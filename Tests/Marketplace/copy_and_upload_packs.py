@@ -385,10 +385,8 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket)
-        (task_status, skipped_pack_uploading, full_pack_path) = \
-            pack.upload_to_storage(zip_pack_path, pack.latest_version,
-                                   production_bucket, override_all_packs)
+        task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
+                                                                              override_all_packs)
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
             pack.cleanup()
