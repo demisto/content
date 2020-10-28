@@ -1,0 +1,9 @@
+!gitlab-get-version using="Moon-Integration"
+!gitlab-get-projects owned=true using="Moon-Integration"
+!gitlab-projects-create-repository-branch branch=feature1 id=21898188 ref=master using="Moon-Integration"
+!gitlab-projects-delete-repository-branch branch=feature1 id=21898188 using="Moon-Integration"
+!gitlab-projects-delete-repository-merged-branches id=21898188 using="Moon-Integration"
+!gitlab-projects-get-repository-branches id=21898188 using="Moon-Integration"
+!gitlab-projects-request-access id=21898188 using=Asteroid
+!gitlab-projects-get-access-requests id=21898188 using="Moon-Integration"
+!gitlab-projects-deny-access id=21898188 user_id=7475865 using="Moon-Integration"

@@ -1,302 +1,277 @@
-import urllib3
-
 import demistomock as demisto
-from CommonServerPython import *  # noqa: F401
-
-''' IMPORTS '''
-
-
-# Disable insecure warnings
-urllib3.disable_warnings()
-
-
-''' CONSTANTS '''
-
-
-INTEGRATION_NAME = 'GitLab'
-
-
-'''API Client'''
+import urllib3
+from CommonServerPython import *
 
 
 class Client(BaseClient):
+    def __init__(self, server_url, verify, proxy, headers):
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
 
-    def query(self, suffix, response_type="json", method="GET", body=None):
-        suffix = suffix
-        LOG(f'running request with url= {self._base_url}')
+    def get_projects_request(self, repository_storage, last_activity_before, min_access_level, simple, sort, membership, search_namespaces, archived, search, id_before, last_activity_after, starred, id_after, owned, order_by, statistics, visibility, with_custom_attributes, with_issues_enabled, with_merge_requests_enabled, with_programming_language):
+        params = assign_params(repository_storage=repository_storage, last_activity_before=last_activity_before, min_access_level=min_access_level, simple=simple, sort=sort, membership=membership, search_namespaces=search_namespaces, archived=archived, search=search, id_before=id_before, last_activity_after=last_activity_after, starred=starred, id_after=id_after, owned=owned, order_by=order_by, statistics=statistics, visibility=visibility, with_custom_attributes=with_custom_attributes, with_issues_enabled=with_issues_enabled, with_merge_requests_enabled=with_merge_requests_enabled, with_programming_language=with_programming_language)
+        headers = self._headers
+        response = self._http_request('get', 'projects', params=params, headers=headers)
+        return response
 
-        res = self._http_request(
-            method=method,
-            url_suffix=suffix,
-            resp_type=response_type,
-            data=body
-        )
-        return res
+    def projects_get_access_requests_request(self, id_):
+        headers = self._headers
+        response = self._http_request('get', f'projects/{id_}/access_requests', headers=headers)
+        return response
+
+    def projects_request_access_request(self, id_):
+        headers = self._headers
+        response = self._http_request('post', f'projects/{id_}/access_requests', headers=headers)
+        return response
+
+    def projects_approve_access_request(self, id_, user_id, access_level):
+        params = assign_params(access_level=access_level)
+        headers = self._headers
+        response = self._http_request('put', f'projects/{id_}/access_requests/{user_id}/approve', params=params, headers=headers)
+        return response
+
+    def projects_deny_access_request(self, id_, user_id):
+        headers = self._headers
+        self._http_request('delete', f'projects/{id_}/access_requests/{user_id}', headers=headers, resp_type='text')
+        response = {
+            'id': user_id,
+            'state': 'denied'
+        }
+        return response
+
+    def projects_get_repository_branches_request(self, id_, search):
+        params = assign_params(search=search)
+        headers = self._headers
+        response = self._http_request('get', f'projects/{id_}/repository/branches', params=params, headers=headers)
+        return response
+
+    def projects_create_repository_branch_request(self, id_, branch, ref):
+        params = assign_params(branch=branch, ref=ref)
+        headers = self._headers
+        response = self._http_request('post', f'projects/{id_}/repository/branches', params=params, headers=headers)
+        return response
+
+    def projects_delete_repository_branch_request(self, id_, branch):
+        headers = self._headers
+        self._http_request('delete', f'projects/{id_}/repository/branches/{branch}', headers=headers, resp_type='text')
+        response = {
+            'message': f'Branch \'{branch}\' is deleted.',
+        }
+        return response
+
+    def projects_delete_repository_merged_branches_request(self, id_):
+        headers = self._headers
+        response = self._http_request('delete', f'projects/{id_}/repository/merged_branches', headers=headers)
+        return response
+
+    def get_version_request(self):
+        headers = self._headers
+        response = self._http_request('get', 'version', headers=headers)
+        return response
 
 
-'''' Commands '''
+def get_projects_command(client, args):
+    repository_storage = str(args.get('repository_storage', ''))
+    last_activity_before = str(args.get('last_activity_before', ''))
+    min_access_level = str(args.get('min_access_level', ''))
+    simple = argToBoolean(args.get('simple', False))
+    sort = str(args.get('sort', ''))
+    membership = argToBoolean(args.get('membership', False))
+    search_namespaces = argToBoolean(args.get('search_namespaces', False))
+    archived = argToBoolean(args.get('archived', False))
+    search = str(args.get('search', ''))
+    id_before = str(args.get('id_before', ''))
+    last_activity_after = str(args.get('last_activity_after', ''))
+    starred = argToBoolean(args.get('starred', False))
+    id_after = str(args.get('id_after', ''))
+    owned = argToBoolean(args.get('owned', False))
+    order_by = str(args.get('order_by', ''))
+    statistics = argToBoolean(args.get('statistics', False))
+    visibility = str(args.get('visibility', ''))
+    with_custom_attributes = argToBoolean(args.get('with_custom_attributes', False))
+    with_issues_enabled = argToBoolean(args.get('with_issues_enabled', False))
+    with_merge_requests_enabled = argToBoolean(args.get('with_merge_requests_enabled', False))
+    with_programming_language = str(args.get('with_programming_language', ''))
+
+    response = client.get_projects_request(repository_storage, last_activity_before, min_access_level, simple, sort, membership, search_namespaces, archived, search, id_before, last_activity_after, starred, id_after, owned, order_by, statistics, visibility, with_custom_attributes, with_issues_enabled, with_merge_requests_enabled, with_programming_language)
+    command_results = CommandResults(
+        outputs_prefix='GitLab.Projects',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def projects_get_access_requests_command(client, args):
+    id_ = args.get('id', None)
+    response = client.projects_get_access_requests_request(id_)
+    command_results = CommandResults(
+        outputs_prefix='GitLab.AccessRequests',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response
+    )
+    return command_results
+
+
+def projects_request_access_command(client, args):
+    id_ = args.get('id', None)
+    response = client.projects_request_access_request(id_)
+    command_results = CommandResults(
+        outputs_prefix='GitLab.AccessRequests',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response
+    )
+    return command_results
+
+
+def projects_approve_access_command(client, args):
+    id_ = args.get('id', None)
+    user_id = args.get('user_id', None)
+    access_level = args.get('access_level', None)
+    response = client.projects_approve_access_request(id_, user_id, access_level)
+    command_results = CommandResults(
+        outputs_prefix='GitLab.AccessRequests',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response
+    )
+    return command_results
+
+
+def projects_deny_access_command(client, args):
+    id_ = args.get('id', None)
+    user_id = args.get('user_id', None)
+    response = client.projects_deny_access_request(id_, user_id)
+    command_results = CommandResults(
+        outputs_prefix='GitLab.AccessRequests',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response
+    )
+    return command_results
+
+
+def projects_get_repository_branches_command(client, args):
+    id_ = args.get('id', None)
+    search = str(args.get('search', ''))
+
+    response = client.projects_get_repository_branches_request(id_, search)
+    command_results = CommandResults(
+        outputs_prefix='GitLab.Branches',
+        outputs_key_field='web_url',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def projects_create_repository_branch_command(client, args):
+    id_ = args.get('id', None)
+    branch = str(args.get('branch', ''))
+    ref = str(args.get('ref', ''))
+
+    response = client.projects_create_repository_branch_request(id_, branch, ref)
+    command_results = CommandResults(
+        outputs_prefix='GitLab.Branches',
+        outputs_key_field='web_url',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def projects_delete_repository_branch_command(client, args):
+    id_ = args.get('id', None)
+    branch = str(args.get('branch', ''))
+
+    response = client.projects_delete_repository_branch_request(id_, branch)
+    command_results = CommandResults(
+        outputs_prefix='GitLab.Branches',
+        outputs_key_field='web_url',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def projects_delete_repository_merged_branches_command(client, args):
+    id_ = args.get('id', None)
+
+    response = client.projects_delete_repository_merged_branches_request(id_)
+    command_results = CommandResults(
+        outputs_prefix='GitLab',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def get_version_command(client, args):
+    response = client.get_version_request()
+    command_results = CommandResults(
+        outputs_prefix='GitLab',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
 
 
 def test_module(client):
-    test_result=client.query(suffix='/version')
-    if test_result.get('version'):
-        return "ok"
+    # Test functions here
+    response = client.get_version_request()
+    if response.get('version'):
+        demisto.results('ok')
     else:
-        return "Test Failed:" + test_result
-
-
-def get_project_by_url(client, args):
-    search_query = '/projects/' + args.get('provider') + '/' + args.get('org') + '/' + args.get('name')
-    title = f'{INTEGRATION_NAME} - Project Details'
-    raws = []
-    project_ec = []
-    raw_response = client.query(search_query)
-
-    if raw_response:
-        raws.append(raw_response)
-        project_ec.append({
-            "id": raws[0]['id'],
-            "name": raws[0]['name'],
-            "url": raws[0]['url'],
-            "languages": raws[0]['languages']
-        })
-
-    if not raws:
-        return_error(f'{INTEGRATION_NAME} - Could not find any results for given query')
-
-    context_entry = {
-        "LGTM": {"Projects": project_ec}
-    }
-
-    human_readable = tableToMarkdown(t=context_entry['LGTM']['Projects'], name=title)
-    return [human_readable, context_entry, raws]
-
-
-def get_project_by_id(client, args):
-    search_query = '/projects/' + str(args.get('id'))
-    title = f'{INTEGRATION_NAME} - Project Details'
-    raws = []
-    project_ec = []
-    raw_response = client.query(search_query)
-
-    if raw_response:
-        raws.append(raw_response)
-        project_ec.append({
-            "id": raws[0]['id'],
-            "name": raws[0]['name'],
-            "url": raws[0]['url'],
-            "languages": raws[0]['languages']
-        })
-
-    if not raws:
-        return_error(f'{INTEGRATION_NAME} - Could not find any results for given query')
-
-    context_entry = {
-        "LGTM": {"Projects": project_ec}
-    }
-
-    human_readable = tableToMarkdown(t=context_entry['LGTM']['Projects'], name=title)
-    return [human_readable, context_entry, raws]
-
-
-def get_project_config(client, args):
-    search_query = '/projects/' + str(args.get('id')) + '/settings/analysis-configuration'
-    title = f'{INTEGRATION_NAME} - Project LGTM Configurations'
-    raws = []
-    project_ec = []
-    raw_response = client.query(search_query, response_type='text')
-
-    if raw_response:
-        raws.append(raw_response)
-        project_ec.append(raws)
-
-    if not raws:
-        return_error(f'{INTEGRATION_NAME} - Could not find any results for given query')
-
-    context_entry = {
-        "LGTM": {"Configs": project_ec}
-    }
-
-    human_readable = tableToMarkdown(t=context_entry['LGTM']['Configs'], name=title, headers='Configurations')
-    return [human_readable, context_entry, raws]
-
-
-def run_commit_analysis(client, args):
-    search_query = '/analyses/' + str(args.get('project_id')) + \
-                   '?commit=' + args.get('commit_id') + \
-                   '&language=' + args.get('language')
-    title = f'{INTEGRATION_NAME} - Code Analysis Results'
-    raws = []
-    analysis_ec = []
-    raw_response = client.query(search_query, method="POST")['task-result']
-
-    if raw_response:
-        raws.append(raw_response)
-        analysis_ec.append(raws)
-
-    if not raws:
-        return_error(f'{INTEGRATION_NAME} - Could not find any results for given query')
-
-    context_entry = {
-        "LGTM": {"Analysis": analysis_ec}
-    }
-
-    human_readable = tableToMarkdown(t=context_entry['LGTM']['Analysis'], name=title, headers='Analysis Results')
-    return [human_readable, context_entry, raws]
-
-
-def get_analysis_status(client, args):
-    analysis_id = args.get('analysis_id')
-    commit_id = args.get('commit_id')
-    project_id = args.get('project_id')
-
-    if analysis_id:
-        search_query = '/analyses/' + str(analysis_id)
-        title = f'{INTEGRATION_NAME} - Code Analysis Status'
-        raws = []
-        analysis_ec = []
-        raw_response = client.query(search_query)
-
-        if raw_response:
-            raws.append(raw_response)
-            analysis_ec.append(raws[0])
-
-        if not raws:
-            return_error(f'{INTEGRATION_NAME} - Could not find any results for given query')
-        human_readable = tableToMarkdown(t=analysis_ec[0]['languages'][0]['status'], name=title, headers='Analysis Status')
-        return [human_readable, {"LGTM.Analysis(val.id == obj.id)": analysis_ec}, raws]
-
-    elif commit_id and project_id:
-        search_query = '/analyses/' + str(project_id) + '/commits/' + str(commit_id)
-        title = f'{INTEGRATION_NAME} - Code Analysis Status'
-        raws = []
-        analysis_ec = []
-        raw_response = client.query(search_query)
-
-        if raw_response:
-            raws.append(raw_response)
-            analysis_ec.append(raws[0])
-
-        if not raws:
-            return_error(f'{INTEGRATION_NAME} - Could not find any results for given query')
-        human_readable = tableToMarkdown(t=analysis_ec[0]['languages'][0]['status'], name=title, headers='Analysis Status')
-        return [human_readable, {"LGTM.Analysis(val.id == obj.id)": analysis_ec}, raws]
-
-    else:
-        return_error(f'{INTEGRATION_NAME} - Please use either the Analysis ID or Commit and Project IDs')
-
-
-def get_alerts_details(client, args):
-    search_query = '/analyses/' + str(args.get('analysis_id')) + '/alerts?excluded-files=false'
-    title = f'{INTEGRATION_NAME} - Code Analysis Alerts'
-    raws = []
-    analysis_ec = []
-    raw_response = client.query(search_query)
-
-    if raw_response:
-        raws.append(raw_response)
-
-    for runs in raws[0]['runs']:
-        for result in runs['results']:
-            analysis_ec.append({
-                'analysisId': args.get('analysis_id'),
-                'alert': result
-            })
-
-    if not raws:
-        return_error(f'{INTEGRATION_NAME} - Could not find any results for given query')
-
-    context_entry = {
-        "LGTM": {"Alerts": analysis_ec}
-    }
-
-    human_readable = tableToMarkdown(t=context_entry['LGTM']['Alerts'], name=title)
-    return [human_readable, context_entry, raws]
-
-
-def run_project_query(client, args):
-    search_query = '/queryjobs/' + \
-                   '?language=' + args.get('language') + \
-                   '&project-id=' + str(args.get('project_id'))
-    title = f'{INTEGRATION_NAME} - Query Analysis Results'
-    raws = []
-    query_ec = []
-
-    raw_response = client.query(search_query, method="POST", body=args.get('query'))
-
-    if raw_response:
-        raws.append(raw_response)
-        query_ec.append(raws)
-
-    if not raws:
-        return_error(f'{INTEGRATION_NAME} - Could not find any results for given query')
-
-    context_entry = {
-        "LGTM": {"Queries": query_ec}
-    }
-
-    human_readable = tableToMarkdown(t=context_entry['LGTM']['Queries'], name=title, headers='Query Results')
-    return [human_readable, context_entry, raws]
+        demisto.results('Test Failed:' + response)
 
 
 def main():
-    """
-        PARSE AND VALIDATE INTEGRATION PARAMS
-    """
+
     params = demisto.params()
-    api_key = params.get('apikey')
-    base_url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url'] + '/api/v4'
+    args = demisto.args()
+    url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    headers = {}
+    headers['PRIVATE-TOKEN'] = f'{params["api_key"]}'
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    LOG(f'Command being called is {command}')
+
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            ok_codes=(200, 201, 202, 204),
-            headers={
-                'PRIVATE-TOKEN': api_key,
-                'Content-Type': 'text/plain'
-            },
-        )
+        urllib3.disable_warnings()
+        client = Client(urljoin(url, ""), verify_certificate, proxy, headers=headers)
+        commands = {
+            'gitlab-get-projects': get_projects_command,
+            'gitlab-projects-get-access-requests': projects_get_access_requests_command,
+            'gitlab-projects-request-access': projects_request_access_command,
+            'gitlab-projects-approve-access': projects_approve_access_command,
+            'gitlab-projects-deny-access': projects_deny_access_command,
+            'gitlab-projects-get-repository-branches': projects_get_repository_branches_command,
+            'gitlab-projects-create-repository-branch': projects_create_repository_branch_command,
+            'gitlab-projects-delete-repository-branch': projects_delete_repository_branch_command,
+            'gitlab-projects-delete-repository-merged-branches': projects_delete_repository_merged_branches_command,
+            'gitlab-get-version': get_version_command,
+        }
 
-        if demisto.command() == 'test-module':
-            result = test_module(client)
-            return_outputs(result)
-
-        elif demisto.command() == 'lgtm-get-project-by-url':
-            result = get_project_by_url(client, demisto.args())
-            return_outputs(*result)
-
-        elif demisto.command() == 'lgtm-get-project-by-id':
-            result = get_project_by_id(client, demisto.args())
-            return_outputs(*result)
-
-        elif demisto.command() == 'lgtm-get-project-config':
-            result = get_project_config(client, demisto.args())
-            return_outputs(*result)
-
-        elif demisto.command() == 'lgtm-run-commit-analysis':
-            result = run_commit_analysis(client, demisto.args())
-            return_outputs(*result)
-
-        elif demisto.command() == 'lgtm-get-analysis-status':
-            result = get_analysis_status(client, demisto.args())
-            return_outputs(*result)
-
-        elif demisto.command() == 'lgtm-get-alerts-details':
-            result = get_alerts_details(client, demisto.args())
-            return_outputs(*result)
-
-        elif demisto.command() == 'lgtm-run-project-query':
-            result = run_project_query(client, demisto.args())
-            return_outputs(*result)
+        if command == 'test-module':
+            test_module(client)
+        else:
+            return_results(commands[command](client, args))
 
     except Exception as e:
-        return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e)}'))
+        return_error(str(e))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

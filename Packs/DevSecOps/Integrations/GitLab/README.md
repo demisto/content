@@ -1,17 +1,15 @@
-An Integration with a code analysis platform for finding zero-days and preventing critical vulnerabilities
-This integration was integrated and tested with version 1.0 of LGTM
-## Configure LGTM on Cortex XSOAR
+An Integration with GitLab
+This integration was integrated and tested with version v4.0 of GitLab API
+## Configure GitLab Integration on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for LGTM.
+2. Search for GitLab Integration.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://example.net\) | True |
-| apikey | API Token | True |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
+| url | Server URL \(e.g. https://gitlab.com/api/v4\) | True |
+| api_key | API Key | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
@@ -19,54 +17,319 @@ This integration was integrated and tested with version 1.0 of LGTM
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### lgtm-get-project-by-url
+### gitlab-get-projects
 ***
-Get Project by Org and Name Identifiers
+Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with “simple” fields are returned.
 
 
 #### Base Command
 
-`lgtm-get-project-by-url`
+`gitlab-get-projects`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| provider | Code Repo Provider , example : g for github | Required | 
-| org | Code Repo Organization | Required | 
-| name | Code Repo Name | Required | 
+| repository_storage | Limit results to projects stored on repository_storage. Available for admins only. | Optional | 
+| last_activity_before | Limit results to projects with last_activity before specified time. | Optional | 
+| min_access_level | Limit by current user minimal access level. | Optional | 
+| simple | Return only limited fields for each project. This is a no-op without authentication as then only simple fields are returned. | Optional | 
+| sort | Return projects sorted in asc or desc order. | Optional | 
+| membership | Limit by projects that the current user is a member of. | Optional | 
+| search_namespaces | Include ancestor namespaces when matching search criteria. | Optional | 
+| archived | Limit by archived status . | Optional | 
+| search | Return list of projects matching the search criteria . | Optional | 
+| id_before | Limit results to projects with IDs less than the specified ID . | Optional | 
+| last_activity_after | Limit results to projects with last_activity after specified time | Optional | 
+| starred | Limit by projects starred by the current user . | Optional | 
+| id_after | Limit results to projects with IDs greater than the specified ID. | Optional | 
+| owned | Limit by projects explicitly owned by the current user. | Optional | 
+| order_by | Return projects ordered by id, name, path, created_at, updated_at, or last_activity_at fields. repository_size, storage_size, or wiki_size fields are only allowed for admins. Default is created_at. | Optional | 
+| statistics | Include project statistics . | Optional | 
+| visibility | Limit by visibility public, internal, or private . | Optional | 
+| with_custom_attributes | Include custom attributes in response (admins only). | Optional | 
+| with_issues_enabled | Limit by enabled issues feature . | Optional | 
+| with_merge_requests_enabled | Limit by enabled merge requests feature. | Optional | 
+| with_programming_language | Limit by projects which use the given programming language. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LGTM.Projects | Unknown | LGTM Projects | 
+| GitLab.Projects.web_url | Unknown | Project Web URL | 
+| GitLab.Projects.name | Unknown | Project Name | 
+| GitLab.Projects.path | Unknown | Project Path | 
+| GitLab.Projects.created_at | Unknown | Project Created At | 
+| GitLab.Projects.visibility | Unknown | Project Visiblity | 
+| GitLab.Projects.id | Unknown | Project ID | 
 
 
 #### Command Example
-```!lgtm-get-project-by-url provider="g" org="my-devsecops" name="moon"```
+```!gitlab-get-projects owned=true using="Moon-Integration"```
 
 #### Context Example
-```
+```json
 {
-    "LGTM": {
+    "GitLab": {
         "Projects": [
             {
-                "id": 1512319787549,
-                "languages": [
-                    {
-                        "alerts": 11,
-                        "analysis-date": "2020-09-25T04:12:27.131+0000",
-                        "commit-date": "2020-09-09T14:53:17.000+0000",
-                        "commit-id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
-                        "grade": "E",
-                        "language": "python",
-                        "lines": 127,
-                        "status": "success"
+                "_links": {
+                    "events": "https://gitlab.com/api/v4/projects/21898188/events",
+                    "issues": "https://gitlab.com/api/v4/projects/21898188/issues",
+                    "labels": "https://gitlab.com/api/v4/projects/21898188/labels",
+                    "members": "https://gitlab.com/api/v4/projects/21898188/members",
+                    "merge_requests": "https://gitlab.com/api/v4/projects/21898188/merge_requests",
+                    "repo_branches": "https://gitlab.com/api/v4/projects/21898188/repository/branches",
+                    "self": "https://gitlab.com/api/v4/projects/21898188"
+                },
+                "allow_merge_on_skipped_pipeline": null,
+                "approvals_before_merge": 0,
+                "archived": false,
+                "auto_cancel_pending_pipelines": "enabled",
+                "auto_devops_deploy_strategy": "continuous",
+                "auto_devops_enabled": false,
+                "autoclose_referenced_issues": true,
+                "avatar_url": null,
+                "build_coverage_regex": null,
+                "build_timeout": 3600,
+                "builds_access_level": "enabled",
+                "can_create_merge_request_in": true,
+                "ci_config_path": "",
+                "ci_default_git_depth": 50,
+                "ci_forward_deployment_enabled": true,
+                "compliance_frameworks": [],
+                "container_expiration_policy": {
+                    "cadence": "1d",
+                    "enabled": true,
+                    "keep_n": 10,
+                    "name_regex": null,
+                    "name_regex_keep": null,
+                    "next_run_at": "2020-10-21T10:49:15.236Z",
+                    "older_than": "90d"
+                },
+                "container_registry_enabled": true,
+                "created_at": "2020-10-20T10:49:15.219Z",
+                "creator_id": 5773551,
+                "default_branch": "master",
+                "description": null,
+                "emails_disabled": null,
+                "empty_repo": false,
+                "external_authorization_classification_label": "",
+                "forking_access_level": "enabled",
+                "forks_count": 0,
+                "http_url_to_repo": "https://gitlab.com/ayman-m/moon.git",
+                "id": 21898188,
+                "import_status": "finished",
+                "issues_access_level": "enabled",
+                "issues_enabled": true,
+                "jobs_enabled": true,
+                "last_activity_at": "2020-10-25T11:50:47.126Z",
+                "lfs_enabled": true,
+                "marked_for_deletion_at": null,
+                "marked_for_deletion_on": null,
+                "merge_method": "merge",
+                "merge_requests_access_level": "enabled",
+                "merge_requests_enabled": true,
+                "mirror": false,
+                "name": "moon",
+                "name_with_namespace": "Ayman Mahmoud / moon",
+                "namespace": {
+                    "avatar_url": "/uploads/-/system/user/avatar/5773551/avatar.png",
+                    "full_path": "ayman-m",
+                    "id": 7637905,
+                    "kind": "user",
+                    "name": "Ayman Mahmoud",
+                    "parent_id": null,
+                    "path": "ayman-m",
+                    "web_url": "https://gitlab.com/ayman-m"
+                },
+                "only_allow_merge_if_all_discussions_are_resolved": false,
+                "only_allow_merge_if_pipeline_succeeds": false,
+                "open_issues_count": 16,
+                "owner": {
+                    "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png",
+                    "id": 5773551,
+                    "name": "Ayman Mahmoud",
+                    "state": "active",
+                    "username": "ayman-m",
+                    "web_url": "https://gitlab.com/ayman-m"
+                },
+                "packages_enabled": true,
+                "pages_access_level": "enabled",
+                "path": "moon",
+                "path_with_namespace": "ayman-m/moon",
+                "permissions": {
+                    "group_access": null,
+                    "project_access": {
+                        "access_level": 40,
+                        "notification_level": 3
                     }
-                ],
-                "name": "my-devsecops/moon",
-                "url": "https://lgtm.com/projects/g/my-devsecops/moon"
+                },
+                "printing_merge_request_link_enabled": true,
+                "public_jobs": true,
+                "readme_url": "https://gitlab.com/ayman-m/moon/-/blob/master/README.md",
+                "remove_source_branch_after_merge": true,
+                "repository_access_level": "enabled",
+                "request_access_enabled": true,
+                "resolve_outdated_diff_discussions": false,
+                "service_desk_address": "incoming+ayman-m-moon-21898188-issue-@incoming.gitlab.com",
+                "service_desk_enabled": true,
+                "shared_runners_enabled": true,
+                "shared_with_groups": [],
+                "snippets_access_level": "enabled",
+                "snippets_enabled": true,
+                "ssh_url_to_repo": "git@gitlab.com:ayman-m/moon.git",
+                "star_count": 0,
+                "suggestion_commit_message": null,
+                "tag_list": [],
+                "visibility": "public",
+                "web_url": "https://gitlab.com/ayman-m/moon",
+                "wiki_access_level": "enabled",
+                "wiki_enabled": true
+            },
+            {
+                "_links": {
+                    "events": "https://gitlab.com/api/v4/projects/18044686/events",
+                    "issues": "https://gitlab.com/api/v4/projects/18044686/issues",
+                    "labels": "https://gitlab.com/api/v4/projects/18044686/labels",
+                    "members": "https://gitlab.com/api/v4/projects/18044686/members",
+                    "merge_requests": "https://gitlab.com/api/v4/projects/18044686/merge_requests",
+                    "repo_branches": "https://gitlab.com/api/v4/projects/18044686/repository/branches",
+                    "self": "https://gitlab.com/api/v4/projects/18044686"
+                },
+                "allow_merge_on_skipped_pipeline": null,
+                "approvals_before_merge": 0,
+                "archived": false,
+                "auto_cancel_pending_pipelines": "enabled",
+                "auto_devops_deploy_strategy": "continuous",
+                "auto_devops_enabled": false,
+                "autoclose_referenced_issues": true,
+                "avatar_url": null,
+                "build_coverage_regex": null,
+                "build_timeout": 3600,
+                "builds_access_level": "enabled",
+                "can_create_merge_request_in": true,
+                "ci_config_path": null,
+                "ci_default_git_depth": 0,
+                "ci_forward_deployment_enabled": true,
+                "compliance_frameworks": [],
+                "container_expiration_policy": {
+                    "cadence": "7d",
+                    "enabled": true,
+                    "keep_n": null,
+                    "name_regex": null,
+                    "name_regex_keep": null,
+                    "next_run_at": "2020-10-24T01:50:06.530Z",
+                    "older_than": null
+                },
+                "container_registry_enabled": true,
+                "created_at": "2020-04-10T04:25:23.777Z",
+                "creator_id": 5773551,
+                "default_branch": "master",
+                "description": "Python wrapper for OTRS (REST) API",
+                "emails_disabled": null,
+                "empty_repo": false,
+                "external_authorization_classification_label": "",
+                "forked_from_project": {
+                    "avatar_url": null,
+                    "created_at": "2016-04-25T10:01:22.538Z",
+                    "default_branch": "master",
+                    "description": "Python wrapper for OTRS (REST) API",
+                    "forks_count": 9,
+                    "http_url_to_repo": "https://gitlab.com/rhab/PyOTRS.git",
+                    "id": 1112166,
+                    "last_activity_at": "2020-10-20T18:46:30.547Z",
+                    "name": "PyOTRS",
+                    "name_with_namespace": "Robert Habermann / PyOTRS",
+                    "namespace": {
+                        "avatar_url": "https://secure.gravatar.com/avatar/fd996be0107aa697f0ca5753aa7b5d1f?s=80&d=identicon",
+                        "full_path": "rhab",
+                        "id": 599974,
+                        "kind": "user",
+                        "name": "Robert Habermann",
+                        "parent_id": null,
+                        "path": "rhab",
+                        "web_url": "https://gitlab.com/rhab"
+                    },
+                    "path": "PyOTRS",
+                    "path_with_namespace": "rhab/PyOTRS",
+                    "readme_url": "https://gitlab.com/rhab/PyOTRS/-/blob/master/README.rst",
+                    "ssh_url_to_repo": "git@gitlab.com:rhab/PyOTRS.git",
+                    "star_count": 12,
+                    "tag_list": [],
+                    "web_url": "https://gitlab.com/rhab/PyOTRS"
+                },
+                "forking_access_level": "enabled",
+                "forks_count": 0,
+                "http_url_to_repo": "https://gitlab.com/ayman-m/PyOTRS.git",
+                "id": 18044686,
+                "import_status": "finished",
+                "issues_access_level": "enabled",
+                "issues_enabled": true,
+                "jobs_enabled": true,
+                "last_activity_at": "2020-04-10T04:25:23.777Z",
+                "lfs_enabled": true,
+                "marked_for_deletion_at": null,
+                "marked_for_deletion_on": null,
+                "merge_method": "merge",
+                "merge_requests_access_level": "enabled",
+                "merge_requests_enabled": true,
+                "mirror": false,
+                "name": "PyOTRS",
+                "name_with_namespace": "Ayman Mahmoud / PyOTRS",
+                "namespace": {
+                    "avatar_url": "/uploads/-/system/user/avatar/5773551/avatar.png",
+                    "full_path": "ayman-m",
+                    "id": 7637905,
+                    "kind": "user",
+                    "name": "Ayman Mahmoud",
+                    "parent_id": null,
+                    "path": "ayman-m",
+                    "web_url": "https://gitlab.com/ayman-m"
+                },
+                "only_allow_merge_if_all_discussions_are_resolved": false,
+                "only_allow_merge_if_pipeline_succeeds": false,
+                "open_issues_count": 0,
+                "owner": {
+                    "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png",
+                    "id": 5773551,
+                    "name": "Ayman Mahmoud",
+                    "state": "active",
+                    "username": "ayman-m",
+                    "web_url": "https://gitlab.com/ayman-m"
+                },
+                "packages_enabled": true,
+                "pages_access_level": "enabled",
+                "path": "PyOTRS",
+                "path_with_namespace": "ayman-m/PyOTRS",
+                "permissions": {
+                    "group_access": null,
+                    "project_access": {
+                        "access_level": 40,
+                        "notification_level": 3
+                    }
+                },
+                "printing_merge_request_link_enabled": true,
+                "public_jobs": true,
+                "readme_url": "https://gitlab.com/ayman-m/PyOTRS/-/blob/master/README.rst",
+                "remove_source_branch_after_merge": true,
+                "repository_access_level": "enabled",
+                "request_access_enabled": true,
+                "resolve_outdated_diff_discussions": false,
+                "service_desk_address": "incoming+ayman-m-pyotrs-18044686-issue-@incoming.gitlab.com",
+                "service_desk_enabled": true,
+                "shared_runners_enabled": true,
+                "shared_with_groups": [],
+                "snippets_access_level": "enabled",
+                "snippets_enabled": true,
+                "ssh_url_to_repo": "git@gitlab.com:ayman-m/PyOTRS.git",
+                "star_count": 0,
+                "suggestion_commit_message": null,
+                "tag_list": [],
+                "visibility": "public",
+                "web_url": "https://gitlab.com/ayman-m/PyOTRS",
+                "wiki_access_level": "enabled",
+                "wiki_enabled": true
             }
         ]
     }
@@ -75,92 +338,144 @@ Get Project by Org and Name Identifiers
 
 #### Human Readable Output
 
->### LGTM - Project Details
->|id|languages|name|url|
->|---|---|---|---|
->| 1512319787549 | {'language': 'python', 'status': 'success', 'alerts': 11, 'lines': 127, 'commit-id': '39eb3dc0c7e86d0b943df1be922b173068010bf5', 'commit-date': '2020-09-09T14:53:17.000+0000', 'analysis-date': '2020-09-25T04:12:27.131+0000', 'grade': 'E'} | my-devsecops/moon | https://lgtm.com/projects/g/my-devsecops/moon |
+>### Results
+>|_links|allow_merge_on_skipped_pipeline|approvals_before_merge|archived|auto_cancel_pending_pipelines|auto_devops_deploy_strategy|auto_devops_enabled|autoclose_referenced_issues|avatar_url|build_coverage_regex|build_timeout|builds_access_level|can_create_merge_request_in|ci_config_path|ci_default_git_depth|ci_forward_deployment_enabled|compliance_frameworks|container_expiration_policy|container_registry_enabled|created_at|creator_id|default_branch|description|emails_disabled|empty_repo|external_authorization_classification_label|forking_access_level|forks_count|http_url_to_repo|id|import_status|issues_access_level|issues_enabled|jobs_enabled|last_activity_at|lfs_enabled|marked_for_deletion_at|marked_for_deletion_on|merge_method|merge_requests_access_level|merge_requests_enabled|mirror|name|name_with_namespace|namespace|only_allow_merge_if_all_discussions_are_resolved|only_allow_merge_if_pipeline_succeeds|open_issues_count|owner|packages_enabled|pages_access_level|path|path_with_namespace|permissions|printing_merge_request_link_enabled|public_jobs|readme_url|remove_source_branch_after_merge|repository_access_level|request_access_enabled|resolve_outdated_diff_discussions|service_desk_address|service_desk_enabled|shared_runners_enabled|shared_with_groups|snippets_access_level|snippets_enabled|ssh_url_to_repo|star_count|suggestion_commit_message|tag_list|visibility|web_url|wiki_access_level|wiki_enabled|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| self: https://gitlab.com/api/v4/projects/21898188<br/>issues: https://gitlab.com/api/v4/projects/21898188/issues<br/>merge_requests: https://gitlab.com/api/v4/projects/21898188/merge_requests<br/>repo_branches: https://gitlab.com/api/v4/projects/21898188/repository/branches<br/>labels: https://gitlab.com/api/v4/projects/21898188/labels<br/>events: https://gitlab.com/api/v4/projects/21898188/events<br/>members: https://gitlab.com/api/v4/projects/21898188/members |  | 0 | false | enabled | continuous | false | true |  |  | 3600 | enabled | true |  | 50 | true |  | cadence: 1d<br/>enabled: true<br/>keep_n: 10<br/>older_than: 90d<br/>name_regex: null<br/>name_regex_keep: null<br/>next_run_at: 2020-10-21T10:49:15.236Z | true | 2020-10-20T10:49:15.219Z | 5773551 | master |  |  | false |  | enabled | 0 | https://gitlab.com/ayman-m/moon.git | 21898188 | finished | enabled | true | true | 2020-10-25T11:50:47.126Z | true |  |  | merge | enabled | true | false | moon | Ayman Mahmoud / moon | id: 7637905<br/>name: Ayman Mahmoud<br/>path: ayman-m<br/>kind: user<br/>full_path: ayman-m<br/>parent_id: null<br/>avatar_url: /uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/ayman-m | false | false | 16 | id: 5773551<br/>name: Ayman Mahmoud<br/>username: ayman-m<br/>state: active<br/>avatar_url: https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/ayman-m | true | enabled | moon | ayman-m/moon | project_access: {"access_level": 40, "notification_level": 3}<br/>group_access: null | true | true | https://gitlab.com/ayman-m/moon/-/blob/master/README.md | true | enabled | true | false | incoming+ayman-m-moon-21898188-issue-@incoming.gitlab.com | true | true |  | enabled | true | git@gitlab.com:ayman-m/moon.git | 0 |  |  | public | https://gitlab.com/ayman-m/moon | enabled | true |
+>| self: https://gitlab.com/api/v4/projects/18044686<br/>issues: https://gitlab.com/api/v4/projects/18044686/issues<br/>merge_requests: https://gitlab.com/api/v4/projects/18044686/merge_requests<br/>repo_branches: https://gitlab.com/api/v4/projects/18044686/repository/branches<br/>labels: https://gitlab.com/api/v4/projects/18044686/labels<br/>events: https://gitlab.com/api/v4/projects/18044686/events<br/>members: https://gitlab.com/api/v4/projects/18044686/members |  | 0 | false | enabled | continuous | false | true |  |  | 3600 | enabled | true |  | 0 | true |  | cadence: 7d<br/>enabled: true<br/>keep_n: null<br/>older_than: null<br/>name_regex: null<br/>name_regex_keep: null<br/>next_run_at: 2020-10-24T01:50:06.530Z | true | 2020-04-10T04:25:23.777Z | 5773551 | master | Python wrapper for OTRS (REST) API |  | false |  | enabled | 0 | https://gitlab.com/ayman-m/PyOTRS.git | 18044686 | finished | enabled | true | true | 2020-04-10T04:25:23.777Z | true |  |  | merge | enabled | true | false | PyOTRS | Ayman Mahmoud / PyOTRS | id: 7637905<br/>name: Ayman Mahmoud<br/>path: ayman-m<br/>kind: user<br/>full_path: ayman-m<br/>parent_id: null<br/>avatar_url: /uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/ayman-m | false | false | 0 | id: 5773551<br/>name: Ayman Mahmoud<br/>username: ayman-m<br/>state: active<br/>avatar_url: https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/ayman-m | true | enabled | PyOTRS | ayman-m/PyOTRS | project_access: {"access_level": 40, "notification_level": 3}<br/>group_access: null | true | true | https://gitlab.com/ayman-m/PyOTRS/-/blob/master/README.rst | true | enabled | true | false | incoming+ayman-m-pyotrs-18044686-issue-@incoming.gitlab.com | true | true |  | enabled | true | git@gitlab.com:ayman-m/PyOTRS.git | 0 |  |  | public | https://gitlab.com/ayman-m/PyOTRS | enabled | true |
 
 
-### lgtm-get-project-by-id
+### gitlab-projects-get-access-requests
 ***
-Get Project by LGTM ID
+Gets a list of access requests viewable by the authenticated user.
 
 
 #### Base Command
 
-`lgtm-get-project-by-id`
+`gitlab-projects-get-access-requests`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | LGTM Project ID, example: 1511896439667 | Required | 
+| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LGTM.Projects | Unknown | LGTM Projects | 
+| GitLab.AccessRequests.id | Unknown | Access Request ID | 
+| GitLab.AccessRequests.username | Unknown | Access Request User | 
+| GitLab.AccessRequests.requested_at | Unknown | Access Request Create Time | 
+| GitLab.AccessRequests.state | Unknown | Access Request State | 
 
 
 #### Command Example
-```!lgtm-get-project-by-id id=1512319787549```
+```!gitlab-projects-get-access-requests id=21898188 using="Moon-Integration"```
 
 #### Context Example
-```
+```json
 {
-    "LGTM": {
-        "Projects": [
-            {
-                "id": 1512319787549,
-                "languages": [
-                    {
-                        "alerts": 11,
-                        "analysis-date": "2020-09-25T04:12:27.131+0000",
-                        "commit-date": "2020-09-09T14:53:17.000+0000",
-                        "commit-id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
-                        "grade": "E",
-                        "language": "python",
-                        "lines": 127,
-                        "status": "success"
-                    }
-                ],
-                "name": "my-devsecops/moon",
-                "url": "https://lgtm.com/projects/g/my-devsecops/moon"
-            }
-        ]
+    "GitLab": {
+        "AccessRequests": {
+            "avatar_url": "https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon",
+            "id": 7475865,
+            "name": "Omar Elkhayam",
+            "requested_at": "2020-10-25T12:50:05.865Z",
+            "state": "active",
+            "username": "OmarElkhayam",
+            "web_url": "https://gitlab.com/OmarElkhayam"
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->### LGTM - Project Details
->|id|languages|name|url|
->|---|---|---|---|
->| 1512319787549 | {'language': 'python', 'status': 'success', 'alerts': 11, 'lines': 127, 'commit-id': '39eb3dc0c7e86d0b943df1be922b173068010bf5', 'commit-date': '2020-09-09T14:53:17.000+0000', 'analysis-date': '2020-09-25T04:12:27.131+0000', 'grade': 'E'} | my-devsecops/moon | https://lgtm.com/projects/g/my-devsecops/moon |
+>### Results
+>|avatar_url|id|name|requested_at|state|username|web_url|
+>|---|---|---|---|---|---|---|
+>| https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon | 7475865 | Omar Elkhayam | 2020-10-25T12:50:05.865Z | active | OmarElkhayam | https://gitlab.com/OmarElkhayam |
 
 
-### lgtm-get-project-config
+### gitlab-projects-request-access
 ***
-Get Extraction and Analysis Config by Project ID
+Requests access for the authenticated user to a group or project.
 
 
 #### Base Command
 
-`lgtm-get-project-config`
+`gitlab-projects-request-access`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | LGTM Project ID | Required | 
+| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LGTM.Configs | Unknown | LGTM Project Configurations | 
+| GitLab.AccessRequests.id | Unknown | Access Request ID | 
+| GitLab.AccessRequests.username | Unknown | Access Request User | 
+| GitLab.AccessRequests.requested_at | Unknown | Access Request Create Time | 
+| GitLab.AccessRequests.state | Unknown | Access Request State | 
+
+
+#### Command Example
+```!gitlab-projects-request-access id=21898188 using=Asteroid```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "AccessRequests": {
+            "avatar_url": "https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon",
+            "id": 7475865,
+            "name": "Omar Elkhayam",
+            "requested_at": "2020-10-25T12:50:05.865Z",
+            "state": "active",
+            "username": "OmarElkhayam",
+            "web_url": "https://gitlab.com/OmarElkhayam"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|avatar_url|id|name|requested_at|state|username|web_url|
+>|---|---|---|---|---|---|---|
+>| https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon | 7475865 | Omar Elkhayam | 2020-10-25T12:50:05.865Z | active | OmarElkhayam | https://gitlab.com/OmarElkhayam |
+
+
+### gitlab-projects-approve-access
+***
+Approves an access request for the given user.
+
+
+#### Base Command
+
+`gitlab-projects-approve-access`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
+| user_id | The user ID of the access requester . | Required | 
+| access_level | A valid access level (defaults: 30, developer access level)  | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.AccessRequests.id | Unknown | Access Request ID | 
+| GitLab.AccessRequests.username | Unknown | Access Request User | 
+| GitLab.AccessRequests.requested_at | Unknown | Access Request Create Time | 
+| GitLab.AccessRequests.state | Unknown | Access Request State | 
 
 
 #### Command Example
@@ -170,126 +485,40 @@ Get Extraction and Analysis Config by Project ID
 
 
 
-### lgtm-run-commit-analysis
+### gitlab-projects-deny-access
 ***
-Run LGTM Analysis on Specific Commit
+Denies an access request for the given user.
 
 
 #### Base Command
 
-`lgtm-run-commit-analysis`
+`gitlab-projects-deny-access`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| commit_id | Commit ID to Analyze | Required | 
-| project_id | LGTM Project ID | Required | 
-| language | LGTM Coding Language | Required | 
+| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
+| user_id | The user ID of the access requester . | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LGTM.Tasks | Unknown | LGTM Analysis Results | 
+| GitLab.AccessRequests.id | Unknown | Access Request ID | 
+| GitLab.AccessRequests.state | Unknown | Access Request State | 
 
 
 #### Command Example
-```!lgtm-run-commit-analysis commit_id="39eb3dc0c7e86d0b943df1be922b173068010bf5" project_id="1512319787549" language="python"```
+```!gitlab-projects-deny-access id=21898188 user_id=7475865 using="Moon-Integration"```
 
 #### Context Example
-```
+```json
 {
-    "LGTM": {
-        "Analysis": [
-            [
-                {
-                    "commit-id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
-                    "id": "927d89b0392c332575d30a73ca0298317d68477c",
-                    "languages": [
-                        {
-                            "alerts": 11,
-                            "analysis-date": "2020-09-26T10:51:50.333+0000",
-                            "commit-date": "2020-09-09T14:53:17.000+0000",
-                            "commit-id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
-                            "language": "python",
-                            "lines": 127,
-                            "status": "success"
-                        }
-                    ],
-                    "log-url": "https://lgtm.com/projects/g/my-devsecops/moon/logs/analysis/927d89b0392c332575d30a73ca0298317d68477c",
-                    "project": {
-                        "id": 1512319787549,
-                        "name": "my-devsecops/moon",
-                        "url": "https://lgtm.com/projects/g/my-devsecops/moon",
-                        "url-identifier": "g/my-devsecops/moon"
-                    },
-                    "results-url": "https://lgtm.com/projects/g/my-devsecops/moon/analysis/927d89b0392c332575d30a73ca0298317d68477c/files"
-                }
-            ]
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### LGTM - Code Analysis Results
->|Analysis Results|
->|---|
->| {'id': '927d89b0392c332575d30a73ca0298317d68477c', 'project': {'id': 1512319787549, 'url-identifier': 'g/my-devsecops/moon', 'name': 'my-devsecops/moon', 'url': 'https://lgtm.com/projects/g/my-devsecops/moon'}, 'commit-id': '39eb3dc0c7e86d0b943df1be922b173068010bf5', 'languages': [{'language': 'python', 'status': 'success', 'alerts': 11, 'lines': 127, 'commit-id': '39eb3dc0c7e86d0b943df1be922b173068010bf5', 'commit-date': '2020-09-09T14:53:17.000+0000', 'analysis-date': '2020-09-26T10:51:50.333+0000'}], 'log-url': 'https://lgtm.com/projects/g/my-devsecops/moon/logs/analysis/927d89b0392c332575d30a73ca0298317d68477c', 'results-url': 'https://lgtm.com/projects/g/my-devsecops/moon/analysis/927d89b0392c332575d30a73ca0298317d68477c/files'} |
-
-
-### lgtm-get-analysis-status
-***
-Get Analysis Results
-
-
-#### Base Command
-
-`lgtm-get-analysis-status`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| analysis_id | LGTM Analysis Task ID | Optional | 
-| commit_id | Commit ID | Optional | 
-| project_id | Project ID | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-```!lgtm-get-analysis-status analysis_id="927d89b0392c332575d30a73ca0298317d68477c"```
-
-#### Context Example
-```
-{
-    "LGTM": {
-        "Analysis": {
-            "commit-id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
-            "id": "927d89b0392c332575d30a73ca0298317d68477c",
-            "languages": [
-                {
-                    "alerts": 11,
-                    "analysis-date": "2020-09-26T10:51:50.333+0000",
-                    "commit-date": "2020-09-09T14:53:17.000+0000",
-                    "commit-id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
-                    "language": "python",
-                    "lines": 127,
-                    "status": "success"
-                }
-            ],
-            "log-url": "https://lgtm.com/projects/g/my-devsecops/moon/logs/analysis/927d89b0392c332575d30a73ca0298317d68477c",
-            "project": {
-                "id": 1512319787549,
-                "name": "my-devsecops/moon",
-                "url": "https://lgtm.com/projects/g/my-devsecops/moon",
-                "url-identifier": "g/my-devsecops/moon"
-            },
-            "results-url": "https://lgtm.com/projects/g/my-devsecops/moon/analysis/927d89b0392c332575d30a73ca0298317d68477c/files"
+    "GitLab": {
+        "AccessRequests": {
+            "id": "7475865",
+            "state": "denied"
         }
     }
 }
@@ -297,621 +526,169 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### LGTM - Code Analysis Status
->|Analysis Status|
->|---|
->| success |
+>### Results
+>|id|state|
+>|---|---|
+>| 7475865 | denied |
 
 
-### lgtm-run-project-query
+### gitlab-projects-get-repository-branches
 ***
-Run CodeQL Query on A Project
+Get a list of repository  branches from a project, sorted by name alphabetically.
 
 
 #### Base Command
 
-`lgtm-run-project-query`
+`gitlab-projects-get-repository-branches`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | LGTM Project ID | Required | 
-| language | Code Language | Required | 
-| query | CodeQL Query List Name | Required | 
+| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
+| search | Return list of  anches containing the search string. You can use ^term and term$ to find  anches that begin and end with term respectively. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LGTM.Queries | Unknown | LGTM Queries Results | 
+| GitLab.Branches.name | Unknown | Branch Name | 
+| GitLab.Branches.web_url | Unknown | Branch Web URL | 
+| GitLab.Branches.commit.id | Unknown | Branch Head Commit ID | 
 
 
 #### Command Example
-```!lgtm-run-project-query project_id="1512319787549" language="python" query=${lists.CodeQL-Queries-SQL_Injection}```
+```!gitlab-projects-get-repository-branches id=21898188 using="Moon-Integration"```
 
 #### Context Example
-```
+```json
 {
-    "LGTM": {
-        "Queries": [
-            [
-                {
-                    "id": 1512683436389,
-                    "status": "pending",
-                    "task-result": {
-                        "id": "2586147600888057373",
-                        "result-url": "https://lgtm.com/query/2586147600888057373",
-                        "stats": {
-                            "failed": 0,
-                            "pending": 0,
-                            "success-with-result": 0,
-                            "success-without-result": 0,
-                            "successful": 0
-                        }
-                    },
-                    "task-result-url": "https://lgtm.com/api/v1.0/queryjobs/2586147600888057373",
-                    "task-type": "queryjob"
-                }
-            ]
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### LGTM - Query Analysis Results
->|Query Results|
->|---|
->| {'id': 1512683436389, 'status': 'pending', 'task-type': 'queryjob', 'task-result': {'id': '2586147600888057373', 'stats': {'successful': 0, 'success-with-result': 0, 'success-without-result': 0, 'failed': 0, 'pending': 0}, 'result-url': 'https://lgtm.com/query/2586147600888057373'}, 'task-result-url': 'https://lgtm.com/api/v1.0/queryjobs/2586147600888057373'} |
-
-
-### lgtm-get-alerts-details
-***
-Get Alerts Details by Analysis ID
-
-
-#### Base Command
-
-`lgtm-get-alerts-details`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| analysis_id | LGTM Analysis ID | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| LGTM.Alerts | Unknown | LGTM Alerts Details | 
-
-
-#### Command Example
-```!lgtm-get-alerts-details analysis_id="927d89b0392c332575d30a73ca0298317d68477c"```
-
-#### Context Example
-```
-{
-    "LGTM": {
-        "Alerts": [
+    "GitLab": {
+        "Branches": [
             {
-                "alert": {
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 70,
-                                    "startColumn": 23,
-                                    "startLine": 112
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "Call to [function load_from_config](1) with too many arguments; should be no more than 1."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "a8e1daf8b5008d1d:1",
-                        "primaryLocationStartColumnFingerprint": "18"
-                    },
-                    "relatedLocations": [
-                        {
-                            "id": 1,
-                            "message": {
-                                "text": "function load_from_config"
-                            },
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 28,
-                                    "startLine": 101
-                                }
-                            }
-                        }
-                    ],
-                    "ruleId": "com.lgtm/python-queries:py/call/wrong-arguments",
-                    "ruleIndex": 0
+                "can_push": true,
+                "commit": {
+                    "author_email": "57979775+ayman-m@users.noreply.github.com",
+                    "author_name": "Ayman Mahmoud",
+                    "authored_date": "2020-09-09T05:39:00.000+00:00",
+                    "committed_date": "2020-09-09T05:39:00.000+00:00",
+                    "committer_email": "noreply@github.com",
+                    "committer_name": "GitHub",
+                    "created_at": "2020-09-09T05:39:00.000+00:00",
+                    "id": "3ccb453019594b9a56ae8090663af76dcac4cc0c",
+                    "message": "Create atom.py",
+                    "parent_ids": null,
+                    "short_id": "3ccb4530",
+                    "title": "Create atom.py",
+                    "web_url": "https://gitlab.com/ayman-m/moon/-/commit/3ccb453019594b9a56ae8090663af76dcac4cc0c"
                 },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
+                "default": false,
+                "developers_can_merge": false,
+                "developers_can_push": false,
+                "merged": false,
+                "name": "codeql",
+                "protected": false,
+                "web_url": "https://gitlab.com/ayman-m/moon/-/tree/codeql"
             },
             {
-                "alert": {
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 49,
-                                    "startColumn": 12,
-                                    "startLine": 113
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "Call to [function load_from_config](1) with too many arguments; should be no more than 1."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "5c8cfaabeac1e16d:1",
-                        "primaryLocationStartColumnFingerprint": "7"
-                    },
-                    "relatedLocations": [
-                        {
-                            "id": 1,
-                            "message": {
-                                "text": "function load_from_config"
-                            },
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 28,
-                                    "startLine": 101
-                                }
-                            }
-                        }
-                    ],
-                    "ruleId": "com.lgtm/python-queries:py/call/wrong-arguments",
-                    "ruleIndex": 0
+                "can_push": true,
+                "commit": {
+                    "author_email": "amahmoud@paloaltonetworks.com",
+                    "author_name": "Ayman",
+                    "authored_date": "2020-09-09T14:53:17.000+00:00",
+                    "committed_date": "2020-09-09T14:53:17.000+00:00",
+                    "committer_email": "amahmoud@paloaltonetworks.com",
+                    "committer_name": "Ayman",
+                    "created_at": "2020-09-09T14:53:17.000+00:00",
+                    "id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
+                    "message": "Update ReadME",
+                    "parent_ids": null,
+                    "short_id": "39eb3dc0",
+                    "title": "Update ReadME",
+                    "web_url": "https://gitlab.com/ayman-m/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5"
                 },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
+                "default": true,
+                "developers_can_merge": false,
+                "developers_can_push": false,
+                "merged": false,
+                "name": "master",
+                "protected": true,
+                "web_url": "https://gitlab.com/ayman-m/moon/-/tree/master"
             },
             {
-                "alert": {
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 19,
-                                    "startColumn": 5,
-                                    "startLine": 24
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "This assignment to 'code_execution' is unnecessary as it is redefined [here](1) before this value is used."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "8180e24b4613f9a2:1",
-                        "primaryLocationStartColumnFingerprint": "4"
-                    },
-                    "relatedLocations": [
-                        {
-                            "id": 1,
-                            "message": {
-                                "text": "here"
-                            },
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 19,
-                                    "startColumn": 5,
-                                    "startLine": 31
-                                }
-                            }
-                        }
-                    ],
-                    "ruleId": "com.lgtm/python-queries:py/multiple-definition",
-                    "ruleIndex": 1
+                "can_push": true,
+                "commit": {
+                    "author_email": "57979775+ayman-m@users.noreply.github.com",
+                    "author_name": "Ayman Mahmoud",
+                    "authored_date": "2020-09-09T05:40:27.000+00:00",
+                    "committed_date": "2020-09-09T05:40:27.000+00:00",
+                    "committer_email": "noreply@github.com",
+                    "committer_name": "GitHub",
+                    "created_at": "2020-09-09T05:40:27.000+00:00",
+                    "id": "24ddc466d4736222407585a5d947b48b30265fe4",
+                    "message": "Create template.yaml",
+                    "parent_ids": null,
+                    "short_id": "24ddc466",
+                    "title": "Create template.yaml",
+                    "web_url": "https://gitlab.com/ayman-m/moon/-/commit/24ddc466d4736222407585a5d947b48b30265fe4"
                 },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
+                "default": false,
+                "developers_can_merge": false,
+                "developers_can_push": false,
+                "merged": false,
+                "name": "prisma",
+                "protected": false,
+                "web_url": "https://gitlab.com/ayman-m/moon/-/tree/prisma"
             },
             {
-                "alert": {
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 13,
-                                    "startColumn": 9,
-                                    "startLine": 46
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "This assignment to 'user' is unnecessary as it is redefined [here](1) before this value is used."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "5358472308e96529:1",
-                        "primaryLocationStartColumnFingerprint": "0"
-                    },
-                    "relatedLocations": [
-                        {
-                            "id": 1,
-                            "message": {
-                                "text": "here"
-                            },
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 13,
-                                    "startColumn": 9,
-                                    "startLine": 50
-                                }
-                            }
-                        }
-                    ],
-                    "ruleId": "com.lgtm/python-queries:py/multiple-definition",
-                    "ruleIndex": 1
+                "can_push": true,
+                "commit": {
+                    "author_email": "57979775+ayman-m@users.noreply.github.com",
+                    "author_name": "Ayman Mahmoud",
+                    "authored_date": "2020-09-09T05:49:46.000+00:00",
+                    "committed_date": "2020-09-09T05:49:46.000+00:00",
+                    "committer_email": "noreply@github.com",
+                    "committer_name": "GitHub",
+                    "created_at": "2020-09-09T05:49:46.000+00:00",
+                    "id": "fb3f67b779ead6bff43c8a5002de516a2e8ca99b",
+                    "message": "Create template.yaml",
+                    "parent_ids": null,
+                    "short_id": "fb3f67b7",
+                    "title": "Create template.yaml",
+                    "web_url": "https://gitlab.com/ayman-m/moon/-/commit/fb3f67b779ead6bff43c8a5002de516a2e8ca99b"
                 },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
+                "default": false,
+                "developers_can_merge": false,
+                "developers_can_push": false,
+                "merged": false,
+                "name": "prisma-cloud",
+                "protected": false,
+                "web_url": "https://gitlab.com/ayman-m/moon/-/tree/prisma-cloud"
             },
             {
-                "alert": {
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 13,
-                                    "startColumn": 9,
-                                    "startLine": 50
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "This assignment to 'user' is unnecessary as it is redefined [here](1) before this value is used."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "1805a8f6fd5b76df:1",
-                        "primaryLocationStartColumnFingerprint": "0"
-                    },
-                    "relatedLocations": [
-                        {
-                            "id": 1,
-                            "message": {
-                                "text": "here"
-                            },
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 13,
-                                    "startColumn": 9,
-                                    "startLine": 54
-                                }
-                            }
-                        }
-                    ],
-                    "ruleId": "com.lgtm/python-queries:py/multiple-definition",
-                    "ruleIndex": 1
+                "can_push": true,
+                "commit": {
+                    "author_email": "amahmoud@paloaltonetworks.com",
+                    "author_name": "Ayman",
+                    "authored_date": "2020-09-09T14:56:09.000+00:00",
+                    "committed_date": "2020-09-09T14:56:09.000+00:00",
+                    "committer_email": "amahmoud@paloaltonetworks.com",
+                    "committer_name": "Ayman",
+                    "created_at": "2020-09-09T14:56:09.000+00:00",
+                    "id": "405fc6ea44910177f48db9b2eb6839efb4211743",
+                    "message": "Test PR",
+                    "parent_ids": null,
+                    "short_id": "405fc6ea",
+                    "title": "Test PR",
+                    "web_url": "https://gitlab.com/ayman-m/moon/-/commit/405fc6ea44910177f48db9b2eb6839efb4211743"
                 },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
-            },
-            {
-                "alert": {
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 19,
-                                    "startColumn": 5,
-                                    "startLine": 223
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "This assignment to 'send_encrypted' is unnecessary as it is redefined [here](1) before this value is used."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "552c6bffbe6cb915:1",
-                        "primaryLocationStartColumnFingerprint": "4"
-                    },
-                    "relatedLocations": [
-                        {
-                            "id": 1,
-                            "message": {
-                                "text": "here"
-                            },
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 19,
-                                    "startColumn": 5,
-                                    "startLine": 230
-                                }
-                            }
-                        }
-                    ],
-                    "ruleId": "com.lgtm/python-queries:py/multiple-definition",
-                    "ruleIndex": 1
-                },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
-            },
-            {
-                "alert": {
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 13,
-                                    "startColumn": 9,
-                                    "startLine": 54
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "The value assigned to local variable 'user' is never used."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "d37b5c11bd142430:1",
-                        "primaryLocationStartColumnFingerprint": "0"
-                    },
-                    "ruleId": "com.lgtm/python-queries:py/unused-local-variable",
-                    "ruleIndex": 2
-                },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
-            },
-            {
-                "alert": {
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 9,
-                                    "startColumn": 5,
-                                    "startLine": 64
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "The value assigned to local variable 'data' is never used."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "b60374c7564cf3b5:1",
-                        "primaryLocationStartColumnFingerprint": "0"
-                    },
-                    "ruleId": "com.lgtm/python-queries:py/unused-local-variable",
-                    "ruleIndex": 2
-                },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
-            },
-            {
-                "alert": {
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 9,
-                                    "startColumn": 5,
-                                    "startLine": 73
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "The value assigned to local variable 'data' is never used."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "269b1675deaafb50:1",
-                        "primaryLocationStartColumnFingerprint": "0"
-                    },
-                    "ruleId": "com.lgtm/python-queries:py/unused-local-variable",
-                    "ruleIndex": 2
-                },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
-            },
-            {
-                "alert": {
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 9,
-                                    "startColumn": 5,
-                                    "startLine": 85
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "The value assigned to local variable 'data' is never used."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "c32d3d378ff25d1d:1",
-                        "primaryLocationStartColumnFingerprint": "0"
-                    },
-                    "ruleId": "com.lgtm/python-queries:py/unused-local-variable",
-                    "ruleIndex": 2
-                },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
-            },
-            {
-                "alert": {
-                    "codeFlows": [
-                        {
-                            "threadFlows": [
-                                {
-                                    "locations": [
-                                        {
-                                            "location": {
-                                                "message": {
-                                                    "text": "Step 1"
-                                                },
-                                                "physicalLocation": {
-                                                    "artifactLocation": {
-                                                        "index": 0,
-                                                        "uri": "module1.py",
-                                                        "uriBaseId": "%SRCROOT%"
-                                                    },
-                                                    "region": {
-                                                        "endColumn": 44,
-                                                        "startColumn": 16,
-                                                        "startLine": 156
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        {
-                                            "location": {
-                                                "message": {
-                                                    "text": "Step 2"
-                                                },
-                                                "physicalLocation": {
-                                                    "artifactLocation": {
-                                                        "index": 0,
-                                                        "uri": "module1.py",
-                                                        "uriBaseId": "%SRCROOT%"
-                                                    },
-                                                    "region": {
-                                                        "endColumn": 41,
-                                                        "startColumn": 33,
-                                                        "startLine": 158
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ],
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 41,
-                                    "startColumn": 33,
-                                    "startLine": 158
-                                }
-                            }
-                        }
-                    ],
-                    "message": {
-                        "text": "Sensitive data from [a request parameter containing a password](1) is stored here."
-                    },
-                    "partialFingerprints": {
-                        "primaryLocationLineHash": "ba844552ea173e36:1",
-                        "primaryLocationStartColumnFingerprint": "28"
-                    },
-                    "relatedLocations": [
-                        {
-                            "id": 1,
-                            "message": {
-                                "text": "a request parameter containing a password"
-                            },
-                            "physicalLocation": {
-                                "artifactLocation": {
-                                    "index": 0,
-                                    "uri": "module1.py",
-                                    "uriBaseId": "%SRCROOT%"
-                                },
-                                "region": {
-                                    "endColumn": 44,
-                                    "startColumn": 16,
-                                    "startLine": 156
-                                }
-                            }
-                        }
-                    ],
-                    "ruleId": "com.lgtm/python-queries:py/clear-text-storage-sensitive-data",
-                    "ruleIndex": 3
-                },
-                "analysisId": "927d89b0392c332575d30a73ca0298317d68477c"
+                "default": false,
+                "developers_can_merge": false,
+                "developers_can_push": false,
+                "merged": false,
+                "name": "vulnerable",
+                "protected": false,
+                "web_url": "https://gitlab.com/ayman-m/moon/-/tree/vulnerable"
             }
         ]
     }
@@ -920,18 +697,206 @@ Get Alerts Details by Analysis ID
 
 #### Human Readable Output
 
->### LGTM - Code Analysis Alerts
->|alert|analysisId|
+>### Results
+>|can_push|commit|default|developers_can_merge|developers_can_push|merged|name|protected|web_url|
+>|---|---|---|---|---|---|---|---|---|
+>| true | id: 3ccb453019594b9a56ae8090663af76dcac4cc0c<br/>short_id: 3ccb4530<br/>created_at: 2020-09-09T05:39:00.000+00:00<br/>parent_ids: null<br/>title: Create atom.py<br/>message: Create atom.py<br/>author_name: Ayman Mahmoud<br/>author_email: 57979775+ayman-m@users.noreply.github.com<br/>authored_date: 2020-09-09T05:39:00.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:39:00.000+00:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/3ccb453019594b9a56ae8090663af76dcac4cc0c | false | false | false | false | codeql | false | https://gitlab.com/ayman-m/moon/-/tree/codeql |
+>| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T14:53:17.000+00:00<br/>parent_ids: null<br/>title: Update ReadME<br/>message: Update ReadME<br/>author_name: Ayman<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T14:53:17.000+00:00<br/>committer_name: Ayman<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T14:53:17.000+00:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | true | false | false | false | master | true | https://gitlab.com/ayman-m/moon/-/tree/master |
+>| true | id: 24ddc466d4736222407585a5d947b48b30265fe4<br/>short_id: 24ddc466<br/>created_at: 2020-09-09T05:40:27.000+00:00<br/>parent_ids: null<br/>title: Create template.yaml<br/>message: Create template.yaml<br/>author_name: Ayman Mahmoud<br/>author_email: 57979775+ayman-m@users.noreply.github.com<br/>authored_date: 2020-09-09T05:40:27.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:40:27.000+00:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/24ddc466d4736222407585a5d947b48b30265fe4 | false | false | false | false | prisma | false | https://gitlab.com/ayman-m/moon/-/tree/prisma |
+>| true | id: fb3f67b779ead6bff43c8a5002de516a2e8ca99b<br/>short_id: fb3f67b7<br/>created_at: 2020-09-09T05:49:46.000+00:00<br/>parent_ids: null<br/>title: Create template.yaml<br/>message: Create template.yaml<br/>author_name: Ayman Mahmoud<br/>author_email: 57979775+ayman-m@users.noreply.github.com<br/>authored_date: 2020-09-09T05:49:46.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:49:46.000+00:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/fb3f67b779ead6bff43c8a5002de516a2e8ca99b | false | false | false | false | prisma-cloud | false | https://gitlab.com/ayman-m/moon/-/tree/prisma-cloud |
+>| true | id: 405fc6ea44910177f48db9b2eb6839efb4211743<br/>short_id: 405fc6ea<br/>created_at: 2020-09-09T14:56:09.000+00:00<br/>parent_ids: null<br/>title: Test PR<br/>message: Test PR<br/>author_name: Ayman<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T14:56:09.000+00:00<br/>committer_name: Ayman<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T14:56:09.000+00:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/405fc6ea44910177f48db9b2eb6839efb4211743 | false | false | false | false | vulnerable | false | https://gitlab.com/ayman-m/moon/-/tree/vulnerable |
+
+
+### gitlab-projects-create-repository-branch
+***
+Create a new Branch in the repository.
+
+
+#### Base Command
+
+`gitlab-projects-create-repository-branch`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
+| branch | Name of the  anch.  | Required | 
+| ref | Branch name or commit SHA to create  anch from.  | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Branches.name | Unknown | Branch Name | 
+| GitLab.Branches.web_url | Unknown | Branch Web URL | 
+| GitLab.Branches.commit.id | Unknown | Branch Head Commit ID | 
+
+
+#### Command Example
+```!gitlab-projects-create-repository-branch branch=feature1 id=21898188 ref=master using="Moon-Integration"```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Branches": {
+            "can_push": true,
+            "commit": {
+                "author_email": "amahmoud@paloaltonetworks.com",
+                "author_name": "Ayman",
+                "authored_date": "2020-09-09T18:53:17.000+04:00",
+                "committed_date": "2020-09-09T18:53:17.000+04:00",
+                "committer_email": "amahmoud@paloaltonetworks.com",
+                "committer_name": "Ayman",
+                "created_at": "2020-09-09T18:53:17.000+04:00",
+                "id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
+                "message": "Update ReadME\n",
+                "parent_ids": [
+                    "b736f064314a254c5c847f042938290167598454"
+                ],
+                "short_id": "39eb3dc0",
+                "title": "Update ReadME",
+                "web_url": "https://gitlab.com/ayman-m/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5"
+            },
+            "default": false,
+            "developers_can_merge": false,
+            "developers_can_push": false,
+            "merged": false,
+            "name": "feature1",
+            "protected": false,
+            "web_url": "https://gitlab.com/ayman-m/moon/-/tree/feature1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|can_push|commit|default|developers_can_merge|developers_can_push|merged|name|protected|web_url|
+>|---|---|---|---|---|---|---|---|---|
+>| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T18:53:17.000+04:00<br/>parent_ids: b736f064314a254c5c847f042938290167598454<br/>title: Update ReadME<br/>message: Update ReadME<br/><br/>author_name: Ayman<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T18:53:17.000+04:00<br/>committer_name: Ayman<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T18:53:17.000+04:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | false | false | false | false | feature1 | false | https://gitlab.com/ayman-m/moon/-/tree/feature1 |
+
+
+### gitlab-projects-delete-repository-branch
+***
+Delete a Branch from the repository.
+
+
+#### Base Command
+
+`gitlab-projects-delete-repository-branch`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
+| branch | Name of the  anch.  | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!gitlab-projects-delete-repository-branch branch=feature1 id=21898188 using="Moon-Integration"```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Branches": {
+            "message": "Branch 'feature1' is deleted."
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|message|
+>|---|
+>| Branch 'feature1' is deleted. |
+
+
+### gitlab-projects-delete-repository-merged-branches
+***
+Will delete all branches that are merged into the project’s default  anch.
+
+
+#### Base Command
+
+`gitlab-projects-delete-repository-merged-branches`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!gitlab-projects-delete-repository-merged-branches id=21898188 using="Moon-Integration"```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "message": "202 Accepted"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|message|
+>|---|
+>| 202 Accepted |
+
+
+### gitlab-get-version
+***
+Retrieve version information for this GitLab instance. Responds 200 OK for authenticated users.
+
+
+#### Base Command
+
+`gitlab-get-version`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.version | String | GitLab Verion | 
+| GitLab.revision | String | GitLab Revision | 
+
+
+#### Command Example
+```!gitlab-get-version using="Moon-Integration"```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "revision": "18e3d7de8d5",
+        "version": "13.6.0-pre"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|revision|version|
 >|---|---|
->| ruleId: com.lgtm/python-queries:py/call/wrong-arguments<br/>ruleIndex: 0<br/>message: {"text": "Call to [function load_from_config](1) with too many arguments; should be no more than 1."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 112, 'startColumn': 23, 'endColumn': 70}}}<br/>partialFingerprints: {"primaryLocationLineHash": "a8e1daf8b5008d1d:1", "primaryLocationStartColumnFingerprint": "18"}<br/>relatedLocations: {'id': 1, 'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 101, 'endColumn': 28}}, 'message': {'text': 'function load_from_config'}} | 927d89b0392c332575d30a73ca0298317d68477c |
->| ruleId: com.lgtm/python-queries:py/call/wrong-arguments<br/>ruleIndex: 0<br/>message: {"text": "Call to [function load_from_config](1) with too many arguments; should be no more than 1."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 113, 'startColumn': 12, 'endColumn': 49}}}<br/>partialFingerprints: {"primaryLocationLineHash": "5c8cfaabeac1e16d:1", "primaryLocationStartColumnFingerprint": "7"}<br/>relatedLocations: {'id': 1, 'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 101, 'endColumn': 28}}, 'message': {'text': 'function load_from_config'}} | 927d89b0392c332575d30a73ca0298317d68477c |
->| ruleId: com.lgtm/python-queries:py/multiple-definition<br/>ruleIndex: 1<br/>message: {"text": "This assignment to 'code_execution' is unnecessary as it is redefined [here](1) before this value is used."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 24, 'startColumn': 5, 'endColumn': 19}}}<br/>partialFingerprints: {"primaryLocationLineHash": "8180e24b4613f9a2:1", "primaryLocationStartColumnFingerprint": "4"}<br/>relatedLocations: {'id': 1, 'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 31, 'startColumn': 5, 'endColumn': 19}}, 'message': {'text': 'here'}} | 927d89b0392c332575d30a73ca0298317d68477c |
->| ruleId: com.lgtm/python-queries:py/multiple-definition<br/>ruleIndex: 1<br/>message: {"text": "This assignment to 'user' is unnecessary as it is redefined [here](1) before this value is used."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 46, 'startColumn': 9, 'endColumn': 13}}}<br/>partialFingerprints: {"primaryLocationLineHash": "5358472308e96529:1", "primaryLocationStartColumnFingerprint": "0"}<br/>relatedLocations: {'id': 1, 'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 50, 'startColumn': 9, 'endColumn': 13}}, 'message': {'text': 'here'}} | 927d89b0392c332575d30a73ca0298317d68477c |
->| ruleId: com.lgtm/python-queries:py/multiple-definition<br/>ruleIndex: 1<br/>message: {"text": "This assignment to 'user' is unnecessary as it is redefined [here](1) before this value is used."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 50, 'startColumn': 9, 'endColumn': 13}}}<br/>partialFingerprints: {"primaryLocationLineHash": "1805a8f6fd5b76df:1", "primaryLocationStartColumnFingerprint": "0"}<br/>relatedLocations: {'id': 1, 'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 54, 'startColumn': 9, 'endColumn': 13}}, 'message': {'text': 'here'}} | 927d89b0392c332575d30a73ca0298317d68477c |
->| ruleId: com.lgtm/python-queries:py/multiple-definition<br/>ruleIndex: 1<br/>message: {"text": "This assignment to 'send_encrypted' is unnecessary as it is redefined [here](1) before this value is used."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 223, 'startColumn': 5, 'endColumn': 19}}}<br/>partialFingerprints: {"primaryLocationLineHash": "552c6bffbe6cb915:1", "primaryLocationStartColumnFingerprint": "4"}<br/>relatedLocations: {'id': 1, 'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 230, 'startColumn': 5, 'endColumn': 19}}, 'message': {'text': 'here'}} | 927d89b0392c332575d30a73ca0298317d68477c |
->| ruleId: com.lgtm/python-queries:py/unused-local-variable<br/>ruleIndex: 2<br/>message: {"text": "The value assigned to local variable 'user' is never used."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 54, 'startColumn': 9, 'endColumn': 13}}}<br/>partialFingerprints: {"primaryLocationLineHash": "d37b5c11bd142430:1", "primaryLocationStartColumnFingerprint": "0"} | 927d89b0392c332575d30a73ca0298317d68477c |
->| ruleId: com.lgtm/python-queries:py/unused-local-variable<br/>ruleIndex: 2<br/>message: {"text": "The value assigned to local variable 'data' is never used."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 64, 'startColumn': 5, 'endColumn': 9}}}<br/>partialFingerprints: {"primaryLocationLineHash": "b60374c7564cf3b5:1", "primaryLocationStartColumnFingerprint": "0"} | 927d89b0392c332575d30a73ca0298317d68477c |
->| ruleId: com.lgtm/python-queries:py/unused-local-variable<br/>ruleIndex: 2<br/>message: {"text": "The value assigned to local variable 'data' is never used."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 73, 'startColumn': 5, 'endColumn': 9}}}<br/>partialFingerprints: {"primaryLocationLineHash": "269b1675deaafb50:1", "primaryLocationStartColumnFingerprint": "0"} | 927d89b0392c332575d30a73ca0298317d68477c |
->| ruleId: com.lgtm/python-queries:py/unused-local-variable<br/>ruleIndex: 2<br/>message: {"text": "The value assigned to local variable 'data' is never used."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 85, 'startColumn': 5, 'endColumn': 9}}}<br/>partialFingerprints: {"primaryLocationLineHash": "c32d3d378ff25d1d:1", "primaryLocationStartColumnFingerprint": "0"} | 927d89b0392c332575d30a73ca0298317d68477c |
->| ruleId: com.lgtm/python-queries:py/clear-text-storage-sensitive-data<br/>ruleIndex: 3<br/>message: {"text": "Sensitive data from [a request parameter containing a password](1) is stored here."}<br/>locations: {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 158, 'startColumn': 33, 'endColumn': 41}}}<br/>partialFingerprints: {"primaryLocationLineHash": "ba844552ea173e36:1", "primaryLocationStartColumnFingerprint": "28"}<br/>codeFlows: {'threadFlows': [{'locations': [{'location': {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 156, 'startColumn': 16, 'endColumn': 44}}, 'message': {'text': 'Step 1'}}}, {'location': {'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 158, 'startColumn': 33, 'endColumn': 41}}, 'message': {'text': 'Step 2'}}}]}]}<br/>relatedLocations: {'id': 1, 'physicalLocation': {'artifactLocation': {'uri': 'module1.py', 'uriBaseId': '%SRCROOT%', 'index': 0}, 'region': {'startLine': 156, 'startColumn': 16, 'endColumn': 44}}, 'message': {'text': 'a request parameter containing a password'}} | 927d89b0392c332575d30a73ca0298317d68477c |
+>| 18e3d7de8d5 | 13.6.0-pre |
 
