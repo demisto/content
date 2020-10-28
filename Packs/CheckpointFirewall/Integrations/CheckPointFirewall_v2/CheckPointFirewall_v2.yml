@@ -2091,37 +2091,37 @@ script:
   - name: checkpoint-package-list
     arguments:
     - name: identifier
-      description: Object unique identifier or name.
+      description: The object unique identifier or name.
       required: true
     - name: session_id
-      description: Execute command with a specific session ID
+      description: The session ID used to execute the command.
       defaultValue: None
     outputs:
     - contextPath: CheckPoint.Packages.name
-      description: Package name.
+      description: The name of the package.
       type: String
     - contextPath: CheckPoint.Packages.target-name
-      description: target name.
+      description: The name of the target.
       type: String
     - contextPath: CheckPoint.Packages.target-uid
-      description: target UID.
+      description: The UID of the target.
       type: String
     - contextPath: CheckPoint.Packages.revision.domain.domain-type
-      description: domain type.
+      description: The type of the domain.
       type: String
     - contextPath: CheckPoint.Packages.revision.domain.name
-      description: domain name.
+      description: The name of the domain.
       type: String
     - contextPath: CheckPoint.Packages.revision.domain.uid
-      description: domain UID.
+      description: The UID of the domain.
       type: String
     - contextPath: CheckPoint.Packages.revision.type
-      description: revision type.
+      description: The type of the revision.
       type: String
     - contextPath: CheckPoint.Packages.revision.uid
-      description: revision UID.
+      description: The UID of the revision.
       type: String
-    description: Get checkpoint-packages details
+    description: Retrieve the details of Checkpoint packages.
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
