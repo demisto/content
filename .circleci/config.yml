@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.10.0"
+      CONTENT_VERSION: "20.10.1"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "8a93f9ad1328fc1f2e4ed75aec24d10159d68312" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "52bf3a89b48721112f6899cf766fa7bf5ccc2c1b" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -287,13 +287,7 @@ references:
       name: Infrastructure testing
       when: always
       command: |
-        python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
-        python3 -m pytest ./Tests/Marketplace/Tests/ -v
-        python3 -m pytest ./Tests/scripts/utils/tests -v
-
-        # TODO: replace this line with running all unit tests in Utils directory
-        # see issue https://github.com/demisto/etc/issues/29435
-        python3 -m pytest ./Utils/github_workflow_scripts/ -v
+        python3 -m pytest Tests Utils -v
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
           ./Tests/scripts/sdk_pylint_check.sh

@@ -170,32 +170,35 @@ def search_records_soap_request(token, app_id, display_fields, field_id, field_n
     return request_body
 
 
-SOAP_COMMANDS = {'archer-get-reports':
-                 {'soapAction': 'http://archer-tech.com/webservices/GetReports',
-                  'urlSuffix': 'ws/search.asmx',
-                  'soapBody': get_reports_soap_request,
-                  'outputPath': 'Envelope.Body.GetReportsResponse.GetReportsResult'},
-                 'archer-execute-statistic-search-by-report':
-                     {'soapAction': 'http://archer-tech.com/webservices/ExecuteStatisticSearchByReport',
-                      'urlSuffix': 'ws/search.asmx',
-                      'soapBody': get_statistic_search_report_soap_request,
-                      'outputPath': 'Envelope.Body.ExecuteStatisticSearchByReportResponse.ExecuteStatisticSearchByReportResult'},
-                 'archer-get-search-options-by-guid':
-                     {'soapAction': 'http://archer-tech.com/webservices/GetSearchOptionsByGuid',
-                      'urlSuffix': 'ws/search.asmx',
-                      'soapBody': get_search_options_soap_request,
-                      'outputPath': 'Envelope.Body.GetSearchOptionsByGuidResponse.GetSearchOptionsByGuidResult'},
-                 'archer-search-records':
-                     {'soapAction': 'http://archer-tech.com/webservices/ExecuteSearch',
-                      'urlSuffix': 'ws/search.asmx',
-                      'soapBody': search_records_soap_request,
-                      'outputPath': 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult'},
-                 'archer-search-records-by-report':
-                     {'soapAction': 'http://archer-tech.com/webservices/SearchRecordsByReport',
-                      'urlSuffix': 'ws/search.asmx',
-                      'soapBody': search_records_by_report_soap_request,
-                      'outputPath': 'Envelope.Body.SearchRecordsByReportResponse.SearchRecordsByReportResult'}
-                 }
+SOAP_COMMANDS = {
+    'archer-get-reports': {'soapAction': 'http://archer-tech.com/webservices/GetReports', 'urlSuffix': 'ws/search.asmx',
+                           'soapBody': get_reports_soap_request,
+                           'outputPath': 'Envelope.Body.GetReportsResponse.GetReportsResult'},
+    'archer-execute-statistic-search-by-report': {
+        'soapAction': 'http://archer-tech.com/webservices/ExecuteStatisticSearchByReport',
+        'urlSuffix': 'ws/search.asmx',
+        'soapBody': get_statistic_search_report_soap_request,
+        'outputPath': 'Envelope.Body.ExecuteStatisticSearchByReportResponse.ExecuteStatistic'
+                      'SearchByReportResult'
+    },
+    'archer-get-search-options-by-guid':
+        {'soapAction': 'http://archer-tech.com/webservices/GetSearchOptionsByGuid',
+         'urlSuffix': 'ws/search.asmx',
+         'soapBody': get_search_options_soap_request,
+         'outputPath': 'Envelope.Body.GetSearchOptionsByGuidResponse.GetSearchOptionsByGuidResult'
+         },
+    'archer-search-records':
+        {'soapAction': 'http://archer-tech.com/webservices/ExecuteSearch',
+         'urlSuffix': 'ws/search.asmx',
+         'soapBody': search_records_soap_request,
+         'outputPath': 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult'},
+    'archer-search-records-by-report': {
+        'soapAction': 'http://archer-tech.com/webservices/SearchRecordsByReport',
+        'urlSuffix': 'ws/search.asmx',
+        'soapBody': search_records_by_report_soap_request,
+        'outputPath': 'Envelope.Body.SearchRecordsByReportResponse.SearchRecordsByReportResult'
+    }
+}
 
 
 class Client(BaseClient):
@@ -229,8 +232,10 @@ class Client(BaseClient):
         }
 
         res = self._http_request('POST', '/api/core/security/login', json_data=body)
-
-        session = res.get('RequestedObject').get('SessionToken')
+        is_successful_response = res.get('IsSuccessful')
+        if not is_successful_response:
+            return_error(res.get('ValidationMessages'))
+        session = res.get('RequestedObject', {}).get('SessionToken')
         REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
 
     def get_token(self):
@@ -240,7 +245,9 @@ class Client(BaseClient):
         res = self._http_request('POST'
                                  '', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
 
-        return extract_from_xml(res, 'Envelope.Body.CreateUserSessionFromInstanceResponse.CreateUserSessionFromInstanceResult')
+        return extract_from_xml(res,
+                                'Envelope.Body.CreateUserSessionFromInstanceResponse.'
+                                'CreateUserSessionFromInstanceResult')
 
     def destroy_token(self, token):
         body = terminate_session_soap_request(token)
@@ -562,7 +569,6 @@ def get_file(entry_id):
 
 
 def test_module(client: Client, params) -> str:
-
     if params.get('isFetch', False):
         first_fetch_time = '3 days'
         last_fetch = dateparser.parse(first_fetch_time)
