@@ -1188,7 +1188,9 @@ def process_search_command(client: Client, args: Dict) -> CommandResults:
     process_hash = args.get('process_hash', '')
     event_id = args.get('event_id', '')
     query = args.get('query', '')
-    limit = args.get('limit', 20)
+    limit = args.get('limit')
+    if not limit:
+        limit = 20
     try:
         limit = int(limit)
     except ValueError:
@@ -1209,7 +1211,9 @@ def event_by_process_search_command(client: Client, args: Dict) -> CommandResult
     process_guid = args.get('process_guid', '')
     event_type = args.get('event_type', '')
     query = args.get('query', '')
-    limit = args.get('limit', 20)
+    limit = args.get('limit')
+    if not limit:
+        limit = 20
     try:
         limit = int(limit)
     except ValueError:
