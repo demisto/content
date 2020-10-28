@@ -392,7 +392,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
             dbot_score=dbot_score
         )
 
-        readable_output = tableToMarkdown(f'URL {url}', url_standard_context)
+        readable_output = tableToMarkdown(f'URL {url}', url_raw_response)
 
         command_results.append(
             CommandResults(
@@ -484,7 +484,7 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
             dbot_score=dbot_score
         )
 
-        readable_output = tableToMarkdown(f'File {_hash}', hash_standard_context)
+        readable_output = tableToMarkdown(f'File {_hash}', hash_reputation_response)
 
         command_results.append(
             CommandResults(
