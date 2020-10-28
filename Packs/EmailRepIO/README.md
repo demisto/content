@@ -1,4 +1,4 @@
-EmailRep.io Provides email address reputation and reports.
+EmailRep.io provides the reputation and reports for email addresses.
 This integration was integrated and tested with version EmailRep Alpha API v0.1 of EmailRep.io
 ## Configure EmailRepIO on Cortex XSOAR
 
@@ -8,18 +8,18 @@ This integration was integrated and tested with version EmailRep Alpha API v0.1 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://emailrep.io\) | True |
+| url | Server URL \(e.g., https://emailrep.io\) | True |
 | apikey | API Key | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### emailrepio-email-reputation-get
 ***
-Get EmailRepIO reputation for email address
+Gets the EmailRepIO reputation for the given email address.
 
 
 #### Base Command
@@ -29,40 +29,40 @@ Get EmailRepIO reputation for email address
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_address | Email address to get reputation for | Required | 
+| email_address | The email address to get the reputation for. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| EmailRepIO.Email.email | String | email address queried | 
-| EmailRepIO.Email.reputation | String | high/medium/low/none | 
-| EmailRepIO.Email.suspicious | Boolean | whether the email address should be treated as suspicious or risky | 
-| EmailRepIO.Email.references | Number | total number of positive and negative sources of reputation. note that these may not all be direct references to the email address, but can include reputation sources for the domain or other related information | 
-| EmailRepIO.Email.details.blacklisted | Boolean | the email is believed to be malicious or spammy | 
-| EmailRepIO.Email.details.malicious_activity | Boolean | the email has exhibited malicious behavior \(e.g. phishing or fraud\) | 
-| EmailRepIO.Email.details.malicious_activity_recent | Boolean | malicious behavior in the last 90 days \(e.g. in the case of temporal account takeovers\) | 
-| EmailRepIO.Email.details.credentials_leaked | Boolean | credentials were leaked at some point in time \(e.g. a data breach, pastebin, dark web, etc.\) | 
-| EmailRepIO.Email.details.credentials_leaked_recent | Boolean | credentials were leaked in the last 90 days | 
-| EmailRepIO.Email.details.data_breach | Boolean | the email was in a data breach at some point in time | 
-| EmailRepIO.Email.details.first_seen | Date | the first date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior \(‘never’ if never seen\) | 
-| EmailRepIO.Email.details.last_seen | Date | the last date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior \(‘never’ if never seen\) | 
-| EmailRepIO.Email.details.domain_exists | Boolean | valid domain | 
-| EmailRepIO.Email.details.domain_reputation | String | high/medium/low/n/a \(n/a if the domain is a free_provider, disposable, or doesn’t exist\) | 
-| EmailRepIO.Email.details.new_domain | Boolean | the domain was created within the last year | 
-| EmailRepIO.Email.details.days_since_domain_creation | Number | days since the domain was created | 
-| EmailRepIO.Email.details.suspicious_tld | Boolean | suspicious tld | 
-| EmailRepIO.Email.details.spam | Boolean | the email has exhibited spammy behavior \(e.g. spam traps, login form abuse\) | 
-| EmailRepIO.Email.details.free_provider | Boolean | the email uses a free email provider | 
-| EmailRepIO.Email.details.disposable | Boolean | the email uses a temporary/disposable service | 
-| EmailRepIO.Email.details.deliverable | Boolean | deliverable | 
-| EmailRepIO.Email.details.accept_all | Boolean | whether the mail server has a default accept all policy. some mail servers return inconsistent responses, so we may default to an accept_all for those to be safe | 
-| EmailRepIO.Email.details.valid_mx | Boolean | has an MX record | 
-| EmailRepIO.Email.details.spoofable | Boolean | email address can be spoofed \(e.g. not a strict SPF policy or DMARC is not enforced\) | 
-| EmailRepIO.Email.details.spf_strict | Boolean | sufficiently strict SPF record to prevent spoofing | 
-| EmailRepIO.Email.details.dmarc_enforced | Boolean | DMARC is configured correctly and enforced | 
-| EmailRepIO.Email.details.profiles | String | online profiles used by the email | 
+| EmailRepIO.Email.email | String | The email address that was queried. | 
+| EmailRepIO.Email.reputation | String | The reputation of the email. Possible values are: "high", "medium", "low", and "none". | 
+| EmailRepIO.Email.suspicious | Boolean | Whether the email address should be treated as suspicious or risky. | 
+| EmailRepIO.Email.references | Number | The total number of positive and negative sources of the reputation. Note that these may not all be direct references to the email address, but can include reputation sources for the domain or other related information. | 
+| EmailRepIO.Email.details.blacklisted | Boolean | Whether the email is believed to be malicious or spam. | 
+| EmailRepIO.Email.details.malicious_activity | Boolean | Whether the email exhibited malicious behavior \(e.g., phishing or fraud\). | 
+| EmailRepIO.Email.details.malicious_activity_recent | Boolean | Whether the email exhibited malicious behavior in the last 90 days \(e.g., in the case of temporal account takeovers\). | 
+| EmailRepIO.Email.details.credentials_leaked | Boolean | Whether the email credentials were ever leaked \(e.g., a data breach, pastebin, dark web, etc.\). | 
+| EmailRepIO.Email.details.credentials_leaked_recent | Boolean | Whether the email credentials were leaked in the last 90 days. | 
+| EmailRepIO.Email.details.data_breach | Boolean | Whether the email was ever in a data breach. | 
+| EmailRepIO.Email.details.first_seen | Date | The first date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior. | 
+| EmailRepIO.Email.details.last_seen | Date | The last date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior. | 
+| EmailRepIO.Email.details.domain_exists | Boolean | Whether the domain is a valid domain. | 
+| EmailRepIO.Email.details.domain_reputation | String | The reputation of the domain. Possible values are: "high", "medium", "low", and "n/a". Displays "n/a" if the domain is a free_provider, disposable, or doesn’t exist. | 
+| EmailRepIO.Email.details.new_domain | Boolean | Whether the domain was created within the last year. | 
+| EmailRepIO.Email.details.days_since_domain_creation | Number | The number of days since the domain was created. | 
+| EmailRepIO.Email.details.suspicious_tld | Boolean | Whether the email has a suspicious top level domain (tld). | 
+| EmailRepIO.Email.details.spam | Boolean | Whether the email has exhibited spammy behavior  \(e.g., spam traps, login form abuse\). | 
+| EmailRepIO.Email.details.free_provider | Boolean | Whether the email uses a free email provider. | 
+| EmailRepIO.Email.details.disposable | Boolean | Whether the email uses a temporary or disposable service. | 
+| EmailRepIO.Email.details.deliverable | Boolean | Whether the email is deliverable. | 
+| EmailRepIO.Email.details.accept_all | Boolean | Whether the mail server has a default accept all policy. Some mail servers return inconsistent responses, so the default may be an accept all policy. | 
+| EmailRepIO.Email.details.valid_mx | Boolean | Whether the email has a mail exchanger (MX) record. | 
+| EmailRepIO.Email.details.spoofable | Boolean | Whether the email address can be spoofed \(e.g., not a strict SPF policy or DMARC is not enforced\). | 
+| EmailRepIO.Email.details.spf_strict | Boolean |  Whether there is a sufficiently strict SPF record to prevent spoofing. | 
+| EmailRepIO.Email.details.dmarc_enforced | Boolean | Whether DMARC is configured correctly and enforced. | 
+| EmailRepIO.Email.details.profiles | String | The online profiles used by the email. | 
 
 
 #### Command Example
@@ -72,7 +72,7 @@ Get EmailRepIO reputation for email address
 
 ### email
 ***
-Get DBot score for email address using EmailRepIO reputation
+Gets the DBot score for the given email address using the EmailRepIO reputation.
 
 
 #### Base Command
@@ -82,7 +82,7 @@ Get DBot score for email address using EmailRepIO reputation
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | Email address to get reputation for | Required | 
+| email | The email address to get the reputation for. | Required | 
 
 
 #### Context Output
@@ -90,36 +90,36 @@ Get DBot score for email address using EmailRepIO reputation
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Score | Number | The actual DBot score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| EmailRepIO.Email.email | String | email address queried | 
-| EmailRepIO.Email.reputation | String | high/medium/low/none | 
-| EmailRepIO.Email.suspicious | Boolean | whether the email address should be treated as suspicious or risky | 
-| EmailRepIO.Email.references | Number | total number of positive and negative sources of reputation. note that these may not all be direct references to the email address, but can include reputation sources for the domain or other related information | 
-| EmailRepIO.Email.details.blacklisted | Boolean | the email is believed to be malicious or spammy | 
-| EmailRepIO.Email.details.malicious_activity | Boolean | the email has exhibited malicious behavior \(e.g. phishing or fraud\) | 
-| EmailRepIO.Email.details.malicious_activity_recent | Boolean | malicious behavior in the last 90 days \(e.g. in the case of temporal account takeovers\) | 
-| EmailRepIO.Email.details.credentials_leaked | Boolean | credentials were leaked at some point in time \(e.g. a data breach, pastebin, dark web, etc.\) | 
-| EmailRepIO.Email.details.credentials_leaked_recent | Boolean | credentials were leaked in the last 90 days | 
-| EmailRepIO.Email.details.data_breach | Boolean | the email was in a data breach at some point in time | 
-| EmailRepIO.Email.details.first_seen | Date | the first date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior \(‘never’ if never seen\) | 
-| EmailRepIO.Email.details.last_seen | Date | the last date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior \(‘never’ if never seen\) | 
-| EmailRepIO.Email.details.domain_exists | Boolean | valid domain | 
-| EmailRepIO.Email.details.domain_reputation | String | high/medium/low/n/a \(n/a if the domain is a free_provider, disposable, or doesn’t exist\) | 
-| EmailRepIO.Email.details.new_domain | Boolean | the domain was created within the last year | 
-| EmailRepIO.Email.details.days_since_domain_creation | Number | days since the domain was created | 
-| EmailRepIO.Email.details.suspicious_tld | Boolean | suspicious tld | 
-| EmailRepIO.Email.details.spam | Boolean | the email has exhibited spammy behavior \(e.g. spam traps, login form abuse\) | 
-| EmailRepIO.Email.details.free_provider | Boolean | the email uses a free email provider | 
-| EmailRepIO.Email.details.disposable | Boolean | the email uses a temporary/disposable service | 
-| EmailRepIO.Email.details.deliverable | Boolean | deliverable | 
-| EmailRepIO.Email.details.accept_all | Boolean | whether the mail server has a default accept all policy. some mail servers return inconsistent responses, so we may default to an accept_all for those to be safe | 
-| EmailRepIO.Email.details.valid_mx | Boolean | has an MX record | 
-| EmailRepIO.Email.details.spoofable | Boolean | email address can be spoofed \(e.g. not a strict SPF policy or DMARC is not enforced\) | 
-| EmailRepIO.Email.details.spf_strict | Boolean | sufficiently strict SPF record to prevent spoofing | 
-| EmailRepIO.Email.details.dmarc_enforced | Boolean | DMARC is configured correctly and enforced | 
-| EmailRepIO.Email.details.profiles | String | online profiles used by the email | 
+| EmailRepIO.Email.email | String | email address that was queried | 
+| EmailRepIO.Email.reputation | String | The reputation of the email. Possible values are: "high", "medium", "low", and "none". | 
+| EmailRepIO.Email.suspicious | Boolean | Whether the email address should be treated as suspicious or risky. | 
+| EmailRepIO.Email.references | Number | The total number of positive and negative sources of the reputation. Note that these may not all be direct references to the email address, but can include reputation sources for the domain or other related information. | 
+| EmailRepIO.Email.details.blacklisted | Boolean | Whether the email is believed to be malicious or spam. | 
+| EmailRepIO.Email.details.malicious_activity | Boolean | Whether the email exhibited malicious behavior \(e.g., phishing or fraud\). | 
+| EmailRepIO.Email.details.malicious_activity_recent | Boolean | Whether the email exhibited malicious behavior in the last 90 days \(e.g., in the case of temporal account takeovers\). | 
+| EmailRepIO.Email.details.credentials_leaked | Boolean | Whether the email credentials were ever leaked \(e.g., a data breach, pastebin, dark web, etc.\). | 
+| EmailRepIO.Email.details.credentials_leaked_recent | Boolean | Whether the email credentials were leaked in the last 90 days. | 
+| EmailRepIO.Email.details.data_breach | Boolean | Whether the email was ever in a data breach. | 
+| EmailRepIO.Email.details.first_seen | Date | The first date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior. | 
+| EmailRepIO.Email.details.last_seen | Date | The last date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak,  or exhibiting malicious or spammy behavior. | 
+| EmailRepIO.Email.details.domain_exists | Boolean | Whether the domain is a valid domain. | 
+| EmailRepIO.Email.details.domain_reputation | String | The reputation of the domain. Possible values are: "high", "medium", "low", and "n/a". Displays "n/a" if the domain is a free_provider, disposable, or doesn’t exist. | 
+| EmailRepIO.Email.details.new_domain | Boolean | Whether the domain was created within the last year. | 
+| EmailRepIO.Email.details.days_since_domain_creation | Number | The number of days since the domain was created. | 
+| EmailRepIO.Email.details.suspicious_tld | Boolean | Whether the email has a suspicious top level domain (tld). | 
+| EmailRepIO.Email.details.spam | Boolean | Whether the email exhibited spammy behavior \(e.g., spam traps, login form abuse\). | 
+| EmailRepIO.Email.details.free_provider | Boolean | Whether the email uses a free email provider. | 
+| EmailRepIO.Email.details.disposable | Boolean | Whether the email uses a temporary or disposable service. | 
+| EmailRepIO.Email.details.deliverable | Boolean | Whether the email is deliverable. | 
+| EmailRepIO.Email.details.accept_all | Boolean | Whether the mail server has a default accept all policy. Some mail servers return inconsistent responses, so the default may be an accept all policy. | 
+| EmailRepIO.Email.details.valid_mx | Boolean | Whether the email has a mail exchanger (MX) record. | 
+| EmailRepIO.Email.details.spoofable | Boolean | Whether the email has a mail exchanger (MX) record. \(e.g., not a strict SPF policy or DMARC is not enforced\). | 
+| EmailRepIO.Email.details.spf_strict | Boolean | Whether there is a sufficiently strict SPF record to prevent spoofing. | 
+| EmailRepIO.Email.details.dmarc_enforced | Boolean | Whether DMARC is configured correctly and enforced. | 
+| EmailRepIO.Email.details.profiles | String | The online profiles used by the email. | 
 
 
 #### Command Example
@@ -128,7 +128,7 @@ Get DBot score for email address using EmailRepIO reputation
 
 ### emailrepio-email-address-report
 ***
-Report email address to EmailRepIO
+Reports a malicious email address to EmailRepIO.  You tag the type of malicious activity associated with the email address. The date of the malicious activity defaults to the current time unless otherwise specified.
 
 
 #### Base Command
@@ -138,11 +138,11 @@ Report email address to EmailRepIO
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_address | Email address being reported. | Required | 
-| tags | Tags that should be applied. See detailed descriptions in EmailRepIO documentation for more information. | Required | 
+| email_address | The email address to report. | Required | 
+| tags | The tags that should be applied. See detailed descriptions in the EmailRepIO documentation for more information. | Required | 
 | description | Additional information and context. | Optional | 
-| timestamp | When this activity occurred in UTC. Defaults to now(). | Optional | 
-| expires | Number of hours the email should be considered risky (suspicious=true and blacklisted=true in the QueryResponse). Defaults to no expiration unless account_takeover tag is specified, in which case the default is 14 days. | Optional | 
+| timestamp |The time the activity occurred in UTC time format. Defaults to now(). | Optional | 
+| expires | The number of hours the email should be considered risky (suspicious=true and blacklisted=true in the QueryResponse). Defaults to no expiration unless the "account_takeover" tag is specified, in which case the default is 14 days. | Optional | 
 
 
 #### Context Output
