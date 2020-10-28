@@ -1,11 +1,13 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa F401 # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa F401 # pylint: disable=unused-wildcard-import
 from datetime import datetime
 
 import requests
-
-from CommonServerPython import *
+import os
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 URL = demisto.getParam('url')
 if URL[-1] != '/':
@@ -34,7 +36,7 @@ def get_token():
         'password': demisto.getParam('credentials')['password']
     })
 
-    if response.status_code != requests.codes.ok:
+    if response.status_code != requests.codes.ok:  # pylint: disable=no-member
         raise Exception('Error authenticating to RedLock service [%d] - %s' % (response.status_code, response.text))
     try:
         response_json = response.json()
@@ -60,7 +62,7 @@ def req(method, path, data, param_data):
     if not TOKEN:
         get_token()
     response = requests.request(method, URL + path, json=data, params=param_data, headers=HEADERS, verify=VERIFY)
-    if response.status_code != requests.codes.ok:
+    if response.status_code != requests.codes.ok:  # pylint: disable=no-member
         text = response.text
         if response.headers.get('x-redlock-status'):
             try:
@@ -107,7 +109,7 @@ def convert_date_to_unix(date_str):
 
 def convert_unix_to_date(timestamp):
     """
-    Convert millise since epoch to date formatted MM/DD/YYYY HH:MI:SS
+    Convert milliseconds since epoch to date formatted MM/DD/YYYY HH:MI:SS
     """
     if timestamp:
         date_time = datetime.utcfromtimestamp(timestamp / 1000)
@@ -117,7 +119,7 @@ def convert_unix_to_date(timestamp):
 
 def convert_unix_to_demisto(timestamp):
     """
-    Convert millise since epoch to date formatted MM/DD/YYYYTHH:MI:SS
+    Convert milliseconds since epoch to date formatted MM/DD/YYYYTHH:MI:SS
     """
     if timestamp:
         date_time = datetime.utcfromtimestamp(timestamp / 1000)
@@ -174,7 +176,7 @@ def handle_filters(payload):
         'cloud-type': 'cloud.type',
         'risk-grade': 'risk.grade',
         'policy-type': 'policy.type',
-        'policy-severity': 'policy.severity'
+        'policy-severity': 'policy.severity',
     }
     payload['filters'] = []
     for filter_ in demisto.args():
@@ -314,7 +316,7 @@ def dismiss_alerts():
     payload = {'alerts': ids, 'policies': policies, 'dismissalNote': demisto.getArg('dismissal-note'), 'filter': {}}
     demisto.args().pop('alert-id', None)
     handle_filters(payload['filter'])
-    handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
+    handle_time_filter(payload, {'type': 'to_now', 'value': 'epoch'})
     if not ids and not policies:
         return_error('You must specify either alert-id or policy-id for dismissing alerts')
     response = req('POST', 'alert/dismiss', payload, None)
@@ -415,6 +417,43 @@ def get_remediation_details():
         demisto.results('No Remediation Details Found')
 
 
+def redlock_search_config():
+    """
+    Run query in config
+    """
+    query = demisto.args().get('query', None)
+    if not query:
+        return_error('You must specify a query to retrieve assets')
+    payload = {
+        'query': query,
+        'limit': 100,
+        'sort': [{"direction": "desc", "field": "insertTs"}],
+        'withResourceJson': True
+    }
+    handle_time_filter(payload, {'type': 'to_now', 'value': 'epoch'})
+
+    response = req('POST', 'search/config', payload, None)
+
+    if (
+        not response
+        or 'data' not in response
+        or not isinstance(response['data'], dict)
+        or 'items' not in response['data']
+        or not isinstance(response['data']['items'], list)
+    ):
+        demisto.results('No results found')
+    else:
+        items = response['data']['items']
+        MD = tableToMarkdown("Configuration Details", items)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': items,
+            'EntryContext': {'Redlock.Asset(val.id == obj.id)': items},
+            'HumanReadable': MD
+        })
+
+
 def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
@@ -468,6 +507,8 @@ try:
         reopen_alerts()
     elif demisto.command() == 'redlock-get-remediation-details':
         get_remediation_details()
+    elif demisto.command() == 'redlock-search-config':
+        redlock_search_config()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
     else:
