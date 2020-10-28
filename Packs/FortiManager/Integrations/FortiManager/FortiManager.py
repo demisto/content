@@ -116,8 +116,8 @@ def get_specific_entity(entity_name: str):
 
 
 def get_range_for_list_command(args: Dict):
-    first_index = args.get('from', 0)
-    last_index = args.get('to', 50)
+    first_index = args.get('offset', 0)
+    last_index = args.get('limit', 50)
     list_range = []
 
     # A bug on Forti API when the first index is 0, need to add 1 to the last index for consistency
@@ -368,9 +368,9 @@ def list_policy_packages_command(client, args):
                                                           f"{get_specific_entity(args.get('policy_package'))}")
 
     # No native range filter in API call, implementing manually
-    from_val = int(args.get('from', 0))
-    to_val = args.get('to')
-    if not args.get('to'):
+    from_val = int(args.get('offset', 0))
+    to_val = args.get('limit')
+    if not args.get('limit'):
         policy_packages = policy_packages[from_val:]
 
     else:

@@ -1,4 +1,5 @@
 category: Network Security
+beta: true
 commonfields:
   id: FortiManager
   version: -1
@@ -28,7 +29,7 @@ configuration:
   type: 8
 description: FortiManager is a single console central management system that manages
   Fortinet Devices.
-display: FortiManager
+display: FortiManager (Beta)
 name: FortiManager
 script:
   commands:
@@ -41,7 +42,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of a specific device to get.
+      description: The name of a specific device to get. If not specified will get
+        all devices.
       isArray: false
       name: device
       required: false
@@ -57,7 +59,7 @@ script:
       defaultValue: '50'
       description: To which index to get the list.
       isArray: false
-      name: to
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -308,7 +310,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of a device group to fetch.
+      description: The name of a device group to fetch.  If not specified will get
+        all device groups.
       isArray: false
       name: group
       required: false
@@ -324,7 +327,7 @@ script:
       defaultValue: '50'
       description: To which index to get the list.
       isArray: false
-      name: to
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -359,18 +362,19 @@ script:
       defaultValue: '0'
       description: From which index to start the list.
       isArray: false
-      name: from
+      name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
       description: To which index to get the list.
       isArray: false
-      name: to
+      name: limit
       required: false
       secret: false
     - default: false
-      description: The name of a specific address to fetch.
+      description: The name of a specific address to fetch.  If not specified will
+        get all addresses.
       isArray: false
       name: address
       required: false
@@ -717,18 +721,19 @@ script:
       defaultValue: '0'
       description: From which index to start the list.
       isArray: false
-      name: from
+      name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
       description: To which index to get the list.
       isArray: false
-      name: to
+      name: limit
       required: false
       secret: false
     - default: false
-      description: Name for a specific address group to fetch.
+      description: Name for a specific address group to fetch. If not specified will
+        get all address groups.
       isArray: false
       name: address_group
       required: false
@@ -907,18 +912,19 @@ script:
       defaultValue: '0'
       description: From which index to start the list.
       isArray: false
-      name: from
+      name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
       description: To which index to get the list.
       isArray: false
-      name: to
+      name: limit
       required: false
       secret: false
     - default: false
-      description: Name of a specific category to fetch
+      description: Name of a specific category to fetch. If not specified will get
+        all service groups.
       isArray: false
       name: service_category
       required: false
@@ -946,18 +952,19 @@ script:
       defaultValue: '0'
       description: From which index to start the list.
       isArray: false
-      name: from
+      name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
       description: To which index to get the list.
       isArray: false
-      name: to
+      name: limit
       required: false
       secret: false
     - default: false
-      description: Name of a specific service group to fetch.
+      description: Name of a specific service group to fetch. If not specified will
+        get all service groups.
       isArray: false
       name: service_group
       required: false
@@ -1092,18 +1099,19 @@ script:
       defaultValue: '0'
       description: From which index to start the list.
       isArray: false
-      name: from
+      name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
       description: To which index to get the list.
       isArray: false
-      name: to
+      name: limit
       required: false
       secret: false
     - default: false
-      description: Name of a specific custom service to fetch.
+      description: Name of a specific custom service to fetch.  If not specified will
+        get all custom services.
       isArray: false
       name: custom_service
       required: false
@@ -1623,18 +1631,19 @@ script:
       defaultValue: '0'
       description: From which index to start the list.
       isArray: false
-      name: from
+      name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
       description: To which index to get the list.
       isArray: false
-      name: to
+      name: limit
       required: false
       secret: false
     - default: false
-      description: Name of a specific policy package to fetch.
+      description: Name of a specific policy package to fetch. If not specified will
+        get all policy packages.
       isArray: false
       name: policy_package
       required: false
@@ -1921,7 +1930,7 @@ script:
       defaultValue: '0'
       description: From which index to start the list.
       isArray: false
-      name: from
+      name: offset
       predefined:
       - '50'
       required: false
@@ -1929,11 +1938,12 @@ script:
     - default: false
       description: To which index to get the list.
       isArray: false
-      name: to
+      name: limit
       required: false
       secret: false
     - default: false
-      description: An id for the specific policy to fetch.
+      description: An id for the specific policy to fetch. If not specified will get
+        all policies.
       isArray: false
       name: policy_id
       required: false
@@ -2739,14 +2749,14 @@ script:
       defaultValue: '0'
       description: From which index to start the list.
       isArray: false
-      name: from
+      name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
       description: To which index to get the list.
       isArray: false
-      name: to
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -2842,7 +2852,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The device name on which to install the package.
+      description: The device or device group name on which to install the package.
       isArray: false
       name: name
       required: true
