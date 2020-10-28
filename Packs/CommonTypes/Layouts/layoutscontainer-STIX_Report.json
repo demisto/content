@@ -1,7 +1,7 @@
 {
   "group": "indicator",
-  "name": "STIX Report",
-  "id": "STIX Report",
+  "name": "STIX Report111",
+  "id": "STIX Report111",
   "indicatorsDetails": {
     "tabs": [
       {
@@ -335,30 +335,12 @@
                 "startCol": 0
               },
               {
-                "endCol": 2,
-                "fieldId": "creationdate",
-                "height": 22,
-                "id": "384db440-16aa-11eb-a177-2d529d9aff28",
-                "index": 1,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "endCol": 2,
-                "fieldId": "updateddate",
-                "height": 22,
-                "id": "394ed090-16aa-11eb-a177-2d529d9aff28",
-                "index": 2,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
                 "dropEffect": "move",
                 "endCol": 2,
                 "fieldId": "firstseen",
                 "height": 22,
                 "id": "4ccc29d0-ccca-11ea-a049-6b4b59f3b34f",
-                "index": 3,
+                "index": 1,
                 "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                 "sectionItemType": "field",
                 "startCol": 0
@@ -368,7 +350,7 @@
                 "fieldId": "lastseen",
                 "height": 22,
                 "id": "5c2ac3d0-16aa-11eb-a177-2d529d9aff28",
-                "index": 4,
+                "index": 2,
                 "sectionItemType": "field",
                 "startCol": 0
               }
