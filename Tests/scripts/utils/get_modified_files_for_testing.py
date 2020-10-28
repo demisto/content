@@ -117,8 +117,8 @@ def get_modified_files_for_testing(
 
     # Checks if any common file represents in it
     changed_common = get_common_files(
-            types_to_files.get(FileType.INTEGRATION, set()),
-            types_to_files.get(FileType.SCRIPT, set())
+        types_to_files.get(FileType.INTEGRATION, set()),
+        types_to_files.get(FileType.SCRIPT, set())
     )
 
     # Remove common files from the sets
