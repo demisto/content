@@ -34,6 +34,7 @@ class GCPConfig(object):
     """
     STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
+    BUILD_BASE_PATH = "content/builds"
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
@@ -841,6 +842,39 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True, None
 
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack):
+        task_status = True
+
+        build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, self.latest_version)
+
+        existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
+        if not existing_bucket_version_files:
+            print_error(f"{self._pack_name} latest version ({self.latest_version}) was not found on build bucket at "
+                        f"path {build_version_pack_path}.")
+            return False, True
+
+        existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=build_version_pack_path)]
+        if existing_prod_version_files and not override_pack:
+            print_warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
+            print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
+            return task_status, True
+
+        prod_full_file_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, self.latest_version,
+                                           f'{self._pack_name}.zip')
+        build_full_file_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
+        build_file_blob = build_bucket.blob(build_full_file_path)
+        copied_blob = build_bucket.copy_blob(
+            blob=build_file_blob, destination_bucket=production_bucket, new_name=prod_full_file_path
+        )
+        task_status = task_status and copied_blob.exists()
+
+        if not task_status:
+            print_error(f"Failed in uploading {self._pack_name} pack to gcs.")
+        else:
+            print_color(f"Uploaded {self._pack_name} pack to {prod_full_file_path} path.", LOG_COLORS.GREEN)
+
+        return task_status, False
+
     def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion]:
         """
         Returns the changelog file contents and the last version of rn in the changelog file
@@ -1573,6 +1607,40 @@ class Pack(object):
         finally:
             return task_status, uploaded_integration_images
 
+    def copy_and_upload_integration_images(self, production_bucket, build_bucket):
+        """ Uploads pack integrations images to gcs.
+
+            The returned result of integration section are defined in issue #19786.
+
+        Args:
+            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
+            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+
+        Returns:
+            bool: Whether the operation succeeded.
+
+        """
+        task_status = True
+
+        # assuming that directories ends with a "/" and that all images are of type "png"
+        build_integration_images_blobs = [f for f in
+                                          build_bucket.list_blobs(
+                                              prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
+                                          )
+                                          if is_integration_image(f.name)]
+        for integration_image_blob in build_integration_images_blobs:
+            # TODO: check if copy_blob is fine in terms of visioning and if successful in case of existing
+            copied_blob = build_bucket.copy_blob(
+                blob=integration_image_blob, destination_bucket=production_bucket,
+                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, integration_image_blob.name)
+            )
+            task_status = task_status and copied_blob.exists()
+
+        if not task_status:
+            print_error(f"Failed to upload {self._pack_name} pack integration images.")
+
+        return task_status
+
     def upload_author_image(self, storage_bucket):
         """ Uploads pack author image to gcs.
 
@@ -1630,6 +1698,40 @@ class Pack(object):
         finally:
             return task_status, author_image_storage_path
 
+    def copy_and_upload_author_image(self, production_bucket, build_bucket):
+        """ Uploads pack integrations images to gcs.
+
+            The returned result of integration section are defined in issue #19786.
+
+        Args:
+            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
+            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+
+        Returns:
+            bool: Whether the operation succeeded.
+
+        """
+        task_status = True
+
+        # assuming that directories ends with a "/" and that all images are of type "png"
+        build_author_images_blobs = [f for f in
+                                     build_bucket.list_blobs(
+                                         prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
+                                     )
+                                     if is_author_image(f.name)]
+        for author_image_blob in build_author_images_blobs:
+            # TODO: check if copy_blob is fine in terms of visioning and if successful in case of existing
+            copied_blob = build_bucket.copy_blob(
+                blob=author_image_blob, destination_bucket=production_bucket,
+                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, author_image_blob.name)
+            )
+            task_status = task_status and copied_blob.exists()
+
+        if not task_status:
+            print_error(f"Failed uploading {self._pack_name} pack author image.")
+
+        return task_status
+
     def cleanup(self):
         """ Finalization action, removes extracted pack folder.
 
@@ -1640,6 +1742,32 @@ class Pack(object):
 
 
 # HELPER FUNCTIONS
+
+def is_integration_image(file_name):
+    """ Indicates whether a file_name in pack directory (in the bucket) is an integration image or not
+
+    Args:
+        file_name (str): The file name
+
+    Returns:
+        bool: True if the file is an integration image or False otherwise
+
+    """
+    return not file_name.endswith('/') and file_name.endswith('.png') and 'author' not in file_name.lower()
+
+
+def is_author_image(file_name):
+    """ Indicates whether a file_name in pack directory (in the bucket) is an author image or not
+
+    Args:
+        file_name (str): The file name
+
+    Returns:
+        bool: True if the file is an author image or False otherwise
+
+    """
+    return not file_name.endswith('/') and file_name.endswith('.png') and 'author' in file_name.lower()
+
 
 def init_storage_client(service_account=None):
     """Initialize google cloud storage client.

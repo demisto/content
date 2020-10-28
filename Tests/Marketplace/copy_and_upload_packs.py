@@ -20,7 +20,7 @@ from Tests.Marketplace.upload_packs import download_and_extract_index, extract_p
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 
-def get_packs_names():
+def get_pack_names():
     """
     Retrieves the paths of all relevant packs (that aren't ignored)
 
@@ -263,7 +263,29 @@ Total number of packs: {len(packs_list)}
         add_pr_comment(pr_comment)
 
 
-def option_handler():
+def is_valid_pack(extract_destination_path, pack_name, production_bucket, build_bucket):
+    """ Indicates whether a pack should be in the loop of uploads or not
+
+    Args:
+        extract_destination_path (str): Full path of folder to extract wanted packs
+        pack_name (str): The pack name
+        production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
+        build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+
+    Returns:
+        bool: True if the pack should be considered to upload or False otherwise
+
+    """
+    is_in_artifacts = os.path.exists(os.path.join(extract_destination_path, pack_name))
+    prod_pack_names = [f.name for f in production_bucket.list_blobs(prefix=GCPConfig.STORAGE_BASE_PATH)]
+    build_pack_names = [f.name for f in build_bucket.list_blobs(prefix=GCPConfig.BUILD_BASE_PATH)]
+    # if pack is in prod bucket and not in build bucket it should be deleted because upload packs
+    # on prepare content step in create instances job has deleted it
+    is_in_prod_but_not_in_build = pack_name in prod_pack_names and pack_name not in build_pack_names
+    return is_in_artifacts and is_in_prod_but_not_in_build
+
+
+def options_handler():
     """Validates and parses script arguments.
 
     Returns:
@@ -291,7 +313,9 @@ def option_handler():
                               "Default is set to `All`"),
                         required=False, default="All")
     parser.add_argument('-n', '--ci_build_number',
-                        help="CircleCi build number (will be used as hash revision at index file)", required=False)
+                        help="CircleCi build number (will be used as hash revision at index file)", required=True)
+    parser.add_argument('-c', '--circle_branch',
+                        help="CircleCi branch of current build", required=True)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         default=False, action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
@@ -307,81 +331,66 @@ def option_handler():
 
 def main():
     install_logging('Prepare Content Packs For Testing.log')
-    option = option_handler()
-    packs_artifacts_path = option.artifacts_path
-    extract_destination_path = option.extract_path
-    storage_bucket_name = option.bucket_name
-    private_bucket_name = option.private_bucket_name
-    service_account = option.service_account
-    target_packs = option.pack_names if option.pack_names else ""
-    build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
-    override_all_packs = option.override_all_packs
-    signature_key = option.key_string
-    id_set_path = option.id_set_path
-    packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
-    storage_base_path = option.storage_base_path
-    remove_test_playbooks = option.remove_test_playbooks
+    options = options_handler()
+    packs_artifacts_path = options.artifacts_path
+    extract_destination_path = options.extract_path
+    production_bucket_name = options.production_bucket_name
+    build_bucket_name = options.build_bucket_name
+    private_bucket_name = options.private_bucket_name
+    service_account = options.service_account
+    build_number = options.ci_build_number
+    circle_branch = options.circle_branch
+    override_all_packs = options.override_all_packs
+    id_set_path = options.id_set_path
+    production_base_path = options.production_base_path
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.bucket(storage_bucket_name)
+    production_bucket = storage_client.bucket(production_bucket_name)
+    build_bucket = storage_client.bucket(build_bucket_name)
 
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
+    # initialize base paths
+    if production_base_path:
+        GCPConfig.STORAGE_BASE_PATH = production_base_path
+    build_bucket_path = f'{GCPConfig.BUILD_BASE_PATH}/{circle_branch}/{build_number}/'
+    GCPConfig.BUILD_BASE_PATH = f'{build_bucket_path}/{GCPConfig.STORAGE_BASE_PATH}'
 
     # TODO: for prepare content step, think what to do if a pack was failing to upload
     # TODO: for upload packs step, think what to do if a pack was failing to upload
     # TODO: what if no commit was found, for example: there was a squash of several master commits?
+    # TODO: refactor prepare content step to be the same as upload step
 
     # download and extract index from public bucket
-    index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
+    index_folder_path, index_blob, index_generation = download_and_extract_index(production_bucket,
                                                                                  extract_destination_path)
-
     # detect packs to upload
-    # TODO: think why need to get pack names from content repo and not from artifacts
-    pack_names = get_packs_names()
+    pack_names = get_pack_names()
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
-                  if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+                  if is_valid_pack(extract_destination_path, pack_name, production_bucket, build_bucket)]
 
-    # TODO: check each pack not in ci-build-bucket but on prod-bucket
     # TODO: check that new/modified packs are in the artifacts (sdk)
 
     # starting iteration over packs
     for pack in packs_list:
-        task_status, integration_images = pack.upload_integration_images(storage_bucket)
+        task_status = pack.copy_and_upload_integration_images(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status, author_image = pack.upload_author_image(storage_bucket)
+        task_status = pack.copy_and_upload_author_image(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status, zip_pack_path = pack.zip_pack()
-        # TODO: here need to download pack from bucket
-        if not task_status:
-            pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
-            pack.cleanup()
-            continue
-
+        task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket)
         (task_status, skipped_pack_uploading, full_pack_path) = \
             pack.upload_to_storage(zip_pack_path, pack.latest_version,
-                                   storage_bucket, override_all_packs)
-        if full_pack_path is not None:
-            branch_name = os.environ['CIRCLE_BRANCH']
-            build_num = os.environ['CIRCLE_BUILD_NUM']
-            bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                          f'marketplace-ci-build/{branch_name}/{build_num}'
-            bucket_url = bucket_path.join(full_pack_path)
-        else:
-            bucket_url = 'Pack was not uploaded.'
+                                   production_bucket, override_all_packs)
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
-            pack.bucket_url = bucket_url
             pack.cleanup()
             continue
 
@@ -395,14 +404,14 @@ def main():
         pack.status = PackStatus.SUCCESS.name
 
     # upload core packs json to bucket
-    upload_core_packs_config(storage_bucket, build_number, index_folder_path)
+    upload_core_packs_config(production_bucket, build_number, index_folder_path)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
                             current_commit_hash, index_generation)
 
     # upload id_set.json to bucket
-    upload_id_set(storage_bucket, id_set_path)
+    upload_id_set(production_bucket, id_set_path)
 
     # summary of packs status
     print_packs_summary(packs_list)

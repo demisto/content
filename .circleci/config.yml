@@ -994,7 +994,7 @@ jobs:
                   ID_SET=$CIRCLE_ARTIFACTS/id_set.json
                   GCS_PATH=$(mktemp)
                   echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
+                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist-dev' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -sb "wow/content/packs"
                   rm $GCS_PATH 
       - run:
           name: Slack Notifier
@@ -1330,8 +1330,8 @@ workflows:
   bucket_upload:
     triggers:
       - schedule:
-          # should trigger every day at 10 PM UTC (1 AM Israel Time)
-          cron: "0 22 * * *"
+          # should trigger every day at 9 PM UTC (00:00 AM Israel Time)
+          cron: "0 21 * * *"
           filters:
             branches:
               only:
