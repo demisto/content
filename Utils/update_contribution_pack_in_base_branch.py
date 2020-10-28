@@ -31,6 +31,8 @@ def main():
             if os.path.isdir(f'Packs/{pack_dir}'):
                 # Remove existing pack
                 shutil.rmtree(f'Packs/{pack_dir}')
+        # if packs_dir_names = ['pack_a', 'pack_b', 'pack_c'],
+        # string_dir_names will be 'Packs/pack_a Packs/pack_b Packs/pack_c'
         string_dir_names = f'Packs/{" Packs/".join(packs_dir_names)}'
 
         commands = [
@@ -46,7 +48,8 @@ def main():
         print_error(f'Failed to deploy contributed pack to base branch: {e}')
         sys.exit(1)
 
-    print_success(f'Successfully updated the base branch with the contrib packs: {" - ".join(packs_dir_names)}')
+    print_success(f'Successfully updated the base branch with the following contrib packs: '
+                  f'{", ".join(packs_dir_names)}')
 
 
 def get_pack_dir(branch: str, pr_number: str, repo: str) -> List[str]:
