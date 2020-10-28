@@ -304,7 +304,7 @@ def reply_email(to, item_id, body="", subject="", bcc=None, cc=None, htmlBody=No
         with open(file_path, 'rb') as f:
             attachments.append(FileAttachment(content=f.read(), name=attachment_name))
 
-    send_email_reply_to_mailbox(account, item_id, to,body, subject, bcc, cc, htmlBody, attachments)
+    send_email_reply_to_mailbox(account, item_id, to, body, subject, bcc, cc, htmlBody, attachments)
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
