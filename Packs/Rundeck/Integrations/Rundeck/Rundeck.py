@@ -540,9 +540,9 @@ def convert_str_to_int(val_to_convert: Optional[str], param_name: str) -> Option
 
 def job_retry_command(client: Client, args: dict):
     arg_string: str = args.get('arg_string', '')
-    log_level: str = args.get('log_level', '')  # TODO: add list options 'DEBUG','VERBOSE','INFO','WARN','ERROR'
+    log_level: str = args.get('log_level', '')
     as_user: str = args.get('as_user', '')
-    failed_nodes: str = args.get('failed_nodes', '')  # TODO: add list options 'true' or 'false'
+    failed_nodes: str = args.get('failed_nodes', '')
     job_id: str = args.get('job_id')
     execution_id: str = args.get('execution_id')
     options: str = args.get('options')
@@ -567,7 +567,7 @@ def job_retry_command(client: Client, args: dict):
 
 def execute_job_command(client: Client, args: dict):
     arg_string: str = args.get('arg_string', '')
-    log_level: str = args.get('log_level', '')  # TODO: add list options 'DEBUG','VERBOSE','INFO','WARN','ERROR'
+    log_level: str = args.get('log_level', '')
     as_user: str = args.get('as_user', '')
     node_filter: str = args.get('filter', '')
     run_at_time: str = args.get('run_at_time', '')
@@ -688,14 +688,14 @@ def job_execution_query_command(client: Client, args: dict):
     :param args: command's arguments
     :return: CommandResults object
     """
-    status_filter: str = args.get('status_filter', '')  # TODO: add a list options: "running", succeeded", "failed" or "aborted"
+    status_filter: str = args.get('status_filter', '')
     aborted_by_filter: str = args.get('aborted_by_filter', '')
     user_filter: str = args.get('user_filter', '')
     recent_filter: str = args.get('recent_filter', '')
     older_filter: str = args.get('older_filter', '')
     begin: str = args.get('begin', '')
     end: str = args.get('end', '')
-    adhoc: str = args.get('adhoc', '')  # TODO: add list options: true or false
+    adhoc: str = args.get('adhoc', '')
     job_id_list_filter: list = argToList(args.get('job_id_list_filter', []))
     exclude_job_id_list_filter: list = argToList(args.get('exclude_job_id_list_filter', []))
     job_list_filter: list = argToList(args.get('job_list_filter', []))
@@ -707,7 +707,7 @@ def job_execution_query_command(client: Client, args: dict):
     exclude_job_filter: str = args.get('exclude_job_filter', '')
     job_exact_filter: str = args.get('job_exact_filter', '')
     exclude_job_exact_filter: str = args.get('exclude_job_exact_filter', '')
-    execution_type_filter: str = args.get('execution_type_filter', '')  #￿￿￿ TODO: add list options: scheduled, user, user-scheduled
+    execution_type_filter: str = args.get('execution_type_filter', '')
     max_paging: Optional[int] = convert_str_to_int(args.get('max_paging'), 'max')
     offset: Optional[int] = convert_str_to_int(args.get('offset'), 'offset')
     project_name: str = args.get('project_name', '')
