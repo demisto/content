@@ -190,7 +190,7 @@
         },
         "illuminate": {
             "mandatory": false,
-            "display_name": "illuminate"
+            "display_name": "Analyst1"
         },
         "isight": {
             "mandatory": false,
@@ -382,6 +382,7 @@
         "DomainTools",
         "ThreatExchange",
         "Pwned",
-        "McAfee-TIE"
+        "McAfee-TIE",
+        "Analyst1"
     ]
 }
