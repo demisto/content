@@ -84,6 +84,7 @@ def find_needed_test_playbook_paths(test_playbooks, filter_file_path):
                 for test_pb in test_playbooks:
                     if test_clean in test_pb:
                         tests_file_paths.add(PRIVATE_CONTENT_PATH + '/' + test_pb[test_clean].get("file_path"))
+    print(f"Test files to install are: {tests_file_paths}")
     return tests_file_paths
 
 
