@@ -91,16 +91,18 @@ def _extract_analysis_info(res: dict, indicator_value: str, dbot_score_type: str
     dbot = None
     analysis_info = {}
     if res.get('total_size'):
-        results_array = res.get('results')[0]
-        dbot_score: int = _calculate_dbot_score(results_array.get('severity',0))
-        desc = 'Match found in iDefense database'
-        dbot = Common.DBotScore(indicator_value, dbot_score_type, 'iDefense', dbot_score, desc)
-        analysis_info = {
-            'Name': results_array.get('key', ''),
-            'Dbot Reputation': dbot_score,
-            'confidence': results_array.get('confidence'),
-            'Threat Types': results_array.get('threat_types')
-        }
+        results_array = res.get('results', [])
+        if len(results_array):
+            result_content = results_array[0]
+            dbot_score: int = _calculate_dbot_score(result_content.get('severity', 0))
+            desc = 'Match found in iDefense database'
+            dbot = Common.DBotScore(indicator_value, dbot_score_type, 'iDefense', dbot_score, desc)
+            analysis_info = {
+                'Name': result_content.get('key', ''),
+                'Dbot Reputation': dbot_score,
+                'confidence': result_content.get('confidence', 0),
+                'Threat Types': result_content.get('threat_types', '')
+            }
     return analysis_info, dbot
 
 
@@ -146,11 +148,9 @@ def ip_command(client: Client, args: dict) -> CommandResults:
         readable_output = f"No results were found for ip {ip}"
         indicator = []
 
-    return CommandResults(
-        indicators=indicator,
-        raw_response=res,
-        readable_output=readable_output
-    )
+    return CommandResults(indicators=indicator,
+                          raw_response=res,
+                          readable_output=readable_output)
 
 
 def url_command(client: Client, args: dict) -> CommandResults:
@@ -168,11 +168,9 @@ def url_command(client: Client, args: dict) -> CommandResults:
         readable_output = "No results were found for url {url}"
         indicator = []
 
-    return CommandResults(
-            indicators=indicator,
-            raw_response=res,
-            readable_output=readable_output
-        )
+    return CommandResults(indicators=indicator,
+                          raw_response=res,
+                          readable_output=readable_output)
 
 
 def domain_command(client: Client, args: dict) -> CommandResults:
@@ -188,11 +186,9 @@ def domain_command(client: Client, args: dict) -> CommandResults:
         readable_output = f"No results were found for domain {domain}"
         indicator = []
 
-    return CommandResults(
-            indicators=indicator,
-            raw_response=res,
-            readable_output=readable_output
-        )
+    return CommandResults(indicators=indicator,
+                          raw_response=res,
+                          readable_output=readable_output)
 
 
 def uuid_command(client: Client, args: dict) -> CommandResults:
@@ -238,11 +234,9 @@ def uuid_command(client: Client, args: dict) -> CommandResults:
         'confidence': res.get('confidence'),
         'Threat Types': res.get('threat_types')
     }
-    return CommandResults(
-        indicators=[indicator],
-        raw_response=res,
-        readable_output=tableToMarkdown('Results', analysis_info)
-    )
+    return CommandResults(indicators=[indicator],
+                          raw_response=res,
+                          readable_output=tableToMarkdown('Results', analysis_info))
 
 
 def main():
