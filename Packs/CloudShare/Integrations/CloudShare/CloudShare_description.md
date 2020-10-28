@@ -1,3 +1,2 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+## CloudShare
+You can obtain your API ID and API Key from the CloudShare portal under your user account 'My Details'. You may need to click on 'Regenerate API credentials'.
