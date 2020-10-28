@@ -141,14 +141,16 @@ def ip_command(client: Client, args: dict) -> CommandResults:
 
     res = client.perform_request('/ip', ip)
     analysis_info, dbot = _extract_analysis_info(res, ip, DBotScoreType.IP)
+
+    indicator: Optional[Common.IP] = None
+
     if len(analysis_info):
         readable_output = tableToMarkdown('Results', analysis_info)
-        indicator = [Common.IP(ip, dbot)]
+        indicator = Common.IP(ip, dbot)
     else:
         readable_output = f"No results were found for ip {ip}"
-        indicator = []
 
-    return CommandResults(indicators=indicator,
+    return CommandResults(indicator=indicator,
                           raw_response=res,
                           readable_output=readable_output)
 
@@ -161,14 +163,15 @@ def url_command(client: Client, args: dict) -> CommandResults:
     res = client.perform_request('/url', url)
     analysis_info, dbot = _extract_analysis_info(res, url, DBotScoreType.URL)
 
+    indicator: Optional[Common.URL] = None
+
     if len(analysis_info):
         readable_output = tableToMarkdown('Results', analysis_info)
-        indicator = [Common.URL(url, dbot)]
+        indicator = Common.URL(url, dbot)
     else:
-        readable_output = "No results were found for url {url}"
-        indicator = []
+        readable_output = f"No results were found for url {url}"
 
-    return CommandResults(indicators=indicator,
+    return CommandResults(indicator=indicator,
                           raw_response=res,
                           readable_output=readable_output)
 
@@ -178,15 +181,16 @@ def domain_command(client: Client, args: dict) -> CommandResults:
     res = client.perform_request('/domain', domain)
     analysis_info, dbot = _extract_analysis_info(res, domain, DBotScoreType.DOMAIN)
 
+    indicator: Optional[Common.Domain] = None
+
     if len(analysis_info):
         readable_output = tableToMarkdown('Results', analysis_info)
-        indicator = [Common.Domain(domain, dbot)]
+        indicator = Common.Domain(domain, dbot)
 
     else:
         readable_output = f"No results were found for domain {domain}"
-        indicator = []
 
-    return CommandResults(indicators=indicator,
+    return CommandResults(indicator=indicator,
                           raw_response=res,
                           readable_output=readable_output)
 
@@ -206,7 +210,7 @@ def uuid_command(client: Client, args: dict) -> CommandResults:
         res = client.perform_request(f'/{uuid}', '')
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
-            return CommandResults(indicators=[], raw_response={},
+            return CommandResults(indicator=None, raw_response={},
                                   readable_output=f"No results were found for uuid {uuid}")
         else:
             raise e
@@ -234,7 +238,7 @@ def uuid_command(client: Client, args: dict) -> CommandResults:
         'confidence': res.get('confidence'),
         'Threat Types': res.get('threat_types')
     }
-    return CommandResults(indicators=[indicator],
+    return CommandResults(indicator=indicator,
                           raw_response=res,
                           readable_output=tableToMarkdown('Results', analysis_info))
 
