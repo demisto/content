@@ -5,7 +5,7 @@ import glob
 import os
 import re
 from enum import Enum
-from typing import Dict, Set, Optional, Tuple
+from typing import Dict, Set, Optional, Tuple, List
 
 import demisto_sdk.commands.common.constants as constants
 from demisto_sdk.commands.common import tools
@@ -17,8 +17,8 @@ from Tests.scripts.utils.collect_helpers import (
 
 
 class FileType(constants.FileType, Enum):
-    CONF_JSON = 'confjson'
-    METADATA = 'metadata'
+    CONF_JSON = "confjson"
+    METADATA = "metadata"
 
 
 def resolve_type(file_path: str) -> Optional[FileType]:
@@ -44,7 +44,7 @@ def resolve_type(file_path: str) -> Optional[FileType]:
     return None
 
 
-def create_diff_list(files_string) -> Dict[FileType, Set[str]]:
+def create_type_to_file(files_string) -> Dict[FileType, Set[str]]:
     """Classified the diff list using tools.find_type
 
     Returns:
@@ -66,94 +66,131 @@ def create_diff_list(files_string) -> Dict[FileType, Set[str]]:
                     file_status in ("m", "a") or file_status.startswith("r")
                 ) and not file_path.startswith("."):
                     file_type = tools.find_type(file_path) or resolve_type(file_path)
-                    # Common YML files
                     if file_type in types_to_files:
                         types_to_files[file_type].add(file_path)
-                    else:
+                    elif file_type is not None:
                         types_to_files[file_type] = {file_path}
+
+    # Get corresponding yml files and types from PY files.
+    py_to_be_removed = set()
+    for file_path in types_to_files.get(FileType.PYTHON_FILE, set()):
+        yml_path = get_corresponding_yml_file(file_path)
+        # There's a yml path
+        if yml_path is not None:
+            yml_type = tools.find_type(yml_path) or resolve_type(file_path)
+            if yml_type is not None:
+                if yml_type in types_to_files:
+                    types_to_files[yml_type].add(yml_path)
+                else:
+                    types_to_files[yml_type] = {yml_path}
+                py_to_be_removed.add(file_path)
+
+    # remove python files
+    if py_to_be_removed:
+        types_to_files[FileType.PYTHON_FILE] = types_to_files[FileType.PYTHON_FILE] - py_to_be_removed
+
     return types_to_files
 
 
-def get_modified_files_for_testing(files_string):
-    """Get a string of the modified files"""
+def get_modified_files_for_testing(
+    git_diff: str,
+) -> Tuple[List[str], List[str], List[str], bool, List[str], set, bool, bool]:
+    """
+    Gets git diff string and filters those files into tests:
+
+    Args:
+        git_diff: a git diff output (with --name-only flag)
+    Returns:
+        modified_files: Modified YMLs for testing (Integrations, Scripts, Playbooks).
+        modified_tests: Test playbooks.
+        changed_common: Globally used YMLs (Like CommonServerPython).
+        is_conf_json: If Tests/Conf.json has been changed.
+        sample_tests: Files to test, Like the infrastructures files.
+        modified_metadata: Metadata files.
+        is_reputations_json: If any reputation file changed.
+        is_indicator_json: If any indicator file changed.
+    """
     sample_tests: Set[str] = set()
-    modified_metadata_list: Set[str] = set()
-    changed_common: Set[str] = set()
+    modified_metadata: Set[str] = set()
     modified_files: Set[str] = set()
-    modified_tests: Set[str] = set()
-    files_to_types: Dict[FileType, Set[str]] = create_diff_list(files_string)
+    types_to_files: Dict[FileType, Set[str]] = create_type_to_file(git_diff)
 
-    changed_common = changed_common.union(get_common_files(
-        files_to_types.get(FileType.INTEGRATION, set()),
-        files_to_types.get(FileType.SCRIPT, set())
-    ))
+    # Checks if any common file represents in it
+    changed_common = get_common_files(
+            types_to_files.get(FileType.INTEGRATION, set()),
+            types_to_files.get(FileType.SCRIPT, set())
+    )
 
+    # Remove common files from the sets
     for file_path in changed_common:
         file_type = tools.find_type(file_path)
-        files_to_types[file_type].remove(file_path)
+        try:
+            types_to_files[file_type].remove(file_path)
+        except KeyError:
+            # Can be a python file that changed and now the yml representing. Will ignore
+            pass
 
-    yml_corresponding_to_python, new_sample_tests = get_corresponding_yml_file(
-        files_to_types.get(FileType.PYTHON_FILE, set())
-    )
+    # Remove pytest files
+    pytest_files = set(filter(is_pytest_file, types_to_files.get(FileType.PYTHON_FILE, {})))
+    if pytest_files:
+        types_to_files[FileType.PYTHON_FILE] = types_to_files[FileType.PYTHON_FILE] - pytest_files
 
-    sample_tests = new_sample_tests.union(sample_tests)
+    # Sample tests are the remaining python files
+    sample_tests = sample_tests.union(types_to_files.get(FileType.PYTHON_FILE, set()))
 
+    # Modified files = YMLs of integrations, scripts and playbooks
     modified_files = modified_files.union(
-        yml_corresponding_to_python,
-        files_to_types.get(FileType.INTEGRATION, set()),
-        files_to_types.get(FileType.SCRIPT, set()),
-        files_to_types.get(FileType.PLAYBOOK, set())
+        types_to_files.get(FileType.INTEGRATION, set()),
+        types_to_files.get(FileType.SCRIPT, set()),
+        types_to_files.get(FileType.PLAYBOOK, set()),
     )
 
-    metadata_changed_pack = set()
-    for file_path in files_to_types.get(FileType.METADATA, set()):
-        metadata_changed_pack.add(tools.get_pack_name(file_path))
+    # Metadata packs
+    for file_path in types_to_files.get(FileType.METADATA, set()):
+        modified_metadata.add(tools.get_pack_name(file_path))
 
-    modified_metadata_list = modified_metadata_list.union(metadata_changed_pack)
+    # Modified tests are test playbooks
+    modified_tests: Set[str] = types_to_files.get(FileType.TEST_PLAYBOOK, set())
 
-    is_conf_json = FileType.CONF_JSON in files_to_types
+    # Booleans. If this kind of file is inside, its exists
+    is_conf_json = FileType.CONF_JSON in types_to_files
 
-    modified_tests = modified_tests.union(files_to_types.get(FileType.TEST_PLAYBOOK, set()))
+    is_reputations_json = FileType.REPUTATION in types_to_files
 
-    is_reputations_json = FileType.REPUTATION in files_to_types
-
-    is_indicator_json = FileType.INDICATOR_FIELD in files_to_types
+    is_indicator_json = FileType.INDICATOR_FIELD in types_to_files
 
     return (
-        list(modified_files), list(modified_tests), list(changed_common),
-        is_conf_json, list(sample_tests), modified_metadata_list,
-        is_reputations_json, is_indicator_json
+        list(modified_files),
+        list(modified_tests),
+        list(changed_common),
+        is_conf_json,
+        list(sample_tests),
+        modified_metadata,
+        is_reputations_json,
+        is_indicator_json,
     )
 
 
-def get_corresponding_yml_file(*args: set) -> Tuple[Set[str], Set[str]]:
-    """Filtering out Python files that should not be tested.
+def get_corresponding_yml_file(file_path: str) -> Optional[str]:
+    """Gets yml files from file path.
 
-    Currently:
-    - Pytest files: Will be removed from files_to_types[FileType.PYTHON_FILE].
-    - Python files belongs to integration/script: YMl file will be added to modified_file_list
-    - All other files: Will be added to sample_tests.
+    Args:
+        file_path
 
+    Returns:
+        file path of the yml file if exists else None.
     """
-    py_files = set()
-    sample_files = set()
-    for arg in args:
-        py_files = py_files.union(arg)
-    yml_paths = set()
-    for file_path in py_files:
-        if not is_pytest_file(file_path):
-            try:
-                # Py files, Integration, script, playbook ymls
-                dir_path = os.path.dirname(file_path)
-                file_path = glob.glob(dir_path + "/*.yml")[0]
-                yml_paths.add(file_path)
-            except IndexError:  # Not matching yml - sample test
-                sample_files.add(file_path)
-    return yml_paths, sample_files
+    try:
+        # Py files, Integration, script, playbook ymls
+        dir_path = os.path.dirname(file_path)
+        file_path = glob.glob(dir_path + "/*.yml")[0]
+        return file_path
+    except IndexError:  # Not matching yml - sample test
+        return None
 
 
 def get_common_files(*args: Set[str]) -> Set[str]:
-    unified_args = set()
+    unified_args: Set[str] = set()
     for arg in args:
         unified_args = unified_args.union(arg)
     return set(arg for arg in unified_args if arg in COMMON_YML_LIST)

@@ -183,8 +183,8 @@ class TestGetModifiedFilesForTesting:
         assert is_reputations_json is False
         assert is_indicator_json is False
 
-    def test_common_file_list(self, mocker):
-        diff_line = f"M    {COMMON_YML_LIST[0]}"
+    def test_common_yml_file(self, mocker):
+        diff_line = f"M    scripts/script-CommonIntegration.yml"
         mock_get_dict_from_yaml(mocker, {"category": "cat"}, "yml")
         (
             modified_files_list,
@@ -205,6 +205,31 @@ class TestGetModifiedFilesForTesting:
         assert is_reputations_json is False
         assert is_indicator_json is False
 
+    def test_common_py_file(self, mocker):
+        diff_line = f"M    Packs/Base/Scripts/CommonServerPython/CommonServerPython.py"
+        mocker.patch(
+            "Tests.scripts.utils.get_modified_files_for_testing.glob.glob",
+            return_value=["Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"],
+        )
+        mock_get_dict_from_yaml(mocker, {"category": "cat"}, "yml")
+        (
+            modified_files_list,
+            modified_tests_list,
+            changed_common,
+            is_conf_json,
+            sample_tests,
+            modified_metadata_list,
+            is_reputations_json,
+            is_indicator_json,
+        ) = get_modified_files_for_testing(diff_line)
+        assert modified_files_list == []
+        assert modified_tests_list == []
+        assert changed_common == ["Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"]
+        assert is_conf_json is False
+        assert sample_tests == []
+        assert modified_metadata_list == set()
+        assert is_reputations_json is False
+        assert is_indicator_json is False
     @pytest.mark.parametrize(
         "path",
         (
