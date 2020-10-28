@@ -81,7 +81,7 @@ def get_credentials(credentials, scopes):
 def get_client(credentials, scopes, proxy, disable_ssl):
     credentials = get_credentials(credentials, scopes)
 
-    if proxy or disable_ssl :
+    if proxy or disable_ssl:
         http_client = credentials.authorize(get_http_client_with_proxy(disable_ssl))
         return discovery.build('docs', 'v1', http=http_client)
     return discovery.build('docs', 'v1', credentials=credentials)
