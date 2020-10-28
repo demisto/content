@@ -1145,23 +1145,23 @@ def remove_ignored_tests(tests: set, content_packs: set) -> set:
 
     if ignored_tests_set:
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
-        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        logging.info(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
         tests.difference_update(ignored_tests_set)
 
     return tests
 
 
 def remove_tests_for_non_supported_packs(tests: set, id_set: json):
+    tests_that_should_not_be_tested = set()
     for test in tests:
-        tests_that_should_not_be_tested = set()
         id_set_test_playbook_pack_name = get_test_pack_name(test, id_set)
 
         # We don't want to test playbooks from Non-certified partners.
         if not should_test_content_pack(id_set_test_playbook_pack_name):
-            logging.info('The test playbook {} belongs to a non XSOAR supported pack, hence it will not be '
-                         'tested'.format(test))
             tests_that_should_not_be_tested.add(test)
 
+    logging.info('The following test playbooks are not supported and will not be tested: \n{} '.format(
+        '\n'.join(tests_that_should_not_be_tested)))
     tests.difference_update(tests_that_should_not_be_tested)
     return tests
 
