@@ -494,7 +494,7 @@ def calculate_fetch_start_time(last_fetch, first_fetch):
         if not first_fetch:
             first_fetch = '3 days'
         first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)
-        first_fetch_time = int(first_fetch_dt.timestamp())
+        first_fetch_time = int(first_fetch_dt.timestamp()) * 1000
         return first_fetch_time
     else:
         return int(last_fetch)
@@ -536,6 +536,9 @@ def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time, last_run)
         if incident_created_time > fetch_start_time:
             fetch_start_time = incident_created_time
             current_last_incident_fetched = alert.get('_id')
+
+    if not current_last_incident_fetched:
+        current_last_incident_fetched = last_run.get('last_fetch_id')
 
     return incidents, fetch_start_time, current_last_incident_fetched
 
