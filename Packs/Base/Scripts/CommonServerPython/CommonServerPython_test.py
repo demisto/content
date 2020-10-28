@@ -992,7 +992,6 @@ class TestCommandResults:
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
-
     def test_readable_only_context(self):
         """
         Given:
@@ -1429,6 +1428,84 @@ class TestCommandResults:
         assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
             {'Value': '8.8.8.8', 'Category': 'Integration Update'}
         ])
+
+    def test_single_indicator(self, mocker):
+        """
+        Given:
+            - a single indicator
+        When
+           - mocking the demisto.params()
+           - creating an Common.IP object
+           - creating a CommandResults objects using the indicator member
+       Then
+           - The CommandResults.to_context() returns single result of standard output IP and DBotScore
+       """
+        from CommonServerPython import CommandResults, Common, DBotScoreType
+        mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+
+        ip = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score
+        )
+
+        results = CommandResults(
+            indicator=ip
+        )
+
+        assert results.to_context()['EntryContext'] == {
+          'IP(val.Address && val.Address == obj.Address)': [
+            {
+              'Address': '8.8.8.8'
+            }
+          ],
+          'DBotScore(val.Indicator && val.Indicator == '
+          'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+            {
+              'Indicator': '8.8.8.8',
+              'Type': 'ip',
+              'Vendor': 'Virus Total',
+              'Score': 1
+            }
+          ]
+        }
+
+    def test_single_indicator_with_indicators(self, mocker):
+        """
+        Given:
+            - a single indicator and a list of indicators
+        When
+           - mocking the demisto.params()
+           - creating an Common.IP object
+           - creating a CommandResults objects using the indicator member AND indicators member
+       Then
+           - The CommandResults.__init__() should raise an ValueError with appropriate error
+       """
+        from CommonServerPython import CommandResults, Common, DBotScoreType
+        mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+
+        ip = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score
+        )
+
+        with pytest.raises(ValueError) as e:
+            CommandResults(
+                indicator=ip,
+                indicators=[ip]
+            )
+        assert e.value.args[0] == 'indicators is DEPRECATED, use only indicator'
 
 
 class TestBaseClient:
@@ -2581,3 +2658,38 @@ def test_get_x_content_info_headers(mocker):
     headers = get_x_content_info_headers()
     assert headers['X-Content-LicenseID'] == test_license
     assert headers['X-Content-Name'] == test_brand
+
+
+def test_return_results_multiple_command_results(mocker):
+    """
+    Given:
+      - List of 2 CommandResult
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 2 times (with the list items)
+    """
+    from CommonServerPython import CommandResults, return_results
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = []
+    for i in range(2):
+        mock_output = {'MockContext': i}
+        mock_command_results.append(CommandResults(outputs_prefix='Mock', outputs=mock_output))
+    return_results(mock_command_results)
+    assert demisto_results_mock.call_count == 2
+
+
+def test_return_results_multiple_dict_results(mocker):
+    """
+    Given:
+      - List of 2 dictionaries
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 1 time (with the list as an argument)
+    """
+    from CommonServerPython import return_results
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [{'MockContext': 0}, {'MockContext': 1}]
+    return_results(mock_command_results)
+    assert demisto_results_mock.call_count == 1
