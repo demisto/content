@@ -423,9 +423,9 @@ class Client(BaseClient):
     Client to use in the ServiceNow integration. Overrides BaseClient.
     """
 
-    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, fetch_time: str,
-                 sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str):
+    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, oauth_params: dict,
+                 verify: bool, fetch_time: str, sysparm_query: str, sysparm_limit: int,
+                 timestamp_field: str, ticket_type: str, get_attachments: bool, incident_name: str):
         """
 
         Args:
@@ -433,6 +433,10 @@ class Client(BaseClient):
             sc_server_url: SNOW Service Catalog url
             username: SNOW username
             password: SNOW password
+            # client_id: (optional) the client id of the application of the user if OAuth2 should be used.
+            # client_secret: (optional) the client secret of the application of the user if OAuth2 should be used.
+            oauth_params: (optional) the parameters for the ServiceNowClient that should be used to create an
+                                 access token when using OAuth2 authentication.
             verify: whether to verify the request
             fetch_time: first time fetch for fetch_incidents
             sysparm_query: system query
@@ -448,6 +452,7 @@ class Client(BaseClient):
         self._username = username
         self._password = password
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+        self.use_oauth = True if oauth_params else False
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -456,6 +461,11 @@ class Client(BaseClient):
         self.sys_param_query = sysparm_query
         self.sys_param_limit = sysparm_limit
         self.sys_param_offset = 0
+
+        if self.use_oauth:  # if given, OAuth2 authentication flow should be used
+            self._snow_client: ServiceNowClient = ServiceNowClient(params=oauth_params)
+        else:
+            self._auth = (self._username, self._password)
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
                      headers: dict = None, file=None, sc_api: bool = False):
@@ -494,17 +504,31 @@ class Client(BaseClient):
                     file_name = file['name']
                     shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                     with open(file_name, 'rb') as f:
-                        res = requests.request(method, url, headers=headers, data=body, params=params,
-                                               files={'file': f}, auth=(self._username, self._password),
-                                               verify=self._verify, proxies=self._proxies)
+                        if self.use_oauth:
+                            access_token = self._snow_client.get_access_token()
+                            headers.update({
+                                'Authorization': f'Bearer {access_token}'
+                            })
+                            res = requests.request(method, url, headers=headers, data=body, params=params,
+                                                   files={'file': f}, verify=self._verify, proxies=self._proxies)
+                        else:
+                            res = requests.request(method, url, headers=headers, data=body, params=params,
+                                                   files={'file': f}, auth=self._auth,
+                                                   verify=self._verify, proxies=self._proxies)
                     shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
                     raise Exception('Failed to upload file - ' + str(err))
             else:
-                res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
-                                       params=params,
-                                       auth=(self._username, self._password),
-                                       verify=self._verify, proxies=self._proxies)
+                if self.use_oauth:
+                    access_token = self._snow_client.get_access_token()
+                    headers.update({
+                        'Authorization': f'Bearer {access_token}'
+                    })
+                    res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
+                                           params=params, verify=self._verify, proxies=self._proxies)
+                else:
+                    res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
+                                           params=params, auth=self._auth, verify=self._verify, proxies=self._proxies)
 
             if "Instance Hibernating page" in res.text:
                 raise DemistoException(
@@ -2107,6 +2131,28 @@ def main():
     password = params.get('credentials', {}).get('password')
     verify = not params.get('insecure', False)
 
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
+    use_oauth = True if client_id and client_secret else False
+
+    oauth_params = {}
+    if use_oauth:
+        oauth_params = {
+            'credentials': {
+                'identifier': username,
+                'password': password
+            },
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'url': params.get('url'),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            'insecure': params.get('insecure'),
+            'proxy': params.get('proxy')
+        }
+
     version = params.get('api_version')
     if version:
         api = f'/api/now/{version}/'
@@ -2128,8 +2174,8 @@ def main():
 
     raise_exception = False
     try:
-        client = Client(server_url, sc_server_url, username, password, verify, fetch_time, sysparm_query,
-                        sysparm_limit, timestamp_field, ticket_type, get_attachments, incident_name)
+        client = Client(server_url, sc_server_url, username, password, oauth_params, verify, fetch_time,
+                        sysparm_query, sysparm_limit, timestamp_field, ticket_type, get_attachments, incident_name)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-update-ticket': update_ticket_command,
@@ -2181,6 +2227,9 @@ def main():
             return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
         else:
             raise
+
+
+from ServiceNowApiModule import *
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -11,6 +11,18 @@ configuration:
   name: credentials
   required: false
   type: 9
+- additionalinfo: If using OAuth, the client id of the application that was created.
+  display: Client ID
+  hidden: false
+  name: client_id
+  required: false
+  type: 4
+- additionalinfo: If using OAuth, the client secret of the application that was created.
+  display: Client Secret
+  hidden: false
+  name: client_secret
+  required: false
+  type: 4
 - additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request,
     sc_task or sc_req_item.'
   defaultvalue: incident
@@ -2341,9 +2353,6 @@ script:
   isfetch: true
   longRunning: false
   longRunningPort: false
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
