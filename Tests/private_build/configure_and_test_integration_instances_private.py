@@ -1,9 +1,7 @@
 from __future__ import print_function
 
 import glob
-import os
 import shutil
-import json
 import sys
 import zipfile
 from time import sleep
@@ -20,7 +18,8 @@ from Tests.configure_and_test_integration_instances import Build, configure_serv
     test_pack_metadata, options_handler
 
 
-PRIVATE_CONTENT_PATH = '/home/runner/work/content-private/content-private/content'
+PRIVATE_CONTENT_PATH = '/home/runner/work/content-private/content-private/content/'
+PRIVATE_CONTENT_TEST_ZIP = PRIVATE_CONTENT_PATH + '/test_pack.zip'
 
 
 def create_install_private_testing_pack(build, prints_manager):
@@ -33,10 +32,9 @@ def create_install_private_testing_pack(build, prints_manager):
     """
     threads_print_manager = ParallelPrintsManager(len(build.servers))
 
-    private_test_pack_zip(build.id_set)
-    pack_path = '/home/runner/work/content-private/content-private/content/test_pack.zip'
+    create_private_test_pack_zip(build.id_set)
     nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs,
-                          pack_path=pack_path)
+                          pack_path=PRIVATE_CONTENT_TEST_ZIP)
 
     prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0,
                                  include_timestamp=True)
@@ -68,27 +66,32 @@ def install_packs_private(build, prints_manager, pack_ids=None):
     return installed_content_packs_successfully
 
 
-def private_test_pack_zip(id_set=None):
-    target = PRIVATE_CONTENT_PATH + '/test_pack.zip'
+def find_needed_test_playbook_paths(test_playbooks):
+    """
+    Uses the test filter file to determine which test playbooks are needed to run, then will use the
+    test playbook IDs found in the ID set to determine what the path is for that test.
+    :param test_playbooks: The test_playbooks dictionary from the ID set.
+    :return: tests_file_paths set used to keep file paths of found tests.
+    """
     tests_file_paths = set()
-    test_pbs = id_set.get('TestPlaybooks', [])
-    #  Adding test playbooks
     with open("./Tests/filter_file.txt", "r") as filter_file:
         tests_to_run = filter_file.readlines()
         for test_to_run in tests_to_run:
             test_clean = test_to_run.rstrip()
-            if any(test_clean in d for d in test_pbs):
-                for test_pb in test_pbs:
+            if any(test_clean in d for d in test_playbooks):
+                for test_pb in test_playbooks:
                     if test_clean in test_pb:
-                        tests_file_paths.add("/home/runner/work/content-private/content-private/"
-                                             "content/" + test_pb[test_clean].get("file_path"))
-    #  Adding contents of DeveloperPack
-    developer_pack_items = glob.glob("/home/runner/work/content-private/content-private/content/Packs"
-                                     "/DeveloperTools/*/*.yml")
-    for dev_pack_item in developer_pack_items:
-        tests_file_paths.add(dev_pack_item)
+                        tests_file_paths.add(PRIVATE_CONTENT_PATH + test_pb[test_clean].get("file_path"))
+    return tests_file_paths
 
-    with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+
+def write_test_pack_zip(tests_file_paths):
+    """
+    Builds and writes the test pack when given a set of file paths.
+    :param tests_file_paths: Set of file paths to add to the test pack zip.
+    :return:
+    """
+    with zipfile.ZipFile(PRIVATE_CONTENT_TEST_ZIP, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         for test_path, test in test_files(PRIVATE_CONTENT_PATH):
             if test_path not in tests_file_paths:
@@ -104,7 +107,27 @@ def private_test_pack_zip(id_set=None):
                 else:
                     test_target = f'test_pack/TestPlaybooks/{test}'
                 zip_file.writestr(test_target, test_file.read())
-    shutil.copy("/home/runner/work/content-private/content-private/content/test_pack.zip",
+
+
+def create_private_test_pack_zip(id_set=None):
+    """
+    Creates the test pack with all of the scripts and dependant playbooks for the private tests.
+    :param id_set: ID set file object.
+    :return: None
+    """
+    #  Retrieve test playbooks object from the ID set.
+    test_playbooks = id_set.get('TestPlaybooks', [])
+    #  Finding test playbook paths needed for testing
+    tests_file_paths = find_needed_test_playbook_paths(test_playbooks)
+    #  Adding contents of DeveloperPack for testing.
+    #  TODO: Remove this when we have migrated test content out of this pack.
+    developer_pack_items = glob.glob(PRIVATE_CONTENT_PATH + "Packs/DeveloperTools/*/*.yml")
+    for dev_pack_item in developer_pack_items:
+        tests_file_paths.add(dev_pack_item)
+    #  Write the test pack using collected file paths
+    write_test_pack_zip(tests_file_paths)
+    #  Copy the test pack to the private artifacts directory.
+    shutil.copy(PRIVATE_CONTENT_TEST_ZIP,
                 '/home/runner/work/content-private/content'
                 '-private/content/artifacts/packs/test_pack.zip')
     print("Finished creating test pack.")

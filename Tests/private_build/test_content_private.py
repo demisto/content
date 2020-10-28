@@ -162,20 +162,21 @@ def run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_t
                               server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
                               prints_manager, thread_index=0):
     """
-
+    Checks to see if test should run given the scenario. If the test should run, it will collect the
+    integrations which are required to run the test.
     :param tests_settings: SettingsTester object which contains the test variables
     :param t: Options being passed to the test. PID, Docker Threshold, Timeout, etc.
     :param default_test_timeout: Time in seconds indicating when the test should timeout if no
                                  status is reported.
-    :param skipped_tests_conf:
-    :param nightly_integrations:
-    :param skipped_integrations_conf:
-    :param skipped_integration:
-    :param run_all_tests:
-    :param is_filter_configured:
-    :param filtered_tests:
-    :param skipped_tests:
-    :param secret_params:
+    :param skipped_tests_conf: Collection of the tests which are skipped.
+    :param nightly_integrations: List of integrations which should only be tested on a nightly build.
+    :param skipped_integrations_conf: Collection of integrations which are skiped.
+    :param skipped_integration: Set of skipped integrations. Currently not used in private.
+    :param run_all_tests: Boolean. True if 'Run all tests' is present in the test filter.
+    :param is_filter_configured: Boolean indicating if there are items in the test filter.
+    :param filtered_tests: List of tests excluded from testing.
+    :param skipped_tests: List of skipped tests.
+    :param secret_params: Parameters found in the content-test-conf. Used to configure the instance.
     :param failed_playbooks: List of failed playbooks, additional failed playbooks will be added if
                              they failed.
     :param playbook_skipped_integration:
@@ -185,10 +186,10 @@ def run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_t
     :param build_number: The build number of the CI run. Used in slack message.
     :param server: The FQDN of the server tests are being ran on.
     :param build_name: Name of the build. (Nightly, etc.)
-    :param server_numeric_version:
+    :param server_numeric_version: Version of XSOAR currently installed on the server.
     :param demisto_user: Username of the demisto user running the tests.
     :param demisto_pass: Password of the demisto user running the tests.
-    :param demisto_api_key:
+    :param demisto_api_key: API key for the demisto instance.
     :param prints_manager: PrintsManager object used in reporting. Will be deprecated.
     :param thread_index: Integer indicating what thread the test is running on.
     :return:
