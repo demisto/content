@@ -1,3 +1,5 @@
+from exchangelib.errors import ErrorItemNotFound
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -139,6 +141,9 @@ def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_t
 def send_email_reply_to_mailbox(account, item_id, to, body, subject=None, bcc=None, cc=None, html_body=None,
                                 attachments=[]):
     item_to_reply_to = account.inbox.get(id=item_id)
+    if isinstance(item_to_reply_to, ErrorItemNotFound):
+        raise Exception(item_to_reply_to)
+
     subject = subject or item_to_reply_to.subject
     message_body = HTMLBody(html_body) if html_body else body
     m = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
@@ -248,7 +253,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     }
 
 
-def reply_email(to, item_id, body="", subject=None, bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
+def reply_email(to, item_id, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
                 attachNames="", from_mailbox=None, manualAttachObj=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = bcc.split(",") if bcc else None
@@ -425,5 +430,6 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+# if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
