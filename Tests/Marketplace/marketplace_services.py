@@ -844,6 +844,7 @@ class Pack(object):
 
     def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack):
         task_status = True
+        skipped_pack_uploading = False
 
         build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, self.latest_version)
 
@@ -863,6 +864,7 @@ class Pack(object):
         prod_full_file_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_full_file_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
         build_file_blob = build_bucket.blob(build_full_file_path)
+        # TODO: check if copy_blob is fine in terms of visioning and if successful in case of existing
         copied_blob = build_bucket.copy_blob(
             blob=build_file_blob, destination_bucket=production_bucket, new_name=prod_full_file_path
         )
@@ -873,7 +875,7 @@ class Pack(object):
         else:
             print_color(f"Uploaded {self._pack_name} pack to {prod_full_file_path} path.", LOG_COLORS.GREEN)
 
-        return task_status, False
+        return task_status, skipped_pack_uploading
 
     def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion]:
         """

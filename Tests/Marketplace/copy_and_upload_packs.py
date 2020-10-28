@@ -80,17 +80,45 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         shutil.rmtree(index_folder_path)
 
 
-def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
+def upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket):
     """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
 
      Args:
-        storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
-        build_number (str): circleCI build number.
-        index_folder_path (str): The index folder path.
+        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
+        build_number (str): CircleCI build number.
+        extract_destination_path (str): Full path of folder to extract the corepacks file
+        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is downloaded from.
 
     """
-    build_corepacks_file_path = os.path.join(GCPConfig.BUILD_BASE_PATH, 'corepacks.json')
-    
+    # download the corepacks.json stored in the build bucket to temp dir
+    build_corepacks_file_path = os.path.join(GCPConfig.BUILD_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
+    temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
+    build_corepacks_blob = build_bucket.blob(build_corepacks_file_path)
+
+    if not build_corepacks_blob.exists():
+        logging.critical(f"{GCPConfig.CORE_PACK_FILE_NAME} is missing in {build_bucket.name} bucket, exiting...")
+        sys.exit(1)
+
+    build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
+    corepacks_file = load_json(temp_corepacks_file_path)
+
+    # change the storage paths to the prod bucket
+    corepacks_list = corepacks_file.get('corePacks', [])
+    corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, GCPConfig.STORAGE_BASE_PATH,
+                                   corepack_path.split('content/packs/')[1]) for corepack_path in corepacks_list]
+
+    # construct core pack data with public gcs urls
+    core_packs_data = {
+        'corePacks': corepacks_list,
+        'buildNumber': build_number
+    }
+
+    # upload core pack json file to gcs
+    prod_corepacks_file_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
+    prod_corepacks_blob = production_bucket.blob(prod_corepacks_file_path)
+    prod_corepacks_blob.upload_from_string(json.dumps(core_packs_data, indent=4))
+
+    logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
 
 
 def _build_summary_table(packs_input_list, include_pack_status=False):
@@ -355,7 +383,7 @@ def main():
         pack.status = PackStatus.SUCCESS.name
 
     # upload core packs json to bucket
-    upload_core_packs_config(production_bucket, build_number, index_folder_path)
+    upload_core_packs_config(production_bucket, build_number, index_folder_path, extract_destination_path, build_bucket)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
