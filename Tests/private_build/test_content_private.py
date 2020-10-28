@@ -58,6 +58,31 @@ def run_test_logic(tests_settings, c, failed_playbooks,
                    integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, demisto_user, demisto_pass, build_name,
                    prints_manager, thread_index=0):
+    """
+    run_test_logic handles the testing of the integration by triggering check_integration. afterwards
+    it will check the status of the test and report success or add the failed test to the list of
+    failed integrations.
+    :param tests_settings: SettingsTester object which contains the test variables
+    :param c: Client for connecting to XSOAR via demisto-py
+    :param failed_playbooks: List of failed playbooks, additional failed playbooks will be added if
+                             they failed.
+    :param integrations: List of integrations being tested.
+    :param playbook_id: ID of the test playbook being tested.
+    :param succeed_playbooks: List of playbooks which have passed tests.
+    :param test_message: Name of the playbook/integration being tested. This is reported back in the
+                         build and used to print in the console the test being ran.
+    :param test_options: Options being passed to the test. PID, Docker Threshold, Timeout, etc.
+    :param slack: Slack client used for notifications.
+    :param circle_ci: CircleCI token. Used to get name of dev who triggered the build.
+    :param build_number: The build number of the CI run. Used in slack message.
+    :param server_url: The FQDN of the server tests are being ran on.
+    :param demisto_user: Username of the demisto user running the tests.
+    :param demisto_pass: Password of the demisto user running the tests.
+    :param build_name: Name of the build. (Nightly, etc.)
+    :param prints_manager: PrintsManager object used in reporting. Will be deprecated.
+    :param thread_index: Integer indicating what thread the test is running on.
+    :return: Boolean indicating if the test was successful.
+    """
     status, inc_id = check_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager,
                                        test_options, thread_index=thread_index)
     if status == PB_Status.COMPLETED:
@@ -91,6 +116,28 @@ def run_test(tests_settings, demisto_user, demisto_pass,
              failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
              prints_manager, thread_index=0):
+    """
+
+    :param tests_settings: SettingsTester object which contains the test variables
+    :param demisto_user: Username of the demisto user running the tests.
+    :param demisto_pass: Password of the demisto user running the tests.
+    :param failed_playbooks: List of failed playbooks, additional failed playbooks will be added if
+                             they failed.
+    :param integrations: List of integrations being tested.
+    :param playbook_id: ID of the test playbook being tested.
+    :param succeed_playbooks: List of playbooks which have passed tests.
+    :param test_message: Name of the playbook/integration being tested. This is reported back in the
+                         build and used to print in the console the test being ran.
+    :param test_options: Options being passed to the test. PID, Docker Threshold, Timeout, etc.
+    :param slack: Slack client used for notifications.
+    :param circle_ci: CircleCI token. Used to get name of dev who triggered the build.
+    :param build_number: The build number of the CI run. Used in slack message.
+    :param server_url: The FQDN of the server tests are being ran on.
+    :param build_name: Name of the build. (Nightly, etc.)
+    :param prints_manager: PrintsManager object used in reporting. Will be deprecated.
+    :param thread_index: Integer indicating what thread the test is running on.
+    :return: No object is returned.
+    """
     start_message = f'------ Test {test_message} start ------'
     client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
     prints_manager.add_print_job(start_message + ' (Private Build Test)', print, thread_index,
@@ -113,6 +160,37 @@ def run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_t
                               succeed_playbooks, slack, circle_ci, build_number, server, build_name,
                               server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
                               prints_manager, thread_index=0):
+    """
+
+    :param tests_settings: SettingsTester object which contains the test variables
+    :param t: Options being passed to the test. PID, Docker Threshold, Timeout, etc.
+    :param default_test_timeout: Time in seconds indicating when the test should timeout if no
+                                 status is reported.
+    :param skipped_tests_conf:
+    :param nightly_integrations:
+    :param skipped_integrations_conf:
+    :param skipped_integration:
+    :param run_all_tests:
+    :param is_filter_configured:
+    :param filtered_tests:
+    :param skipped_tests:
+    :param secret_params:
+    :param failed_playbooks:
+    :param playbook_skipped_integration:
+    :param succeed_playbooks:
+    :param slack:
+    :param circle_ci:
+    :param build_number:
+    :param server:
+    :param build_name:
+    :param server_numeric_version:
+    :param demisto_user:
+    :param demisto_pass:
+    :param demisto_api_key:
+    :param prints_manager:
+    :param thread_index:
+    :return:
+    """
     playbook_id = t['playbookID']
     integrations_conf = t.get('integrations', [])
     instance_names_conf = t.get('instance_names', [])
@@ -181,6 +259,16 @@ def run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_t
 
 def execute_testing(tests_settings, server_ip, all_tests,
                     tests_data_keeper, prints_manager, thread_index=0):
+    """
+
+    :param tests_settings:
+    :param server_ip:
+    :param all_tests:
+    :param tests_data_keeper:
+    :param prints_manager:
+    :param thread_index:
+    :return:
+    """
     server = SERVER_URL.format(server_ip)
     server_numeric_version = tests_settings.serverNumericVersion
     start_message = "Executing tests with the server {} - and the server ip {}".format(server, server_ip)
@@ -280,11 +368,10 @@ def update_round_set_and_sleep_if_round_completed(executed_in_current_round: set
         prints_manager: ParallelPrintsManager object
         t: test configuration as it appears in conf.json file
         thread_index: Currently executing thread
-        unmockable_tests_queue: The queue of remaining tests
 
     Returns:
-        A new executed_in_current_round set which contains only the current tests configuration if a round was completed
-        else it just adds the new test to the set.
+        A new executed_in_current_round set which contains only the current tests configuration if a
+        round was completed else it just adds the new test to the set.
     """
     if str(t) in executed_in_current_round:
         prints_manager.add_print_job(
@@ -302,7 +389,8 @@ def manage_tests(tests_settings):
     This function manages the execution of Demisto's tests.
 
     Args:
-        tests_settings (TestsSettings): An object containing all the relevant data regarding how the tests should be ran
+        tests_settings (TestsSettings): An object containing all the relevant data regarding how the
+                                        tests should be ran.
 
     """
     tests_settings.serverNumericVersion = get_server_numeric_version(tests_settings.serverVersion,

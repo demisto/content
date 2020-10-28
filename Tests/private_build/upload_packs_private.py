@@ -59,6 +59,11 @@ def get_packs_names(target_packs):
 
 
 def is_pack_paid_or_premium(path_to_pack_metadata_in_index):
+    """
+
+    :param path_to_pack_metadata_in_index:
+    :return:
+    """
     with open(path_to_pack_metadata_in_index, 'r') as pack_metadata_file:
         pack_metadata = json.load(pack_metadata_file)
 
@@ -68,6 +73,11 @@ def is_pack_paid_or_premium(path_to_pack_metadata_in_index):
 
 
 def delete_public_packs_from_index(index_folder_path):
+    """
+
+    :param index_folder_path:
+    :return:
+    """
     packs_in_index = [pack_dir.name for pack_dir in os.scandir(index_folder_path) if pack_dir.is_dir()]
     for pack_name in packs_in_index:
         path_to_pack = os.path.join(index_folder_path, pack_name)
@@ -139,6 +149,12 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
 
 
 def update_private_index(private_index_path, unified_index_path):
+    """
+
+    :param private_index_path:
+    :param unified_index_path:
+    :return:
+    """
     private_packs_names = [d for d in os.listdir(private_index_path) if
                            os.path.isdir(os.path.join(private_index_path, d))]
 
@@ -734,6 +750,20 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
                                        packs_dependencies_mapping,
                                        private_storage_bucket=None, content_repo=None, current_commit_hash='',
                                        remote_previous_commit_hash='', packs_statistic_df=None):
+    """
+
+    :param upload_config:
+    :param pack:
+    :param storage_bucket:
+    :param index_folder_path:
+    :param packs_dependencies_mapping:
+    :param private_storage_bucket:
+    :param content_repo:
+    :param current_commit_hash:
+    :param remote_previous_commit_hash:
+    :param packs_statistic_df:
+    :return:
+    """
     build_number = upload_config.ci_build_number
     remove_test_playbooks = upload_config.remove_test_playbooks
     signature_key = upload_config.key_string
@@ -913,6 +943,10 @@ def option_handler():
 
 
 def prepare_test_directories():
+    """
+
+    :return:
+    """
     packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
     zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
     if not os.path.exists(packs_dir):

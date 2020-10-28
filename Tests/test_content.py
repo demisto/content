@@ -368,12 +368,13 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, demis
 
 
 # run the test using a real instance, record traffic.
-def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks, integrations,
-                   playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                   server_url, build_name, prints_manager, thread_index=0):
+def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass,
+                   proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+                   test_options, slack, circle_ci, build_number, server_url, build_name, prints_manager,
+                   thread_index=0):
     proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True, thread_index=thread_index, prints_manager=prints_manager)
-    succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, str, str,
+    succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass,
                              failed_playbooks, integrations, playbook_id, succeed_playbooks,
                              test_message, test_options, slack, circle_ci, build_number, server_url,
                              build_name, prints_manager, thread_index=thread_index,
@@ -441,8 +442,9 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_use
     # Mock recording - no mock file or playback failure.
     c = demisto_client.configure(base_url=c.api_client.configuration.host,
                                  api_key=c.api_client.configuration.api_key, verify_ssl=False)
-    succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks,
-                             integrations, playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
+    succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user,
+                             demisto_pass, proxy, failed_playbooks, integrations, playbook_id,
+                             succeed_playbooks, test_message, test_options, slack, circle_ci,
                              build_number, server_url, build_name, prints_manager, thread_index=thread_index)
 
     if rerecord and succeed:

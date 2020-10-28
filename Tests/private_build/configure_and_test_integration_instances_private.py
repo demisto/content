@@ -21,6 +21,12 @@ from Tests.configure_and_test_integration_instances import Build, configure_serv
 
 
 def create_install_private_testing_pack(build, prints_manager):
+    """
+
+    :param build:
+    :param prints_manager:
+    :return:
+    """
     threads_print_manager = ParallelPrintsManager(len(build.servers))
     private_test_pack_zip()
     pack_path = '/home/runner/work/content-private/content-private/content/test_pack.zip'
@@ -34,6 +40,13 @@ def create_install_private_testing_pack(build, prints_manager):
 
 
 def install_packs_private(build, prints_manager, pack_ids=None):
+    """
+
+    :param build:
+    :param prints_manager:
+    :param pack_ids:
+    :return:
+    """
     pack_ids = get_pack_ids_to_install() if pack_ids is None else pack_ids
     installed_content_packs_successfully = True
     for server in build.servers:
