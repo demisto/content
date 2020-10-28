@@ -74,16 +74,19 @@ def create_type_to_file(files_string) -> Dict[FileType, Set[str]]:
     # Get corresponding yml files and types from PY files.
     py_to_be_removed = set()
     for file_path in types_to_files.get(FileType.PYTHON_FILE, set()):
-        yml_path = get_corresponding_yml_file(file_path)
-        # There's a yml path
-        if yml_path is not None:
-            yml_type = tools.find_type(yml_path) or resolve_type(file_path)
-            if yml_type is not None:
-                if yml_type in types_to_files:
-                    types_to_files[yml_type].add(yml_path)
-                else:
-                    types_to_files[yml_type] = {yml_path}
-                py_to_be_removed.add(file_path)
+        if not is_pytest_file(file_path):
+            yml_path = get_corresponding_yml_file(file_path)
+            # There's a yml path
+            if yml_path is not None:
+                yml_type = tools.find_type(yml_path) or resolve_type(file_path)
+                if yml_type is not None:
+                    if yml_type in types_to_files:
+                        types_to_files[yml_type].add(yml_path)
+                    else:
+                        types_to_files[yml_type] = {yml_path}
+                    py_to_be_removed.add(file_path)
+        else:
+            py_to_be_removed.add(file_path)
 
     # remove python files
     if py_to_be_removed:
@@ -129,11 +132,6 @@ def get_modified_files_for_testing(
         except KeyError:
             # Can be a python file that changed and now the yml representing. Will ignore
             pass
-
-    # Remove pytest files
-    pytest_files = set(filter(is_pytest_file, types_to_files.get(FileType.PYTHON_FILE, {})))
-    if pytest_files:
-        types_to_files[FileType.PYTHON_FILE] = types_to_files[FileType.PYTHON_FILE] - pytest_files
 
     # Sample tests are the remaining python files
     sample_tests = sample_tests.union(types_to_files.get(FileType.PYTHON_FILE, set()))
