@@ -1,7 +1,7 @@
 import pytest
 
-from Tests.scripts.collect_tests_and_content_packs import get_modified_files_for_testing
 from Tests.scripts.utils.collect_helpers import COMMON_YML_LIST
+from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 
 
 def mock_get_dict_from_yaml(mocker, _dict: dict, ext: str):
@@ -21,7 +21,7 @@ class TestGetModifiedFilesForTesting:
         diff_line = "M       Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py"
         yml_file = "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml"
         mocker.patch(
-            "Tests.scripts.collect_tests_and_content_packs.glob.glob",
+            "Tests.scripts.utils.get_modified_files_for_testing.glob.glob",
             return_value=[yml_file],
         )
         mock_get_dict_from_yaml(mocker, {"category": "cat"}, "yml")
@@ -373,7 +373,7 @@ class TestGetModifiedFilesForTesting:
         diff_line = "M       Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py"
         yml_file = "Packs/HelloWorld/Integrations/HelloWorld/NewHelloWorld.yml"
         mocker.patch(
-            "Tests.scripts.collect_tests_and_content_packs.glob.glob",
+            "Tests.scripts.utils.get_modified_files_for_testing.glob.glob",
             return_value=[yml_file],
         )
         mock_get_dict_from_yaml(mocker, {"category": "cat"}, "yml")

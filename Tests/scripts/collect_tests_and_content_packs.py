@@ -3,25 +3,25 @@
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 Overview can be found at: https://confluence.paloaltonetworks.com/display/DemistoContent/Configure+Test+Filter
 """
-import os
-import sys
-import json
-import glob
-import random
 import argparse
+import glob
+import json
 import logging
-
-from Tests.scripts.utils import collect_helpers
-from Tests.scripts.utils.get_modified_files_for_testing import GetModifiedFilesForTesting
-from Tests.scripts.utils.log_util import install_logging
-from distutils.version import LooseVersion
+import os
+import random
+import sys
 from copy import deepcopy
+from distutils.version import LooseVersion
 from typing import Dict, Tuple, Union, Optional
-from Tests.Marketplace.marketplace_services import IGNORED_FILES
+
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
+from Tests.Marketplace.marketplace_services import IGNORED_FILES
+from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.content_packs_util import should_test_content_pack
+from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
+from Tests.scripts.utils.log_util import install_logging
 
 
 class TestConf(object):
@@ -156,17 +156,6 @@ def is_runnable_in_server_version(from_v, server_v, to_v):
         bool. true if obj is runnable
     """
     return tools.server_version_compare(from_v, server_v) <= 0 and tools.server_version_compare(server_v, to_v) <= 0
-
-
-def get_modified_files_for_testing(
-        files_string: str
-) -> Tuple[List[str], List[str], List[str], bool, List[str], set, bool, bool]:
-    get_modified = GetModifiedFilesForTesting(files_string)
-    return (
-        list(get_modified.modified_files), list(get_modified.modified_tests), list(get_modified.changed_common),
-        get_modified.is_conf_json, list(get_modified.sample_tests), get_modified.modified_metadata_list,
-        get_modified.is_reputations_json, get_modified.is_indicator_json
-    )
 
 
 def get_name(file_path):
