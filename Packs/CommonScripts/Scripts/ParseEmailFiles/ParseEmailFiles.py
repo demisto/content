@@ -3478,7 +3478,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             part = parts.pop()
             if (part.is_multipart() or part.get_content_type().startswith('multipart')) \
                     and "attachment" not in part.get("Content-Disposition", ""):
-                parts += part.get_payload()
+                parts += [part_ for part_ in part.get_payload() if isinstance(part_, email.message.Message)]
 
             elif part.get_filename() or "attachment" in part.get("Content-Disposition", ""):
 
