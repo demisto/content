@@ -87,7 +87,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 5. [Returns a list of addresses: panorama-list-addresses](#panorama-list-addresses)
 6. [Returns address details for the supplied address name: panorama-get-address](#panorama-get-address)
 7. [Creates an address object: panorama-create-address](#panorama-create-address)
-8. [Delete an address object: Delete an address object](#Delete an address object)
+8. [Delete an address object: Delete an address object](#panorama-delete-address)
 9. [Returns a list of address groups: panorama-list-address-groups](#panorama-list-address-groups)
 10. [Get details for the specified address group: panorama-get-address-group](#panorama-get-address-group)
 11. [Creates a static or dynamic address group: panorama-create-address-group](#panorama-create-address-group)
