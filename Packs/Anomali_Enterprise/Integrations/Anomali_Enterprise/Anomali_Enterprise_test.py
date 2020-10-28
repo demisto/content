@@ -201,9 +201,9 @@ def test_get_search_job_result_command_with_matches_and_limit(mocker):
         'status': 'completed', 'category': 'forensic_api_result', 'totalFiles': 1,
         'streamResults': [
             {
-            'count': '1', 'indicator': '', 'itype': '', 'severity': '',
-            'event_time': '2020-10-14T09:10:00.000+0000', 'age': '', 'event.dest': '8.8.8.8',
-            'confidence': '', 'event.src': '8.8.8.8'
+                'count': '1', 'indicator': '', 'itype': '', 'severity': '',
+                'event_time': '2020-10-14T09:10:00.000+0000', 'age': '', 'event.dest': '8.8.8.8',
+                'confidence': '', 'event.src': '8.8.8.8'
             },
             {
                 'count': '1', 'indicator': '', 'itype': '', 'severity': '',
