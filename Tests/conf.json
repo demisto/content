@@ -72,12 +72,28 @@
         {
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus Test",
-            "fromversion": "5.0.0"
+            "instance_names": "sdp_instance_1",
+            "fromversion": "5.0.0",
+            "toversion": "5.9.9"
         },
         {
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus - Generic Polling Test",
-            "fromversion": "5.0.0"
+            "instance_names": "sdp_instance_1",
+            "fromversion": "5.0.0",
+            "toversion": "5.9.9"
+        },
+        {
+            "integrations": "ServiceDeskPlus",
+            "playbookID": "Service Desk Plus Test",
+            "instance_names": "sdp_instance_2",
+            "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "ServiceDeskPlus",
+            "playbookID": "Service Desk Plus - Generic Polling Test",
+            "instance_names": "sdp_instance_2",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "ThreatConnect Feed",
