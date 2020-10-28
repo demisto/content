@@ -638,7 +638,7 @@ def should_upload_core_packs(storage_bucket_name):
     return not (is_private_storage_bucket or is_private_ci_bucket)
 
 
-def print_packs_summary(packs_list):
+def print_packs_summary(packs_list, storage_bucket_name, private_bucket_name):
     """Prints summary of packs uploaded to gcs.
 
     Args:
@@ -683,8 +683,12 @@ def print_packs_summary(packs_list):
 
         build_num = os.environ['CIRCLE_BUILD_NUM']
 
-        bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-            f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
+        if private_bucket_name == "marketplace-dist-private":
+            bucket_path = f'https://console.cloud.google.com/storage/browser/' \
+                f'marketplace-dist-private/non_master_upload'
+        else:
+            bucket_path = f'https://console.cloud.google.com/storage/browser/' \
+                f'marketplace-ci-build-private/content/builds/{branch_name}/{build_num}'
 
         pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
             f'Uploaded packs:\n{successful_packs_table}\n\n' \
@@ -1013,7 +1017,7 @@ def main():
     upload_id_set(default_storage_bucket, id_set_path)
 
     # summary of packs status
-    print_packs_summary(packs_list)
+    print_packs_summary(packs_list, storage_bucket_name, private_bucket_name)
 
 
 if __name__ == '__main__':
