@@ -89,51 +89,8 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
         index_folder_path (str): The index folder path.
 
     """
-    core_packs_public_urls = []
-    found_core_packs = set()
-
-    for pack in os.scandir(index_folder_path):
-        if pack.is_dir() and pack.name in GCPConfig.CORE_PACKS_LIST:
-            pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
-
-            if not os.path.exists(pack_metadata_path):
-                logging.critical(f"{pack.name} pack {Pack.METADATA} is missing in {GCPConfig.INDEX_NAME}")
-                sys.exit(1)
-
-            with open(pack_metadata_path, 'r') as metadata_file:
-                metadata = json.load(metadata_file)
-
-            pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
-            core_pack_relative_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack.name,
-                                                   pack_current_version, f"{pack.name}.zip")
-            core_pack_public_url = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name, core_pack_relative_path)
-
-            if not storage_bucket.blob(core_pack_relative_path).exists():
-                logging.critical(f"{pack.name} pack does not exist under {core_pack_relative_path} path")
-                sys.exit(1)
-
-            core_packs_public_urls.append(core_pack_public_url)
-            found_core_packs.add(pack.name)
-
-    if len(found_core_packs) != len(GCPConfig.CORE_PACKS_LIST):
-        missing_core_packs = set(GCPConfig.CORE_PACKS_LIST) ^ found_core_packs
-        logging.error(f"Number of defined core packs are: {len(GCPConfig.CORE_PACKS_LIST)}")
-        logging.error(f"Actual number of found core packs are: {len(found_core_packs)}")
-        logging.critical(f"Missing core packs are: {missing_core_packs}")
-        sys.exit(1)
-
-    # construct core pack data with public gcs urls
-    core_packs_data = {
-        'corePacks': core_packs_public_urls,
-        'buildNumber': build_number
-    }
-    # TODO: download from ci-build-bucket, refactor and upload to prod-bucket
-    # upload core pack json file to gcs
-    core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
-    blob = storage_bucket.blob(core_packs_config_path)
-    blob.upload_from_string(json.dumps(core_packs_data, indent=4))
-
-    logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
+    build_corepacks_file_path = os.path.join(GCPConfig.BUILD_BASE_PATH, 'corepacks.json')
+    
 
 
 def _build_summary_table(packs_input_list, include_pack_status=False):
@@ -387,15 +344,11 @@ def main():
 
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
                                                                               override_all_packs)
+        if skipped_pack_uploading:
+            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
-            pack.cleanup()
-            continue
-
-        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
-        if not task_status:
-            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
             continue
 
