@@ -20,6 +20,7 @@ from Tests.configure_and_test_integration_instances import Build, configure_serv
 
 PRIVATE_CONTENT_PATH = '/home/runner/work/content-private/content-private/content/'
 PRIVATE_CONTENT_TEST_ZIP = PRIVATE_CONTENT_PATH + '/test_pack.zip'
+FILTER_FILE_PATH = "./Tests/filter_file.txt"
 
 
 def create_install_private_testing_pack(build, prints_manager):
@@ -66,7 +67,7 @@ def install_packs_private(build, prints_manager, pack_ids=None):
     return installed_content_packs_successfully
 
 
-def find_needed_test_playbook_paths(test_playbooks):
+def find_needed_test_playbook_paths(test_playbooks, filter_file_path):
     """
     Uses the test filter file to determine which test playbooks are needed to run, then will use the
     test playbook IDs found in the ID set to determine what the path is for that test.
@@ -74,7 +75,7 @@ def find_needed_test_playbook_paths(test_playbooks):
     :return: tests_file_paths set used to keep file paths of found tests.
     """
     tests_file_paths = set()
-    with open("./Tests/filter_file.txt", "r") as filter_file:
+    with open(filter_file_path, "r") as filter_file:
         tests_to_run = filter_file.readlines()
         for test_to_run in tests_to_run:
             test_clean = test_to_run.rstrip()
@@ -118,7 +119,7 @@ def create_private_test_pack_zip(id_set=None):
     #  Retrieve test playbooks object from the ID set.
     test_playbooks = id_set.get('TestPlaybooks', [])
     #  Finding test playbook paths needed for testing
-    tests_file_paths = find_needed_test_playbook_paths(test_playbooks)
+    tests_file_paths = find_needed_test_playbook_paths(test_playbooks, FILTER_FILE_PATH)
     #  Adding contents of DeveloperPack for testing.
     #  TODO: Remove this when we have migrated test content out of this pack.
     developer_pack_items = glob.glob(PRIVATE_CONTENT_PATH + "Packs/DeveloperTools/*/*.yml")

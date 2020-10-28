@@ -709,7 +709,6 @@ class Pack(object):
             os.chdir(current_working_dir)
         except subprocess.CalledProcessError as error:
             print(f"Error while trying to encrypt pack. {error}")
-            pass
 
     def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
         """ Zips pack folder.
