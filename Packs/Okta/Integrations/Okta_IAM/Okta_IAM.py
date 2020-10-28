@@ -420,7 +420,7 @@ def main():
             test_module(client)
 
         elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields_command(client, mapper_in))
+            return_results(get_mapping_fields_command(client))
 
     except Exception:
         # For any other integration command exception, return an error
