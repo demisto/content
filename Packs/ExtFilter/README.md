@@ -11,7 +11,7 @@ You can make filters with comlex and combination conditions for the context data
 
 
 ---
-## ExtFilter
+## Filter format examples
 
     [
       {
