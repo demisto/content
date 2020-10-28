@@ -218,7 +218,7 @@ def install_packs_nightly(client, prints_manager, thread_index, packs_to_install
                     prints_manager.execute_thread_prints(thread_index)
 
 
-def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999,
+def install_packs(client, host, prints_manager, thread_index, packs_to_install, lock, request_timeout=999999,
                   private_install=False, is_nightly=False):
     """ Make a packs installation request.
 
@@ -281,7 +281,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
 
         # make the pack installation request
         if is_nightly:
-            install_packs_nightly(client, prints_manager, thread_index, packs_to_install)
+            install_packs_nightly(client, prints_manager, thread_index, packs_to_install, lock)
         else:
             request_data = {
                 'packs': packs_to_install,
