@@ -102,7 +102,7 @@ class ContextData:
         if key is not None:
             dx = self.__demisto
             for prefix in ['inputs', 'lists', 'incident', 'local']:
-                if key.startswith(prefix) and key[len(prefix):len(prefix) + 1] in ('.', '(', '='):
+                if key.startswith(prefix) and (len(prefix) == len(key) or key[len(prefix):len(prefix) + 1] in ('.', '(', '=')):
                     dx = self.__specials
                     break
 
@@ -752,7 +752,10 @@ class ExtFilter:
           :param inlist: True if `root` is an element in a list, False otherwise.
           :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
-        if optype == "is transformed with":
+        if optype == "abort":
+            exit_error(f"ABORT: value = {root}, conds = {conds}, path = {path}")
+
+        elif optype == "is transformed with":
             conds = self.parse_conds_json(conds)
             conds = conds if isinstance(conds, list) else [conds]
 
@@ -1029,6 +1032,26 @@ class ExtFilter:
 
         elif optype == "regex: doesn't contain any caseless string of":
             return Value(lhs) if not self.filter_value(lhs, "regex: contains any caseless string of", rhs) else None
+
+        elif optype == "is replaced with":
+            return Value(self.parse_conds_json(rhs))
+
+        elif optype == "is updated with":
+            rval = self.parse_conds_json(rhs)
+            if isinstance(lhs, dict) and isinstance(rval, dict):
+                lhs.update(rval)
+            elif isinstance(lhs, list) and len(lhs) == 1 and isinstance(lhs[0], dict):
+                lhs[0].update(rval)
+            else:
+                lhs = rval
+            return Value(lhs)
+
+        elif optype == "appends":
+            rval = self.parse_conds_json(rhs)
+            rval = rval if isinstance(rval, list) else [rval]
+            lval = lhs if isinstance(lhs, list) else [lhs]
+            lval.extend(rval)
+            return Value(lval)
 
         elif optype == "json: encode array":
             params = self.parse_conds_json(rhs)
