@@ -18,6 +18,13 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Majestic Million",
+            "playbookID": "Majestic Million Test Playbook",
+            "fromversion": "5.5.0",
+            "memory_threshold": 250,
+            "timeout": 500
+        },
+        {
             "integrations": "RiskIQDigitalFootprint",
             "playbookID": "RiskIQDigitalFootprint-Test",
             "fromversion": "5.5.0",
@@ -235,6 +242,7 @@
         {
             "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConsultingFeed_Test",
+            "memory_threshold": 250,
             "fromversion": "5.5.0"
         },
         {
@@ -1414,7 +1422,7 @@
             "nightly": true
         },
         {
-            "integrations": "PhishTank",
+            "integrations": "PhishTank V2",
             "playbookID": "PhishTank Testing"
         },
         {
@@ -2718,17 +2726,9 @@
             "memory_threshold": 190
         },
         {
-            "integrations": "illuminate",
-            "playbookID": "illuminate Integration Test"
-        },
-        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "illuminate",
-            "playbookID": "illuminate Integration Demonstration - Test"
         },
         {
             "integrations": "MongoDB Key Value Store",
@@ -3084,7 +3084,6 @@
             "fromversion": "5.5.0"
         },
         {
-
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
@@ -3093,7 +3092,14 @@
             "playbookID": "Field polling test",
             "timeout": 600,
             "fromversion": "5.0.0"
-
+        },
+        {
+            "integrations": "Analyst1",
+            "playbookID": "Analyst1 Integration Test"
+        },
+        {
+            "integrations": "Analyst1",
+            "playbookID": "Analyst1 Integration Demonstration - Test"
         }
     ],
     "skipped_tests": {
@@ -3148,14 +3154,12 @@
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
         "ThreatConnect v2 - Test": "Issue 26782",
-        "Pwned v2 test": "Issue 26601",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
         "Mail Sender (New) Test": "Issue 25602",
         "Luminate-TestPlaybook": "Issue 27016",
         "AutoFocus V2 test": "Issue 26464",
-        "test-Expanse": "Issue 27279",
         "Fidelis Elevate Network": "Issue 26453",
         "SepioPrimeAPI-Test": "Issue 27240",
         "Cortex XDR - IOC - Test": "Issue 25598",
@@ -3168,16 +3172,23 @@
         "SMB test": "Issue 26454",
         "TestCofenseFeed": "Issue 29198",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
-        "Indeni_test": "Non-certified partner pack, this should be skipped for now"
+        "Indeni_test": "Non-certified partner pack, this should be skipped for now",
+        "playbook-feodoteackerhash_test": "Issue 29304",
+        "TCPUtils-Test": "Issue 29677",
+        "OpenCTI Feed Test": "Issue 29592",
+        "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
+        "Polygon-Test": "Issue 29060",
+        "AttackIQ - Test": "Issue 29774",
+        "CyberTotal_TestPlaybook": "Issue 29776",
+        "AWS-securityhub Test": "Issue 29796"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "ZeroFox": "Issue 29284",
         "Recorded Future v2": "Issue 29090",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
-        "Infoblox": "Issue 25651",
         "IntSights": "Issue 26742",
         "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
@@ -3230,7 +3241,6 @@
         "Check Point": "Issue 18643",
         "CheckPointFirewall_v2": "Issue 18643",
         "Preempt": "Issue 20268",
-        "iDefense": "Issue 20095",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
         "Anomali ThreatStream v2": "Issue 19182",
@@ -3262,7 +3272,6 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "Ivanti Heat": "Issue 26259",
-        "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
         "Hatching Triage": "Community contribution",
@@ -3270,11 +3279,11 @@
         "illuminate": "Will be replaced by analyst1 - Issue 9401",
         "Workday": "License expired Issue: 29590, 29595",
         "QuestKace": "License expired Issue: 29594",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
@@ -3282,13 +3291,13 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
         "Smokescreen IllusionBLACK": "partner integration",
-
+        
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3301,7 +3310,8 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "Palo Alto Minemeld": "Issue #26878"
+        "Palo Alto Minemeld": "Issue #26878",
+        "AttackIQFireDrill": "License issues #29774"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3456,7 +3466,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
