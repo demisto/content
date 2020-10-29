@@ -23,10 +23,18 @@ import urllib3
 import requests
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
-from slackclient import SlackClient
+try:
+    """
+    Those dual-imports are required as Slack updated their sdk and it breaks BC.
+    `from slack import...` is for new slack and local runs.
+    `from slackclient import...` is for old slack and running in CircleCI (old slack in docker image)
+    """
+    from slack import WebClient as SlackClient  # New slack
+except ModuleNotFoundError:
+    from slackclient import SlackClient  # Old slack
 
 from Tests.mock_server import MITMProxy, AMIConnection
-from Tests.test_integration import Docker, test_integration, disable_all_integrations
+from Tests.test_integration import Docker, check_integration, disable_all_integrations
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
 from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
@@ -74,11 +82,11 @@ def options_handler():
                                                   'tests to run')
 
     options = parser.parse_args()
-    tests_settings = TestsSettings(options)
+    tests_settings = SettingsTester(options)
     return tests_settings
 
 
-class TestsSettings:
+class SettingsTester:
     def __init__(self, options):
         self.api_key = options.apiKey
         self.server = options.server
@@ -147,7 +155,7 @@ class ParallelPrintsManager:
         self.threads_print_jobs[thread_index] = []
 
 
-class TestsDataKeeper:
+class DataKeeperTester:
 
     def __init__(self):
         self.succeeded_playbooks = []
@@ -326,8 +334,8 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
                            thread_index,
                            tests_settings.conf_path) as lock:
         if lock:
-            status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
-                                              is_mock_run, thread_index=thread_index)
+            status, inc_id = check_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                                               is_mock_run, thread_index=thread_index)
             # c.api_client.pool.close()
             if status == PB_Status.COMPLETED:
                 prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
@@ -388,8 +396,8 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
         prints_manager.add_print_job(start_mock_message, print, thread_index, include_timestamp=True)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, _ = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
-                                     is_mock_run=True, thread_index=thread_index)
+        status, _ = check_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                                      is_mock_run=True, thread_index=thread_index)
         # use results
         proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
         if status == PB_Status.COMPLETED:
@@ -1046,7 +1054,7 @@ def manage_tests(tests_settings):
     This function manages the execution of Demisto's tests.
 
     Args:
-        tests_settings (TestsSettings): An object containing all the relevant data regarding how the tests should be ran
+        tests_settings (SettingsTester): An object containing all the relevant data regarding how the tests should be ran
 
     """
     tests_settings.serverNumericVersion = get_server_numeric_version(tests_settings.serverVersion,
@@ -1055,7 +1063,7 @@ def manage_tests(tests_settings):
     is_nightly = tests_settings.nightly
     number_of_instances = len(instances_ips)
     prints_manager = ParallelPrintsManager(number_of_instances)
-    tests_data_keeper = TestsDataKeeper()
+    tests_data_keeper = DataKeeperTester()
 
     if tests_settings.server:
         # If the user supplied a server - all tests will be done on that server.

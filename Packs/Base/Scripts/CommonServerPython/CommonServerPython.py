@@ -2642,7 +2642,10 @@ class CommandResults:
     :param outputs: the data to be returned and will be set to context
 
     :type indicators: ``list``
-    :param indicators: must be list of Indicator types, like Common.IP, Common.URL, Common.File, etc.
+    :param indicators: DEPRECATED: use 'indicator' instead.
+
+    :type indicator: ``Common.Indicator``
+    :param indicator: single indicator like Common.IP, Common.URL, Common.File, etc.
 
     :type readable_output: ``str``
     :param readable_output: (Optional) markdown string that will be presented in the warroom, should be human readable -
@@ -2660,12 +2663,15 @@ class CommandResults:
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline) -> None
+                 raw_response=None, indicators_timeline=None, indicator=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator) -> None
         if raw_response is None:
             raw_response = outputs
 
-        self.indicators = indicators
+        if indicators and indicator:
+            raise ValueError('indicators is DEPRECATED, use only indicator')
+        self.indicators = indicators  # type: Optional[List[Common.Indicator]]
+        self.indicator = indicator  # type: Optional[Common.Indicator]
 
         self.outputs_prefix = outputs_prefix
 
@@ -2697,8 +2703,10 @@ class CommandResults:
         raw_response = None  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
 
-        if self.indicators:
-            for indicator in self.indicators:
+        indicators = [self.indicator] if self.indicator else self.indicators
+
+        if indicators:
+            for indicator in indicators:
                 context_outputs = indicator.to_context()
 
                 for key, value in context_outputs.items():
@@ -2749,7 +2757,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``IAMUserProfile``
+    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``IAMUserProfile`` or ``list``
     :param results: A result object to return as a War-Room entry.
 
     :return: None
@@ -2758,6 +2766,11 @@ def return_results(results):
     if results is None:
         # backward compatibility reasons
         demisto.results(None)
+        return
+
+    if results and isinstance(results, list) and len(results) > 0 and isinstance(results[0], CommandResults):
+        for result in results:
+            demisto.results(result.to_context())
         return
 
     if isinstance(results, CommandResults):
@@ -4616,7 +4629,7 @@ class IAMVendorActionResult:
     :rtype: ``None``
     """
 
-    def __init__(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+    def __init__(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
                  error_message=None, details=None, skip=False, skip_reason=None, action=None):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
@@ -4649,28 +4662,21 @@ class IAMVendorActionResult:
     def create_outputs(self):
         """ Sets the outputs in `_outputs` attribute.
         """
-        if not self._skip:
-            outputs = {
-                'brand': self._brand,
-                'instanceName': self._instance_name,
-                'action': self._action,
-                'success': self._success,
-                'active': self._active,
-                'id': self._iden,
-                'username': self._username,
-                'email': self._email,
-                'errorCode': self._error_code,
-                'errorMessage': self._error_message,
-                'details': self._details
-            }
-        else:
-            outputs = {
-                'brand': self._brand,
-                'instanceName': self._instance_name,
-                'action': self._action,
-                'skipped': True,
-                'reason': self._skip_reason
-            }
+        outputs = {
+            'brand': self._brand,
+            'instanceName': self._instance_name,
+            'action': self._action,
+            'success': self._success,
+            'active': self._active,
+            'id': self._iden,
+            'username': self._username,
+            'email': self._email,
+            'errorCode': self._error_code,
+            'errorMessage': self._error_message,
+            'details': self._details,
+            'skipped': self._skip,
+            'reason': self._skip_reason
+        }
         return outputs
 
     def create_readable_outputs(self, outputs):
@@ -4749,7 +4755,7 @@ class IAMUserProfile:
 
         return return_entry
 
-    def set_result(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+    def set_result(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
                    error_message=None, details=None, skip=False, skip_reason=None, action=None):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
@@ -4775,10 +4781,10 @@ class IAMUserProfile:
             username=username,
             email=email,
             error_code=error_code,
-            error_message=error_message,
+            error_message=error_message if error_message else '',
             details=details,
             skip=skip,
-            skip_reason=skip_reason,
+            skip_reason=skip_reason if skip_reason else '',
             action=action
         )
 
