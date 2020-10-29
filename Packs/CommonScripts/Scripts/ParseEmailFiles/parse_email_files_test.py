@@ -438,6 +438,17 @@ def test_email_raw_headers(mocker):
 
 
 def test_email_raw_headers_from_is_cyrillic_characters(mocker):
+    """
+    Given:
+     - The email message the should pe parsed.
+     - Checking an email file that contains '\r\n' in it's 'From' header.
+
+    When:
+     - After parsed email file into Email object
+
+    Then:
+     - Validate that all raw headers are valid.
+    """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '1'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('multiple_to_cc_from_Cyrillic'
                                                                                      '_characters.eml'))

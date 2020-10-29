@@ -3251,6 +3251,14 @@ def extract_address(s):
 
 
 def get_email_address(eml, entry):
+    """
+    This function gets email addresses from an eml object, i.e eml[entry].
+    Args:
+        eml : Email object.
+        entry (str) : entry to look for in the email. i.e ('To', 'CC', 'From')
+    Returns:
+        res (str) : string of all required email addresses.
+    """
     gel_all_values_from_email_by_entry = eml.get_all(entry, [])
     addresses = getaddresses(gel_all_values_from_email_by_entry)
     if addresses:
@@ -3261,6 +3269,15 @@ def get_email_address(eml, entry):
 
 
 def extract_address_eml(eml, entry):
+    """
+    This function calls get_email_address in order to get required email addresses from email object.
+    In addition, this function handles an edge case of '\r\n' in eml['from'] (as explained below).
+    Args:
+        eml : Email object.
+        entry (str) : entry to look for in the email. i.e ('To', 'CC', 'From')
+    Returns:
+        res (str) : string of all required email addresses.
+    """
     email_address = get_email_address(eml, entry)
     if email_address:
         if entry == 'from' and not re.search(REGEX_EMAIL, email_address):
