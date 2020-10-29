@@ -249,7 +249,7 @@ def get_hashes_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
 
 
 def generate_report_url(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, dict]:
-    report_id = args.get('report_id')
+    report_id = str(args.get('report_id'))
     expiration = arg_to_int(arg=args.get('expiration'), arg_name='expiration', required=True)
     if expiration:
         if expiration < 1 or expiration > 8760:
