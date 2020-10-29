@@ -202,6 +202,10 @@ def get_all_attributes(search_base):
     obj_inetorgperson = ObjectDef('user', conn)
     r = Reader(conn, obj_inetorgperson, search_base)
     r.search()
+    if not r:
+        return []
+    if not r[0]:
+        return []
     attributes = r[0].entry_attributes
     return attributes
 
@@ -1344,7 +1348,7 @@ def get_mapping_fields_command(search_base):
     incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
 
     for field in ad_attributes:
-        incident_type_scheme.add_field(field)
+        incident_type_scheme.add_field(field, "Field")
 
     return GetMappingFieldsResponse([incident_type_scheme])
 

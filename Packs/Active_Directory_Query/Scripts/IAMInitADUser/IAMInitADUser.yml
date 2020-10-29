@@ -55,6 +55,5 @@ dependson:
   - Active Directory Query v2|||ad-set-new-password
   - Active Directory Query v2|||ad-enable-account
   - Active Directory Query v2|||ad-update-user
-  - GeneratePassword
   - send-email
 fromversion: 5.0.0
