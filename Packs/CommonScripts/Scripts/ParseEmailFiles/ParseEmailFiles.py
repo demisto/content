@@ -3250,22 +3250,29 @@ def extract_address(s):
         return s
 
 
-def extract_address_eml(eml, entry):
+def get_email_address(eml, entry):
     gel_all_values_from_email_by_entry = eml.get_all(entry, [])
     addresses = getaddresses(gel_all_values_from_email_by_entry)
     if addresses:
         res = [item[1] for item in addresses]
         res = ', '.join(res)
-        if entry == 'from' and not re.search(REGEX_EMAIL, res):
+        return res
+    return ''
+
+
+def extract_address_eml(eml, entry):
+    email_address = get_email_address(eml, entry)
+    if email_address:
+        if entry == 'from' and not re.search(REGEX_EMAIL, email_address):
             # this condition refers only to ['from'] header that does not have a valid email
             # fixed an issue where email['From'] had '\r\n'.
             # in order to solve, used replace_header() on email object,
             # and did again get_all() on the new format of ['from']
             original_value = eml['from']
             eml.replace_header('from', ' '.join(eml["from"].splitlines()))
-            res = extract_address_eml(eml, entry)
+            email_address = get_email_address(eml, entry)
             eml.replace_header('from', original_value)  # replace again to the original header (keep on BC)
-        return res
+        return email_address
     else:
         return ''
 
