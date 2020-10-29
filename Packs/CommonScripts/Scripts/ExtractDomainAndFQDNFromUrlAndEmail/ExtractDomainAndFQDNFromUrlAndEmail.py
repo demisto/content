@@ -121,6 +121,7 @@ def main():
     if entries_list:
         demisto.results(entries_list)
     else:
+        # Return empty string so it wouldn't create an empty domain indicator.
         demisto.results('')
 
 
