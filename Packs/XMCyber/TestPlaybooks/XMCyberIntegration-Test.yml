@@ -66,7 +66,7 @@ tasks:
       - '3'
     scriptarguments:
       entityId:
-        simple: "3771622114909501696"
+        simple: "6324751896077844368"
       timeId: {}
     separatecontext: false
     view: '{"position": {"x": 50, "y": 400}}'
@@ -93,22 +93,22 @@ tasks:
     conditions:
     - label: yes
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityId
+              simple: XMCyber.entityId
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: XMCyber.criticalAssetsAtRiskList.name
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: XMCyber.criticalAssetsAtRiskList.average
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: XMCyber.criticalAssetsAtRiskList.minimum
@@ -136,7 +136,7 @@ tasks:
       - '5'
     scriptarguments:
       entityId:
-        simple: "3771622114909501696"
+        simple: "6324751896077844368"
       timeId: {}
     separatecontext: false
     view: '{"position": {"x": 50, "y": 800}}'
@@ -163,17 +163,17 @@ tasks:
     conditions:
     - label: yes
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityId
+              simple: XMCyber.entityId
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: XMCyber.entitiesAtRiskList.name
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: XMCyber.entitiesAtRiskList.technique
@@ -190,9 +190,9 @@ tasks:
     task:
       id: '6'
       version: -1
-      name: xmcyber-is-version-supported
+      name: xmcyber-version-supported
       description: ''
-      script: '|||xmcyber-is-version-supported'
+      script: '|||xmcyber-version-supported'
       type: regular
       iscommand: true
       brand: ''
@@ -225,7 +225,7 @@ tasks:
     conditions:
     - label: yes
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: XMCyber.IsVersion.valid
@@ -242,9 +242,9 @@ tasks:
     task:
       id: '8'
       version: -1
-      name: xmcyber-get-version
+      name: xmcyber-version-get
       description: ''
-      script: '|||xmcyber-get-version'
+      script: '|||xmcyber-version-get'
       type: regular
       iscommand: true
       brand: ''
@@ -277,7 +277,7 @@ tasks:
     conditions:
     - label: yes
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: XMCyber.Version.system
@@ -305,7 +305,7 @@ tasks:
       - '11'
     scriptarguments:
       ip:
-        simple: 172.0.100.5
+        simple: 192.168.111.185
     separatecontext: false
     view: '{"position": {"x": 50, "y": 2000}}'
     note: false
@@ -331,100 +331,60 @@ tasks:
     conditions:
     - label: yes
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityId
+              simple: XMCyber.entityId
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: name
+              simple: XMCyber.displayName
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: isAsset
+              simple: XMCyber.isAsset
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: affectedEntities
+              simple: XMCyber.entitiesAtRiskList
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: averageComplexity
+              simple: XMCyber.averageComplexity
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: criticalAssetsAtRisk
+              simple: XMCyber.criticalAssetsAtRisk
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: averageComplexityLevel
+              simple: XMCyber.averageComplexityLevel
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: compromisingTechniques.name
+              simple: XMCyber.compromisingTechniques.name
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: compromisingTechniques.count
+              simple: XMCyber.compromisingTechniques.count
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityType
+              simple: XMCyber.entityType
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityReport
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DBotScore.Indicator
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DBotScore.Score
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DBotScore.Type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DBotScore.Vendor
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: IP.Address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: IP.Malicious.Vendor
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: IP.Malicious.Description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: IP.ASN
+              simple: XMCyber.entityReport
             iscontext: true
     view: '{"position": {"x": 50, "y": 2200}}'
     note: false
@@ -449,7 +409,7 @@ tasks:
       - '13'
     scriptarguments:
       hostname:
-        simple: Alex
+        simple: USERCC59
       ip: {}
     separatecontext: false
     view: '{"position": {"x": 50, "y": 2400}}'
@@ -476,60 +436,60 @@ tasks:
     conditions:
     - label: yes
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityId
+              simple: XMCyber.entityId
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: name
+              simple: XMCyber.displayName
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: isAsset
+              simple: XMCyber.isAsset
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: affectedEntities
+              simple: XMCyber.entitiesAtRiskList
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: averageComplexity
+              simple: XMCyber.averageComplexity
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: criticalAssetsAtRisk
+              simple: XMCyber.criticalAssetsAtRisk
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: averageComplexityLevel
+              simple: XMCyber.averageComplexityLevel
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: compromisingTechniques.name
+              simple: XMCyber.compromisingTechniques.name
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: compromisingTechniques.count
+              simple: XMCyber.compromisingTechniques.count
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityType
+              simple: XMCyber.entityType
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityReport
+              simple: XMCyber.entityReport
             iscontext: true
     view: '{"position": {"x": 50, "y": 2600}}'
     note: false
@@ -554,7 +514,7 @@ tasks:
       - '15'
     scriptarguments:
       hostname:
-        simple: Alex
+        simple: USERCC59
       ip: {}
     separatecontext: false
     view: '{"position": {"x": 50, "y": 2800}}'
@@ -581,125 +541,60 @@ tasks:
     conditions:
     - label: yes
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityId
+              simple: XMCyber.entityId
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: name
+              simple: XMCyber.displayName
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: isAsset
+              simple: XMCyber.isAsset
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: affectedEntities
+              simple: XMCyber.entitiesAtRiskList
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: averageComplexity
+              simple: XMCyber.averageComplexity
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: criticalAssetsAtRisk
+              simple: XMCyber.criticalAssetsAtRisk
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: averageComplexityLevel
+              simple: XMCyber.averageComplexityLevel
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: compromisingTechniques.name
+              simple: XMCyber.compromisingTechniques.name
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: compromisingTechniques.count
+              simple: XMCyber.compromisingTechniques.count
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityType
+              simple: XMCyber.entityType
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: entityReport
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.Domain
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.Hostname
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.BIOVersion
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.ID
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.DHCPServer
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.IP
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.MACAddress
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.Memory
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.Model
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.OS
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.OSVersion
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.Processor
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Host.Processors
+              simple: XMCyber.entityReport
             iscontext: true
     view: '{"position": {"x": 50, "y": 3000}}'
     note: false
@@ -707,63 +602,11 @@ tasks:
     ignoreworker: false
     skipunavailable: false
   '16':
-    id: 16
+    id: '16'
     taskid: '16'
-    type: regular
-    task:
-      id: '16'
-      version: -1
-      name: xmcyber-get-base-url
-      description: ''
-      script: '|||xmcyber-get-base-url'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '17'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 3200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '17':
-    id: '17'
-    taskid: '17'
-    type: condition
-    task:
-      id: '17'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '18'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: XMCyber.Version.system
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 3400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '18':
-    id: '18'
-    taskid: '18'
     type: title
     task:
-      id: '18'
+      id: '16'
       version: -1
       name: Test Done
       type: title
@@ -771,7 +614,7 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 3600}}'
+    view: '{"position": {"x": 50, "y": 3200}}'
     note: false
     timertriggers: []
     ignoreworker: false

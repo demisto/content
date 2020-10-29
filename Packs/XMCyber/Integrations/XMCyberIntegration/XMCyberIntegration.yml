@@ -175,15 +175,6 @@ script:
       - contextPath: IP.Address
         description: IP address.
         type: String
-      - contextPath: IP.Malicious.Vendor
-        description: The vendor reporting the IP address as malicious.
-        type: String
-      - contextPath: IP.Malicious.Description
-        description: A description explaining why the IP address was reported as malicious.
-        type: String
-      - contextPath: IP.ASN
-        description: The autonomous system name for the IP address.
-        type: String
 
   - name: xmcyber-entity-get
     description: Return data on Entity by IP or Hostname from XM Cyber
@@ -280,45 +271,15 @@ script:
       - contextPath: entityReport
         description: Link to the Entity Report
         type: String
-      - contextPath: Host.Domain
-        description: The domain of the host.
-        type: String
       - contextPath: Host.Hostname
         description: The name of the host.
-        type: String
-      - contextPath: Host.BIOVersion
-        description: The BIOS version of the host.
         type: String
       - contextPath: Host.ID
         description: The unique ID within the tool retrieving the host.
         type: String
-      - contextPath: Host.DHCPServer
-        description: The DHCP server.
-        type: String
       - contextPath: Host.IP
         description: The IP address of the host.
         type: String
-      - contextPath: Host.MACAddress
-        description: The MAC address of the host.
-        type: String
-      - contextPath: Host.Memory
-        description: Memory on the host.
-        type: String
-      - contextPath: Host.Model
-        description: The model of the host.
-        type: String
-      - contextPath: Host.OS
-        description: Host OS.
-        type: String
-      - contextPath: Host.OSVersion
-        description: The OS version of the host.
-        type: String
-      - contextPath: Host.Processor
-        description: The processor of the host.
-        type: String
-      - contextPath: Host.Processors
-        description: The number of processors that the host is using.
-        type: Number
 
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: true
