@@ -1,5 +1,5 @@
 description: export alert from panw iot cloud to servicenow
-id: e1d1baba-0487-401f-8c41-4286f2ea17cd
+id: panw_iot_servicenow_alert_playbook
 inputs: []
 name: panw_iot_servicenow_alert_playbook
 outputs:
@@ -25,6 +25,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 5490ce8f-b2af-4b98-8661-7ca43a0151f0
     timertriggers: []
     type: start

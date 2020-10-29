@@ -220,3 +220,6 @@ view: |-
       }
     }
   }
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

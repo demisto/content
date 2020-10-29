@@ -6,11 +6,11 @@ args:
 comment: This script takes in custom attributes from PANW IoT cloud and create or
   updates endpoints in ISE
 commonfields:
-  id: send_panw_iotices_to_ise
+  id: send_panw_iot_devices_to_ise
   version: -1
 dockerimage: demisto/python3:3.8.6.12176
 enabled: true
-name: send_panw_iotices_to_ise
+name: send_panw_iot_devices_to_ise
 outputs:
 - contextPath: PaloAltoIoTIntegrationBase.Status
   description: total count of devices updated or created on ISE
