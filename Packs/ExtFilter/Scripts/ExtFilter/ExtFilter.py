@@ -200,7 +200,7 @@ def extract_value(source: Any, extractor: Callable[[str, Optional[ContextData]],
       :param dx: The demisto context.
       :return: The value extracted.
     """
-    def _extract(source: str, extractor: Optional[Callable[[str, Optional[ContextData]], Any]], dx: Optional[ContextData], si: int, endc: Optional[str]) -> Union[str, int]:
+    def _extract(source: str, extractor: Optional[Callable[[str, Optional[ContextData]], Any]], dx: Optional[ContextData], si: int, endc: Optional[str]) -> Tuple[str, int]:
         val = ''
         ci = si
         while ci < len(source):
@@ -215,7 +215,7 @@ def extract_value(source: Any, extractor: Callable[[str, Optional[ContextData]],
                 nextec = {'(': ')', '{': '}',
                           '[': ']', '"': '"', "'": "'"}.get(source[ci])
                 if nextec:
-                    ci = _extract(source, None, dx, ci + 1, nextec)
+                    _, ci = _extract(source, None, dx, ci + 1, nextec)
                 elif extractor and source[ci:ci + 2] == '${':
                     val += source[si:ci]
                     si = ci = ci + 2
@@ -224,7 +224,7 @@ def extract_value(source: Any, extractor: Callable[[str, Optional[ContextData]],
                     ci += 2
                 else:
                     ci += 1
-        return val + source[si:] if extractor else ci
+        return (val + source[si:], 0) if extractor else ('', ci)
 
     if isinstance(source, dict):
         return {extract_value(k, extractor, dx): extract_value(v, extractor, dx) for k, v in source.items()}
@@ -234,7 +234,8 @@ def extract_value(source: Any, extractor: Callable[[str, Optional[ContextData]],
         if source.startswith('${') and source.endswith('}'):
             return extractor(source[2:-1], dx)
         else:
-            return _extract(source, extractor, dx, 0, None)
+            dst, _ = _extract(source, extractor, dx, 0, None)
+            return dst
     else:
         return source
 
@@ -618,6 +619,8 @@ class ExtFilter:
 
                 if parent:
                     if isinstance(parent, dict):
+                        if not isinstance(child_name, str):
+                            exit_error('Internal error: no child_name')
                         Ddict.set(parent, child_name, child)
                     else:
                         Ddict.set(root, parent_path, child)
@@ -712,7 +715,7 @@ class ExtFilter:
                         lop = x
                     else:
                         exit_error('Invalid logical operators syntax')
-                else:
+                elif isinstance(x, (dict, list)):
                     val = None
                     if ok is None:
                         val = self.filter_by_conditions(root, x)
@@ -727,6 +730,8 @@ class ExtFilter:
                         exit_error(f'Invalid logical operator: {lop}')
                     lop, neg = (None, None)
                     root = val.value if val else root
+                else:
+                    exit_error('Internal error: {x}')
             return Value(root) if ok is None or ok else None
         else:
             exit_error(f'Invalid custom condition format: {conds}')
@@ -1086,7 +1091,7 @@ class ExtFilter:
 
         elif optype == "digest":
             params = self.parse_conds_json(rhs)
-            h = hashlib.new(params.get('algorithm', 'sha256'))
+            h = hashlib.new(str(params.get('algorithm', 'sha256')))
             h.update(str(lhs).encode('utf-8'))
             return Value(h.hexdigest())
 
