@@ -194,9 +194,8 @@ def get_hashes_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
         else:
             score = 0  # unknown
             for key in engines.keys():
-                if (engines[key].get('verdict', 'not_found') != "not_found"
-                    and engines[key].get('verdict', 'not_found') != "malicious"
-                   ):
+                verdict = engines[key].get('verdict', 'not_found')
+                if verdict != "not_found" and verdict != "malicious":
                     score = 1  # good
                     break
 
