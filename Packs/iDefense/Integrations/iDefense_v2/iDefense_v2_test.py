@@ -113,7 +113,7 @@ def test_wrong_connection():
     with requests_mock.Mocker() as m:
         mock_address = 'https://test.com/rest/threatindicator/v0/'
         m.get(mock_address, status_code=401, json={})
-        client = Client(API_URL, 'wrong_token', True, False)
+        client = Client('bad_api_key', 'wrong_token', True, False)
         try:
             test_module(client)
         except DemistoException as err:

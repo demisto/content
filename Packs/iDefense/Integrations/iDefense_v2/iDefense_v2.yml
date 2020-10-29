@@ -23,7 +23,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-description: IDefense provides intelligence regarding security threats and vulnerabilities.
+description: iDefense provides intelligence regarding security threats and vulnerabilities.
 display: iDefense v2
 name: iDefense_v2
 script:
@@ -31,7 +31,6 @@ script:
   - name: ip
     arguments:
     - name: ip
-      required: true
       default: true
       description: IP to check
     outputs:
@@ -56,7 +55,6 @@ script:
   - name: domain
     arguments:
     - name: domain
-      required: true
       default: true
       description: Domain to check
     outputs:
@@ -85,7 +83,6 @@ script:
   - name: url
     arguments:
     - name: url
-      required: true
       default: true
       description: The URL to check (must start with "http://").
     outputs:
@@ -115,7 +112,7 @@ script:
     arguments:
     - name: uuid
       required: true
-      default: true
+      default: false
       description: Unique User ID
     outputs:
     - contextPath: IP.Address
