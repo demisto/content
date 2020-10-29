@@ -203,8 +203,12 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
             err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
             prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
             SUCCESS_FLAG = False
-
-            message = str(e).split('\n')[4].split(':', 1)[1]
+            # .split(':', 1)[1]
+            message = str(e).split('\n')[4]
+            print(message)
+            error_msg = message.split(':', 1)
+            print(err_msg)
+            sys.exit(0)
             response = json.loads(message)
             error = response.get('error')
             pack_id = error.split()[-2]
