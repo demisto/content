@@ -1,111 +1,153 @@
 id: AWS - CloudWatchLogs Test Playbook
 version: -1
 name: AWS - CloudWatchLogs Test Playbook
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 5ed045bb-7326-46e4-86fd-836a6c494c1b
     type: start
     task:
       id: 5ed045bb-7326-46e4-86fd-836a6c494c1b
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
     note: false
-  '8':
-    id: '8'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
     taskid: d24be249-1a30-4085-8c97-9ee708b9d0d8
     type: regular
     task:
       id: d24be249-1a30-4085-8c97-9ee708b9d0d8
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '33'
+      - "33"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.CloudWatchLogs.LogGroups.LogGroupName
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
     note: false
-  '14':
-    id: '14'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
     taskid: fdefc79c-145a-49dc-88c7-62dc2599e0a0
     type: regular
     task:
       id: fdefc79c-145a-49dc-88c7-62dc2599e0a0
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '33'
+      - "33"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.CloudWatchLogs.LogGroups.CreationTime
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
     note: false
-  '15':
-    id: '15'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
     taskid: 0484c7cc-a29b-4853-8e20-54f874c7faa4
     type: regular
     task:
       id: 0484c7cc-a29b-4853-8e20-54f874c7faa4
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '33'
+      - "33"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.CloudWatchLogs.LogGroups.Arn
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1070\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
     note: false
-  '24':
-    id: '24'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
     taskid: 2c968e3b-22ef-4789-8692-9e9ba779f98b
     type: regular
     task:
@@ -116,22 +158,32 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '45'
+      - "45"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
     note: false
-  '25':
-    id: '25'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
     taskid: 303b78bc-2e29-4600-8618-f984f1d00a2d
     type: title
     task:
@@ -140,17 +192,26 @@ tasks:
       name: End of Playbook
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 3170\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3345
+        }
+      }
     note: false
-  '26':
-    id: '26'
-    taskid: 4323c00c-b648-4ecc-871c-1aaf9678742a
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 22d667bc-b630-4540-83e5-188482cfeeb4
     type: regular
     task:
-      id: 4323c00c-b648-4ecc-871c-1aaf9678742a
+      id: 22d667bc-b630-4540-83e5-188482cfeeb4
       version: -1
       name: aws-logs-create-log-group
       description: Creates a log group with the specified name.
@@ -160,25 +221,35 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '38'
+      - "38"
     scriptarguments:
       kmsKeyId: {}
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       region:
         simple: ${inputs.region}
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
     note: false
-  '28':
-    id: '28'
-    taskid: b040aaed-ed82-4b2e-8393-892f979b140b
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 2877e0f8-37ec-44a5-8382-3949fb1c215a
     type: regular
     task:
-      id: b040aaed-ed82-4b2e-8393-892f979b140b
+      id: 2877e0f8-37ec-44a5-8382-3949fb1c215a
       version: -1
       name: aws-logs-put-log-events
       description: Uploads a batch of log events to the specified log stream. You
@@ -193,12 +264,12 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '29'
+      - "29"
     scriptarguments:
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       logStreamName:
-        simple: test
+        simple: ${GeneratedUUID}
       message:
         simple: testing test
       region:
@@ -210,14 +281,24 @@ tasks:
       timestamp:
         simple: ${timeTimeNowUnix}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1595\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
     note: false
-  '29':
-    id: '29'
-    taskid: d31b327b-4a0a-45cc-89ea-51e823b46a34
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 40c0505e-ee4f-43b9-861a-02c9d2b9cf94
     type: regular
     task:
-      id: d31b327b-4a0a-45cc-89ea-51e823b46a34
+      id: 40c0505e-ee4f-43b9-861a-02c9d2b9cf94
       version: -1
       name: aws-logs-put-metric-filter
       description: Creates or updates a metric filter and associates it with the specified
@@ -229,34 +310,44 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '31'
+      - "31"
     scriptarguments:
       filterName:
-        simple: test
+        simple: ${GeneratedUUID}
       filterPattern:
         simple: '"ERROR"'
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       metricName:
         simple: test
       metricNamespace:
         simple: test
       metricValue:
-        simple: '1'
+        simple: "1"
       region:
         simple: ${inputs.region}
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
     note: false
-  '30':
-    id: '30'
-    taskid: 246492ad-d75e-490d-8e11-9f388d2ac875
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 8488b652-97cc-4c19-8003-66adcaea9a3b
     type: regular
     task:
-      id: 246492ad-d75e-490d-8e11-9f388d2ac875
+      id: 8488b652-97cc-4c19-8003-66adcaea9a3b
       version: -1
       name: aws-logs-delete-metric-filter
       description: Deletes the specified metric filter.
@@ -266,26 +357,36 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '37'
+      - "37"
     scriptarguments:
       filterName:
-        simple: test
+        simple: ${GeneratedUUID}
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       region:
         simple: ${inputs.region}
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2645\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2820
+        }
+      }
     note: false
-  '31':
-    id: '31'
-    taskid: d687cc47-11f9-4c68-8578-803dc5716ada
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 78ba711f-f2ad-44d5-8187-9d4d79b5a6bf
     type: regular
     task:
-      id: d687cc47-11f9-4c68-8578-803dc5716ada
+      id: 78ba711f-f2ad-44d5-8187-9d4d79b5a6bf
       version: -1
       name: aws-logs-describe-metric-filters
       description: Lists the specified metric filters. You can list all the metric
@@ -297,13 +398,13 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '44'
-      - '43'
-      - '42'
+      - "44"
+      - "43"
+      - "42"
     scriptarguments:
       filterNamePrefix: {}
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       metricName: {}
       metricNamespace: {}
       region:
@@ -312,10 +413,20 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1945\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2110
+        }
+      }
     note: false
-  '32':
-    id: '32'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
     taskid: a9522c33-a656-4301-800c-cd6c8bd28355
     type: regular
     task:
@@ -331,9 +442,9 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '14'
-      - '8'
-      - '15'
+      - "14"
+      - "8"
+      - "15"
     scriptarguments:
       limit: {}
       logGroupNamePrefix: {}
@@ -343,14 +454,24 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
     note: false
-  '33':
-    id: '33'
-    taskid: 62f5a219-0f8c-440e-8603-68c9247e13e7
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 5051a158-d349-4081-8022-b0b4936b69b3
     type: regular
     task:
-      id: 62f5a219-0f8c-440e-8603-68c9247e13e7
+      id: 5051a158-d349-4081-8022-b0b4936b69b3
       version: -1
       name: aws-logs-describe-log-streams
       description: Lists the log streams for the specified log group. You can list
@@ -362,13 +483,13 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '39'
-      - '40'
-      - '41'
+      - "39"
+      - "40"
+      - "41"
     scriptarguments:
       limit: {}
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       logStreamNamePrefix: {}
       orderBy: {}
       region:
@@ -377,14 +498,24 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1245\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
     note: false
-  '34':
-    id: '34'
-    taskid: 390dfc88-caed-4393-85a7-cf7000248506
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 0e731928-412e-4f66-8a28-806c373c265a
     type: regular
     task:
-      id: 390dfc88-caed-4393-85a7-cf7000248506
+      id: 0e731928-412e-4f66-8a28-806c373c265a
       version: -1
       name: aws-logs-put-retention-policy
       description: Sets the retention of the specified log group. A retention policy
@@ -396,26 +527,36 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '35'
+      - "35"
     scriptarguments:
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       region:
         simple: ${inputs.region}
       retentionInDays:
-        simple: '5'
+        simple: "5"
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2295\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
     note: false
-  '35':
-    id: '35'
-    taskid: 0151095a-08d7-4eb1-802d-280bdf78741f
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 89691f8d-b68f-4346-889d-b267e17af6f4
     type: regular
     task:
-      id: 0151095a-08d7-4eb1-802d-280bdf78741f
+      id: 89691f8d-b68f-4346-889d-b267e17af6f4
       version: -1
       name: aws-logs-delete-retention-policy
       description: Deletes the specified retention policy.  Log events do not expire
@@ -426,24 +567,34 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '30'
+      - "30"
     scriptarguments:
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       region:
         simple: ${inputs.region}
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2470\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2645
+        }
+      }
     note: false
-  '36':
-    id: '36'
-    taskid: b0ea5c19-3da0-4e9d-8417-e31bdbb35a7a
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 8a3b00c6-a7ca-4a22-8e1b-879c2a86cee2
     type: regular
     task:
-      id: b0ea5c19-3da0-4e9d-8417-e31bdbb35a7a
+      id: 8a3b00c6-a7ca-4a22-8e1b-879c2a86cee2
       version: -1
       name: aws-logs-delete-log-group
       description: Deletes the specified log group and permanently deletes all the
@@ -454,24 +605,34 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '25'
+      - "25"
     scriptarguments:
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       region:
         simple: ${inputs.region}
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2995\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3170
+        }
+      }
     note: false
-  '37':
-    id: '37'
-    taskid: fb5a1d2e-5abc-4866-8276-7d89f1c28da3
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: e15a92f7-a100-4d9c-8c10-931c16f93af9
     type: regular
     task:
-      id: fb5a1d2e-5abc-4866-8276-7d89f1c28da3
+      id: e15a92f7-a100-4d9c-8c10-931c16f93af9
       version: -1
       name: aws-logs-delete-log-stream
       description: Deletes the specified log stream and permanently deletes all the
@@ -482,26 +643,36 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '36'
+      - "36"
     scriptarguments:
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       logStreamName:
-        simple: test
+        simple: ${GeneratedUUID}
       region:
         simple: ${inputs.region}
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2820\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2995
+        }
+      }
     note: false
-  '38':
-    id: '38'
-    taskid: 6e1905c5-84fd-486e-841f-d2dc76e7616d
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 7822500f-14cc-4178-88ce-d3510ea1eb32
     type: regular
     task:
-      id: 6e1905c5-84fd-486e-841f-d2dc76e7616d
+      id: 7822500f-14cc-4178-88ce-d3510ea1eb32
       version: -1
       name: aws-logs-create-log-stream
       description: Creates a log stream for the specified log group.
@@ -511,204 +682,281 @@ tasks:
       brand: AWS - CloudWatchLogs
     nexttasks:
       '#none#':
-      - '32'
+      - "32"
     scriptarguments:
       logGroupName:
-        simple: test
+        simple: ${GeneratedUUID}
       logStreamName:
-        simple: test
+        simple: ${GeneratedUUID}
       region:
         simple: ${inputs.region}
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
     note: false
-  '39':
-    id: '39'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
     taskid: cb00ecfa-2604-4eae-83a0-7de886a98da1
     type: regular
     task:
       id: cb00ecfa-2604-4eae-83a0-7de886a98da1
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '28'
+      - "28"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.CloudWatchLogs.LogGroups.LogStreams.CreationTime
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
     note: false
-  '40':
-    id: '40'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
     taskid: 1795122d-fe3c-4d21-8842-39aacb1cc736
     type: regular
     task:
       id: 1795122d-fe3c-4d21-8842-39aacb1cc736
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '28'
+      - "28"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.CloudWatchLogs.LogGroups.LogStreams.LogStreamName
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1420\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
     note: false
-  '41':
-    id: '41'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
     taskid: 6f7f3ea6-a795-4b18-8378-243d120ff1fa
     type: regular
     task:
       id: 6f7f3ea6-a795-4b18-8378-243d120ff1fa
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '28'
+      - "28"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.CloudWatchLogs.LogGroups.LogStreams.LogGroupName
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1420\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1595
+        }
+      }
     note: false
-  '42':
-    id: '42'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
     taskid: f2b2bb53-fd44-46bb-8a91-dea4f8aa3a1d
     type: regular
     task:
       id: f2b2bb53-fd44-46bb-8a91-dea4f8aa3a1d
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
+      - "34"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.CloudWatchLogs.MetricFilters.creationTime
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
     note: false
-  '43':
-    id: '43'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
     taskid: 6ed06fe9-9022-4d61-8c07-797d086987b9
     type: regular
     task:
       id: 6ed06fe9-9022-4d61-8c07-797d086987b9
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
+      - "34"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.CloudWatchLogs.MetricFilters.filterPattern
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
     note: false
-  '44':
-    id: '44'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
     taskid: 621141a6-0d14-4353-8b48-de27c6c54652
     type: regular
     task:
       id: 621141a6-0d14-4353-8b48-de27c6c54652
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
+      - "34"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: AWS.CloudWatchLogs.MetricFilters.filterName
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2295
+        }
+      }
     note: false
-  '45':
-    id: '45'
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
     taskid: aef8f5ae-12ce-40fc-819d-494a6af86788
     type: regular
     task:
       id: aef8f5ae-12ce-40fc-819d-494a6af86788
       version: -1
       name: GetTime
-      description: "Retrieves the current date and time.\n"
+      description: |
+        Retrieves the current date and time.
       scriptName: GetTime
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '26'
+      - "46"
     scriptarguments:
       contextKey:
         simple: time
@@ -719,11 +967,60 @@ tasks:
       minutesAgo: {}
       monthsAgo: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
     note: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 3185,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\":\
-  \ 50\n    }\n  }\n}"
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 12e37c5e-3025-4a86-8802-e585b48317eb
+    type: regular
+    task:
+      id: 12e37c5e-3025-4a86-8802-e585b48317eb
+      version: -1
+      name: GenerateUUID
+      description: Generates random UUID
+      scriptName: GenerateUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3360,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs:
 - key: region
   value:
