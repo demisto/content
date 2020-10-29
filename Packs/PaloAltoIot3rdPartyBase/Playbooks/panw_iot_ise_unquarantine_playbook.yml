@@ -1,13 +1,12 @@
-description: Playbook to handle incident triggered from PANW Iot (Zingbox) UI to send
-  unquarantine a device in ISE
-id: 09990d44-43e8-42a2-8521-d9fff17ad2cb
+description: Playbook to handle incident triggered from PANW Iot (Zingbox) UI to un-quarantine
+  a device in ISE
+id: panw_iot_ise_unquarantine_playbook
 inputs: []
 name: panw_iot_ise_unquarantine_playbook
 outputs:
 - contextPath: incident
-  description: This playbook is invoked via the incident type "panw_iot_ise_unquarantine"
+  description: This playbook is invoked via the incident type "panw_iot_ise_quarantine"
   type: unknown
-sourceplaybookid: 4bdb8bfb-119b-44bb-8eb2-eeb81c447c49
 starttaskid: "0"
 tasks:
   "0":
@@ -22,11 +21,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ff1b9a9c-2efb-4c76-82b6-e31279d89e1b
+      id: f5f97dff-b6c8-442e-89b9-b31fbe70cbb9
       iscommand: false
       name: ""
       version: -1
-    taskid: ff1b9a9c-2efb-4c76-82b6-e31279d89e1b
+      description: ''
+    taskid: f5f97dff-b6c8-442e-89b9-b31fbe70cbb9
     timertriggers: []
     type: start
     view: |-
@@ -37,31 +37,32 @@ tasks:
         }
       }
   "1":
+    continueonerror: true
     id: "1"
     ignoreworker: false
     nexttasks:
       "no":
-      - "3"
+      - "4"
       "yes":
-      - "2"
+      - "5"
     note: false
     quietmode: 0
     scriptarguments:
       brandname:
-        simple: Cisco ISE
+        simple: Cisco ISE Copy
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
-      id: 1a47a285-3fda-411d-820e-7dd9728f81e0
+      id: 72e325de-f67e-460a-84d2-8eb181de6772
       iscommand: false
       name: Is Cisco ISE enabled?
       script: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: 1a47a285-3fda-411d-820e-7dd9728f81e0
+    taskid: 72e325de-f67e-460a-84d2-8eb181de6772
     timertriggers: []
     type: condition
     view: |-
@@ -71,75 +72,372 @@ tasks:
           "y": 230
         }
       }
-  "2":
-    id: "2"
+  "4":
+    continueonerror: true
+    id: "4"
     ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
     note: false
     quietmode: 0
     scriptarguments:
-      value:
-        complex:
-          accessor: alert
-          root: incident
+      integration-name:
+        simple: ise
+      message:
+        simple: Cisco Ise instance not configured
+      playbook-name:
+        simple: panw_iot_ise_unquarantine_playbook
+      status:
+        simple: error
+      type:
+        simple: alert
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: b8bc0a58-9510-4e3f-83dc-43bf0cd6bbc9
-      iscommand: false
-      name: Print
-      script: Print
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: sends a status message back to PANW IOT cloud
+      id: 495c5d55-a29a-4cee-80b7-fed2cc9a4f48
+      iscommand: true
+      name: send-status-to-panw-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: b8bc0a58-9510-4e3f-83dc-43bf0cd6bbc9
+    taskid: 495c5d55-a29a-4cee-80b7-fed2cc9a4f48
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 450
+          "x": -30,
+          "y": 460
         }
       }
-  "3":
-    id: "3"
+  "5":
+    continueonerror: true
+    id: "5"
     ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
     note: false
     quietmode: 0
     scriptarguments:
-      value:
-        simple: Integration not Configured
+      macAddress:
+        simple: ${incident.macAddress}
+      using:
+        simple: PANW IoT ise Instance
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 7eba1d22-62c6-40a5-8538-3dc5cb892388
-      iscommand: false
-      name: Print
-      script: Print
+      brand: Cisco ISE Copy
+      description: Returns an endpoint ID, by its MAC address.
+      id: 55a4620f-bbfb-417f-8426-91aa758ccbef
+      iscommand: true
+      name: cisco-ise-get-endpoint-id
+      script: Cisco ISE Copy|||cisco-ise-get-endpoint-id
       type: regular
       version: -1
-    taskid: 7eba1d22-62c6-40a5-8538-3dc5cb892388
+    taskid: 55a4620f-bbfb-417f-8426-91aa758ccbef
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 450
+          "x": 500,
+          "y": 490
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "8"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: d5945d4a-3ca7-49e0-81fb-2f7f2a5f8ce9
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: d5945d4a-3ca7-49e0-81fb-2f7f2a5f8ce9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 670
+        }
+      }
+  "7":
+    continueonerror: true
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integration-name:
+        simple: ise
+      message:
+        simple: Endpoint ${incident.macAddress} does not exist on ISE.
+      playbook-name:
+        simple: panw_iot_ise_unquarantine_playbook
+      status:
+        simple: error
+      type:
+        simple: alert
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: sends a status message back to PANW IOT cloud
+      id: 316395ab-c911-4c71-85f5-3b21e4337a19
+      iscommand: true
+      name: send-status-to-panw-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
+      type: regular
+      version: -1
+    taskid: 316395ab-c911-4c71-85f5-3b21e4337a19
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 840
+        }
+      }
+  "8":
+    continueonerror: true
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attributeName:
+        simple: ZingboxAlertType,ZingboxAlertSeverity
+      attributeValue:
+        simple: ','
+      id:
+        simple: ${Endpoint.ID}
+      macAddress:
+        simple: ${Endpoint.MACAddress}
+      using:
+        simple: PANW IoT ise Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cisco ISE Copy
+      description: Updates the custom attributes of an endpoint.
+      id: 5bb5363b-0774-4a58-87b5-69dd40ed7645
+      iscommand: true
+      name: cisco-ise-update-endpoint-custom-attribute
+      script: Cisco ISE Copy|||cisco-ise-update-endpoint-custom-attribute
+      type: regular
+      version: -1
+    taskid: 5bb5363b-0774-4a58-87b5-69dd40ed7645
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 960
+        }
+      }
+  "9":
+    continueonerror: true
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 8d078f45-6533-4fc1-8d53-de3db5e65f5a
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: 8d078f45-6533-4fc1-8d53-de3db5e65f5a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 1200
+        }
+      }
+  "10":
+    continueonerror: true
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integration-name:
+        simple: ise
+      message:
+        simple: Failed to un-quarantine Endpoint ${Endpoint.MACAddress} on ISE
+      playbook-name:
+        simple: panw_iot_ise_unquarantine_playbook
+      status:
+        simple: error
+      type:
+        simple: alert
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: sends a status message back to PANW IOT cloud
+      id: acf1ed50-c8ed-4beb-8773-01bf60dd45e7
+      iscommand: true
+      name: send-status-to-panw-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
+      type: regular
+      version: -1
+    taskid: acf1ed50-c8ed-4beb-8773-01bf60dd45e7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1400
+        }
+      }
+  "11":
+    continueonerror: true
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integration-name:
+        simple: ise
+      message:
+        simple: Un-Quarantine Successful for Endpoint ${Endpoint.MACAddress}
+      playbook-name:
+        simple: panw_iot_ise_unquarantine_playbook
+      status:
+        simple: success
+      type:
+        simple: alert
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: sends a status message back to PANW IOT cloud
+      id: 8415a9a8-bbbe-4bfe-86b8-b8001a34ab90
+      iscommand: true
+      name: send-status-to-panw-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
+      type: regular
+      version: -1
+    taskid: 8415a9a8-bbbe-4bfe-86b8-b8001a34ab90
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1400
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: e1148ee3-b303-4780-8118-70d399153ad2
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: e1148ee3-b303-4780-8118-70d399153ad2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1700
         }
       }
 version: -1
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "9_11_no": 0.72
+    },
     "paper": {
       "dimensions": {
-        "height": 495,
-        "width": 790,
-        "x": 40,
+        "height": 1745,
+        "width": 1360,
+        "x": -210,
         "y": 50
       }
     }

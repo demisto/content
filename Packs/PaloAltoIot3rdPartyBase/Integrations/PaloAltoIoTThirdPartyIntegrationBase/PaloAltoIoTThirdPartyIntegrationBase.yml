@@ -178,6 +178,16 @@ script:
     outputs:
     - contextPath: PaloAltoIoTIntegrationBase.SingleAsset
       description: stores the asset here
+  - arguments:
+    - description: list of device maps
+      isArray: true
+      name: device_maps
+      required: true
+    description: converts PANW Iot device attribute map to ISE custom attributees
+    name: convert-device-inventory-to-ise-custom-attributes
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.CisceISEAttributes
+      description: list of Cisco ISE attribute maps
   dockerimage: demisto/python3:3.8.6.12176
   longRunning: true
   runonce: false

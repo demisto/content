@@ -1,0 +1,197 @@
+description: |
+  This playbook gets all available device inventory and updates/create endpoints with custom attributes on Cisco ISE
+id: panw_iot_ise_bulk_integration
+inputs: []
+name: panw_iot_ise_bulk_integration
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 200cd8df-07f3-497f-85da-7efc29c1080e
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 200cd8df-07f3-497f-85da-7efc29c1080e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerror: true
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cisco ISE Copy
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      id: 55c3b0b4-0b6a-4fd5-8057-93c3e8304d47
+      iscommand: false
+      name: IsIntegrationAvailable
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 55c3b0b4-0b6a-4fd5-8057-93c3e8304d47
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    continueonerror: true
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integration-name:
+        simple: ise
+      message:
+        simple: Cisco Ise instance not configured
+      playbook-name:
+        simple: panw_iot_ise_bulk_integration
+      status:
+        simple: error
+      type:
+        simple: device
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: sends a status message back to PANW IOT cloud
+      id: 5760ff89-a931-40a2-82b6-445da322f6be
+      iscommand: true
+      name: send-status-to-panw-iot-cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
+      type: regular
+      version: -1
+    taskid: 5760ff89-a931-40a2-82b6-445da322f6be
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 410
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance,PANW IoT ise Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This script gets all available devices from the IoT cloud and updates/creates
+        new endpoint with custom attributes on Cisco ISE
+      id: 4835528b-9887-4088-80e0-0847d377497a
+      iscommand: false
+      name: send_bulk_panw_iot_devices_to_ise
+      script: d42e8837-9ab1-47c6-8bb0-d80624238b92
+      type: regular
+      version: -1
+    taskid: 4835528b-9887-4088-80e0-0847d377497a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 540
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 48c8ca06-1ec6-4deb-8402-0e99108b466a
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 48c8ca06-1ec6-4deb-8402-0e99108b466a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 810
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 855,
+        "width": 840,
+        "x": 60,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

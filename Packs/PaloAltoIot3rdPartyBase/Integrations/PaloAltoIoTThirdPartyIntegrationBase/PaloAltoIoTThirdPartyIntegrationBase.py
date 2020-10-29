@@ -41,6 +41,34 @@ api_type_map = {
     }
 }
 
+cisco_ise_field_map = {
+    "ip": "ZingboxIpAddress",
+    "ip address": "ZingboxIP",
+    "ip_address": "ZingboxIP",
+    "profile": "ZingboxProfile",
+    "category": "ZingboxCategory",
+    "risk_score": "ZingboxRiskScore",
+    "risk score": "ZingboxRiskScore",
+    "confidence": "ZingboxConfidence",
+    "confidence score": "ZingboxConfidence",
+    "confidence_score": "ZingboxConfidence",
+    "tag": "ZingboxTag",
+    "asset_tag": "ZingboxTag",
+    "Tags": "ZingboxTag",
+    "hostname": "ZingboxHostname",
+    "osCombined": "ZingboxOS",
+    "model": "ZingboxModel",
+    "vendor": "ZingboxVendor",
+    "Serial Number": "ZingboxSerial",
+    "Serial_Number": "ZingboxSerial",
+    "endpoint protection": "ZingboxEPP",
+    "endpoint_protection": "ZingboxEPP",
+    "AET": "ZingboxAET",
+    # "External Network": "ZingboxInternetAccess",
+    # "last activity": "ZingboxLastActivity"
+}
+int_fields = ["risk_score", "risk score", "confidence", "confidence score", "confidence_score"]
+
 device_fields_map = [
     ("ip_address", "dvc="),
     ("mac_address", "dvcmac="),
@@ -294,7 +322,7 @@ def write_status_context_data(status_path, message, status, count):
 
 def get_servicenow_device_query(args):
 
-    device_list = args.get("devices")
+    device_list = args.get("devices")['asset_list']
     deviceids = [device['deviceid'] for device in device_list]
 
     query = "mac_addressIN" + ",".join(deviceids)
@@ -690,6 +718,36 @@ def get_asset_lists(args):
     )
 
 
+def convert_device_map_to_ise_attributes(args):
+    opList = []
+    device_list = demisto.args().get('device_maps')
+    for device_map in device_list:
+        if 'mac_address' in device_map:
+            attribute_list = {}
+            attribute_list['mac'] = device_map['mac_address']
+            zb_attributes = {}
+            for field in device_map:
+                if device_map[field] == None or device_map[field] == "":
+                    continue
+                if field in cisco_ise_field_map:
+                    if field in int_fields:
+                        try:
+                            int_val = int(device_map[field])
+                        except:
+                            continue
+                        zb_attributes[cisco_ise_field_map[field]] = int_val
+                    else:
+                        zb_attributes[cisco_ise_field_map[field]] = device_map[field]
+            attribute_list['zb_attributes'] = zb_attributes
+            opList.append(attribute_list)
+
+    return CommandResults(
+        readable_output="Converted Device maps to custom attributes",
+        outputs_prefix="PaloAltoIoTIntegrationBase.CisceISEAttributes",
+        outputs=opList
+    )
+
+
 def main() -> None:
     """main function, parses params and runs command functions
     :return:
@@ -735,6 +793,9 @@ def main() -> None:
             return_results(results)
         elif demisto.command() == 'get-single-asset-details':
             results = get_single_asset(demisto.args())
+            return_results(results)
+        elif demisto.command() == 'convert-device-inventory-to-ise-custom-attributes':
+            results = convert_device_map_to_ise_attributes(demisto.args())
             return_results(results)
 
     # Log exceptions and return errors
