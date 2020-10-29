@@ -11,7 +11,7 @@
  "id": "panw_iot_ise_quarantine",
  "locked": false,
  "name": "panw_iot_ise_quarantine",
- "playbookId": "panw_iot_ise_quarantine",
+ "playbookId": "panw_iot_ise_quarantine_playbook",
  "preProcessingScript": "",
  "readonly": false,
  "reputationCalc": 0,
