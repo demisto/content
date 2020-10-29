@@ -1043,7 +1043,6 @@ class IntegrationLogger(object):
         to_add = []
         for a in args:
             if a:
-                to_add.append(a)
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
