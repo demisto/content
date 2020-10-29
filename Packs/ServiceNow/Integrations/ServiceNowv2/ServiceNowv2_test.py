@@ -5,7 +5,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
-    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, get_ticket_fields
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
@@ -586,9 +586,10 @@ def test_upload_entries_update_remote_system_command(mocker):
 
 
 DATA = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-            'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '3',
-            'work_start': '0001-01-01T00:00:00Z'}
+        'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+        'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '3',
+        'work_start': '0001-01-01T00:00:00Z'}
+
 
 def update_ticket(*args):
     assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
@@ -599,6 +600,7 @@ def update_ticket(*args):
             'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
             'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
             'sla_due': '0001-01-01T00:00:00Z', 'state': '1', 'urgency': '3', 'work_start': '0001-01-01T00:00:00Z'}
+
 
 def test_update_remote_data_sc_task(mocker):
     """
@@ -614,7 +616,7 @@ def test_update_remote_data_sc_task(mocker):
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='sc_task', get_attachments=False, incident_name='description')
-    params = {'ticket_type':'sc_task', 'close_ticket': True}
+    params = {'ticket_type': 'sc_task', 'close_ticket': True}
     args = {'remoteId': '1234', 'data': DATA, 'entries': [], 'incidentChanged': True, 'delta': {}, 'inc_status': 2}
     mocker.patch('ServiceNowv2.get_ticket_fields', return_value=DATA)
     mocker.patch.object(client, 'update', side_effect=update_ticket)
