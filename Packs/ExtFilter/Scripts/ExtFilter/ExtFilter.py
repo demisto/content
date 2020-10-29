@@ -621,7 +621,8 @@ class ExtFilter:
                     if isinstance(parent, dict):
                         if not isinstance(child_name, str):
                             exit_error('Internal error: no child_name')
-                        Ddict.set(parent, child_name, child)
+                        else:
+                            Ddict.set(parent, child_name, child)
                     else:
                         Ddict.set(root, parent_path, child)
                 else:

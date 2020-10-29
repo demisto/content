@@ -1505,7 +1505,7 @@ Returns a set of elements which doesn't match the data type or the value of a va
 <details><summary>
 Returns a set of elements which is equal to a value given in a filter.
 The value is implicitly converted from its data type to another in a comparison between different data types.
-`=='` is an alias name for `equals`.
+`==` is an alias name for `equals`.
 </summary><p/>
 
 > **Filter Format**: `<value>`
@@ -1541,7 +1541,7 @@ The value is implicitly converted from its data type to another in a comparison 
 <details><summary>
 Returns a set of elements which is not equal to a value given in a filter.
 The value is implicitly converted from its data type to another in a comparison between different data types.
-`!='` is an alias name for `doesn't equal`.
+`!=` is an alias name for `doesn't equal`.
 </summary><p/>
 
 > **Filter Format**: `<value>`
@@ -1577,7 +1577,7 @@ The value is implicitly converted from its data type to another in a comparison 
 Returns a set of elements which is greater or equal to a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
-`>='` is an alias name for `greater or equal`.
+`>=` is an alias name for `greater or equal`.
 </summary><p/>
 
 > **Filter Format**: `<value>`
@@ -1615,7 +1615,7 @@ This operator evaluates to false for either or both of the data which cannot con
 Returns a set of elements which is greater than a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
-`>'` is an alias name for `greater than`.
+`>` is an alias name for `greater than`.
 </summary><p/>
 
 > **Filter Format**: `<value>`
@@ -1652,7 +1652,7 @@ This operator evaluates to false for either or both of the data which cannot con
 Returns a set of elements which is less or equal to a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
-`<='` is an alias name for `less or equal`.
+`<=` is an alias name for `less or equal`.
 </summary><p/>
 
 > **Filter Format**: `<value>`
@@ -1691,7 +1691,7 @@ This operator evaluates to false for either or both of the data which cannot con
 Returns a set of elements which is less than a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
-`<'` is an alias name for `less than`.
+`<` is an alias name for `less than`.
 </summary><p/>
 
 > **Filter Format**: `<value>`
