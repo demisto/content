@@ -42,6 +42,13 @@ configuration:
   name: first_run
   required: false
   type: 8
+- name: fetch_samples
+  display: Fetch Samples
+  required: false
+  defaultvalue: 'false'
+  additionalinfo: If checked, the fetch incidents command will sample (at most) five incidents.
+    Use only to sample incidents for classification & mapping.
+  type: 8
 description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: Workday IAM
@@ -58,4 +65,4 @@ tests:
 - No tests
 defaultmapperin: IAM Sync User - Workday
 defaultclassifier: Workday Classifier
-fromversion: 5.0.0
+fromversion: 6.0.0

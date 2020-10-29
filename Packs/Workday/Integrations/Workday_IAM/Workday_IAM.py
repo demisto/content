@@ -45,12 +45,50 @@ def is_user_profile_unchanged(demisto_user, workday_user):
     return (demisto_user and len(profile_changed_fields) == 0), profile_changed_fields
 
 
+def fetch_samples(client, mapper_in, report_url):
+    """
+    This function returns a list of (at most) five sample events (used for classification and mapping only).
+
+    Args:
+        client: Workday client
+        mapper_in: Incoming mapper's name
+        report_url: The report full URL
+
+    Returns:
+        events: Incidents/events that will be used as samples for classification and mapping.
+    """
+    events = []
+    num_of_samples = 5
+    try:
+        report_data = client.get_full_report(report_url)
+        report_entries = report_data.get('Report_Entry')
+        num_of_samples = min(num_of_samples, len(report_entries))
+        report_entries = report_entries[:num_of_samples]
+
+        for entry in report_entries:
+            workday_user = demisto.mapObject(entry, mapper_in, INCIDENT_TYPE)
+            workday_user = convert_incident_fields_to_cli_names(workday_user)
+            entry['UserProfile'] = workday_user
+            event = {
+                "name": f'{workday_user.get("givenname")} {workday_user.get("surname")}',
+                "rawJSON": json.dumps(entry),
+                "details": 'This is a sample event.'
+            }
+            events.append(event)
+    except Exception as e:
+        demisto.error('Failed to fetch events. Reason: ' + str(e))
+        raise e
+
+    return events
+
+
 def fetch_incidents(client, mapper_in, report_url):
     """
     This function will execute each interval (default is 1 minute).
 
     Args:
         client: Workday client
+        mapper_in: Incoming mapper's name
         report_url: The report full URL.
 
     Returns:
@@ -243,29 +281,38 @@ def main():
                 Returns the first x events (x being the fetch limit) and stores the remaining in integration context
             '''
             workday_context = demisto.getIntegrationContext()
+            last_run = demisto.getLastRun()
             events = workday_context.get('events', [])
             report_url = params.get('report_url')
 
-            last_run = demisto.getLastRun()
-            if not last_run.get('synced_users') and params.get('first_run'):
-                workday_first_run_command(client, mapper_in, report_url)
-
-            elif not events:
-                # Get the events from Workday by making an API call. Last run is updated only when API call is made
-                events = fetch_incidents(
+            if params.get('fetch_samples') and not params.get('isFetch'):
+                sample_events = fetch_samples(
                     client=client,
                     mapper_in=mapper_in,
                     report_url=report_url
                 )
+                demisto.incidents(sample_events)
 
-            fetch_limit = int(params.get('max_fetch'))
+            else:
+                if not last_run.get('synced_users') and params.get('first_run'):
+                    workday_first_run_command(client, mapper_in, report_url)
 
-            demisto.setLastRun({'synced_users': True})
-            demisto.incidents(events[:fetch_limit])
+                elif not events:
+                    # Get the events from Workday by making an API call. Last run is updated only when API call is made
+                    events = fetch_incidents(
+                        client=client,
+                        mapper_in=mapper_in,
+                        report_url=report_url
+                    )
 
-            # Set the remaining events back to integration context
-            workday_context = {'events': events[fetch_limit:]}
-            demisto.setIntegrationContext(workday_context)
+                fetch_limit = int(params.get('max_fetch'))
+
+                demisto.setLastRun({'synced_users': True})
+                demisto.incidents(events[:fetch_limit])
+
+                # Set the remaining events back to integration context
+                workday_context = {'events': events[fetch_limit:]}
+                demisto.setIntegrationContext(workday_context)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command, Error: {e}. Traceback: {traceback.format_exc()}')
