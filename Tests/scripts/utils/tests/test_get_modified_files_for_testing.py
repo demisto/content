@@ -388,6 +388,16 @@ class TestGetModifiedFilesForTesting:
         ("Tests/scripts/integration-test.yml", "Tests/Util/Scripts/new_script.py"),
     )
     def test_sample(self, file_path):
+        """
+        Given:
+            - A python file outside of a pack
+
+        When:
+            - Collecting tests
+
+        Then:
+            - Validate the python file is in sample tests list and not in any other list
+        """
         diff_line = "M Tests/Util/Scripts/new_script.py"
         py_file = "Tests/Util/Scripts/new_script.py"
         (
@@ -410,7 +420,18 @@ class TestGetModifiedFilesForTesting:
         assert is_indicator_json is False
 
     def test_name_not_same_as_folder(self, mocker):
-        diff_line = "M       Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py"
+        """
+        Given:
+            - A python file that the file name is not the same as the dir name (Helloworld/NewHelloWorld.py)
+
+        When:
+            - Collecting tests
+
+        Then:
+            - Validate the yml file is in modified file list and not in any other list
+
+        """
+        diff_line = "M       Packs/HelloWorld/Integrations/HelloWorld/NewHelloWorld.py"
         yml_file = "Packs/HelloWorld/Integrations/HelloWorld/NewHelloWorld.yml"
         mocker.patch(
             "Tests.scripts.utils.get_modified_files_for_testing.glob.glob",
