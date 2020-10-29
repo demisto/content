@@ -843,6 +843,21 @@ class Pack(object):
             return task_status, True, None
 
     def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack):
+        """ Manages the upload of pack zip artifact to correct path in cloud storage.
+        The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
+        In case that zip pack artifact already exist at constructed path, the upload will be skipped.
+        If flag override_pack is set to True, pack will forced for upload.
+
+        Args:
+            production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
+            build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
+            override_pack (bool): whether to override existing pack.
+
+        Returns:
+            bool: whether the operation succeeded.
+            bool: True in case of pack existence at targeted path and upload was skipped, otherwise returned False.
+
+        """
         task_status = True
         skipped_pack_uploading = False
 
@@ -864,10 +879,11 @@ class Pack(object):
         prod_full_file_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_full_file_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
         build_file_blob = build_bucket.blob(build_full_file_path)
-        # TODO: check if copy_blob is fine in terms of visioning and if successful in case of existing
         copied_blob = build_bucket.copy_blob(
             blob=build_file_blob, destination_bucket=production_bucket, new_name=prod_full_file_path
         )
+        copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+        self.public_storage_path = copied_blob.public_url
         task_status = task_status and copied_blob.exists()
 
         if not task_status:
@@ -1629,17 +1645,21 @@ class Pack(object):
                                           build_bucket.list_blobs(
                                               prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
                                           )
-                                          if is_integration_image(f.name)]
+                                          if is_integration_image(os.path.basename(f.name))]
         for integration_image_blob in build_integration_images_blobs:
-            # TODO: check if copy_blob is fine in terms of visioning and if successful in case of existing
+            image_name = os.path.basename(integration_image_blob.name)
+            print_color(f"Uploading {self._pack_name} pack integration image: {image_name}", LOG_COLORS.NATIVE)
             copied_blob = build_bucket.copy_blob(
                 blob=integration_image_blob, destination_bucket=production_bucket,
-                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, integration_image_blob.name)
+                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
             )
             task_status = task_status and copied_blob.exists()
 
         if not task_status:
             print_error(f"Failed to upload {self._pack_name} pack integration images.")
+        else:
+            print_color(f"Uploaded {len(build_integration_images_blobs)} images for {self._pack_name} pack.",
+                        LOG_COLORS.GREEN)
 
         return task_status
 
@@ -1715,22 +1735,26 @@ class Pack(object):
         """
         task_status = True
 
-        # assuming that directories ends with a "/" and that all images are of type "png"
-        build_author_images_blobs = [f for f in
-                                     build_bucket.list_blobs(
-                                         prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
-                                     )
-                                     if is_author_image(f.name)]
-        for author_image_blob in build_author_images_blobs:
-            # TODO: check if copy_blob is fine in terms of visioning and if successful in case of existing
+        build_author_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+        build_author_image_blob = build_bucket.blob(build_author_image_path)
+
+        if build_author_image_blob.exists():
             copied_blob = build_bucket.copy_blob(
-                blob=author_image_blob, destination_bucket=production_bucket,
-                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, author_image_blob.name)
+                blob=build_author_image_blob, destination_bucket=production_bucket,
+                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
             )
             task_status = task_status and copied_blob.exists()
+        elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
+            print_color((f"Skipping uploading of {self._pack_name} pack author image "
+                         f"and use default {GCPConfig.BASE_PACK} pack image"), LOG_COLORS.GREEN)
+        else:
+            print_color(f"Skipping uploading of {self._pack_name} pack. The pack is defined as {self.support_type} "
+                        f"support type", LOG_COLORS.NATIVE)
 
         if not task_status:
             print_error(f"Failed uploading {self._pack_name} pack author image.")
+        else:
+            print_color(f"Uploaded successfully {self._pack_name} pack author image", LOG_COLORS.GREEN)
 
         return task_status
 
@@ -1755,20 +1779,7 @@ def is_integration_image(file_name):
         bool: True if the file is an integration image or False otherwise
 
     """
-    return not file_name.endswith('/') and file_name.endswith('.png') and 'author' not in file_name.lower()
-
-
-def is_author_image(file_name):
-    """ Indicates whether a file_name in pack directory (in the bucket) is an author image or not
-
-    Args:
-        file_name (str): The file name
-
-    Returns:
-        bool: True if the file is an author image or False otherwise
-
-    """
-    return not file_name.endswith('/') and file_name.endswith('.png') and 'author' in file_name.lower()
+    return file_name.endswith('.png') and 'author' not in file_name.lower()
 
 
 def init_storage_client(service_account=None):

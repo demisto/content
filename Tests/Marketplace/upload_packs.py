@@ -435,7 +435,7 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
         return private_packs
 
 
-def _build_summary_table(packs_input_list, include_pack_status=False):
+def _build_summary_table(packs_input_list, include_bucket_url=True, include_pack_status=False):
     """Build summary table from pack list
 
     Args:
@@ -448,6 +448,8 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
     table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status",
                     "Pack Bucket URL"] if include_pack_status \
         else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
+    if not include_bucket_url:
+        table_fields.remove("Pack Bucket URL")
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
@@ -587,11 +589,13 @@ def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_com
         sys.exit(1)
 
 
-def print_packs_summary(packs_list):
+def print_packs_summary(packs_list, comment_on_pr=True, include_bucket_url=True):
     """Prints summary of packs uploaded to gcs.
 
     Args:
         packs_list (list): list of initialized packs.
+        comment_on_pr (bool): indicates whether to comment on pr for external prs or not
+        include_bucket_url (bool): indicates whether to include the bucket url column in the summary or not
 
     """
     successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
@@ -608,34 +612,35 @@ Total number of packs: {len(packs_list)}
 ----------------------------------------------------------------------------------------------------------""")
 
     if successful_packs:
-        successful_packs_table = _build_summary_table(successful_packs)
+        successful_packs_table = _build_summary_table(successful_packs, include_bucket_url)
         logging.success(f"Number of successful uploaded packs: {len(successful_packs)}")
         logging.success(f"Uploaded packs:\n{successful_packs_table}")
     if skipped_packs:
-        skipped_packs_table = _build_summary_table(skipped_packs)
+        skipped_packs_table = _build_summary_table(skipped_packs, include_bucket_url)
         logging.warning(f"Number of skipped packs: {len(skipped_packs)}")
         logging.warning(f"Skipped packs:\n{skipped_packs_table}")
     if failed_packs:
-        failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
+        failed_packs_table = _build_summary_table(failed_packs, include_bucket_url, include_pack_status=True)
         logging.critical(f"Number of failed packs: {len(failed_packs)}")
         logging.critical(f"Failed packs:\n{failed_packs_table}")
         sys.exit(1)
 
-    # for external pull requests -  when there is no failed packs, add the build summary to the pull request
-    branch_name = os.environ['CIRCLE_BRANCH']
-    if branch_name.startswith('pull/'):
-        successful_packs_table = build_summary_table_md(successful_packs)
+    if comment_on_pr:
+        # for external pull requests -  when there is no failed packs, add the build summary to the pull request
+        branch_name = os.environ['CIRCLE_BRANCH']
+        if branch_name.startswith('pull/'):
+            successful_packs_table = build_summary_table_md(successful_packs)
 
-        build_num = os.environ['CIRCLE_BUILD_NUM']
+            build_num = os.environ['CIRCLE_BUILD_NUM']
 
-        bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                      f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
+            bucket_path = f'https://console.cloud.google.com/storage/browser/' \
+                          f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
 
-        pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
-                     f'Uploaded packs:\n{successful_packs_table}\n\n' \
-                     f'Browse to the build bucket with this address:\n{bucket_path}'
+            pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
+                         f'Uploaded packs:\n{successful_packs_table}\n\n' \
+                         f'Browse to the build bucket with this address:\n{bucket_path}'
 
-        add_pr_comment(pr_comment)
+            add_pr_comment(pr_comment)
 
 
 def option_handler():
