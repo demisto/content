@@ -1,8 +1,9 @@
 from typing import Tuple, List, Dict
 
-import urllib3
-from requests.auth import HTTPBasicAuth
 import math
+import urllib3
+from dateparser import parse
+from requests.auth import HTTPBasicAuth
 
 from CommonServerPython import *
 
@@ -332,7 +333,7 @@ class Client(BaseClient):
         tlp_color (str): Traffic Light Protocol color.
     """
 
-    def __init__(self, public_key: str, private_key: str,
+    def __init__(self, public_key: str, private_key: str, first_fetch_timestamp: str,
                  malicious_threshold: int, reputation_interval: int,
                  polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
                  tags: list = [], tlp_color: Optional[str] = None):
@@ -346,8 +347,8 @@ class Client(BaseClient):
         self.tlp_color = tlp_color
 
         integration_context = demisto.getIntegrationContext()
-        self.last_indicators_fetch_time = integration_context.get('last_indicators_fetch_time')
-        self.last_reports_fetch_time = integration_context.get('last_reports_fetch_time')
+        self.last_indicators_fetch_time = integration_context.get('last_indicators_fetch_time', first_fetch_timestamp)
+        self.last_reports_fetch_time = integration_context.get('last_reports_fetch_time', first_fetch_timestamp)
 
     @staticmethod
     def parse_access_token_expiration_time(expires_in: str) -> int:
@@ -443,11 +444,12 @@ class Client(BaseClient):
         if self.last_indicators_fetch_time:
             query_url += f'&added_after={self.last_indicators_fetch_time}'
 
+        demisto.debug('Starting raw indicators fetching')
         round_count = 0
-        while round_count != 10:
+        while round_count != 50:
+            # For fetching 50K objects each time
             headers['Authorization'] = f'Bearer {self.get_access_token()}'
 
-            demisto.debug(f'Fetching indicators round {round_count}')
             response = self._http_request(
                 method='GET',
                 url_suffix=query_url,
@@ -455,7 +457,6 @@ class Client(BaseClient):
                 timeout=self._polling_timeout,
                 resp_type='response'
             )
-            demisto.debug(f'Finished fetching indicators round {round_count}')
             round_count += 1
 
             if response.status_code == 204:
@@ -516,11 +517,12 @@ class Client(BaseClient):
         if self.last_reports_fetch_time:
             query_url += f'&added_after={self.last_reports_fetch_time}'
 
+        demisto.debug('Starting raw reports fetching')
         round_count = 0
-        while round_count != 10:
+        while round_count != 50:
+            # For fetching 50K objects each time
             headers['Authorization'] = f'Bearer {self.get_access_token()}'
 
-            demisto.debug(f'Fetching reports round {round_count}')
             response = self._http_request(
                 method='GET',
                 url_suffix=query_url,
@@ -528,7 +530,6 @@ class Client(BaseClient):
                 timeout=self._polling_timeout,
                 resp_type='response'
             )
-            demisto.debug(f'Finished fetching reports round {round_count}')
             round_count += 1
 
             if response.status_code != 200:
@@ -668,6 +669,25 @@ def reset_fetch_command():
     return 'Fetch was reset successfully', {}, {}
 
 
+def handle_first_fetch_timestamp():
+    """Parses the first_fetch_timestamp parameter.
+
+    Returns:
+        timestamp as str if valid, None otherwise.
+
+    """
+    user_input = demisto.params().get('first_fetch_timestamp')
+
+    try:
+        first_fetch_timestamp = parse(user_input).timestamp()
+        first_fetch_timestamp = str(first_fetch_timestamp).split('.')[0]
+        return first_fetch_timestamp
+    except Exception:
+        # Timestamp could not be parsed
+        demisto.debug(f'Could not parse requested first fetch timestamp with value {user_input}')
+        return None
+
+
 def verify_threshold_reputation_interval_types(threshold: str, reputation_interval: str):
     if not str.isdigit(threshold):
         return_error(f'{INTEGRATION_NAME} wrong parameter value - '
@@ -685,6 +705,7 @@ def main():
 
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
+    first_fetch_timestamp = handle_first_fetch_timestamp()
     threshold = demisto.params().get('threshold', '70')
     reputation_interval = demisto.params().get('reputation_interval', '30')
     verify_threshold_reputation_interval_types(threshold, reputation_interval)
@@ -701,7 +722,7 @@ def main():
     demisto.info(f'Command being called is {command}')
     command = demisto.command()
     try:
-        client = Client(public_key, private_key, int(threshold), int(reputation_interval),
+        client = Client(public_key, private_key, first_fetch_timestamp, int(threshold), int(reputation_interval),
                         polling_timeout, insecure, proxy, feedTags, tlp_color)
         if command == 'test-module':
             return_outputs(*test_module(client))
@@ -722,8 +743,8 @@ def main():
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
-    except Exception:
-        raise
+    except Exception as e:
+        return_error(str(e))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

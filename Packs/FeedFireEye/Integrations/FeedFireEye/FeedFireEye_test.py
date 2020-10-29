@@ -3,7 +3,8 @@ from typing import Optional
 
 import pytest
 import requests_mock
-from FeedFireEye import Client, STIX21Processor, FE_CONFIDENCE_TO_REPUTATION, parse_timestamp
+from FeedFireEye import Client, STIX21Processor, FE_CONFIDENCE_TO_REPUTATION, parse_timestamp, \
+    handle_first_fetch_timestamp
 from freezegun import freeze_time
 
 import demistomock as demisto
@@ -325,3 +326,30 @@ def test_parse_timestamp():
         'last_id_modified_timestamp=MTU4MDgwOTIxOTcyODY0NixpbmRpY2F0b3ItLTA5MWI3OWQxLTllOWQtNWExYS04ODMzLTZlNTkyZmNj'
         'MmM1NQ%3D%3D&added_after=1580764458'
     ) == 1580809219
+
+
+@pytest.mark.parametrize('param_input, expected_result', [
+    ('1 month', '737647200'),
+    ('2 months', '735055200'),
+    ('1 day', '740239200'),
+    ('3 weeks', '738511200'),
+    ('', None),
+    (None, None),
+
+])
+@freeze_time("1993-06-17 11:00:00 GMT")
+def test_handle_first_fetch_timestamp(mocker, param_input, expected_result):
+    """
+
+    Given:
+        - first_fetch_timestamp parameter from user input
+
+    When:
+        - Calculating the first fetch timestamp value
+
+    Then:
+        - str value of the required time, or None if empty
+
+    """
+    mocker.patch.object(demisto, 'params', return_value={'first_fetch_timestamp': param_input})
+    assert handle_first_fetch_timestamp() == expected_result

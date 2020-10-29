@@ -57,7 +57,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '15'
+- defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -74,6 +74,11 @@ configuration:
   name: credentials
   required: true
   type: 9
+- defaultvalue: 1 month
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year). Leave empty to fetch from the first indicator available.
+  name: first_fetch_timestamp
+  required: false
+  type: 0
 - additionalinfo: |-
     The minimum score from the feed to consider the indicator as malicious. Default is "70".
   defaultvalue: '70'
