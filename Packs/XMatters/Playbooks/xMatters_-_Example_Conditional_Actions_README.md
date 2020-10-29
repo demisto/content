@@ -1,12 +1,10 @@
-Trigger an xMatters workflow to notify a user for a response. This playbook would be used as a sub-playbook to notify an xMatters Group or User and then wait for a response. The user's response is passed as an output to the playbook for use in a parent playbook for branching. 
-
-See the `xMatters - Example Conditional Actions` playbook for an example.
+Trigger the `xMatters - Trigger and Wait` playbook to fire an event to xMatters targeting the recipients, then branch based on the chosen response. 
 
 ## Dependencies
 * xMatters
 
 ### Sub-playbooks
-This playbook does not use any sub-playbooks.
+* xMatters - Wait for Response
 
 ### Integrations
 * xMatters
@@ -18,7 +16,6 @@ This playbook does not use any scripts.
 * xm-trigger-workflow
 
 ## Playbook Inputs
-
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
@@ -32,8 +29,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** |
 | --- | --- | 
 | xMatters.UserResponse | The user's response | 
-| xMatters.RequestId | The requestId of the request to xMatters. This can be used for troubleshooting. |
 
 ## Playbook Image
----
-![xMatters - Wait for Response](xMatters_-_Wait_for_Response.png)
+
+![xMatters - Example Conditional Actions](xMatters_-_Example_Conditional_Actions.png)

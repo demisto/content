@@ -1,5 +1,5 @@
 id: deeb234b-0c7e-4f09-83fb-e2e10fb8f608
-version: 60
+version: 71
 vcShouldKeepItemLegacyProdMachine: false
 name: xMatters - Wait for Response
 description: Trigger an xMatters workflow to notify a user for a response.
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 60
+          "y": 50
         }
       }
     note: false
@@ -75,10 +75,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 25a89d68-bb20-4758-8df9-b50adb84e683
+    taskid: 87286044-50c4-4ab2-8491-2ccad4cfc5f7
     type: regular
     task:
-      id: 25a89d68-bb20-4758-8df9-b50adb84e683
+      id: 87286044-50c4-4ab2-8491-2ccad4cfc5f7
       version: -1
       name: waitForxMatters
       description: Response from xMatters.
@@ -105,12 +105,12 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 8a61ec3a-a2ab-4070-88a7-906d334df1f2
+    taskid: 9e20ec55-c37b-4201-8ad6-14331d6fb685
     type: regular
     task:
-      id: 8a61ec3a-a2ab-4070-88a7-906d334df1f2
+      id: 9e20ec55-c37b-4201-8ad6-14331d6fb685
       version: -1
-      name: Comments to context
+      name: Copy the comment value to the context
       description: "Takes the comments of a given entry ID and stores them in the
         incident context, under a provided context key. \nFor accessing the last executed
         task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
@@ -224,10 +224,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 900,
+        "height": 910,
         "width": 380,
         "x": 50,
-        "y": 60
+        "y": 50
       }
     }
   }

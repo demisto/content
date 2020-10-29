@@ -4,6 +4,7 @@ import requests
 import json
 import dateparser
 import traceback
+import urllib.parse
 from typing import Any, Dict, Tuple, List, Optional, cast
 
 ''' CONSTANTS '''
@@ -34,7 +35,7 @@ class Client(BaseClient):
         """
         res = self._http_request(
             method='GET',
-            url_suffix='/api/xm/1/people/' + user
+            url_suffix='/api/xm/1/people?webLogin=' + urllib.parse.quote(user)
         )
 
         return res
@@ -444,7 +445,7 @@ def event_reduce(e):
             "PlanName": e.get('plan').get('name'),
             "FormName": e.get('form').get('name'),
             "Status": e.get('status'),
-            "Prioity": e.get('priority'),
+            "Priority": e.get('priority'),
             "Properties": e.get('properties'),
             "SubmitterName": e.get('submitter').get('targetName')}
 
