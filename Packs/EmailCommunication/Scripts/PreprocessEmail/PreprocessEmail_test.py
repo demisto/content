@@ -85,7 +85,7 @@ def test_get_entry_id_list():
         When
         - building an entry id list in order to replace the email's attachments source path.
         Then
-        - Ensures that only the email's attachments entry id's was returned and not all files entries.
+        - Ensures that only the email attachments entry id's were returned and not all files entries.
     """
     from PreprocessEmail import get_entry_id_list
     attachments = [
