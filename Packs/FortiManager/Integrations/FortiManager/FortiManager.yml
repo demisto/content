@@ -1,5 +1,4 @@
 category: Network Security
-beta: true
 commonfields:
   id: FortiManager
   version: -1
@@ -527,25 +526,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fully Qualified Domain Name address.
+      description: Fully Qualified Domain Name address. Required for fqdn address
+        type.
       isArray: false
       name: fqdn
       required: false
       secret: false
     - default: false
-      description: First IP address (inclusive) in the range for the address.
+      description: First IP address (inclusive) in the range for the address. Required
+        for iprange address type.
       isArray: false
       name: start_ip
       required: false
       secret: false
     - default: false
-      description: Final IP address (inclusive) in the range for the address.
+      description: Final IP address (inclusive) in the range for the address. Required
+        for iprange address type.
       isArray: false
       name: end_ip
       required: false
       secret: false
     - default: false
-      description: IP address and subnet mask of address.
+      description: IP address and subnet mask of address. Required for ipmask address
+        type.
       isArray: false
       name: subnet
       required: false
@@ -558,7 +561,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The address SDN
+      description: The address SDN. Required for dynamic address type.
       isArray: false
       name: sdn
       predefined:
@@ -570,15 +573,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP address and wildcard netmask.
+      description: IP address and wildcard netmask. Required for wildcard address
+        type.
       isArray: false
       name: wildcard
       required: false
       secret: false
     - default: false
-      description: Fully Qualified Domain Name with wildcard characters.
+      description: Fully Qualified Domain Name with wildcard characters. Required
+        for wildcard-fqdn address type.
       isArray: false
       name: wildcard_fqdn
+      required: false
+      secret: false
+    - default: false
+      description: '2 letter representing a counrty associated to an IP address (for
+        example: ''us''). Required for geography address type. '
+      isArray: false
+      name: country
       required: false
       secret: false
     deprecated: false
@@ -633,25 +645,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fully Qualified Domain Name address.
+      description: Fully Qualified Domain Name address. Required for fqdn address
+        type.
       isArray: false
       name: fqdn
       required: false
       secret: false
     - default: false
-      description: First IP address (inclusive) in the range for the address.
+      description: First IP address (inclusive) in the range for the address. Required
+        for iprange address type.
       isArray: false
       name: start_ip
       required: false
       secret: false
     - default: false
-      description: Final IP address (inclusive) in the range for the address.
+      description: Final IP address (inclusive) in the range for the address. Required
+        for iprange address type.
       isArray: false
       name: end_ip
       required: false
       secret: false
     - default: false
-      description: IP address and subnet mask of address.
+      description: IP address and subnet mask of address. Required for ipmask address
+        type.
       isArray: false
       name: subnet
       required: false
@@ -664,27 +680,36 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The address SDN
+      description: The address SDN. Required for dynamic address type.
       isArray: false
       name: sdn
       predefined:
-      - aci
-      - aws
-      - nsx
-      - nuage
-      - azure
+        - aci
+        - aws
+        - nsx
+        - nuage
+        - azure
       required: false
       secret: false
     - default: false
-      description: IP address and wildcard netmask.
+      description: IP address and wildcard netmask. Required for wildcard address
+        type.
       isArray: false
       name: wildcard
       required: false
       secret: false
     - default: false
-      description: Fully Qualified Domain Name with wildcard characters.
+      description: Fully Qualified Domain Name with wildcard characters. Required
+        for wildcard-fqdn address type.
       isArray: false
       name: wildcard_fqdn
+      required: false
+      secret: false
+    - default: false
+      description: '2 letter representing a counrty associated to an IP address (for
+       example: ''us''). Required for geography address type. '
+      isArray: false
+      name: country
       required: false
       secret: false
     deprecated: false
@@ -2976,3 +3001,4 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
+beta: true

@@ -14,6 +14,16 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
 GLOBAL_VAR = 'global'
+ADDRESS_TYPE_MAPPING = {
+    0: 'ipmask',
+    1: 'iprange',
+    2: 'fqdn',
+    3: 'wildcard',
+    4: 'geography',
+    5: 'dynamic',
+    6: 'wildcard-fqdn'
+}
+
 
 ''' CLIENT CLASS '''
 
@@ -177,7 +187,16 @@ def list_firewall_addresses_command(client, args):
                                                              f"{get_specific_entity(args.get('address'))}",
                                                       range_info=get_range_for_list_command(args))
 
-    headers = ['name', 'type', 'subnet', 'start-ip', 'end-ip', 'fqdn', 'wildcard', 'country', 'wildcard-fqdn']
+    headers = ['name', 'type', 'subnet', 'start-ip', 'end-ip', 'fqdkn', 'wildcard', 'country', 'wildcard-fqdn', 'sdn']
+
+    # change address type from number to text
+    if type(firewall_addresses) == list:
+        for address in firewall_addresses:
+            if 'type' in address:
+                address['type'] = ADDRESS_TYPE_MAPPING.get(address['type'], address['type'])
+
+    else:
+        firewall_addresses['type'] = ADDRESS_TYPE_MAPPING.get(firewall_addresses['type'], firewall_addresses['type'])
 
     return CommandResults(
         outputs_prefix='FortiManager.Address',
