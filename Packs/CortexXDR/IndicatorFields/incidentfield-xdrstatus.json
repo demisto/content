@@ -8,7 +8,7 @@
   "fromVersion": "5.5.0",
   "toServerVersion": "",
   "vcShouldIgnore": true,
-  "commitMessage": "XDR status changeds",
+  "commitMessage": "XDR status changed",
   "shouldCommit": true,
   "name": "XDR status",
   "prevName": "XDR status",
