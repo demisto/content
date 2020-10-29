@@ -11,13 +11,14 @@ from demisto_sdk.commands.common import tools
 
 from Tests.scripts.utils.collect_helpers import (
     COMMON_YML_LIST,
-    is_pytest_file, checked_type,
+    is_pytest_file, checked_type, SECRETS_WHITE_LIST,
 )
 
 
 class FileType(constants.FileType, Enum):
     CONF_JSON = "confjson"
     METADATA = "metadata"
+    WHITE_LIST = 'whitelist'
 
 
 def resolve_type(file_path: str) -> Optional[FileType]:
@@ -31,7 +32,7 @@ def resolve_type(file_path: str) -> Optional[FileType]:
     """
     if checked_type(constants.CONF_PATH, [file_path]):
         return FileType.CONF_JSON
-    # if is not part of packs meta file name or whitelisted
+    # MetaData files
     elif any(
         file in file_path
         for file in (
@@ -40,7 +41,41 @@ def resolve_type(file_path: str) -> Optional[FileType]:
         )
     ):
         return FileType.METADATA
+    elif checked_type(file_path, [SECRETS_WHITE_LIST]):
+        return FileType.WHITE_LIST
     return None
+
+
+def remove_python_files(types_to_files: Dict[FileType, Set[str]]):
+    """Get corresponding yml files and types from PY files. Then removes all python files with corresponding ymls.
+
+    Args:
+        types_to_files: Mapping of FileType: file_paths
+
+    Returns:
+        Filtered types_to_files
+    """
+    py_to_be_removed = set()
+    for file_path in types_to_files.get(FileType.PYTHON_FILE, set()):
+        if not is_pytest_file(file_path):
+            yml_path = get_corresponding_yml_file(file_path)
+            # There's a yml path
+            if yml_path is not None:
+                yml_type = tools.find_type(yml_path) or resolve_type(file_path)
+                if yml_type is not None:
+                    if yml_type in types_to_files:
+                        types_to_files[yml_type].add(yml_path)
+                    else:
+                        types_to_files[yml_type] = {yml_path}
+                    py_to_be_removed.add(file_path)
+        else:
+            py_to_be_removed.add(file_path)
+
+    # remove python files
+    if py_to_be_removed:
+        types_to_files[FileType.PYTHON_FILE] = types_to_files[FileType.PYTHON_FILE] - py_to_be_removed
+
+    return types_to_files
 
 
 def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
@@ -70,26 +105,7 @@ def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
                     elif file_type is not None:
                         types_to_files[file_type] = {file_path}
 
-    # Get corresponding yml files and types from PY files.
-    py_to_be_removed = set()
-    for file_path in types_to_files.get(FileType.PYTHON_FILE, set()):
-        if not is_pytest_file(file_path):
-            yml_path = get_corresponding_yml_file(file_path)
-            # There's a yml path
-            if yml_path is not None:
-                yml_type = tools.find_type(yml_path) or resolve_type(file_path)
-                if yml_type is not None:
-                    if yml_type in types_to_files:
-                        types_to_files[yml_type].add(yml_path)
-                    else:
-                        types_to_files[yml_type] = {yml_path}
-                    py_to_be_removed.add(file_path)
-        else:
-            py_to_be_removed.add(file_path)
-
-    # remove python files
-    if py_to_be_removed:
-        types_to_files[FileType.PYTHON_FILE] = types_to_files[FileType.PYTHON_FILE] - py_to_be_removed
+    types_to_files = remove_python_files(types_to_files)
 
     return types_to_files
 
@@ -108,7 +124,7 @@ def get_modified_files_for_testing(
         changed_common: Globally used YMLs (Like CommonServerPython).
         is_conf_json: If Tests/Conf.json has been changed.
         sample_tests: Files to test, Like the infrastructures files.
-        modified_metadata: Metadata files.
+        modified_metadata: Pack names of changed metadata files.
         is_reputations_json: If any reputation file changed.
         is_indicator_json: If any indicator file changed.
     """
