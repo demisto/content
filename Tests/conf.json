@@ -3198,7 +3198,8 @@
         "CyberTotal_TestPlaybook": "Issue 29776",
         "AWS-securityhub Test": "Issue 29796",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
-        "AWS - CloudWatchLogs Test Playbook": "Issue 29828"
+        "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
+        "Wildfire Test": "Issue 24936"
     },
     "skipped_integrations": {
         
@@ -3329,7 +3330,7 @@
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "Palo Alto Minemeld": "Issue #26878",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
     },
     "nightly_integrations": [
         "Lastline v2",
