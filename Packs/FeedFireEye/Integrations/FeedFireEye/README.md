@@ -19,6 +19,7 @@ Use the FireEye feed integration to fetch indicators from the FireEye Intelligen
     | Indicator Expiration Interval | How often to expire the indicators from this integration instance (in minutes). This only applies if the `feedExpirationPolicy` is set to "interval".|
     | Feed Fetch Interval | How often to fetch indicators from the feed for this integration instance (in minutes). The default value is 240. | 
     | Public Key + Password | The credentials used to access the feed's data. | 
+    | First Fetch Time | First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year). |
     | Malicious Threshold | The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "70". | 
     | Reputation Interval | If this amount of days passed since the indicator was created, then its reputation can be at most "Suspicious". Default is "30". | 
     | Bypass exclusion list | Whether the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. |
