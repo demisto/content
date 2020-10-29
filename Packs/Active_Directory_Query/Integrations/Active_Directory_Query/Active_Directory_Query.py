@@ -125,8 +125,20 @@ def endpoint_entry(computer_object, custome_attributes):
         'Groups': computer_object.get('memberOf')
     }
 
+    lower_cased_person_object_keys = {
+        person_object_key.lower(): person_object_key for person_object_key in computer_object.keys()
+    }
+
     for attr in custome_attributes:
-        endpoint[attr] = computer_object[attr]
+        try:
+            endpoint[attr] = computer_object[attr]
+        except KeyError as e:
+            lower_cased_custom_attr = attr.lower()
+            if lower_cased_custom_attr in lower_cased_person_object_keys:
+                cased_custom_attr = lower_cased_person_object_keys.get(lower_cased_custom_attr, '')
+                endpoint[cased_custom_attr] = computer_object[cased_custom_attr]
+            else:
+                demisto.error(f'Failed parsing custom attribute {attr}, error: {e}')
 
     return endpoint
 
@@ -408,7 +420,6 @@ def search_computers(default_base_dn, page_size):
     # this command is equivalent to ADGetComputer script
 
     args = demisto.args()
-
     attributes: List[str] = []
     custome_attributes: List[str] = []
 
@@ -432,9 +443,7 @@ def search_computers(default_base_dn, page_size):
 
     if args.get('attributes'):
         custome_attributes = args['attributes'].split(",")
-
     attributes = list(set(custome_attributes + DEFAULT_COMPUTER_ATTRIBUTES))
-
     entries = search_with_paging(
         query,
         default_base_dn,
