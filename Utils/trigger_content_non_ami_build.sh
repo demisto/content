@@ -46,3 +46,5 @@ curl \
 --data "${post_data}" \
 --request POST ${trigger_build_url} \
 --user "$_circle_token:"
+
+echo test very nice
