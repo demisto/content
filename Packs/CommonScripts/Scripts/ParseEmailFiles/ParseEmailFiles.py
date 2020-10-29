@@ -3250,11 +3250,46 @@ def extract_address(s):
         return s
 
 
-def extract_address_eml(eml, s):
-    addresses = getaddresses(eml.get_all(s, []))
+def get_email_address(eml, entry):
+    """
+    This function gets email addresses from an eml object, i.e eml[entry].
+    Args:
+        eml : Email object.
+        entry (str) : entry to look for in the email. i.e ('To', 'CC', 'From')
+    Returns:
+        res (str) : string of all required email addresses.
+    """
+    gel_all_values_from_email_by_entry = eml.get_all(entry, [])
+    addresses = getaddresses(gel_all_values_from_email_by_entry)
     if addresses:
         res = [item[1] for item in addresses]
-        return ', '.join(res)
+        res = ', '.join(res)
+        return res
+    return ''
+
+
+def extract_address_eml(eml, entry):
+    """
+    This function calls get_email_address in order to get required email addresses from email object.
+    In addition, this function handles an edge case of '\r\n' in eml['from'] (as explained below).
+    Args:
+        eml : Email object.
+        entry (str) : entry to look for in the email. i.e ('To', 'CC', 'From')
+    Returns:
+        res (str) : string of all required email addresses.
+    """
+    email_address = get_email_address(eml, entry)
+    if email_address:
+        if entry == 'from' and not re.search(REGEX_EMAIL, email_address):
+            # this condition refers only to ['from'] header that does not have a valid email
+            # fixed an issue where email['From'] had '\r\n'.
+            # in order to solve, used replace_header() on email object,
+            # and did again get_all() on the new format of ['from']
+            original_value = eml['from']
+            eml.replace_header('from', ' '.join(eml["from"].splitlines()))
+            email_address = get_email_address(eml, entry)
+            eml.replace_header('from', original_value)  # replace again to the original header (keep on BC)
+        return email_address
     else:
         return ''
 
@@ -3307,8 +3342,9 @@ def save_attachments(attachments, root_email_file_name, max_depth):
                     inner_eml, attached_inner_emails = handle_eml(tf.name, file_name=root_email_file_name,
                                                                   max_depth=max_depth)
                     if inner_eml:
-                        return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name),
-                                       outputs=None)
+                        return_outputs(
+                            readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name),
+                            outputs=None)
                         attached_emls.append(inner_eml)
                     if attached_inner_emails:
                         attached_emls.extend(attached_inner_emails)
@@ -3597,7 +3633,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         # if we are parsing a signed attachment there can be one of two options:
         # 1. it is 'multipart/signed' so it is probably a wrapper and we can ignore the outer "email"
         # 2. if it is 'multipart/signed' but has 'to' address so it is actually a real mail.
-        if 'multipart/signed' not in eml.get_content_type()\
+        if 'multipart/signed' not in eml.get_content_type() \
                 or ('multipart/signed' in eml.get_content_type() and extract_address_eml(eml, 'to')):
             email_data = {
                 'To': extract_address_eml(eml, 'to'),
