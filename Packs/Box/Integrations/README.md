@@ -1,5 +1,4 @@
 Manage Box users
-This integration was integrated and tested with version xx of Box
 ## Configure Box on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
