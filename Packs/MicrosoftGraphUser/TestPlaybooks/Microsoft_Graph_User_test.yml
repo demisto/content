@@ -723,7 +723,7 @@ tasks:
       version: -1
       name: 'Create test user #2'
       description: Creates a new user.
-      script: '|||msgraph-user-create'
+      script: '|||msgraph-user--create'
       type: regular
       iscommand: true
       brand: ""
@@ -733,16 +733,16 @@ tasks:
     scriptarguments:
       account_enabled: {}
       display_name:
-        simple:
+        simple: 'Graph Test - User #2'
       mail_nickname:
-        simple:
+        simple: graph
       on_premises_immutable_id: {}
       other_properties:
         simple: jobTitle=Test,city=Tel Aviv
       password:
         simple: ${NEW_PASSWORD}
       user_principal_name:
-        simple:
+        simple: ${GeneratedUUID}-2@${inputs.baseurl}
     continueonerror: true
     separatecontext: false
     view: |-
