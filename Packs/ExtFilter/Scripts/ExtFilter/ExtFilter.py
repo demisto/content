@@ -206,7 +206,7 @@ def extract_value(source: Any, extractor: Callable[[str, Optional[ContextData]],
         while ci < len(source):
             if endc is not None and source[ci] == endc:
                 if not extractor:
-                    return ci + len(endc)
+                    return '', ci + len(endc)
                 xval = extractor(source[si:ci], dx)
                 val += str(xval) if xval is not None else ''
                 si = ci = ci + len(endc)
@@ -640,7 +640,7 @@ class ExtFilter:
                         lop = x
                     else:
                         exit_error('Invalid logical operators syntax')
-                else:
+                elif isinstance(x, (dict, list)):
                     val = None
                     if ok is None:
                         val = self.filter_with_expressions(
@@ -658,9 +658,11 @@ class ExtFilter:
                         exit_error(f'Invalid logical operator: {lop}')
                     lop, neg = (None, None)
                     root = val.value if val else root
+                else:
+                    exit_error(f'Invalid conditions format: {x}')
             return Value(root) if ok is None or ok else None
         else:
-            exit_error(f'Invalid condition format: {conds}')
+            exit_error(f'Invalid conditions format: {conds}')
         return None
 
     def filter_by_conditions(self, root: Any, conds: Union[dict, list]) -> Optional[Value]:
@@ -699,6 +701,9 @@ class ExtFilter:
         if isinstance(conds, dict):
             # AND conditions
             for x in conds.items():
+                if len(x) < 2 or isinstance(x[0], (dict, list)):
+                    exit_error(f'Invalid conditions format: {x}')
+
                 root = self.filter_with_expressions(root, x[1], x[0])
                 if not root:
                     return None
@@ -731,10 +736,10 @@ class ExtFilter:
                     lop, neg = (None, None)
                     root = val.value if val else root
                 else:
-                    exit_error('Internal error: {x}')
+                    exit_error(f'Invalid conditions format: {x}')
             return Value(root) if ok is None or ok else None
         else:
-            exit_error(f'Invalid custom condition format: {conds}')
+            exit_error(f'Invalid conditions format: {conds}')
         return None
 
     def filter_values(self, root: List[Any], optype: str, conds: Any, path: Optional[str] = None) -> Optional[Value]:
@@ -761,7 +766,8 @@ class ExtFilter:
           :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
         if optype == "abort":
-            exit_error(f"ABORT: value = {root}, conds = {conds}, path = {path}")
+            exit_error(
+                f"ABORT: value = {root}, conds = {conds}, path = {path}")
 
         elif optype == "is transformed with":
             conds = self.parse_conds_json(conds)

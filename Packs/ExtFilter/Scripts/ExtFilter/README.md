@@ -364,8 +364,8 @@ Available operators
 ----
 ### Operator: `is transformed with`
 <details><summary>
-Transform each element with `<transformers>` given in a filter.
-See `Filter Syntax` for the details of `<transformers>`.
+Transform each element with `transformers` given in a filter.
+See `Filter Syntax` for the details of `transformers`.
 </summary><p/>
 
 > **Filter Format**: `transformers`
@@ -462,7 +462,7 @@ See `Filter Syntax` for the details of `<transformers>`.
 <details><summary>
 Evaluates each element of an array with given conditions and returns a set of the elements matched.
 The value is handled as an array which has only one element when its data type is `dictionary`.
-See `Filter Syntax` for the details of `<conditions>`.
+See `Filter Syntax` for the details of `conditions`.
 </summary><p/>
 
 > **Filter Format**: `conditions`
@@ -510,7 +510,7 @@ See `Filter Syntax` for the details of `<conditions>`.
 ### Operator: `value is filtered with`
 <details><summary>
 Evaluates each value of dictionary elements or each element for values whose data type is not `dictionary`, and returns a set of the elements matched to expressions given in a filter.
-See `Filter Syntax` for the details of `<expressions>`.
+See `Filter Syntax` for the details of `expressions`.
 </summary><p/>
 
 > **Filter Format**: `expressions`
@@ -6664,8 +6664,8 @@ The matching is peformed case-insensitively.
 ----
 ### Operator: `matches expressions of`
 <details><summary>
-Returns the result of a value filtered by `<expressions>` given.
-See `Filter Syntax` for the details of `<expressions>`.
+Returns the result of a value filtered by `expressions` given.
+See `Filter Syntax` for the details of `expressions`.
 </summary><p/>
 
 > **Filter Format**: `expressions`
@@ -6744,8 +6744,8 @@ See `Filter Syntax` for the details of `<expressions>`.
 ----
 ### Operator: `matches conditions of`
 <details><summary>
-Returns the result of a value filtered by `<conditions>` given.
-See `Filter Syntax` for the details of `<conditions>`.
+Returns the result of a value filtered by `conditions` given.
+See `Filter Syntax` for the details of `conditions`.
 </summary><p/>
 
 > **Filter Format**: `conditions`
@@ -7034,7 +7034,7 @@ See `Filter Syntax` for the details of `<conditions>`.
 ### Operator: `value matches expressions of`
 <details><summary>
 Evaluates each value of dictionary elements or each element for values whose data type is not `dictionary`, and returns a set of the elements matched to expressions given in a filter.
-See `Filter Syntax` for the details of `<expressions>`.
+See `Filter Syntax` for the details of `expressions`.
 </summary><p/>
 
 > **Filter Format**: `expressions`
@@ -7110,7 +7110,7 @@ See `Filter Syntax` for the details of `<expressions>`.
 ### Operator: `value matches conditions of`
 <details><summary>
 Evaluates each value of dictionary elements, and returns a set of the elements matched to conditions given in a filter.
-See `Filter Syntax` for the details of `<conditions>`.
+See `Filter Syntax` for the details of `conditions`.
 </summary><p/>
 
 > **Filter Format**: `conditions`
