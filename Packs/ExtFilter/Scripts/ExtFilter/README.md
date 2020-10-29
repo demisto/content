@@ -1,4 +1,4 @@
-Filter values with complex conditions.<br>
+Filter values with complex conditions.<br/>
 You can make filters with comlex and combination conditions for the context data at any level of the tree.
 
 ---
@@ -366,7 +366,7 @@ Available operators
 <details><summary>
 Transform each element with `<transformers>` given in a filter.
 See `Filter Syntax` for the details of `<transformers>`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `transformers`
 
@@ -463,7 +463,7 @@ See `Filter Syntax` for the details of `<transformers>`.
 Evaluates each element of an array with given conditions and returns a set of the elements matched.
 The value is handled as an array which has only one element when its data type is `dictionary`.
 See `Filter Syntax` for the details of `<conditions>`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `conditions`
 
@@ -511,7 +511,7 @@ See `Filter Syntax` for the details of `<conditions>`.
 <details><summary>
 Evaluates each value of dictionary elements or each element for values whose data type is not `dictionary`, and returns a set of the elements matched to expressions given in a filter.
 See `Filter Syntax` for the details of `<expressions>`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `expressions`
 
@@ -595,7 +595,7 @@ See `Filter Syntax` for the details of `<expressions>`.
 <details><summary>
 Evaluates each element of an array with keys given and returns a set of the elements which only retains the keys given and corresponding values.
 The value is handled as an array which has only one element when its data type is `dictionary`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `expressions`
 
@@ -650,7 +650,7 @@ The value is handled as an array which has only one element when its data type i
 <details><summary>
 Evaluates each element of an array with keys given and returns a set of the elements which are excluded the keys given.
 The value is handled as an array which has only one element when its data type is `dictionary`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `expressions`
 
@@ -705,13 +705,13 @@ The value is handled as an array which has only one element when its data type i
 ### Operator: `is`
 <details><summary>
 This operator works with a sub operator specified as filter.
-</summary><p>
+</summary><p/>
 
 ----
 #### Sub Operator: empty
 <details><summary>
 Returns a set of elements which is empty.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -762,7 +762,7 @@ Returns a set of elements which is empty.
 #### Sub Operator: null
 <details><summary>
 Returns a set of elements which is `null`.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -811,7 +811,7 @@ Returns a set of elements which is `null`.
 #### Sub Operator: string
 <details><summary>
 Returns a set of elements whose data type is `string`.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -861,7 +861,7 @@ Returns a set of elements whose data type is `string`.
 #### Sub Operator: integer
 <details><summary>
 Returns a set of elements whose data type is `integer`.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -908,7 +908,7 @@ Returns a set of elements whose data type is `integer`.
 <details><summary>
 Returns a set of elements whose data type is `string` and whose value is integer.
 The value that includes decimal point is evaluated as not integer.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -938,7 +938,7 @@ The value that includes decimal point is evaluated as not integer.
 #### Sub Operator: any integer
 <details><summary>
 Returns a set of elements matched with `string` or `integer string` operator.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -971,7 +971,7 @@ Returns a set of elements matched with `string` or `integer string` operator.
 #### Sub Operator: existing key
 <details><summary>
 Evaluates each dictionary element of an array, then returns a set of the elements which has a key given in `path`.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -1058,13 +1058,13 @@ Evaluates each dictionary element of an array, then returns a set of the element
 ### Operator: `isn't`
 <details><summary>
 This operator works with a sub operator specified as filter.
-</summary><p>
+</summary><p/>
 
 ----
 #### Sub Operator: empty
 <details><summary>
 Returns a set of elements which is not empty.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -1115,7 +1115,7 @@ Returns a set of elements which is not empty.
 #### Sub Operator: null
 <details><summary>
 Returns a set of elements which is not `null`.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -1167,7 +1167,7 @@ Returns a set of elements which is not `null`.
 #### Sub Operator: string
 <details><summary>
 Returns a set of elements whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -1220,7 +1220,7 @@ Returns a set of elements whose data type is not `string`.
 #### Sub Operator: integer
 <details><summary>
 Returns a set of elements whose date type is not `integer`.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -1267,7 +1267,7 @@ Returns a set of elements whose date type is not `integer`.
 <details><summary>
 Returns a set of elements whose data type is not `string` or whose value is not integer.
 The value that includes decimal point is evaluated as not integer.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -1299,7 +1299,7 @@ The value that includes decimal point is evaluated as not integer.
 #### Sub Operator: any integer
 <details><summary>
 Returns a set of elements which are neither `string` or `integer string`.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -1331,7 +1331,7 @@ Returns a set of elements which are neither `string` or `integer string`.
 #### Sub Operator: existing key
 <details><summary>
 Evaluates each dictionary element of an array, then returns a set of the elements which doesn't have a key given in `path`.
-</summary><p>
+</summary><p/>
 
 
 #### Example 1
@@ -1413,7 +1413,7 @@ Evaluates each dictionary element of an array, then returns a set of the element
 ### Operator: `===`
 <details><summary>
 Returns a set of elements which exactly matches to a value given in a filter. It doesn't match when the data types are different.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<value>`
 
@@ -1470,7 +1470,7 @@ Returns a set of elements which exactly matches to a value given in a filter. It
 ### Operator: `!==`
 <details><summary>
 Returns a set of elements which doesn't match the data type or the value of a value given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<value>`
 
@@ -1506,7 +1506,7 @@ Returns a set of elements which doesn't match the data type or the value of a va
 Returns a set of elements which is equal to a value given in a filter.
 The value is implicitly converted from its data type to another in a comparison between different data types.
 `=='` is an alias name for `equals`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<value>`
 
@@ -1542,7 +1542,7 @@ The value is implicitly converted from its data type to another in a comparison 
 Returns a set of elements which is not equal to a value given in a filter.
 The value is implicitly converted from its data type to another in a comparison between different data types.
 `!='` is an alias name for `doesn't equal`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<value>`
 
@@ -1578,7 +1578,7 @@ Returns a set of elements which is greater or equal to a value given in a filter
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
 `>='` is an alias name for `greater or equal`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<value>`
 
@@ -1616,7 +1616,7 @@ Returns a set of elements which is greater than a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
 `>'` is an alias name for `greater than`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<value>`
 
@@ -1653,7 +1653,7 @@ Returns a set of elements which is less or equal to a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
 `<='` is an alias name for `less or equal`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<value>`
 
@@ -1692,7 +1692,7 @@ Returns a set of elements which is less than a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
 `<'` is an alias name for `less than`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<value>`
 
@@ -1728,7 +1728,7 @@ This operator evaluates to false for either or both of the data which cannot con
 Returns a set of elements which is greater or equal to `min` and less or equal to `max` given in a range.
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `min`,`max`
 
@@ -1765,7 +1765,7 @@ This operator evaluates to false for either or both of the data which cannot con
 ### Operator: `starts with`
 <details><summary>
 Returns a set of elements which starts with a string given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -1801,7 +1801,7 @@ Returns a set of elements which starts with a string given in a filter.
 ### Operator: `starts with caseless`
 <details><summary>
 Returns a set of elements which starts with a string given in a filter. It performs case-insensitive matching.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -1839,7 +1839,7 @@ Returns a set of elements which starts with a string given in a filter. It perfo
 ### Operator: `doesn't start with`
 <details><summary>
 Returns a set of elements which doesn't start with a string given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -1879,7 +1879,7 @@ Returns a set of elements which doesn't start with a string given in a filter.
 ### Operator: `doesn't start with caseless`
 <details><summary>
 Returns a set of elements which doesn't start with a string given in a filter. It performs case-insensitive matching.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -1920,7 +1920,7 @@ Returns a set of elements which doesn't start with a string given in a filter. I
 ### Operator: `ends with`
 <details><summary>
 Returns a set of elements which ends with a string given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -1956,7 +1956,7 @@ Returns a set of elements which ends with a string given in a filter.
 ### Operator: `ends with caseless`
 <details><summary>
 Returns a set of elements which ends with a string given in a filter. It performs case-insensitive matching.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -1994,7 +1994,7 @@ Returns a set of elements which ends with a string given in a filter. It perform
 ### Operator: `doesn't end with`
 <details><summary>
 Returns a set of elements which doesn't end with a string given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2034,7 +2034,7 @@ Returns a set of elements which doesn't end with a string given in a filter.
 ### Operator: `doesn't end with caseless`
 <details><summary>
 Returns a set of elements which doesn't end with a string given in a filter. It performs case-insensitive matching.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2077,7 +2077,7 @@ Returns a set of elements which doesn't end with a string given in a filter. It 
 Returns a set of elements of which a string given in a filter is a substring.
 The searching only works for `string` data types.
 It evaluates to unmatched for a element that either or both of the data types is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2133,7 +2133,7 @@ It evaluates to unmatched for a element that either or both of the data types is
 Returns a set of elements of which a string given in a filter is a substring.
 It performs case-insensitive seaching, and only works for `string` data types.
 It evaluates to unmatched for a element that either or both of the data types is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2172,7 +2172,7 @@ It evaluates to unmatched for a element that either or both of the data types is
 Returns a set of elements of which a string given in a filter is not a substring.
 The searching only works for `string` data types.
 It evaluates to unmatched for a element that either or both of the data types is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2213,7 +2213,7 @@ It evaluates to unmatched for a element that either or both of the data types is
 Returns a set of elements of which a string given in a filter is not a substring.
 It performs case-insensitive seaching, and only works for `string` data types.
 It evaluates to unmatched for a element that either or both of the data types is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2253,7 +2253,7 @@ It evaluates to unmatched for a element that either or both of the data types is
 <details><summary>
 Returns the entire target value if a string given in a filter is a substring of any of the elements, `null` otherwise.
 The searching is performed for a single `string` element or each `string` element of an array.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2334,7 +2334,7 @@ The searching is performed for a single `string` element or each `string` elemen
 <details><summary>
 Returns the entire target value if a string given in a filter is a substring of any of the elements, `null` otherwise.
 The searching is performed for a single `string` element or each `string` element of an array with case-insensitive matching.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2390,7 +2390,7 @@ The searching is performed for a single `string` element or each `string` elemen
 <details><summary>
 Returns an entire target value if a string given in a filter is not a substring of any of the elements, `null` otherwise.
 The searching is performed for a single `string` element or each `string` element of an array.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2473,7 +2473,7 @@ The searching is performed for a single `string` element or each `string` elemen
 <details><summary>
 Returns an entire target value if a string given in a filter is not a substring of any of the elements, `null` otherwise.
 The searching is performed for a single `string` element or each `string` element of an array with case-insensitive matching.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2553,7 +2553,7 @@ The searching is performed for a single `string` element or each `string` elemen
 <details><summary>
 Returns a set of elements which is equal to a string given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2623,7 +2623,7 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 <details><summary>
 Returns a set of elements which matches a string given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2693,7 +2693,7 @@ The matching is peformed case-insensitively and between `string` data types. It 
 <details><summary>
 Returns a set of elements which is not equal to a string given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2766,7 +2766,7 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 <details><summary>
 Returns a set of elements which doesn't match a string given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2839,7 +2839,7 @@ The matching is peformed case-insensitively and between `string` data types. It 
 <details><summary>
 Returns a set of elements which matches a wildcard pattern given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2892,7 +2892,7 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 <details><summary>
 Returns a set of elements which matches a wildcard pattern given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -2945,7 +2945,7 @@ The matching is peformed case-insensitively and between `string` data types. It 
 <details><summary>
 Returns a set of elements which doesn't match a wildcard pattern given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3001,7 +3001,7 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 <details><summary>
 Returns a set of elements which doesn't match a wildcard pattern given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3057,7 +3057,7 @@ The matching is peformed case-insensitively and between `string` data types. It 
 <details><summary>
 Returns a set of elements which matches a regular expression pattern given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3110,7 +3110,7 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 <details><summary>
 Returns a set of elements which matches a regular expression pattern given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3163,7 +3163,7 @@ The matching is peformed case-insensitively and between `string` data types. It 
 <details><summary>
 Returns a set of elements which doesn't match a regular expression pattern given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3219,7 +3219,7 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 <details><summary>
 Returns a set of elements which doesn't match a regular expression pattern given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3275,7 +3275,7 @@ The matching is peformed case-insensitively and between `string` data types. It 
 <details><summary>
 Returns a set of elements which matches any of strings of a comma separated list.
 The matching always evaluates to false for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3330,7 +3330,7 @@ The matching always evaluates to false for a element whose data type is not `str
 <details><summary>
 Returns a set of elements which matches any of strings of a comma separated list.
 The matching is peformed case-insensitively, and always evaluates to false for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3385,7 +3385,7 @@ The matching is peformed case-insensitively, and always evaluates to false for a
 <details><summary>
 Returns a set of elements which doesn't match any of strings of a comma separated list.
 The matching always evaluates to false for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3459,7 +3459,7 @@ The matching always evaluates to false for a element whose data type is not `str
 <details><summary>
 Returns a set of elements which doesn't match any of strings of a comma separated list.
 The matching is peformed case-insensitively, and always evaluates to false for a element whose data type is not `string`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3532,7 +3532,7 @@ The matching is peformed case-insensitively, and always evaluates to false for a
 ### Operator: `contains`
 <details><summary>
 Returns an entire value if any of the elements matches a string given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3602,7 +3602,7 @@ Returns an entire value if any of the elements matches a string given in a filte
 <details><summary>
 Returns an entire value if any of the elements matches a string given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3654,7 +3654,7 @@ The matching is peformed case-insensitively.
 ### Operator: `doesn't contain`
 <details><summary>
 Returns an entire value if all of the elements doesn't match a string given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3720,7 +3720,7 @@ Returns an entire value if all of the elements doesn't match a string given in a
 <details><summary>
 Returns an entire value if all of the elements doesn't match a string given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3785,7 +3785,7 @@ The matching is peformed case-insensitively.
 ### Operator: `wildcard: contains`
 <details><summary>
 Returns an entire value if any of the elements matches a wildcard pattern given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3838,7 +3838,7 @@ Returns an entire value if any of the elements matches a wildcard pattern given 
 <details><summary>
 Returns an entire value if any of the elements matches a wildcard pattern given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3890,7 +3890,7 @@ The matching is peformed case-insensitively.
 ### Operator: `wildcard: doesn't contain`
 <details><summary>
 Returns an entire value if all of the elements doesn't match a wildcard pattern given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -3958,7 +3958,7 @@ Returns an entire value if all of the elements doesn't match a wildcard pattern 
 <details><summary>
 Returns an entire value if all of the elements doesn't match a wildcard pattern given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -4025,7 +4025,7 @@ The matching is peformed case-insensitively.
 ### Operator: `regex: contains`
 <details><summary>
 Returns an entire value if any of the elements matches a regular expression given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -4078,7 +4078,7 @@ Returns an entire value if any of the elements matches a regular expression give
 <details><summary>
 Returns an entire value if any of the elements matches a regular expression given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -4130,7 +4130,7 @@ The matching is peformed case-insensitively.
 ### Operator: `regex: doesn't contain`
 <details><summary>
 Returns an entire value if all of the elements doesn't match a regular expression given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -4198,7 +4198,7 @@ Returns an entire value if all of the elements doesn't match a regular expressio
 <details><summary>
 Returns an entire value if all of the elements doesn't match a regular expression given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -4265,7 +4265,7 @@ The matching is peformed case-insensitively.
 ### Operator: `matches any line of`
 <details><summary>
 Returns a set of elements which matches any line of a text given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -4344,7 +4344,7 @@ Returns a set of elements which matches any line of a text given in a filter.
 <details><summary>
 Returns a set of elements which matches any line of a text given in a filter.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -4399,7 +4399,7 @@ The matching is peformed case-insensitively.
 ### Operator: `doesn't match any line of`
 <details><summary>
 Returns a set of elements which doesn't match any line of a text given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -4455,7 +4455,7 @@ Returns a set of elements which doesn't match any line of a text given in a filt
 <details><summary>
 Returns a set of elements which doesn't match any line of a text given in a filter.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -4537,7 +4537,7 @@ The matching is peformed case-insensitively.
 ### Operator: `matches any string of`
 <details><summary>
 Returns a set of elements which matches any strings given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -4638,7 +4638,7 @@ Returns a set of elements which matches any strings given in a filter.
 ### Operator: `matches any caseless string of`
 <details><summary>
 Returns a set of elements which matches any strings given in a filter. The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -4697,7 +4697,7 @@ Returns a set of elements which matches any strings given in a filter. The match
 ### Operator: `doesn't match any string of`
 <details><summary>
 Returns a set of elements which doesn't match any strings given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -4757,7 +4757,7 @@ Returns a set of elements which doesn't match any strings given in a filter.
 <details><summary>
 Returns a set of elements which doesn't match any strings given in a filter.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -4816,7 +4816,7 @@ The matching is peformed case-insensitively.
 ### Operator: `wildcard: matches any string of`
 <details><summary>
 Returns a set of elements which matches any wildcard patterns given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -4917,7 +4917,7 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
 ### Operator: `wildcard: matches any caseless string of`
 <details><summary>
 Returns a set of elements which matches any wildcard patterns given in a filter. The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -4976,7 +4976,7 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
 ### Operator: `wildcard: doesn't match any string of`
 <details><summary>
 Returns a set of elements which doesn't match any wildcard patterns given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -5035,7 +5035,7 @@ Returns a set of elements which doesn't match any wildcard patterns given in a f
 <details><summary>
 Returns a set of elements which doesn't match any wildcard patterns given in a filter.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -5093,7 +5093,7 @@ The matching is peformed case-insensitively.
 ### Operator: `regex: matches any string of`
 <details><summary>
 Returns a set of elements which matches any regular expression patterns given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -5194,7 +5194,7 @@ Returns a set of elements which matches any regular expression patterns given in
 ### Operator: `regex: matches any caseless string of`
 <details><summary>
 Returns a set of elements which matches any regular expression patterns given in a filter. The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -5253,7 +5253,7 @@ Returns a set of elements which matches any regular expression patterns given in
 ### Operator: `regex: doesn't match any string of`
 <details><summary>
 Returns a set of elements which doesn't match any regular expression patterns given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -5312,7 +5312,7 @@ Returns a set of elements which doesn't match any regular expression patterns gi
 <details><summary>
 Returns a set of elements which doesn't match any regular expression patterns given in a filter.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -5370,7 +5370,7 @@ The matching is peformed case-insensitively.
 ### Operator: `contains any line of`
 <details><summary>
 Returns an entire value if any of the elements matches any line of a text given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -5451,7 +5451,7 @@ Returns an entire value if any of the elements matches any line of a text given 
 <details><summary>
 Returns an entire value if any of the elements matches any line of a text given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -5508,7 +5508,7 @@ The matching is peformed case-insensitively.
 ### Operator: `doesn't contain any line of`
 <details><summary>
 Returns an entire value if all of the elements doesn't match any line of a text given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -5589,7 +5589,7 @@ Returns an entire value if all of the elements doesn't match any line of a text 
 <details><summary>
 Returns an entire value if all of the elements doesn't match any line of a text given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `string`
 
@@ -5669,7 +5669,7 @@ The matching is peformed case-insensitively.
 ### Operator: `contains any string of`
 <details><summary>
 Returns an entire value if any of the elements matches any strings given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -5772,7 +5772,7 @@ Returns an entire value if any of the elements matches any strings given in a fi
 <details><summary>
 Returns an entire value if any of the elements matches any strings given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -5832,7 +5832,7 @@ The matching is peformed case-insensitively.
 ### Operator: `doesn't contain any string of`
 <details><summary>
 Returns an entire value if all of the elements doesn't match any strings given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -5917,7 +5917,7 @@ Returns an entire value if all of the elements doesn't match any strings given i
 <details><summary>
 Returns an entire value if all of the elements doesn't match any strings given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -6001,7 +6001,7 @@ The matching is peformed case-insensitively.
 ### Operator: `wildcard: contains any string of`
 <details><summary>
 Returns an entire value if any of the elements matches any wildcard patterns given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -6104,7 +6104,7 @@ Returns an entire value if any of the elements matches any wildcard patterns giv
 <details><summary>
 Returns an entire value if any of the elements matches any wildcard patterns given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -6164,7 +6164,7 @@ The matching is peformed case-insensitively.
 ### Operator: `wildcard: doesn't contain any string of`
 <details><summary>
 Returns an entire value if all of the elements doesn't match any wildcard patterns given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -6249,7 +6249,7 @@ Returns an entire value if all of the elements doesn't match any wildcard patter
 <details><summary>
 Returns an entire value if all of the elements doesn't match any wildcard patterns given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -6333,7 +6333,7 @@ The matching is peformed case-insensitively.
 ### Operator: `regex: contains any string of`
 <details><summary>
 Returns an entire value if any of the elements matches any regular expression patterns given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -6436,7 +6436,7 @@ Returns an entire value if any of the elements matches any regular expression pa
 <details><summary>
 Returns an entire value if any of the elements matches any regex patterns given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -6496,7 +6496,7 @@ The matching is peformed case-insensitively.
 ### Operator: `regex: doesn't contain any string of`
 <details><summary>
 Returns an entire value if all of the elements doesn't match any regex patterns given in a filter, `null` otherwise.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -6581,7 +6581,7 @@ Returns an entire value if all of the elements doesn't match any regex patterns 
 <details><summary>
 Returns an entire value if all of the elements doesn't match any regex patterns given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
@@ -6666,7 +6666,7 @@ The matching is peformed case-insensitively.
 <details><summary>
 Returns the result of a value filtered by `<expressions>` given.
 See `Filter Syntax` for the details of `<expressions>`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `expressions`
 
@@ -6746,7 +6746,7 @@ See `Filter Syntax` for the details of `<expressions>`.
 <details><summary>
 Returns the result of a value filtered by `<conditions>` given.
 See `Filter Syntax` for the details of `<conditions>`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `conditions`
 
@@ -7035,7 +7035,7 @@ See `Filter Syntax` for the details of `<conditions>`.
 <details><summary>
 Evaluates each value of dictionary elements or each element for values whose data type is not `dictionary`, and returns a set of the elements matched to expressions given in a filter.
 See `Filter Syntax` for the details of `<expressions>`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `expressions`
 
@@ -7111,7 +7111,7 @@ See `Filter Syntax` for the details of `<expressions>`.
 <details><summary>
 Evaluates each value of dictionary elements, and returns a set of the elements matched to conditions given in a filter.
 See `Filter Syntax` for the details of `<conditions>`.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `conditions`
 
@@ -7247,7 +7247,7 @@ See `Filter Syntax` for the details of `<conditions>`.
 ### Operator: `json: encode array`
 <details><summary>
 Returns an string in JSON which is encoded the entire value.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `dict[str,Any]`
 
@@ -7308,7 +7308,7 @@ Returns an string in JSON which is encoded the entire value.
 ### Operator: `json: encode`
 <details><summary>
 Encodes each element and returns a set of JSON-encoded string.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `dict[str,Any]`
 
@@ -7378,7 +7378,7 @@ Encodes each element and returns a set of JSON-encoded string.
 ### Operator: `json: decode`
 <details><summary>
 Returns a set of JSON decoded-values from the each element.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `dict[str,Any]`
 
@@ -7421,7 +7421,7 @@ Returns a set of JSON decoded-values from the each element.
 ### Operator: `base64: encode`
 <details><summary>
 Encodes each element and returns a set of BASE64-encoded string.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `dict[str,Any]`
 
@@ -7460,7 +7460,7 @@ Encodes each element and returns a set of BASE64-encoded string.
 ### Operator: `base64: decode`
 <details><summary>
 Returns a set of BASE64 decoded-values from the each element.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `dict[str,Any]`
 
@@ -7499,7 +7499,7 @@ Returns a set of BASE64 decoded-values from the each element.
 ### Operator: `digest`
 <details><summary>
 Create a set of secure hash value for each element.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `dict[str,Any]`
 
@@ -7563,7 +7563,7 @@ Create a set of secure hash value for each element.
 ### Operator: `is replaced with`
 <details><summary>
 Replaces an entire value with a value given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON value>`
 
@@ -7632,7 +7632,7 @@ Replaces an entire value with a value given in a filter.
 If both of the data types are `dicrionary`, all the elements given in a filter are added to the value.
 All the values are replaced with the value given the existing key.
 Otherwise, it is simply replaced with a value given in a filter.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON value>`
 
@@ -7698,7 +7698,7 @@ Otherwise, it is simply replaced with a value given in a filter.
 ### Operator: `appends`
 <details><summary>
 Appends all the elements given in a filter to the value.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `<JSON value>`
 
@@ -7776,7 +7776,7 @@ Appends all the elements given in a filter to the value.
 ### Operator: `abort`
 <details><summary>
 Raises an exception and exit with the value filtered at the operator. This operator is available for troubleshooting and debugging.
-</summary><p>
+</summary><p/>
 
 > **Filter Format**: `dict[str,Any]`
 
