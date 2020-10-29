@@ -3,6 +3,17 @@ commonfields:
   id: Respond_Analyst
   version: -1
 configuration:
+- defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+    - None
+    - Incoming
+    - Outgoing
+    - Both
+  required: false
+  type: 15
 - display: base url
   name: base_url
   required: true
@@ -27,8 +38,8 @@ configuration:
   name: username
   required: true
   type: 0
-- display: max fetch
-  defaultvalue: '50'
+- defaultvalue: '50'
+  display: max fetch
   name: max_fetch
   required: false
   type: 0
@@ -37,7 +48,6 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-
 description: Respond Software Description
 display: Respond Analyst (Developer Contribution)
 name: Respond_Analyst
@@ -144,9 +154,28 @@ script:
     description: remove a user from a Respond incident
     execution: false
     name: respond-remove-user
+  - arguments:
+    - default: false
+      description: dbotMirrorId
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: last updated time, we don't currently use
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: mimicking get-remote-data command
+    execution: false
+    name: get-remote-data
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
+  isremotesyncin: true
   longRunning: false
   longRunningPort: false
   runonce: false
@@ -156,3 +185,5 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+defaultclassifier: Respond Analyst (classifier)
+defaultmapperin: Respond Analyst (mapper)

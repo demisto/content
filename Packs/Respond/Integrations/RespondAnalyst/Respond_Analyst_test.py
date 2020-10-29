@@ -85,43 +85,9 @@ def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_m
 def test_get_incident_command(requests_mock):
     from RespondAnalyst import get_incident_command, RestClient
 
-    full_incidents_response = {'data': {'fullIncidents': [
-        {
-            "assetClass": "Critical",
-            "attackStage": "LateralMovement",
-            "dateCreated": "1591374021992",
-            "eventCount": 24,
-            "feedback": {
-                "closedAt": "1593468999299",
-                "closedBy": "qa-user@respond-software.com",
-                "newStatus": "NonActionable",
-                "optionalText": "blah blah blah",
-                "timeGiven": "1593469076049",
-                "userId": "qa-user@respond-software.com"
-            },
-            "firstEventTime": "1576933531016",
-            "id": "6",
-            "internalSystems": [
-                {
-                    "hostname": "enterprise.com"
-                }
-            ],
-            "internalSystemsCount": 1,
-            "lastEventTime": "1591345217664",
-            "priority": "Critical",
-            "probabilityBucket": "VeryHigh",
-            "status": "Closed",
-            "tags": [
-                {
-                    "label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"
-                }
-            ],
-            "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
-            "userIds": [
-                "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
-            ]
-        }
-    ]}}
+    full_incidents_response = load_test_data(
+        'test_data/full_incidents_response_single_full_incident.json')
+
 
     expected_result = load_test_data('test_data/get_incident_response.json')
 
@@ -204,7 +170,6 @@ def test_fetch_incidents(mocker, requests_mock):
     expected_output = load_test_data('test_data/fetch_incidents_response.json')
 
     next_run, response = fetch_incidents(client, None)
-    # print(response)
     assert expected_output == response
     assert next_run['Tenant 1']['time'] == '1591374031591'
 
@@ -486,3 +451,29 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
 
     demisto.error.assert_any_call(
         "error closing incident and/or updating feedback: 'type' object is not subscriptable")
+
+
+def test_get_remote_data_command(mocker, requests_mock):
+    from RespondAnalyst import get_remote_data_command, RestClient
+    full_incidents_response = load_test_data(
+        'test_data/full_incidents_response_single_full_incident.json')
+
+    rest_client = RestClient(
+        base_url='https://localhost:6078',
+        auth=('un', 'pw'),
+        verify=False
+    )
+    requests_mock.get(
+        f'{BASE_URL}/session/tenantIdMapping',
+        json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
+    )
+    requests_mock.post(
+        f'{BASE_URL}/graphql?tenantId=dev1',
+        json=full_incidents_response
+    )
+
+    args = {'id': 'Tenant 1:1'}
+    res = get_remote_data_command(rest_client, args)
+    expected_result = full_incidents_response.get('data').get('fullIncidents')
+    expected_result[0]['id'] = args['id']
+    assert res == expected_result

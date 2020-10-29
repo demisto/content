@@ -1,11 +1,9 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
-# IMPORTS
-
-
+from CommonServerUserPython import *
 import json
-
 from datetime import datetime, timedelta
+import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -42,6 +40,27 @@ def convert_datetime_to_epoch_millis(the_time=0):
     return convert_epoch_to_milli(convert_datetime_to_epoch(the_time=the_time))
 
 
+def arg_to_timestamp(arg, arg_name: str, required: bool = False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp that str - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp() * 1000)
+    if isinstance(arg, (int, float)):
+        return arg
+
+
 # helper function gets incident ids from Respond into array format
 def extract_id(incident_id_map):
     return int(incident_id_map.get('id'))
@@ -50,11 +69,15 @@ def extract_id(incident_id_map):
 class RestClient(BaseClient):
     def get_tenant_mappings(self):
         # need to send one request to big-monolith service to get the external tenant id
-        return self._http_request(
+        tenant_mappings = self._http_request(
             method='GET',
             url_suffix='/session/tenantIdMapping',
             retries=3
         )
+        if len(tenant_mappings) == 0:
+            demisto.error('no tenants found for user')
+            raise Exception('no tenants found for user')
+        return tenant_mappings
 
     def get_current_user(self):
         return self._http_request(
@@ -340,7 +363,10 @@ def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
         'assignedUsers': raw_incident.get('userIds'),
         'feedback': standardized_feedback,
         'tenantIdRespond': respond_tenant_id,
-        'tenantId': external_tenant_id
+        'tenantId': external_tenant_id,
+        'respondRemoteId': f'{external_tenant_id}:{raw_incident.get("id")}',
+        'dbotMirrorDirection': 'In',
+        'dbotMirrorInstance': demisto.integrationInstance()
     }
     # add tenant ids and incident URLs to incidents (cannot get them with gql query)
     raw_incident['tenantId'] = external_tenant_id
@@ -530,7 +556,30 @@ def get_incident_command(rest_client, args):
 
     raw_incident = \
         rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
-    return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
+
+    if format:
+        return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
+    else:
+        return raw_incident
+
+
+def get_remote_data_command(rest_client, args):
+    args['tenant_id'] = args.get('id').split(':')[0]
+    args['incident_id'] = args.get('id').split(':')[1]
+
+    entries = []
+    try:
+        updated_incident = get_incident_command(rest_client, args, False)
+        updated_incident['id'] = args.get('id')
+        demisto.debug(f"Respond incident {args.get('id')}\n"
+                      f"update time:   {arg_to_timestamp(args.get('last_update'), 'last_update')}")
+
+        return [updated_incident] + entries
+
+    except Exception as e:
+        demisto.debug(
+            f'Error in Respond incoming mirror for incident {args["id"]} \n'
+            f'Error message: {str(e)}')
 
 
 def update_remote_system_command(rest_client, args):
@@ -580,10 +629,6 @@ def fetch_incidents(rest_client, last_run=dict()):
 
     # get tenant ids
     tenant_mappings = rest_client.get_tenant_mappings()
-
-    if len(tenant_mappings) == 0:
-        demisto.error('no tenants found for user')
-        raise Exception('no tenants found for user')
 
     incidents = []
     next_run = last_run
@@ -648,6 +693,7 @@ def main():
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
+            demisto.debug('fetch incidents called')
             # get all tenant ids
             next_run, incidents = fetch_incidents(rest_client, demisto.getLastRun())
             demisto.setLastRun(next_run)
@@ -667,6 +713,10 @@ def main():
 
         elif demisto.command() == 'update-remote-system':
             return_results(update_remote_system_command(rest_client, demisto.args()))
+
+        elif demisto.command() == 'get-remote-data':
+            demisto.debug('remote data called')
+            return_results(get_remote_data_command(rest_client, demisto.args()))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
