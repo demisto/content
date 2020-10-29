@@ -301,7 +301,7 @@ class XM:
             if previous_tech is None or current_tech["criticalAssets"] == previous_tech["criticalAssets"]:  # should be >
                 current_tech["advices"] = self._get_technique_best_practices_and_remediation(current_tech)
                 critical_asset_trend = current_tech["criticalAssets"] - previous_tech["criticalAssets"]
-                if critical_asset_trend is 0:
+                if critical_asset_trend == 0:
                     critical_asset_trend = 3
                 current_tech["criticalAssets_trend"] = critical_asset_trend
                 events_array.append(self.create_xm_event(EVENT_NAME.TopTechnique, current_tech["displayName"], current_tech))
