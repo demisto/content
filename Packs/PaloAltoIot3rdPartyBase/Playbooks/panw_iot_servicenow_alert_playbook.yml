@@ -1,5 +1,5 @@
-description: Export alert and vulnerability to service now
-id: panw_iot_servicenow_alert_playbook
+description: export alert from panw iot cloud to servicenow
+id: e1d1baba-0487-401f-8c41-4286f2ea17cd
 inputs: []
 name: panw_iot_servicenow_alert_playbook
 outputs:
@@ -25,14 +25,13 @@ tasks:
       iscommand: false
       name: ""
       version: -1
-      description: ''
     taskid: 5490ce8f-b2af-4b98-8661-7ca43a0151f0
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 695,
           "y": 50
         }
       }
@@ -66,8 +65,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 1420
+          "x": 50,
+          "y": 1245
         }
       }
   "5":
@@ -75,9 +74,9 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     note: false
-    quietmode: 0
+    quietmode: 2
     scriptarguments:
       custom_fields: {}
       fields:
@@ -91,19 +90,19 @@ tasks:
     task:
       brand: ServiceNow v2
       description: Creates a new record in the specified ServiceNow table.
-      id: 83eed57c-e036-47ac-8eb3-8df3f57e7ca4
+      id: 0921a2bc-363f-4373-86ca-a230f44179d0
       iscommand: true
       name: servicenow-create-record
       script: ServiceNow v2|||servicenow-create-record
       type: regular
       version: -1
-    taskid: 83eed57c-e036-47ac-8eb3-8df3f57e7ca4
+    taskid: 0921a2bc-363f-4373-86ca-a230f44179d0
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 480,
           "y": 1070
         }
       }
@@ -135,19 +134,19 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: convert alert to service now format
-      id: 7fbae192-489a-4a61-88bf-3fc884ebbaec
+      id: a3b94c91-63e7-4250-81ce-4df7a8017467
       iscommand: true
       name: convert-alert-to-servicenow
       script: Palo Alto IoT Third-Party-Integration Base|||convert-alert-to-servicenow
       type: regular
       version: -1
-    taskid: 7fbae192-489a-4a61-88bf-3fc884ebbaec
+    taskid: a3b94c91-63e7-4250-81ce-4df7a8017467
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 265,
           "y": 720
         }
       }
@@ -182,7 +181,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 695,
           "y": 195
         }
       }
@@ -224,7 +223,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 910,
           "y": 370
         }
       }
@@ -261,7 +260,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 480,
           "y": 370
         }
       }
@@ -296,7 +295,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 480,
           "y": 545
         }
       }
@@ -338,44 +337,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 695,
           "y": 720
-        }
-      }
-  "14":
-    id: "14"
-    ignoreworker: false
-    nexttasks:
-      "no":
-      - "3"
-      "yes":
-      - "15"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      entryId:
-        simple: ${lastCompletedTaskEntries}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      id: c0859f27-9b84-4e10-8c0e-1469cdcc74a0
-      iscommand: false
-      name: isError
-      script: isError
-      type: condition
-      version: -1
-    taskid: c0859f27-9b84-4e10-8c0e-1469cdcc74a0
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1245
         }
       }
   "15":
@@ -385,7 +348,7 @@ tasks:
       '#none#':
       - "20"
     note: false
-    quietmode: 0
+    quietmode: 2
     scriptarguments:
       integration-name:
         simple: servicenow
@@ -394,7 +357,7 @@ tasks:
       playbook-name:
         simple: panw_iot_servicenow_alert_playbook
       status:
-        simple: error
+        simple: success
       type:
         simple: alert
       using:
@@ -404,20 +367,20 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 510d950c-d095-45cf-8f93-8c64ffb19381
+      id: 12576241-043e-492c-8064-164ab73f2a99
       iscommand: true
-      name: send error status back to panw iot
+      name: send success status back to panw iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 510d950c-d095-45cf-8f93-8c64ffb19381
+    taskid: 12576241-043e-492c-8064-164ab73f2a99
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1420
+          "x": 480,
+          "y": 1245
         }
       }
   "16":
@@ -450,7 +413,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 910,
           "y": 545
         }
       }
@@ -486,7 +449,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 265,
           "y": 895
         }
       }
@@ -529,7 +492,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
   "19":
@@ -562,7 +525,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 695,
           "y": 895
         }
       }
@@ -596,8 +559,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1595
+          "x": 480,
+          "y": 1420
         }
       }
 version: -1
@@ -608,8 +571,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1640,
-        "width": 1250,
+        "height": 1465,
+        "width": 1240,
         "x": 50,
         "y": 50
       }

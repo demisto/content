@@ -41,34 +41,6 @@ api_type_map = {
     }
 }
 
-cisco_ise_field_map = {
-    "ip": "ZingboxIpAddress",
-    "ip address": "ZingboxIP",
-    "ip_address": "ZingboxIP",
-    "profile": "ZingboxProfile",
-    "category": "ZingboxCategory",
-    "risk_score": "ZingboxRiskScore",
-    "risk score": "ZingboxRiskScore",
-    "confidence": "ZingboxConfidence",
-    "confidence score": "ZingboxConfidence",
-    "confidence_score": "ZingboxConfidence",
-    "tag": "ZingboxTag",
-    "asset_tag": "ZingboxTag",
-    "Tags": "ZingboxTag",
-    "hostname": "ZingboxHostname",
-    "osCombined": "ZingboxOS",
-    "model": "ZingboxModel",
-    "vendor": "ZingboxVendor",
-    "Serial Number": "ZingboxSerial",
-    "Serial_Number": "ZingboxSerial",
-    "endpoint protection": "ZingboxEPP",
-    "endpoint_protection": "ZingboxEPP",
-    "AET": "ZingboxAET",
-    # "External Network": "ZingboxInternetAccess",
-    # "last activity": "ZingboxLastActivity"
-}
-int_fields = ["risk_score", "risk score", "confidence", "confidence score", "confidence_score"]
-
 device_fields_map = [
     ("ip_address", "dvc="),
     ("mac_address", "dvcmac="),
@@ -496,18 +468,15 @@ def convert_alert_to_servicenow(args):
     user_email = incident['user_email']
     zb_ticketid = incident['correlation_id']
 
-    # alert = args.get('alert')
-    # TODO: need to make sure category and profile's name
-    alert = {
-        'description': 'test description',
-        'category': 'iphone',
-        'profile': 'iphone 12',
-        'location': 'panw',
-        'name': 'zingcloud alert bg job integration test at 1602102666747'
-    }
+    alert = args.get('alert')
     alert.setdefault('msg', {}).setdefault('impact', 'Sorry, no impact available to display so far!')
     alert.setdefault('msg', {}).setdefault('recommendation', {}).setdefault(
         'content', ['Sorry, no recommendation available to display so far!'])
+    alert.setdefault('location', 'Sorry, location is not provided')
+    alert.setdefault('category', 'Sorry, category is not provided')
+    alert.setdefault('profile', 'Sorry, profile is not provided')
+    alert.setdefault('description', 'Sorry, description is not provided')
+
     impact = alert['msg']['impact']
     recommendations = alert['msg']['recommendation']['content']
     recommendation_text = ''
@@ -543,26 +512,22 @@ def convert_vulnerability_to_servicenow(args):
     user_email = incident['user_email']
     zb_ticketid = incident['correlation_id']
 
-    # vuln = args.get('vulnerability')
-    # TODO: need to make sure category and profile's name
-    vuln = {
-        'description': 'test description',
-        'category': 'iphone',
-        'profile': 'iphone 12',
-        'location': 'panw',
-        'name': 'zingcloud vuln bg job integration test at 1602102666747'
-    }
+    vuln = args.get('vulnerability')
     vuln.setdefault('msg', {}).setdefault('impact', 'Sorry, no impact available to display so far!')
     vuln.setdefault('msg', {}).setdefault('recommendation', {}).setdefault(
         'content', ['Sorry, no recommendation available to display so far!'])
+    vuln.setdefault('category', 'Sorry, category is not provided')
+    vuln.setdefault('profile', 'Sorry, profile is not provided')
+    vuln.setdefault('description', 'Sorry, description is not provided')
+    vuln.setdefault('location', 'Sorry, location is not provided')
     impact = vuln['msg']['impact']
     recommendations = vuln['msg']['recommendation']['content']
     recommendation_text = ''
     alert_description = str(vuln['description'])
-    category = vuln['category']
-    profile = vuln['profile']
-    location = vuln['location']
-    short_description = vuln['name']
+    category = str(vuln['category'])
+    profile = str(vuln['profile'])
+    location = str(vuln['location'])
+    short_description = str(vuln['name'])
 
     for rec in recommendations:
         recommendation_text += '*' + rec + '\n'
@@ -831,36 +796,6 @@ def get_asset_lists(args):
     )
 
 
-def convert_device_map_to_ise_attributes(args):
-    opList = []
-    device_list = demisto.args().get('device_maps')
-    for device_map in device_list:
-        if 'mac_address' in device_map:
-            attribute_list = {}
-            attribute_list['mac'] = device_map['mac_address']
-            zb_attributes = {}
-            for field in device_map:
-                if device_map[field] == None or device_map[field] == "":
-                    continue
-                if field in cisco_ise_field_map:
-                    if field in int_fields:
-                        try:
-                            int_val = int(device_map[field])
-                        except:
-                            continue
-                        zb_attributes[cisco_ise_field_map[field]] = int_val
-                    else:
-                        zb_attributes[cisco_ise_field_map[field]] = device_map[field]
-            attribute_list['zb_attributes'] = zb_attributes
-            opList.append(attribute_list)
-
-    return CommandResults(
-        readable_output="Converted Device maps to custom attributes",
-        outputs_prefix="PaloAltoIoTIntegrationBase.CisceISEAttributes",
-        outputs=opList
-    )
-
-
 def main() -> None:
     """main function, parses params and runs command functions
     :return:
@@ -912,9 +847,6 @@ def main() -> None:
             return_results(results)
         elif demisto.command() == 'convert-vulnerability-to-servicenow':
             results = convert_vulnerability_to_servicenow(demisto.args())
-            return_results(results)
-        elif demisto.command() == 'convert-device-inventory-to-ise-custom-attributes':
-            results = convert_device_map_to_ise_attributes(demisto.args())
             return_results(results)
 
     # Log exceptions and return errors

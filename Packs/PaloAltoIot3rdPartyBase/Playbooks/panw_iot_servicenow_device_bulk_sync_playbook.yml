@@ -1,8 +1,8 @@
 description: This playbook gets all available device inventory from PANW IoT cloud
   send to ServiceNow
-id: panw_iot_servicenowice_bulk_sync_playbook
+id: 7150d634-f40d-474b-8419-e4bab11210af
 inputs: []
-name: panw_iot_servicenowice_bulk_sync_playbook
+name: panw_iot_servicenow_device_bulk_sync_playbook
 outputs: []
 starttaskid: "0"
 tasks:
@@ -22,7 +22,6 @@ tasks:
       iscommand: false
       name: ""
       version: -1
-      description: ''
     taskid: 7a11e867-f09e-46fd-899f-19044b9fe1cf
     timertriggers: []
     type: start
@@ -221,6 +220,3 @@ view: |-
       }
     }
   }
-fromversion: 5.5.0
-tests:
-- No tests (auto formatted)
