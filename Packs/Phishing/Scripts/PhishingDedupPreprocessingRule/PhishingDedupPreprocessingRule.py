@@ -197,12 +197,10 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
     existing_incidents_df['similarity'] = existing_incidents_df['vector'].apply(
         lambda x: cosine_sim(x, new_incident_vector))
     if FROM_POLICY == FROM_POLICY_DOMAIN:
-        demisto.results(1)
         mask = (existing_incidents_df[FROM_DOMAIN_FIELD] != '') & \
                (existing_incidents_df[FROM_DOMAIN_FIELD] == new_incident[FROM_DOMAIN_FIELD])
         existing_incidents_df = existing_incidents_df[mask]
     elif FROM_POLICY == FROM_POLICY_EXACT:
-        demisto.results(2)
         mask = (existing_incidents_df[FROM_FIELD] != '') & \
                (existing_incidents_df[FROM_FIELD] == new_incident[FROM_FIELD])
         existing_incidents_df = existing_incidents_df[mask]
@@ -215,7 +213,6 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
         pass
     existing_incidents_df.sort_values(by=['distance', 'created', tie_breaker_col], inplace=True)
     if len(existing_incidents_df) > 0:
-        demisto.results(str(existing_incidents_df))
         return existing_incidents_df.iloc[0], existing_incidents_df.iloc[0]['similarity']
     else:
         return None, None
@@ -318,14 +315,12 @@ def main():
         create_new_incident()
         return
     new_incident_preprocessed = new_incident_df.iloc[0].to_dict()
-    demisto.results('here')
     duplicate_incident_row, similarity = find_duplicate_incidents(new_incident_preprocessed,
                                                                   existing_incidents_df)
     if duplicate_incident_row is None:
         create_new_incident()
         return
     if similarity < SIMILARITY_THRESHOLD:
-        demisto.results(similarity)
         create_new_incident_low_similarity(duplicate_incident_row, similarity)
     else:
         return close_new_incident_and_link_to_existing(new_incident_df.iloc[0], duplicate_incident_row, similarity)
