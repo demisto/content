@@ -195,7 +195,7 @@ class TestGetModifiedFilesForTesting:
 
     def test_common_yml_file(self, mocker):
         diff_line = "M    scripts/script-CommonIntegration.yml"
-        mock_get_dict_from_yaml(mocker, {"category": "cat"}, "yml")
+        mock_get_dict_from_yaml(mocker, {"script": "cat"}, "yml")
         (
             modified_files_list,
             modified_tests_list,
@@ -223,7 +223,7 @@ class TestGetModifiedFilesForTesting:
                 "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"
             ],
         )
-        mock_get_dict_from_yaml(mocker, {"category": "cat"}, "yml")
+        mock_get_dict_from_yaml(mocker, {"script": "cat"}, "yml")
         (
             modified_files_list,
             modified_tests_list,

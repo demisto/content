@@ -30,7 +30,8 @@ def resolve_type(file_path: str) -> Optional[FileType]:
     Returns:
         FileType. Conf.json and Metadata files.
     """
-    if checked_type(constants.CONF_PATH, [file_path]):
+    # if conf.json file
+    if checked_type(file_path, [constants.CONF_PATH]):
         return FileType.CONF_JSON
     # MetaData files
     elif any(
@@ -41,13 +42,15 @@ def resolve_type(file_path: str) -> Optional[FileType]:
         )
     ):
         return FileType.METADATA
+    # Whitelist file type
     elif checked_type(file_path, [SECRETS_WHITE_LIST]):
         return FileType.WHITE_LIST
     return None
 
 
 def remove_python_files(types_to_files: Dict[FileType, Set[str]]):
-    """Get corresponding yml files and types from PY files. Then removes all python files with corresponding ymls.
+    """Get corresponding yml files and types from PY files.
+    If a corresponding yml found, will remove the py file
 
     Args:
         types_to_files: Mapping of FileType: file_paths
@@ -110,6 +113,13 @@ def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
     return types_to_files
 
 
+def remove_common_files(
+        types_to_files: Dict[FileType, Set[str]], changed_common_files: Set[str]) -> Dict[FileType, Set[str]]:
+    if changed_common_files:
+        types_to_files[FileType.SCRIPT] = types_to_files[FileType.SCRIPT] - changed_common_files
+    return types_to_files
+
+
 def get_modified_files_for_testing(
     git_diff: str,
 ) -> Tuple[List[str], List[str], List[str], bool, List[str], set, bool, bool]:
@@ -121,48 +131,32 @@ def get_modified_files_for_testing(
     Returns:
         modified_files: Modified YMLs for testing (Integrations, Scripts, Playbooks).
         modified_tests: Test playbooks.
-        changed_common: Globally used YMLs (Like CommonServerPython).
+        changed_common_files: Globally used YMLs (Like CommonServerPython).
         is_conf_json: If Tests/Conf.json has been changed.
         sample_tests: Files to test, Like the infrastructures files.
         modified_metadata: Pack names of changed metadata files.
         is_reputations_json: If any reputation file changed.
         is_indicator_json: If any indicator file changed.
     """
-    sample_tests: Set[str] = set()  # Files to test, Like the infrastructures files.
-    modified_metadata: Set[str] = set()  # Metadata files.
-    modified_files: Set[str] = set()  # Modified YMLs for testing (Integrations, Scripts, Playbooks).
     types_to_files: Dict[FileType, Set[str]] = create_type_to_file(git_diff)  # Mapping of the files FileType: file path
 
-    # Checks if any common file represents in it
-    file_to_check_common = types_to_files.get(
-        FileType.INTEGRATION, set()).union(types_to_files.get(FileType.SCRIPT, set()))
-    changed_common = get_common_files(file_to_check_common)
-
-    # Remove common files from the sets
-    for file_path in changed_common:
-        file_type = tools.find_type(file_path)
-        try:
-            types_to_files[file_type].remove(file_path)
-        except KeyError:
-            # Can be a python file that changed and now the yml representing. Will ignore
-            pass
-
+    # Checks if any common file exists in types_to_file
+    changed_common_files = get_common_files(types_to_files.get(FileType.SCRIPT, set()))
+    types_to_files = remove_common_files(types_to_files, changed_common_files)
     # Sample tests are the remaining python files
-    sample_tests = sample_tests.union(types_to_files.get(FileType.PYTHON_FILE, set()))
+    sample_tests = types_to_files.get(FileType.PYTHON_FILE, set())
 
     # Modified files = YMLs of integrations, scripts and playbooks
-    modified_files = modified_files.union(
-        types_to_files.get(FileType.INTEGRATION, set()),
+    modified_files: Set[str] = types_to_files.get(FileType.INTEGRATION, set()).union(
         types_to_files.get(FileType.SCRIPT, set()),
-        types_to_files.get(FileType.PLAYBOOK, set()),
-    )
+        types_to_files.get(FileType.PLAYBOOK, set()))  # Modified YMLs for testing (Integrations, Scripts, Playbooks).
 
     # Metadata packs
+    modified_metadata: Set[str] = set()
     for file_path in types_to_files.get(FileType.METADATA, set()):
         modified_metadata.add(tools.get_pack_name(file_path))
 
-    # Modified tests are test playbooks
-    modified_tests: Set[str] = types_to_files.get(FileType.TEST_PLAYBOOK, set())
+    modified_tests: Set[str] = types_to_files.get(FileType.TEST_PLAYBOOK, set())  # Modified tests are test playbooks
 
     # Booleans. If this kind of file is inside, its exists
     is_conf_json = FileType.CONF_JSON in types_to_files
@@ -174,7 +168,7 @@ def get_modified_files_for_testing(
     return (
         list(modified_files),
         list(modified_tests),
-        list(changed_common),
+        list(changed_common_files),
         is_conf_json,
         list(sample_tests),
         modified_metadata,
@@ -202,7 +196,7 @@ def get_corresponding_yml_file(file_path: str) -> Optional[str]:
 
 
 def get_common_files(paths_set: Set[str]) -> Set[str]:
-    """Gets paths of file and return only the common yml files
+    """Gets paths of files and return only the common yml files
 
     Args:
         paths_set: A path to find common yml files on
