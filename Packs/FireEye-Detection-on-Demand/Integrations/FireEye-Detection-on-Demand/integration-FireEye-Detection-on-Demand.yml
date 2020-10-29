@@ -1,10 +1,10 @@
 commonfields:
   id: FireEye Detection on Demand
-  version: -1
-vcShouldKeepItemLegacyProdMachine: false
+  version: 1.0.0
 name: FireEye Detection on Demand
 display: FireEye Detection on Demand (Developer Contribution)
 category: Forensics & Malware Analysis
+vcShouldKeepItemLegacyProdMachine: false
 description: FireEye Detection On Demand is a threat detection service delivered as an API for integration into the SOC workflow, SIEM analytics, data repositories, or web applications, etc. It delivers flexible file and content analysis to identify malicious behavior wherever the enterprise needs it.
 configuration:
 - display: "DoD hostname"
@@ -288,7 +288,7 @@ script:
 
 
     def generate_report_url(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, dict]:
-        report_id = args.get('report_id')
+        report_id = str(args.get('report_id'))
         expiration = arg_to_int(arg=args.get('expiration'), arg_name='expiration', required=True)
         if expiration:
             if expiration < 1 or expiration > 8760:
@@ -694,22 +694,8 @@ script:
       defaultValue: "72"
     description: Generates a pre-signed URL for a report
 
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
 image: data:image/png;base64,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
-detaileddescription: >-
-  ### Developer Contributed Integration
-
-  #### Integration Author: FireEye Inc.
-
-  Support and maintenance for this integration are provided by the author. Please use the following contact details:
-
-  - **Email**: [developers@fireeye.com](mailto:developers@fireeye.com)
-
-  - **URL**: [https://fireeye.dev/docs/detection-on-demand](https://fireeye.dev/docs/detection-on-demand)
-
-  ***
-
-  ## Hello World
-
-  - This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-
-  - You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+detaileddescription: "### Developer Contributed Integration\n#### Integration Author: FireEye Inc.\nSupport and maintenance for this integration are provided by the author. Please use the following contact details:\n- **Email**: [developers@fireeye.com](mailto:developers@fireeye.com)\n- **URL**: [https://fireeye.dev/docs/detection-on-demand](https://fireeye.dev/docs/detection-on-demand)\n***\n## Overview\nFireEye offers a best-in-class virtual execution engine in many of its core products, including our Network Security, Email Security, and File Analysis solutions.  With the release of Detection on Demand, our customers can now harness the same execution engine used in our leading products to build new applications, integrations, and workflows.  This pack brings the core functionality of Detection on Demand to the Cortex XSOAR platform, allowing you and your team to detonate and analyze malicious files and URLs.  Check out https://fireeye.dev for more information.\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/fire-eye-detection-on-demand)"

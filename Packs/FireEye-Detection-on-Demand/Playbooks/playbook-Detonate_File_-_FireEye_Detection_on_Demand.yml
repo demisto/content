@@ -3,6 +3,7 @@ version: 8
 vcShouldKeepItemLegacyProdMachine: false
 name: Detonate File - FireEye Detection on Demand
 description: Detonate one or more files using the FireEye Detection on Demand integration.  This playbook returns relevant reports to the War Room and file reputations to the context data.
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":

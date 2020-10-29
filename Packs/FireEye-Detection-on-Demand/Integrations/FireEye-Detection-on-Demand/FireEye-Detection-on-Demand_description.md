@@ -1,3 +1,2 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+## Overview
+FireEye offers a best-in-class virtual execution engine in many of its core products, including our Network Security, Email Security, and File Analysis solutions.  With the release of Detection on Demand, our customers can now harness the same execution engine used in our leading products to build new applications, integrations, and workflows.  This pack brings the core functionality of Detection on Demand to the Cortex XSOAR platform, allowing you and your team to detonate and analyze malicious files and URLs.  Check out https://fireeye.dev for more information.
