@@ -733,16 +733,16 @@ tasks:
     scriptarguments:
       account_enabled: {}
       display_name:
-        simple: 'Graph Test - User #2'
+        simple:
       mail_nickname:
-        simple: graph
+        simple:
       on_premises_immutable_id: {}
       other_properties:
         simple: jobTitle=Test,city=Tel Aviv
       password:
         simple: ${NEW_PASSWORD}
       user_principal_name:
-        simple: ${GeneratedUUID}-2@${inputs.baseurl}
+        simple:
     continueonerror: true
     separatecontext: false
     view: |-
