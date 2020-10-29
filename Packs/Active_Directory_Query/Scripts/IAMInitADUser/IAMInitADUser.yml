@@ -50,10 +50,4 @@ runas: DBotWeakRole
 runonce: false
 tests:
 - No tests (auto formatted)
-dependson:
-  must:
-  - Active Directory Query v2|||ad-set-new-password
-  - Active Directory Query v2|||ad-enable-account
-  - Active Directory Query v2|||ad-update-user
-  - send-email
 fromversion: 5.0.0
