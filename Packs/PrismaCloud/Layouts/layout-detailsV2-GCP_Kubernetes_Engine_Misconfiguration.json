@@ -690,5 +690,6 @@
     "fromVersion": "5.0.0",
     "toVersion": "5.9.9",
     "typeId": "GCP Kubernetes Engine Misconfiguration",
+    "TypeName": "GCP Kubernetes Engine Misconfiguration",
     "version": -1
 }
