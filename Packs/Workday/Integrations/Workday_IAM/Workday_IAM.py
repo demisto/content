@@ -66,10 +66,6 @@ def fetch_incidents(client, mapper_in, report_url):
             workday_user = demisto.mapObject(entry, mapper_in, INCIDENT_TYPE)
             workday_user = convert_incident_fields_to_cli_names(workday_user)
 
-            # todo: remove next condition - for demo
-            if workday_user.get('rehiredemployee') == 'Yes':
-                workday_user['prehireflag'] = True
-
             demisto_user = get_demisto_user(employee_id_to_user_profile, workday_user)
             user_profile_unchanged, changed_fields = is_user_profile_unchanged(demisto_user, workday_user)
             found_potential_termination = detect_potential_termination(demisto_user, workday_user)
