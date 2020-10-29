@@ -686,7 +686,6 @@ def print_packs_summary(packs_list, storage_bucket_name, private_bucket_name):
         bucket_path = f'https://console.cloud.google.com/storage/browser/' \
             f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
 
-
         pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
             f'Uploaded packs:\n{successful_packs_table}\n\n' \
             f'Browse to the build bucket with this address:\n{bucket_path}'
