@@ -55,30 +55,40 @@ class Client:
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
                      data=None, resource=None):
-        if not params:
-            params = {}
-        if not full_url:
-            params['api-version'] = API_VERSION
+        try:
+            demisto.debug("****Starting Http request****")
+            if not params:
+                params = {}
+            if not full_url:
+                params['api-version'] = API_VERSION
 
-        res = self.ms_client.http_request(method=method,  # disable-secrets-detection
-                                          url_suffix=url_suffix,
-                                          full_url=full_url,
-                                          json_data=data,
-                                          params=params,
-                                          resp_type='response',
-                                          resource=resource)
+            res = self.ms_client.http_request(method=method,  # disable-secrets-detection
+                                              url_suffix=url_suffix,
+                                              full_url=full_url,
+                                              json_data=data,
+                                              params=params,
+                                              resp_type='response',
+                                              resource=resource)
 
-        if res.status_code in (200, 204) and not res.text:
-            return res
+            if res.status_code in (200, 204) and not res.text:
+                return res
+            demisto.debug("****starting response.json****")
 
-        res_json = res.json()
+            res_json = res.json()
 
-        if res.status_code in (400, 401, 403, 404, 409):
-            code = res_json.get('error', {}).get('code', 'Error')
-            error_msg = res_json.get('error', {}).get('message', res_json)
-            raise ValueError(
-                f'[{code} {res.status_code}] {error_msg}'
-            )
+            demisto.debug("****finishing response.json****")
+
+            if res.status_code in (400, 401, 403, 404, 409):
+                code = res_json.get('error', {}).get('code', 'Error')
+                error_msg = res_json.get('error', {}).get('message', res_json)
+                return_error(f"*****Status code:{res.status_code}, Error_code: {code}, Error_msg: {error_msg}*****")
+
+        except ValueError:
+            return_error(res.status_code)
+        except Exception as e:
+            demisto.debug(f"*****{res.text}: {e}")
+            demisto.debug(f"*****{res.content} :{e}")
+            demisto.debug(f"*****{res.status_code} :{e}")
 
         return res_json
 
@@ -163,9 +173,10 @@ def execute_query_command(client, args):
     }
 
     remove_nulls_from_dictionary(data)
-
+    demisto.debug(f"*****Starting query command with this data: {data}*****")
     response = client.http_request('POST', full_url=full_url, data=data,
                                    resource=LOG_ANALYTICS_RESOURCE)
+    demisto.debug("*****Finishing query command****")
 
     output = []
 
