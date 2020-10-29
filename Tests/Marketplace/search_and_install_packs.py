@@ -17,6 +17,12 @@ SUCCESS_FLAG = True
 
 
 def get_pack_display_name(pack_id):
+    """
+    Gets the display name of the pack from the pack ID.
+
+    :param pack_id: ID of the pack.
+    :return: Name found in the pack metadata, otherwise an empty string.
+    """
     metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILE)
     if pack_id and os.path.isfile(metadata_path):
         with open(metadata_path, 'r') as json_file:
@@ -169,6 +175,17 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
 
 
 def install_testing_license(client, host, prints_manager, thread_index):
+    """
+    Installs the current license in content-test-conf. Private packs require a specific license to be
+    uploaded. This function should be replaced when the AMI has the new license baked in.
+
+    :param client: Demisto-py client to connect to the server.
+    :param host: FQDN of the server.
+    :param prints_manager: ParallelPrintsManager - Will be deprecated.
+    :param thread_index: Integer indicating which thread the test is running on.
+    :return: None. Call to server waits until a successful response.
+    """
+    #  TODO: Remove this function when AMI contains new license.
     license_path = '/home/runner/work/content-private/content-private/content-test-conf/demisto.lic'
     header_params = {
         'Content-Type': 'multipart/form-data'
@@ -199,7 +216,17 @@ def install_testing_license(client, host, prints_manager, thread_index):
         print("Failed to upload license.")
 
 
-def install_packs_from_artifacts(client, host, prints_manager, thread_index, packs_to_install):
+def install_packs_from_artifacts(client, host, prints_manager, thread_index):
+    """
+    Installs all the packs located in the artifacts folder of the BitHub actions build. Please note:
+    The server always returns a 200 status even if the pack was not installed.
+
+    :param client: Demisto-py client to connect to the server.
+    :param host: FQDN of the server.
+    :param prints_manager: ParallelPrintsManager - Will be deprecated.
+    :param thread_index: Integer indicating which thread the test is running on.
+    :return: None. Call to server waits until a successful response.
+    """
     local_packs = glob.glob(
         "/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
     with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
@@ -226,7 +253,7 @@ def install_packs_private(client, host, prints_manager, thread_index, packs_to_i
         packs_to_install (list): A list of the packs to install.
     """
     install_testing_license(client, host, prints_manager, thread_index)
-    install_packs_from_artifacts(client, host, prints_manager, thread_index, packs_to_install)
+    install_packs_from_artifacts(client, host, prints_manager, thread_index)
 
 
 def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999):
@@ -321,6 +348,14 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
 
 
 def add_pack_to_installation_request(pack_id, installation_request_body):
+    """
+    Adds a pack to the pack_ids variable which is given to the search_and_install_packs_and_their_dependencies
+    function. The request must have the ID and Version.
+
+    :param pack_id: Id of the pack to add.
+    :param installation_request_body: The current pack_ids object to be modified.
+    :return: Updated installation_request_body object.
+    """
     metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILE)
     with open(metadata_path, 'r') as json_file:
         pack_metadata = json.load(json_file)
@@ -332,6 +367,15 @@ def add_pack_to_installation_request(pack_id, installation_request_body):
 
 
 def install_all_content_packs(client, host, prints_manager, thread_index=0):
+    """
+    Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
+
+    :param client: Demisto-py client to connect to the server.
+    :param host: FQDN of the server.
+    :param prints_manager: ParallelPrintsManager - Will be deprecated.
+    :param thread_index: Integer indicating which thread the test is running on.
+    :return: None. Prints the response from the server in the build.
+    """
     all_packs = []
 
     for pack_id in os.listdir(PACKS_FULL_PATH):

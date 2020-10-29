@@ -10,13 +10,14 @@ import git
 import requests
 from datetime import datetime
 from zipfile import ZipFile
+from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
     get_packs_statistics_dataframe
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
-def get_packs_names(target_packs):
+def get_packs_names(target_packs: str) -> set:
     """
     Detects and returns packs names to upload.
 
@@ -59,7 +60,7 @@ def get_packs_names(target_packs):
         sys.exit(1)
 
 
-def is_pack_paid_or_premium(path_to_pack_metadata_in_index):
+def is_pack_paid_or_premium(path_to_pack_metadata_in_index: str) -> bool:
     """
     Determines if a pack is a paid or premium pack.
 
@@ -75,7 +76,7 @@ def is_pack_paid_or_premium(path_to_pack_metadata_in_index):
     return is_pack_paid or is_pack_premium
 
 
-def delete_public_packs_from_index(index_folder_path):
+def delete_public_packs_from_index(index_folder_path: str):
     """
     Removes all packs which are not private from the index.
 
@@ -90,7 +91,7 @@ def delete_public_packs_from_index(index_folder_path):
             shutil.rmtree(path_to_pack, ignore_errors=True)
 
 
-def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
+def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path: str):
     """Extracts all packs from content pack artifact zip.
 
     Args:
@@ -103,7 +104,7 @@ def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
     print("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket, extract_destination_path):
+def download_and_extract_index(storage_bucket: Any, extract_destination_path: str) -> Tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
 
     Args:
@@ -152,7 +153,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         sys.exit(1)
 
 
-def update_private_index(private_index_path, unified_index_path):
+def update_private_index(private_index_path: str, unified_index_path: str):
     """
     Updates the private index by copying the unified index to the private index.
 
@@ -169,7 +170,8 @@ def update_private_index(private_index_path, unified_index_path):
         shutil.copy(path_to_pack_on_unified_index, path_to_pack_on_private_index)
 
 
-def update_index_folder(index_folder_path, pack_name, pack_path, pack_version='', hidden_pack=False):
+def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, pack_version: str = '',
+                        hidden_pack: bool = False) -> bool:
     """
     Copies pack folder into index folder.
 
@@ -208,8 +210,7 @@ def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''
             if os.path.exists(index_pack_path):
                 shutil.rmtree(index_pack_path)  # remove pack folder inside index in case that it exists
             print_warning(f"Skipping updating {pack_name} pack files to index")
-            task_status = True
-            return
+            return True
 
         # Copy new files and add metadata for latest version
         for d in os.scandir(pack_path):
@@ -228,7 +229,7 @@ def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''
         return task_status
 
 
-def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
+def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any) -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -279,18 +280,21 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
     return False
 
 
-def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                            current_commit_hash, index_generation, is_private=False):
-    """Upload updated index zip to cloud storage.
+def upload_index_to_storage(index_folder_path: str, extract_destination_path: str, index_blob: Any,
+                            build_number: str, private_packs: list, current_commit_hash: str,
+                            index_generation: str, is_private: bool = False):
+    """
+    Upload updated index zip to cloud storage.
 
-    Args:
-        index_folder_path (str): index folder full path.
-        extract_destination_path (str): extract folder full path.
-        index_blob (Blob): google cloud storage object that represents index.zip blob.
-        build_number (str): circleCI build number, used as an index revision.
-        private_packs (list): List of private packs and their price.
-        current_commit_hash (str): last commit hash of head.
-        index_generation (str): downloaded index generation.
+    :param index_folder_path: index folder full path.
+    :param extract_destination_path: extract folder full path.
+    :param index_blob: google cloud storage object that represents index.zip blob.
+    :param build_number: circleCI build number, used as an index revision.
+    :param private_packs: List of private packs and their price.
+    :param current_commit_hash: last commit hash of head.
+    :param index_generation: downloaded index generation.
+    :param is_private: Indicates if upload is private.
+    :returns None.
 
     """
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
@@ -325,7 +329,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         shutil.rmtree(index_folder_path)
 
 
-def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
+def upload_core_packs_config(storage_bucket: Any, build_number: str, index_folder_path: str):
     """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
 
      Args:
@@ -379,7 +383,7 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
     print_color(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.", LOG_COLORS.GREEN)
 
 
-def upload_id_set(storage_bucket, id_set_local_path=None):
+def upload_id_set(storage_bucket: Any, id_set_local_path: str = None):
     """
     Uploads the id_set.json artifact to the bucket.
 
@@ -399,14 +403,16 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
     print_color("Finished uploading id_set.json to storage.", LOG_COLORS.GREEN)
 
 
-def get_private_packs(private_index_path, pack_names, is_private_build, extract_destination_path):
-    """ Get the list of ID and price of the private packs.
+def get_private_packs(private_index_path: str, pack_names: set, is_private_build: bool,
+                      extract_destination_path: str) -> list:
+    """
+    Gets a list of private packs.
 
-    Args:
-        private_index_path: The path for the index of the private packs.
-
-    Returns:
-        private_packs: A list of ID and price of the private packs.
+    :param private_index_path: Path to where the private index is located.
+    :param pack_names: Collection of pack names.
+    :param is_private_build: Indicates if the build is private.
+    :param extract_destination_path: Path to where the files should be extracted to.
+    :return: List of dicts containing pack metadata information.
     """
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
@@ -441,7 +447,7 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
     return private_packs
 
 
-def add_private_packs_to_index(index_folder_path, private_index_path):
+def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
     """ Add the private packs to the index folder.
 
     Args:
@@ -454,14 +460,17 @@ def add_private_packs_to_index(index_folder_path, private_index_path):
             update_index_folder(index_folder_path, d.name, d.path)
 
 
-def update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
-                                   index_folder_path, pack_names, is_private_build):
+def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
+                                   index_folder_path: str, pack_names: set, is_private_build: bool) -> \
+                                   Tuple[Union[list, list], str, Any]:
     """ Updates index with priced packs and returns list of priced packs data.
 
     Args:
         private_storage_bucket (google.cloud.storage.bucket.Bucket): google storage private bucket.
         extract_destination_path (str): full path to extract directory.
         index_folder_path (str): downloaded index folder directory path.
+        pack_names (set): Collection of pack names.
+        is_private_build (bool): Indicates if the build is private.
 
     Returns:
         list: priced packs from private bucket.
@@ -488,7 +497,7 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
         return private_packs, private_index_path, private_index_blob
 
 
-def _build_summary_table(packs_input_list, include_pack_status=False):
+def _build_summary_table(packs_input_list: list, include_pack_status: bool = False) -> Any:
     """Build summary table from pack list
 
     Args:
@@ -514,7 +523,7 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
     return table
 
 
-def build_summary_table_md(packs_input_list, include_pack_status=False):
+def build_summary_table_md(packs_input_list: list, include_pack_status: bool = False) -> str:
     """Build markdown summary table from pack list
 
     Args:
@@ -550,7 +559,7 @@ def build_summary_table_md(packs_input_list, include_pack_status=False):
     return '\n'.join(table)
 
 
-def load_json(file_path):
+def load_json(file_path: str) -> dict:
     """ Reads and loads json file.
 
     Args:
@@ -568,7 +577,7 @@ def load_json(file_path):
     return result
 
 
-def get_content_git_client(content_repo_path):
+def get_content_git_client(content_repo_path: str):
     """ Initializes content repo client.
 
     Args:
@@ -581,7 +590,7 @@ def get_content_git_client(content_repo_path):
     return git.Repo(content_repo_path)
 
 
-def get_recent_commits_data(content_repo):
+def get_recent_commits_data(content_repo: Any):
     """ Returns recent commits hashes (of head and remote master)
 
     Args:
@@ -594,10 +603,10 @@ def get_recent_commits_data(content_repo):
     return content_repo.head.commit.hexsha, content_repo.commit('origin/master~1').hexsha
 
 
-def check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
-                              storage_bucket):
-    """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
-    added/modified/deleted, all other steps are not performed.
+def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current_commit_hash: str,
+                              remote_previous_commit_hash: str, storage_bucket: Any):
+    """ Checks stored at index.json commit hash and compares it to current commit hash. In case no
+    packs folders were added/modified/deleted, all other steps are not performed.
 
     Args:
         index_folder_path (str): index folder full path.
@@ -654,7 +663,7 @@ def check_if_index_is_updated(index_folder_path, content_repo, current_commit_ha
         sys.exit(1)
 
 
-def should_upload_core_packs(storage_bucket_name):
+def should_upload_core_packs(storage_bucket_name: str) -> bool:
     """
     Indicates if the core packs should be updated.
     :param storage_bucket_name: Name of the storage bucket. Typically either marketplace-dist, or
@@ -666,7 +675,7 @@ def should_upload_core_packs(storage_bucket_name):
     return not (is_private_storage_bucket or is_private_ci_bucket)
 
 
-def print_packs_summary(packs_list):
+def print_packs_summary(packs_list: list):
     """Prints summary of packs uploaded to gcs.
 
     Args:
@@ -721,7 +730,7 @@ def print_packs_summary(packs_list):
         add_pr_comment(pr_comment)
 
 
-def add_pr_comment(comment):
+def add_pr_comment(comment: str):
     """Add comment to the pull request.
 
     Args:
@@ -750,7 +759,7 @@ def add_pr_comment(comment):
         print_warning('Add pull request comment failed: {}'.format(e))
 
 
-def handle_github_response(response):
+def handle_github_response(response: json) -> dict:
     """
     Handles the response from the GitHub server after making a request.
     :param response: Response from the server.
@@ -763,10 +772,11 @@ def handle_github_response(response):
     return res_dict
 
 
-def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
-                                       packs_dependencies_mapping,
-                                       private_storage_bucket=None, content_repo=None, current_commit_hash='',
-                                       remote_previous_commit_hash='', packs_statistic_df=None):
+def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bucket: Any, index_folder_path: str,
+                                       packs_dependencies_mapping: dict, private_storage_bucket: bool = None,
+                                       content_repo:bool = None, current_commit_hash: str = '',
+                                       remote_previous_commit_hash: str = '', packs_statistic_df: Any = None)\
+                                       -> Any:
     """
     The main logic flow for the create and upload process. Acts as a decision tree while consistently
     checking the status of the progress being made.
@@ -781,7 +791,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
     :param current_commit_hash: Current commit hash for the run. Used in the pack metadata file.
     :param remote_previous_commit_hash: Previous commit hash. Used for comparison.
     :param packs_statistic_df: Dataframe object containing current pack analytics.
-    :return:
+    :return: Updated pack.status value.
     """
     build_number = upload_config.ci_build_number
     remove_test_playbooks = upload_config.remove_test_playbooks

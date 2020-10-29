@@ -115,6 +115,11 @@ class Server:
 
 
 def get_id_set():
+    """
+    Used to collect the ID set so it can be passed to the Build class on init.
+
+    :return: None.
+    """
     if os.path.isfile(ID_SET_PATH):
         return get_json_file(ID_SET_PATH)
 

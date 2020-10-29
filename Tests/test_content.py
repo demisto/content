@@ -105,7 +105,13 @@ class SettingsTester:
         self.is_local_run = (self.server is not None)
 
     @staticmethod
-    def parse_tests_list_arg(tests_list):
+    def parse_tests_list_arg(tests_list: str):
+        """
+        Parses the test list arguments if present.
+
+        :param tests_list: CSV string of tests to run.
+        :return: List of tests if there are any, otherwise empty list.
+        """
         tests_to_run = tests_list.split(",") if tests_list else []
         return tests_to_run
 
@@ -188,7 +194,14 @@ class DataKeeperTester:
             self.empty_files.append(playbook_id)
 
 
-def print_test_summary(tests_data_keeper, is_ami=True):
+def print_test_summary(tests_data_keeper: DataKeeperTester, is_ami: bool=True):
+    """
+    Takes the information stored in the tests_data_keeper and prints it in a human readable way.
+
+    :param tests_data_keeper: DataKeeperTester object containing test statuses.
+    :param is_ami: Boolean indicating if the server running the tests is an AMI or not.
+    :return: None.
+    """
     succeed_playbooks = tests_data_keeper.succeeded_playbooks
     failed_playbooks = tests_data_keeper.failed_playbooks
     skipped_tests = tests_data_keeper.skipped_tests

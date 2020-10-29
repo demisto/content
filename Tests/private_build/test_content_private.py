@@ -6,6 +6,7 @@ import traceback
 from time import sleep
 import datetime
 from distutils.version import LooseVersion
+from typing import Any
 
 import urllib3
 import demisto_client.demisto_api
@@ -54,10 +55,11 @@ def options_handler():
     return tests_settings
 
 
-def run_test_logic(tests_settings, c, failed_playbooks,
-                   integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
-                   circle_ci, build_number, server_url, demisto_user, demisto_pass, build_name,
-                   prints_manager, thread_index=0):
+def run_test_logic(tests_settings: Any, c: Any, failed_playbooks: list,
+                   integrations: list, playbook_id: str, succeed_playbooks: list, test_message: str,
+                   test_options: dict, slack: Any, circle_ci: str, build_number: str, server_url: str,
+                   demisto_user: str, demisto_pass: str, build_name: str,
+                   prints_manager: Any, thread_index: int = 0) -> bool:
     """
     run_test_logic handles the testing of the integration by triggering check_integration. afterwards
     it will check the status of the test and report success or add the failed test to the list of
@@ -112,10 +114,11 @@ def run_test_logic(tests_settings, c, failed_playbooks,
     return succeed
 
 
-def run_test(tests_settings, demisto_user, demisto_pass,
-             failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
-             prints_manager, thread_index=0):
+def run_test(tests_settings: SettingsTester, demisto_user: str, demisto_pass: str,
+             failed_playbooks: list, integrations: list, playbook_id: str, succeed_playbooks: list,
+             test_message: str, test_options: dict, slack: str, circle_ci: str, build_number: str,
+             server_url: str, build_name: str, prints_manager: ParallelPrintsManager,
+             thread_index: int = 0) -> None:
     """
     Wrapper for the run_test_logic function. Helps by indicating when the test is starting and ending.
 
@@ -154,13 +157,16 @@ def run_test(tests_settings, demisto_user, demisto_pass,
     return
 
 
-def run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_tests_conf,
-                              nightly_integrations, skipped_integrations_conf, skipped_integration,
-                              run_all_tests, is_filter_configured, filtered_tests, skipped_tests,
-                              secret_params, failed_playbooks, playbook_skipped_integration,
-                              succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                              server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
-                              prints_manager, thread_index=0):
+def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_test_timeout: int,
+                              skipped_tests_conf: set,
+                              nightly_integrations: list, skipped_integrations_conf: set,
+                              skipped_integration: set, run_all_tests: bool, is_filter_configured: bool,
+                              filtered_tests: list, skipped_tests: set, secret_params: dict,
+                              failed_playbooks: list, playbook_skipped_integration: set,
+                              succeed_playbooks: list, slack: str, circle_ci: str, build_number: str,
+                              server: str, build_name: str, server_numeric_version: str, demisto_user: str,
+                              demisto_pass: str, demisto_api_key: str, prints_manager: ParallelPrintsManager,
+                              thread_index: int = 0):
     """
     Checks to see if test should run given the scenario. If the test should run, it will collect the
     integrations which are required to run the test.
@@ -179,7 +185,7 @@ def run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_t
     :param secret_params: Parameters found in the content-test-conf. Used to configure the instance.
     :param failed_playbooks: List of failed playbooks, additional failed playbooks will be added if
                              they failed.
-    :param playbook_skipped_integration:
+    :param playbook_skipped_integration: Not used.
     :param succeed_playbooks: List of playbooks which have passed tests.
     :param slack: Slack client used for notifications.
     :param circle_ci: CircleCI token. Used to get name of dev who triggered the build.
@@ -260,8 +266,9 @@ def run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_t
              build_number, server, build_name, prints_manager, thread_index=thread_index)
 
 
-def execute_testing(tests_settings, server_ip, all_tests,
-                    tests_data_keeper, prints_manager, thread_index=0):
+def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: set,
+                    tests_data_keeper: DataKeeperTester, prints_manager: ParallelPrintsManager,
+                    thread_index: int = 0):
     """
     Main function used to handle the testing process. Starts by turning off telemetry and disabling
     any left over tests. Afterwards it will create a test queue object which then is used to run the
@@ -389,12 +396,12 @@ def update_round_set_and_sleep_if_round_completed(executed_in_current_round: set
     return executed_in_current_round
 
 
-def manage_tests(tests_settings):
+def manage_tests(tests_settings: SettingsTester):
     """
     This function manages the execution of Demisto's tests.
 
     Args:
-        tests_settings (TestsSettings): An object containing all the relevant data regarding how the
+        tests_settings (SettingsTester): An object containing all the relevant data regarding how the
                                         tests should be ran.
 
     """

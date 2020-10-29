@@ -23,7 +23,7 @@ PRIVATE_CONTENT_TEST_ZIP = PRIVATE_CONTENT_PATH + '/test_pack.zip'
 FILTER_FILE_PATH = "./Tests/filter_file.txt"
 
 
-def create_install_private_testing_pack(build, prints_manager):
+def create_install_private_testing_pack(build: Build, prints_manager: ParallelPrintsManager):
     """
     Creates and installs the test pack used in the private build. This pack contains the test
     playbooks and test scripts that will be used for the tests.
@@ -43,7 +43,7 @@ def create_install_private_testing_pack(build, prints_manager):
     sleep(45)
 
 
-def install_packs_private(build, prints_manager, pack_ids=None):
+def install_packs_private(build: Build, prints_manager: ParallelPrintsManager, pack_ids: list = None) -> bool:
     """
     Wrapper for the search and install packs function.
 
@@ -67,11 +67,11 @@ def install_packs_private(build, prints_manager, pack_ids=None):
     return installed_content_packs_successfully
 
 
-def find_needed_test_playbook_paths(test_playbooks, filter_file_path):
+def find_needed_test_playbook_paths(test_playbooks: dict, filter_file_path: str) -> set:
     """
     Uses the test filter file to determine which test playbooks are needed to run, then will use the
     test playbook IDs found in the ID set to determine what the path is for that test.
-    :param filter_file_path:
+    :param filter_file_path: Path to the test filter txt file.
     :param test_playbooks: The test_playbooks dictionary from the ID set.
     :return: tests_file_paths set used to keep file paths of found tests.
     """
@@ -88,7 +88,7 @@ def find_needed_test_playbook_paths(test_playbooks, filter_file_path):
     return tests_file_paths
 
 
-def write_test_pack_zip(tests_file_paths):
+def write_test_pack_zip(tests_file_paths: set):
     """
     Builds and writes the test pack when given a set of file paths.
     :param tests_file_paths: Set of file paths to add to the test pack zip.
@@ -112,7 +112,7 @@ def write_test_pack_zip(tests_file_paths):
                 zip_file.writestr(test_target, test_file.read())
 
 
-def create_private_test_pack_zip(id_set=None):
+def create_private_test_pack_zip(id_set: dict = None):
     """
     Creates the test pack with all of the scripts and dependant playbooks for the private tests.
     :param id_set: ID set file object.
