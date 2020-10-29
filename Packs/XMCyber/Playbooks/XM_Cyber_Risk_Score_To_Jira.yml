@@ -1,8 +1,8 @@
-id: XM Cyber Risk Score To Jira
+id: XM_Cyber_Risk_Score_To_Jira
 version: -1
 description: THIS_TEST
 fromversion: 5.0.0
-name: XM Cyber Risk Score To Jira
+name: XM_Cyber_Risk_Score_To_Jira
 starttaskid: "0"
 tasks:
   "0":
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: c3cd0cee-b271-4aed-89cb-97d915f18f32
+    taskid: 28b833dc-b8c4-4084-8220-e0e5cb94569e
     type: regular
     task:
-      id: c3cd0cee-b271-4aed-89cb-97d915f18f32
+      id: 28b833dc-b8c4-4084-8220-e0e5cb94569e
       version: -1
       name: jira-create-issue
       description: Creates a new issue in Jira.
@@ -49,8 +49,9 @@ tasks:
       assignee: {}
       description:
         simple: |-
-          Current risk score is : ${incident.xmriskscore}.
+          Current security score is : ${incident.xmriskscore}.
           Trend from the previous week is: ${incident.xmriskscoretrend}
+          Learn more: ${URL.Data}
       dueDate: {}
       issueJson: {}
       issueTypeId:
@@ -67,7 +68,7 @@ tasks:
         simple: XMTEST
       reporter: {}
       summary:
-        simple: XM risk score is  ${incident.xmriskscore}
+        simple: XM Security Score has dropped to  ${incident.xmriskscore}
     separatecontext: false
     view: |-
       {
@@ -95,5 +96,6 @@ view: |-
   }
 inputs: []
 outputs: []
+sourceplaybookid: d604675a-27dc-47d0-8492-d2293c645d23
 tests:
   - No tests
