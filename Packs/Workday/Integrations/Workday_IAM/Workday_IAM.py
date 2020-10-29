@@ -285,7 +285,7 @@ def main():
             events = workday_context.get('events', [])
             report_url = params.get('report_url')
 
-            if params.get('fetch_samples') and not params.get('isFetch'):
+            if params.get('fetch_samples'):
                 sample_events = fetch_samples(
                     client=client,
                     mapper_in=mapper_in,
