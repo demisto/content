@@ -1,6 +1,6 @@
 description: |
   This playbook gets all available device inventory and updates/create endpoints with custom attributes on Cisco ISE
-id: d2394bae-e9ac-40ec-8b19-7459e49a52d6
+id: panw_iot_ise_bulk_integration
 inputs: []
 name: panw_iot_ise_bulk_integration
 outputs: []
@@ -22,6 +22,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 200cd8df-07f3-497f-85da-7efc29c1080e
     timertriggers: []
     type: start
