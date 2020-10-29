@@ -241,7 +241,7 @@ tasks:
       id: 12f532fc-c00c-4bdb-80cc-7e9ea07b8d03
       iscommand: false
       name: send_panw_iot_devices_to_ise
-      script: 000d1f7c-0e12-4c42-811a-8b98d8eb7a7a
+      script: send_panw_iot_devices_to_ise
       type: regular
       version: -1
     taskid: 12f532fc-c00c-4bdb-80cc-7e9ea07b8d03
