@@ -1,8 +1,9 @@
-id: f48ec30a-8aa0-48f0-89c9-c65c205bfb2e
-version: 8
-vcshouldkeepitemlegacyprodmachine: false
+id: Detonate File - FireEye Detection on Demand
+version: -1
 name: Detonate File - FireEye Detection on Demand
-description: Detonate one or more files using the FireEye Detection on Demand integration.  This playbook returns relevant reports to the War Room and file reputations to the context data.
+description: Detonate one or more files using the FireEye Detection on Demand integration.  This
+  playbook returns relevant reports to the War Room and file reputations to the context
+  data.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -16,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -194,6 +196,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -241,6 +244,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -274,19 +278,19 @@ inputs:
     simple: ${File}
   required: false
   description: File object of the file to detonate
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "30"
   required: false
   description: How much time to wait before a timeout occurs  (minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File
   description: The File object

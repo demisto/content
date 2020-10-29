@@ -1,10 +1,9 @@
 commonfields:
   id: FireEye Detection on Demand
-  version: 1.0.0
+  version: -1
 name: FireEye Detection on Demand
 display: FireEye Detection on Demand
 category: Forensics & Malware Analysis
-vcShouldKeepItemLegacyProdMachine: false
 description: FireEye Detection On Demand is a threat detection service delivered as
   an API for integration into the SOC workflow, SIEM analytics, data repositories,
   or web applications, etc. It delivers flexible file and content analysis to identify
@@ -32,7 +31,7 @@ configuration:
 script:
   script: ''
   type: python
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.6.12176
   runonce: false
   subtype: python3
   commands:
