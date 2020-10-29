@@ -142,6 +142,12 @@ def marshal(value: Any) -> Any:
         return value
 
 
+def hexdigest(value: str, algorithm: str) -> str:
+    h = hashlib.new(algorithm)
+    h.update(value.encode('utf-8'))
+    return h.hexdigest()
+
+
 def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool:
     """ Pattern matching
 
@@ -1098,10 +1104,7 @@ class ExtFilter:
 
         elif optype == "digest":
             params = self.parse_conds_json(rhs)
-            algorithm = str(params.get('algorithm', 'sha256'))
-            h = hashlib.new(algorithm)
-            h.update(str(lhs).encode('utf-8'))
-            return Value(h.hexdigest())
+            return hexdigest(str(lhs), str(params.get('algorithm', 'sha256')))
 
         """
         Filter for single value (boolean evaluation)
