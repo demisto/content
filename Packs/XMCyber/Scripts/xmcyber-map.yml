@@ -16,7 +16,7 @@ script: |-
       'criticalAssetsAtRisk': 'xmcybercriticalassetsatrisk',
       'criticalAssetsAtRiskLevel': 'xmcybercriticalassetsatrisklevel',
       'criticalAssetsAtRiskList':'xmcybercriticalassetsatrisklist',
-      'isAsset': 'xmcyberiscriticalasset',
+      'isAsset': 'xmcybercriticalasset',
       'entityType': 'xmcyberentitytype',
       'name': 'xmcyberhostname',
       'entityReport': 'xmcyberentityreport'

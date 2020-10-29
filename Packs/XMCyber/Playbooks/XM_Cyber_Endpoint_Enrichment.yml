@@ -3,7 +3,7 @@ version: -1
 fromversion: 6.0.0
 starttaskid: "0"
 name: XM Cyber Endpoint Enrichment
-description: Given inputs of IP address or hostnames the playbook will enrich with
+description: Given inputs of an Endpoint indicator, this playbook will enrich with data from XM. This is a simpler and less robust playbook than the XM Cyber Enrich
   affected assets, entities, etc
 tasks:
   "0":
@@ -344,7 +344,7 @@ inputs:
   value:
     simple: ${Endpoint.IPAddress}
   required: false
-  description: ""
+  description: "IP address of entity"
   playbookInputQuery: null
 outputs:
 - contextPath: Endpoint.ID

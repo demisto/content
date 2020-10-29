@@ -2,7 +2,7 @@ id: XM Cyber Enrich
 version: -1
 name: XM Cyber Enrich
 starttaskid: "0"
-description: Extracts all IPs in context to see impact on critical assets
+description: Using either playbook input of IP or name or from the incident context this playbook enriches the incident with data from XM Cyber. Use this playbook as the default to handle new incidents related to devices/entities
 fromversion: 6.0.0
 tasks:
   "0":
@@ -722,13 +722,13 @@ inputs:
   value:
     simple: ${Endpoint.Hostname}
   required: false
-  description: ""
+  description: "Name i.e. hostname"
   playbookInputQuery: null
 - key: IpAddress
   value:
     simple: ${IP.Address}
   required: false
-  description: ""
+  description: "IP Address of entity to enrich"
   playbookInputQuery: null
 outputs:
 - contextPath: entityId
