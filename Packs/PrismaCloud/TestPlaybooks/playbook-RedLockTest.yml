@@ -1,5 +1,5 @@
 id: RedLockTest
-version: -1
+version: 34
 name: RedLockTest
 starttaskid: "0"
 tasks:
@@ -839,7 +839,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "22"
     scriptarguments:
       rql:
         simple: config where api.name = 'aws-iam-list-access-keys'
@@ -849,38 +849,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 2830
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "39":
-    id: "39"
-    taskid: 95655d11-43da-4d8a-8f11-b32dc051b144
-    type: regular
-    task:
-      id: 95655d11-43da-4d8a-8f11-b32dc051b144
-      version: -1
-      name: Remediate Alert
-      description: Remediate alerts in Prisma Cloud
-      script: '|||redlock-remediate-alerts'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      alert-id:
-        simple: ${RedLockID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 270,
-          "y": 2990
         }
       }
     note: false
@@ -910,3 +878,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

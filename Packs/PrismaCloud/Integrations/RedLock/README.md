@@ -638,7 +638,7 @@ Run RQL query on Prisma Cloud
 >### RQL Output:
 >|Account Id|Account Name|Cloud Type|Deleted|Has Alert|Id|Insert Ts|Name|Region Id|Region Name|Resource Type|Rrn|Service|State Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 858079422468 | lhunt-aws-acct | aws | false | false | i-0e1740403b4d6e529 | 1602534920946 | vm-series-1 | us-east-1 | AWS Virginia | Instance | rrn::instance:us-east-1:858079422468:i-0e1740403b4d6e529 | Amazon EC2 | d68a78d95041dca18277f0389ac43d60ba456061 |
+>| 858079422345 | test-aws-acct | aws | false | false | i-0e1740403b4d6e555 | 13332534920946 | vm-series-1 | us-east-1 | AWS Virginia | Instance | rrn::instance:us-east-1:85807943458:i-0e1740403b4d6e529 | Amazon EC2 | d68a78d95041dca18277f0389ac43d60ba456061 |
 
 
 ### redlock-remediate-alerts

@@ -61,12 +61,19 @@ script:
       required: false
       default: false
       isArray: false
-      description: "The maximum number of records to return. '; limit search records to {}' is appended to every query where {} is the maximum number of records to return. If no value is provided, only 1 record is returned."
-    - name: rql  
+      description: "The maximum number of records to return. '; limit search records\
+        \ to {}' is appended to every query where {} is the maximum number of records\
+        \ to return. If no value is provided, only 1 record is returned."
+    - name: rql
       required: true
       default: false
       isArray: false
-      description: "The RQL query to run. Examples of RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1."
+      description: "The RQL query to run. Examples of RQL queries can be found here:\
+        \ https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples.\
+        \ Note that ` limit search records to 1` is automatically appended to each\
+        \ query and a `;` may need to be added to the end of the rql input to make\
+        \ the entire query valid.  The limit parameter adjusts this to be a value\
+        \ other than 1."
     outputs:
     - contextPath: Redlock.RQL.cloudType
       description: The cloud type.
@@ -111,7 +118,8 @@ script:
       required: true
       default: false
       isArray: true
-      description: The ID of the alert to remediate. You can retrieve alerts using the redlock-search-alerts command.
+      description: The ID of the alert to remediate. You can retrieve alerts using
+        the redlock-search-alerts command.
   - name: redlock-search-alerts
     arguments:
     - name: time-range-date-from
@@ -130,7 +138,9 @@ script:
       - year
       - login
       - epoch
-      description: 'The time range unit. Possible values are: "hour", "day", "week", "month", "year", "login", and "epoch". "login" and "epoch" are only available if time-range-value is not provided.'
+      description: 'The time range unit. Possible values are: "hour", "day", "week",
+        "month", "year", "login", and "epoch". "login" and "epoch" are only available
+        if time-range-value is not provided.'
     - name: policy-name
       auto: PREDEFINED
       predefined:
@@ -187,7 +197,8 @@ script:
       - open
       - resolved
       - dismissed
-      description: 'The alert status. Possible values are: "open", "resolved", and "dismissed". Default is "open".'
+      description: 'The alert status. Possible values are: "open", "resolved", and
+        "dismissed". Default is "open".'
       defaultValue: open
     - name: alert-id
       description: The alert ID.
@@ -310,7 +321,8 @@ script:
       description: comma separated list of string IDs to be dismissed
     - name: snooze-value
       required: false
-      description: The amount of time to snooze. Both snooze value and unit must be specified
+      description: The amount of time to snooze. Both snooze value and unit must be
+        specified
     - name: snooze-unit
       required: false
       auto: PREDEFINED
@@ -320,9 +332,9 @@ script:
       - week
       - month
       - year
-      - login
       - epoch
-      description: The time unit for if snoozing alert.  Both snooze value and unit must be specified if snoozing.
+      description: The time unit for if snoozing alert.  Both snooze value and unit
+        must be specified if snoozing.
     - name: dismissal-note
       required: true
       description: Reason for dismissal
@@ -436,7 +448,8 @@ script:
     - contextPath: Redlock.DismissedAlert.ID
       description: The IDs of the dismissed alerts
       type: string
-    description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
+    description: Dismiss the alerts matching the given filter. Must provide either
+      policy IDs or alert IDs.
     execution: true
   - name: redlock-reopen-alerts
     arguments:
@@ -550,7 +563,8 @@ script:
     - contextPath: Redlock.ReopenedAlert.ID
       description: IDs of the re-opened alerts
       type: string
-    description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
+    description: Re-open the alerts matching the given filter.  Must provide either
+      policy IDs or alert IDs.
     execution: true
   - name: redlock-list-alert-filters
     arguments: []
@@ -572,6 +586,4 @@ script:
       description: The alert ID for which to get remediation details.
   isfetch: true
   runonce: false
-defaultclassifier: RedLock
-defaultmapperin: RedLock-mapper
 fromversion: 5.0.0
