@@ -728,6 +728,19 @@ script:
       - emergency
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: normal
+      description: Type of Change Request ticket. Can be "normal", "standard", or
+        "emergency". Default is "normal".
+      isArray: false
+      name: type
+      predefined:
+        - normal
+        - standard
+        - emergency
+      required: false
+      secret: false
     - default: false
       description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
       isArray: false
