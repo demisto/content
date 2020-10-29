@@ -196,7 +196,7 @@ You can make filters with comlex and combination conditions for the context data
 ---
 ## DT (Demisto Transform Language)
 
-  In filters written in JSON like `expressions`, `conditions` or `<value>`, you can set values with DT expressions for keys and values.
+  In filters written in JSON like `expressions`, `conditions`, `transformers` or `<value>`, you can set values with DT expressions for keys and values.
   When you use DT, you must set `ctx_demisto`, `ctx_inputs`, `ctx_lists` and `ctx_incident` of the parameters for the data to which DT accesses.
   
 | *Parameter* | *Data Source* | *Value* | *Description* |
@@ -206,7 +206,7 @@ You can make filters with comlex and combination conditions for the context data
 | ctx_lists | From Previous Tasks | list | Enable to access the `list` data and use `${list.}` |
 | ctx_incident | From Previous Tasks | incident | Enable to access the incident context and use `${incident.}` |
 
-   *NOTE:* `${list.}` doesn't work in XSOAR 6.0 in transformer.
+   *NOTE:* `${list.}` doesn't work in XSOAR 6.0 in transformer. 
    
   Also, `local` prefix (`${local.}`) can be available for referring to the root value of the target. No parameters set is required for using `${local.}`.
 
@@ -7775,7 +7775,7 @@ Appends all the elements given in a filter to the value.
 ----
 ### Operator: `abort`
 <details><summary>
-Raises an exception and exit with the value filtered at the operator. This operator is available for debugging.
+Raises an exception and exit with the value filtered at the operator. This operator is available for troubleshooting and debugging.
 </summary><p>
 
 > **Filter Format**: `dict[str,Any]`
