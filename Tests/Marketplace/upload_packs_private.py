@@ -683,12 +683,9 @@ def print_packs_summary(packs_list, storage_bucket_name, private_bucket_name):
 
         build_num = os.environ['CIRCLE_BUILD_NUM']
 
-        if private_bucket_name == "marketplace-dist-private":
-            bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                f'marketplace-dist-private/non_master_upload'
-        else:
-            bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                f'marketplace-ci-build-private/content/builds/{branch_name}/{build_num}'
+        bucket_path = f'https://console.cloud.google.com/storage/browser/' \
+            f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
+
 
         pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
             f'Uploaded packs:\n{successful_packs_table}\n\n' \
