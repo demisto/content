@@ -475,7 +475,7 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
     try:
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
-        default_attribute = args.get('defult_attribute', "samaccountname")
+        default_attribute = "samaccountname"
 
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 

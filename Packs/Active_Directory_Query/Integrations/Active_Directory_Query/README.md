@@ -823,7 +823,6 @@ Used in the IAM premium pack.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
-| default_attribute | The unique attribute in AD. Default is samaccountname. | Optional | 
 
 #### Context Output
 

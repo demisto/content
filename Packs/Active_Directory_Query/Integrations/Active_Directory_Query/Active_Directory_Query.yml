@@ -512,12 +512,6 @@ script:
         required: true
         secret: false
         description: A User Profile indicator that contains user information, such as name, email address, etc.
-      - default: false
-        isArray: false
-        name: default_attribute
-        required: false
-        secret: false
-        description: "The unique attribute in AD. Default is samaccountname."
     deprecated: false
     execution: false
     description: "Retrieves a single user resource."
