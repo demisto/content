@@ -2,6 +2,8 @@
 
 Integrate with Okta's Identity Access Management service to execute CRUD operations to employee lifecycle processes.
 This integration was integrated and tested with version v1 of Okta.
+For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
+
 ## Configure Okta IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
