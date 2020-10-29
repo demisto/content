@@ -77,8 +77,8 @@ There is no context output for this command.
 ```!phishtank-reload```
 
 #### Human Readable Output
-<br>PhishTankV2 Database reloaded</br>
-<br>Total **13181** URLs loaded.</br>
+>PhishTankV2 Database reloaded
+>Total **13181** URLs loaded.
 
 
 
@@ -102,8 +102,8 @@ There is no context output for this command.
 ```!phishtank-status```
 
 #### Human Readable Output
-<br>PhishTankV2 Database Status</br>
-<br>Total **13181** URLs loaded.</br>
-<br>Last Load time **Sun Oct 04 2020 09:43:01 (UTC)**</br>
+>PhishTankV2 Database Status
+>Total **13181** URLs loaded.
+>Last Load time **Sun Oct 04 2020 09:43:01 (UTC)**
 
 
