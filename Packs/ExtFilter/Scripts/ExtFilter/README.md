@@ -1648,12 +1648,12 @@ This operator evaluates to false for either or both of the data which cannot con
 
 
 ----
-### Operator: `less or equal`, `<=`
+### Operator: `less or equal`, `&lt;=`
 <details><summary>
 Returns a set of elements which is less or equal to a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
-`<=` is an alias name for `less or equal`.
+`&lt;=` is an alias name for `less or equal`.
 </summary><p/>
 
 > **Filter Format**: `<value>`
@@ -1692,7 +1692,7 @@ This operator evaluates to false for either or both of the data which cannot con
 Returns a set of elements which is less than a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
 This operator evaluates to false for either or both of the data which cannot convert to number.
-`<` is an alias name for `less than`.
+`&lt;` is an alias name for `less than`.
 </summary><p/>
 
 > **Filter Format**: `<value>`
