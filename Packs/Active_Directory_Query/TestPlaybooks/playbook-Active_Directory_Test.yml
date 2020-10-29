@@ -50,7 +50,7 @@ tasks:
       display-name:
         simple: Samurai Jack
       email:
-        simple: jack@AssasinsForRent.com
+        simple:
       password:
         simple: ${NEW_PASSWORD}
       telephone-number: {}

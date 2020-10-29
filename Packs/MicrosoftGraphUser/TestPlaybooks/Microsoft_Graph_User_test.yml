@@ -723,7 +723,7 @@ tasks:
       version: -1
       name: 'Create test user #2'
       description: Creates a new user.
-      script: '|||msgraph-user--create'
+      script: '|||msgraph-user-create'
       type: regular
       iscommand: true
       brand: ""
