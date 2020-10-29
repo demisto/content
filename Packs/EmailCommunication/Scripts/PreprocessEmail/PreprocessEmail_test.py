@@ -69,7 +69,7 @@ def test_create_email_html(email_html, entry_id_list, expected):
         When
         1. Only one of the images were uploaded to the server hence only one entry id exists within the entry id list.
         2. None of the images were uploaded to the server -> an empty entry_id_list.
-        3. There is no access token in the integration context.
+        3. All images were uploaded to the server.
         Then
         - The images' src attribute would be replaced as expected.
     """
