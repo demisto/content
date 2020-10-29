@@ -194,7 +194,7 @@ class DataKeeperTester:
             self.empty_files.append(playbook_id)
 
 
-def print_test_summary(tests_data_keeper: DataKeeperTester, is_ami: bool=True):
+def print_test_summary(tests_data_keeper: DataKeeperTester, is_ami: bool = True):
     """
     Takes the information stored in the tests_data_keeper and prints it in a human readable way.
 
