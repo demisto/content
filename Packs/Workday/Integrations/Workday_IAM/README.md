@@ -1,5 +1,6 @@
 Use the Workday IAM Integration as part of the IAM premium pack.
-This integration was integrated and tested with version xx of Workday IAM
+For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
+
 ## Configure Workday IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -17,5 +18,6 @@ This integration was integrated and tested with version xx of Workday IAM
 | proxy | Use system proxy settings | False |
 | mapper_in | Mapper \(incoming\) | False |
 | first_run | Sync user profiles on first run | False |
+| fetch_samples | Fetch Samples | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
