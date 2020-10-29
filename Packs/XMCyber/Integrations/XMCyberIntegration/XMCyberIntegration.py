@@ -251,13 +251,13 @@ class XM:
             return XM_CYBER_INCIDENT_TYPE_ENTITY
         return XM_CYBER_INCIDENT_TYPE
 
-    def create_xm_event(self, name, data, date=None):
+    def create_xm_event(self, name, additional_data_to_title, data, date=None):
         if self.date_created is not None:
             date = self.date_created
         if date is None:
             date = datetime.now()
 
-        data["name"] = f'{EVENT_NAME.EventPrefix}{name}'
+        data["name"] = f'{EVENT_NAME.EventPrefix}{name} - {additional_data_to_title}'
         data["create_time"] = timestamp_to_datestring(date.timestamp() * 1000)
         data["type"] = self.get_incident_type(name)
         data["severity"] = SEVERITY.Low
@@ -269,7 +269,7 @@ class XM:
         risk_score = self.risk_score()
         trend = risk_score["trend"]
         if trend is not None and trend != '' and trend > 0:  # < 0:
-            events.append(self.create_xm_event(EVENT_NAME.RiskScore, risk_score))
+            events.append(self.create_xm_event(EVENT_NAME.RiskScore, risk_score["current_score"], risk_score))
 
     def _create_events_from_top_dashboard(self, events_array, top_list, event_name):
         for top in top_list:
@@ -277,7 +277,7 @@ class XM:
             if trend is None or trend == '':
                 trend = 0
             # if trend is not None and trend != '' and int(trend) >= 0: # < 0:
-            events_array.append(self.create_xm_event(event_name, top))
+            events_array.append(self.create_xm_event(event_name, top["displayName"], top))
 
     def _get_technique_best_practices_and_remediation(self, technique):
         advices = []
@@ -300,7 +300,11 @@ class XM:
 
             if previous_tech is None or current_tech["criticalAssets"] == previous_tech["criticalAssets"]:  # should be >
                 current_tech["advices"] = self._get_technique_best_practices_and_remediation(current_tech)
-                events_array.append(self.create_xm_event(EVENT_NAME.TopTechnique, current_tech))
+                critical_asset_trend = current_tech["criticalAssets"] - previous_tech["criticalAssets"]
+                if critical_asset_trend is 0:
+                    critical_asset_trend = 3
+                current_tech["criticalAssets_trend"] = critical_asset_trend
+                events_array.append(self.create_xm_event(EVENT_NAME.TopTechnique, current_tech["displayName"], current_tech))
 
     def get_fetch_incidents_events(self):
         events: List = []

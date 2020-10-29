@@ -1,9 +1,8 @@
 {
-	"defaultIncidentType": "XM Cyber Incident",
-	"description": "Maps XM Cyber incidents to field values",
+	"defaultIncidentType": "",
+	"description": "",
 	"feed": false,
-	"id": "classifier-XM_Cyber_Incident",
-	"fromVersion": "6.0.0",
+	"id": "92eb9160-4a8c-4df6-8a75-e7710a5abdc7",
 	"mapping": {
 		"XM Cyber Incident": {
 			"dontMapEventToLabels": false,
@@ -17,6 +16,15 @@
 						"accessor": "",
 						"filters": [],
 						"root": "entityId",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Hostname": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "displayName",
 						"transformers": []
 					},
 					"simple": ""
@@ -49,6 +57,15 @@
 						"accessor": "",
 						"filters": [],
 						"root": "criticalAssets",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Technique Affected Assets Trend": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "criticalAssets_trend",
 						"transformers": []
 					},
 					"simple": ""
@@ -211,5 +228,6 @@
 	},
 	"name": "XM Cyber Incident",
 	"type": "mapping-incoming",
+	"fromVersion": "6.0.0",
 	"version": -1
 }
