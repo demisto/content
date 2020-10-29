@@ -33,7 +33,10 @@ class ServiceNowClient(BaseClient):
 
         # If the user passed client id and client secret use OAuth2 authorization, else use basic authorization
         if self.use_oauth:
-            self.get_access_token()  # Add a valid access token to the headers
+            access_token = self.get_access_token()  # Add a valid access token to the headers
+            self._headers.update({
+                'Authorization': 'Bearer ' + access_token
+            })
 
         else:
             self._auth = (self.username, self.password)
@@ -56,7 +59,10 @@ class ServiceNowClient(BaseClient):
             if res.status_code in [401]:
                 if self.use_oauth:
                     if demisto.getIntegrationContext().get('expiry_time', 0) <= date_to_timestamp(datetime.now()):
-                        self.get_access_token()
+                        access_token = self.get_access_token()
+                        self._headers.update({
+                            'Authorization': 'Bearer ' + access_token
+                        })
                         return self.http_request(method, url_suffix, full_url=full_url, params=params)
                     try:
                         err_msg = f'Unauthorized request: \n{str(res.json())}'
@@ -126,5 +132,3 @@ class ServiceNowClient(BaseClient):
         #     'Authorization': 'Bearer ' + access_token
         # })
         return access_token
-
-

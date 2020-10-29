@@ -423,9 +423,9 @@ class Client(BaseClient):
     Client to use in the ServiceNow integration. Overrides BaseClient.
     """
 
-    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, oauth_params: dict,
-                 verify: bool, fetch_time: str, sysparm_query: str, sysparm_limit: int,
-                 timestamp_field: str, ticket_type: str, get_attachments: bool, incident_name: str):
+    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, fetch_time: str,
+                 sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
+                 incident_name: str, oauth_params: dict = None):
         """
 
         Args:
@@ -433,10 +433,8 @@ class Client(BaseClient):
             sc_server_url: SNOW Service Catalog url
             username: SNOW username
             password: SNOW password
-            # client_id: (optional) the client id of the application of the user if OAuth2 should be used.
-            # client_secret: (optional) the client secret of the application of the user if OAuth2 should be used.
             oauth_params: (optional) the parameters for the ServiceNowClient that should be used to create an
-                                 access token when using OAuth2 authentication.
+                          access token when using OAuth2 authentication.
             verify: whether to verify the request
             fetch_time: first time fetch for fetch_incidents
             sysparm_query: system query
@@ -462,7 +460,7 @@ class Client(BaseClient):
         self.sys_param_limit = sysparm_limit
         self.sys_param_offset = 0
 
-        if self.use_oauth:  # if given, OAuth2 authentication flow should be used
+        if self.use_oauth:  # if user passed client_id and client_secret, OAuth2 authentication flow should be used
             self._snow_client: ServiceNowClient = ServiceNowClient(params=oauth_params)
         else:
             self._auth = (self._username, self._password)
@@ -2174,8 +2172,10 @@ def main():
 
     raise_exception = False
     try:
-        client = Client(server_url, sc_server_url, username, password, oauth_params, verify, fetch_time,
-                        sysparm_query, sysparm_limit, timestamp_field, ticket_type, get_attachments, incident_name)
+        client = Client(server_url=server_url, sc_server_url=sc_server_url, username=username, password=password,
+                        verify=verify, fetch_time=fetch_time, sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
+                        timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
+                        incident_name=incident_name, oauth_params=oauth_params)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-update-ticket': update_ticket_command,
@@ -2229,7 +2229,7 @@ def main():
             raise
 
 
-from ServiceNowApiModule import *
+from ServiceNowApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

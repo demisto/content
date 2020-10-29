@@ -1,11 +1,12 @@
 import pytest
+# from ServiceNowv2 import *
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
-    get_mapping_fields_command, get_remote_data_command, update_remote_system_command
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, ServiceNowClient
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
@@ -382,6 +383,68 @@ def test_not_authenticated_retry_negative(requests_mock, mocker):
     assert debug[0][0][0] == expected_debug_msg
     assert debug[1][0][0] == expected_debug_msg
     assert debug[2][0][0] == expected_debug_msg
+
+
+def test_oauth_authentication(mocker, requests_mock):
+    """
+    Given:
+     - Integration instance, once initialized with client id and client secret for OAuth2 and once without.
+
+    When:
+     - Clicking on Test button (running test-module).
+
+    Then:
+     - Verify that oauth authorization flow is used by checking that the get_access_token is called when client_id and
+       client_secret are given.
+     - Verify that basic authentication is used when client_id and client_secret are missing by asserting that the
+       get_access_token function is NOT called.
+    """
+    from unittest.mock import MagicMock
+    url = 'https://test.service-now.com'
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(ServiceNowClient, 'get_access_token')
+    requests_mock.get(
+        f'{url}/api/now/table/incident?sysparm_limit=1',
+        json={
+            'result': [{
+                'opened_at': 'sometime'
+            }]
+        }
+    )
+
+    # Assert that get_access_token is called when client_id and client_secret are given:
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'url': url,
+            'credentials': {
+                'identifier': 'identifier',
+                'password': 'password',
+            },
+            'client_id': 'client-id',
+            'client_secret': 'client-secret'
+        }
+    )
+    ServiceNowClient.get_access_token = MagicMock()
+    main()
+    assert ServiceNowClient.get_access_token.called
+
+    # Assert that get_access_token is NOT called when client_id and client_secret are NOT given:
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'url': url,
+            'credentials': {
+                'identifier': 'identifier',
+                'password': 'password',
+            }
+        }
+    )
+    ServiceNowClient.get_access_token = MagicMock()
+    main()
+    assert not ServiceNowClient.get_access_token.called
 
 
 def test_test_module(mocker):
