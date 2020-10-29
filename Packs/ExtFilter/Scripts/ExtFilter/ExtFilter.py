@@ -1098,7 +1098,8 @@ class ExtFilter:
 
         elif optype == "digest":
             params = self.parse_conds_json(rhs)
-            h = hashlib.new(str(params.get('algorithm', 'sha256')))
+            algorithm = str(params.get('algorithm', 'sha256'))
+            h = hashlib.new(algorithm)
             h.update(str(lhs).encode('utf-8'))
             return Value(h.hexdigest())
 
