@@ -3196,7 +3196,9 @@
         "Polygon-Test": "Issue 29060",
         "AttackIQ - Test": "Issue 29774",
         "CyberTotal_TestPlaybook": "Issue 29776",
-        "AWS-securityhub Test": "Issue 29796"
+        "AWS-securityhub Test": "Issue 29796",
+        "Carbon Black Enterprise EDR Test": "Issue 29775",
+        "AWS - CloudWatchLogs Test Playbook": "Issue 29828"
     },
     "skipped_integrations": {
         
