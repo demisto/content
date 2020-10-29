@@ -77,7 +77,7 @@ def test_create_process_search_failing(mocker, requests_mock, demisto_args, expe
         cb_org_key="123")
     mocker.patch.object(client, '_http_request', return_value={})
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(Exception) as e:
         client.create_search_process_request(**demisto_args)
     assert str(e.value) == expected_error_msg
 
@@ -152,6 +152,6 @@ def test_event_by_process_failing(mocker, requests_mock, demisto_args, expected_
         cb_org_key="123")
     mocker.patch.object(client, '_http_request', return_value={})
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(Exception) as e:
         client.create_search_event_by_process_request(**demisto_args)
     assert str(e.value) == expected_error_msg

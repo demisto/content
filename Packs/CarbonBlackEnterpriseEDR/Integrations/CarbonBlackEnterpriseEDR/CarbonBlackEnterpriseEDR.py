@@ -15,9 +15,9 @@ class Client(BaseClient):
     def __init__(self, base_url: str, use_ssl: bool, use_proxy: bool, token=None, cb_org_key=None):
         self.token = token
         self.cb_org_key = cb_org_key
-        super().__init__(base_url, verify=use_ssl, proxy=use_proxy, headers={
-            'Content-Type': 'application/json',
-            'X-Auth-Token': self.token})
+        super().__init__(base_url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json',
+                                                                             'Content-Type': 'application/json',
+                                                                             'X-Auth-Token': self.token})
 
     def test_module_request(self):
         url_suffix = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/_search'
@@ -347,8 +347,8 @@ class Client(BaseClient):
     def create_search_process_request(self, process_hash: str, process_name: str, event_id: str, query: str,
                                       limit: int) -> dict:
         if not process_hash and not process_name and not event_id and not query:
-            raise ValueError("To perform an process search, please provide at least one of the following: "
-                             "'process_hash', 'process_name', 'event_id' or 'query'")
+            raise Exception("To perform an process search, please provide at least one of the following: "
+                            "'process_hash', 'process_name', 'event_id' or 'query'")
         suffix_url = f'/api/investigate/v2/orgs/{self.cb_org_key}/processes/search_jobs'
         process_hash_list = argToList(process_hash)
         process_name_list = argToList(process_name)
@@ -372,10 +372,10 @@ class Client(BaseClient):
     def create_search_event_by_process_request(self, process_guid: str, event_type: str,
                                                query: str, limit: int) -> dict:
         if event_type and event_type not in ['filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc']:
-            raise ValueError("Only the following event types can be searched: "
-                             "'filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc'")
+            raise Exception("Only the following event types can be searched: "
+                            "'filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc'")
         if not event_type and not query:
-            raise ValueError("To perform an event search, please provide either event_type or query.")
+            raise Exception("To perform an event search, please provide either event_type or query.")
         suffix_url = f'api/investigate/v2/orgs/{self.cb_org_key}/events/{process_guid}/_search'
         body = assign_params(
             criteria=assign_params(event_type=argToList(event_type)),
