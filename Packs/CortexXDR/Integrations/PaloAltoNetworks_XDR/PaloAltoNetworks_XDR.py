@@ -972,28 +972,30 @@ def get_incident_extra_data_command(client, args):
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
 
     if return_only_updated_incident:
-
         demisto_incident = demisto.incident()
         last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
         last_mirrored_in_time_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
+        demisto.info(f"Inside get-extra-data command. \n Incident id: {incident_id}.\n"
+                      f"last mirrored in time : {last_mirrored_in_time_timestamp}")
 
         last_modified_incidents = get_integration_context().get('modified_incidents', {})
-        demisto.debug(f"integration context: {last_modified_incidents}\n")  # type:ignore
+        demisto.info(f"integration context: {last_modified_incidents}\n")  # type:ignore
 
         if incident_id in last_modified_incidents:  # search the incident in the dict of modified incidents
             current_incident_modified_time = int(str(last_modified_incidents[incident_id]))
 
-            demisto.debug(f"XDR incident {incident_id}\n"  # type:ignore
+            demisto.info(f"XDR incident {incident_id}\n"  # type:ignore
                           f"modified time: {current_incident_modified_time}\n"
                           f"last mirrored in time: {last_mirrored_in_time_timestamp}")
 
             if current_incident_modified_time > last_mirrored_in_time_timestamp:   # need to update this incident
+                demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
                 pass
 
             else:  # the incident was not modified
-                return {}
+                return "", {}, {}
         else:  # the incident was not modified
-            return {}
+            return "", {}, {}
 
     raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
 
