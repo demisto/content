@@ -591,7 +591,8 @@ def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={"Argus.Tag(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.Tags',
+        outputs=result,
         raw_response=result,
     )
 

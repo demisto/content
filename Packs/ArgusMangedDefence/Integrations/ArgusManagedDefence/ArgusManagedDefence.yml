@@ -100,6 +100,91 @@ script:
     description: List tags attached to an Argus case
     execution: false
     name: argus_list_case_tags
+    outputs:
+      - contextPath: Argus.Tags.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.count
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.size
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.data.id
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.key
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.value
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.addedTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.data.addedByUser.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.data.addedByUser.customerID
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.data.addedByUser.customer.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.data.addedByUser.customer.name
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.addedByUser.customer.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.addedByUser.customer.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.data.addedByUser.customer.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.addedByUser.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Tags.data.addedByUser.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.addedByUser.userName
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.addedByUser.name
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.addedByUser.type
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.flags
+        description: ''
+        type: String
+      - contextPath: Argus.Tags.data.addedTime
+        description: ''
+        type: String
   - arguments:
     - default: false
       description: Case ID
