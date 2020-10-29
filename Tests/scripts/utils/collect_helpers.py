@@ -2,7 +2,7 @@
 Helper functions for collect_tests.
 """
 import re
-from typing import List
+from typing import Iterable
 
 import demisto_sdk.commands.common.constants as constants
 
@@ -62,7 +62,7 @@ COMMON_YML_LIST = ["scripts/script-CommonIntegration.yml", "scripts/script-Commo
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
 
-def checked_type(file_path: str, regex_list: List[str]) -> bool:
+def checked_type(file_path: str, regex_list: Iterable[str]) -> bool:
     """
     Check if the file_path is from the regex list
     """

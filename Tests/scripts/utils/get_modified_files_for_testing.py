@@ -3,7 +3,6 @@ This class replaces the old get_modified_files_for_testing function in collect_t
 """
 import glob
 import os
-import re
 from enum import Enum
 from typing import Dict, Set, Optional, Tuple, List
 
@@ -12,7 +11,7 @@ from demisto_sdk.commands.common import tools
 
 from Tests.scripts.utils.collect_helpers import (
     COMMON_YML_LIST,
-    is_pytest_file,
+    is_pytest_file, checked_type,
 )
 
 
@@ -30,7 +29,7 @@ def resolve_type(file_path: str) -> Optional[FileType]:
     Returns:
         FileType. Conf.json and Metadata files.
     """
-    if re.match(constants.CONF_PATH, file_path, re.IGNORECASE):
+    if checked_type(constants.CONF_PATH, [file_path]):
         return FileType.CONF_JSON
     # if is not part of packs meta file name or whitelisted
     elif any(
@@ -44,8 +43,8 @@ def resolve_type(file_path: str) -> Optional[FileType]:
     return None
 
 
-def create_type_to_file(files_string) -> Dict[FileType, Set[str]]:
-    """Classified the diff list using tools.find_type
+def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
+    """Classifies the files in the diff list (files_string) using tools.find_type
 
     Returns:
         A dict of {FileType: Set of files}
@@ -113,16 +112,15 @@ def get_modified_files_for_testing(
         is_reputations_json: If any reputation file changed.
         is_indicator_json: If any indicator file changed.
     """
-    sample_tests: Set[str] = set()
-    modified_metadata: Set[str] = set()
-    modified_files: Set[str] = set()
-    types_to_files: Dict[FileType, Set[str]] = create_type_to_file(git_diff)
+    sample_tests: Set[str] = set()  # Files to test, Like the infrastructures files.
+    modified_metadata: Set[str] = set()  # Metadata files.
+    modified_files: Set[str] = set()  # Modified YMLs for testing (Integrations, Scripts, Playbooks).
+    types_to_files: Dict[FileType, Set[str]] = create_type_to_file(git_diff)  # Mapping of the files FileType: file path
 
     # Checks if any common file represents in it
-    changed_common = get_common_files(
-        types_to_files.get(FileType.INTEGRATION, set()),
-        types_to_files.get(FileType.SCRIPT, set())
-    )
+    file_to_check_common = types_to_files.get(
+        FileType.INTEGRATION, set()).union(types_to_files.get(FileType.SCRIPT, set()))
+    changed_common = get_common_files(file_to_check_common)
 
     # Remove common files from the sets
     for file_path in changed_common:
@@ -187,8 +185,14 @@ def get_corresponding_yml_file(file_path: str) -> Optional[str]:
         return None
 
 
-def get_common_files(*args: Set[str]) -> Set[str]:
-    unified_args: Set[str] = set()
-    for arg in args:
-        unified_args = unified_args.union(arg)
-    return set(arg for arg in unified_args if arg in COMMON_YML_LIST)
+def get_common_files(paths_set: Set[str]) -> Set[str]:
+    """Gets paths of file and return only the common yml files
+
+    Args:
+        paths_set: A path to find common yml files on
+
+    Returns:
+        intersection of the Common files list
+    """
+    common_yml = set(COMMON_YML_LIST)
+    return paths_set.intersection(common_yml)

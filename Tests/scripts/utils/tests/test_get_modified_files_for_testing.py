@@ -6,6 +6,13 @@ from Tests.scripts.utils.get_modified_files_for_testing import (
 
 
 def mock_get_dict_from_yaml(mocker, _dict: dict, ext: str):
+    """Mocking the 'get_dict_from_file` function
+
+    Args:
+        mocker: Pytests mocker
+        _dict: Content of a mocked file to return
+        ext: its extension
+    """
     mocker.patch(
         "demisto_sdk.commands.common.tools.get_dict_from_file",
         return_value=(_dict, ext),
