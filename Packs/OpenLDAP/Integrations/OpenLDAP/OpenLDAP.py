@@ -42,6 +42,7 @@ class LdapClient:
         self._member_identifier_attribute = kwargs.get('member_identifier_attribute', 'memberUid').strip()
         self._user_filter_class = kwargs.get('user_filter_class', 'posixAccount')
         self._user_identifier_attribute = kwargs.get('user_identifier_attribute', 'uid')
+        self._custom_attributes = kwargs.get('custom_attributes', '')
 
     @property
     def GROUPS_OBJECT_CLASS(self):
@@ -82,6 +83,15 @@ class LdapClient:
         :return: Users identifier attribute.
         """
         return self._user_identifier_attribute
+
+    @property
+    def CUSTOM_ATTRIBUTE(self):
+        """
+        rtype: ``str``
+        :return: User defined attributes.
+        """
+        return self._custom_attributes
+
 
     def _initialize_ldap_server(self):
         """
@@ -171,6 +181,23 @@ class LdapClient:
                 'Entries': LdapClient._parse_ldap_group_entries(ldap_group_entries, self.GROUPS_IDENTIFIER_ATTRIBUTE)
             }
 
+    def _get_formatted_custom_attributes(self):
+        """
+        :return: custom attributes parsed to the form (att_name1=value1)(attname2=value2)
+        """
+        if not self.CUSTOM_ATTRIBUTE:
+            return ''
+        formatted_attributes = ''
+        for att in self.CUSTOM_ATTRIBUTE.split(','):
+            if len(att.split('=')) != 2:
+                raise Exception(f'User defined attributes must be of the form'
+                                f' \"attrA=valA,attrB=valB,...\", but got: {self.CUSTOM_ATTRIBUTE}')
+            formatted_attributes =  formatted_attributes + f'({att})'
+        return formatted_attributes
+
+    def _create_search_filter(self, filter_prefix):
+        return filter_prefix + self._get_formatted_custom_attributes()
+
     def _fetch_specific_groups(self, specific_groups):
         """
             Fetches specific ldap groups under given base DN.
@@ -236,12 +263,14 @@ class LdapClient:
                 attributes.append(mail_attribute)
 
             if search_user_by_dn:
-                search_filter = f'(objectClass={self.USER_OBJECT_CLASS})'
+                search_filter = f'(&(objectClass={self.USER_OBJECT_CLASS})' +\
+                                self._get_formatted_custom_attributes() + ')'
                 ldap_conn.search(search_base=username, search_filter=search_filter, size_limit=1,
                                  attributes=attributes, search_scope=BASE)
             else:
+                custom_attributes = self._get_formatted_custom_attributes()
                 search_filter = (f'(&(objectClass={self.USER_OBJECT_CLASS})'
-                                 f'({self.USER_IDENTIFIER_ATTRIBUTE}={username}))')
+                                 f'({self.USER_IDENTIFIER_ATTRIBUTE}={username}){custom_attributes})')
                 ldap_conn.search(search_base=self._base_dn, search_filter=search_filter, size_limit=1,
                                  attributes=attributes)
 
@@ -301,6 +330,7 @@ class LdapClient:
             Basic test connection and validation of the Ldap integration.
         """
         build_number = get_demisto_version().get('buildNumber', LdapClient.DEV_BUILD_NUMBER)
+        self._get_formatted_custom_attributes()
 
         if build_number != LdapClient.DEV_BUILD_NUMBER \
                 and LdapClient.SUPPORTED_BUILD_NUMBER > int(build_number):

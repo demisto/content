@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: OpenLDAP
+  id: OpenLDAP_2
   version: -1
 configuration:
 - display: Server IP or Host Name (e.g. 192.168.0.1)
@@ -44,6 +44,10 @@ configuration:
   name: user_filter_class
   required: false
   type: 0
+- display: User Defined Attributes
+  name: custom_attributes
+  required: false
+  type: 0
 - defaultvalue: uid
   display: User Unique Identifier Attribute
   name: user_identifier_attribute
@@ -73,7 +77,7 @@ configuration:
   type: 8
 description: Authenticate using Open LDAP
 display: OpenLDAP (Beta)
-name: OpenLDAP
+name: OpenLDAP_2
 beta: true
 script:
   commands:
