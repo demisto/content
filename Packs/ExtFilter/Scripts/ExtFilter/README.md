@@ -358,6 +358,7 @@ Available operators
 * `is replaced with`
 * `is updated with`
 * `appends`
+* `if-then-else`
 * `abort`
 
 
@@ -7767,6 +7768,149 @@ Appends all the elements given in a filter to the value.
           "2.2.2.2"
         ]
       }
+    ]
+
+</details>
+
+
+----
+### Operator: `if-then-else`
+<details><summary>
+Evaluates each element with `if` condition, and returns a set of the results of `then` or `else` operations.
+If `if` condition is not given or returns any value, `then` operation is executed, otherwise `else` operation is executed.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+| if | conditions | (Optional) `if` condition |
+| then | conditions | Conditions to execute if `if` condition is not given or returns any value. |
+| else | conditions | (Optional) Conditions to execute if `if` returns `null`. |
+
+
+#### Example 1
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Size": 100
+      },
+      {
+        "Name": "b.exe",
+        "Size": 200
+      },
+      {
+        "Name": "c.txt",
+        "Size": 300
+      }
+    ]
+
+##### Filter
+> **Operator**: if-then-else
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "if": {
+        "is filtered with": {
+          "Name": {
+            "ends with": ".exe"
+          }
+        }
+      },
+      "then": {
+        "is updated with": {
+          "Executable": true
+        }
+      },
+      "else": {
+        "is updated with": {
+          "Executable": false
+        }
+      }
+    }
+
+##### Output
+    [
+      {
+        "Name": "a.dat",
+        "Size": 100,
+        "Executable": false
+      },
+      {
+        "Name": "b.exe",
+        "Size": 200,
+        "Executable": true
+      },
+      {
+        "Name": "c.txt",
+        "Size": 300,
+        "Executable": false
+      }
+    ]
+
+
+#### Example 2
+##### Input
+    [
+      "a.dat",
+      "b.exe",
+      "c.txt"
+    ]
+
+##### Filter
+> **Operator**: if-then-else
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "if": {
+        "ends with": ".exe"
+      },
+      "then": {
+        "is replaced with": 10
+      }
+    }
+
+##### Output
+    [
+      "a.dat",
+      10,
+      "c.txt"
+    ]
+
+
+#### Example 3
+##### Input
+    [
+      "a.dat",
+      "b.exe",
+      "c.txt"
+    ]
+
+##### Filter
+> **Operator**: if-then-else
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "then": {
+        "is replaced with": 10
+      }
+    }
+
+##### Output
+    [
+      10,
+      10,
+      10
     ]
 
 </details>

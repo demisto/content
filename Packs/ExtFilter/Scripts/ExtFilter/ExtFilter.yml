@@ -6,8 +6,8 @@ script: ''
 type: python
 tags:
 - transformer
-- entirelist
 - general
+- entirelist
 comment: Advanced Filter. It enables you to make filters with complex conditions.
 enabled: true
 args:
@@ -68,6 +68,7 @@ args:
   - finds caseless
   - greater or equal
   - greater than
+  - if-then-else
   - in caseless list
   - in list
   - in range
@@ -178,3 +179,5 @@ runonce: false
 dockerimage: demisto/python3:3.8.6.12176
 runas: DBotWeakRole
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

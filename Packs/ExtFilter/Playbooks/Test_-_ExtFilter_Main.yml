@@ -23674,7 +23674,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "3.3.3.3",
+                            "IP": "192.168.1.3",
                             "Score": 40
                           }
                         }
@@ -23738,7 +23738,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "3.3.3.3",
+                            "IP": "192.168.1.3",
                             "Score": 40
                           }
                         }
@@ -23818,7 +23818,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "3.3.3.3",
+                            "IP": "192.168.1.3",
                             "Score": 40,
                             "File": {
                               "Risk": [
@@ -23900,7 +23900,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "3.3.3.3",
+                            "IP": "192.168.1.3",
                             "Score": 40,
                             "File": {
                               "Risk": [
@@ -24098,7 +24098,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "3.3.3.3",
+                            "IP": "192.168.1.3",
                             "Score": 40
                           }
                         }
@@ -24161,7 +24161,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "3.3.3.3",
+                            "IP": "192.168.1.3",
                             "Score": 40
                           }
                         }
@@ -24202,12 +24202,12 @@ tasks:
     quietmode: 0
   "226":
     id: "226"
-    taskid: 332d61d7-9c7d-4d74-8155-02865a35b13b
+    taskid: 3feed1f2-13f1-4283-8022-e4948e391788
     type: playbook
     task:
-      id: 332d61d7-9c7d-4d74-8155-02865a35b13b
+      id: 3feed1f2-13f1-4283-8022-e4948e391788
       version: -1
-      name: "Test - ExtFilter"
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24260,7 +24260,9 @@ tasks:
                 value:
                   simple: "10"
       ExtFilterOperation:
-        simple: "==="
+        complex:
+          root: ${
+          accessor: ="==="}
       ExtFilterPath: {}
       Input:
         complex:
@@ -24315,12 +24317,12 @@ tasks:
     quietmode: 0
   "227":
     id: "227"
-    taskid: d3dc94c9-e4b0-4edb-81dd-8096bb87b986
+    taskid: 6f602afd-dd98-4267-86e9-8c298cb3f3ef
     type: playbook
     task:
-      id: d3dc94c9-e4b0-4edb-81dd-8096bb87b986
+      id: 6f602afd-dd98-4267-86e9-8c298cb3f3ef
       version: -1
-      name: "Test - ExtFilter"
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24373,7 +24375,9 @@ tasks:
                 value:
                   simple: '"10"'
       ExtFilterOperation:
-        simple: "==="
+        complex:
+          root: ${
+          accessor: ="==="}
       ExtFilterPath: {}
       Input:
         complex:
@@ -25280,6 +25284,9 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "239"
     scriptarguments:
       ExpectedOutput:
         complex:
@@ -25395,12 +25402,407 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "239":
+    id: "239"
+    taskid: 213a4e09-0daf-4b13-8f17-47b423002572
+    type: playbook
+    task:
+      id: 213a4e09-0daf-4b13-8f17-47b423002572
+      version: -1
+      name: Test - ExtFilter
+      description: Run ExtFilter for a test
+      playbookName: Test - ExtFilter
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "240"
+    scriptarguments:
+      ExpectedOutput:
+        complex:
+          root: ${
+          accessor: =}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |2-
+                        [
+                          {
+                            "Name": "a.dat",
+                            "Size": 100,
+                            "Executable": false
+                          },
+                          {
+                            "Name": "b.exe",
+                            "Size": 200,
+                            "Executable": true
+                          },
+                          {
+                            "Name": "c.txt",
+                            "Size": 300,
+                            "Executable": false
+                          }
+                        ]
+          - operator: ExtFilter
+            args:
+              ctx_demisto: {}
+              ctx_incident: {}
+              ctx_inputs: {}
+              ctx_lists: {}
+              filter:
+                value:
+                  simple: |-
+                    [
+                      {"json: decode": {}},
+                      {"json: encode": {"indent":2}}
+                    ]
+              operation:
+                value:
+                  simple: is transformed with
+              path: {}
+      ExtFilterFilter:
+        complex:
+          root: ${
+          accessor: =}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |2-
+                        {
+                          "if": {
+                            "is filtered with": {
+                              "Name": {
+                                "ends with": ".exe"
+                              }
+                            }
+                          },
+                          "then": {
+                            "is updated with": {
+                              "Executable": true
+                            }
+                          },
+                          "else": {
+                            "is updated with": {
+                              "Executable": false
+                            }
+                          }
+                        }
+      ExtFilterOperation:
+        simple: if-then-else
+      ExtFilterPath: {}
+      Input:
+        complex:
+          root: ${
+          accessor: =}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |2-
+                        [
+                          {
+                            "Name": "a.dat",
+                            "Size": 100
+                          },
+                          {
+                            "Name": "b.exe",
+                            "Size": 200
+                          },
+                          {
+                            "Name": "c.txt",
+                            "Size": 300
+                          }
+                        ]
+          - operator: ExtFilter
+            args:
+              ctx_demisto: {}
+              ctx_incident: {}
+              ctx_inputs: {}
+              ctx_lists: {}
+              filter:
+                value:
+                  simple: |-
+                    [
+                      {"json: decode": {}},
+                      {"json: encode": {"indent":2}}
+                    ]
+              operation:
+                value:
+                  simple: is transformed with
+              path: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 38520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "240":
+    id: "240"
+    taskid: 7fedf4ca-51ae-4ff5-816b-acccfa1fd70b
+    type: playbook
+    task:
+      id: 7fedf4ca-51ae-4ff5-816b-acccfa1fd70b
+      version: -1
+      name: Test - ExtFilter
+      description: Run ExtFilter for a test
+      playbookName: Test - ExtFilter
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "241"
+    scriptarguments:
+      ExpectedOutput:
+        complex:
+          root: ${
+          accessor: =}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |2-
+                        [
+                          "a.dat",
+                          10,
+                          "c.txt"
+                        ]
+          - operator: ExtFilter
+            args:
+              ctx_demisto: {}
+              ctx_incident: {}
+              ctx_inputs: {}
+              ctx_lists: {}
+              filter:
+                value:
+                  simple: |-
+                    [
+                      {"json: decode": {}},
+                      {"json: encode": {"indent":2}}
+                    ]
+              operation:
+                value:
+                  simple: is transformed with
+              path: {}
+      ExtFilterFilter:
+        complex:
+          root: ${
+          accessor: =}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |2-
+                        {
+                          "if": {
+                            "ends with": ".exe"
+                          },
+                          "then": {
+                            "is replaced with": 10
+                          }
+                        }
+      ExtFilterOperation:
+        simple: if-then-else
+      ExtFilterPath: {}
+      Input:
+        complex:
+          root: ${
+          accessor: =}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |2-
+                        [
+                          "a.dat",
+                          "b.exe",
+                          "c.txt"
+                        ]
+          - operator: ExtFilter
+            args:
+              ctx_demisto: {}
+              ctx_incident: {}
+              ctx_inputs: {}
+              ctx_lists: {}
+              filter:
+                value:
+                  simple: |-
+                    [
+                      {"json: decode": {}},
+                      {"json: encode": {"indent":2}}
+                    ]
+              operation:
+                value:
+                  simple: is transformed with
+              path: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 38695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "241":
+    id: "241"
+    taskid: 389e04bd-8135-45bc-8625-490057bdc7ed
+    type: playbook
+    task:
+      id: 389e04bd-8135-45bc-8625-490057bdc7ed
+      version: -1
+      name: Test - ExtFilter
+      description: Run ExtFilter for a test
+      playbookName: Test - ExtFilter
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      ExpectedOutput:
+        complex:
+          root: ${
+          accessor: =}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |2-
+                        [
+                          10,
+                          10,
+                          10
+                        ]
+          - operator: ExtFilter
+            args:
+              ctx_demisto: {}
+              ctx_incident: {}
+              ctx_inputs: {}
+              ctx_lists: {}
+              filter:
+                value:
+                  simple: |-
+                    [
+                      {"json: decode": {}},
+                      {"json: encode": {"indent":2}}
+                    ]
+              operation:
+                value:
+                  simple: is transformed with
+              path: {}
+      ExtFilterFilter:
+        complex:
+          root: ${
+          accessor: =}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |2-
+                        {
+                          "then": {
+                            "is replaced with": 10
+                          }
+                        }
+      ExtFilterOperation:
+        simple: if-then-else
+      ExtFilterPath: {}
+      Input:
+        complex:
+          root: ${
+          accessor: =}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |2-
+                        [
+                          "a.dat",
+                          "b.exe",
+                          "c.txt"
+                        ]
+          - operator: ExtFilter
+            args:
+              ctx_demisto: {}
+              ctx_incident: {}
+              ctx_inputs: {}
+              ctx_lists: {}
+              filter:
+                value:
+                  simple: |-
+                    [
+                      {"json: decode": {}},
+                      {"json: encode": {"indent":2}}
+                    ]
+              operation:
+                value:
+                  simple: is transformed with
+              path: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 38870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 38390,
+        "height": 38915,
         "width": 380,
         "x": 50,
         "y": 50
@@ -25409,6 +25811,7 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
