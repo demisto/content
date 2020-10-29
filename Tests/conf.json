@@ -3400,7 +3400,6 @@
         "Microsoft Graph Calendar": "Test direct access to oproxy",
         "Microsoft Graph Device Management": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
-        "AWS - CloudWatchLogs": "Issue 20958",
         "AWS - AccessAnalyzer": "Issue 24926",
         "AWS - ACM": "Issue 24926",
         "AWS - Athena - Beta": "Issue 24926",
