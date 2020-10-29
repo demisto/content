@@ -275,7 +275,7 @@ tasks:
       version: -1
       name: Verify XM Cyber Instance
       description: Check if current XM version supports Demisto integration
-      script: XMCyber|||xmcyber-is-version-supported
+      script: XMCyber|||xmcyber-version-supported
       type: regular
       iscommand: true
       brand: XMCyber
@@ -392,11 +392,11 @@ tasks:
     task:
       id: d15771a1-ff69-48fc-88e7-08ea3f195cc9
       version: -1
-      name: Hostname Case
+      name: Name Case
       type: title
       iscommand: false
       brand: ""
-      description: Hostname Case
+      description: Name Case
     nexttasks:
       '#none#':
       - "19"
@@ -420,7 +420,7 @@ tasks:
     task:
       id: 2476f642-3c91-4683-85cb-ad27c2164ff9
       version: -1
-      name: EntityId or Hostname or IP based?
+      name: EntityId or Name or IP based?
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
       type: condition
@@ -431,18 +431,18 @@ tasks:
       - "13"
       Entity ID:
       - "25"
-      Hostname:
+      Name:
       - "15"
       IP:
       - "18"
     separatecontext: false
     conditions:
-    - label: Hostname
+    - label: Name
       condition:
       - - operator: isExists
           left:
             value:
-              simple: ${incident.xmcyberhostname}
+              simple: ${incident.xmcyberdisplayname}
             iscontext: true
     - label: IP
       condition:
@@ -505,8 +505,8 @@ tasks:
     task:
       id: fa7e367f-9b36-4540-860d-4a70a2848ec6
       version: -1
-      name: Lookup Hostname
-      description: Return data on Entity by hostname from XM Cyber
+      name: Lookup Name
+      description: Return data on entity by name from XM Cyber
       script: XMCyber|||hostname
       type: regular
       iscommand: true
@@ -516,7 +516,7 @@ tasks:
       - "9"
     scriptarguments:
       hostname:
-        simple: ${incident.xmcyberhostname}
+        simple: ${incident.xmcyberdisplayname}
     separatecontext: false
     view: |-
       {
@@ -566,11 +566,11 @@ tasks:
     task:
       id: e82702b7-6274-45d6-8af2-65a2455c8d11
       version: -1
-      name: No IP or Hostname to Enrich
+      name: No IP or Name to Enrich
       type: title
       iscommand: false
       brand: ""
-      description: No IP or Hostname found in incident or its context
+      description: No IP or name found in incident or its context
     separatecontext: false
     view: |-
       {
@@ -679,7 +679,7 @@ tasks:
       id: 82c202a6-5ce8-429b-88ab-d8dba4677e7a
       version: -1
       name: Get Entity
-      description: Return data on Entity by IP or Hostname from XM Cyber
+      description: Return data on Entity by IP or Name from XM Cyber
       script: XMCyber|||xmcyber-entity-get
       type: regular
       iscommand: true
@@ -690,7 +690,7 @@ tasks:
     scriptarguments:
       entityId:
         simple: ${XMCyber.entityId}
-      hostname: {}
+      name: {}
       ip: {}
     separatecontext: false
     view: |-

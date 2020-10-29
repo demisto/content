@@ -1,0 +1,17 @@
+{
+	"description": "Classifis XM Cyber incidents",
+	"feed": false,
+	"id": "classifier-XM_Cyber_Incident_Classifier",
+	"fromVersion": "6.0.0",
+	"keyTypeMap": {
+		"XM Cyber Entity": "XM Cyber Incident",
+		"XM Cyber Incident": "XM Cyber Incident",
+		"XM Cyber Risk Score": "XM Cyber Risk Score",
+		"XM Cyber Technique": "XM Cyber Technique"
+	},
+	"locked": false,
+	"logicalVersion": 2,
+	"name": "XM Cyber Incident Classifier",
+	"type": "classification",
+	"version": -1
+}

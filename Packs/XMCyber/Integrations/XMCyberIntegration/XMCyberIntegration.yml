@@ -193,9 +193,9 @@ script:
         description: List of IPs
         isArray: true
         required: false
-      - name: hostname
+      - name: name
         default: true
-        description: List of hostnames
+        description: List of entity names (i.e. hostname, cloud instance, user)
         isArray: true
         required: false
       - name: entityId

@@ -1,0 +1,215 @@
+{
+	"defaultIncidentType": "XM Cyber Incident",
+	"description": "Maps XM Cyber incidents to field values",
+	"feed": false,
+	"id": "classifier-XM_Cyber_Incident",
+	"fromVersion": "6.0.0",
+	"mapping": {
+		"XM Cyber Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"XM Cyber Display Name": {
+					"complex": null,
+					"simple": "displayName"
+				},
+				"XM Cyber Entity ID": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "entityId",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Critical Assets At Risk": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "criticalAssets",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Technique Advices": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "advices",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Technique Affected Assets": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "criticalAssets",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Technique Choke Points": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "chokePoints",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Technique Mitre": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "mitre",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Technique Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "displayName",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Dashboard": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "linkToReport",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Risk Score": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "current_score",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Risk Score Grade": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "current_grade",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Risk Score Trend": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "trend",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Technique": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "linkToReport",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Technique Assets": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "criticalAssets",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Technique Best Practice": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "bestPractice",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Technique Description": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "description",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Technique Mitre": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "mitre",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Technique Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "displayName",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Cyber Techqniue Choke": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "chokePoints",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Risk Score": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "current_score",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Risk Score Grade": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "current_grade",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"XM Risk Score Trend": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "trend",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"name": "XM Cyber Incident",
+	"type": "mapping-incoming",
+	"version": -1
+}

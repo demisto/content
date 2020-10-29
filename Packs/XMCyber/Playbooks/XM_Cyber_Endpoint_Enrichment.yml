@@ -147,7 +147,7 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      hostname:
+      name:
         simple: ${inputs.Hostname}
       ip:
         simple: ${inputs.IPAddress}
@@ -265,7 +265,7 @@ tasks:
       version: -1
       name: Is XM Cyber Valid?
       description: Check if current XM version supports Demisto integration
-      script: XMCyber|||xmcyber-is-version-supported
+      script: XMCyber|||xmcyber-version-supported
       type: regular
       iscommand: true
       brand: XMCyber

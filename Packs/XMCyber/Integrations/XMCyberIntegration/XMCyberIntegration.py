@@ -689,26 +689,27 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
 
 
 def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    hostnames = argToList(args.get('hostname'))
+    names = argToList(args.get('name'))
     ips = argToList(args.get('ip'))
     entity_ids = argToList(args.get('entityId'))
-    if len(ips) == 0 and len(hostnames):
+    if len(ips) == 0 and len(names):
         raise ValueError('No input specified')
     entities = []
     xm_data_list: List[Dict[str, Any]] = []
     for ip in ips:
         entities.extend(xm.search_entities(ip))
-    for hostname in hostnames:
-        entities.extend(xm.search_entities(hostname))
+    for name in names:
+        entities.extend(xm.search_entities(name))
     for entity_id in entity_ids:
         entities.extend(xm.search_entities(entity_id))
     if len(entities) > 0:
         readable_output = '**Matched the following entities**'
     else:
-        readable_output = f'**No entity matched the input {ips} (IP) {hostnames} (Hostname) {entity_ids} (Entity ID)'
+        readable_output = f'**No entity matched the input {ips} (IP) {names} (Hostname) {entity_ids} (Entity ID)'
     for entity in entities:
-        entity_obj = entity_obj_to_data(xm, entity)
-        readable_output += pretty_print_entity(entity_obj)
+        entity_data = entity_obj_to_data(xm, entity)
+        readable_output += pretty_print_entity(entity_data)
+        xm_data_list.append(entity_data)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='XMCyber',
