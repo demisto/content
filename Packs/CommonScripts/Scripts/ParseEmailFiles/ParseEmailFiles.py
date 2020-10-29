@@ -3250,22 +3250,6 @@ def extract_address(s):
         return s
 
 
-def handle_invalid_from_value(eml, entry):
-    original_value = eml['from']
-    # fixed an issue where email['From'] had '\r\n'.
-    # in order to solve, used replace_header() on email object,
-    # and did again get_all() on the new format of ['from']
-    eml.replace_header('from', ' '.join(eml["from"].splitlines()))
-    gel_all_values_from_email_by_entry = eml.get_all(entry, [])
-    eml.replace_header('from', original_value)  # replace again to the original header (keep on BC)
-    gel_all_values_from_email_by_entry_str = str(gel_all_values_from_email_by_entry)
-    email_address_between_angle_brackets_regex = "\<(.*?)\>"
-    # get the email address by above regex
-    from_address = re.findall(email_address_between_angle_brackets_regex,
-                              gel_all_values_from_email_by_entry_str)[0]
-    return from_address
-
-
 def extract_address_eml(eml, entry):
     gel_all_values_from_email_by_entry = eml.get_all(entry, [])
     addresses = getaddresses(gel_all_values_from_email_by_entry)
@@ -3273,8 +3257,14 @@ def extract_address_eml(eml, entry):
         res = [item[1] for item in addresses]
         res = ', '.join(res)
         if entry == 'from' and not re.search(REGEX_EMAIL, res):
-            # this condition refers only to ['from'] header that is not a valid email address
-            res = handle_invalid_from_value(eml, entry)
+            # this condition refers only to ['from'] header that does not have a valid email
+            # fixed an issue where email['From'] had '\r\n'.
+            # in order to solve, used replace_header() on email object,
+            # and did again get_all() on the new format of ['from']
+            original_value = eml['from']
+            eml.replace_header('from', ' '.join(eml["from"].splitlines()))
+            res = extract_address_eml(eml, entry)
+            eml.replace_header('from', original_value)  # replace again to the original header (keep on BC)
         return res
     else:
         return ''
