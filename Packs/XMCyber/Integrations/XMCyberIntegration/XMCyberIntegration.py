@@ -15,11 +15,11 @@ urllib3.disable_warnings()
 # Minimum supported version is:  1.38
 MIN_MAJOR_VERSION = 1
 MIN_MINOR_VERSION = 38
-FULL_INCIDENTS_SECONDS = 86  # 400
+FULL_INCIDENTS_SECONDS = 86 #400
 
 DEFAULT_TIME_ID = 'timeAgo_days_7'
 PREVIOUS_DEFAULT_TIME_ID = 'timeAgo_days_7'
-XM_CYBER_INCIDENT_TYPE = 'XM Cyber Risk Score'
+XM_CYBER_INCIDENT_TYPE = 'XM Cyber Security Score'
 XM_CYBER_INCIDENT_TYPE_TECHNIQUE = 'XM Cyber Technique'
 XM_CYBER_INCIDENT_TYPE_ENTITY = 'XM Cyber Entity'
 TOP_ENTITIES = 3
@@ -268,16 +268,19 @@ class XM:
     def _create_event_for_risk_score(self, events):
         risk_score = self.risk_score()
         trend = risk_score["trend"]
-        if trend is not None and trend != '' and trend > 0:  # < 0:
+        if trend is not None and trend != '' and trend < 0:
             events.append(self.create_xm_event(EVENT_NAME.RiskScore, risk_score["current_score"], risk_score))
 
-    def _create_events_from_top_dashboard(self, events_array, top_list, event_name):
+    def _create_events_from_top_dashboard(self, events_array, top_list, event_name, trend_negative):
         for top in top_list:
             trend = top["trend"]
             if trend is None or trend == '':
                 trend = 0
-            # if trend is not None and trend != '' and int(trend) >= 0: # < 0:
-            events_array.append(self.create_xm_event(event_name, top["displayName"], top))
+            else:
+                trend = int(trend)
+
+            if (trend_negative and trend < 0) or (not trend_negative and trend > 0):
+                events_array.append(self.create_xm_event(event_name, top["displayName"], top))
 
     def _get_technique_best_practices_and_remediation(self, technique):
         advices = []
@@ -298,7 +301,7 @@ class XM:
                     previous_tech = previous_tech_iteratee
                     break
 
-            if previous_tech is None or current_tech["criticalAssets"] == previous_tech["criticalAssets"]:  # should be >
+            if previous_tech is None or int(current_tech["criticalAssets"]) > int(previous_tech["criticalAssets"]):
                 current_tech["advices"] = self._get_technique_best_practices_and_remediation(current_tech)
                 critical_asset_trend = current_tech["criticalAssets"] - previous_tech["criticalAssets"]
                 if critical_asset_trend == 0:
@@ -315,11 +318,11 @@ class XM:
 
         writeLog("assets at risk")
         # top assets at risk
-        self._create_events_from_top_dashboard(events, self.top_assets_at_risk(), EVENT_NAME.AssetAtRisk)
+        self._create_events_from_top_dashboard(events, self.top_assets_at_risk(), EVENT_NAME.AssetAtRisk, True)
 
         writeLog("choke point")
         # top choke points
-        self._create_events_from_top_dashboard(events, self.top_choke_points(), EVENT_NAME.ChokePoint)
+        self._create_events_from_top_dashboard(events, self.top_choke_points(), EVENT_NAME.ChokePoint, False)
 
         writeLog("top techniques")
         # top techniques
