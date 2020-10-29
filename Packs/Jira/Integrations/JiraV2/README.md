@@ -40,6 +40,7 @@ ConsumerKey__
 ## Fetched Incidents Data
 ---
 When you enable fetched incidents, Demisto fetches the first batch of Jira issues from the 10 minutes prior to when the integration was added. After the first batch of fetched issues, Demisto fetches new Jira issues as soon as they are generated in Jira. By default, 50 issues are pulled for each call. To pull older Jira issues, use the query to fetch issues option.
+If mirror `Mirror incoming incidents` is enabled, any incident data changed in remote JIRA server will reflected on existing fetched incidents.
 
 ## Commands
 ---
@@ -194,9 +195,9 @@ Creates a new issue in Jira.
 | --- | --- | --- |
 | issueJson | The issue object (in JSON format). | Optional | 
 | summary | The summary of the issue. | Required | 
-| projectKey | The project key with which to associate the issue. | Optional | 
+| projectKey | The project key with which to associate the issue. | Required | 
 | issueTypeName |  Select an issue type by name, for example: "Problem".  | Optional | 
-| issueTypeId | Select an issue type by its numeric ID. | Optional | 
+| issueTypeId | Select an issue type by its numeric ID. | Required | 
 | projectName | The project name with which to associate the issue. | Optional | 
 | description | A description of the issue. | Optional | 
 | labels | A CSV list of labels.  | Optional | 
@@ -217,7 +218,7 @@ Creates a new issue in Jira.
 
 
 ##### Command Example
-```!jira-create-issue summary="test SOC issue26" projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}\````
+```!jira-create-issue summary="test SOC issue26" issueTypeId=10008 projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}\````
 
 ##### Context Example
 ```
