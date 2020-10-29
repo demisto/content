@@ -1,6 +1,5 @@
 id: Test - ExtFilter Main
-version: 104
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Test - ExtFilter Main
 description: Run Test Suite for ExtFilter
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -74,7 +74,7 @@ tasks:
     task:
       id: 01992b1b-013d-4d3c-8cd8-fd43b3ca1b94
       version: -1
-      name: matches conditions of
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -234,7 +234,7 @@ tasks:
     task:
       id: b872fb40-9440-4c04-8a85-4f0d0d4c1584
       version: -1
-      name: is filtered with
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -393,7 +393,7 @@ tasks:
     task:
       id: 792c1799-66a1-4792-8ef8-e8a72558d776
       version: -1
-      name: value matches conditions of
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -522,7 +522,7 @@ tasks:
     task:
       id: a64a84ee-6856-4fb7-8e9d-33fd339d0f42
       version: -1
-      name: 'matches conditions of: wildcard'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -651,7 +651,7 @@ tasks:
     task:
       id: 9f012932-5960-4036-8ee1-4465c7af3620
       version: -1
-      name: 'matches conditions of : regex'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -780,7 +780,7 @@ tasks:
     task:
       id: b8f39211-8a3e-44fa-8102-7bc2ec86e883
       version: -1
-      name: value matches conditions of
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1069,7 +1069,7 @@ tasks:
     task:
       id: e0d79bf2-8299-47bb-8498-7943608a27b2
       version: -1
-      name: value is filtered with
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1141,7 +1141,7 @@ tasks:
     task:
       id: 25832d7e-3af8-41e6-8cd0-c628cfab8965
       version: -1
-      name: keeps
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1277,7 +1277,7 @@ tasks:
     task:
       id: c67ca5ab-0f86-4146-8cba-6f5b2155efeb
       version: -1
-      name: 'is: existing key (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1399,7 +1399,7 @@ tasks:
     task:
       id: 9ab4964b-39e9-4623-8bd0-b1268973df58
       version: -1
-      name: 'is: existing key (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1537,7 +1537,7 @@ tasks:
     task:
       id: d3f122c0-9201-49f8-8330-7ee5ec295333
       version: -1
-      name: 'isnt: empty'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1653,7 +1653,7 @@ tasks:
     task:
       id: 7733ea24-d79b-42e8-8712-83b13958b797
       version: -1
-      name: 'isnt: null'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1771,7 +1771,7 @@ tasks:
     task:
       id: 7dbb3310-4f53-40f5-8423-43dd41bc0c83
       version: -1
-      name: 'isnt: any integer'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1884,7 +1884,7 @@ tasks:
     task:
       id: 2f2559b4-9a4f-4380-8edc-98b2fac51b67
       version: -1
-      name: 'isnt: existing key'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2017,7 +2017,7 @@ tasks:
     task:
       id: aa6e72bc-cb1b-460d-879c-cec93ee18f22
       version: -1
-      name: equals
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2131,7 +2131,7 @@ tasks:
     task:
       id: bbcd777e-b1c2-41b6-8d79-398c91e11e3d
       version: -1
-      name: doesn't equal
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2244,7 +2244,7 @@ tasks:
     task:
       id: 31587669-4b16-494b-83e2-f54584b69631
       version: -1
-      name: greater or equal
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2360,7 +2360,7 @@ tasks:
     task:
       id: e59f73f6-164b-45f3-8325-a7e834bd0a2f
       version: -1
-      name: greater than
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2474,7 +2474,7 @@ tasks:
     task:
       id: 9a05b6da-1b0f-4c06-8a92-7c7000de9ef0
       version: -1
-      name: less or equal
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2590,7 +2590,7 @@ tasks:
     task:
       id: 1fd87787-ba53-49cb-8952-e95abe0fb992
       version: -1
-      name: less than
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2704,7 +2704,7 @@ tasks:
     task:
       id: df438d96-27ff-4713-83e9-537fd5e49cda
       version: -1
-      name: in range
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2821,7 +2821,7 @@ tasks:
     task:
       id: a8fda6af-317c-42f3-828d-6df0859d3b3f
       version: -1
-      name: starts with
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2937,7 +2937,7 @@ tasks:
     task:
       id: aca388b7-c729-4113-8f82-587b29d892ce
       version: -1
-      name: starts with caseless
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3055,7 +3055,7 @@ tasks:
     task:
       id: d12f0a53-a066-4f54-83b2-ad958d36e838
       version: -1
-      name: doesn't start with
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3175,7 +3175,7 @@ tasks:
     task:
       id: 442c04ae-285d-4d9a-873f-81e9f95651f5
       version: -1
-      name: doesn't start with caseless
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3296,7 +3296,7 @@ tasks:
     task:
       id: e22fea4d-8c24-4c00-88d6-d8e6e5200bb5
       version: -1
-      name: ends with
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3412,7 +3412,7 @@ tasks:
     task:
       id: c1e3b491-38c0-4237-8f2e-fdbed55b424f
       version: -1
-      name: ends with caseless
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3530,7 +3530,7 @@ tasks:
     task:
       id: f7cf5a97-826f-49bb-8937-34edc055a24e
       version: -1
-      name: doesn't end with
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3650,7 +3650,7 @@ tasks:
     task:
       id: 15eb20f4-54f7-41f7-81b2-3f0b1a25633d
       version: -1
-      name: doesn't end with caseless
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3771,7 +3771,7 @@ tasks:
     task:
       id: 449bbeff-9f4e-434a-8a26-705becc68b26
       version: -1
-      name: includes (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3888,7 +3888,7 @@ tasks:
     task:
       id: 466ad215-6414-4181-8c94-41b6ebbc8cba
       version: -1
-      name: includes caseless
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4005,7 +4005,7 @@ tasks:
     task:
       id: 07948435-3e9a-4695-884a-be77d5e6a1e4
       version: -1
-      name: doesn't include
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4124,7 +4124,7 @@ tasks:
     task:
       id: e191cd0a-5461-4f14-88b4-4edb9749f973
       version: -1
-      name: includes (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4229,7 +4229,7 @@ tasks:
     task:
       id: a11d1fb6-b3a5-4fc2-8a34-74f81e3e23c1
       version: -1
-      name: doesn't include caseless
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4348,7 +4348,7 @@ tasks:
     task:
       id: ee868812-6414-4918-8efa-bc5090de177b
       version: -1
-      name: doesn't include caseless
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4467,7 +4467,7 @@ tasks:
     task:
       id: d4eb3015-5893-430f-84c4-3c6c91fc7216
       version: -1
-      name: finds (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4572,7 +4572,7 @@ tasks:
     task:
       id: 1d78acda-4abd-4553-8942-9a7c578fa9b8
       version: -1
-      name: finds (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4693,7 +4693,7 @@ tasks:
     task:
       id: 92f6d55f-2abb-44ec-8361-788061029558
       version: -1
-      name: finds caseless (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4798,7 +4798,7 @@ tasks:
     task:
       id: d8c77580-4257-47c8-8fb2-a6f30238cf01
       version: -1
-      name: finds caseless (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4917,7 +4917,7 @@ tasks:
     task:
       id: 4f2dad2f-7f74-4500-86a7-09f93bd8126f
       version: -1
-      name: doesn't find (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5022,7 +5022,7 @@ tasks:
     task:
       id: 66aa2cfb-3a41-4596-8b89-351dadb7c3fe
       version: -1
-      name: doesn't find (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5135,7 +5135,7 @@ tasks:
     task:
       id: 6e1a2dca-5e77-4177-828b-5f907fa7f581
       version: -1
-      name: doesn't find (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5256,7 +5256,7 @@ tasks:
     task:
       id: 6eecd203-86c7-4935-84aa-0192ca084b9f
       version: -1
-      name: doesn't find caseless (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5361,7 +5361,7 @@ tasks:
     task:
       id: 7aa1b56e-3a4c-408a-8ffc-952f8d1d4fc5
       version: -1
-      name: doesn't find caseless (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5473,7 +5473,7 @@ tasks:
     task:
       id: 3d8c385f-048f-4e91-80a4-f453ce913b14
       version: -1
-      name: doesn't find caseless (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5592,7 +5592,7 @@ tasks:
     task:
       id: 52ef327f-7a1a-4b28-8782-1a52f4230008
       version: -1
-      name: finds (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5705,7 +5705,7 @@ tasks:
     task:
       id: 7ea2ba18-a976-4d49-8553-728b8fb35fbb
       version: -1
-      name: matches (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5810,7 +5810,7 @@ tasks:
     task:
       id: 4ed90bb6-a017-4599-8f6e-7e3b147e6fe6
       version: -1
-      name: matches (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5915,7 +5915,7 @@ tasks:
     task:
       id: c03648a5-2674-4286-8d21-19877e5408eb
       version: -1
-      name: matches (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6030,7 +6030,7 @@ tasks:
     task:
       id: 1fbcabd2-c467-4bff-87b8-5daadee6b931
       version: -1
-      name: matches caseless (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6135,7 +6135,7 @@ tasks:
     task:
       id: 166619ec-f186-4277-8932-9ad94b5ad652
       version: -1
-      name: matches caseless (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6240,7 +6240,7 @@ tasks:
     task:
       id: c7d4c218-c355-4194-8730-1701094f3f13
       version: -1
-      name: matches caseless (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6355,7 +6355,7 @@ tasks:
     task:
       id: 19d10410-e004-4bf7-8a24-002f8b718508
       version: -1
-      name: doesn't match (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6460,7 +6460,7 @@ tasks:
     task:
       id: f4966c6a-c2c1-4960-89e5-19750952be32
       version: -1
-      name: doesn't match (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6565,7 +6565,7 @@ tasks:
     task:
       id: 65025146-2e8a-49ad-8ad5-0d2a58734ac5
       version: -1
-      name: doesn't match (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6683,7 +6683,7 @@ tasks:
     task:
       id: 1a9c1092-805e-43dc-8c00-9cd8ca62c9f5
       version: -1
-      name: doesn't match caseless (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6788,7 +6788,7 @@ tasks:
     task:
       id: a65b57a8-3fee-4cd5-82ec-c93ac1f39e49
       version: -1
-      name: doesn't match caseless (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6893,7 +6893,7 @@ tasks:
     task:
       id: a385a357-bd29-49b8-8698-a0b75909a915
       version: -1
-      name: doesn't match caseless (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7011,7 +7011,7 @@ tasks:
     task:
       id: c86c6e5d-c3ae-46d7-8723-0baa2b3f4673
       version: -1
-      name: 'wildcard: matches (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7116,7 +7116,7 @@ tasks:
     task:
       id: 2c5b866a-9a3b-4625-8136-42776308ce97
       version: -1
-      name: 'wildcard: matches (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7231,7 +7231,7 @@ tasks:
     task:
       id: e691cfa5-8de9-42d3-8551-2fee5b9a1583
       version: -1
-      name: 'wildcard: matches caseless (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7336,7 +7336,7 @@ tasks:
     task:
       id: fbbeb0c8-04f2-4a2a-8c1d-c4498e7bcb6b
       version: -1
-      name: 'wildcard: matches caseless (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7451,7 +7451,7 @@ tasks:
     task:
       id: adffa8ce-f34e-4078-85c7-3dc4ee5513a3
       version: -1
-      name: 'wildcard: doesn''t match (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7556,7 +7556,7 @@ tasks:
     task:
       id: 04e81af0-3eed-461e-8ae5-eb9d62f6fc6f
       version: -1
-      name: 'wildcard: doesn''t match (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7674,7 +7674,7 @@ tasks:
     task:
       id: 1188e652-0c70-4582-8ede-16aeb7847fb7
       version: -1
-      name: 'wildcard: doesn''t match caseless (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7779,7 +7779,7 @@ tasks:
     task:
       id: 30edb964-37b7-4369-8e58-e0371e51334d
       version: -1
-      name: 'wildcard: doesn''t match caseless (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7897,7 +7897,7 @@ tasks:
     task:
       id: 36ac842b-6551-4b98-8c0c-23bfb9b0c033
       version: -1
-      name: 'regex: matches (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8002,7 +8002,7 @@ tasks:
     task:
       id: d96c81c2-c7bd-403b-85ab-ebece33b5684
       version: -1
-      name: 'regex: matches (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8117,7 +8117,7 @@ tasks:
     task:
       id: fc840d76-187f-4e12-83f4-8f6c22e8072b
       version: -1
-      name: 'regex: matches caseless (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8222,7 +8222,7 @@ tasks:
     task:
       id: 01997286-f783-4b4b-859c-b9979bafe793
       version: -1
-      name: 'regex: matches caseless (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8337,7 +8337,7 @@ tasks:
     task:
       id: 0dac4486-4937-4db1-8b23-13749ef88acb
       version: -1
-      name: 'regex: doesn''t match (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8442,7 +8442,7 @@ tasks:
     task:
       id: 72571a2d-cbb0-4fd6-8148-b79a688ed1f8
       version: -1
-      name: 'regex: doesn''t match (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8560,7 +8560,7 @@ tasks:
     task:
       id: 8e36e739-931e-4c11-8e0f-d2a0fdd67a70
       version: -1
-      name: 'regex: doesn''t match caseless (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8665,7 +8665,7 @@ tasks:
     task:
       id: 504ae027-7630-41d2-8ce0-1a27aee61c62
       version: -1
-      name: 'regex: doesn''t match caseless (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8783,7 +8783,7 @@ tasks:
     task:
       id: 0a581f11-96b9-4c0c-8539-18fb62baab5e
       version: -1
-      name: in list (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8888,7 +8888,7 @@ tasks:
     task:
       id: 3d202674-52ea-47a3-85fa-fadef841215a
       version: -1
-      name: in list (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9005,7 +9005,7 @@ tasks:
     task:
       id: e2bb5d60-0a50-41ae-8977-3f1ca45a2e5e
       version: -1
-      name: in caseless list (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9110,7 +9110,7 @@ tasks:
     task:
       id: 2308467c-85a5-4103-89da-7f575e780fa9
       version: -1
-      name: in caseless list (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9227,7 +9227,7 @@ tasks:
     task:
       id: 04a21b5f-ddfe-4b87-8678-aceaecb30aa8
       version: -1
-      name: not in list (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9332,7 +9332,7 @@ tasks:
     task:
       id: 4434ac35-7c81-4813-859f-4d8c6417b39d
       version: -1
-      name: not in list (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9451,7 +9451,7 @@ tasks:
     task:
       id: fe3ed87f-8d3d-473c-8751-c4a30bea354d
       version: -1
-      name: not in caseless list (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9556,7 +9556,7 @@ tasks:
     task:
       id: 51e6ff1b-bb8a-407c-87eb-a28e760d0fd8
       version: -1
-      name: not in caseless list (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9675,7 +9675,7 @@ tasks:
     task:
       id: ae1cc24d-ff39-46b6-8f90-9f636df700a0
       version: -1
-      name: contains (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9780,7 +9780,7 @@ tasks:
     task:
       id: 116a3bdf-b25e-4ea7-89e5-3e94e6817bdc
       version: -1
-      name: contains (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9885,7 +9885,7 @@ tasks:
     task:
       id: 937904a7-9a40-4e40-8706-bb5c2be03bf8
       version: -1
-      name: contains (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10000,7 +10000,7 @@ tasks:
     task:
       id: 5cc88efa-de4c-47a0-8644-a767b27ea942
       version: -1
-      name: doesn't contain (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10105,7 +10105,7 @@ tasks:
     task:
       id: a32af7f0-5c99-4c26-8089-9ae4865546d2
       version: -1
-      name: doesn't contain (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10210,7 +10210,7 @@ tasks:
     task:
       id: 65c1aca1-f44f-4344-8281-4c12b8c05c81
       version: -1
-      name: doesn't contain (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10320,7 +10320,7 @@ tasks:
     task:
       id: a5ae91ce-f4ba-4c24-89f4-11b1daf8bfec
       version: -1
-      name: contains caseless (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10425,7 +10425,7 @@ tasks:
     task:
       id: 1974a3b2-3e0e-4920-8050-879889394527
       version: -1
-      name: contains caseless (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10540,7 +10540,7 @@ tasks:
     task:
       id: e252afb3-3909-4f74-8e75-da578409fe21
       version: -1
-      name: doesn't contain caseless (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10645,7 +10645,7 @@ tasks:
     task:
       id: ad0d5386-3cb8-421a-81e1-052648389219
       version: -1
-      name: doesn't contain caseless (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10750,7 +10750,7 @@ tasks:
     task:
       id: b2d4d8ad-f3e4-443a-890c-8551a967a3bd
       version: -1
-      name: doesn't contain caseless (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10860,7 +10860,7 @@ tasks:
     task:
       id: 3d2f871d-80e9-46d5-8df7-1bec6f0309ae
       version: -1
-      name: 'wildcard: contains (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10965,7 +10965,7 @@ tasks:
     task:
       id: 3a7fa6e7-b401-4bae-8b5d-5235457405a7
       version: -1
-      name: 'wildcard: contains (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11080,7 +11080,7 @@ tasks:
     task:
       id: ac220ad5-1ad0-4593-889b-051c965e5399
       version: -1
-      name: 'wildcard: contains caseless (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11185,7 +11185,7 @@ tasks:
     task:
       id: bf3e574c-1e9e-436a-8e8f-6da7da36dbf5
       version: -1
-      name: 'wildcard: contains caseless (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11300,7 +11300,7 @@ tasks:
     task:
       id: 56438a7f-9a55-4b9c-84fa-ab2780c3061f
       version: -1
-      name: 'wildcard: doesn''t contain (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11405,7 +11405,7 @@ tasks:
     task:
       id: d0eecd80-a37d-4704-8df7-7f2092bcdb61
       version: -1
-      name: 'wildcard: doesn''t contain (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11510,7 +11510,7 @@ tasks:
     task:
       id: 4eb7ddc7-25c8-4b7c-8642-3651f93d6919
       version: -1
-      name: 'wildcard: doesn''t contain (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11623,7 +11623,7 @@ tasks:
     task:
       id: 66d12065-6838-43a2-8740-8417ff40d7be
       version: -1
-      name: 'wildcard: doesn''t contain caseless (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11728,7 +11728,7 @@ tasks:
     task:
       id: 34821010-384f-41ae-8b09-827d873bb3f6
       version: -1
-      name: 'wildcard: doesn''t contain caseless (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11833,7 +11833,7 @@ tasks:
     task:
       id: 5b3a53b7-e109-42ca-82e7-c10d3ad994ba
       version: -1
-      name: 'wildcard: doesn''t contain caseless (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11946,7 +11946,7 @@ tasks:
     task:
       id: 61328785-c56b-4276-8414-5587113d2cb9
       version: -1
-      name: 'regex: contains (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12051,7 +12051,7 @@ tasks:
     task:
       id: b001460d-3b9d-4647-826e-c22bcd1b72c0
       version: -1
-      name: 'regex: contains (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12166,7 +12166,7 @@ tasks:
     task:
       id: 9a862868-d29b-486d-8eaa-59b2a53d0048
       version: -1
-      name: 'regex: contains caseless (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12271,7 +12271,7 @@ tasks:
     task:
       id: 664f6798-e4bf-4387-86cf-f87a4c2b5e61
       version: -1
-      name: 'regex: contains caseless (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12386,7 +12386,7 @@ tasks:
     task:
       id: b18cd024-e385-468e-87c3-bafafa7455fc
       version: -1
-      name: 'regex: doesn''t contain (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12491,7 +12491,7 @@ tasks:
     task:
       id: 3ec7e4b2-be1b-4be2-8a0c-73336c011ef3
       version: -1
-      name: 'regex: doesn''t contain (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12596,7 +12596,7 @@ tasks:
     task:
       id: d54b43a3-a990-495a-8de1-a6611cd1bc08
       version: -1
-      name: 'regex: doesn''t contain (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12709,7 +12709,7 @@ tasks:
     task:
       id: c40515ab-fc0a-4001-88fe-003708dbf532
       version: -1
-      name: 'regex: doesn''t contain caseless (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12814,7 +12814,7 @@ tasks:
     task:
       id: 6a49c755-dcf7-4821-8a21-3b4f2f30f41b
       version: -1
-      name: 'regex: doesn''t contain caseless (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12919,7 +12919,7 @@ tasks:
     task:
       id: 3758545f-fc6f-4aa7-8748-f148b4b3354f
       version: -1
-      name: 'regex: doesn''t contain caseless (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13032,7 +13032,7 @@ tasks:
     task:
       id: 882d4904-8536-4d9e-8ab2-28d379c960bf
       version: -1
-      name: contains any line of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13140,7 +13140,7 @@ tasks:
     task:
       id: 84b80abb-c48a-49b7-8fa9-3dd5a0d06431
       version: -1
-      name: contains any line of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13258,7 +13258,7 @@ tasks:
     task:
       id: ffcac247-defd-4357-8d27-add3c7588bf5
       version: -1
-      name: contains any line of (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13371,7 +13371,7 @@ tasks:
     task:
       id: aa58cfb9-fe4d-4100-8faf-83674259fd40
       version: -1
-      name: contains any caseless line of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13479,7 +13479,7 @@ tasks:
     task:
       id: a4caca58-c9d9-48ba-8f2d-1187491ff6b5
       version: -1
-      name: contains any caseless line of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13597,7 +13597,7 @@ tasks:
     task:
       id: 471753dd-2eb7-4aab-866f-9576d30983b8
       version: -1
-      name: doesn't contain any line of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13705,7 +13705,7 @@ tasks:
     task:
       id: ba7b1cc3-350b-4ecc-8054-7a40c625aeaf
       version: -1
-      name: doesn't contain any line of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13823,7 +13823,7 @@ tasks:
     task:
       id: eee71c61-8328-44d0-8d9b-71cff9717e0e
       version: -1
-      name: doesn't contain any line of (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13936,7 +13936,7 @@ tasks:
     task:
       id: e3315a7c-51a0-46c1-8137-4f2ef4c2380e
       version: -1
-      name: doesn't match any caseless line of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14044,7 +14044,7 @@ tasks:
     task:
       id: 4b221761-290d-4822-83fb-323ba32496d5
       version: -1
-      name: doesn't match any caseless line of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14162,7 +14162,7 @@ tasks:
     task:
       id: 9aa4fb19-f5b7-42ab-8582-1773d74207b5
       version: -1
-      name: doesn't match any caseless line of (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14279,7 +14279,7 @@ tasks:
     task:
       id: 4a2fcd53-c821-435c-8c46-5b087b144123
       version: -1
-      name: matches any string of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14389,7 +14389,7 @@ tasks:
     task:
       id: 4e42cc49-972d-4d55-8429-a1ef5118af1f
       version: -1
-      name: matches any string of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14508,7 +14508,7 @@ tasks:
     task:
       id: ec068c35-74dd-4c9e-8768-f515bed76b32
       version: -1
-      name: matches any string of (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14625,7 +14625,7 @@ tasks:
     task:
       id: 5208ee1a-a7cf-4f74-81e6-32f9fbbb14e2
       version: -1
-      name: matches any caseless string of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14735,7 +14735,7 @@ tasks:
     task:
       id: 744e29b1-0977-4e8a-84d2-b72231c57979
       version: -1
-      name: matches any caseless string of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14854,7 +14854,7 @@ tasks:
     task:
       id: 9272f5b4-341a-4d8f-8d8c-5d04cd7d39e5
       version: -1
-      name: doesn't match any string of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14964,7 +14964,7 @@ tasks:
     task:
       id: 29b7a490-ed7d-4e19-8063-953f86cc8759
       version: -1
-      name: doesn't match any string of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15083,7 +15083,7 @@ tasks:
     task:
       id: 58698d1e-66c7-4ab3-8687-c73577bf8941
       version: -1
-      name: doesn't match any caseless string of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15193,7 +15193,7 @@ tasks:
     task:
       id: 54464c14-618e-4a27-8c70-54ac6194691f
       version: -1
-      name: doesn't match any caseless string of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15312,7 +15312,7 @@ tasks:
     task:
       id: a926f52e-864e-46ba-8906-ba7bad2c70d0
       version: -1
-      name: matches any line of(1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15420,7 +15420,7 @@ tasks:
     task:
       id: b692393c-3624-4d88-80f3-b4360eb9f70a
       version: -1
-      name: matches any line of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15537,7 +15537,7 @@ tasks:
     task:
       id: e2c0172a-75b6-497d-8210-ece479eab53d
       version: -1
-      name: matches any line of (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15652,7 +15652,7 @@ tasks:
     task:
       id: 7cb3cb46-dda7-4d8b-87f6-451e91659b1b
       version: -1
-      name: matches any caseless line of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15760,7 +15760,7 @@ tasks:
     task:
       id: 4365ca61-8b49-4c59-8d3b-bce4a6a527f3
       version: -1
-      name: matches any caseless line of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15877,7 +15877,7 @@ tasks:
     task:
       id: 4968947e-0d04-4884-8366-01d0e8d40759
       version: -1
-      name: doesn't match any line of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15985,7 +15985,7 @@ tasks:
     task:
       id: b828b769-688e-4668-8810-ff3e8671580e
       version: -1
-      name: doesn't match any line of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16102,7 +16102,7 @@ tasks:
     task:
       id: c5c64d53-2263-43ff-8e91-98fbaf7e0fc6
       version: -1
-      name: doesn't match any caseless line of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16210,7 +16210,7 @@ tasks:
     task:
       id: ec841af6-7900-4cee-82f6-5cdb005c83be
       version: -1
-      name: doesn't match any caseless line of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16327,7 +16327,7 @@ tasks:
     task:
       id: 023d8cce-d54a-4488-8d5f-7a258bb5e9b3
       version: -1
-      name: 'wildcard: matches any string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16437,7 +16437,7 @@ tasks:
     task:
       id: 98a6b3f9-d7c9-4d98-866a-719cd4aeafee
       version: -1
-      name: 'wildcard: matches any string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16556,7 +16556,7 @@ tasks:
     task:
       id: 99befe52-e708-47ea-816a-399b6fc7dfdb
       version: -1
-      name: 'wildcard: matches any string of (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16673,7 +16673,7 @@ tasks:
     task:
       id: 1956eb9b-d8fd-4e0a-86d0-6690a8e39cff
       version: -1
-      name: 'wildcard: matches any caseless string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16783,7 +16783,7 @@ tasks:
     task:
       id: dbe2a741-8fa2-4eb6-836b-896ca395313a
       version: -1
-      name: 'wildcard: matches any caseless string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16902,7 +16902,7 @@ tasks:
     task:
       id: f73049fd-12fa-430f-8783-7d50b8e96944
       version: -1
-      name: 'wildcard: doesn''t match any string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17012,7 +17012,7 @@ tasks:
     task:
       id: ea521016-0363-40c7-875a-85a243face16
       version: -1
-      name: 'wildcard: doesn''t match any string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17130,7 +17130,7 @@ tasks:
     task:
       id: f14008ed-460e-44a4-87c2-2e3895a8394b
       version: -1
-      name: 'wildcard: doesn''t match any caseless string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17240,7 +17240,7 @@ tasks:
     task:
       id: 3a8f7bb1-943b-4125-807e-8e0ae303cc91
       version: -1
-      name: 'wildcard: doesn''t match any caseless string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17358,7 +17358,7 @@ tasks:
     task:
       id: 40420b0a-764f-46aa-8080-c79536b45366
       version: -1
-      name: 'regex: matches any string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17468,7 +17468,7 @@ tasks:
     task:
       id: a2bc01c5-8e24-488c-82c6-36ce4ad326cb
       version: -1
-      name: 'regex: matches any string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17587,7 +17587,7 @@ tasks:
     task:
       id: 5cb0c245-ff7a-40a3-866d-f672d93fa5c1
       version: -1
-      name: 'regex: matches any string of (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17704,7 +17704,7 @@ tasks:
     task:
       id: 5d795bd3-4979-4856-8c2f-0494b9de70b6
       version: -1
-      name: 'regex: matches any caseless string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17814,7 +17814,7 @@ tasks:
     task:
       id: dccb7105-0ac8-4e06-8bbf-5b5806ee2352
       version: -1
-      name: 'regex: matches any caseless string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17933,7 +17933,7 @@ tasks:
     task:
       id: 8ad2694d-7a3e-42d7-8ec3-fa63da7f8e74
       version: -1
-      name: 'regex: doesn''t match any string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18043,7 +18043,7 @@ tasks:
     task:
       id: 09c6d4af-111b-48ef-8fdb-d678edce127e
       version: -1
-      name: 'regex: doesn''t match any string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18161,7 +18161,7 @@ tasks:
     task:
       id: 697c3f79-c872-4049-86b0-f9da6a4fe309
       version: -1
-      name: 'regex: doesn''t match any caseless string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18271,7 +18271,7 @@ tasks:
     task:
       id: a799d272-365d-4a9b-8122-3126774abd27
       version: -1
-      name: 'regex: doesn''t match any caseless string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18389,7 +18389,7 @@ tasks:
     task:
       id: 825fba52-d96c-4b83-8f29-a14fd2e6bb03
       version: -1
-      name: contains any string of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18494,7 +18494,7 @@ tasks:
     task:
       id: 6451e240-8f9e-401d-833f-18f6a3606906
       version: -1
-      name: contains any string of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18604,7 +18604,7 @@ tasks:
     task:
       id: 1b924b5c-6820-452f-8c0d-8c23bb38d685
       version: -1
-      name: contains any string of (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18724,7 +18724,7 @@ tasks:
     task:
       id: 038bda1f-d891-4531-855d-472b71df9920
       version: -1
-      name: contains any string of (4)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18839,7 +18839,7 @@ tasks:
     task:
       id: 4fe07325-693f-452f-8115-ae9933b03c19
       version: -1
-      name: contains any caseless string of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18949,7 +18949,7 @@ tasks:
     task:
       id: 23d8f2dc-db0d-42dc-88a3-53c706f42638
       version: -1
-      name: contains any caseless string of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19069,7 +19069,7 @@ tasks:
     task:
       id: c9c02460-30c3-4cfd-8498-58d93beeab11
       version: -1
-      name: doesn't contain any string of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19179,7 +19179,7 @@ tasks:
     task:
       id: 768d8756-7032-4b85-8315-cc607da2aa3f
       version: -1
-      name: doesn't contain any string of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19299,7 +19299,7 @@ tasks:
     task:
       id: 347ed2df-2d72-4ae6-8c14-875d8bd81576
       version: -1
-      name: doesn't contain any string of (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19414,7 +19414,7 @@ tasks:
     task:
       id: a7af2947-c239-49a9-87fa-17f810217f4b
       version: -1
-      name: doesn't contain any caseless string of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19529,7 +19529,7 @@ tasks:
     task:
       id: 75a66542-4dd9-4557-8036-02d3be912a0c
       version: -1
-      name: doesn't contain any caseless string of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19649,7 +19649,7 @@ tasks:
     task:
       id: b87f5019-f2c6-43b6-856a-9226e0fce849
       version: -1
-      name: doesn't contain any caseless string of (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19764,7 +19764,7 @@ tasks:
     task:
       id: 9de0a007-9ef7-4160-857e-8a72ee694d7b
       version: -1
-      name: 'wildcard: contains any string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19869,7 +19869,7 @@ tasks:
     task:
       id: d220c581-88b8-4b82-8942-820f7a011c2f
       version: -1
-      name: 'wildcard: contains any string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19979,7 +19979,7 @@ tasks:
     task:
       id: 16951183-b838-45b1-8a91-439e3ef52fc6
       version: -1
-      name: 'wildcard: contains any string of (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20099,7 +20099,7 @@ tasks:
     task:
       id: dd97c102-bd5f-4b41-810c-e7a48f56718e
       version: -1
-      name: 'wildcard: contains any string of (4)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20214,7 +20214,7 @@ tasks:
     task:
       id: 2d38d6bd-6a14-4754-8fb4-eb2bb8432122
       version: -1
-      name: 'wildcard: contains any caseless string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20324,7 +20324,7 @@ tasks:
     task:
       id: 341ca6e6-db39-4955-8202-18aac2377c59
       version: -1
-      name: 'wildcard: contains any caseless string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20444,7 +20444,7 @@ tasks:
     task:
       id: a6e99022-622e-4f8d-85f3-36c8363a44f3
       version: -1
-      name: 'wildcard: doesn''t contain any string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20554,7 +20554,7 @@ tasks:
     task:
       id: cd8531bc-6dba-484c-8446-c2196573e98d
       version: -1
-      name: 'wildcard: doesn''t contain any string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20669,7 +20669,7 @@ tasks:
     task:
       id: 6d79e049-4177-4424-8814-0b1ac624964b
       version: -1
-      name: 'wildcard: doesn''t contain any string of (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20789,7 +20789,7 @@ tasks:
     task:
       id: 058866d1-5cc1-4362-87e5-a9b9dbe26fbc
       version: -1
-      name: 'wildcard: doesn''t contain any caseless string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20899,7 +20899,7 @@ tasks:
     task:
       id: 71453e0e-ede0-4116-8f8b-a0d08145d1b5
       version: -1
-      name: 'wildcard: doesn''t contain any caseless string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21019,7 +21019,7 @@ tasks:
     task:
       id: ab3ac345-5636-49e9-8fdb-734a2bb444b2
       version: -1
-      name: 'wildcard: doesn''t contain any caseless string of (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21134,7 +21134,7 @@ tasks:
     task:
       id: fd03ae1d-1613-4ced-8253-81ff2d248058
       version: -1
-      name: 'regex: contains any string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21239,7 +21239,7 @@ tasks:
     task:
       id: 18717671-9ee3-4f6f-8247-955767bb7005
       version: -1
-      name: 'regex: contains any string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21349,7 +21349,7 @@ tasks:
     task:
       id: 21941cb8-19c3-4409-86d7-5524d61c8336
       version: -1
-      name: 'regex: contains any string of (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21469,7 +21469,7 @@ tasks:
     task:
       id: a3d1d0f8-78bb-4923-8a55-cd2eff181665
       version: -1
-      name: 'regex: contains any string of (4)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21584,7 +21584,7 @@ tasks:
     task:
       id: 14663723-4657-4c7c-81b5-d46a070d642c
       version: -1
-      name: 'regex: contains any caseless string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21694,7 +21694,7 @@ tasks:
     task:
       id: cecfe7b2-62ed-4f9c-894e-d40c5a2ec286
       version: -1
-      name: 'regex: contains any caseless string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21814,7 +21814,7 @@ tasks:
     task:
       id: 63458319-4614-47d3-8885-2fde0584ad1f
       version: -1
-      name: 'regex: doesn''t contain any string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21924,7 +21924,7 @@ tasks:
     task:
       id: ff35d4da-8a6c-4a88-82d9-62e1b292ccf1
       version: -1
-      name: 'regex: doesn''t contain any string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22039,7 +22039,7 @@ tasks:
     task:
       id: 24427523-3133-4c4e-86ff-7476260e1a61
       version: -1
-      name: 'regex: doesn''t contain any string of (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22159,7 +22159,7 @@ tasks:
     task:
       id: 8e38244b-7081-45bf-8c6b-85740e5eb124
       version: -1
-      name: 'regex: doesn''t contain any caseless string of (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22269,7 +22269,7 @@ tasks:
     task:
       id: 1f4546de-b21e-4924-8e32-5a6474e02e2a
       version: -1
-      name: 'regex: doesn''t contain any caseless string of (2)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22389,7 +22389,7 @@ tasks:
     task:
       id: e9ac97f3-b2ba-46c7-80c7-b17200b39873
       version: -1
-      name: 'regex: doesn''t contain any caseless string of (3)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22504,7 +22504,7 @@ tasks:
     task:
       id: 9959ba3a-ee7f-42de-8449-93df873e71a9
       version: -1
-      name: matches expressions of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22621,7 +22621,7 @@ tasks:
     task:
       id: 613db855-f9e8-48cb-83d3-7be1a75ba840
       version: -1
-      name: matches expressions of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22755,7 +22755,7 @@ tasks:
     task:
       id: 2f54433d-9b66-403f-8fd7-4e706ba3ecd0
       version: -1
-      name: matches conditions of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22923,7 +22923,7 @@ tasks:
     task:
       id: 05550e62-a288-4d2d-8b19-8ef14f1e81d8
       version: -1
-      name: matches conditions of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23088,7 +23088,7 @@ tasks:
     task:
       id: 8708a378-171e-4f55-8517-ad071f7c300b
       version: -1
-      name: matches conditions of (3)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23257,7 +23257,7 @@ tasks:
     task:
       id: e3d87e3d-ded4-468a-8267-fb40ddd9af6b
       version: -1
-      name: matches conditions of (4)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23398,7 +23398,7 @@ tasks:
     task:
       id: b5006035-2a4e-45ab-8c6d-5441007ecdb2
       version: -1
-      name: value matches expressions of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23514,7 +23514,7 @@ tasks:
     task:
       id: 12819323-7ba1-4f50-884f-6a78cb2364bc
       version: -1
-      name: value matches expressions of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23645,7 +23645,7 @@ tasks:
     task:
       id: 4c8ca5e5-1cb5-4098-82f4-272405788949
       version: -1
-      name: value matches conditions of (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23674,7 +23674,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40
                           }
                         }
@@ -23738,7 +23738,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40
                           }
                         }
@@ -23784,7 +23784,7 @@ tasks:
     task:
       id: 1b06f952-17b0-4224-8f9b-0a021ab9fba5
       version: -1
-      name: value matches conditions of (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23818,7 +23818,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40,
                             "File": {
                               "Risk": [
@@ -23900,7 +23900,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40,
                             "File": {
                               "Risk": [
@@ -23952,7 +23952,7 @@ tasks:
     task:
       id: 6aa49f0b-8816-49af-84dd-1f1d73276c9b
       version: -1
-      name: value is filtered with (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24069,7 +24069,7 @@ tasks:
     task:
       id: 70442ee8-174c-4d8d-8ce9-f76517ca28cf
       version: -1
-      name: value is filtered with (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24098,7 +24098,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40
                           }
                         }
@@ -24161,7 +24161,7 @@ tasks:
                           },
                           "Host3": {
                             "User": "MBLACK",
-                            "IP": "192.168.1.3",
+                            "IP": "3.3.3.3",
                             "Score": 40
                           }
                         }
@@ -24207,7 +24207,7 @@ tasks:
     task:
       id: 332d61d7-9c7d-4d74-8155-02865a35b13b
       version: -1
-      name: === (1)
+      name: "Test - ExtFilter"
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24260,7 +24260,7 @@ tasks:
                 value:
                   simple: "10"
       ExtFilterOperation:
-        simple: ===
+        simple: "==="
       ExtFilterPath: {}
       Input:
         complex:
@@ -24320,7 +24320,7 @@ tasks:
     task:
       id: d3dc94c9-e4b0-4edb-81dd-8096bb87b986
       version: -1
-      name: === (2)
+      name: "Test - ExtFilter"
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24373,7 +24373,7 @@ tasks:
                 value:
                   simple: '"10"'
       ExtFilterOperation:
-        simple: ===
+        simple: "==="
       ExtFilterPath: {}
       Input:
         complex:
@@ -24433,7 +24433,7 @@ tasks:
     task:
       id: 6b683bac-222a-4e2f-8258-4f844034eb07
       version: -1
-      name: '!== (1)'
+      name: 'Test - ExtFilter'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24548,6 +24548,7 @@ tasks:
       id: 16a30dcf-beeb-421d-8e25-77096e88f564
       version: -1
       name: encode (1)
+      description: Run ExtFilter for a test
       type: condition
       iscommand: false
       brand: ""
@@ -24679,7 +24680,7 @@ tasks:
     task:
       id: c74960ac-bc02-4445-8b33-113fc191aa29
       version: -1
-      name: is replaced with (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24801,7 +24802,7 @@ tasks:
     task:
       id: c69fdfa5-e344-4198-816c-203ce2d1be20
       version: -1
-      name: is replaced with (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24917,7 +24918,7 @@ tasks:
     task:
       id: b12d9d8d-e2ac-469c-85c6-e22629ff2fbf
       version: -1
-      name: is updated with (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25039,7 +25040,7 @@ tasks:
     task:
       id: a11f40bf-0c77-401a-8037-c2bedc0cc395
       version: -1
-      name: is updated with (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25154,7 +25155,7 @@ tasks:
     task:
       id: f35816a2-976f-4b04-8a92-9b9813318238
       version: -1
-      name: appends (1)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25273,7 +25274,7 @@ tasks:
     task:
       id: 56bf0687-938a-4d31-8f10-99b8b95c9ca2
       version: -1
-      name: appends (2)
+      name: Test - ExtFilter
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25408,3 +25409,6 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
