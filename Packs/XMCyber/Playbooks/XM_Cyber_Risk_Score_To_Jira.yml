@@ -1,6 +1,6 @@
 id: 474083ca-be5a-4b95-80f9-1877dfd91438
 version: 15
-vcShouldKeepItemLegacyProdMachine: false
+vcshouldkeepitemlegacyprodmachine: false
 name: XM_Cyber_Risk_Score_To_Jira
 description: This playbook creates a jira ticket about XM risk score
 fromversion: 6.0.0
@@ -47,7 +47,7 @@ tasks:
       brand: jira-v2
     scriptarguments:
       assignee: {}
-      description: T
+      description: Example
         simple: |-
           Current risk score is : ${incident.xmriskscore}.
           Trend from the previous week is: ${incident.xmriskscoretrend}
