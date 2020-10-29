@@ -41,6 +41,34 @@ api_type_map = {
     }
 }
 
+cisco_ise_field_map = {
+    "ip": "ZingboxIpAddress",
+    "ip address": "ZingboxIP",
+    "ip_address": "ZingboxIP",
+    "profile": "ZingboxProfile",
+    "category": "ZingboxCategory",
+    "risk_score": "ZingboxRiskScore",
+    "risk score": "ZingboxRiskScore",
+    "confidence": "ZingboxConfidence",
+    "confidence score": "ZingboxConfidence",
+    "confidence_score": "ZingboxConfidence",
+    "tag": "ZingboxTag",
+    "asset_tag": "ZingboxTag",
+    "Tags": "ZingboxTag",
+    "hostname": "ZingboxHostname",
+    "osCombined": "ZingboxOS",
+    "model": "ZingboxModel",
+    "vendor":"ZingboxVendor",
+    "Serial Number": "ZingboxSerial",
+    "Serial_Number": "ZingboxSerial",
+    "endpoint protection": "ZingboxEPP",
+    "endpoint_protection": "ZingboxEPP",
+    "AET":"ZingboxAET",
+    #"External Network": "ZingboxInternetAccess",
+    #"last activity": "ZingboxLastActivity"
+}
+int_fields = ["risk_score", "risk score", "confidence", "confidence score", "confidence_score"]
+
 device_fields_map = [
     ("ip_address", "dvc="),
     ("mac_address", "dvcmac="),

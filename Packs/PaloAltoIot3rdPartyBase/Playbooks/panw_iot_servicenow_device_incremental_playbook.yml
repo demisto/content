@@ -1,7 +1,7 @@
 description: This playbook is for pushing devices inventory to service now
-id: 8df44371-60b2-4726-80e1-98b126e6dfeb
+id: panw_iot_servicenowice_incremental_playbook
 inputs: []
-name: panw_iot_servicenow_device_incremental_playbook
+name: panw_iot_servicenowice_incremental_playbook
 outputs: []
 starttaskid: "0"
 tasks:
@@ -21,6 +21,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 1ea05cd5-e783-4fb6-8194-21b602bb16b2
     timertriggers: []
     type: start
