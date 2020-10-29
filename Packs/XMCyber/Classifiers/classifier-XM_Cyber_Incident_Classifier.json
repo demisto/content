@@ -6,6 +6,7 @@
   "XM Cyber Entity": "XM Cyber Incident",
   "XM Cyber Incident": "XM Cyber Incident",
   "XM Cyber Risk Score": "XM Cyber Risk Score",
+  "XM Cyber Security Score": "XM Cyber Security Score",
   "XM Cyber Technique": "XM Cyber Technique"
  },
  "name": "XM Cyber Incident Classifier",
@@ -17,6 +18,6 @@
   "simple": "type"
  },
  "type": "classification",
- "fromVersion": "6.0.0",
- "version": -1
+ "version": -1,
+ "fromVersion": "6.0.0"
 }
