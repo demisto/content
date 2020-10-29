@@ -18,12 +18,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5750b996-2fea-4c7f-84f0-54f319725d63
+      id: 710b2102-94bd-438f-8485-c6f246a513ab
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 5750b996-2fea-4c7f-84f0-54f319725d63
+    taskid: 710b2102-94bd-438f-8485-c6f246a513ab
     timertriggers: []
     type: start
     view: |-
@@ -52,13 +52,13 @@ tasks:
       brand: ""
       description: gets all available devices from the IoT cloud and sends it to the
         SIEM server
-      id: bc0e9e42-51cc-40de-824f-5b2f60cbe94d
+      id: f2909d40-74f9-4528-8941-9f035dd9408e
       iscommand: false
       name: send_bulk_panw_iot_devices_to_siem
       script: send_bulk_panw_iot_devices_to_siem
       type: regular
       version: -1
-    taskid: bc0e9e42-51cc-40de-824f-5b2f60cbe94d
+    taskid: f2909d40-74f9-4528-8941-9f035dd9408e
     timertriggers: []
     type: regular
     view: |-
@@ -87,13 +87,13 @@ tasks:
       brand: ""
       description: gets all available alerts from the IoT cloud and sends it to the
         SIEM server
-      id: ffdf43ce-055f-40b3-8adf-ce81e96d5496
+      id: 31c824cc-8d45-4a6d-8b6f-02b5c5bb17a1
       iscommand: false
       name: send_bulk_panw_iot_alerts_to_siem
       script: send_bulk_panw_iot_alerts_to_siem
       type: regular
       version: -1
-    taskid: ffdf43ce-055f-40b3-8adf-ce81e96d5496
+    taskid: 31c824cc-8d45-4a6d-8b6f-02b5c5bb17a1
     timertriggers: []
     type: regular
     view: |-
@@ -122,13 +122,13 @@ tasks:
       brand: ""
       description: gets all available vulnerabilities from the IoT cloud and sends
         it to the SIEM server
-      id: f1e43a35-4107-4313-8b31-bffa21c83a67
+      id: 18e7ce4b-abf6-4dd0-8b5c-822ea9d233e6
       iscommand: false
       name: send_bulk_panw_iot_vulnerabilities_to_siem
       script: send_bulk_panw_iot_vulnerabilities_to_siem
       type: regular
       version: -1
-    taskid: f1e43a35-4107-4313-8b31-bffa21c83a67
+    taskid: 18e7ce4b-abf6-4dd0-8b5c-822ea9d233e6
     timertriggers: []
     type: regular
     view: |-
@@ -160,13 +160,13 @@ tasks:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
-      id: 6403f342-dc45-4534-8021-ffd2b561dae2
+      id: 6209ec04-fdf1-4293-89e4-251bf6b4f210
       iscommand: false
       name: IsIntegrationAvailable
       script: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: 6403f342-dc45-4534-8021-ffd2b561dae2
+    taskid: 6209ec04-fdf1-4293-89e4-251bf6b4f210
     timertriggers: []
     type: condition
     view: |-
@@ -200,13 +200,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 1b0ddb3c-4465-4e03-8c0d-313374bdea7c
+      id: ee34dffa-6f9d-410b-8b9c-90d664dcfd12
       iscommand: true
       name: send-status-to-panw-iot-cloud
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 1b0ddb3c-4465-4e03-8c0d-313374bdea7c
+    taskid: ee34dffa-6f9d-410b-8b9c-90d664dcfd12
     timertriggers: []
     type: regular
     view: |-
@@ -234,13 +234,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: d758cbd8-2201-4c52-875b-4eb3be58670c
+      id: 1b3b66c5-219c-444f-8d90-e43cb24f76ec
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: d758cbd8-2201-4c52-875b-4eb3be58670c
+    taskid: 1b3b66c5-219c-444f-8d90-e43cb24f76ec
     timertriggers: []
     type: regular
     view: |-

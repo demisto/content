@@ -100,12 +100,47 @@ script:
     - description: list of service now Id and corresponding deviceid
       isArray: true
       name: sn_id_deviceids
+      required: true
     description: Gets service now upsert devices
     name: get-servicenow-upsert-devices
     outputs:
     - contextPath: PaloAltoIoTIntegrationBase.UpsertDevices
       description: Return an object contains two list. The first list is inserted
         devices, the second is updated devices
+  - arguments:
+    - description: incident triggered by PANW IoT cloud API
+      name: incident
+      required: true
+    - description: single alert from PANW public API
+      name: alert
+      required: true
+    description: convert alert to service now format
+    name: convert-alert-to-servicenow
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.AlertSN
+      description: a string of alert
+  - arguments:
+    - description: incident triggered by PANW IoT cloud API
+      name: incident
+      required: true
+    - description: single vulnerability from PANW public API
+      name: vulnerability
+      required: true
+    description: convert vulnerability to service now format
+    name: convert-vulnerability-to-servicenow
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.VulnerabilitySN
+      description: a string of vulnerability
+  - arguments:
+    - description: list of devices
+      isArray: true
+      name: devices
+      required: true
+    description: Lists of query
+    name: get-servicenow-devices-query-batch
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.QueryList
+      description: list of query
   - arguments:
     - auto: PREDEFINED
       description: status reported back to PANW IOT cloud
@@ -138,6 +173,24 @@ script:
       required: true
     description: sends a status message back to PANW IOT cloud
     name: send-status-to-panw-iot-cloud
+  - arguments:
+    - auto: PREDEFINED
+      description: asset type
+      name: asset_type
+      predefined:
+      - Devices
+      - Alerts
+      - Vulnerabilities
+      required: true
+    - description: zb_ticketid for alerts and vulnerabilities, mac address for device
+      name: asset_id
+      required: true
+    description: Given a id (alert-id, vulnerability-id or mac-address) returns the
+      asset details
+    name: get-single-asset-details
+    outputs:
+    - contextPath: PaloAltoIoTIntegrationBase.SingleAsset
+      description: stores the asset here
   - arguments:
     - defaultValue: "1000"
       description: page size - upper limit is 1000

@@ -322,7 +322,7 @@ def write_status_context_data(status_path, message, status, count):
 
 def get_servicenow_device_query(args):
 
-    device_list = args.get("devices")['asset_list']
+    device_list = args.get("devices")
     deviceids = [device['deviceid'] for device in device_list]
 
     query = "mac_addressIN" + ",".join(deviceids)
@@ -420,6 +420,25 @@ return example:
 """
 
 
+def get_servicenow_devices_query_batch(args):
+    data = args.get('devices')
+    query_strs = []
+    query_str = 'mac_addressIN'
+    DEFAULT_VALUE_SIZE = 2
+
+    for i in range(len(data)):
+        query_str += entry['deviceid'] + ','
+        if ((i + 1) % DEFAULT_VALUE_SIZE == 0 or i == (len(data) - 1)):
+            query_strs.append(query_str)
+            query_str = 'mac_addressIN'
+
+    return CommandResults(
+        readable_output="Total data length is " + str(len(data)) + ". Query List: " + ("\n".join(query_str)),
+        outputs_prefix='PaloAltoIoTIntegrationBase.BatchQuery',
+        outputs=query_strs
+    )
+
+
 def convert_device_to_servicenow_format(device):
     device_fields_mapping = {
         "hostname": "name",
@@ -466,6 +485,100 @@ def convert_device_to_servicenow_format(device):
 
     instance["custom_fields"] = custom_fields
     return instance
+
+
+def convert_alert_to_servicenow(args):
+    incident = args.get('incident')
+    comments_and_work_notes = str(incident['comments_and_work_notes'])
+    url = str(incident['url'])
+    urgency = str(incident['urgency'])
+    incident.setdefault('user_email', 'cannot find any email')
+    user_email = incident['user_email']
+    zb_ticketid = incident['correlation_id']
+
+    # alert = args.get('alert')
+    # TODO: need to make sure category and profile's name
+    alert = {
+        'description': 'test description',
+        'category': 'iphone',
+        'profile': 'iphone 12',
+        'location': 'panw',
+        'name': 'zingcloud alert bg job integration test at 1602102666747'
+    }
+    alert.setdefault('msg', {}).setdefault('impact', 'Sorry, no impact available to display so far!')
+    alert.setdefault('msg', {}).setdefault('recommendation', {}).setdefault(
+        'content', ['Sorry, no recommendation available to display so far!'])
+    impact = alert['msg']['impact']
+    recommendations = alert['msg']['recommendation']['content']
+    recommendation_text = ''
+    alert_description = str(alert['description'])
+    category = alert['category']
+    profile = alert['profile']
+    location = alert['location']
+    short_description = alert['name']
+
+    for rec in recommendations:
+        recommendation_text += '*' + rec + '\n'
+
+    description = 'Summary\n' + alert_description + '\n\nCategory: ' + category + " Profile: " + profile\
+        + '\n\nImpact\n' + impact + '\n\nRecommendations\n' + recommendation_text + '\nURL\n' + url
+
+    result = 'urgency=' + urgency + ';location=' + location + ';short_description=' + short_description\
+        + ';comments_and_work_notes=' + comments_and_work_notes + ';description=' + description\
+        + ';correlation_id=' + zb_ticketid + ';impact=3;company=Palo Alto Networks;opened_by=svc_panw_iot;'
+
+    return CommandResults(
+        readable_output=result,
+        outputs_prefix='PaloAltoIoTIntegrationBase.AlertSN',
+        outputs=result
+    )
+
+
+def convert_vulnerability_to_servicenow(args):
+    incident = args.get('incident')
+    comments_and_work_notes = str(incident['comments_and_work_notes'])
+    url = str(incident['url'])
+    urgency = str(incident['urgency'])
+    incident.setdefault('user_email', 'cannot find any email')
+    user_email = incident['user_email']
+    zb_ticketid = incident['correlation_id']
+
+    # vuln = args.get('vulnerability')
+    # TODO: need to make sure category and profile's name
+    vuln = {
+        'description': 'test description',
+        'category': 'iphone',
+        'profile': 'iphone 12',
+        'location': 'panw',
+        'name': 'zingcloud vuln bg job integration test at 1602102666747'
+    }
+    vuln.setdefault('msg', {}).setdefault('impact', 'Sorry, no impact available to display so far!')
+    vuln.setdefault('msg', {}).setdefault('recommendation', {}).setdefault(
+        'content', ['Sorry, no recommendation available to display so far!'])
+    impact = vuln['msg']['impact']
+    recommendations = vuln['msg']['recommendation']['content']
+    recommendation_text = ''
+    alert_description = str(vuln['description'])
+    category = vuln['category']
+    profile = vuln['profile']
+    location = vuln['location']
+    short_description = vuln['name']
+
+    for rec in recommendations:
+        recommendation_text += '*' + rec + '\n'
+
+    description = 'Summary\n' + alert_description + '\n\nCategory: ' + category + " Profile: " + profile\
+        + '\n\nImpact\n' + impact + '\n\nRecommendations\n' + recommendation_text + '\nURL\n' + url
+
+    result = 'urgency=' + urgency + ';location=' + location + ';short_description=' + short_description\
+        + ';comments_and_work_notes=' + comments_and_work_notes + ';description=' + description\
+        + ';correlation_id=' + zb_ticketid + ';impact=3;company=Palo Alto Networks;opened_by=svc_panw_iot;'
+
+    return CommandResults(
+        readable_output=result,
+        outputs_prefix='PaloAltoIoTIntegrationBase.VulnerabilitySN',
+        outputs=result
+    )
 
 
 def run_api_command(api_type, delay=-1):
@@ -793,6 +906,12 @@ def main() -> None:
             return_results(results)
         elif demisto.command() == 'get-single-asset-details':
             results = get_single_asset(demisto.args())
+            return_results(results)
+        elif demisto.command() == 'convert-alert-to-servicenow':
+            results = convert_alert_to_servicenow(demisto.args())
+            return_results(results)
+        elif demisto.command() == 'convert-vulnerability-to-servicenow':
+            results = convert_vulnerability_to_servicenow(demisto.args())
             return_results(results)
         elif demisto.command() == 'convert-device-inventory-to-ise-custom-attributes':
             results = convert_device_map_to_ise_attributes(demisto.args())
