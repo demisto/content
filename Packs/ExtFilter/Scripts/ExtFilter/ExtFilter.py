@@ -617,7 +617,10 @@ class ExtFilter:
                 child = child.value
 
                 if parent:
-                    Ddict.set(parent, child_name, child)
+                    if isinstance(parent, dict):
+                        Ddict.set(parent, child_name, child)
+                    else:
+                        Ddict.set(root, parent_path, child)
                 else:
                     root = child
 
