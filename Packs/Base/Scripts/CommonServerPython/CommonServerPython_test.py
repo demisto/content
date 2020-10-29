@@ -2693,3 +2693,4 @@ def test_return_results_multiple_dict_results(mocker):
     mock_command_results = [{'MockContext': 0}, {'MockContext': 1}]
     return_results(mock_command_results)
     assert demisto_results_mock.call_count == 1
+    assert demisto_results_mock.call_args.args[0] == [{'MockContext': 0}, {'MockContext': 1}]
