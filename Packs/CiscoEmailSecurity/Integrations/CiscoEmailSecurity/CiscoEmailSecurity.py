@@ -16,7 +16,7 @@ class Client(BaseClient):
     def __init__(self, params):
         self.username = params.get('credentials').get('identifier')
         self.password = params.get('credentials').get('password')
-        self.timeout = params.get('timeout')
+        self.timeout = int(params.get('timeout'))
         super().__init__(base_url=params.get('base_url'), verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
 
@@ -201,7 +201,9 @@ def message_ids_to_list_of_integers(args):
 def build_url_params_for_list_report(args, report_counter):
     start_date = date_to_cisco_date(args.get('start_date'))
     end_date = date_to_cisco_date(args.get('end_date'))
-    url_params = f'/{report_counter}?startDate={start_date}&endDate={end_date}&device_type=esa'
+    device_group_name = args.get('device_group_name')
+    url_params = f'/{report_counter}?startDate={start_date}&endDate={end_date}&device_type=esa' \
+                 f'&device_group_name={device_group_name}'
     return url_params
 
 
@@ -226,7 +228,7 @@ def list_report_command(client: Client, args: Dict[str, Any]):
     counter = args.get('counter')
     url_params = build_url_params_for_list_report(args, counter)
     report_response_data = client.list_report(url_params)
-    report_data = report_response_data.get('data', {}).get('resultSet', [None])[0]
+    report_data = report_response_data.get('data', {}).get('resultSet')
     counter_output_prefix = set_var_to_output_prefix(counter)
     return CommandResults(
         readable_output=f'{report_response_data}',
@@ -310,7 +312,7 @@ def messages_to_human_readable(messages):
                                         serial_number=dict_safe_get(message, ['attributes', 'serialNumber'], None),
                                         timestamp=dict_safe_get(message, ['attributes', 'timestamp'], None))
         messages_readable_outputs.append(readable_output)
-    headers = ['message_id', 'cisco_id', 'sender', 'sender_ip', 'subject', 'serial_number', 'timestamp']
+    headers = ['timestamp', 'message_id', 'cisco_id', 'sender', 'sender_ip', 'subject', 'serial_number']
     human_readable = tableToMarkdown('CiscoEmailSecurity Messages', messages_readable_outputs, headers, removeNull=True)
     return human_readable
 
