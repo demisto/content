@@ -3198,7 +3198,8 @@
         "CyberTotal_TestPlaybook": "Issue 29776",
         "AWS-securityhub Test": "Issue 29796",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
-        "AWS - CloudWatchLogs Test Playbook": "Issue 29828"
+        "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
+        "Wildfire Test": "Issue 24936"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
