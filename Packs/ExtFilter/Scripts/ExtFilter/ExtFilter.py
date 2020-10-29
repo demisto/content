@@ -9,7 +9,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 PATALG_BINARY = 0
-PATALG_WILDCARD = 1
+PATALG_WILDCARD: int = 1
 PATALG_REGEX = 2
 
 
@@ -20,7 +20,8 @@ class Value:
 
 class Ddict:
     @staticmethod
-    def __search(val: Union[Dict[str, Any], List[Dict[str, Any]]], comps: List[str]) -> Optional[Tuple[str, Any, List[str]]]:
+    def __search(val: Union[Dict[str, Any], List[Dict[str, Any]]],
+                 comps: List[str]) -> Optional[Tuple[str, Any, List[str]]]:
         for i in range(len(comps), 0, -1):
             key = '.'.join(comps[:i])
 
@@ -37,7 +38,8 @@ class Ddict:
         return None
 
     @staticmethod
-    def search(node: Union[Dict[str, Any]], path: str) -> Optional[Tuple[str, Any, str]]:
+    def search(node: Union[Dict[str, Any]],
+               path: str) -> Optional[Tuple[str, Any, str]]:
         """ Get a child node
 
             :param node: A root node.
@@ -84,13 +86,21 @@ class Ddict:
 
 
 class ContextData:
-    def __init__(self, demisto: Optional[Dict[str, Any]] = None, inputs: Optional[Dict[str, Any]] = None, lists: Optional[Dict[str, Any]] = None, incident: Optional[Dict[str, Any]] = None, local: Any = None):
+    def __init__(self,
+                 demisto: Optional[Dict[str, Any]] = None,
+                 inputs: Optional[Dict[str, Any]] = None,
+                 lists: Optional[Dict[str, Any]] = None,
+                 incident: Optional[Dict[str, Any]] = None,
+                 local: Any = None):
         self.__demisto = demisto
         self.__specials = {
             'inputs': inputs if isinstance(inputs, dict) else {},
             'lists': lists if isinstance(lists, dict) else {},
             'incident': incident if isinstance(incident, dict) else {},
-            'local': local[0] if isinstance(local, list) and len(local) == 1 and isinstance(local[0], dict) else local
+            'local': local[0]
+            if isinstance(local, list) and
+            len(local) == 1 and
+            isinstance(local[0], dict) else local
         }
 
     def get(self, key: Optional[str] = None) -> Any:
@@ -102,7 +112,8 @@ class ContextData:
         if key is not None:
             dx = self.__demisto
             for prefix in ['inputs', 'lists', 'incident', 'local']:
-                if key.startswith(prefix) and (len(prefix) == len(key) or key[len(prefix):len(prefix) + 1] in ('.', '(', '=')):
+                if prefix == key or (key.startswith(prefix) and key[len(
+                        prefix):len(prefix) + 1] in ('.', '(', '=')):
                     dx = self.__specials
                     break
 
@@ -148,7 +159,11 @@ def hashdigest(value: str, algorithm: str) -> str:
     return h.hexdigest()
 
 
-def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool:
+def match_pattern(
+        pattern: str,
+        value: Any,
+        caseless: bool,
+        patalg: int) -> bool:
     """ Pattern matching
 
       :param pattern: The pattern string.
@@ -161,7 +176,11 @@ def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool
         if caseless:
             pattern = pattern.lower()
             if isinstance(value, list):
-                return next(filter(lambda v: isinstance(v, str) and v.lower() == pattern, value), None) is not None
+                return next(
+                    filter(
+                        lambda v: isinstance(v, str) and v.lower() == pattern,
+                        value),
+                    None) is not None
             elif isinstance(value, str):
                 return pattern == value.lower()
         else:
@@ -175,12 +194,24 @@ def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool
         if caseless:
             pattern = pattern.lower()
             if isinstance(value, list):
-                return next(filter(lambda v: isinstance(v, str) and fnmatch.fnmatchcase(v.lower(), pattern), value), None) is not None
+                return next(
+                    filter(
+                        lambda v:
+                        isinstance(v, str) and
+                        fnmatch.fnmatchcase(v.lower(), pattern),
+                        value),
+                    None) is not None
             elif isinstance(value, str):
                 return fnmatch.fnmatchcase(value.lower(), pattern)
         else:
             if isinstance(value, list):
-                return next(filter(lambda v: isinstance(v, str) and fnmatch.fnmatchcase(v, pattern), value), None) is not None
+                return next(
+                    filter(
+                        lambda v:
+                        isinstance(v, str) and
+                        fnmatch.fnmatchcase(v, pattern),
+                        value),
+                    None) is not None
             elif isinstance(value, str):
                 return fnmatch.fnmatchcase(value, pattern)
         return False
@@ -189,7 +220,13 @@ def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool
         flags = re.IGNORECASE if caseless else 0
 
         if isinstance(value, list):
-            return next(filter(lambda v: isinstance(v, str) and re.fullmatch(pattern, v, flags), value), None) is not None
+            return next(
+                filter(
+                    lambda v:
+                        isinstance(v, str) and
+                        re.fullmatch(pattern, v, flags),
+                    value),
+                None) is not None
         elif isinstance(value, str):
             return re.fullmatch(pattern, value, flags) is not None
         return False
@@ -198,7 +235,11 @@ def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool
     return False
 
 
-def extract_value(source: Any, extractor: Callable[[str, Optional[ContextData]], Any], dx: Optional[ContextData]) -> Any:
+def extract_value(source: Any,
+                  extractor: Callable[[str,
+                                       Optional[ContextData]],
+                                      Any],
+                  dx: Optional[ContextData]) -> Any:
     """ Extract value including dt expression
 
       :param source: The value to be extracted that may include dt expressions.
@@ -206,7 +247,13 @@ def extract_value(source: Any, extractor: Callable[[str, Optional[ContextData]],
       :param dx: The demisto context.
       :return: The value extracted.
     """
-    def _extract(source: str, extractor: Optional[Callable[[str, Optional[ContextData]], Any]], dx: Optional[ContextData], si: int, endc: Optional[str]) -> Tuple[str, int]:
+    def _extract(source: str,
+                 extractor: Optional[Callable[[str,
+                                               Optional[ContextData]],
+                                              Any]],
+                 dx: Optional[ContextData],
+                 si: int,
+                 endc: Optional[str]) -> Tuple[str, int]:
         val = ''
         ci = si
         while ci < len(source):
@@ -233,7 +280,10 @@ def extract_value(source: Any, extractor: Callable[[str, Optional[ContextData]],
         return (val + source[si:], 0) if extractor else ('', ci)
 
     if isinstance(source, dict):
-        return {extract_value(k, extractor, dx): extract_value(v, extractor, dx) for k, v in source.items()}
+        return {
+            extract_value(k, extractor, dx): extract_value(v, extractor, dx)
+            for k, v in source.items()
+        }
     elif isinstance(source, list):
         return [extract_value(v, extractor, dx) for v in source]
     elif isinstance(source, str):
@@ -256,9 +306,13 @@ def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
     return dx.get(dtstr) if dx else dtstr
 
 
-def get_parent_child(root: dict, path: str) -> Union[
-    Tuple[Tuple[None, None], Tuple[None, None]], Tuple[Tuple[dict, None], Tuple[Any, str]], Tuple[
-        Tuple[Any, str], Tuple[Any, str]]]:
+def get_parent_child(root: dict,
+                     path: str) -> Union[Tuple[Tuple[None, None],
+                                               Tuple[None, None]],
+                                         Tuple[Tuple[dict, None],
+                                               Tuple[Any, str]],
+                                         Tuple[Tuple[Any, str],
+                                               Tuple[Any, str]]]:
     """ Get first and second level node
 
       :param root: The root node.
@@ -321,7 +375,8 @@ class ExtFilter:
                     return False
             elif rhs == "any integer":
                 try:
-                    return isinstance(lhs, int) or isinstance(int(lhs, 10), int)
+                    return isinstance(lhs, int) or\
+                        isinstance(int(lhs, 10), int)
                 except (ValueError, TypeError):
                     return False
             exit_error(f"Unknown operation filter: '{rhs}'")
@@ -332,14 +387,14 @@ class ExtFilter:
         elif optype == "===":
             rhs = self.parse_conds_json(rhs)
             try:
-                return type(lhs) == type(rhs) and lhs == rhs
+                return isinstance(lhs, type(rhs)) and lhs == rhs
             except (ValueError, TypeError):
                 return False
 
         elif optype == "!==":
             rhs = self.parse_conds_json(rhs)
             try:
-                return type(lhs) != type(rhs) or lhs != rhs
+                return not isinstance(lhs, type(rhs)) or lhs != rhs
             except (ValueError, TypeError):
                 return False
 
@@ -403,10 +458,14 @@ class ExtFilter:
             return float(minmax[0]) <= lhs and lhs <= float(minmax[1])
 
         elif optype == "starts with":
-            return isinstance(rhs, str) and isinstance(lhs, str) and lhs.startswith(rhs)
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                lhs.startswith(rhs)
 
         elif optype == "starts with caseless":
-            return isinstance(rhs, str) and isinstance(lhs, str) and lhs.lower().startswith(rhs.lower())
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                lhs.lower().startswith(rhs.lower())
 
         elif optype == "doesn't start with":
             return not self.match_value(lhs, 'starts with', rhs)
@@ -415,10 +474,14 @@ class ExtFilter:
             return not self.match_value(lhs, 'starts with caseless', rhs)
 
         elif optype == "ends with":
-            return isinstance(rhs, str) and isinstance(lhs, str) and lhs.endswith(rhs)
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                lhs.endswith(rhs)
 
         elif optype == "ends with caseless":
-            return isinstance(rhs, str) and isinstance(lhs, str) and lhs.lower().endswith(rhs.lower())
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                lhs.lower().endswith(rhs.lower())
 
         elif optype == "doesn't end with":
             return not self.match_value(lhs, 'ends with', rhs)
@@ -427,10 +490,14 @@ class ExtFilter:
             return not self.match_value(lhs, 'ends with caseless', rhs)
 
         elif optype == "includes":
-            return isinstance(rhs, str) and isinstance(lhs, str) and rhs in lhs
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                rhs in lhs
 
         elif optype == "includes caseless":
-            return isinstance(rhs, str) and isinstance(lhs, str) and rhs.lower() in lower(lhs)
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                rhs.lower() in lower(lhs)
 
         elif optype == "doesn't include":
             return not self.match_value(lhs, 'includes', rhs)
@@ -439,10 +506,14 @@ class ExtFilter:
             return not self.match_value(lhs, 'includes caseless', rhs)
 
         elif optype == "matches":
-            return isinstance(rhs, str) and isinstance(lhs, str) and lhs == rhs
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                lhs == rhs
 
         elif optype == "matches caseless":
-            return isinstance(rhs, str) and isinstance(lhs, str) and lhs.lower() == rhs.lower()
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                lhs.lower() == rhs.lower()
 
         elif optype == "doesn't match":
             return not self.match_value(lhs, 'matches', rhs)
@@ -451,34 +522,46 @@ class ExtFilter:
             return not self.match_value(lhs, 'matches caseless', rhs)
 
         elif optype == "wildcard: matches":
-            return isinstance(rhs, str) and match_pattern(rhs, lhs, False, PATALG_WILDCARD)
+            return isinstance(rhs, str) and\
+                match_pattern(rhs, lhs, False, PATALG_WILDCARD)
 
         elif optype == "wildcard: matches caseless":
-            return isinstance(rhs, str) and match_pattern(rhs, lhs, True, PATALG_WILDCARD)
+            return isinstance(rhs, str) and\
+                match_pattern(rhs, lhs, True, PATALG_WILDCARD)
 
         elif optype == "wildcard: doesn't match":
-            return not isinstance(rhs, str) or not match_pattern(rhs, lhs, False, PATALG_WILDCARD)
+            return not isinstance(rhs, str) or\
+                not match_pattern(rhs, lhs, False, PATALG_WILDCARD)
 
         elif optype == "wildcard: doesn't match caseless":
-            return not isinstance(rhs, str) or not match_pattern(rhs, lhs, True, PATALG_WILDCARD)
+            return not isinstance(rhs, str) or\
+                not match_pattern(rhs, lhs, True, PATALG_WILDCARD)
 
         elif optype == "regex: matches":
-            return isinstance(rhs, str) and match_pattern(rhs, lhs, False, PATALG_REGEX)
+            return isinstance(rhs, str) and\
+                match_pattern(rhs, lhs, False, PATALG_REGEX)
 
         elif optype == "regex: matches caseless":
-            return isinstance(rhs, str) and match_pattern(rhs, lhs, True, PATALG_REGEX)
+            return isinstance(rhs, str) and\
+                match_pattern(rhs, lhs, True, PATALG_REGEX)
 
         elif optype == "regex: doesn't match":
-            return not isinstance(rhs, str) or not match_pattern(rhs, lhs, False, PATALG_REGEX)
+            return not isinstance(rhs, str) or\
+                not match_pattern(rhs, lhs, False, PATALG_REGEX)
 
         elif optype == "regex: doesn't match caseless":
-            return not isinstance(rhs, str) or not match_pattern(rhs, lhs, True, PATALG_REGEX)
+            return not isinstance(rhs, str) or\
+                not match_pattern(rhs, lhs, True, PATALG_REGEX)
 
         elif optype == "in list":
-            return isinstance(rhs, str) and isinstance(lhs, str) and lhs in rhs.split(',')
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                lhs in rhs.split(',')
 
         elif optype == "in caseless list":
-            return isinstance(rhs, str) and isinstance(lhs, str) and lower(lhs) in rhs.lower().split(',')
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                lower(lhs) in rhs.lower().split(',')
 
         elif optype == "not in list":
             return not self.match_value(lhs, "in list", rhs)
@@ -487,20 +570,29 @@ class ExtFilter:
             return not self.match_value(lhs, "in caseless list", rhs)
 
         elif optype == "matches any line of":
-            return isinstance(rhs, str) and isinstance(lhs, str) and lhs in rhs.splitlines()
+            return isinstance(rhs, str) and\
+                isinstance(lhs, str) and\
+                lhs in rhs.splitlines()
 
         elif optype == "matches any caseless line of":
             if not isinstance(rhs, str) or not isinstance(lhs, str):
                 return False
 
             lhs = lhs.lower()
-            return next(filter(lambda x: isinstance(x, str) and x.lower() == lhs, rhs.splitlines()), None) is not None
+            return next(
+                filter(
+                    lambda x: isinstance(
+                        x,
+                        str) and x.lower() == lhs,
+                    rhs.splitlines()),
+                None) is not None
 
         elif optype == "doesn't match any line of":
             return not self.match_value(lhs, "matches any line of", rhs)
 
         elif optype == "doesn't match any caseless line of":
-            return not self.match_value(lhs, "matches any caseless line of", rhs)
+            return not self.match_value(
+                lhs, "matches any caseless line of", rhs)
 
         elif optype == "matches any string of":
             if not isinstance(lhs, str):
@@ -516,13 +608,20 @@ class ExtFilter:
 
             rhs = self.parse_conds_json(rhs)
             rhs = rhs if isinstance(rhs, list) else [rhs]
-            return next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_BINARY), rhs), None) is not None
+            return next(
+                filter(
+                    lambda r:
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_BINARY),
+                    rhs),
+                None) is not None
 
         elif optype == "doesn't match any string of":
             return not self.match_value(lhs, "matches any string of", rhs)
 
         elif optype == "doesn't match any caseless string of":
-            return not self.match_value(lhs, "matches any caseless string of", rhs)
+            return not self.match_value(
+                lhs, "matches any caseless string of", rhs)
 
         elif optype == "wildcard: matches any string of":
             if not isinstance(lhs, str):
@@ -530,7 +629,13 @@ class ExtFilter:
 
             rhs = self.parse_conds_json(rhs)
             rhs = rhs if isinstance(rhs, list) else [rhs]
-            return next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, False, PATALG_WILDCARD), rhs), None) is not None
+            return next(
+                filter(
+                    lambda r:
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, False, PATALG_WILDCARD),
+                    rhs),
+                None) is not None
 
         elif optype == "wildcard: matches any caseless string of":
             if not isinstance(lhs, str):
@@ -538,13 +643,21 @@ class ExtFilter:
 
             rhs = self.parse_conds_json(rhs)
             rhs = rhs if isinstance(rhs, list) else [rhs]
-            return next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_WILDCARD), rhs), None) is not None
+            return next(
+                filter(
+                    lambda r:
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_WILDCARD),
+                    rhs),
+                None) is not None
 
         elif optype == "wildcard: doesn't match any string of":
-            return not self.match_value(lhs, "wildcard: matches any string of", rhs)
+            return not self.match_value(
+                lhs, "wildcard: matches any string of", rhs)
 
         elif optype == "wildcard: doesn't match any caseless string of":
-            return not self.match_value(lhs, "wildcard: matches any caseless string of", rhs)
+            return not self.match_value(
+                lhs, "wildcard: matches any caseless string of", rhs)
 
         elif optype == "regex: matches any string of":
             if not isinstance(lhs, str):
@@ -552,7 +665,13 @@ class ExtFilter:
 
             rhs = self.parse_conds_json(rhs)
             rhs = rhs if isinstance(rhs, list) else [rhs]
-            return next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, False, PATALG_REGEX), rhs), None) is not None
+            return next(
+                filter(
+                    lambda r:
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, False, PATALG_REGEX),
+                    rhs),
+                None) is not None
 
         elif optype == "regex: matches any caseless string of":
             if not isinstance(lhs, str):
@@ -560,19 +679,31 @@ class ExtFilter:
 
             rhs = self.parse_conds_json(rhs)
             rhs = rhs if isinstance(rhs, list) else [rhs]
-            return next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_REGEX), rhs), None) is not None
+            return next(
+                filter(
+                    lambda r:
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_REGEX),
+                    rhs),
+                None) is not None
 
         elif optype == "regex: doesn't match any string of":
-            return not self.match_value(lhs, "regex: matches any string of", rhs)
+            return not self.match_value(
+                lhs, "regex: matches any string of", rhs)
 
         elif optype == "regex: doesn't match any caseless string of":
-            return not self.match_value(lhs, "regex: matches any caseless string of", rhs)
+            return not self.match_value(
+                lhs, "regex: matches any caseless string of", rhs)
 
         else:
             raise RuntimeError(f"Unknown operation name: '{optype}'")
         return False
 
-    def filter_with_expressions(self, root: Any, conds: Union[dict, list], path: Optional[str] = None, inlist: bool = False) -> Optional[Value]:
+    def filter_with_expressions(self,
+                                root: Any,
+                                conds: Union[dict, list],
+                                path: Optional[str] = None,
+                                inlist: bool = False) -> Optional[Value]:
         """ Filter the value with the conditions
 
           *** NOTE ***
@@ -612,8 +743,8 @@ class ExtFilter:
             if path:
                 if not isinstance(root, dict):
                     return None
-                (parent, parent_path), (child,
-                                        child_name) = get_parent_child(root, path)
+                (parent, parent_path),\
+                    (child, child_name) = get_parent_child(root, path)
 
             for x in conds.items():
                 coptype, cconds = x
@@ -672,7 +803,8 @@ class ExtFilter:
             exit_error(f'Invalid conditions format: {conds}')
         return None
 
-    def filter_by_conditions(self, root: Any, conds: Union[dict, list]) -> Optional[Value]:
+    def filter_by_conditions(
+            self, root: Any, conds: Union[dict, list]) -> Optional[Value]:
         """ Filter the value with the conditions
 
           *** NOTE ***
@@ -749,7 +881,12 @@ class ExtFilter:
             exit_error(f'Invalid conditions format: {conds}')
         return None
 
-    def filter_values(self, root: List[Any], optype: str, conds: Any, path: Optional[str] = None) -> Optional[Value]:
+    def filter_values(
+            self,
+            root: List[Any],
+            optype: str,
+            conds: Any,
+            path: Optional[str] = None) -> Optional[Value]:
         """ Filter values of a list with the conditions
 
           :param self: This instance.
@@ -759,9 +896,16 @@ class ExtFilter:
           :param path: The path to apply the conditions.
           :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
-        return Value([v.value for v in [self.filter_value(r, optype, conds, path, True) for r in root] if v])
+        return Value([v.value for v in [self.filter_value(
+            r, optype, conds, path, True) for r in root] if v])
 
-    def filter_value(self, root: Any, optype: str, conds: Any, path: Optional[str] = None, inlist: bool = False) -> Optional[Value]:
+    def filter_value(
+            self,
+            root: Any,
+            optype: str,
+            conds: Any,
+            path: Optional[str] = None,
+            inlist: bool = False) -> Optional[Value]:
         """ Filter the value with the conditions
 
           :param self: This instance.
@@ -796,7 +940,11 @@ class ExtFilter:
 
             if path:
                 conds = {"matches conditions of": self.parse_conds_json(conds)}
-                return self.filter_with_expressions(root, conds, path, inlist) if isinstance(root, dict) else None
+                if isinstance(root, dict):
+                    return self.filter_with_expressions(
+                        root, conds, path, inlist)
+                else:
+                    return None
             else:
                 return self.filter_value(root, "matches conditions of", conds)
 
@@ -808,18 +956,36 @@ class ExtFilter:
             if path:
                 conds = {"value matches expressions of": conds}
                 if isinstance(root, dict):
-                    v = {k: v for k, f, v in [(k, self.filter_with_expressions(
-                        v, conds, path, False), v) for k, v in root.items()] if f and f.value}
+                    v = {
+                        k: v for k, f, v in [
+                            (k,
+                             self.filter_with_expressions(
+                                 v,
+                                 conds,
+                                 path,
+                                 False),
+                                v) for k,
+                            v in root.items()] if f and f.value}
                     return Value(v) if v else None
                 else:
-                    return self.filter_with_expressions(root, conds, path, inlist)
+                    return self.filter_with_expressions(
+                        root, conds, path, inlist)
             else:
                 if isinstance(root, dict):
-                    v = {k: v for k, f, v in [(k, self.filter_with_expressions(
-                        v, conds, None, False), v) for k, v in root.items()] if f and f.value}
+                    v = {
+                        k: v for k, f, v in [
+                            (k,
+                             self.filter_with_expressions(
+                                 v,
+                                 conds,
+                                 None,
+                                 False),
+                                v) for k,
+                            v in root.items()] if f and f.value}
                     return Value(v) if v else None
                 else:
-                    return self.filter_with_expressions(root, conds, None, inlist)
+                    return self.filter_with_expressions(
+                        root, conds, None, inlist)
 
         elif optype in ("is", "isn't"):
             if not inlist and isinstance(root, list):
@@ -828,16 +994,21 @@ class ExtFilter:
             filstr = conds
             if isinstance(filstr, str) and filstr == "existing key":
                 if optype == "is":
-                    return Value(root) if path and Ddict.get_value(root, path) else None
+                    if path and Ddict.get_value(root, path):
+                        return Value(root)
                 else:  # isn't
-                    return Value(root) if not path or not Ddict.get_value(root, path) else None
-
+                    if not path or not Ddict.get_value(root, path):
+                        return Value(root)
+                return None
         if path:
             if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
             conds = {optype: self.parse_conds_json(conds)}
-            return self.filter_with_expressions(root, conds, path, inlist) if isinstance(root, dict) else None
+            if isinstance(root, dict):
+                return self.filter_with_expressions(root, conds, path, inlist)
+            else:
+                return None
 
         if optype == "keeps":
             if not inlist and isinstance(root, list):
@@ -877,8 +1048,14 @@ class ExtFilter:
 
             conds = self.parse_conds_json(conds)
             if isinstance(root, dict):
-                v = {k: v.value for k, v in {k: self.filter_with_expressions(
-                    v, conds, None, False) for k, v in root.items()}.items() if v}
+                v = {
+                    k: v.value for k, v in {
+                        k: self.filter_with_expressions(
+                            v,
+                            conds,
+                            None,
+                            False) for k,
+                        v in root.items()}.items() if v}
                 return Value(v) if v else None
             else:
                 return self.filter_with_expressions(root, conds, None, inlist)
@@ -889,8 +1066,10 @@ class ExtFilter:
 
             conds = self.parse_conds_json(conds)
             if isinstance(root, dict):
-                v = {k: v.value for k, v in {k: self.filter_by_conditions(
-                    v, conds) for k, v in root.items()}.items() if v}
+                v = {k: v.value
+                     for k, v in
+                     {k: self.filter_by_conditions(v, conds)
+                      for k, v in root.items()}.items() if v}
                 return Value(v) if v else None
             else:
                 return self.filter_by_conditions(root, conds)
@@ -905,8 +1084,8 @@ class ExtFilter:
             try:
                 if isinstance(rhs, str):
                     if isinstance(lhs, list):
-                        ok = any(isinstance(v, str)
-                                 and rhs in v for v in lhs)
+                        ok = any(isinstance(v, str) and rhs in v
+                                 for v in lhs)
                     elif isinstance(lhs, str):
                         ok = rhs in lhs
             except (ValueError, TypeError):
@@ -918,8 +1097,8 @@ class ExtFilter:
             try:
                 if isinstance(rhs, str):
                     if isinstance(lhs, list):
-                        ok = any(isinstance(v, str) and rhs.lower()
-                                 in v for v in lower(lhs))
+                        ok = any(isinstance(v, str) and rhs.lower() in v
+                                 for v in lower(lhs))
                     elif isinstance(lhs, str):
                         ok = rhs.lower() in lower(lhs)
             except (ValueError, TypeError):
@@ -927,93 +1106,170 @@ class ExtFilter:
             return Value(lhs) if ok else None
 
         elif optype == "doesn't find":
-            return Value(lhs) if not self.filter_value(lhs, "finds", rhs, path) else None
+            if not self.filter_value(lhs, "finds", rhs, path):
+                return Value(lhs)
+            return None
 
         elif optype == "doesn't find caseless":
-            return Value(lhs) if not self.filter_value(lhs, "finds caseless", rhs) else None
+            if not self.filter_value(lhs, "finds caseless", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "contains":
             lval = lhs if isinstance(lhs, list) else [lhs]
-            return Value(lhs) if isinstance(rhs, str) and rhs in lval else None
+            if isinstance(rhs, str) and rhs in lval:
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "contains caseless":
             lval = lhs if isinstance(lhs, list) else [lhs]
-            return Value(lhs) if isinstance(rhs, str) and rhs.lower() in lower(lval) else None
+            if isinstance(rhs, str) and rhs.lower() in lower(lval):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "doesn't contain":
-            return Value(lhs) if not self.filter_value(lhs, "contains", rhs) else None
+            if not self.filter_value(lhs, "contains", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "doesn't contain caseless":
-            return Value(lhs) if not self.filter_value(lhs, "contains caseless", rhs) else None
+            if not self.filter_value(lhs, "contains caseless", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "wildcard: contains":
             lval = lhs if isinstance(lhs, list) else [lhs]
-            return Value(lhs) if isinstance(rhs, str) and match_pattern(rhs, lval, False, PATALG_WILDCARD) else None
+            if isinstance(rhs, str) and\
+                    match_pattern(rhs, lval, False, PATALG_WILDCARD):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "wildcard: contains caseless":
             lval = lhs if isinstance(lhs, list) else [lhs]
-            return Value(lhs) if isinstance(rhs, str) and match_pattern(rhs, lval, True, PATALG_WILDCARD) else None
+            if isinstance(rhs, str) and\
+                    match_pattern(rhs, lval, True, PATALG_WILDCARD):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "wildcard: doesn't contain":
-            return Value(lhs) if not self.filter_value(lhs, "wildcard: contains", rhs) else None
+            if not self.filter_value(lhs, "wildcard: contains", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "wildcard: doesn't contain caseless":
-            return Value(lhs) if not self.filter_value(lhs, "wildcard: contains caseless", rhs) else None
+            if not self.filter_value(lhs, "wildcard: contains caseless", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "regex: contains":
             lval = lhs if isinstance(lhs, list) else [lhs]
-            return Value(lhs) if isinstance(rhs, str) and match_pattern(rhs, lval, False, PATALG_REGEX) else None
+            if isinstance(rhs, str) and\
+                    match_pattern(rhs, lval, False, PATALG_REGEX):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "regex: contains caseless":
             lval = lhs if isinstance(lhs, list) else [lhs]
-            return Value(lhs) if isinstance(rhs, str) and match_pattern(rhs, lval, True, PATALG_REGEX) else None
+            if isinstance(rhs, str) and\
+                    match_pattern(rhs, lval, True, PATALG_REGEX):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "regex: doesn't contain":
-            return Value(lhs) if not self.filter_value(lhs, "regex: contains", rhs) else None
+            if not self.filter_value(lhs, "regex: contains", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "regex: doesn't contain caseless":
-            return Value(lhs) if not self.filter_value(lhs, "regex: contains caseless", rhs) else None
+            if not self.filter_value(lhs, "regex: contains caseless", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "contains any line of":
-            if not isinstance(rhs, str):
+            if isinstance(rhs, str) and\
+                    any(self.filter_value(lhs, "contains", x)
+                        for x in rhs.splitlines()):
+                return Value(lhs)
+            else:
                 return None
-            return Value(lhs) if any(self.filter_value(lhs, "contains", x) for x in rhs.splitlines()) else None
 
         elif optype == "contains any caseless line of":
-            if not isinstance(rhs, str):
+            if isinstance(rhs, str) and\
+                any(self.filter_value(lhs, "contains caseless", x)
+                    for x in rhs.splitlines()):
+                return Value(lhs)
+            else:
                 return None
-            return Value(lhs) if any(self.filter_value(lhs, "contains caseless", x) for x in rhs.splitlines()) else None
 
         elif optype == "doesn't contain any line of":
-            return Value(lhs) if not self.filter_value(lhs, "contains any line of", rhs) else None
+            if not self.filter_value(lhs, "contains any line of", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "doesn't contain any caseless line of":
-            return Value(lhs) if not self.filter_value(lhs, "contains any caseless line of", rhs) else None
+            if not self.filter_value(
+                    lhs, "contains any caseless line of", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "contains any string of":
             rval = self.parse_conds_json(rhs)
             rval = rval if isinstance(rval, list) else [rval]
             lval = lhs if isinstance(lhs, list) else [lhs]
-            return Value(lhs) if next(filter(lambda r: isinstance(r, str) and r in lval, rval), None) else None
+            if next(
+                    filter(lambda r: isinstance(r, str) and r in lval, rval),
+                    None):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "contains any caseless string of":
             rval = self.parse_conds_json(rhs)
             rval = rval if isinstance(rval, list) else [rval]
-            if next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_BINARY), rval), None):
+            if next(
+                filter(
+                    lambda r:
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_BINARY),
+                    rval),
+                    None):
                 return Value(lhs)
             else:
                 return None
 
         elif optype == "doesn't contain any string of":
-            return Value(lhs) if not self.filter_value(lhs, "contains any string of", rhs) else None
+            return Value(lhs) if not self.filter_value(
+                lhs, "contains any string of", rhs) else None
 
         elif optype == "doesn't contain any caseless string of":
-            return Value(lhs) if not self.filter_value(lhs, "contains any caseless string of", rhs) else None
+            return Value(lhs) if not self.filter_value(
+                lhs, "contains any caseless string of", rhs) else None
 
         elif optype == "wildcard: contains any string of":
             rval = self.parse_conds_json(rhs)
             rval = rval if isinstance(rval, list) else [rval]
-            if next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, False, PATALG_WILDCARD), rval), None):
+            if next(
+                filter(
+                    lambda r:
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, False, PATALG_WILDCARD),
+                    rval),
+                    None):
                 return Value(lhs)
             else:
                 return None
@@ -1021,21 +1277,35 @@ class ExtFilter:
         elif optype == "wildcard: contains any caseless string of":
             rval = self.parse_conds_json(rhs)
             rval = rval if isinstance(rval, list) else [rval]
-            if next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_WILDCARD), rval), None):
+            if next(
+                filter(
+                    lambda r:
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_WILDCARD),
+                    rval),
+                    None):
                 return Value(lhs)
             else:
                 return None
 
         elif optype == "wildcard: doesn't contain any string of":
-            return Value(lhs) if not self.filter_value(lhs, "wildcard: contains any string of", rhs) else None
+            return Value(lhs) if not self.filter_value(
+                lhs, "wildcard: contains any string of", rhs) else None
 
         elif optype == "wildcard: doesn't contain any caseless string of":
-            return Value(lhs) if not self.filter_value(lhs, "wildcard: contains any caseless string of", rhs) else None
+            return Value(lhs) if not self.filter_value(
+                lhs, "wildcard: contains any caseless string of", rhs) else None
 
         elif optype == "regex: contains any string of":
             rval = self.parse_conds_json(rhs)
             rval = rval if isinstance(rval, list) else [rval]
-            if next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, False, PATALG_REGEX), rval), None):
+            if next(
+                filter(
+                    lambda r:
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, False, PATALG_REGEX),
+                    rval),
+                    None):
                 return Value(lhs)
             else:
                 return None
@@ -1043,16 +1313,30 @@ class ExtFilter:
         elif optype == "regex: contains any caseless string of":
             rval = self.parse_conds_json(rhs)
             rval = rval if isinstance(rval, list) else [rval]
-            if next(filter(lambda r: isinstance(r, str) and match_pattern(r, lhs, True, PATALG_REGEX), rval), None):
+            if next(
+                filter(
+                    lambda r:
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_REGEX),
+                    rval),
+                    None):
                 return Value(lhs)
             else:
                 return None
 
         elif optype == "regex: doesn't contain any string of":
-            return Value(lhs) if not self.filter_value(lhs, "regex: contains any string of", rhs) else None
+            if not self.filter_value(
+                    lhs, "regex: contains any string of", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "regex: doesn't contain any caseless string of":
-            return Value(lhs) if not self.filter_value(lhs, "regex: contains any caseless string of", rhs) else None
+            if not self.filter_value(
+                    lhs, "regex: contains any caseless string of", rhs):
+                return Value(lhs)
+            else:
+                return None
 
         elif optype == "is replaced with":
             return Value(self.parse_conds_json(rhs))
@@ -1077,7 +1361,8 @@ class ExtFilter:
         elif optype == "json: encode array":
             params = self.parse_conds_json(rhs)
             indent = params.get("indent")
-            return Value(json.dumps(lhs, indent=None if indent is None else int(indent)))
+            return Value(json.dumps(
+                lhs, indent=None if indent is None else int(indent)))
 
         """
         Filter for individual values
@@ -1091,20 +1376,25 @@ class ExtFilter:
         if optype == "json: encode":
             params = self.parse_conds_json(rhs)
             indent = params.get("indent")
-            return Value(json.dumps(lhs, indent=None if indent is None else int(indent)))
+            return Value(
+                json.dumps(
+                    lhs, indent=None if indent is None else int(indent)))
 
         elif optype == "json: decode":
             return Value(json.loads(str(lhs)))
 
         elif optype == "base64: encode":
-            return Value(base64.b64encode(str(lhs).encode('utf-8')).decode('utf-8'))
+            return Value(
+                base64.b64encode(
+                    str(lhs).encode('utf-8')).decode('utf-8'))
 
         elif optype == "base64: decode":
             return Value(base64.b64decode(lhs.encode('utf-8')).decode('utf-8'))
 
         elif optype == "digest":
             params = self.parse_conds_json(rhs)
-            return Value(hashdigest(str(lhs), str(params.get('algorithm', 'sha256'))))
+            return Value(
+                hashdigest(str(lhs), str(params.get('algorithm', 'sha256'))))
 
         """
         Filter for single value (boolean evaluation)
@@ -1120,7 +1410,10 @@ class ExtFilter:
         """
         return extract_value(source, extract_dt, self.__dx)
 
-    def parse_conds_json(self, jstr: str, only_parse_for_string: bool = True) -> Any:
+    def parse_conds_json(
+            self,
+            jstr: str,
+            only_parse_for_string: bool = True) -> Any:
         """ parse a json string and extract value
 
           :param self: This instance.
@@ -1146,8 +1439,12 @@ if __name__ in ('__builtin__', 'builtins', '__main__'):
         dx = json.loads(dx)
     elif not dx:
         dx = value if isinstance(value, dict) else None
-    dx = ContextData(demisto=dx, inputs=args.get('ctx_inputs'),
-                     lists=args.get('ctx_lists'), incident=args.get('ctx_incident'), local=value)
+    dx = ContextData(
+        demisto=dx,
+        inputs=args.get('ctx_inputs'),
+        lists=args.get('ctx_lists'),
+        incident=args.get('ctx_incident'),
+        local=value)
 
     # Extract value
     xfilter = ExtFilter(dx)
