@@ -255,8 +255,8 @@ def main():
     # initialize base paths
     if production_base_path:
         GCPConfig.STORAGE_BASE_PATH = production_base_path
-    build_bucket_path = f'{GCPConfig.BUILD_BASE_PATH}/{circle_branch}/{build_number}/'
-    GCPConfig.BUILD_BASE_PATH = f'{build_bucket_path}/{GCPConfig.STORAGE_BASE_PATH}'
+    build_bucket_path = os.path.join(GCPConfig.BUILD_BASE_PATH, circle_branch, build_number)
+    GCPConfig.BUILD_BASE_PATH = os.path.join(build_bucket_path, GCPConfig.STORAGE_BASE_PATH)
 
     # TODO: for prepare content step, think what to do if a pack was failing to upload
     # TODO: for upload packs step, think what to do if a pack was failing to upload
