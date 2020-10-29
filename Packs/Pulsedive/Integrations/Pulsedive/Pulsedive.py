@@ -1,6 +1,5 @@
-import json
 import traceback
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Dict, List, Optional, Union
 
 import dateparser
 import demistomock as demisto  # noqa: F401
@@ -26,7 +25,7 @@ class Client(BaseClient):
     def test_connect(self):
         return self._http_request(
             method='GET',
-            url_suffix=f'/info.php?',
+            url_suffix='/info.php?',
             params={
                 'value': 'pulsedive.com'
             }
@@ -35,7 +34,7 @@ class Client(BaseClient):
     def get_ip_reputation(self, ip: str, api_key) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix=f'/info.php?',
+            url_suffix='/info.php?',
             params={
                 'indicator': ip,
                 'pretty': '1',
@@ -47,7 +46,7 @@ class Client(BaseClient):
     def get_domain_reputation(self, domain: str, api_key) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix=f'/info.php?',
+            url_suffix='/info.php?',
             params={
                 'indicator': domain,
                 'pretty': '1',
@@ -58,7 +57,7 @@ class Client(BaseClient):
     def get_url_reputation(self, url: str, api_key) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix=f'/info.php?',
+            url_suffix='/info.php?',
             params={
                 'indicator': url,
                 'pretty': '1',
@@ -95,7 +94,7 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
     return None
 
 
-def convert_to_xsoar_severity(pulsedive_severity) -> str:
+def convert_to_xsoar_severity(pulsedive_severity) -> int:
     if (pulsedive_severity == 'unknown' or pulsedive_severity == 'none'):
         xsoar_severity = Common.DBotScore.NONE  # unknown
     elif pulsedive_severity == 'high':
@@ -114,8 +113,8 @@ def test_module(client: Client) -> str:
     """Tests API connectivity and authentication"""
 
     try:
-        response = client.test_connect()
-    except DemistoException as err:
+        client.test_connect()
+    except DemistoException:
         return 'Could not connect to Pulsedive'
     return 'ok'
 
@@ -202,14 +201,14 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> 
 
         domain_standard_context = Common.Domain(
             domain=indicator_domain,
-            #creation_date=domain_data.get('creation_date', None),
-            #expiration_date=domain_data.get('expiration_date', None),
-            #updated_date=domain_data.get('updated_date', None),
-            #organization=domain_data.get('org', None),
-            #name_servers=domain_data.get('name_servers', None),
-            #registrant_name=domain_data.get('name', None),
-            #registrant_country=domain_data.get('country', None),
-            #registrar_name=domain_data.get('registrar', None),
+            # creation_date=domain_data.get('creation_date', None),
+            # expiration_date=domain_data.get('expiration_date', None),
+            # updated_date=domain_data.get('updated_date', None),
+            # organization=domain_data.get('org', None),
+            # name_servers=domain_data.get('name_servers', None),
+            # registrant_name=domain_data.get('name', None),
+            # registrant_country=domain_data.get('country', None),
+            # registrar_name=domain_data.get('registrar', None),
             dbot_score=dbot_score
         )
 
@@ -290,7 +289,7 @@ def main() -> None:
     # etc. to print information in the XSOAR server log. You can set the log
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
-    #demisto.debug(f'Command being called is {demisto.command()}')
+    # demisto.debug(f'Command being called is {demisto.command()}')
 
     try:
 
