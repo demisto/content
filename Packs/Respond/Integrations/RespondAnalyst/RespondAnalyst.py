@@ -122,6 +122,9 @@ class RestClient(BaseClient):
                               "incidentStatus: Closed } ] ){ id } }"}
         else:
             query = {"query": "query { incidents( createdAfter:\"" + from_time_str + "\" ){ id } }"}
+
+        print(query)
+
         res = self._http_request(
             method='POST',
             url_suffix='/graphql?tenantId=' + tenant_id,
@@ -215,6 +218,55 @@ class RestClient(BaseClient):
         )
         return res.get('data').get('removeUserFromIncident')
 
+    def construct_and_send_update_description_mutation(self, tenant_id, incident_id, input):
+        data = {
+            "query": '''mutation updateIncidentDescription(
+                $incidentId: ID!, $input: IncidentDescription!
+            ) {
+                updateIncidentDescription(
+                    incidentId: $incidentId,
+                    input: $input
+                ) {
+                    id
+                    description
+                }
+            }''',
+            "variables": {"id": incident_id, "input": input}
+        }
+
+        res = self._http_request(
+            method='POST',
+            url_suffix='/graphql?tenantId=' + tenant_id,
+            retries=3,
+            json_data=data
+        )
+        return res.get('data').get('updateIncidentDescription')
+
+
+    def construct_and_send_update_title_mutation(self, tenant_id, incident_id, input):
+        data = {
+            "query": '''mutation updateIncidentTitle(
+            $incidentId: ID!, $input: IncidentTitle!
+            ) {
+                updateIncidentTitle(
+                    incidentId: $incidentId,
+                    input: $input
+                ) {
+                    id
+                    title
+                }
+            }''',
+            "variables": {"id": incident_id, "input": input}
+        }
+
+        res = self._http_request(
+            method='POST',
+            url_suffix='/graphql?tenantId=' + tenant_id,
+            retries=3,
+            json_data=data
+        )
+        return res.get('data').get('updateIncidentTitle')
+
 
 def test_module(client):
     """
@@ -233,9 +285,11 @@ def test_module(client):
 def fetch_incidents_for_tenant(rest_client, respond_tenant_id, external_tenant_id, from_time):
     # first time fetch is handled in query
     try:
+        print(from_time)
         response = rest_client.construct_and_send_get_incident_ids_query(respond_tenant_id,
                                                                          from_time)
         id_list = list(map(extract_id, response))
+        print(id_list)
         raw_incidents = rest_client.construct_and_send_full_incidents_query(respond_tenant_id,
                                                                             id_list)
     except Exception as err:
@@ -364,7 +418,7 @@ def get_tenant_ids(rest_client, args):
             user_tenant_mappings)
     else:
         respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                      external_tenant_id)
+                                                                          external_tenant_id)
     return respond_tenant_id, external_tenant_id
 
 
@@ -478,25 +532,35 @@ def get_incident_command(rest_client, args):
         rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
     return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
 
+
 def update_remote_system_command(rest_client, args):
     demisto.debug('in update remote system command')
     remote_args = UpdateRemoteSystemArgs(args)
     try:
         if remote_args.delta:
+            #get incident id and tenant id from remote_system_id
+            incident_id =
+
             changed_fields = list(remote_args.delta.keys())
             demisto.debug(f'Got the following delta keys {str(changed_fields)} to '
                           f' update Respond incident {remote_args.remote_incident_id}')
             demisto.debug(remote_args.data)
             if changed_fields['title']:
-                # todo construct_and_send_update_incident_title
+                demisto.debug(changed_fields['title'])
+
+                rest_client.construct_and_send_update_title_mutation()
+
             elif changed_fields['feedback']:
+                demisto.debug(changed_fields['feedback'])
                 # best thing to do here is probably fit the args into the feedback mold already in close_incident_commmand
 
     except Exception as e:
-        demisto.debug(f"Error in XDR outgoing mirror for incident {remote_args.remote_incident_id} \n"
-                      f"Error message: {str(e)}")
+        demisto.debug(
+            f"Error in XDR outgoing mirror for incident {remote_args.remote_incident_id} \n"
+            f"Error message: {str(e)}")
 
-        return remote_args.remote_incident_id
+    return remote_args.remote_incident_id
+
 
 def fetch_incidents(rest_client, last_run=dict()):
     """
@@ -524,17 +588,18 @@ def fetch_incidents(rest_client, last_run=dict()):
     incidents = []
     next_run = last_run
 
+    print(tenant_mappings)
     # get incidents for each tenant
     for respond_tenant_id, external_tenant_id in tenant_mappings.items():
         # Get the last fetch time for tenant, if exists, which will be used as the 'search from here onward' time
+        latest_time = None
+        from_time = ''
         if last_run.get(external_tenant_id):
             latest_time = last_run.get(external_tenant_id).get('time')
             # latest_time+1 (ms) to prevent duplicates
-            from_time = datetime.utcfromtimestamp((int(latest_time) + 1) / 1000).strftime(
-                '%Y-%m-%d %H:%M:%S.%f')
-        else:
-            latest_time = None
-            from_time = ''
+            if latest_time is not None:
+                from_time = datetime.utcfromtimestamp((int(latest_time) + 1) / 1000).strftime(
+                    '%Y-%m-%d %H:%M:%S.%f')
         # convert to utc datetime for incidents filter
         raw_incidents = fetch_incidents_for_tenant(rest_client, respond_tenant_id,
                                                    external_tenant_id, from_time)

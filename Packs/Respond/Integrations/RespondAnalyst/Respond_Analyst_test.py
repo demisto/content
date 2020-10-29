@@ -26,6 +26,31 @@ def load_test_data(json_path):
         return json.load(f)
 
 
+def test_fetch_incidents_int():
+    from RespondAnalyst import fetch_incidents, RestClient
+    integration_params = {
+        'base_url': 'https://172.31.26.31',
+        'username': 'danno@respond-software.com',
+        'password': 'm2Fd7GX@6c4@nX5pPu',
+        'insecure': True
+    }
+    rest_client = RestClient(
+        base_url=integration_params['base_url'],
+        auth=(integration_params['username'], integration_params['password']),
+        verify=False
+    )
+
+    # last_run = {'remote': {'time': '1589088564211'}, 'qadenver': {'time': '1589088563403'},
+    #             'qa650castro': {'time': '1589088563246'}, 'qa785castro': {'time': '1589088562685'}}
+
+    # last_run = {'QA 5': {'time': '1594078335866'}}
+
+
+    next_run, incidents = fetch_incidents(rest_client, None)
+    # print(len(incidents))
+    print(json.dumps(incidents, sort_keys=True, indent=2, separators=(',', ': ')))
+    assert len(incidents) > 0
+
 def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents, RestClient
 
