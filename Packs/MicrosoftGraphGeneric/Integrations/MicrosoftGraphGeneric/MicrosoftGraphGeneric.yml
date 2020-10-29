@@ -40,7 +40,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: GET
-      description: 'The HTTP method used for the request to Microsoft Graph. Possible values are: "GET", "POST", "DELETE", "PUT", or "PATCH". Default is "GET".'
+      description: 'The HTTP method used for the request to Microsoft Graph. Possible values are: "GET", "POST", "DELETE", "PUT", or "PATCH".'
       isArray: false
       name: http_method
       predefined:
@@ -54,7 +54,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: v1.0
-      description: 'The version of the Microsoft Graph API to use. Possible values are: "v1.0" or "beta". Default is v1.0.'
+      description: 'The version of the Microsoft Graph API to use. Possible values are: "v1.0" or "beta".'
       isArray: false
       name: api_version
       predefined:

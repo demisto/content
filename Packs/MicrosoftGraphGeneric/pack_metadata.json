@@ -1,6 +1,6 @@
 {
     "name": "Microsoft Graph Generic",
-    "description": "Use the Microsoft Graph Generic integration to interact with Microsoft Graph API. Should be used for APIs that are not implemented in other specific Microsoft Graph integrations.",
+    "description": "Use the Microsoft Graph Generic integration to interact with Microsoft Graph API. It should be used for APIs that are not implemented in other specific Microsoft Graph integrations.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

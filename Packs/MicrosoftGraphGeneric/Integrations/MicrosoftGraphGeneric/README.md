@@ -1,6 +1,6 @@
 Use the Microsoft Graph Generic integration to interact with Microsoft Graph API. 
 
-The integration Should be used for APIs that are not implemented in other specific Microsoft Graph integrations.
+The integration should be used for APIs that are not implemented in other specific Microsoft Graph integrations.
 
 The integration supports only Application permission type, and does not support Delegated permission type.
 
@@ -46,8 +46,8 @@ Run a Microsoft Graph API query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource | The resource in Microsoft Graph to refer. | Required | 
-| http_method | The HTTP method used on the request to Microsoft Graph. | Optional | 
-| api_version | The version of the Microsoft Graph API to use. | Optional | 
+| http_method | The HTTP method used for the request to Microsoft Graph. Possible values are: "GET", "POST", "DELETE", "PUT", or "PATCH". Default is "GET". | Optional | 
+| api_version | The version of the Microsoft Graph API to use. Possible values are: "v1.0" or "beta". Default is "v1.0". | Optional | 
 | request_body | The request body (required for POST queries). | Optional | 
 | odata | OData system query options, e.g. $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters | Optional | 
 
