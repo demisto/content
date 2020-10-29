@@ -1,9 +1,8 @@
-id: 474083ca-be5a-4b95-80f9-1877dfd91438
-version: 15
-vcshouldkeepitemlegacyprodmachine: false
-name: XM_Cyber_Risk_Score_To_Jira
-description: This playbook creates a jira ticket about XM risk score
-fromversion: 6.0.0
+id: XM Cyber Risk Score To Jira
+version: -1
+description: THIS_TEST
+fromversion: 5.0.0
+name: XM Cyber Risk Score To Jira
 starttaskid: "0"
 tasks:
   "0":
@@ -12,6 +11,7 @@ tasks:
     type: start
     task:
       id: bcd58b39-3d74-4730-8c46-8d089aa7bc43
+      description: THIS_TEST
       version: -1
       name: ""
       iscommand: false
@@ -47,7 +47,7 @@ tasks:
       brand: jira-v2
     scriptarguments:
       assignee: {}
-      description: Example
+      description:
         simple: |-
           Current risk score is : ${incident.xmriskscore}.
           Trend from the previous week is: ${incident.xmriskscoretrend}
@@ -95,4 +95,5 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: d604675a-27dc-47d0-8492-d2293c645d23
+tests:
+  - No tests
