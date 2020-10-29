@@ -376,7 +376,6 @@ class Client(BaseClient):
         Returns:
             str. Authentication token.
         """
-        demisto.debug('Requested new Token')
         response = self._http_request(
             method='POST',
             url_suffix='token',
@@ -384,7 +383,6 @@ class Client(BaseClient):
             auth=HTTPBasicAuth(self.public_key, self.private_key),
             timeout=self._polling_timeout
         )
-        demisto.debug('Received new Token')
 
         auth_token = response.get('access_token')
         expires_in = response.get('expires_in')
