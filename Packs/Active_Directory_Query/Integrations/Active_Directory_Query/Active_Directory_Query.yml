@@ -1,8 +1,8 @@
 commonfields:
-  id: Active Directory Query v2 test
+  id: Active Directory Query v2
   version: -1
-name: Active Directory Query v2 test
-display: Active Directory Query v2 test
+name: Active Directory Query v2
+display: Active Directory Query v2
 category: Data Enrichment & Threat Intelligence
 description: Active Directory Query integration enables you to  access and manage Active Directory objects (users, contacts, and computers).
 configuration:
