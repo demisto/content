@@ -43,12 +43,12 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_known_issue': 'Other',
     'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
-    'resloved_other': 'Other'
+    'resolved_other': 'Other'
 }
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Resolved': 'resolved_threat_handled',
-    'Other': 'resloved_other',
+    'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive'
 }
@@ -1693,6 +1693,28 @@ def endpoint_scan_command(client, args):
     )
 
 
+def sort_by_key(list_to_sort, main_key, fallback_key):
+    """Sorts a given list elements by main_key for all elements with the key,
+    uses sorting by fallback_key on all elements that dont have the main_key"""
+    list_elements_with_main_key = [element for element in list_to_sort if element.get(main_key)]
+    sorted_list = sorted(list_elements_with_main_key, key=itemgetter(main_key))
+    if len(list_to_sort) == len(sorted_list):
+        return sorted_list
+
+    list_elements_with_fallback_without_main = [element for element in list_to_sort
+                                                if element.get(fallback_key) and not element.get(main_key)]
+    sorted_list.extend(sorted(list_elements_with_fallback_without_main, key=itemgetter(fallback_key)))
+
+    if len(sorted_list) == len(list_to_sort):
+        return sorted_list
+
+    list_elements_without_fallback_and_main = [element for element in list_to_sort
+                                               if not element.get(fallback_key) and not element.get(main_key)]
+
+    sorted_list.extend(list_elements_without_fallback_and_main)
+    return sorted_list
+
+
 def sort_all_list_incident_fields(incident_data):
     """Sorting all lists fields in an incident - without this, elements may shift which results in false
     identification of changed fields"""
@@ -1708,16 +1730,17 @@ def sort_all_list_incident_fields(incident_data):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
 
     if incident_data.get('alerts', []):
-        incident_data['alerts'] = sorted(incident_data.get('alerts', []), key=itemgetter('alert_id'))
+        incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
         reformat_sublist_fields(incident_data['alerts'])
 
     if incident_data.get('file_artifacts', []):
-        incident_data['file_artifacts'] = sorted(incident_data.get('file_artifacts', []), key=itemgetter('file_name'))
+        incident_data['file_artifacts'] = sort_by_key(incident_data.get('file_artifacts', []), main_key='file_name',
+                                                      fallback_key='file_sha256')
         reformat_sublist_fields(incident_data['file_artifacts'])
 
     if incident_data.get('network_artifacts', []):
-        incident_data['network_artifacts'] = sorted(incident_data.get('network_artifacts', []),
-                                                    key=itemgetter('network_domain'))
+        incident_data['network_artifacts'] = sort_by_key(incident_data.get('network_artifacts', []),
+                                                         main_key='network_domain', fallback_key='network_remote_ip')
         reformat_sublist_fields(incident_data['network_artifacts'])
 
 
@@ -1890,8 +1913,8 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        demisto.debug("Closing Remote XDR incident")
         update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason'))
+        demisto.debug(f"Closing Remote XDR incident with status {update_args['status']}")
         update_args['resolve_comment'] = update_args.get('closeNotes')
 
 
@@ -1952,7 +1975,7 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: 
 
         sort_all_list_incident_fields(incident_data)
 
-        incident_data['mirror_direction'] = MIRROR_DIRECTION[demisto.params().get('mirror_direction')]
+        incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
         incident_data['mirror_instance'] = demisto.integrationInstance()
 
         description = raw_incident.get('description')
