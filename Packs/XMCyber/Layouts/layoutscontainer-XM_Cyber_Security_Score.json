@@ -1,7 +1,9 @@
 {
+	"close": null,
 	"description": "",
-	"fromVersion": "6.0.0",
+	"details": null,
 	"detailsV2": {
+		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -392,33 +394,34 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "xmriskscore",
+								"fieldId": "xmsecurityscore",
 								"height": 22,
-								"id": "082184c0-17a1-11eb-ba78-db44622b4844",
+								"id": "05e11a60-1a01-11eb-8cab-11c2452023b3",
 								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "xmriskscoregrade",
+								"fieldId": "xmsecurityscoregrade",
 								"height": 22,
-								"id": "3b4938c0-17a1-11eb-ba78-db44622b4844",
+								"id": "071a5db0-1a01-11eb-8cab-11c2452023b3",
 								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "xmriskscoretrend",
+								"fieldId": "xmsecurityscoretrend",
 								"height": 22,
-								"id": "4c5f2750-17a1-11eb-ba78-db44622b4844",
+								"id": "0838ed10-1a01-11eb-8cab-11c2452023b3",
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
-						"maxW": 3,
+						"maxH": null,
+						"maxW": 1,
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
@@ -433,9 +436,23 @@
 			}
 		]
 	},
+	"edit": null,
+	"fromServerVersion": "",
 	"group": "incident",
-	"id": "XM_Cyber_Risk_Score",
-	"name": "XM Cyber Risk Score",
+	"id": "c7bc5d76-e49e-49aa-897d-bac59e869150",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "XM Cyber Security Score",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"sortValues": null,
 	"system": false,
+	"toServerVersion": "",
 	"version": -1
 }

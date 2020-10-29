@@ -1,7 +1,12 @@
 import json
 import io
-import datetime
-from XMCyberIntegration import *
+from datetime import datetime
+from XMCyberIntegration import get_version_command, is_xm_version_supported_command, entity_get_command, ip_command
+from XMCyberIntegration import hostname_command, affected_entities_list_command, affected_critical_assets_list_command
+from XMCyberIntegration import Client, XM, URLS, PAGE_SIZE, DEFAULT_TIME_ID, TOP_ENTITIES, PREVIOUS_DEFAULT_TIME_ID
+from XMCyberIntegration import XM_CYBER_INCIDENT_TYPE, SEVERITY, XM_CYBER_INCIDENT_TYPE_ENTITY, XM_CYBER_INCIDENT_TYPE_TECHNIQUE
+from XMCyberIntegration import fetch_incidents_command
+from CommonServerPython import *
 
 
 TEST_URL = 'https://test.com/api'
@@ -22,7 +27,9 @@ def get_xm_mock():
             'Authentication': 'Bearer some_api_key'
         }
     )
-    return XM(client)
+    xm = XM(client)
+    xm.ignore_trend = True
+    return xm
 
 
 def assert_response(response, prefix, key_field, outputs):
@@ -238,7 +245,7 @@ def _get_risk_score_incidents(create_time):
         'trend': 21,
         'current_grade': 'F',
         'current_score': 41,
-        'name': 'XM Risk score',
+        'name': 'XM Risk score - 41',
         'create_time': create_time,
         'type': XM_CYBER_INCIDENT_TYPE,
         'severity': SEVERITY.Low,
@@ -287,7 +294,7 @@ def _get_entities_incidents(create_time):
             "score": 0.53,
             "level": "low",
             "trend": None,
-            "name": "XM Asset at risk",
+            "name": "XM Asset at risk - Deployer",
             'severity': SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=azureUser-5d49400b-bc26-4d36-8cff-640d1eeb6465'
@@ -359,7 +366,7 @@ def _get_entities_incidents(create_time):
             "score": 1.55,
             "level": "low",
             "trend": None,
-            "name": "XM Asset at risk",
+            "name": "XM Asset at risk - testwinvm2",
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=azureVirtualMachine-4be55d60-136f-'
@@ -431,7 +438,7 @@ def _get_entities_incidents(create_time):
             "score": 1.91,
             "level": "low",
             "trend": None,
-            "name": "XM Asset at risk",
+            "name": "XM Asset at risk - testwinvm",
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=azureVirtualMachine-9f9a1625-aa36-428c-b6bd-'
@@ -476,7 +483,7 @@ def _get_entities_incidents(create_time):
             "score": 0.05,
             "level": "low",
             "trend": 20,
-            "name": "XM Choke point",
+            "name": "XM Choke point - USERBB21",
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=15553084234424912589&timeId=timeAgo_days_7',
@@ -520,7 +527,7 @@ def _get_entities_incidents(create_time):
             "score": 0.05,
             "level": "low",
             "trend": 33,
-            "name": "XM Choke point",
+            "name": "XM Choke point - USERBB02",
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=872743867762485580&timeId=timeAgo_days_7',
@@ -560,7 +567,7 @@ def _get_entities_incidents(create_time):
             "score": 0.05,
             "level": "low",
             "trend": 33,
-            "name": "XM Choke point",
+            "name": "XM Choke point - script.bat",
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=file-163b4ecf80b8429583007386c77cae39&'
@@ -627,6 +634,7 @@ def _get_top_techniques_incidents(create_time):
             "version": 1,
             "technique": "Exploit::DomainCredentials",
             "criticalAssets": 63,
+            "criticalAssets_trend": 0,
             "entities": 563,
             "displayName": "Domain Credentials",
             "complexity": {
@@ -635,7 +643,7 @@ def _get_top_techniques_incidents(create_time):
             },
             "chokePoints": 116,
             "ratio": 0.0007349167094395969,
-            "name": "XM Top technique",
+            "name": "XM Top technique - Domain Credentials",
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/#/scenarioHub/systemReport/attackTechniques/Exploit::DomainCredentials'
@@ -717,6 +725,7 @@ def _get_top_techniques_incidents(create_time):
             "version": 1,
             "technique": "taintSharedContent",
             "criticalAssets": 46,
+            "criticalAssets_trend": 0,
             "entities": 360,
             "displayName": "Taint Shared Content",
             "complexity": {
@@ -725,7 +734,7 @@ def _get_top_techniques_incidents(create_time):
             },
             "chokePoints": 35,
             "ratio": 0.0017784651072878406,
-            "name": "XM Top technique",
+            "name": "XM Top technique - Taint Shared Content",
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/#/scenarioHub/systemReport/attackTechniques/taintSharedContent?timeId='
@@ -789,6 +798,7 @@ def _get_top_techniques_incidents(create_time):
             "version": 1,
             "technique": "Exploit::Ms17010",
             "criticalAssets": 43,
+            "criticalAssets_trend": 0,
             "entities": 513,
             "displayName": "EternalBlue (CVE-2017-0144)",
             "complexity": {
@@ -797,7 +807,7 @@ def _get_top_techniques_incidents(create_time):
             },
             "chokePoints": 74,
             "ratio": 0.0007863072815711517,
-            "name": "XM Top technique",
+            "name": "XM Top technique - EternalBlue (CVE-2017-0144)",
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/#/scenarioHub/systemReport/attackTechniques/Exploit::Ms17010?timeId=timeAgo_days_7',

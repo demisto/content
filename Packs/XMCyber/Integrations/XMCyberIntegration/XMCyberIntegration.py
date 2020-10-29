@@ -15,7 +15,7 @@ urllib3.disable_warnings()
 # Minimum supported version is:  1.38
 MIN_MAJOR_VERSION = 1
 MIN_MINOR_VERSION = 38
-FULL_INCIDENTS_SECONDS = 86 #400
+FULL_INCIDENTS_SECONDS = 86400
 
 DEFAULT_TIME_ID = 'timeAgo_days_7'
 PREVIOUS_DEFAULT_TIME_ID = 'timeAgo_days_7'
@@ -111,6 +111,7 @@ class SEVERITY:
 class XM:
 
     is_fetch_incidents = False
+    ignore_trend = False
     date_created = None  # For tests
 
     def __init__(self, client: Client):
@@ -268,7 +269,7 @@ class XM:
     def _create_event_for_risk_score(self, events):
         risk_score = self.risk_score()
         trend = risk_score["trend"]
-        if trend is not None and trend != '' and trend < 0:
+        if self.ignore_trend or (trend is not None and trend != '' and trend < 0):
             events.append(self.create_xm_event(EVENT_NAME.RiskScore, risk_score["current_score"], risk_score))
 
     def _create_events_from_top_dashboard(self, events_array, top_list, event_name, trend_negative):
@@ -279,7 +280,7 @@ class XM:
             else:
                 trend = int(trend)
 
-            if (trend_negative and trend < 0) or (not trend_negative and trend > 0):
+            if self.ignore_trend or (trend_negative and trend < 0) or (not trend_negative and trend > 0):
                 events_array.append(self.create_xm_event(event_name, top["displayName"], top))
 
     def _get_technique_best_practices_and_remediation(self, technique):
@@ -301,11 +302,12 @@ class XM:
                     previous_tech = previous_tech_iteratee
                     break
 
-            if previous_tech is None or int(current_tech["criticalAssets"]) > int(previous_tech["criticalAssets"]):
+            criticalAssets = int(current_tech["criticalAssets"])
+            if self.ignore_trend or previous_tech is None or criticalAssets > int(previous_tech["criticalAssets"]):
                 current_tech["advices"] = self._get_technique_best_practices_and_remediation(current_tech)
-                critical_asset_trend = current_tech["criticalAssets"] - previous_tech["criticalAssets"]
-                if critical_asset_trend == 0:
-                    critical_asset_trend = 3
+                critical_asset_trend = 0
+                if previous_tech is not None:
+                    critical_asset_trend = criticalAssets - int(previous_tech["criticalAssets"])
                 current_tech["criticalAssets_trend"] = critical_asset_trend
                 events_array.append(self.create_xm_event(EVENT_NAME.TopTechnique, current_tech["displayName"], current_tech))
 
@@ -726,17 +728,18 @@ def entity_get_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
 
 
 def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
-#     """Tests API connectivity and authentication'
+    #     """Tests API connectivity and authentication'
 
-#     Returning 'ok' indicates that the integration works like it is supposed to.
-#     Connection to the service is successful.
-#     Raises exceptions if something goes wrong.
+    #     Returning 'ok' indicates that the integration works like it is supposed to.
+    #     Connection to the service is successful.
+    #     Raises exceptions if something goes wrong.
 
-#     :type client: ``Client``
+    #     :type client: ``Client``
 
-#     :return: 'ok' if test passed, anything else will fail the test.
-#     :rtype: ``str``
-#     """
+    #     :return: 'ok' if test passed, anything else will fail the test.
+    #     :rtype: ``str``
+    #     """
+
     try:
         version = xm.get_version()
         system_version = version['system']
@@ -753,7 +756,11 @@ def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults
             raise e
     except Exception as e:
         raise Exception(f'Verification Error: could not load XM Cyber version.\n{e}')
-    return 'ok'
+    return CommandResults(
+        outputs_prefix='ok',
+        outputs_key_field='ok',
+        outputs='ok'
+    )
 
 
 ''' MAIN FUNCTION '''
