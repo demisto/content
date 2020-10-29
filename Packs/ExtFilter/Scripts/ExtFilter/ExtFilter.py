@@ -142,7 +142,7 @@ def marshal(value: Any) -> Any:
         return value
 
 
-def hexdigest(value: str, algorithm: str) -> str:
+def hashdigest(value: str, algorithm: str) -> str:
     h = hashlib.new(algorithm)
     h.update(value.encode('utf-8'))
     return h.hexdigest()
@@ -1104,7 +1104,7 @@ class ExtFilter:
 
         elif optype == "digest":
             params = self.parse_conds_json(rhs)
-            return hexdigest(str(lhs), str(params.get('algorithm', 'sha256')))
+            return Value(hashdigest(str(lhs), str(params.get('algorithm', 'sha256'))))
 
         """
         Filter for single value (boolean evaluation)
