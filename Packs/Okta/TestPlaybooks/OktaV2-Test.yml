@@ -78,7 +78,7 @@ tasks:
         question and answer.The new user will immediately be able to login after activation
         with the assigned password. This flow is common when developing a custom user
         registration experience.
-      script: Okta v2|||okta-create******-user
+      script: Okta v2|||okta-create-user
       type: regular
       iscommand: true
       brand: Okta v2
@@ -98,7 +98,7 @@ tasks:
         simple: Test 1 that
       division: {}
       email:
-        simple:
+        simple: ${RandomString}@test.com
       employeeNumber:
         simple: "12345"
       firstName:

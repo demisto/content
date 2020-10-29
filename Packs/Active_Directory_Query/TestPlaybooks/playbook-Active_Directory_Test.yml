@@ -50,13 +50,13 @@ tasks:
       display-name:
         simple: Samurai Jack
       email:
-        simple:
+        simple: jack@AssasinsForRent.com
       password:
         simple: ${NEW_PASSWORD}
       telephone-number: {}
       title: {}
       user-dn:
-        simple: cn=jack${RandomString},dc=demisto,dc=ninja
+        simple: cn=jack${RandomString}
       username:
         simple: jack${RandomString}
     separatecontext: false
