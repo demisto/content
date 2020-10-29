@@ -648,7 +648,7 @@ class MsGraphClient:
         params = {
             "$filter": f"receivedDateTime gt {target_modified_time}",
             "$orderby": "receivedDateTime asc",
-            "$select": "*",
+            "select": "*",
             "$top": self._emails_fetch_limit
         }
 
