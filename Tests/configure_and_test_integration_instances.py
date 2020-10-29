@@ -942,7 +942,7 @@ def restart_server_legacy(server):
 
 def get_tests(server_numeric_version, prints_manager, tests):
     if Build.run_environment == Running.CIRCLECI_RUN:
-        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests()
+        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(prints_manager)
         if run_all_tests:
             # skip test button testing
             skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(
