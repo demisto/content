@@ -32,14 +32,15 @@ comment: |-
   Send mail to the user with tha account information.
   This script is running `send-mail` command, make sure there is a matching Integration configurated.
 commonfields:
-  id: IAM-Init-AD-User
+  id: IAMInitADUser
   version: -1
 enabled: true
-name: IAM-Init-AD-User
+name: IAMInitADUser
 script: '-'
 subtype: python3
 system: false
 tags:
+- IAM
 - active directory
 - Utility
 timeout: '0'
@@ -51,5 +52,9 @@ tests:
 - No tests (auto formatted)
 dependson:
   must:
-  - Active Directory Query v2|||ad-search
+  - Active Directory Query v2|||ad-set-new-password
+  - Active Directory Query v2|||ad-enable-account
+  - Active Directory Query v2|||ad-update-user
+  - GeneratePassword
+  - send-email
 fromversion: 5.0.0
