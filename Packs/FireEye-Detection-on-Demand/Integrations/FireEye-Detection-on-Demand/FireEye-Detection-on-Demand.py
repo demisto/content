@@ -1,6 +1,4 @@
-import json
-import traceback
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Dict, List, Optional, Tuple
 
 import dateparser
 import demistomock as demisto
@@ -173,8 +171,6 @@ def get_hashes_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
         if md5Regex.match(hash):
             continue
         raise Exception('Invalid hash. Only MD5 is supported.')
-    default_threshold = 60
-    threshold = int(args.get('threshold', default_threshold))
 
     dbot_score_list: List[Dict[str, Any]] = []
     file_standard_list: List[Dict[str, Any]] = []
