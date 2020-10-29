@@ -59,45 +59,61 @@
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"
         },
-        {
-            "integrations": "Infinipoint",
-            "playbookID": "Infinipoint-Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Zimperium",
-            "playbookID": "Zimperium_Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "ServiceDeskPlus",
-            "playbookID": "Service Desk Plus Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "ServiceDeskPlus",
-            "playbookID": "Service Desk Plus - Generic Polling Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "ThreatConnect Feed",
-            "playbookID": "FeedThreatConnect-Test",
-            "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "Group-IB TDS Polygon",
-            "playbookID": "Polygon-Test",
-            "timeout": 1000,
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Bastille Networks",
-            "playbookID": "BastilleNetworks-Test"
-        },
-        {
-            "integrations": "MITRE ATT&CK",
-            "playbookID": "Mitre Attack List 10 Indicators Feed Test",
-            "fromversion": "5.5.0"
+      {
+        "integrations": "Infinipoint",
+        "playbookID": "Infinipoint-Test",
+        "fromversion": "5.0.0"
+      },
+      {
+        "integrations": "Zimperium",
+        "playbookID": "Zimperium_Test",
+        "fromversion": "5.0.0"
+      },
+      {
+        "integrations": "ServiceDeskPlus",
+        "playbookID": "Service Desk Plus Test",
+        "instance_names": "sdp_instance_1",
+        "fromversion": "5.0.0",
+        "toversion": "5.9.9"
+      },
+      {
+        "integrations": "ServiceDeskPlus",
+        "playbookID": "Service Desk Plus - Generic Polling Test",
+        "instance_names": "sdp_instance_1",
+        "fromversion": "5.0.0",
+        "toversion": "5.9.9"
+      },
+      {
+        "integrations": "ServiceDeskPlus",
+        "playbookID": "Service Desk Plus Test",
+        "instance_names": "sdp_instance_2",
+        "fromversion": "6.0.0"
+      },
+      {
+        "integrations": "ServiceDeskPlus",
+        "playbookID": "Service Desk Plus - Generic Polling Test",
+        "instance_names": "sdp_instance_2",
+        "fromversion": "6.0.0"
+      },
+      {
+        "integrations": "ThreatConnect Feed",
+        "playbookID": "FeedThreatConnect-Test",
+        "fromversion": "5.5.0"
+      },
+      {
+        "integrations": "Group-IB TDS Polygon",
+        "playbookID": "Polygon-Test",
+        "timeout": 1000,
+        "fromversion": "5.0.0"
+      },
+      {
+        "integrations": "Bastille Networks",
+        "playbookID": "BastilleNetworks-Test"
+      },
+      {
+        "integrations": "MITRE ATT&CK",
+        "playbookID": "Mitre Attack List 10 Indicators Feed Test",
+        "fromversion": "5.5.0"
         },
         {
             "integrations": "Sepio",
@@ -229,31 +245,32 @@
             "playbookID": "CreateIndicatorFromSTIXTest",
             "fromversion": "5.0.0"
         },
-        {
-            "integrations": "SpamhausFeed",
-            "playbookID": "Spamhaus_Feed_Test",
-            "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "Cofense Feed",
-            "playbookID": "TestCofenseFeed",
-            "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "Bambenek Consulting Feed",
-            "playbookID": "BambenekConsultingFeed_Test",
-            "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "Pipl",
-            "playbookID": "Pipl Test"
-        },
-        {
-            "integrations": "AWS Feed",
-            "playbookID": "AWS Feed Test",
-            "fromversion": "5.5.0"
-        },
-        {
+      {
+        "integrations": "SpamhausFeed",
+        "playbookID": "Spamhaus_Feed_Test",
+        "fromversion": "5.5.0"
+      },
+      {
+        "integrations": "Cofense Feed",
+        "playbookID": "TestCofenseFeed",
+        "fromversion": "5.5.0"
+      },
+      {
+        "integrations": "Bambenek Consulting Feed",
+        "playbookID": "BambenekConsultingFeed_Test",
+        "memory_threshold": 250,
+        "fromversion": "5.5.0"
+      },
+      {
+        "integrations": "Pipl",
+        "playbookID": "Pipl Test"
+      },
+      {
+        "integrations": "AWS Feed",
+        "playbookID": "AWS Feed Test",
+        "fromversion": "5.5.0"
+      },
+      {
             "integrations": "QuestKace",
             "playbookID": "QuestKace test",
             "fromversion": "5.0.0"
@@ -1410,30 +1427,30 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy KV commands",
-            "memory_threshold": 200,
-            "instance_names": "use_python_requests_handler"
+          "playbookID": "SplunkPy KV commands",
+          "memory_threshold": 200,
+          "instance_names": "use_python_requests_handler"
         },
-        {
-            "integrations": "McAfee NSM",
-            "playbookID": "McAfeeNSMTest",
-            "timeout": 400,
-            "nightly": true
-        },
-        {
-            "integrations": "PhishTank",
-            "playbookID": "PhishTank Testing"
-        },
-        {
-            "integrations": "McAfee Web Gateway",
-            "playbookID": "McAfeeWebGatewayTest",
-            "timeout": 500
-        },
-        {
-            "integrations": "TCPIPUtils",
-            "playbookID": "TCPUtils-Test"
-        },
-        {
+      {
+        "integrations": "McAfee NSM",
+        "playbookID": "McAfeeNSMTest",
+        "timeout": 400,
+        "nightly": true
+      },
+      {
+        "integrations": "PhishTank V2",
+        "playbookID": "PhishTank Testing"
+      },
+      {
+        "integrations": "McAfee Web Gateway",
+        "playbookID": "McAfeeWebGatewayTest",
+        "timeout": 500
+      },
+      {
+        "integrations": "TCPIPUtils",
+        "playbookID": "TCPUtils-Test"
+      },
+      {
             "playbookID": "listExecutedCommands-Test"
         },
         {
@@ -3153,32 +3170,33 @@
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
         "ThreatConnect v2 - Test": "Issue 26782",
-        "Pwned v2 test": "Issue 26601",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
-        "Mail Sender (New) Test": "Issue 25602",
-        "Luminate-TestPlaybook": "Issue 27016",
-        "AutoFocus V2 test": "Issue 26464",
-        "Fidelis Elevate Network": "Issue 26453",
-        "SepioPrimeAPI-Test": "Issue 27240",
-        "Cortex XDR - IOC - Test": "Issue 25598",
-        "Cherwell Example Scripts - test": "Issue 27107",
-        "Cherwell - test": "Issue 26780",
-        "Logzio - Test": "Issue 26729",
-        "pyEWS_Test": "Issue 28339",
-        "GmailTest": "Issue 27057",
-        "playbook-SafeBreach-Test": "Issue 21205",
-        "SMB test": "Issue 26454",
-        "TestCofenseFeed": "Issue 29198",
-        "PAN-OS Query Logs For Indicators Test": "Issue 28753",
-        "Indeni_test": "Non-certified partner pack, this should be skipped for now",
-        "playbook-feodoteackerhash_test": "Issue 29304",
-        "urlscan_malicious_Test": "Issue 20111",
-        "TCPUtils-Test": "Issue 29677",
-        "OpenCTI Feed Test": "Issue 29592",
-        "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
-        "Polygon-Test": "Issue 29060"
+      "Mail Sender (New) Test": "Issue 25602",
+      "Luminate-TestPlaybook": "Issue 27016",
+      "AutoFocus V2 test": "Issue 26464",
+      "Fidelis Elevate Network": "Issue 26453",
+      "SepioPrimeAPI-Test": "Issue 27240",
+      "Cortex XDR - IOC - Test": "Issue 25598",
+      "Cherwell Example Scripts - test": "Issue 27107",
+      "Cherwell - test": "Issue 26780",
+      "Logzio - Test": "Issue 26729",
+      "pyEWS_Test": "Issue 28339",
+      "GmailTest": "Issue 27057",
+      "playbook-SafeBreach-Test": "Issue 21205",
+      "SMB test": "Issue 26454",
+      "TestCofenseFeed": "Issue 29198",
+      "PAN-OS Query Logs For Indicators Test": "Issue 28753",
+      "Indeni_test": "Non-certified partner pack, this should be skipped for now",
+      "playbook-feodoteackerhash_test": "Issue 29304",
+      "TCPUtils-Test": "Issue 29677",
+      "OpenCTI Feed Test": "Issue 29592",
+      "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
+      "Polygon-Test": "Issue 29060",
+      "AttackIQ - Test": "Issue 29774",
+      "CyberTotal_TestPlaybook": "Issue 29776",
+      "AWS-securityhub Test": "Issue 29796"
     },
     "skipped_integrations": {
         
@@ -3270,7 +3288,6 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "Ivanti Heat": "Issue 26259",
-        "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
         "Hatching Triage": "Community contribution",
@@ -3289,27 +3306,26 @@
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "Issue 26266",
-        
-        "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
-        "Zabbix": "Supported by external developer",
-        "Humio": "supported by the partner",
-        "Digital Guardian": "partner integration",
-        "Smokescreen IllusionBLACK": "partner integration",
-        
-        "_comment5": "~~~ OTHER ~~~",
-        "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
-        "Endace": "Issue 24304",
-        "Pentera": "authentication method will not work with testing",
-        "EclecticIQ Platform": "Issue 8821",
-        "BitDam": "Issue #17247",
-        "Zoom": "Issue 19832",
-        "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
-        "HelloWorldSimple": "This is just an example integration - no need for test",
-        "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
-        "Cymulate": "Partner didn't provided test playbook",
-        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "Palo Alto Minemeld": "Issue #26878"
+      "Ipstack": "Issue 26266",
+      "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
+      "Zabbix": "Supported by external developer",
+      "Humio": "supported by the partner",
+      "Digital Guardian": "partner integration",
+      "Smokescreen IllusionBLACK": "partner integration",
+      "_comment5": "~~~ OTHER ~~~",
+      "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
+      "Endace": "Issue 24304",
+      "Pentera": "authentication method will not work with testing",
+      "EclecticIQ Platform": "Issue 8821",
+      "BitDam": "Issue #17247",
+      "Zoom": "Issue 19832",
+      "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
+      "HelloWorldSimple": "This is just an example integration - no need for test",
+      "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
+      "Cymulate": "Partner didn't provided test playbook",
+      "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
+      "Palo Alto Minemeld": "Issue #26878",
+      "AttackIQFireDrill": "License issues #29774"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3467,24 +3483,27 @@
         
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
-            "demisto/chromium": {
-                "pid_threshold": 11
-            },
-            "demisto/py-ews:2.0": {
-                "memory_threshold": 150
-            },
-            "demisto/pymisp:1.0.0.52": {
-                "memory_threshold": 150
-            },
-            "demisto/pytan": {
-                "pid_threshold": 11
-            },
-            "demisto/google-k8s-engine:1.0.0.9467": {
-                "pid_threshold": 11
-            },
-            "demisto/threatconnect-tcex": {
-                "pid_threshold": 11
-            }
+          "demisto/chromium": {
+            "pid_threshold": 11
+          },
+          "demisto/py-ews:2.0": {
+            "memory_threshold": 150
+          },
+          "demisto/pymisp:1.0.0.52": {
+            "memory_threshold": 150
+          },
+          "demisto/pytan": {
+            "pid_threshold": 11
+          },
+          "demisto/google-k8s-engine:1.0.0.9467": {
+            "pid_threshold": 11
+          },
+          "demisto/threatconnect-tcex": {
+            "pid_threshold": 11
+          },
+          "demisto/taxii2": {
+            "pid_threshold": 11
+          }
         }
     }
 }

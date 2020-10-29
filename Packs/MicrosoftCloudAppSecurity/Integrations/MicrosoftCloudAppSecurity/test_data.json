@@ -844,25 +844,37 @@
               },
               "isAdmin": false,
               "isExternal": true,
-              "email": null,
-              "role": null,
-              "organization": null,
-              "lastSeen": "2020-07-19T06:59:24Z",
-              "domain": null,
-              "scoreTrends": null,
-              "subApps": [],
-              "threatScore": null,
-              "idType": 17,
-              "isFake": false,
-              "ii": "11161|0|7e14f6a3-185d-49e3-85e8-40a33d90dc90",
-              "actions": [],
-              "username": "{'id': '7e14f6a3-185d-49e3-85e8-40a33d90dc90', 'saas': 11161, 'inst': 0}",
-              "sctime": null
+            "email": null,
+            "role": null,
+            "organization": null,
+            "lastSeen": "2020-07-19T06:59:24Z",
+            "domain": null,
+            "scoreTrends": null,
+            "subApps": [],
+            "threatScore": null,
+            "idType": 17,
+            "isFake": false,
+            "ii": "11161|0|7e14f6a3-185d-49e3-85e8-40a33d90dc90",
+            "actions": [],
+            "username": "{'id': '7e14f6a3-185d-49e3-85e8-40a33d90dc90', 'saas': 11161, 'inst': 0}",
+            "sctime": null
           }
       ],
-      "hasNext": false,
-      "max": 100,
-      "total": 1,
-      "moreThanTotal": false
-  }
+    "hasNext": false,
+    "max": 100,
+    "total": 1,
+    "moreThanTotal": false
+  },
+  "incidents": [
+    {
+      "_id": "5f919e55b0703c2f5a23d9d8",
+      "timestamp": 1603378041000,
+      "title": "block0"
+    },
+    {
+      "_id": "5f919e55b0703c2f5a23d9d7",
+      "timestamp": 1603385903000,
+      "title": "block1"
+    }
+  ]
 }

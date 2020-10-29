@@ -1,28 +1,28 @@
 {
-    "name": "Palo Alto Networks Cortex XDR - Investigation and Response",
-    "description": "This Content Pack automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
-    "support": "xsoar",
-    "currentVersion": "2.4.5",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-03-11T13:16:53Z",
-    "categories": [
-        "Endpoint",
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Recommended by Cortex XSOAR"
-    ],
-    "useCases": [
-        "Malware"
-    ],
-    "keywords": [
-        "adaptive cyber protection",
-        "apt"
-    ],
-    "dependencies": {
-        "EWSMailSender": {
+  "name": "Palo Alto Networks Cortex XDR - Investigation and Response",
+  "description": "This Content Pack automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
+  "support": "xsoar",
+  "currentVersion": "2.4.7",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-11T13:16:53Z",
+  "categories": [
+    "Endpoint",
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Recommended by Cortex XSOAR"
+  ],
+  "useCases": [
+    "Malware"
+  ],
+  "keywords": [
+    "adaptive cyber protection",
+    "apt"
+  ],
+  "dependencies": {
+    "EWSMailSender": {
             "mandatory": false,
             "display_name": "EWS Mail Sender"
         },

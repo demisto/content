@@ -1,8 +1,8 @@
 {
-    "id": "AWS Feed",
-    "name": "AWS Feed - Incoming Mapper",
-    "type": "mapping-incoming",
-    "description": "Maps incoming AWS indicator fields.",
+	"id": "AWS Feed Mapper",
+	"name": "AWS Feed - Incoming Mapper",
+	"type": "mapping-incoming",
+	"description": "Maps incoming AWS indicator fields.",
 	"defaultIncidentType": "",
 	"feed": true,
 	"mapping": {
