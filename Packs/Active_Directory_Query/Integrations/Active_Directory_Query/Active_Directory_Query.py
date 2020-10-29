@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from typing import List, Dict, Optional
-from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry
+from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry, Reader, ObjectDef
 from ldap3.extend import microsoft
 import ssl
 from datetime import datetime
@@ -196,6 +196,13 @@ def modify_user_ou(dn, new_ou):
 
     success = conn.modify_dn(dn, cn, new_superior=new_ou)
     return success
+
+def get_all_attributes(search_base):
+    obj_inetorgperson = ObjectDef('user', conn)
+    r = Reader(conn, obj_inetorgperson, search_base)
+    r.search()
+    attributes = r[0].entry_attributes
+    return attributes
 
 
 ''' COMMANDS '''
@@ -1328,9 +1335,17 @@ def delete_group():
     demisto.results(demisto_entry)
 
 
-def get_mapping_fields_command():
-    # in progress
-    return ""
+def get_mapping_fields_command(search_base):
+    ad_attributes = get_all_attributes(search_base)
+    # add keys that are not attributes but can be used in mapping
+    ad_attributes.extend(("dn", "samaccountname"))
+
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+
+    for field in ad_attributes:
+        incident_type_scheme.add_field(field)
+
+    return GetMappingFieldsResponse([incident_type_scheme])
 
 
 '''
@@ -1504,7 +1519,8 @@ def main():
             return return_results(user_profile)
 
         elif demisto.command() == 'get-mapping-fields':
-            get_mapping_fields_command()
+            mapping_fields = get_mapping_fields_command(DEFAULT_BASE_DN)
+            return return_results(mapping_fields)
 
     except Exception as e:
         message = str(e)

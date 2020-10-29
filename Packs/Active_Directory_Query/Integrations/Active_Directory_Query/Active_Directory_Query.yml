@@ -703,8 +703,15 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
+  - deprecated: false
+    description: Retrieves a User Profile schema which holds all of the user fields within the application.
+      Used for outgoing-mapping through the Get Schema option.
+    execution: false
+    name: get-mapping-fields
   dockerimage: demisto/ldap:1.0.0.12410
   runonce: false
+  ismappable: true
+  isremotesyncout: true
 fromversion: 5.0.0
 tests:
   - Active Directory Test
