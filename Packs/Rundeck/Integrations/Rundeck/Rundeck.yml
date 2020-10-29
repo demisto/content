@@ -961,7 +961,7 @@ script:
   subtype: python3
   type: python
 tests:
-  - No tests
+  - Rundeck_test
 defaultmapperin: HelloWorld-mapper
 defaultclassifier: HelloWorld
 fromversion: 5.0.0

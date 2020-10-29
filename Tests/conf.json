@@ -3038,6 +3038,11 @@
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Rundeck",
+            "playbookID": "Rundeck_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
