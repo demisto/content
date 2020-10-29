@@ -610,9 +610,13 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     return test_skipped_integration, integrations, is_nightly_integration
 
 
-def extract_filtered_tests():
+def extract_filtered_tests(prints_manager):
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
+        prints_manager.add_print_job('\n\n\n\n\n\n\n\n ---------------------------->>>> ', print, thread_index=0)
+        prints_manager.add_print_job('filter file content:\n{}'.format(filtered_tests), print, thread_index=0)
+        prints_manager.add_print_job('---------------------------->>>> \n\n\n\n\n\n\n\n', print, thread_index=0)
+        prints_manager.execute_thread_prints(0)
         filtered_tests = [line.strip('\n') for line in filtered_tests]
         is_filter_configured = bool(filtered_tests)
         run_all = RUN_ALL_TESTS_FORMAT in filtered_tests
@@ -663,6 +667,10 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
 
     if playbook_id in filtered_tests:
         playbook_skipped_integration.update(test_skipped_integration)
+    else:
+        prints_manager.add_print_job('\n\n\n\n\n ======================', print, thread_index)
+        prints_manager.add_print_job('{} is not in the filtered_tests list'.format(playbook_id), print, thread_index)
+        prints_manager.add_print_job('====================== \n\n\n\n\n', print, thread_index)
 
     skip_nightly_test = (nightly_test or is_nightly_integration) and not is_nightly
 
@@ -842,7 +850,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
+    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests(prints_manager)
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
