@@ -130,8 +130,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
                                                                                       client,
-                                                                                      prints_manager,
-                                                                                      is_private=False)
+                                                                                      prints_manager)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs
@@ -139,8 +138,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
 
     installed_packs, _ = script.search_and_install_packs_and_their_dependencies(bad_pack_ids,
                                                                                 client,
-                                                                                prints_manager,
-                                                                                is_private=False)
+                                                                                prints_manager)
     assert bad_pack_ids[0] not in installed_packs
 
 
@@ -164,8 +162,7 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
                                                                                       client,
-                                                                                      prints_manager,
-                                                                                      is_private=False)
+                                                                                      prints_manager)
     assert success is False
 
 

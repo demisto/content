@@ -1052,8 +1052,8 @@ def install_packs(build, prints_manager, pack_ids=None):
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
-            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, prints_manager,
-                                                                      build.is_private)
+            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client,
+                                                                      prints_manager)
             if not flag:
                 raise Exception('Failed to search and install packs.')
         except Exception as exc:

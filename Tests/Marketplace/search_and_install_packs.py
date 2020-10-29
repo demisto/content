@@ -9,6 +9,8 @@ import demisto_client
 from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list, print_error
+from typing import List
+
 from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES
 from Tests.test_content import ParallelPrintsManager
 
@@ -16,7 +18,7 @@ PACK_METADATA_FILE = 'pack_metadata.json'
 SUCCESS_FLAG = True
 
 
-def get_pack_display_name(pack_id):
+def get_pack_display_name(pack_id: str) -> str:
     """
     Gets the display name of the pack from the pack ID.
 
@@ -31,7 +33,8 @@ def get_pack_display_name(pack_id):
     return ''
 
 
-def create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, checked_packs):
+def create_dependencies_data_structure(response_data: dict, dependants_ids: list, dependencies_data: list,
+                                       checked_packs: list):
     """ Recursively creates the packs' dependencies data structure for the installation requests
     (only required and uninstalled).
 
@@ -60,7 +63,8 @@ def create_dependencies_data_structure(response_data, dependants_ids, dependenci
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
 
 
-def get_pack_dependencies(client, prints_manager, pack_data, thread_index, lock):
+def get_pack_dependencies(client: demisto_client, prints_manager: ParallelPrintsManager, pack_data: dict,
+                          thread_index: int, lock: Lock):
     """ Get the pack's required dependencies.
 
     Args:
@@ -174,7 +178,8 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
         lock.release()
 
 
-def install_testing_license(client, host, prints_manager, thread_index):
+def install_testing_license(client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
+                            thread_index: int):
     """
     Installs the current license in content-test-conf. Private packs require a specific license to be
     uploaded. This function should be replaced when the AMI has the new license baked in.
@@ -216,7 +221,8 @@ def install_testing_license(client, host, prints_manager, thread_index):
         print("Failed to upload license.")
 
 
-def install_packs_from_artifacts(client, host, prints_manager, thread_index):
+def install_packs_from_artifacts(client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
+                                 thread_index: int):
     """
     Installs all the packs located in the artifacts folder of the BitHub actions build. Please note:
     The server always returns a 200 status even if the pack was not installed.
@@ -242,7 +248,8 @@ def install_packs_from_artifacts(client, host, prints_manager, thread_index):
                                 thread_index=thread_index, pack_path=local_pack)
 
 
-def install_packs_private(client, host, prints_manager, thread_index, packs_to_install):
+def install_packs_private(client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
+                          thread_index: int):
     """ Make a packs installation request.
 
     Args:
@@ -250,13 +257,13 @@ def install_packs_private(client, host, prints_manager, thread_index, packs_to_i
         host (str): The server URL.
         prints_manager (ParallelPrintsManager): Print manager object.
         thread_index (int): the thread index.
-        packs_to_install (list): A list of the packs to install.
     """
     install_testing_license(client, host, prints_manager, thread_index)
     install_packs_from_artifacts(client, host, prints_manager, thread_index)
 
 
-def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999):
+def install_packs(client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
+                  thread_index: int, packs_to_install: list, request_timeout: int = 999999):
     """ Make a packs installation request.
 
     Args:
@@ -307,8 +314,9 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         prints_manager.execute_thread_prints(thread_index)
 
 
-def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
-                                     installation_request_body, thread_index, lock):
+def search_pack_and_its_dependencies(client: demisto_client, prints_manager: ParallelPrintsManager,
+                                     pack_id: str, packs_to_install: list, installation_request_body: list,
+                                     thread_index: int, lock: Lock):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
 
@@ -347,7 +355,7 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
         lock.release()
 
 
-def add_pack_to_installation_request(pack_id, installation_request_body):
+def add_pack_to_installation_request(pack_id: str, installation_request_body: List[dict]):
     """
     Adds a pack to the pack_ids variable which is given to the search_and_install_packs_and_their_dependencies
     function. The request must have the ID and Version.
@@ -366,7 +374,8 @@ def add_pack_to_installation_request(pack_id, installation_request_body):
         })
 
 
-def install_all_content_packs(client, host, prints_manager, thread_index=0):
+def install_all_content_packs(client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
+                              thread_index: int = 0):
     """
     Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
 
@@ -384,7 +393,8 @@ def install_all_content_packs(client, host, prints_manager, thread_index=0):
     install_packs(client, host, prints_manager, thread_index, all_packs)
 
 
-def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
+def upload_zipped_packs(client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
+                        thread_index: int, pack_path: str):
     """ Install packs from zip file.
 
         Args:
@@ -429,7 +439,9 @@ def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
         sys.exit(1)
 
 
-def search_and_install_packs_and_their_dependencies_private(pack_ids, client, prints_manager, thread_index=0):
+def search_and_install_packs_and_their_dependencies_private(pack_ids: list, client: demisto_client,
+                                                            prints_manager: ParallelPrintsManager,
+                                                            thread_index: int = 0):
     """ Searches for the packs from the specified list, searches their dependencies, and then installs them.
     Args:
         pack_ids (list): A list of the pack ids to search and install.
@@ -465,13 +477,16 @@ def search_and_install_packs_and_their_dependencies_private(pack_ids, client, pr
         threads_list.append(thread)
     run_threads_list(threads_list)
 
-    install_packs_private(client, host, prints_manager, thread_index, installation_request_body)
+    install_packs_private(client, host, prints_manager, thread_index)
 
     return packs_to_install, SUCCESS_FLAG
 
 
-def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, is_private, thread_index=0):
-    """ Searches for the packs from the specified list, searches their dependencies, and then installs them.
+def search_and_install_packs_and_their_dependencies(pack_ids: list, client: demisto_client,
+                                                    prints_manager: ParallelPrintsManager,
+                                                    thread_index: int = 0):
+    """ Searches for the packs from the specified list, searches their dependencies, and then
+    installs them.
     Args:
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
