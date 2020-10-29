@@ -1,21 +1,23 @@
 args:
 - default: false
   defaultValue: type
-  description: The name of the incident field where its type is stored. Default is "type". Change this arguement only in case you use a custom field for specifying incident type.
+  description: The name of the incident field where its type is stored. Default is
+    "type". Change this arguement only in case you use a custom field for specifying
+    incident type.
   isArray: false
   name: incidentTypeFieldName
   required: false
   secret: false
 - default: false
-  defaultValue: Phishing
-  description: A comma-separatetd list of incident types by which to filter. Specify
-    "None" to ignore incident type from deduplication logic.
+  description: A comma-separatetd list of incident types by which to filter. The default
+    is the current incident type. Specify "None" to ignore incident type from deduplication
+    logic.
   isArray: false
   name: incidentTypes
   required: false
   secret: false
 - default: false
-  defaultValue: 100 days ago
+  defaultValue: 30 days ago
   description: The start date by which to search for duplicated existing incidents.
     Date format is the same as in the incidents query page. For example, "3 days ago",
     ""2019-01-01T00:00:00 +0200").
@@ -94,24 +96,29 @@ args:
   isArray: false
   name: statusScope
   predefined:
-  - All
-  - ClosedOnly
-  - NonClosedOnly
+    - All
+    - ClosedOnly
+    - NonClosedOnly
   required: false
   secret: false
-outputs:
-- contextPath: similarIncident.id
-  description: Similar incident ID.
-  type: string
-- contextPath: isSimilarIncidentFound
-  description: Whether a similar incident was found ("true" or "false").
-  type: boolean
-- contextPath: similarIncident
-  description: Similar incident.
-  type: unknown
-- contextPath: similarIncident.name
-  description: Similar incident name.
-  type: string
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Wheter to close or not the current incident if duplicate incident found
+  isArray: false
+  name: closeAsDuplicate
+  predefined:
+    - 'true'
+    - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.99'
+  description: Threshold to consider incident as duplication, number between 0-1
+  isArray: false
+  name: threshold
+  required: false
+  secret: false
 comment: An out-of-the-box deduplication preprocessing script based on a machine learning
   algorithm.
 commonfields:
@@ -119,6 +126,26 @@ commonfields:
   version: -1
 enabled: false
 name: PhishingDedupPreprocessingRule
+outputs:
+  - contextPath: similarIncident.id
+    description: Similar incident ID.
+    type: string
+  - contextPath: isSimilarIncidentFound
+    description: Whether a similar incident was found ("true" or "false").
+    type: boolean
+  - contextPath: similarIncident
+    description: Similar incident.
+    type: unknown
+  - contextPath: similarIncident.name
+    description: Similar incident name.
+    type: string
+  - contextPath: similarIncident.rawId
+    description: Similar incident ID.
+    type: Unknown
+  - contextPath: similarIncident.similarity
+    description: 'Number in range 0-1 which describe the similairty between the existing
+    incident and the new incident. '
+    type: Unknown
 script: '-'
 subtype: python3
 system: false
