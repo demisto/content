@@ -37,11 +37,32 @@ def main():
             'attribute-name': 'pwdLastSet',
             'attribute-value': -1
         }
-        demisto.executeCommand("ad-set-new-password", ad_create_user_arguments)
-        demisto.executeCommand("ad-enable-account", ad_create_user_arguments)
-        demisto.executeCommand("ad-update-user", ad_create_user_arguments)
-        send_email(display_name, username, user_email, password, to_email)
-        return return_results("User was enabled and a password was set")
+        flow_worked = True
+
+        password_outputs = demisto.executeCommand("ad-set-new-password", ad_create_user_arguments)
+        if is_error(password_outputs):
+            flow_worked = False
+            return_results(password_outputs)
+
+        enable_outputs = demisto.executeCommand("ad-enable-account", ad_create_user_arguments)
+        if is_error(enable_outputs):
+            flow_worked = False
+            return_results(enable_outputs)
+
+        update_outputs = demisto.executeCommand("ad-update-user", ad_create_user_arguments)
+        if is_error(update_outputs):
+            flow_worked = False
+            return_results(update_outputs)
+
+        send_email_outputs = send_email(display_name, username, user_email, password, to_email)
+        if is_error(send_email_outputs):
+            flow_worked = False
+            return_results(send_email_outputs)
+
+        if flow_worked:
+            return return_results("User was enabled and a password was set.")
+        else:
+            return return_results("Some commands failed, please check the errors.")
 
     except Exception as e:
         demisto.log(traceback.format_exc())
