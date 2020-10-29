@@ -54,10 +54,7 @@ def main():
             flow_worked = False
             return_results(update_outputs)
 
-        send_email_outputs = send_email(display_name, username, user_email, password, to_email)
-        if is_error(send_email_outputs):
-            flow_worked = False
-            return_results(send_email_outputs)
+        send_email(display_name, username, user_email, password, to_email)
 
         if flow_worked:
             return return_results("User was enabled and a password was set.")

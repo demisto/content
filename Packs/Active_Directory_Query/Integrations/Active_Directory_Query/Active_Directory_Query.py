@@ -197,6 +197,7 @@ def modify_user_ou(dn, new_ou):
     success = conn.modify_dn(dn, cn, new_superior=new_ou)
     return success
 
+
 def get_all_attributes(search_base):
     obj_inetorgperson = ObjectDef('user', conn)
     r = Reader(conn, obj_inetorgperson, search_base)
