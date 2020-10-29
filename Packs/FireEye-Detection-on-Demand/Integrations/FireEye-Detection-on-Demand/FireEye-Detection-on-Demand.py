@@ -36,7 +36,7 @@ class Client(BaseClient):
     def get_health(self) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix=f'/health'
+            url_suffix='/health'
         )
 
     def submit_file(self, files: Dict[str, Any], data: Dict[str, Any]) -> Dict[str, Any]:
@@ -82,6 +82,7 @@ class Client(BaseClient):
             },
             resp_type='content'
         )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -193,7 +194,9 @@ def get_hashes_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
         else:
             score = 0  # unknown
             for key in engines.keys():
-                if engines[key].get('verdict', 'not_found') != "not_found" and engines[key].get('verdict', 'not_found') != "malicious":
+                if (engines[key].get('verdict', 'not_found') != "not_found" 
+                    and engines[key].get('verdict', 'not_found') != "malicious"
+                ):
                     score = 1  # good
                     break
 
@@ -278,7 +281,7 @@ def submit_file_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
 
     # Optional parameters to send along with the file
     optional_params = ['password', 'param', 'screenshot', 'video', 'fileExtraction', 'memoryDump', 'pcap']
-    data = {} 
+    data = {}
     for param in optional_params:
         value = demisto.args().get(param)
         if value:
@@ -292,7 +295,9 @@ def submit_file_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
 
     report_id = scan.get('report_id')
 
-    readable_output = f'Started analysis of {file_name} with FireEye Detection on Demand. Results will be published to report id: {report_id}'
+    readable_output = '''Started analysis of {file_name} with 
+                      FireEye Detection on Demand. Results will be published 
+                      to report id: {report_id}'''.format(file_name, report_id)
     outputs = {
         'FireEyeDoD.Scan(val.report_id == obj.report_id)': scan
     }
@@ -310,8 +315,8 @@ def submit_urls_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
 
     # Format the URLs into a string list, which the API understands
     formatted_urls = "[" + ",".join(list(map(lambda url: url.replace(url, f'"{url}"'), urls))) + "]"
-    data = { 'urls': formatted_urls }
-    
+    data = {'urls': formatted_urls}
+
     scan = client.submit_urls(data=data)
 
     del scan['status']
@@ -319,7 +324,9 @@ def submit_urls_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
 
     report_id = scan.get('report_id')
 
-    readable_output = f'Started analysis of {urls} with FireEye Detection on Demand. Results will be published to report id: {report_id}'
+    readable_output = '''Started analysis of {urls} with 
+                      FireEye Detection on Demand. Results 
+                      will be published to report id: {report_id}'''.format(urls, report_id)
     outputs = {
         'FireEyeDoD.Scan(val.report_id == obj.report_id)': scan
     }
@@ -364,6 +371,7 @@ def get_reports_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
         outputs,
         report_list
     )
+
 
 ''' MAIN FUNCTION '''
 

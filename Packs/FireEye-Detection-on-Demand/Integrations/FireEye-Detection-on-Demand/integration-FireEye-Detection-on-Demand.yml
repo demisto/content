@@ -72,7 +72,7 @@ script:
         def get_health(self) -> Dict[str, Any]:
             return self._http_request(
                 method='GET',
-                url_suffix=f'/health'
+                url_suffix='/health'
             )
 
         def submit_file(self, files: Dict[str, Any], data: Dict[str, Any]) -> Dict[str, Any]:
@@ -118,6 +118,7 @@ script:
                 },
                 resp_type='content'
             )
+
 
     ''' HELPER FUNCTIONS '''
 
@@ -231,7 +232,9 @@ script:
             else:
                 score = 0  # unknown
                 for key in engines.keys():
-                    if engines[key].get('verdict', 'not_found') != "not_found" and engines[key].get('verdict', 'not_found') != "malicious":
+                    if (engines[key].get('verdict', 'not_found') != "not_found" 
+                        and engines[key].get('verdict', 'not_found') != "malicious"
+                    ):
                         score = 1  # good
                         break
 
@@ -316,7 +319,7 @@ script:
 
         # Optional parameters to send along with the file
         optional_params = ['password', 'param', 'screenshot', 'video', 'fileExtraction', 'memoryDump', 'pcap']
-        data = {} 
+        data = {}
         for param in optional_params:
             value = demisto.args().get(param)
             if value:
@@ -330,7 +333,9 @@ script:
 
         report_id = scan.get('report_id')
 
-        readable_output = f'Started analysis of {file_name} with FireEye Detection on Demand. Results will be published to report id: {report_id}'
+        readable_output = '''Started analysis of {file_name} with 
+                          FireEye Detection on Demand. Results will be published 
+                          to report id: {report_id}'''.format(file_name, report_id)
         outputs = {
             'FireEyeDoD.Scan(val.report_id == obj.report_id)': scan
         }
@@ -348,8 +353,8 @@ script:
 
         # Format the URLs into a string list, which the API understands
         formatted_urls = "[" + ",".join(list(map(lambda url: url.replace(url, f'"{url}"'), urls))) + "]"
-        data = { 'urls': formatted_urls }
-        
+        data = {'urls': formatted_urls}
+
         scan = client.submit_urls(data=data)
 
         del scan['status']
@@ -357,7 +362,9 @@ script:
 
         report_id = scan.get('report_id')
 
-        readable_output = f'Started analysis of {urls} with FireEye Detection on Demand. Results will be published to report id: {report_id}'
+        readable_output = '''Started analysis of {urls} with 
+                          FireEye Detection on Demand. Results 
+                          will be published to report id: {report_id}'''.format(urls, report_id)
         outputs = {
             'FireEyeDoD.Scan(val.report_id == obj.report_id)': scan
         }
@@ -402,6 +409,7 @@ script:
             outputs,
             report_list
         )
+
 
     ''' MAIN FUNCTION '''
 
