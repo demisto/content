@@ -415,6 +415,8 @@ references:
         context: bucket_upload_env
     - Upload Packs:
         context: bucket_upload_env
+        requires:
+          Create Instances
 
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
