@@ -1,6 +1,6 @@
 id: f48ec30a-8aa0-48f0-89c9-c65c205bfb2e
 version: 8
-vcShouldKeepItemLegacyProdMachine: false
+vcshouldkeepitemlegacyprodmachine: false
 name: Detonate File - FireEye Detection on Demand
 description: Detonate one or more files using the FireEye Detection on Demand integration.  This playbook returns relevant reports to the War Room and file reputations to the context data.
 fromversion: 5.0.0
