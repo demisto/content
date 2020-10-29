@@ -1,6 +1,7 @@
 Use the Active Directory Query integration to access and manage Active Directory objects (users, contacts, and computers) and run AD queries. 
 
-This integration can be used along with our IAM premium pack. For further details, visit our IAM pack documentation.
+This integration can be used along with our Identity Lifecycle Management premium pack.
+For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
 Use Cases
 ---------
