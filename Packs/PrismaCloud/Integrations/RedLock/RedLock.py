@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import copy
 import requests
 
 from CommonServerPython import *
@@ -410,24 +409,29 @@ def get_rql_response():
 
     response = req('POST', 'search/config', payload, None)
 
+    human_readable = []
+
     items = response["data"]["items"]
 
-    human_readable = copy.deepcopy(items)
+    for item in items:
+        tmp_human_readable = {
+            "ResourceName": item["name"],
+            "Service": item["service"],
+            "Account": item["accountName"],
+            "Region": item["regionName"],
+            "Deleted": item["deleted"]
+        }
+        item["Query"] = rql
+        human_readable.append(tmp_human_readable)
 
-    for item in human_readable:
-        del item["data"]
-        del item["allowDrillDown"]
-        del item["hasExtFindingRiskFactors"]
-        del item["hasExternalFinding"]
-        del item["hasExternalIntegration"]
-        del item["hasNetwork"]
+    contents = [{pascalToSpace(key).replace(" ", ""): val for key, val in item.items() if val is not None} for item in items]
 
     md = tableToMarkdown(name="RQL Output:", t=human_readable, headerTransform=pascalToSpace, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': response,
-        'EntryContext': {'Redlock.RQL(val.query === obj.query)': response},
+        'Contents': contents,
+        'EntryContext': {'Redlock.RQL(val.Query === obj.Query)': contents},
         'HumanReadable': md
     })
 
