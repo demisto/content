@@ -1,0 +1,584 @@
+description: export alert from panw iot cloud to servicenow
+id: panw_iot_servicenow_alert_playbook
+inputs: []
+name: panw_iot_servicenow_alert_playbook
+outputs:
+- contextPath: incident
+  description: The incident value
+  type: unknown
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5490ce8f-b2af-4b98-8661-7ca43a0151f0
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5490ce8f-b2af-4b98-8661-7ca43a0151f0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: e141045a-1490-4ba0-89be-f22d722933de
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: e141045a-1490-4ba0-89be-f22d722933de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      custom_fields: {}
+      fields:
+        simple: ${PaloAltoIoTIntegrationBase.AlertSN}
+      table_name:
+        simple: u_zingbox_alerts_vulnerablilty_incident
+      using:
+        simple: PANW IoT ServiceNow Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ServiceNow v2
+      description: Creates a new record in the specified ServiceNow table.
+      id: 0921a2bc-363f-4373-86ca-a230f44179d0
+      iscommand: true
+      name: servicenow-create-record
+      script: ServiceNow v2|||servicenow-create-record
+      type: regular
+      version: -1
+    taskid: 0921a2bc-363f-4373-86ca-a230f44179d0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      alert:
+        complex:
+          accessor: SingleAsset
+          root: PaloAltoIoTIntegrationBase
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      incident:
+        simple: ${incident}
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: convert alert to service now format
+      id: a3b94c91-63e7-4250-81ce-4df7a8017467
+      iscommand: true
+      name: convert-alert-to-servicenow
+      script: Palo Alto IoT Third-Party-Integration Base|||convert-alert-to-servicenow
+      type: regular
+      version: -1
+    taskid: a3b94c91-63e7-4250-81ce-4df7a8017467
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "8"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: ServiceNow v2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      id: 5085eea7-69e2-4206-80b6-18b66346a6f0
+      iscommand: false
+      name: is servicenow ready
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 5085eea7-69e2-4206-80b6-18b66346a6f0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integration-name:
+        simple: servicenow
+      message:
+        simple: Servicenow integration is disabled
+      playbook-name:
+        simple: panw_iot_servicenow_alert_playbook
+      status:
+        simple: disabled
+      type:
+        simple: alert
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: sends a status message back to PANW IOT cloud
+      id: 8cf21790-2995-423f-821a-12de5d16bf9c
+      iscommand: true
+      name: send disabled status back to panw iot
+      script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
+      type: regular
+      version: -1
+    taskid: 8cf21790-2995-423f-821a-12de5d16bf9c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      asset_id:
+        simple: ${incident.correlation_id}
+      asset_type:
+        simple: Alerts
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: Given a id (alert-id, vulnerability-id or mac-address) returns
+        the asset details
+      id: f2d65c49-64c1-4033-8fec-7765e1990dee
+      iscommand: true
+      name: get single alert instance
+      script: Palo Alto IoT Third-Party-Integration Base|||get-single-asset-details
+      type: regular
+      version: -1
+    taskid: f2d65c49-64c1-4033-8fec-7765e1990dee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${PaloAltoIoTIntegrationBase.SingleAsset}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 6b2b8387-b925-490d-8bc2-847bd3f5dd5a
+      iscommand: false
+      name: Exists
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 6b2b8387-b925-490d-8bc2-847bd3f5dd5a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integration-name:
+        simple: servicenow
+      message:
+        simple: No alert found with zb_ticketid ${incident.correlation_id}
+      playbook-name:
+        simple: panw_iot_servicenow_alert_playbook
+      status:
+        simple: error
+      type:
+        simple: alert
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: sends a status message back to PANW IOT cloud
+      id: 93cbadd3-4ef4-4d30-81d5-9d91a64cae94
+      iscommand: true
+      name: send_status_to_iot_cloud
+      script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
+      type: regular
+      version: -1
+    taskid: 93cbadd3-4ef4-4d30-81d5-9d91a64cae94
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      integration-name:
+        simple: servicenow
+      message:
+        simple: failed to export alert to servicenow integration
+      playbook-name:
+        simple: panw_iot_servicenow_alert_playbook
+      status:
+        simple: success
+      type:
+        simple: alert
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: sends a status message back to PANW IOT cloud
+      id: 12576241-043e-492c-8064-164ab73f2a99
+      iscommand: true
+      name: send success status back to panw iot
+      script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
+      type: regular
+      version: -1
+    taskid: 12576241-043e-492c-8064-164ab73f2a99
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: dda908a9-a12a-4bb8-8ff3-56fbf35b881a
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: dda908a9-a12a-4bb8-8ff3-56fbf35b881a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: d9b04896-696c-4fff-8b03-eafb3b666637
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: d9b04896-696c-4fff-8b03-eafb3b666637
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integration-name:
+        simple: servicenow
+      message:
+        simple: Cannot convert alert to servicenow data format
+      playbook-name:
+        simple: panw_iot_servicenow_alert_playbook
+      status:
+        simple: error
+      type:
+        simple: alert
+      using:
+        simple: Palo Alto IoT Third-Party-Integration Base Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto IoT Third-Party-Integration Base
+      description: sends a status message back to PANW IOT cloud
+      id: 5d23e313-6f60-4b90-8b21-963e1223e508
+      iscommand: true
+      name: send error status to panw iot
+      script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
+      type: regular
+      version: -1
+    taskid: 5d23e313-6f60-4b90-8b21-963e1223e508
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: c1fe94ad-8081-49b3-8bf0-ccda278aae94
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: c1fe94ad-8081-49b3-8bf0-ccda278aae94
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 9c61ad4d-b355-4ebf-812e-7e020d80199c
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 9c61ad4d-b355-4ebf-812e-7e020d80199c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_6_yes": 0.58
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
