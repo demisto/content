@@ -329,10 +329,10 @@ def test_parse_timestamp():
 
 
 @pytest.mark.parametrize('param_input, expected_result', [
-    ('1 month', '737647200'),
-    ('2 months', '735055200'),
-    ('1 day', '740239200'),
-    ('3 weeks', '738511200'),
+    ('1 month', '737636400'),
+    ('2 months', '735044400'),
+    ('1 day', '740228400'),
+    ('3 weeks', '738500400'),
     ('', None),
     (None, None),
 
