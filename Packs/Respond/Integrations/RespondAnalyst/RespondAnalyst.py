@@ -265,7 +265,6 @@ class RestClient(BaseClient):
         )
         return res.get('data').get('updateIncidentDescription')
 
-
     def construct_and_send_update_title_mutation(self, tenant_id, incident_id, input):
         data = {
             "query": '''mutation updateIncidentTitle(
@@ -587,8 +586,9 @@ def update_remote_system_command(rest_client, args):
     remote_args = UpdateRemoteSystemArgs(args)
     try:
         if remote_args.delta:
-            #get incident id and tenant id from remote_system_id
-            incident_id =
+            # get incident id and tenant id from remote_system_id
+            tenant_id = remote_args.get('remote_incident_id').split(':')[0]
+            incident_id = remote_args.get('remote_incident_id').split(':')[1]
 
             changed_fields = list(remote_args.delta.keys())
             demisto.debug(f'Got the following delta keys {str(changed_fields)} to '
@@ -596,13 +596,29 @@ def update_remote_system_command(rest_client, args):
             demisto.debug(remote_args.data)
             if changed_fields['title']:
                 demisto.debug(changed_fields['title'])
+                res = rest_client.construct_and_send_update_title_mutation(tenant_id, incident_id,
+                                                                     remote_args['data']['title'])
+                print(res)
 
-                rest_client.construct_and_send_update_title_mutation()
+            if changed_fields['description']:
+                demisto.debug(changed_fields['description'])
+                res = rest_client.construct_and_send_update_description_mutation(tenant_id, incident_id,
+                                                                           remote_args['data'][
+                                                                               'description'])
+                print(res)
 
-            elif changed_fields['feedback']:
+            if changed_fields['feedback']:
                 demisto.debug(changed_fields['feedback'])
                 # best thing to do here is probably fit the args into the feedback mold already in close_incident_commmand
-
+                feedback = remote_args['data']['feedback']
+                feedback_args = {
+                    'tenant_id': tenant_id,
+                    'incident_id': incident_id,
+                    'incident_feedback': feedback['outcome'],
+                    'incident_comments': feedback['comments']
+                }
+                demisto.debug(feedback_args)
+                res = close_incident_command(rest_client, args)
     except Exception as e:
         demisto.debug(
             f"Error in XDR outgoing mirror for incident {remote_args.remote_incident_id} \n"
