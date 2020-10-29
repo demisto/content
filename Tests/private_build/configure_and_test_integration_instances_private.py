@@ -27,6 +27,7 @@ def create_install_private_testing_pack(build: Build, prints_manager: ParallelPr
     """
     Creates and installs the test pack used in the private build. This pack contains the test
     playbooks and test scripts that will be used for the tests.
+
     :param build: Build object containing the build settings.
     :param prints_manager: PrintsManager object used for reporting status. Will be deprecated.
     :return: No object is returned. nightly_install_packs will wait for the process to finish.
@@ -71,6 +72,7 @@ def find_needed_test_playbook_paths(test_playbooks: dict, filter_file_path: str)
     """
     Uses the test filter file to determine which test playbooks are needed to run, then will use the
     test playbook IDs found in the ID set to determine what the path is for that test.
+
     :param filter_file_path: Path to the test filter txt file.
     :param test_playbooks: The test_playbooks dictionary from the ID set.
     :return: tests_file_paths set used to keep file paths of found tests.
@@ -91,6 +93,7 @@ def find_needed_test_playbook_paths(test_playbooks: dict, filter_file_path: str)
 def write_test_pack_zip(tests_file_paths: set):
     """
     Builds and writes the test pack when given a set of file paths.
+
     :param tests_file_paths: Set of file paths to add to the test pack zip.
     :return:
     """
@@ -115,6 +118,7 @@ def write_test_pack_zip(tests_file_paths: set):
 def create_private_test_pack_zip(id_set: dict = None):
     """
     Creates the test pack with all of the scripts and dependant playbooks for the private tests.
+
     :param id_set: ID set file object.
     :return: None
     """

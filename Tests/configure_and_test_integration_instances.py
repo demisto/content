@@ -114,11 +114,11 @@ class Server:
                                       key_file_path=Build.key_file_path, user='ec2-user')
 
 
-def get_id_set():
+def get_id_set() -> dict:
     """
     Used to collect the ID set so it can be passed to the Build class on init.
 
-    :return: None.
+    :return: ID set as a dict if it exists.
     """
     if os.path.isfile(ID_SET_PATH):
         return get_json_file(ID_SET_PATH)

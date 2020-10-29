@@ -461,8 +461,8 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
-                                   index_folder_path: str, pack_names: set, is_private_build: bool) -> \
-                                   Tuple[Union[list, list], str, Any]:
+                                   index_folder_path: str, pack_names: set, is_private_build: bool) \
+        -> Tuple[Union[list, list], str, Any]:
     """ Updates index with priced packs and returns list of priced packs data.
 
     Args:
@@ -774,9 +774,9 @@ def handle_github_response(response: json) -> dict:
 
 def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bucket: Any, index_folder_path: str,
                                        packs_dependencies_mapping: dict, private_storage_bucket: bool = None,
-                                       content_repo:bool = None, current_commit_hash: str = '',
+                                       content_repo: bool = None, current_commit_hash: str = '',
                                        remote_previous_commit_hash: str = '', packs_statistic_df: Any = None)\
-                                       -> Any:
+        -> Any:
     """
     The main logic flow for the create and upload process. Acts as a decision tree while consistently
     checking the status of the progress being made.

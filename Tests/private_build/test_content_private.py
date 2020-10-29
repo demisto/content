@@ -64,6 +64,7 @@ def run_test_logic(tests_settings: Any, c: Any, failed_playbooks: list,
     run_test_logic handles the testing of the integration by triggering check_integration. afterwards
     it will check the status of the test and report success or add the failed test to the list of
     failed integrations.
+
     :param tests_settings: SettingsTester object which contains the test variables
     :param c: Client for connecting to XSOAR via demisto-py
     :param failed_playbooks: List of failed playbooks, additional failed playbooks will be added if
@@ -170,6 +171,7 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     """
     Checks to see if test should run given the scenario. If the test should run, it will collect the
     integrations which are required to run the test.
+
     :param tests_settings: SettingsTester object which contains the test variables
     :param t: Options being passed to the test. PID, Docker Threshold, Timeout, etc.
     :param default_test_timeout: Time in seconds indicating when the test should timeout if no
@@ -273,6 +275,7 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
     Main function used to handle the testing process. Starts by turning off telemetry and disabling
     any left over tests. Afterwards it will create a test queue object which then is used to run the
     specific test scenario.
+
     :param tests_settings: SettingsTester object which contains the test variables
     :param server_ip: IP address of the server. Will be formatted before use.
     :param all_tests: All tests currently in the test conf.
