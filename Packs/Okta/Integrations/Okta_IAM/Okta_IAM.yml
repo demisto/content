@@ -287,5 +287,5 @@ script:
   ismappable: true
   isremotesyncout: true
 tests:
-- IAM - Test Playbook
+- No tests
 fromversion: 6.0.0
