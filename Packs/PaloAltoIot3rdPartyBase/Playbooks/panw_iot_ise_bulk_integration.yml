@@ -132,7 +132,7 @@ tasks:
       id: 4835528b-9887-4088-80e0-0847d377497a
       iscommand: false
       name: send_bulk_panw_iot_devices_to_ise
-      script: d42e8837-9ab1-47c6-8bb0-d80624238b92
+      script: send_bulk_panw_iot_devices_to_ise
       type: regular
       version: -1
     taskid: 4835528b-9887-4088-80e0-0847d377497a
