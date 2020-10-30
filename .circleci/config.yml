@@ -965,7 +965,7 @@ jobs:
                   PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
                   ID_SET=$CIRCLE_ARTIFACTS/id_set.json
                   GCS_PATH=$(mktemp)
-                  CIRCLE_BUILD_NUM=${CIRCLE_BUILD_NUM:-00000}
+                  CIRCLE_BUILD_NUM=$(cat create_instances_build_num.txt)
                   CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
                   echo $GCS_MARKET_KEY > $GCS_PATH
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist-dev' -bb 'marketplace-ci-build' -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -c $CIRCLE_BRANCH -pbp 'wow/content/packs'
