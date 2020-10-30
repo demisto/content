@@ -255,6 +255,7 @@ def main():
     # initialize base paths
     build_bucket_path = os.path.join(GCPConfig.BUILD_BASE_PATH, circle_branch, build_number)
     GCPConfig.BUILD_BASE_PATH = os.path.join(build_bucket_path, GCPConfig.STORAGE_BASE_PATH)
+    print(GCPConfig.BUILD_BASE_PATH)
     if production_base_path:
         GCPConfig.STORAGE_BASE_PATH = production_base_path
 
@@ -273,6 +274,12 @@ def main():
 
     # starting iteration over packs
     for pack in packs_list:
+        task_status, user_metadata = pack.load_user_metadata()
+        if not task_status:
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.cleanup()
+            continue
+
         task_status = pack.copy_and_upload_integration_images(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
@@ -286,7 +293,7 @@ def main():
             continue
 
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
-                                                                              override_all_packs)
+                                                                              override_all_packs, pack.latest_version)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
 
