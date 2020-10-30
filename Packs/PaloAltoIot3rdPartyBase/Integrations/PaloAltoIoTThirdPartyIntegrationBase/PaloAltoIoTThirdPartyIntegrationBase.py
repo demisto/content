@@ -432,18 +432,20 @@ def get_servicenow_devices_query_batch(args):
     data = args.get('devices')
     query_strs = []
     query_str = 'mac_addressIN'
-    DEFAULT_VALUE_SIZE = 2
+    DEFAULT_VALUE_SIZE = 100
 
     for i in range(len(data)):
+        entry = data[i]
         query_str += entry['deviceid'] + ','
         if ((i + 1) % DEFAULT_VALUE_SIZE == 0 or i == (len(data) - 1)):
-            query_strs.append(query_str)
+            query_strs.append(query_str[0:len(query_str) - 1])
             query_str = 'mac_addressIN'
-
+    result = {}
+    result['query'] = query_strs
     return CommandResults(
-        readable_output="Total data length is " + str(len(data)) + ". Query List: " + ("\n".join(query_str)),
-        outputs_prefix='PaloAltoIoTIntegrationBase.BatchQuery',
-        outputs=query_strs
+        readable_output="Total data length is " + str(len(data)) + " total number of queries is " + str(len(query_strs)),
+        outputs_prefix='PaloAltoIoTIntegrationBase.QueryList',
+        outputs=result
     )
 
 
@@ -916,6 +918,9 @@ def main() -> None:
             return_results(results)
         elif demisto.command() == 'convert-device-inventory-to-ise-custom-attributes':
             results = convert_device_map_to_ise_attributes(demisto.args())
+            return_results(results)
+        elif demisto.command() == 'get-servicenow-devices-query-batch':
+            results = get_servicenow_devices_query_batch(demisto.args())
             return_results(results)
 
     # Log exceptions and return errors

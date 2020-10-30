@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 res = []
 run_time_count = 1
 offset = 0
-PAGE_SIZE = 1000
+PAGE_SIZE = 100
 update_num = 0
 insert_num = 0
 total_update_num = 0

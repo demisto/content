@@ -17,12 +17,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1ea05cd5-e783-4fb6-8194-21b602bb16b2
+      id: d85f36a3-867f-4ee5-8f98-ec79b2f9b393
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 1ea05cd5-e783-4fb6-8194-21b602bb16b2
+    taskid: d85f36a3-867f-4ee5-8f98-ec79b2f9b393
     timertriggers: []
     type: start
     view: |-
@@ -47,7 +47,15 @@ tasks:
         simple: "10000"
       offset: {}
       query:
-        simple: ${PaloAltoIoTIntegrationBase.Query.query}
+        complex:
+          accessor: QueryList
+          root: PaloAltoIoTIntegrationBase
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: query
+            operator: getField
       system_params: {}
       table_name:
         simple: u_zingbox_discovered_devices
@@ -58,13 +66,13 @@ tasks:
     task:
       brand: ServiceNow v2
       description: Queries the specified table in ServiceNow.
-      id: 5b42729c-9413-42e2-88e9-cf5b0dff685e
+      id: 15d87a08-47d0-4091-8849-4c2bc90bcb8e
       iscommand: true
       name: servicenow-query-table
       script: ServiceNow v2|||servicenow-query-table
       type: regular
       version: -1
-    taskid: 5b42729c-9413-42e2-88e9-cf5b0dff685e
+    taskid: 15d87a08-47d0-4091-8849-4c2bc90bcb8e
     timertriggers: []
     type: regular
     view: |-
@@ -79,9 +87,9 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "19"
+      - "37"
     note: false
-    quietmode: 0
+    quietmode: 2
     scriptarguments:
       devices:
         complex:
@@ -99,14 +107,14 @@ tasks:
     skipunavailable: false
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
-      description: Gets a list of device query of service now
-      id: af4e550a-f760-4b1e-8f28-c8e01c9e7641
+      description: Lists of query
+      id: 3d2410ac-34e8-4a1d-8816-aba431523f4a
       iscommand: true
-      name: get-servicenow-device-query
-      script: Palo Alto IoT Third-Party-Integration Base|||get-servicenow-device-query
+      name: get-servicenow-device-query-batch
+      script: Palo Alto IoT Third-Party-Integration Base|||get-servicenow-devices-query-batch
       type: regular
       version: -1
-    taskid: af4e550a-f760-4b1e-8f28-c8e01c9e7641
+    taskid: 3d2410ac-34e8-4a1d-8816-aba431523f4a
     timertriggers: []
     type: regular
     view: |-
@@ -132,13 +140,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: Gets a list of devices detected/modified within the last 15 minutes
-      id: 6478ddb7-56da-409a-8fe4-b5653ac10e16
+      id: d17397b9-ee9c-452b-80ea-247e76a968b4
       iscommand: true
       name: get-incremental-device-inventory
       script: Palo Alto IoT Third-Party-Integration Base|||get-incremental-device-inventory
       type: regular
       version: -1
-    taskid: 6478ddb7-56da-409a-8fe4-b5653ac10e16
+    taskid: d17397b9-ee9c-452b-80ea-247e76a968b4
     timertriggers: []
     type: regular
     view: |-
@@ -178,13 +186,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: Gets service now upsert devices
-      id: 6c37a176-0c5b-4e3f-829f-eed42a583cfa
+      id: ec1d118f-9e5d-4019-8eb9-de115a4ef71e
       iscommand: true
       name: get-servicenow-upsert-devices
       script: Palo Alto IoT Third-Party-Integration Base|||get-servicenow-upsert-devices
       type: regular
       version: -1
-    taskid: 6c37a176-0c5b-4e3f-829f-eed42a583cfa
+    taskid: ec1d118f-9e5d-4019-8eb9-de115a4ef71e
     timertriggers: []
     type: regular
     view: |-
@@ -257,13 +265,13 @@ tasks:
     task:
       brand: ServiceNow v2
       description: Updates a record in the specified ServiceNow table.
-      id: 8a103969-0e26-41e4-8a8e-857c3d29f84b
+      id: 85f386d0-6daa-465d-8ab8-ea9ce3929c16
       iscommand: true
       name: servicenow-update-record
       script: ServiceNow v2|||servicenow-update-record
       type: regular
       version: -1
-    taskid: 8a103969-0e26-41e4-8a8e-857c3d29f84b
+    taskid: 85f386d0-6daa-465d-8ab8-ea9ce3929c16
     timertriggers: []
     type: regular
     view: |-
@@ -291,13 +299,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 84eb1abf-e920-4cb2-8767-6799e1898614
+      id: 355764e5-f474-4c5c-870d-21d8bcf3f9b0
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 84eb1abf-e920-4cb2-8767-6799e1898614
+    taskid: 355764e5-f474-4c5c-870d-21d8bcf3f9b0
     timertriggers: []
     type: regular
     view: |-
@@ -334,13 +342,13 @@ tasks:
       brand: ""
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
-      id: ee5ef219-1a88-49ad-88a9-243e30ae2dee
+      id: 6379c788-6dbd-4b46-8df3-ef7ad2da5b83
       iscommand: false
       name: is update device data exists
       script: Exists
       type: condition
       version: -1
-    taskid: ee5ef219-1a88-49ad-88a9-243e30ae2dee
+    taskid: 6379c788-6dbd-4b46-8df3-ef7ad2da5b83
     timertriggers: []
     type: condition
     view: |-
@@ -386,13 +394,13 @@ tasks:
       brand: ""
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
-      id: e02d03ac-245f-42e4-8b30-5815cf4ddd0c
+      id: bc23f5cc-81a8-4a79-8300-4c1b7b328f1f
       iscommand: false
       name: Is incremental device data exists
       script: Exists
       type: condition
       version: -1
-    taskid: e02d03ac-245f-42e4-8b30-5815cf4ddd0c
+    taskid: bc23f5cc-81a8-4a79-8300-4c1b7b328f1f
     timertriggers: []
     type: condition
     view: |-
@@ -420,13 +428,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 3934aed8-d842-4b65-8cd3-5f318fbcf6d8
+      id: d0b1ec45-766f-440c-8ce8-bcbafb09fda0
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 3934aed8-d842-4b65-8cd3-5f318fbcf6d8
+    taskid: d0b1ec45-766f-440c-8ce8-bcbafb09fda0
     timertriggers: []
     type: regular
     view: |-
@@ -455,13 +463,13 @@ tasks:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
-      id: 8543c1dc-72db-4386-8700-7221efb71dbb
+      id: a9fd81d4-15ad-4a83-8dde-10581ef3c763
       iscommand: false
       name: Is servicenow integration enabled
       script: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: 8543c1dc-72db-4386-8700-7221efb71dbb
+    taskid: a9fd81d4-15ad-4a83-8dde-10581ef3c763
     timertriggers: []
     type: condition
     view: |-
@@ -497,13 +505,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: dadbdcb7-4123-49d0-8eb5-5110a37b2971
+      id: 15621416-3b15-427e-8d27-f99f9bc4247f
       iscommand: true
       name: send disabled status back to PANW iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: dadbdcb7-4123-49d0-8eb5-5110a37b2971
+    taskid: 15621416-3b15-427e-8d27-f99f9bc4247f
     timertriggers: []
     type: regular
     view: |-
@@ -540,13 +548,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 897f0697-bee3-4cfb-8942-93857edad6c0
+      id: 262ca7a6-f77c-4a07-8a9d-7cc3a9086880
       iscommand: true
       name: send success status back to panw iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 897f0697-bee3-4cfb-8942-93857edad6c0
+    taskid: 262ca7a6-f77c-4a07-8a9d-7cc3a9086880
     timertriggers: []
     type: regular
     view: |-
@@ -554,42 +562,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 2120
-        }
-      }
-  "19":
-    id: "19"
-    ignoreworker: false
-    nexttasks:
-      "no":
-      - "2"
-      "yes":
-      - "21"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      entryId:
-        simple: ${lastCompletedTaskEntries}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      id: 05d4e88b-4fbb-4d8a-8521-79306f276805
-      iscommand: false
-      name: isError
-      script: isError
-      type: condition
-      version: -1
-    taskid: 05d4e88b-4fbb-4d8a-8521-79306f276805
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 895
         }
       }
   "20":
@@ -610,13 +582,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 3928ba21-8405-44c9-889c-eb9a78d9ce0f
+      id: 913c443a-19cc-4ef8-8679-abeed0387589
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 3928ba21-8405-44c9-889c-eb9a78d9ce0f
+    taskid: 913c443a-19cc-4ef8-8679-abeed0387589
     timertriggers: []
     type: regular
     view: |-
@@ -652,13 +624,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 62f62159-0e32-4887-834c-c87647dc8eb9
+      id: 2a592c06-c64d-43ed-82f8-89307f97ecee
       iscommand: true
       name: send error status back to PANW IoT
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 62f62159-0e32-4887-834c-c87647dc8eb9
+    taskid: 2a592c06-c64d-43ed-82f8-89307f97ecee
     timertriggers: []
     type: regular
     view: |-
@@ -688,13 +660,13 @@ tasks:
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
-      id: c777f2c2-1406-4ea3-8c3e-0b0c62e32407
+      id: 5c08834d-7f18-4894-8b0c-6f81d8caff36
       iscommand: false
       name: isError
       script: isError
       type: condition
       version: -1
-    taskid: c777f2c2-1406-4ea3-8c3e-0b0c62e32407
+    taskid: 5c08834d-7f18-4894-8b0c-6f81d8caff36
     timertriggers: []
     type: condition
     view: |-
@@ -730,13 +702,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 2b6bed25-a871-459d-8685-23155952f93e
+      id: def9addb-ca54-4329-8c9d-d089945e2f95
       iscommand: true
       name: send error status to panw iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 2b6bed25-a871-459d-8685-23155952f93e
+    taskid: def9addb-ca54-4329-8c9d-d089945e2f95
     timertriggers: []
     type: regular
     view: |-
@@ -766,13 +738,13 @@ tasks:
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
-      id: adb16254-67f8-466d-82c3-96e98ee1c965
+      id: 31460887-9eaa-4b69-8b26-74295163fe0b
       iscommand: false
       name: isError
       script: isError
       type: condition
       version: -1
-    taskid: adb16254-67f8-466d-82c3-96e98ee1c965
+    taskid: 31460887-9eaa-4b69-8b26-74295163fe0b
     timertriggers: []
     type: condition
     view: |-
@@ -808,13 +780,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 5d187db9-711a-42cc-8164-98d1862d6b89
+      id: 38d31c85-cb07-4ae3-85e4-4674a2252ed7
       iscommand: true
       name: send error status to Panw Iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 5d187db9-711a-42cc-8164-98d1862d6b89
+    taskid: 38d31c85-cb07-4ae3-85e4-4674a2252ed7
     timertriggers: []
     type: regular
     view: |-
@@ -842,13 +814,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 536b4a30-ebcf-4af9-84b7-f77d6b0f9c3f
+      id: 5c3c542a-200d-481f-886a-3936c6abaa0c
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 536b4a30-ebcf-4af9-84b7-f77d6b0f9c3f
+    taskid: 5c3c542a-200d-481f-886a-3936c6abaa0c
     timertriggers: []
     type: regular
     view: |-
@@ -884,13 +856,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: a3130727-3351-4050-8133-43dcd17f4367
+      id: 3e0042de-261a-411a-807e-00045c4fa228
       iscommand: true
       name: send error status back to PANW iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: a3130727-3351-4050-8133-43dcd17f4367
+    taskid: 3e0042de-261a-411a-807e-00045c4fa228
     timertriggers: []
     type: regular
     view: |-
@@ -927,13 +899,13 @@ tasks:
       brand: ""
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
-      id: e8097af8-50ed-4fba-8bb2-4629867cde6f
+      id: fa886486-c74a-4f00-811d-afab664c2fc4
       iscommand: false
       name: Is insert device data exists
       script: Exists
       type: condition
       version: -1
-    taskid: e8097af8-50ed-4fba-8bb2-4629867cde6f
+    taskid: fa886486-c74a-4f00-811d-afab664c2fc4
     timertriggers: []
     type: condition
     view: |-
@@ -991,13 +963,13 @@ tasks:
     task:
       brand: ServiceNow v2
       description: Creates a new record in the specified ServiceNow table.
-      id: 99937645-3ada-4225-82d0-403a67108e04
+      id: 67b92dcf-a130-4979-8be6-9ebe8b7173c2
       iscommand: true
       name: servicenow-create-record
       script: ServiceNow v2|||servicenow-create-record
       type: regular
       version: -1
-    taskid: 99937645-3ada-4225-82d0-403a67108e04
+    taskid: 67b92dcf-a130-4979-8be6-9ebe8b7173c2
     timertriggers: []
     type: regular
     view: |-
@@ -1027,13 +999,13 @@ tasks:
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
-      id: c5af4b52-2578-4b80-8942-a4137a6e8a8e
+      id: 76d16cde-8720-469c-89b7-9926765e466a
       iscommand: false
       name: isError
       script: isError
       type: condition
       version: -1
-    taskid: c5af4b52-2578-4b80-8942-a4137a6e8a8e
+    taskid: 76d16cde-8720-469c-89b7-9926765e466a
     timertriggers: []
     type: condition
     view: |-
@@ -1070,13 +1042,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: daf4cbb6-ba66-4d6c-8fae-3445ac891c14
+      id: 70f8fb72-37bf-4b27-82ee-f3fd5333e5f6
       iscommand: true
       name: send success status back to panw iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: daf4cbb6-ba66-4d6c-8fae-3445ac891c14
+    taskid: 70f8fb72-37bf-4b27-82ee-f3fd5333e5f6
     timertriggers: []
     type: regular
     view: |-
@@ -1112,13 +1084,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 6fe1ba9c-952f-4293-8039-185b25c11061
+      id: d802dc5d-becd-43d6-8cb8-8339979035fe
       iscommand: true
       name: send error status back to panw iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 6fe1ba9c-952f-4293-8039-185b25c11061
+    taskid: d802dc5d-becd-43d6-8cb8-8339979035fe
     timertriggers: []
     type: regular
     view: |-
@@ -1146,13 +1118,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: e71948cb-cb54-402f-8e08-660b97b8eae6
+      id: bf516856-723a-4de9-81ab-353e1e27eda3
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: e71948cb-cb54-402f-8e08-660b97b8eae6
+    taskid: bf516856-723a-4de9-81ab-353e1e27eda3
     timertriggers: []
     type: regular
     view: |-
@@ -1180,13 +1152,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 6d9d4882-0b57-40f7-83b1-0aedb99a6e96
+      id: 9ddcac0c-93cb-4368-8568-504d944eae7e
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 6d9d4882-0b57-40f7-83b1-0aedb99a6e96
+    taskid: 9ddcac0c-93cb-4368-8568-504d944eae7e
     timertriggers: []
     type: regular
     view: |-
@@ -1194,6 +1166,42 @@ tasks:
         "position": {
           "x": 920,
           "y": 2295
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: a29c3d38-4e64-434d-8493-d9b54b497706
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: a29c3d38-4e64-434d-8493-d9b54b497706
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
         }
       }
 version: -1
