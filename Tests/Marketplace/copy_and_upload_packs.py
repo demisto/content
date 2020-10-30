@@ -301,11 +301,8 @@ def main():
             pack.cleanup()
             continue
 
-        print(f"{pack.name} main getting latest_version")
-        pack_latest_version = pack.latest_version
-        print(f"{pack.name} main got latest_version: {pack_latest_version}")
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
-                                                                              override_all_packs, pack_latest_version)
+                                                                              override_all_packs, pack.latest_version)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
 
