@@ -1,6 +1,5 @@
-id: deeb234b-0c7e-4f09-83fb-e2e10fb8f608
-version: 71
-vcShouldKeepItemLegacyProdMachine: false
+id: xMatters - Wait for Response
+version: -1
 name: xMatters - Wait for Response
 description: Trigger an xMatters workflow to notify a user for a response.
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -111,10 +111,10 @@ tasks:
       id: 9e20ec55-c37b-4201-8ad6-14331d6fb685
       version: -1
       name: Copy the comment value to the context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+      description: "Takes the comments of a given entry ID and stores them in the\
+        \ incident context, under a provided context key. \nFor accessing the last\
+        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+        \ value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -152,6 +152,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -173,6 +174,7 @@ tasks:
       id: 65e5eca6-98bb-4b9e-8ccc-1363aaf06944
       version: -1
       name: Is xMatters Enabled?
+      description: 'Checks to see if the xMatters integration is enabled. '
       type: condition
       iscommand: false
       brand: ""
@@ -237,23 +239,23 @@ inputs:
   required: false
   description: 'The targeted recipients in xMatters. Either the targetName or UUID.
     Can be comma separated list. '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: subject
   value: {}
   required: false
   description: A short description of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: body
   value: {}
   required: false
   description: A detailed description of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: incident_id
   value:
     simple: ${incident.id}
   required: false
   description: The ID of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: xMatters.UserResponse
   description: The user's response.
@@ -261,3 +263,6 @@ outputs:
 - contextPath: xMatters.RequestId
   description: The request_id from xMatters
   type: string
+fromversion: 5.5.0
+tests:
+- xMatters-Test

@@ -91,7 +91,7 @@ class Client(BaseClient):
 
         return res
 
-    def search_alerts(self, alert_status: Optional[str] = None, priority: Optional[str] = None,
+    def search_alerts(self, max_fetch: str, alert_status: Optional[str] = None, priority: Optional[str] = None,
                       start_time: Optional[int] = None, property_name: Optional[str] = None,
                       property_value: Optional[str] = None, request_id: Optional[str] = None,
                       from_time: Optional[str] = None, to_time: Optional[str] = None,
@@ -99,6 +99,9 @@ class Client(BaseClient):
         """Searches for xMatters alerts using the '/events' API endpoint
 
         All the parameters are passed directly to the API as HTTP POST parameters in the request
+
+        :type max_fetch: ``str``
+        :param max_fetch: The maximum number of events or incidents to retrieve
 
         :type alert_status: ``Optional[str]``
         :param alert_status: status of the alert to search for. Options are: 'ACTIVE' or 'SUSPENDED'
@@ -138,6 +141,8 @@ class Client(BaseClient):
 
         request_params: Dict[str, Any] = {}
 
+        request_params['limit'] = max_fetch
+
         if alert_status:
             request_params['status'] = alert_status
 
@@ -171,18 +176,19 @@ class Client(BaseClient):
             params=request_params
         )
 
-        data = res['data']
+        data = res.get('data')
 
         has_next = True
 
         while has_next:
             if 'links' in res and 'next' in res['links']:
+
                 res = self._http_request(
                     method='GET',
-                    url_suffix=res['links']['next']
+                    url_suffix=res.get('links').get('next')
                 )
 
-                for val in res['data']:
+                for val in res.get('data'):
                     data.append(val)
             else:
                 has_next = False
@@ -190,11 +196,19 @@ class Client(BaseClient):
         return data
 
     def search_alert(self, event_id: str):
+        """Searches for xMatters alerts using the '/events' API endpoint
+
+        The event_id is passed as a parameter to the API call.
+
+        :type event_id: ``Required[str]``
+        :param event_id: The event ID or UUID of the event to retrieve
+        """
+
         res = self._http_request(
             method='GET',
-            url_suffix='/api/xm/1/events/' + event_id
+            url_suffix='/api/xm/1/events/' + event_id,
+            ok_codes=(200, 404)
         )
-
         return res
 
 
@@ -280,7 +294,8 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], alert_status: Optional[str],
-                    priority: Optional[str], property_name: Optional[str], property_value: Optional[str]
+                    max_fetch: str, priority: Optional[str],
+                    property_name: Optional[str], property_value: Optional[str]
                     ) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
@@ -308,6 +323,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     :param alert_status:
         status of the alert to search for. Options are: 'ACTIVE',
         'SUSPENDED', or 'TERMINATED'
+
+    :type max_fetch: ``str``
+    :param max_fetch:
+        The maximum number of events or incidents to fetch.
 
     :type priority: ``str``
     :param priority:
@@ -352,10 +371,11 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     else:
         start_time = None
 
-    demisto.info("This is the current timestamp: " + str(start_time))
-    demisto.info("MS - last_fetch: " + str(last_fetch))
+    # demisto.info("This is the current timestamp: " + str(start_time))
+    # demisto.info("MS - last_fetch: " + str(last_fetch))
 
     alerts = client.search_alerts(
+        max_fetch=max_fetch,
         alert_status=alert_status,
         start_time=start_time,
         priority=priority,
@@ -440,7 +460,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 def event_reduce(e):
     return {"Created": e.get('created'),
             "Terminated": e.get('terminated'),
-            "Incident": e.get('id'),
+            "ID": e.get('id'),
+            "EventID": e.get('eventId'),
             "Name": e.get('name'),
             "PlanName": e.get('plan').get('name'),
             "FormName": e.get('form').get('name'),
@@ -553,10 +574,15 @@ def xm_get_events_command(client: Client, request_id: Optional[str] = None, stat
         property_value=property_value
     )
 
-    reduced_out = {"xMatters.GetEvents.Events": [event_reduce(event) for event in out]}
+    if len(out) == 0:
+        reduced_out = {"xMatters.GetEvent.Event": {}}
+        readable_output = f'Could not find Events with given criteria in xMatters'
+    else:
+        reduced_out = {"xMatters.GetEvents.Events": [event_reduce(event) for event in out]}
+        readable_output = f'Retrieved Events from xMatters: {reduced_out}'
 
     return CommandResults(
-        readable_output="Retrieved Events from xMatters.",
+        readable_output=readable_output,
         outputs=reduced_out,
         outputs_prefix='xMatters.GetEvents',
         outputs_key_field='event_id'
@@ -579,10 +605,18 @@ def xm_get_event_command(client: Client, event_id: str) -> CommandResults:
     """
     out = client.search_alert(event_id=event_id)
 
-    reduced_out = {"xMatters.GetEvent.Event": event_reduce(out)}
+    if out.get('code') == 404:
+        reduced_out = {"xMatters.GetEvent.Event": {}}
+        readable_output = f'Could not find Event "{event_id}" from xMatters'
+    else:
+        reduced = event_reduce(out)
+        reduced_out = {"xMatters.GetEvent.Event": reduced}
+        readable_output = f'Retrieved Event "{event_id}" from xMatters:\nEventID: {reduced.get("EventID")}\n' \
+                          f'Created: {reduced.get("Created")}\nTerminated: {reduced.get("Terminated")}\n' \
+                          f'Name: {reduced.get("Name")}\nStatus: {reduced.get("Status")}'
 
     return CommandResults(
-        readable_output="Retrieved Event from xMatters.",
+        readable_output=readable_output,
         outputs=reduced_out,
         outputs_prefix='xMatters.GetEvent',
         outputs_key_field='event_id'
@@ -706,11 +740,13 @@ def main() -> None:
             # Set and define the fetch incidents command to run after activated via integration settings.
             alert_status = demisto.params().get('status', None)
             priority = demisto.params().get('priority', None)
+            max_fetch = demisto.params().get('max_fetch', 20)
 
             next_run, incidents = fetch_incidents(
                 client=from_xm_client,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_time,
+                max_fetch=max_fetch,
                 alert_status=alert_status,
                 priority=priority,
                 property_name=property_name,

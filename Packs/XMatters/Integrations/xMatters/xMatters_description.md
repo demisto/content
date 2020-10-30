@@ -1,1 +1,2 @@
-This is an integration for using xMatters.
+### xMatters for XSOAR 
+The XSOAR integration to xMatters allows security personnel to trigger events in xMatters and process their response. For details on setting up the xMatters artifacts, see the installation docs [here](https://github.com/xmatters/xm-labs-xsoar).  

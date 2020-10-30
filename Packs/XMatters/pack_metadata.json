@@ -20,7 +20,7 @@
         "SMS",
         "Notifications",
         "Incident Response",
-
+        "Recommended by Cortex XSOAR"
     ],
     "useCases": [
         "Default",

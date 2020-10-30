@@ -1,6 +1,5 @@
-id: 7952a25a-656f-4b89-8cec-d2a43fc6b70c
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+id: xMatters - Example Conditional Actions
+version: -1
 name: xMatters - Example Conditional Actions
 description: 'Example playbook showing how to use the Trigger and Wait sub-playbook
   to fire an event to xMatters and wait for a response from a user. This playbook
@@ -17,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
@@ -78,17 +78,18 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 43f38b05-bcd5-4be1-8abd-ffe3e3a39397
+    taskid: d53b16f8-4754-4c2c-8d21-a14445208e17
     type: condition
     task:
-      id: 43f38b05-bcd5-4be1-8abd-ffe3e3a39397
+      id: d53b16f8-4754-4c2c-8d21-a14445208e17
       version: -1
       name: Check Response
+      description: Checks the user's response and branches accordingly.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
       - "5"
       Ban Host:
       - "4"
@@ -194,10 +195,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 1d9c8d16-b063-4590-8544-dfe813ceceb4
+    taskid: 4cc023a6-a834-4ee7-87d7-8fbfd2400394
     type: regular
     task:
-      id: 1d9c8d16-b063-4590-8544-dfe813ceceb4
+      id: 4cc023a6-a834-4ee7-87d7-8fbfd2400394
       version: -1
       name: Review
       description: Prints text to war room (Markdown supported)
@@ -226,16 +227,19 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 98a51767-823f-4635-856c-b3c0f3225c11
+    taskid: f9671cd4-7eb9-4fdd-82df-38d493fd44b4
     type: condition
     task:
-      id: 98a51767-823f-4635-856c-b3c0f3225c11
+      id: f9671cd4-7eb9-4fdd-82df-38d493fd44b4
       version: -1
       name: Is xMatters Enabled?
+      description: 'Checks to see if the xMatters integration is enabled. '
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "8"
       "yes":
       - "1"
     separatecontext: false
@@ -269,7 +273,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 195
         }
       }
@@ -289,12 +293,38 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 58c9084b-2c7d-46c3-8002-f22677230dc4
+    type: title
+    task:
+      id: 58c9084b-2c7d-46c3-8002-f22677230dc4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 385
         }
       }
     note: false
@@ -320,26 +350,29 @@ inputs:
     simple: ${incident.owner}
   required: false
   description: Recipients of the xMatters Message
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: subject
   value:
     simple: ${incident.name}
   required: false
   description: Subject of the xMatters Message
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: body
   value:
     simple: ${incident.details}
   required: false
   description: Body of the xMatters Message
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: incident_id
   value:
     simple: ${incident.id}
   required: false
   description: The related incident id
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: xMatters.UserResponse
   description: The user's response
   type: string
+fromversion: 5.5.0
+tests:
+- xMatters-Test

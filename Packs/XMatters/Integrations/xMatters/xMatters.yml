@@ -10,6 +10,7 @@ configuration:
   name: instance
   type: 0
   required: true
+  additionalinfo: This is used to retrieve events and other api calls
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -33,7 +34,8 @@ configuration:
   required: true
   additionalinfo: This is for creating events in xMatters from Cortex XSOAR. Used
     for the xm-trigger-workflow command.
-- display: ""
+- display: Fetch Type
+  additionalinfo: In a future release the xMatters incidents will be supported. For now it's just events.
   name: fetch_type
   defaultvalue: events
   type: 15
@@ -63,22 +65,23 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: ""
+- display: Property Name
   name: property_name
   type: 0
   required: false
   additionalinfo: Property Name to look for in xMatters. Used for importing events.
-- display: ""
+- display: Property Value
   name: property_value
   type: 0
   required: false
   additionalinfo: Property Value to look for in xMatters. Used for importing events.
-- defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: 7 days
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '50'
+- display: Maximum number of incidents to fetch
+  defaultvalue: '50'
   name: max_fetch
   required: false
   type: 0
@@ -138,6 +141,26 @@ script:
     outputs:
     - contextPath: xMatters.GetEvents.Events
       description: Events from xMatters.
+    - contextPath: xMatters.GetEvents.Created
+      description: The date and time the event was created
+    - contextPath: xMatters.GetEvents.Terminated
+      description: The date and time the event was terminated. Populated only if the event is terminated.
+    - contextPath: xMatters.GetEvents.ID
+      description: The UUID of the event
+    - contextPath: xMatters.GetEvents.Name
+      description: The subject of the event as seen in the event report
+    - contextPath: xMatters.GetEvents.PlanName
+      description: The name of the workflow the event is tied to
+    - contextPath: xMatters.GetEvents.FormName
+      description: The name of the form the event is tied to
+    - contextPath: xMatters.GetEvents.Status
+      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL, SUPRESSED
+    - contextPath: xMatters.GetEvents.Priority
+      description: The priority of the event. LOW, MEDIUM, HIGH
+    - contextPath: xMatters.GetEvents.Properties
+      description: The list of properties tied to the event in name/value pairs
+    - contextPath: xMatters.GetEvents.SubmitterName
+      description: The user or integration that created the event
     description: Get events from xMatters.
   - name: xm-get-event
     arguments:
@@ -145,8 +168,28 @@ script:
       required: true
       description: Unique identifier of the event
     outputs:
-    - contextPath: xMatters.GetEvent.Event
-      description: Event from xMatters.
+    - contextPath: xMatters.GetEvent.Events
+      description: Events from xMatters.
+    - contextPath: xMatters.GetEvent.Created
+      description: The date and time the event was created
+    - contextPath: xMatters.GetEvent.Terminated
+      description: The date and time the event was terminated. Populated only if the event is terminated.
+    - contextPath: xMatters.GetEvent.ID
+      description: The UUID of the event
+    - contextPath: xMatters.GetEvent.Name
+      description: The subject of the event as seen in the event report
+    - contextPath: xMatters.GetEvent.PlanName
+      description: The name of the workflow the event is tied to
+    - contextPath: xMatters.GetEvent.FormName
+      description: The name of the form the event is tied to
+    - contextPath: xMatters.GetEvent.Status
+      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL, SUPRESSED
+    - contextPath: xMatters.GetEvent.Priority
+      description: The priority of the event. LOW, MEDIUM, HIGH
+    - contextPath: xMatters.GetEvent.Properties
+      description: The list of properties tied to the event in name/value pairs
+    - contextPath: xMatters.GetEvent.SubmitterName
+      description: The user or integration that created the event
     description: Get a single event from xMatters.
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: true
