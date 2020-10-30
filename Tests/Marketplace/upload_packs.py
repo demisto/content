@@ -446,11 +446,12 @@ def _build_summary_table(packs_input_list, include_bucket_url=True, include_pack
         PrettyTable: table with upload result of packs.
 
     """
+    bucket_url_field = "Pack Bucket URL"
     table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status",
                     "Pack Bucket URL"] if include_pack_status \
         else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
     if not include_bucket_url:
-        table_fields.remove("Pack Bucket URL")
+        table_fields.remove(bucket_url_field)
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
@@ -459,6 +460,8 @@ def _build_summary_table(packs_input_list, include_bucket_url=True, include_pack
         row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message,
                pack.bucket_url] if include_pack_status \
             else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
+        if not include_bucket_url:
+            row.remove(bucket_url_field)
         table.add_row(row)
 
     return table

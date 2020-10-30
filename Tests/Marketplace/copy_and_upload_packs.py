@@ -261,6 +261,8 @@ def main():
 
     # TODO: what if no commit was found, for example: there was a squash of several master commits?
     # TODO: refactor force upload
+    # TODO: add option for pack list
+    # TODO: what if the commit is the same? i.e. between two uploaded the commit hasn't change? (nothing was merged)
 
     # download and extract build and prod index from build and prod buckets
     build_index_folder_path, prod_index_blob, build_index_blob, prod_index_generation, build_index_generation = \
