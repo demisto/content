@@ -240,7 +240,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'upload-packs-build-flow':
+    if branch_name == 'upload-packs-flow':
         print("Extracting build status")
         if test_type == UNITTESTS_TYPE:
             print_color("Starting Slack notifications about nightly build - unit tests", LOG_COLORS.GREEN)

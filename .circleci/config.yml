@@ -954,7 +954,7 @@ jobs:
       - when:
           condition:
             equal:
-              - upload-packs-build-flow
+              - upload-packs-flow
               - << pipeline.git.branch >>
           steps:
             - run:
