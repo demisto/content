@@ -1,11 +1,11 @@
 comment: This script gets all available devices from the IoT cloud and updates/creates
   new endpoint with custom attributes on ServiceNow
 commonfields:
-  id: send_bulk_panw_iot_devices_to_servicenow
+  id: send_bulk_panw_iotices_to_servicenow
   version: -1
 dockerimage: demisto/python3:3.8.6.12176
 enabled: true
-name: send_bulk_panw_iot_devices_to_servicenow
+name: send_bulk_panw_iotices_to_servicenow
 runas: DBotWeakRole
 runonce: false
 script: ''
