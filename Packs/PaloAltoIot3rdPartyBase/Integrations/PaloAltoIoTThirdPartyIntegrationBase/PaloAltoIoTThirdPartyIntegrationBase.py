@@ -58,14 +58,14 @@ cisco_ise_field_map = {
     "hostname": "ZingboxHostname",
     "osCombined": "ZingboxOS",
     "model": "ZingboxModel",
-    "vendor":"ZingboxVendor",
+    "vendor": "ZingboxVendor",
     "Serial Number": "ZingboxSerial",
     "Serial_Number": "ZingboxSerial",
     "endpoint protection": "ZingboxEPP",
     "endpoint_protection": "ZingboxEPP",
-    "AET":"ZingboxAET",
-    #"External Network": "ZingboxInternetAccess",
-    #"last activity": "ZingboxLastActivity"
+    "AET": "ZingboxAET",
+    # "External Network": "ZingboxInternetAccess",
+    # "last activity": "ZingboxLastActivity"
 }
 int_fields = ["risk_score", "risk score", "confidence", "confidence score", "confidence_score"]
 
@@ -326,11 +326,13 @@ def get_servicenow_device_query(args):
     deviceids = [device['deviceid'] for device in device_list]
 
     query = "mac_addressIN" + ",".join(deviceids)
+    result = {}
+    result['query'] = query
 
     return CommandResults(
         readable_output="Service Table Device Query is %s" % (query),
         outputs_prefix='PaloAltoIoTIntegrationBase.Query',
-        outputs=query
+        outputs=result
     )
 
 
@@ -376,7 +378,11 @@ def get_servicenow_upsert_devices(args):
     if sn_id_deviceids:
         for i in range(len(sn_id_deviceids)):
             ids = sn_id_deviceids[i]
-            sn_id = ids["ID"]
+            sn_id = ''
+            if "ID" in ids:
+                sn_id = ids["ID"]
+            else:
+                sn_id = ids['sys_id']
             deviceid = ids["mac_address"]
             ids_map[deviceid] = sn_id
 
@@ -396,6 +402,8 @@ def get_servicenow_upsert_devices(args):
     result = {}
     result["insert"] = insert_list
     result["update"] = update_list
+    result["update_count"] = len(update_list)
+    result["insert_count"] = len(insert_list)
 
     return CommandResults(
         readable_output="Service Table Device Upserting List",
@@ -823,6 +831,7 @@ def get_asset_lists(args):
         outputs=data
     )
 
+
 def convert_device_map_to_ise_attributes(args):
     opList = []
     device_list = demisto.args().get('device_maps')
@@ -851,6 +860,7 @@ def convert_device_map_to_ise_attributes(args):
         outputs_prefix="PaloAltoIoTIntegrationBase.CisceISEAttributes",
         outputs=opList
     )
+
 
 def main() -> None:
     """main function, parses params and runs command functions
