@@ -1,5 +1,6 @@
 <!-- HTML_DOC -->
 <p>Use the SMB integration to upload and download files from an SMB protocol.</p>
+<p>The integration will utilize SMB2 protocol for communication if the remote SMB/CIFS service supports SMB2. Otherwise, it will fallback automatically back to using SMB1 protocol</p>
 <h2>Configure SMB on Demisto</h2>
 <p>If you did not configure the Server IP / Hostname, Server NetBIOS (AD) Name, or Domain parameters, you can configure them later on as command arguments. In that case, the test command in the instance configuration will return an error.</p>
 <ol>
