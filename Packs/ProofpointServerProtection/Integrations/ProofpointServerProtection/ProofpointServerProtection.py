@@ -415,10 +415,10 @@ def add_to_blocked_senders_list_command():
 
     raw_senders_list = get_senders_list()
 
-    current_blocked_senders_list = re.findall(r'var _blacklist = "([^"]*)";', raw_senders_list)[0]
+    current_blocked_senders_list = re.findall(r'var _blacklist = "([^"]*)";', raw_senders_list)
 
     if current_blocked_senders_list:
-        blocked_senders_list = '{0},{1}'.format(current_blocked_senders_list, blocked_sender)
+        blocked_senders_list = '{0},{1}'.format(current_blocked_senders_list[0], blocked_sender)
     else:
         blocked_senders_list = blocked_sender
     add_to_blocked_senders_list(blocked_senders_list)
@@ -495,12 +495,12 @@ def remove_from_blocked_senders_list_command():
 
     raw_senders_list = get_senders_list()
 
-    current_blocked_senders_list = re.findall(r'var _blacklist = "([^"]*)";', raw_senders_list)[0]
+    current_blocked_senders_list = re.findall(r'var _blacklist = "([^"]*)";', raw_senders_list)
 
-    if unblocked_sender not in current_blocked_senders_list:
+    if not current_blocked_senders_list or unblocked_sender not in current_blocked_senders_list:
         return_error('Email is not in Blocked Senders list')
 
-    blocked_senders_list = current_blocked_senders_list.replace(unblocked_sender, '')
+    blocked_senders_list = current_blocked_senders_list[0].replace(unblocked_sender, '')
 
     remove_from_blocked_senders_list(blocked_senders_list, unblocked_sender)
 
