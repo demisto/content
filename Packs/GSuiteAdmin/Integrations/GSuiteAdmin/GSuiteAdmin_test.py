@@ -1,6 +1,8 @@
 import json
 from unittest.mock import patch
+
 import pytest
+
 import demistomock as demisto
 from GSuiteAdmin import DemistoException, MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES
 
@@ -38,9 +40,9 @@ def test_main(mocker):
     }
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(GSuiteAdmin, 'test_function', return_value='ok')
+    mocker.patch.object(GSuiteAdmin, 'test_module', return_value='ok')
     GSuiteAdmin.main()
-    assert GSuiteAdmin.test_function.called
+    assert GSuiteAdmin.test_module.called
 
 
 @patch('GSuiteAdmin.return_error')
@@ -64,7 +66,7 @@ def test_main_failure(mock_return_error, capfd, mocker):
     }
     mocker.patch.object(GSuiteAdmin.demisto, 'params', return_value=params)
     mocker.patch.object(GSuiteAdmin.demisto, 'command', return_value='test-module')
-    mocker.patch.object(GSuiteAdmin, 'test_function', side_effect=Exception)
+    mocker.patch.object(GSuiteAdmin, 'test_module', side_effect=Exception)
     with capfd.disabled():
         GSuiteAdmin.main()
 
@@ -84,11 +86,11 @@ def test_test_function(mocker, gsuite_client):
     Then:
     - Ensure 'ok' should be return.
     """
-    from GSuiteAdmin import test_function, GSuiteClient, service_account
+    from GSuiteAdmin import test_module, GSuiteClient, service_account
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
     mocker.patch.object(service_account.Credentials, 'refresh')
     gsuite_client.credentials.token = True
-    assert test_function(gsuite_client) == 'ok'
+    assert test_module(gsuite_client) == 'ok'
 
 
 def test_test_function_error(mocker, gsuite_client):
@@ -104,13 +106,13 @@ def test_test_function_error(mocker, gsuite_client):
     Then:
     - Ensure 'ok' should be return.
     """
-    from GSuiteAdmin import test_function, service_account
+    from GSuiteAdmin import test_module, service_account
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
     mocker.patch.object(service_account.Credentials, 'refresh')
     gsuite_client.credentials.token = None
 
     with pytest.raises(DemistoException, match=MESSAGES['TEST_FAILED_ERROR']):
-        test_function(gsuite_client)
+        test_module(gsuite_client)
 
 
 @patch(MOCKER_HTTP_METHOD)
@@ -735,7 +737,7 @@ def test_datatransfer_request_create_command_success(mocker_http_request, gsuite
     assert result.outputs == response_data
     assert result.readable_output.startswith(
         "### " + HR_MESSAGES['DATATRANSFER_REQUEST_CREATE_SUCCESS'])
-    assert result.outputs_prefix == OUTPUT_PREFIX['DATA_TRANSFER_LIST']
+    assert result.outputs_prefix == OUTPUT_PREFIX['DATA_TRANSFER_REQUEST_CREATE']
 
 
 def test_get_transfer_params_list_from_str_invalid_param_format():

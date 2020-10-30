@@ -93,6 +93,7 @@ OUTPUT_PREFIX: Dict[str, str] = {
     'ROLE_ASSIGNMENT_CREATE': 'GSuite.RoleAssignment',
     'ROLE': 'GSuite.Role',
     'DATA_TRANSFER_LIST': 'GSuite.DataTransfer(val.id == obj.id)',
+    'DATA_TRANSFER_REQUEST_CREATE': 'GSuite.DataTransfer',
     'DATA_TRANSFER_LIST_PAGE_TOKEN': 'GSuite.PageToken.DataTransfer',
     'CUSTOM_USER_SCHEMA': 'GSuite.UserSchema',
 }
@@ -463,13 +464,11 @@ def is_email_valid(email: str) -> bool:
 
 
 @logger
-def test_function(client) -> str:
+def test_module(client) -> str:
     """
     Performs test connectivity by valid http response
 
     :param client: client object which is used to get response from api.
-    :param last_run: Demisto last run dictionary.
-    :param params: configuration parameters.
 
     :return: raise ValueError if any error occurred during connection
     :raises DemistoException: If there is any other issues while making the http call.
@@ -929,7 +928,7 @@ def datatransfer_request_create_command(client, args: Dict[str, str]) -> Command
                                          'requestTime', 'applicationDataTransfers'])
 
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX['DATA_TRANSFER_LIST'],
+        outputs_prefix=OUTPUT_PREFIX['DATA_TRANSFER_REQUEST_CREATE'],
         outputs=GSuiteClient.remove_empty_entities(response),
         readable_output=hr_output,
         raw_response=GSuiteClient.remove_empty_entities(response),
@@ -1045,7 +1044,7 @@ def main() -> None:
 
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
-            result = test_function(gsuite_client)
+            result = test_module(gsuite_client)
             demisto.results(result)
 
         elif command in commands:

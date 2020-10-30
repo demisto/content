@@ -1,4 +1,5 @@
 import json
+
 import pytest
 
 from GSuiteApiModule import DemistoException, COMMON_MESSAGES, GSuiteClient

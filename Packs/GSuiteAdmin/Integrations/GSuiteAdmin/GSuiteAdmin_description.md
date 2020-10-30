@@ -1,5 +1,6 @@
 # Configure an API account on G Suite Admin
-Configure a Service Account and retrieve it's key in JSON format by following the steps mentioned here: [https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount) 
+Configure a Service Account and retrieve it's key in JSON format by following the steps mentioned here: [https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount) or go through the integration README.
+ 
 
 Provide at least one of the scopes mentioned for each command.
 
