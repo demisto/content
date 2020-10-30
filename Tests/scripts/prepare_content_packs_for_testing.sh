@@ -30,8 +30,9 @@ TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
-gsutil -m rm -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH"
-gsutil -m cp -r "gs://marketplace-dist/content/pakcs" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH"
+echo "copying"
+gsutil -m cp -r "gs://marketplace-dist/content/packs" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH"
+echo "done copying"
 
 exit 1
 
