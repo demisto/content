@@ -253,10 +253,10 @@ def main():
     build_bucket = storage_client.bucket(build_bucket_name)
 
     # initialize base paths
-    if production_base_path:
-        GCPConfig.STORAGE_BASE_PATH = production_base_path
     build_bucket_path = os.path.join(GCPConfig.BUILD_BASE_PATH, circle_branch, build_number)
     GCPConfig.BUILD_BASE_PATH = os.path.join(build_bucket_path, GCPConfig.STORAGE_BASE_PATH)
+    if production_base_path:
+        GCPConfig.STORAGE_BASE_PATH = production_base_path
 
     # TODO: what if no commit was found, for example: there was a squash of several master commits?
     # TODO: refactor force upload
