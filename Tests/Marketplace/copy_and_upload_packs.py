@@ -263,6 +263,7 @@ def main():
     # TODO: refactor force upload
     # TODO: add option for pack list
     # TODO: what if the commit is the same? i.e. between two uploaded the commit hasn't change? (nothing was merged)
+    # TODO: think what to do when pack is failing in prepare content step
 
     # download and extract build and prod index from build and prod buckets
     build_index_folder_path, prod_index_blob, build_index_blob, prod_index_generation, build_index_generation = \
@@ -294,8 +295,11 @@ def main():
             pack.cleanup()
             continue
 
+        print(f"{pack.name} main getting latest_version")
+        pack_latest_version = pack.latest_version
+        print(f"{pack.name} main got latest_version: {pack_latest_version}")
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
-                                                                              override_all_packs, pack.latest_version)
+                                                                              override_all_packs, pack_latest_version)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
 
