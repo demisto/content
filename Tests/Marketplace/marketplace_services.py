@@ -1162,6 +1162,37 @@ class Pack(object):
         finally:
             return task_status, not_updated_build
 
+    def create_local_changelog(self, build_index_folder_path):
+        """
+        Copies the pack index changelog.json file to the pack path
+        Args:
+            build_index_folder_path: The path to the build index folder
+
+        Returns:
+            bool: whether the operation succeeded.
+
+        """
+        task_status = True
+
+        build_changelog_index_path = os.path.join(build_index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+        pack_changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
+
+        if os.path.exists(build_changelog_index_path):
+            try:
+                shutil.copyfile(src=build_changelog_index_path, dst=pack_changelog_path)
+                print_color(f"Successfully copied pack index changelog.json file from {build_changelog_index_path}"
+                            f" to {pack_changelog_path}.", LOG_COLORS.GREEN)
+            except shutil.Error as e:
+                task_status = False
+                print_error(f"Failed copying changelog.json file from {build_changelog_index_path} to "
+                            f"{pack_changelog_path}. Additional info: {str(e)}")
+                return task_status
+        else:
+            task_status = False
+            print_error(f"{self._pack_name} index changelog file is missing at path: {build_changelog_index_path}")
+
+        return task_status and self.is_changelog_exists()
+
     def collect_content_items(self):
         """ Iterates over content items folders inside pack and collects content items data.
 

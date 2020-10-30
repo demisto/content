@@ -295,6 +295,12 @@ def main():
             pack.cleanup()
             continue
 
+        task_status = pack.create_local_changelog(build_index_folder_path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+            pack.cleanup()
+            continue
+
         print(f"{pack.name} main getting latest_version")
         pack_latest_version = pack.latest_version
         print(f"{pack.name} main got latest_version: {pack_latest_version}")
