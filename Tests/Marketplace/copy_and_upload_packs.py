@@ -258,10 +258,7 @@ def main():
     build_bucket_path = os.path.join(GCPConfig.BUILD_BASE_PATH, circle_branch, build_number)
     GCPConfig.BUILD_BASE_PATH = os.path.join(build_bucket_path, GCPConfig.STORAGE_BASE_PATH)
 
-    # TODO: for prepare content step, think what to do if a pack was failing to upload
-    # TODO: for upload packs step, think what to do if a pack was failing to upload
     # TODO: what if no commit was found, for example: there was a squash of several master commits?
-    # TODO: refactor prepare content step to be the same as upload step
     # TODO: refactor force upload
 
     # download and extract build and prod index from build and prod buckets
