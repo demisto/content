@@ -525,7 +525,7 @@ tasks:
       integration-name:
         simple: servicenow
       message:
-        simple: Success to send ${PaloAltoIoTIntegrationBase.UpsertDevices.update_count}
+        simple: Success to update ${PaloAltoIoTIntegrationBase.UpsertDevices.update_count}
           devices to servicenow.
       playbook-name:
         simple: panw_iot_servicenow_device_incremental_playbook
@@ -540,13 +540,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 881dac0c-27a0-4c3f-8d1c-66dbe29850eb
+      id: 897f0697-bee3-4cfb-8942-93857edad6c0
       iscommand: true
       name: send success status back to panw iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 881dac0c-27a0-4c3f-8d1c-66dbe29850eb
+    taskid: 897f0697-bee3-4cfb-8942-93857edad6c0
     timertriggers: []
     type: regular
     view: |-
@@ -1055,7 +1055,7 @@ tasks:
       integration-name:
         simple: servicenow
       message:
-        simple: Success to send ${PaloAltoIoTIntegrationBase.UpsertDevices.insert_count}
+        simple: Success to insert ${PaloAltoIoTIntegrationBase.UpsertDevices.insert_count}
           devices to servicenow.
       playbook-name:
         simple: panw_iot_servicenow_device_incremental_playbook
@@ -1070,13 +1070,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 55ec7509-1125-420f-87ed-b4fee664b7d8
+      id: daf4cbb6-ba66-4d6c-8fae-3445ac891c14
       iscommand: true
       name: send success status back to panw iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 55ec7509-1125-420f-87ed-b4fee664b7d8
+    taskid: daf4cbb6-ba66-4d6c-8fae-3445ac891c14
     timertriggers: []
     type: regular
     view: |-
