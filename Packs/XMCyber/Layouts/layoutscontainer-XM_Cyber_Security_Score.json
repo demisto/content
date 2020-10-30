@@ -1,9 +1,12 @@
 {
-	"close": null,
-	"description": "",
-	"details": null,
+	"description": "Contains a tab XMCyber with fields for XM Cyber Security Score Incident",
+	"fromVersion": "6.0.0",
+	"group": "incident",
+	"id": "XM_Cyber_Security_Score",
+	"name": "XM Cyber Security Score",
+	"system": false,
+	"version": -1,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -435,24 +438,5 @@
 				"type": "custom"
 			}
 		]
-	},
-	"edit": null,
-	"fromServerVersion": "",
-	"group": "incident",
-	"id": "c7bc5d76-e49e-49aa-897d-bac59e869150",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
-	"name": "XM Cyber Security Score",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"sortValues": null,
-	"system": false,
-	"toServerVersion": "",
-	"version": -1
+	}
 }

@@ -1,6 +1,11 @@
 {
-	"description": "",
+	"description": "Contains a tab XMCyber with fields for XM Cyber Incident",
 	"fromVersion": "6.0.0",
+	"group": "incident",
+	"id": "XM_Cyber_Layout",
+	"name": "XM Cyber Layout",
+	"system": false,
+	"version": -1,
 	"detailsV2": {
 		"tabs": [
 			{
@@ -597,10 +602,5 @@
 				"type": "custom"
 			}
 		]
-	},
-	"group": "incident",
-	"id": "XM_Cyber_Layout",
-	"name": "XM Cyber Layout",
-	"system": false,
-	"version": -1
+	}
 }
