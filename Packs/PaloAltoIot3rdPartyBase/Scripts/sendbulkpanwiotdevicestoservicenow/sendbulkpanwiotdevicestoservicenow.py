@@ -3,11 +3,13 @@ from CommonServerPython import *  # noqa: F401
 
 
 res = []
-count = 0
+run_time_count = 1
 offset = 0
 PAGE_SIZE = 1000
 update_num = 0
 insert_num = 0
+total_update_num = 0
+total_insert_num = 0
 while True:
     # get all devices from the IoT cloud
     resp = demisto.executeCommand("get-asset-inventory-with-paging-and-offset", {
@@ -56,8 +58,10 @@ while True:
 
             insert_count = upsert_devices_result['insert_count']
             update_count = upsert_devices_result['update_count']
-            update_num += update_count
-            insert_num += insert_count
+            total_update_num += update_count
+            total_insert_num += insert_count
+            update_num = update_count
+            insert_num = insert_count
 
             if insert_count == 0 and update_count == 0:
                 demisto.executeCommand("send-status-to-panw-iot-cloud", {
@@ -102,26 +106,28 @@ while True:
         offset += PAGE_SIZE
         demisto.executeCommand("send-status-to-panw-iot-cloud", {
             "status": "success",
-            "message": "Successfully sent %d Devices to Servicenow" % count,
+            "message": str(run_time_count) + ". Successfully update " + str(update_num) + " Devices and insert " + str(insert_num) + " to Servicenow ",
             "integration-name": "servicenow",
             "playbook-name": "panw_iot_servicenow_bulk_integration",
             "type": "device",
             "timestamp": int(round(time.time() * 1000)),
             "using": "Palo Alto IoT Third-Party-Integration Base Instance"
         })
-        demisto.results("Successfully sent %d Devices to Servicenow" % count)
+        demisto.results(str(run_time_count) + ".Successfully update " + str(update_num) +
+                        " Devices and insert " + str(insert_num) + " to Servicenow")
+        run_time_count += 1
         time.sleep(5)
     else:
         break
 
 demisto.executeCommand("send-status-to-panw-iot-cloud", {
     "status": "success",
-    "message": "Successfully update " + str(update_num) + " Devices to Servicenow and insert " + str(insert_num) + " Devices to Servicenow",
+    "message": "Successfully total update " + str(total_update_num) + " Devices to Servicenow and total insert " + str(total_insert_num) + " Devices to Servicenow",
     "integration-name": "servicenow",
     "playbook-name": "panw_iot_servicenow_bulk_integration",
     "type": "device",
     "timestamp": int(round(time.time() * 1000)),
     "using": "Palo Alto IoT Third-Party-Integration Base Instance"
 })
-demisto.results("Successfully update " + str(update_num) +
-                " Devices to Servicenow and insert " + str(insert_num) + " Devices to Servicenow")
+demisto.results("Successfully total update " + str(total_update_num) +
+                " Devices to Servicenow and total insert " + str(total_insert_num) + " Devices to Servicenow")
