@@ -472,6 +472,115 @@ script:
     description: List the comments of an Argus case
     execution: false
     name: argus_list_case_comments
+    outputs:
+      - contextPath: Argus.Comments.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.count
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.size
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.data.id
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.addedTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.data.addedByUser.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.data.addedByUser.customerID
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.data.addedByUser.customer.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.data.addedByUser.customer.name
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.addedByUser.customer.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.addedByUser.customer.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.data.addedByUser.customer.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.addedByUser.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.data.addedByUser.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.addedByUser.userName
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.addedByUser.name
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.addedByUser.type
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.comment
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.flags
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.lastUpdatedTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Comments.data.status
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.priority
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.originEmailAddress
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.associatedAttachments.id
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.associatedAttachments.name
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.references.type
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.references.commentID
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.lastUpdatedTime
+        description: ''
+        type: String
+      - contextPath: Argus.Comments.data.addedTime
+        description: ''
+        type: String
   - arguments:
     - default: false
       description: Start timestamp
@@ -4190,6 +4299,259 @@ script:
     description: Fetch events associated with specified case.
     execution: false
     name: argus_get_events_for_case
+    outputs:
+      - contextPath: Argus.Events.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.count
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.size
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.customerInfo.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.customerInfo.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.customerInfo.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.customerInfo.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.customerInfo.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.properties.additionalProp1
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.properties.additionalProp2
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.properties.additionalProp3
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customerID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customer.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customer.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.customer.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.customer.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customer.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.userName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.type
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.comment
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.associatedCase.subject
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.categoryID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.associatedCase.categoryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.service
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.status
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.priority
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.timeZone
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.attackInfo.alarmID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.attackInfo.alarmDescription
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.attackInfo.attackCategoryID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.attackInfo.attackCategoryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.attackInfo.signature
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.domain.fqdn
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.uri
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.count
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.port
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.geoLocation.countryCode
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.source.geoLocation.countryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.source.geoLocation.locationName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.source.geoLocation.latitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.geoLocation.longitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.networkAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.networkAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.port
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.geoLocation.countryCode
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.geoLocation.countryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.geoLocation.locationName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.geoLocation.latitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.geoLocation.longitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.networkAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.networkAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.protocol
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.startTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.endTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.lastUpdatedTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.flags
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.detailedEventIDS
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.severity
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.id
+        description: ''
+        type: String
   - arguments:
     - default: false
       description: Limit to customerID.
@@ -4236,6 +4598,259 @@ script:
     deprecated: false
     execution: false
     name: argus_list_aggregated_events
+    outputs:
+      - contextPath: Argus.Events.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.count
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.size
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.customerInfo.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.customerInfo.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.customerInfo.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.customerInfo.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.customerInfo.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.properties.additionalProp1
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.properties.additionalProp2
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.properties.additionalProp3
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customerID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customer.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customer.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.customer.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.customer.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customer.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.userName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.type
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.comment
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.associatedCase.subject
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.categoryID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.associatedCase.categoryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.service
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.status
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.priority
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.timeZone
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.attackInfo.alarmID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.attackInfo.alarmDescription
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.attackInfo.attackCategoryID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.attackInfo.attackCategoryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.attackInfo.signature
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.domain.fqdn
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.uri
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.count
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.port
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.geoLocation.countryCode
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.source.geoLocation.countryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.source.geoLocation.locationName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.source.geoLocation.latitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.geoLocation.longitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.networkAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.networkAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.port
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.geoLocation.countryCode
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.geoLocation.countryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.geoLocation.locationName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.geoLocation.latitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.geoLocation.longitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.networkAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.networkAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.protocol
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.startTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.endTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.lastUpdatedTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.flags
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.detailedEventIDS
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.severity
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.id
+        description: ''
+        type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -4472,6 +5087,259 @@ script:
       doc)'
     execution: false
     name: argus_find_aggregated_events
+    outputs:
+      - contextPath: Argus.Events.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.count
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.size
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.Events.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.customerInfo.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.customerInfo.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.customerInfo.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.customerInfo.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.customerInfo.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.properties.additionalProp1
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.properties.additionalProp2
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.properties.additionalProp3
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customerID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customer.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customer.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.customer.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.customer.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.customer.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.comments.user.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.userName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.user.type
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.comments.comment
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.associatedCase.subject
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.categoryID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.associatedCase.categoryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.service
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.status
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.associatedCase.priority
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.name
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.timeZone
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.location.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.attackInfo.alarmID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.attackInfo.alarmDescription
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.attackInfo.attackCategoryID
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.attackInfo.attackCategoryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.attackInfo.signature
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.domain.fqdn
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.uri
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.count
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.port
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.geoLocation.countryCode
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.source.geoLocation.countryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.source.geoLocation.locationName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.source.geoLocation.latitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.geoLocation.longitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.networkAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.source.networkAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.source.networkAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.port
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.geoLocation.countryCode
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.geoLocation.countryName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.geoLocation.locationName
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.destination.geoLocation.latitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.geoLocation.longitude
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.networkAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.destination.networkAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Events.data.destination.networkAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.protocol
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.startTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.endTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.lastUpdatedTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Events.data.flags
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.detailedEventIDS
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.severity
+        description: ''
+        type: String
+      - contextPath: Argus.Events.data.id
+        description: ''
+        type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -4506,6 +5374,46 @@ script:
     description: Fetch specified event payload
     execution: false
     name: argus_get_payload
+    outputs:
+      - contextPath: Argus.Payload.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.Payload.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.Payload.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.Payload.count
+        description: ''
+        type: Number
+      - contextPath: Argus.Payload.size
+        description: ''
+        type: Number
+      - contextPath: Argus.Payload.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.Payload.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.Payload.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.Payload.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.Payload.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Payload.data.id
+        description: ''
+        type: String
+      - contextPath: Argus.Payload.data.type
+        description: ''
+        type: String
+      - contextPath: Argus.Payload.data.payload
+        description: ''
+        type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -4570,6 +5478,76 @@ script:
     description: Fetch specified event.
     execution: false
     name: argus_get_event
+    outputs:
+      - contextPath: Argus.Event.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.count
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.size
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.Event.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.Event.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.Event.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.Event.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.data.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.data.flags
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.data.customerID
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.data.aggregationKey
+        description: ''
+        type: String
+      - contextPath: Argus.Event.data.sourceType
+        description: ''
+        type: String
+      - contextPath: Argus.Event.data.customerInfo.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.data.customerInfo.name
+        description: ''
+        type: String
+      - contextPath: Argus.Event.data.customerInfo.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.Event.data.customerInfo.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.Event.data.customerInfo.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.Event.data.update
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Event.data.aggregated
+        description: ''
+        type: Boolean
+      - contextPath: Argus.Event.data.encodedFlags
+        description: ''
+        type: String
   - arguments:
     - default: false
       description: Limit to customerID
@@ -4617,6 +5595,256 @@ script:
     description: Simple search for NIDS events.
     execution: false
     name: argus_list_nids_events
+    outputs:
+      - contextPath: Argus.NIDS.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.count
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.size
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.customerInfo.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.customerInfo.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.customerInfo.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.customerInfo.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.customerInfo.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.properties.additionalProp1
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.properties.additionalProp2
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.properties.additionalProp3
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.customerID
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.customer.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.customer.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.customer.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.customer.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.customer.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.userName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.type
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.comment
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.sensor.sensorID
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.sensor.hostName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.sensor.hostIpString
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.location.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.location.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.location.timeZone
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.location.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.attackInfo.alarmID
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.attackInfo.alarmDescription
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.attackInfo.attackCategoryID
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.attackInfo.attackCategoryName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.attackInfo.signature
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.count
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.engineTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.protocolID
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.domain.fqdn
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.uri
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.source.port
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.source.geoLocation.countryCode
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.source.geoLocation.countryName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.source.geoLocation.locationName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.source.geoLocation.latitude
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.source.geoLocation.longitude
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.source.networkAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.source.networkAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.source.networkAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.source.networkAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.source.networkAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.source.networkAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.destination.port
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.destination.geoLocation.countryCode
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.destination.geoLocation.countryName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.destination.geoLocation.locationName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.destination.geoLocation.latitude
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.destination.geoLocation.longitude
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.destination.networkAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.destination.networkAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.destination.networkAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.destination.networkAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.destination.networkAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.destination.networkAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.severity
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.flags
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.id
+        description: ''
+        type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -4840,6 +6068,256 @@ script:
     description: Search for NIDS events.
     execution: false
     name: argus_find_nids_events
+    outputs:
+      - contextPath: Argus.NIDS.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.count
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.size
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.customerInfo.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.customerInfo.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.customerInfo.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.customerInfo.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.customerInfo.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.properties.additionalProp1
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.properties.additionalProp2
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.properties.additionalProp3
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.customerID
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.customer.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.customer.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.customer.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.customer.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.customer.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.comments.user.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.userName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.user.type
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.comments.comment
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.sensor.sensorID
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.sensor.hostName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.sensor.hostIpAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.sensor.hostIpString
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.location.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.location.name
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.location.timeZone
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.location.id
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.attackInfo.alarmID
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.attackInfo.alarmDescription
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.attackInfo.attackCategoryID
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.attackInfo.attackCategoryName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.attackInfo.signature
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.count
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.engineTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.protocolID
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.domain.fqdn
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.uri
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.source.port
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.source.geoLocation.countryCode
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.source.geoLocation.countryName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.source.geoLocation.locationName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.source.geoLocation.latitude
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.source.geoLocation.longitude
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.source.networkAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.source.networkAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.source.networkAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.source.networkAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.source.networkAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.source.networkAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.destination.port
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.destination.geoLocation.countryCode
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.destination.geoLocation.countryName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.destination.geoLocation.locationName
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.destination.geoLocation.latitude
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.destination.geoLocation.longitude
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.destination.networkAddress.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.destination.networkAddress.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.destination.networkAddress.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.destination.networkAddress.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.destination.networkAddress.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.NIDS.data.destination.networkAddress.address
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.NIDS.data.severity
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.flags
+        description: ''
+        type: String
+      - contextPath: Argus.NIDS.data.id
+        description: ''
+        type: String
   - arguments:
     - default: false
       description: Lookup query
@@ -4915,6 +6393,88 @@ script:
     description: Search against PassiveDNS with criteria and return matching records.
     execution: false
     name: argus_pdns_search_records
+    outputs:
+      - contextPath: Argus.PDNS.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.count
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.size
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.data.createdTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.data.lastUpdatedTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.data.times
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.data.tlp
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.data.query
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.data.answer
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.data.minTtl
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.data.maxTtl
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.data.customer.id
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.data.customer.name
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.data.customer.shortName
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.data.customer.domain.id
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.data.customer.domain.name
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.data.lastSeenTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.data.firstSeenTimestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.PDNS.data.rrclass
+        description: ''
+        type: String
+      - contextPath: Argus.PDNS.data.rrtype
+        description: ''
+        type: String
   - arguments:
     - default: false
       description: Domain to fetch observations for
@@ -4926,6 +6486,49 @@ script:
     description: Look up reputation observations for the given domain
     execution: false
     name: argus_fetch_observations_for_domain
+    outputs:
+      - contextPath: Argus.ObservationsDomain.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsDomain.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsDomain.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsDomain.count
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsDomain.size
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsDomain.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsDomain.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsDomain.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsDomain.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsDomain.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsDomain.data.domainName.fqdn
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsDomain.data.reason
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsDomain.data.override
+        description: ''
+        type: Boolean
+      - contextPath: Argus.ObservationsDomain.data.value
+        description: ''
+        type: Number
   - arguments:
     - default: false
       description: IP address to fetch observations for
@@ -4937,6 +6540,94 @@ script:
     description: Look up reputation observations for the given IP
     execution: false
     name: argus_fetch_observations_for_ip
+    outputs:
+      - contextPath: Argus.ObservationsIP.responseCode
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.limit
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.offset
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.count
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.size
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.messages.message
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsIP.messages.messageTemplate
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsIP.messages.type
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsIP.messages.field
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsIP.messages.timestamp
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.data.id
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.data.lastModified
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.data.source.id
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.data.source.alias
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsIP.data.source.name
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsIP.data.role.id
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.data.role.alias
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsIP.data.role.name
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsIP.data.firstSeen
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.data.lastSeen
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.data.numObservations
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.data.state
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.data.comment
+        description: ''
+        type: String
+      - contextPath: Argus.ObservationsIP.data.address.host
+        description: ''
+        type: Boolean
+      - contextPath: Argus.ObservationsIP.data.address.ipv6
+        description: ''
+        type: Boolean
+      - contextPath: Argus.ObservationsIP.data.address.maskBits
+        description: ''
+        type: Number
+      - contextPath: Argus.ObservationsIP.data.address.multicast
+        description: ''
+        type: Boolean
+      - contextPath: Argus.ObservationsIP.data.address.public
+        description: ''
+        type: Boolean
+      - contextPath: Argus.ObservationsIP.data.address.address
+        description: ''
+        type: String
   dockerimage: demisto/argus-toolbelt:1.0.0.12185
   feed: false
   isfetch: true

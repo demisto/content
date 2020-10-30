@@ -541,7 +541,8 @@ def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={"Argus.Attachment(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.Attachments',
+        outputs=result,
         raw_response=result,
     )
 
@@ -634,7 +635,8 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={"Argus.Comment(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.Comments',
+        outputs=result,
         raw_response=result,
     )
 
@@ -711,7 +713,8 @@ def update_case_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=pretty_print_case_metadata(result),
-        outputs={"Argus.Case(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.Case',
+        outputs=result,
         raw_response=result,
     )
 
@@ -736,7 +739,8 @@ def get_event_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(f"Event: {event_id}", result["data"]),
-        outputs={"Argus.Event(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.Event',
+        outputs=result,
         raw_response=result,
     )
 
@@ -755,7 +759,8 @@ def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={"Argus.Event(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.Events',
+        outputs=result,
         raw_response=result,
     )
 
@@ -807,7 +812,8 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={"Argus.Event(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.Events',
+        outputs=result,
         raw_response=result,
     )
 
@@ -828,7 +834,8 @@ def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={"Argus.Event(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.Events',
+        outputs=result,
         raw_response=result,
     )
 
@@ -855,7 +862,8 @@ def get_payload_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={"Argus.Payload(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.Payload',
+        outputs=result,
         raw_response=result,
     )
 
@@ -924,7 +932,8 @@ def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={"Argus.NIDS_Event(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.NIDS',
+        outputs=result,
         raw_response=result,
     )
 
@@ -945,7 +954,8 @@ def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={"Argus.NIDS_Event(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.NIDS',
+        outputs=result,
         raw_response=result,
     )
 
@@ -967,7 +977,8 @@ def search_records_command(args: Dict[str, Any]) -> CommandResults:
     )
     return CommandResults(
         readable_output=tableToMarkdown("PDNS records", result["data"]),
-        outputs={"Argus.PDNS(val.id === obj.id)": result["data"]},
+        outputs_prefix='Argus.PDNS',
+        outputs=result,
         raw_response=result,
     )
 
@@ -982,7 +993,8 @@ def fetch_observations_for_domain_command(args: Dict[str, Any]) -> CommandResult
         readable_output=tableToMarkdown(
             f'Domain observations for "{fqdn}"', result["data"]
         ),
-        outputs={"Argus.Domain_Observation(val.id === onj.id)": result["data"]},
+        outputs_prefix='Argus.ObservationsDomain',
+        outputs=result,
         raw_response=result,
     )
 
@@ -995,7 +1007,8 @@ def fetch_observations_for_i_p_command(args: Dict[str, Any]) -> CommandResults:
     result = fetch_observations_for_i_p(ip=ip)
     return CommandResults(
         readable_output=tableToMarkdown(f'IP observations for "{ip}"', result["data"]),
-        outputs={"Argus.IP_Observation(val.id === onj.id)": result["data"]},
+        outputs_prefix='Argus.ObservationsIP',
+        outputs=result,
         raw_response=result,
     )
 
