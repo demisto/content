@@ -88,7 +88,7 @@ while True:
                     fields = device['fields']
                     custom_fields = device['custom_fields']
                     sys_id = device['sys_id']
-                    demisto.executeCommand("servicenow-create-record", {
+                    demisto.executeCommand("servicenow-update-record", {
                         "table_name": "u_zingbox_discovered_devices",
                         "fields": fields,
                         "custom_fields": custom_fields,
