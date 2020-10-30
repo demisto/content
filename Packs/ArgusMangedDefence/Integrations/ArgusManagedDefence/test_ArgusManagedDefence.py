@@ -68,7 +68,7 @@ def test_fetch_incidents(requests_mock):
     next_run, incidents = fetch_incidents(last_run, "-1 day")
     assert len(incidents) == 1
     assert incidents[0]["name"] == "#0: string"
-    assert next_run.get("start_time") == "string"
+    assert next_run.get("start_time") == 1
 
 
 def test_fetch_incidents_increment_timestamp(requests_mock):

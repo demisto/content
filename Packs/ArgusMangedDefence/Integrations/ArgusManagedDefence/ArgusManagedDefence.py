@@ -124,8 +124,6 @@ services = [
     },
 ]
 
-""" CLIENT CLASS """
-
 """ HELPER FUNCTIONS """
 
 
@@ -221,10 +219,9 @@ def test_module_command() -> str:
     response = get_current_user()
     if response["responseCode"] == 200:
         return "ok"
-    else:
-        return_error(
-            "Unable to communicate with Argus API", response["responseCode"], response
-        )
+    return_error(
+        "Unable to communicate with Argus API", response["responseCode"], response
+    )
 
 
 def fetch_incidents(last_run: dict, first_fetch_period: str):
@@ -290,7 +287,7 @@ def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Tags',
+        outputs_prefix="Argus.Tags",
         outputs=result,
         raw_response=result,
     )
@@ -319,7 +316,7 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Comment',
+        outputs_prefix="Argus.Comment",
         outputs=result,
         raw_response=result,
     )
@@ -370,7 +367,7 @@ def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Cases',
+        outputs_prefix="Argus.Cases",
         outputs=result,
         raw_response=result,
     )
@@ -392,7 +389,7 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Case',
+        outputs_prefix="Argus.Case",
         outputs=result,
         raw_response=result,
     )
@@ -444,7 +441,7 @@ def create_case_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=pretty_print_case_metadata(result),
-        outputs_prefix='Argus.Case',
+        outputs_prefix="Argus.Case",
         outputs=result,
         raw_response=result,
     )
@@ -459,7 +456,7 @@ def delete_case_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=pretty_print_case_metadata(result, "Case deleted"),
-        outputs_prefix='Argus.Case',
+        outputs_prefix="Argus.Case",
         outputs=result,
         raw_response=result,
     )
@@ -481,7 +478,7 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Comment',
+        outputs_prefix="Argus.Comment",
         outputs=result,
         raw_response=result,
     )
@@ -519,7 +516,7 @@ def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Comment',
+        outputs_prefix="Argus.Comment",
         outputs=result,
         raw_response=result,
     )
@@ -541,7 +538,7 @@ def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Attachments',
+        outputs_prefix="Argus.Attachments",
         outputs=result,
         raw_response=result,
     )
@@ -558,7 +555,7 @@ def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=pretty_print_case_metadata(result),
-        outputs_prefix='Argus.Case',
+        outputs_prefix="Argus.Case",
         outputs=result,
         raw_response=result,
     )
@@ -581,7 +578,7 @@ def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Attachment',
+        outputs_prefix="Argus.Attachment",
         outputs=result,
         raw_response=result,
     )
@@ -602,7 +599,7 @@ def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Tags',
+        outputs_prefix="Argus.Tags",
         outputs=result,
         raw_response=result,
     )
@@ -635,7 +632,7 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Comments',
+        outputs_prefix="Argus.Comments",
         outputs=result,
         raw_response=result,
     )
@@ -657,7 +654,7 @@ def remove_case_tag_by_id_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Tags',
+        outputs_prefix="Argus.Tags",
         outputs=result,
         raw_response=result,
     )
@@ -682,7 +679,7 @@ def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Tags',
+        outputs_prefix="Argus.Tags",
         outputs=result,
         raw_response=result,
     )
@@ -713,7 +710,7 @@ def update_case_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=pretty_print_case_metadata(result),
-        outputs_prefix='Argus.Case',
+        outputs_prefix="Argus.Case",
         outputs=result,
         raw_response=result,
     )
@@ -739,7 +736,7 @@ def get_event_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(f"Event: {event_id}", result["data"]),
-        outputs_prefix='Argus.Event',
+        outputs_prefix="Argus.Event",
         outputs=result,
         raw_response=result,
     )
@@ -759,7 +756,7 @@ def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Events',
+        outputs_prefix="Argus.Events",
         outputs=result,
         raw_response=result,
     )
@@ -769,7 +766,7 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     result = find_aggregated_events(
         skipFutureEvents=args.get("skip_future_events", None),
         exclude=args.get("exclude", None),
-        eventIdentifier=str_to_list(args.get("event_identifier", None)),  # TODO fix
+        eventIdentifier=str_to_list(args.get("event_identifier", None)),  # TODO needed?
         locationID=str_to_list(args.get("location_id", None)),
         severity=str_to_list(args.get("severity", None)),
         customer=str_to_list(args.get("customer", None)),
@@ -812,7 +809,7 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Events',
+        outputs_prefix="Argus.Events",
         outputs=result,
         raw_response=result,
     )
@@ -834,7 +831,7 @@ def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Events',
+        outputs_prefix="Argus.Events",
         outputs=result,
         raw_response=result,
     )
@@ -862,7 +859,7 @@ def get_payload_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.Payload',
+        outputs_prefix="Argus.Payload",
         outputs=result,
         raw_response=result,
     )
@@ -932,7 +929,7 @@ def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.NIDS',
+        outputs_prefix="Argus.NIDS",
         outputs=result,
         raw_response=result,
     )
@@ -954,7 +951,7 @@ def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Argus.NIDS',
+        outputs_prefix="Argus.NIDS",
         outputs=result,
         raw_response=result,
     )
@@ -977,7 +974,7 @@ def search_records_command(args: Dict[str, Any]) -> CommandResults:
     )
     return CommandResults(
         readable_output=tableToMarkdown("PDNS records", result["data"]),
-        outputs_prefix='Argus.PDNS',
+        outputs_prefix="Argus.PDNS",
         outputs=result,
         raw_response=result,
     )
@@ -993,7 +990,7 @@ def fetch_observations_for_domain_command(args: Dict[str, Any]) -> CommandResult
         readable_output=tableToMarkdown(
             f'Domain observations for "{fqdn}"', result["data"]
         ),
-        outputs_prefix='Argus.ObservationsDomain',
+        outputs_prefix="Argus.ObservationsDomain",
         outputs=result,
         raw_response=result,
     )
@@ -1007,7 +1004,7 @@ def fetch_observations_for_i_p_command(args: Dict[str, Any]) -> CommandResults:
     result = fetch_observations_for_i_p(ip=ip)
     return CommandResults(
         readable_output=tableToMarkdown(f'IP observations for "{ip}"', result["data"]),
-        outputs_prefix='Argus.ObservationsIP',
+        outputs_prefix="Argus.ObservationsIP",
         outputs=result,
         raw_response=result,
     )
