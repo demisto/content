@@ -30,12 +30,6 @@ TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
-echo "copying"
-gsutil -m cp -r "gs://marketplace-dist/content/packs" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH"
-echo "done copying"
-
-exit 1
-
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH"
 echo "Finished copying successfully."
@@ -62,7 +56,8 @@ else
   elif [ -n "${BUCKET_UPLOAD}" ]; then
     echo "Updating all content packs for upload packs to production..."
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -o -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt false --id_set_path $ID_SET -pb 'marketplace-dist-private'
+  [ -n "${BUCKET_UPLOAD}" ] && REMOVE_PBS=true || REMOVE_PBS=false
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -o -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -pb 'marketplace-dist-private'
   echo "Finished updating content packs successfully."
 fi
 
