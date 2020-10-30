@@ -804,29 +804,35 @@ def main():
 
     # starting iteration over packs
     for pack in packs_list:
+        print(f"load_user_metadata step: changelog.json file exists: {pack.is_changelog_exists()}")
         task_status, user_metadata = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
             pack.cleanup()
             continue
 
+        print(f"collect_content_items step: changelog.json file exists: {pack.is_changelog_exists()}")
+
         task_status, pack_content_items = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
             continue
+        print(f"upload_integration_images step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
+        print(f"upload_author_image step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status, author_image = pack.upload_author_image(storage_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
             continue
+        print(f"format_metadata step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
@@ -838,6 +844,7 @@ def main():
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
+        print(f"prepare_release_notes step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
         if not task_status:
@@ -849,24 +856,28 @@ def main():
             pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
             pack.cleanup()
             continue
+        print(f"remove_unwanted_files step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status = pack.remove_unwanted_files(remove_test_playbooks)
         if not task_status:
             pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
             pack.cleanup()
             continue
+        print(f"sign_pack step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status = pack.sign_pack(signature_key)
         if not task_status:
             pack.status = PackStatus.FAILED_SIGNING_PACKS.name
             pack.cleanup()
             continue
+        print(f"zip_pack step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status, zip_pack_path = pack.zip_pack()
         if not task_status:
             pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
             pack.cleanup()
             continue
+        print(f"detect_modified step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
                                                               last_upload_commit_hash)
@@ -874,6 +885,7 @@ def main():
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
             continue
+        print(f"upload_to_storage step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         (task_status, skipped_pack_uploading, full_pack_path) = \
             pack.upload_to_storage(zip_pack_path, pack.latest_version,
@@ -892,6 +904,7 @@ def main():
             pack.bucket_url = bucket_url
             pack.cleanup()
             continue
+        print(f"check_if_exists_in_index step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
         if not task_status:
@@ -904,12 +917,14 @@ def main():
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
+        print(f"prepare_for_index_upload step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status = pack.prepare_for_index_upload()
         if not task_status:
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
             pack.cleanup()
             continue
+        print(f"update_index_folder step: changelog.json file exists: {pack.is_changelog_exists()}")
 
         task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
                                           pack_version=pack.latest_version, hidden_pack=pack.hidden)

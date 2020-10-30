@@ -1775,6 +1775,9 @@ class Pack(object):
             shutil.rmtree(self._pack_path)
             print(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
 
+    def is_changelog_exists(self):
+        return os.path.isfile(os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
+
 
 # HELPER FUNCTIONS
 
