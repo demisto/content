@@ -189,7 +189,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage45: demisto/python3:3.8.5.10845
 tests:
 - No tests
 fromversion: 5.5.0
