@@ -201,8 +201,8 @@ def match_pattern(
                 return next(
                     filter(
                         lambda v:
-                            isinstance(v, str)
-                            and fnmatch.fnmatchcase(v.lower(), pattern),
+                            isinstance(v, str) and
+                            fnmatch.fnmatchcase(v.lower(), pattern),
                         value),
                     None) is not None
             elif isinstance(value, str):
@@ -212,8 +212,8 @@ def match_pattern(
                 return next(
                     filter(
                         lambda v:
-                        isinstance(v, str)
-                        and fnmatch.fnmatchcase(v, pattern),
+                        isinstance(v, str) and
+                        fnmatch.fnmatchcase(v, pattern),
                         value),
                     None) is not None
             elif isinstance(value, str):
@@ -227,8 +227,8 @@ def match_pattern(
             return next(
                 filter(
                     lambda v:
-                        isinstance(v, str)
-                        and re.fullmatch(pattern, v, flags),
+                        isinstance(v, str) and
+                        re.fullmatch(pattern, v, flags),
                     value),
                 None) is not None
         elif isinstance(value, str):
@@ -615,8 +615,8 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str)
-                        and match_pattern(r, lhs, True, PATALG_BINARY),
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_BINARY),
                     rhs),
                 None) is not None
 
@@ -636,8 +636,8 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str)
-                        and match_pattern(r, lhs, False, PATALG_WILDCARD),
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, False, PATALG_WILDCARD),
                     rhs),
                 None) is not None
 
@@ -650,8 +650,8 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str)
-                        and match_pattern(r, lhs, True, PATALG_WILDCARD),
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_WILDCARD),
                     rhs),
                 None) is not None
 
@@ -672,8 +672,8 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str)
-                        and match_pattern(r, lhs, False, PATALG_REGEX),
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, False, PATALG_REGEX),
                     rhs),
                 None) is not None
 
@@ -686,8 +686,8 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str)
-                        and match_pattern(r, lhs, True, PATALG_REGEX),
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_REGEX),
                     rhs),
                 None) is not None
 
@@ -1024,39 +1024,26 @@ class ExtFilter:
 
             lconds = conds.get("if")
             if lconds:
-                value = Value(copy.deepcopy(root))
-                for dconds in lconds if isinstance(lconds, list) else [lconds]:
-                    if not isinstance(dconds, dict):
-                        exit_error(f"Invalid conditions: {conds}")
+                lconds = self.parse_conds_json(lconds)
+                if not isinstance(lconds, (dict, list)):
+                    exit_error(f"Invalid conditions: {lconds}")
 
-                    for optype, exp in dconds.items():
-                        value = self.filter_value(
-                            value.value, optype, exp, path, inlist)
-                        if value is None:
-                            lconds = conds.get("else")
-                            break
-                    else:
-                        continue
-                    break
+                elif self.filter_with_expressions(
+                        copy.deepcopy(root), lconds, path, inlist) is None:
+                    lconds = conds.get("else")
                 else:
                     lconds = conds.get("then")
             else:
                 lconds = conds.get("then")
 
-            value = Value(root)
             if lconds:
-                for dconds in lconds if isinstance(lconds, list) else [lconds]:
-                    if not isinstance(dconds, dict):
-                        exit_error(f"Invalid conditions: {conds}")
-                    for optype, exp in dconds.items():
-                        value = self.filter_value(
-                            value.value, optype, exp, path, inlist)
-                        if value is None:
-                            return None
-                    else:
-                        continue
-                    break
-            return value
+                lconds = self.parse_conds_json(lconds)
+                if not isinstance(lconds, (dict, list)):
+                    exit_error(f"Invalid conditions: {lconds}")
+
+                return self.filter_with_expressions(root, lconds, path, inlist)
+            else:
+                return Value(root)
 
         elif optype == "keeps":
             if not inlist and isinstance(root, list):
@@ -1292,8 +1279,8 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str)
-                        and match_pattern(r, lhs, True, PATALG_BINARY),
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_BINARY),
                     rval),
                     None):
                 return Value(lhs)
@@ -1314,8 +1301,8 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str)
-                        and match_pattern(r, lhs, False, PATALG_WILDCARD),
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, False, PATALG_WILDCARD),
                     rval),
                     None):
                 return Value(lhs)
@@ -1328,8 +1315,8 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str)
-                        and match_pattern(r, lhs, True, PATALG_WILDCARD),
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_WILDCARD),
                     rval),
                     None):
                 return Value(lhs)
@@ -1350,8 +1337,8 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str)
-                        and match_pattern(r, lhs, False, PATALG_REGEX),
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, False, PATALG_REGEX),
                     rval),
                     None):
                 return Value(lhs)
@@ -1364,8 +1351,8 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str)
-                        and match_pattern(r, lhs, True, PATALG_REGEX),
+                        isinstance(r, str) and
+                        match_pattern(r, lhs, True, PATALG_REGEX),
                     rval),
                     None):
                 return Value(lhs)
