@@ -147,7 +147,7 @@ class LdapClient:
         }
 
     @staticmethod
-    def _is_valid_dn(dn: str, user_identifier_attribute: List[str]) -> Tuple[bool, str]:
+    def _is_valid_dn(dn: str, user_identifier_attribute: str) -> Tuple[bool, str]:
         """
             Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN.
         """
@@ -192,7 +192,7 @@ class LdapClient:
             if len(att.split('=')) != 2:
                 raise Exception(f'User defined attributes must be of the form'
                                 f' \"attrA=valA,attrB=valB,...\", but got: {self.CUSTOM_ATTRIBUTE}')
-            formatted_attributes =  formatted_attributes + f'({att})'
+            formatted_attributes = formatted_attributes + f'({att})'
         return formatted_attributes
 
     def _create_search_filter(self, filter_prefix: str) -> str:
