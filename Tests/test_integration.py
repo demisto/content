@@ -794,9 +794,9 @@ def __print_investigation_error(client, playbook_id, investigation_id, prints_ma
             if entry['type'] == ENTRY_TYPE_ERROR and entry['parentContent']:
                 prints_manager.add_print_job('- Task ID: {}'.format(entry['taskId']), print_color, thread_index,
                                              message_color=color)
-                # Checks for passwords and replaces them with "passwords are not presented"
+                # Checks for passwords and replaces them with "******"
                 parent_content = re.sub(
-                    r'password="[^";]*"', ' password="passwords are not presented"', entry['parentContent'])
+                    r' (P|p)assword="[^";]*"', ' password=******', entry['parentContent'])
                 prints_manager.add_print_job('  Command: {}'.format(parent_content), print_color,
                                              thread_index, message_color=color)
                 body_contents_str = '  Body:\n{}\n'.format(entry['contents'])

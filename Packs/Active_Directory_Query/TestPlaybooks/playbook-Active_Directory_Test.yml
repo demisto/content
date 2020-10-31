@@ -56,7 +56,7 @@ tasks:
       telephone-number: {}
       title: {}
       user-dn:
-        simple: cn=jack${RandomString}
+        simple: cn=jack${RandomString},dc=demisto,dc=ninja
       username:
         simple: jack${RandomString}
     separatecontext: false
