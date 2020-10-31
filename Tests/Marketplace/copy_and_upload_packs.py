@@ -9,22 +9,37 @@ from datetime import datetime
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, Metadata
+    IGNORED_FILES, Metadata, PACKS_FOLDER
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, upload_id_set, load_json
 
 
-def get_pack_names():
+def get_pack_names(target_packs):
     """
     Retrieves the paths of all relevant packs (that aren't ignored)
+
+    Args:
+        target_packs (str): csv packs names or `All` for all available packs in content.
 
     Returns: The list of paths of the packs
 
     """
-    all_packs: set = set()
-    if os.path.exists(PACKS_FULL_PATH):
-        all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
-        logging.info(f"Number of selected packs to upload is: {len(all_packs)}")
-    return all_packs
+    if target_packs.lower() == "all":
+        if os.path.exists(PACKS_FULL_PATH):
+            all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
+            logging.info(f"Number of selected packs to upload is: {len(all_packs)}")
+            # return all available packs names
+            return all_packs
+        else:
+            logging.error(f"Folder {PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}")
+            sys.exit(1)
+    elif target_packs and isinstance(target_packs, str):
+        modified_packs = {p.strip() for p in target_packs.split(',') if p not in IGNORED_FILES}
+        logging.info(f"Number of selected packs to upload is: {len(modified_packs)}")
+        # return only packs from csv list
+        return modified_packs
+    else:
+        logging.error("Not correct usage of flag -p. Please check help section of upload packs script.")
+        sys.exit(1)
 
 
 def upload_index_to_storage(index_folder_path, extract_destination_path, build_index_blob, prod_index_blob,
@@ -99,6 +114,7 @@ def upload_core_packs_config(production_bucket, build_number, extract_destinatio
 
     # change the storage paths to the prod bucket
     corepacks_list = corepacks_file.get('corePacks', [])
+    # TODO: Change to regex
     corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, GCPConfig.STORAGE_BASE_PATH,
                                    corepack_path.split('content/packs/')[1]) for corepack_path in corepacks_list]
 
@@ -167,11 +183,11 @@ def download_and_extract_index(production_bucket, build_bucket, extract_destinat
         os.mkdir(extract_destination_path)
 
     if not build_index_blob.exists():
-        logging.critical(f"No build index was found in path: {build_index_storage_path}")
+        logging.error(f"No build index was found in path: {build_index_storage_path}")
         sys.exit(1)
 
     if not prod_index_blob.exists():
-        logging.critical(f"No prod index was found in path: {prod_index_storage_path}")
+        logging.error(f"No prod index was found in path: {prod_index_storage_path}")
         sys.exit(1)
 
     build_index_blob.reload()
@@ -186,16 +202,16 @@ def download_and_extract_index(production_bucket, build_bucket, extract_destinat
             index_zip.extractall(extract_destination_path)
 
         if not os.path.exists(build_index_folder_path):
-            logging.critical(f"Failed creating build {GCPConfig.INDEX_NAME} folder with extracted data.")
+            logging.error(f"Failed creating build {GCPConfig.INDEX_NAME} folder with extracted data.")
             sys.exit(1)
 
         os.remove(download_build_index_path)
-        logging.info(f"Finished downloading and extracting build {GCPConfig.INDEX_NAME} file to "
+        logging.success(f"Finished downloading and extracting build {GCPConfig.INDEX_NAME} file to "
                      f"{extract_destination_path}")
 
         return build_index_folder_path, prod_index_blob, build_index_blob, prod_index_generation, build_index_generation
     else:
-        logging.critical(f"Failed to download build {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
+        logging.error(f"Failed to download build {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
 
 
@@ -221,6 +237,11 @@ def options_handler():
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
     parser.add_argument('-i', '--id_set_path', help="The full path of id_set.json", required=False)
+    parser.add_argument('-p', '--pack_names',
+                        help=("Target packs to upload to gcs. Optional values are: `All`"
+                              " or csv list of packs "
+                              "Default is set to `All`"),
+                        required=False, default="All")
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=True)
     parser.add_argument('-c', '--circle_branch',
@@ -234,7 +255,7 @@ def options_handler():
 
 
 def main():
-    install_logging('Prepare Content Packs For Testing.log')
+    install_logging('Copy and Upload Packs.log')
     options = options_handler()
     packs_artifacts_path = options.artifacts_path
     extract_destination_path = options.extract_path
@@ -246,6 +267,7 @@ def main():
     override_all_packs = options.override_all_packs
     id_set_path = options.id_set_path
     production_base_path = options.production_base_path
+    target_packs = options.pack_names if options.pack_names else ""
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -255,13 +277,11 @@ def main():
     # initialize base paths
     build_bucket_path = os.path.join(GCPConfig.BUILD_BASE_PATH, circle_branch, build_number)
     GCPConfig.BUILD_BASE_PATH = os.path.join(build_bucket_path, GCPConfig.STORAGE_BASE_PATH)
-    print(GCPConfig.BUILD_BASE_PATH)
     if production_base_path:
         GCPConfig.STORAGE_BASE_PATH = production_base_path
 
     # TODO: what if no commit was found, for example: there was a squash of several master commits?
     # TODO: refactor force upload
-    # TODO: add option for pack list
     # TODO: what if the commit is the same? i.e. between two uploaded the commit hasn't change? (nothing was merged)
     # TODO: think what to do when pack is failing in prepare content step
 
@@ -270,7 +290,7 @@ def main():
         download_and_extract_index(production_bucket, build_bucket, extract_destination_path)
 
     # detect packs to upload
-    pack_names = get_pack_names()
+    pack_names = get_pack_names(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if is_valid_pack(extract_destination_path, pack_name, production_bucket, build_bucket)]

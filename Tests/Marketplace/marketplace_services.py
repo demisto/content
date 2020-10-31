@@ -864,7 +864,6 @@ class Pack(object):
 
         """
         task_status = True
-        skipped_pack_uploading = False
 
         build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, latest_version)
 
@@ -872,14 +871,14 @@ class Pack(object):
         if not existing_bucket_version_files:
             print_error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
                         f"path {build_version_pack_path}.")
-            return False, True
+            return False, False
 
         prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
         existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
         if existing_prod_version_files and not override_pack:
             print_warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
             print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-            return task_status, True
+            return True, True
 
         prod_full_file_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_full_file_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
@@ -896,7 +895,7 @@ class Pack(object):
         else:
             print_color(f"Uploaded {self._pack_name} pack to {prod_full_file_path} path.", LOG_COLORS.GREEN)
 
-        return task_status, skipped_pack_uploading
+        return task_status, False
 
     def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion]:
         """
@@ -1689,7 +1688,7 @@ class Pack(object):
                 new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
             )
             task_status = task_status and copied_blob.exists()
-            if task_status:
+            if not task_status:
                 print_error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
                             f"{copied_blob.name} blob failed.")
 
