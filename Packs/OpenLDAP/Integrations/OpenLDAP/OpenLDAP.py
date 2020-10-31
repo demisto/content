@@ -147,7 +147,7 @@ class LdapClient:
         }
 
     @staticmethod
-    def _is_valid_dn(dn, user_identifier_attribute: str) -> bool:
+    def _is_valid_dn(dn: str, user_identifier_attribute: str) -> bool:
         """
             Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN.
         """
@@ -238,7 +238,7 @@ class LdapClient:
 
         return searched_results
 
-    def authenticate_ldap_user(self, username, password):
+    def authenticate_ldap_user(self, username: str, password: str) -> str:
         """
             Performs simple bind operation on ldap server.
         """
@@ -250,7 +250,8 @@ class LdapClient:
         else:
             raise Exception("OpenLDAP authentication connection failed")
 
-    def get_user_data(self, username, pull_name, pull_mail, name_attribute, mail_attribute, search_user_by_dn=False):
+    def get_user_data(self, username: str, pull_name: str, pull_mail: str,
+                      name_attribute: str, mail_attribute: str, search_user_by_dn: bool = False) -> dict:
         """
             Returns data for given ldap user.
         """
@@ -292,7 +293,7 @@ class LdapClient:
 
             return user_data
 
-    def get_user_groups(self, user_identifier):
+    def get_user_groups(self, user_identifier: str):
         """
             Returns user's group.
         """
@@ -306,8 +307,8 @@ class LdapClient:
                                                                         paged_size=self._page_size)
             return LdapClient._parse_ldap_users_groups_entries(ldap_group_entries)
 
-    def authenticate_and_roles(self, username, password, pull_name=True, pull_mail=True, mail_attribute='mail',
-                               name_attribute='name'):
+    def authenticate_and_roles(self, username: str, password: str, pull_name: bool = True, pull_mail: bool = True,
+                               mail_attribute: str = 'mail', name_attribute: str = 'name') -> dict:
         """
             Implements authenticate and roles command.
         """
