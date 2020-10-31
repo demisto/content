@@ -111,7 +111,7 @@ class LdapClient:
             return Server(host=self._host, port=self._port, connect_timeout=LdapClient.TIMEOUT)
 
     @staticmethod
-    def _parse_ldap_group_entries(ldap_group_entries, groups_identifier_attribute):
+    def _parse_ldap_group_entries(ldap_group_entries: [dict], groups_identifier_attribute: str) -> List[dict]:
         """
             Returns parsed ldap groups entries.
         """
@@ -121,14 +121,14 @@ class LdapClient:
                 for ldap_group in ldap_group_entries]
 
     @staticmethod
-    def _parse_ldap_users_groups_entries(ldap_group_entries):
+    def _parse_ldap_users_groups_entries(ldap_group_entries: List[dict]) -> List[dict]:
         """
             Returns parsed user's group entries.
         """
         return [ldap_group.get('dn') for ldap_group in ldap_group_entries]
 
     @staticmethod
-    def _build_entry_for_user(user_groups, user_data, mail_attribute, name_attribute):
+    def _build_entry_for_user(user_groups: str, user_data: dict, mail_attribute: str, name_attribute: str) -> dict:
         """
             Returns entry for specific ldap user.
         """
@@ -147,7 +147,7 @@ class LdapClient:
         }
 
     @staticmethod
-    def _is_valid_dn(dn, user_identifier_attribute):
+    def _is_valid_dn(dn, user_identifier_attribute: str) -> bool:
         """
             Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN.
         """
@@ -181,7 +181,7 @@ class LdapClient:
                 'Entries': LdapClient._parse_ldap_group_entries(ldap_group_entries, self.GROUPS_IDENTIFIER_ATTRIBUTE)
             }
 
-    def _get_formatted_custom_attributes(self):
+    def _get_formatted_custom_attributes(self) -> str:
         """
         :return: custom attributes parsed to the form (att_name1=value1)(attname2=value2)
         """
@@ -195,10 +195,10 @@ class LdapClient:
             formatted_attributes =  formatted_attributes + f'({att})'
         return formatted_attributes
 
-    def _create_search_filter(self, filter_prefix):
+    def _create_search_filter(self, filter_prefix: str) -> str:
         return filter_prefix + self._get_formatted_custom_attributes()
 
-    def _fetch_specific_groups(self, specific_groups):
+    def _fetch_specific_groups(self, specific_groups: str) -> dict:
         """
             Fetches specific ldap groups under given base DN.
         """
@@ -223,7 +223,7 @@ class LdapClient:
                 'Entries': parsed_ldap_entries
             }
 
-    def get_ldap_groups(self, specific_group=None):
+    def get_ldap_groups(self, specific_group: str = '') ->  dict:
         """
             Implements ldap groups command.
         """
