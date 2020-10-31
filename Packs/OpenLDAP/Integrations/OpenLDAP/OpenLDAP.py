@@ -111,7 +111,7 @@ class LdapClient:
             return Server(host=self._host, port=self._port, connect_timeout=LdapClient.TIMEOUT)
 
     @staticmethod
-    def _parse_ldap_group_entries(ldap_group_entries: [dict], groups_identifier_attribute: str) -> List[dict]:
+    def _parse_ldap_group_entries(ldap_group_entries: List[dict], groups_identifier_attribute: str) -> List[dict]:
         """
             Returns parsed ldap groups entries.
         """
@@ -147,7 +147,7 @@ class LdapClient:
         }
 
     @staticmethod
-    def _is_valid_dn(dn: str, user_identifier_attribute: str) -> bool:
+    def _is_valid_dn(dn: str, user_identifier_attribute: List[str]) -> Tuple[bool, str]:
         """
             Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN.
         """
