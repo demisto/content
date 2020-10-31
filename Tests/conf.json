@@ -3196,10 +3196,12 @@
         "Polygon-Test": "Issue 29060",
         "AttackIQ - Test": "Issue 29774",
         "CyberTotal_TestPlaybook": "Issue 29776",
-        "AWS-securityhub Test": "Issue 29796"
+        "AWS-securityhub Test": "Issue 29796",
+        "Carbon Black Enterprise EDR Test": "Issue 29775",
+        "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
+        "Wildfire Test": "Issue 24936"
     },
     "skipped_integrations": {
-        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "ZeroFox": "Issue 29284",
         "Recorded Future v2": "Issue 29090",
@@ -3295,11 +3297,9 @@
         "illuminate": "Will be replaced by analyst1 - Issue 9401",
         "Workday": "License expired Issue: 29590, 29595",
         "QuestKace": "License expired Issue: 29594",
-        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
@@ -3307,13 +3307,11 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
         "Smokescreen IllusionBLACK": "partner integration",
-        
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3482,7 +3480,6 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
