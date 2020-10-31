@@ -62,312 +62,6 @@
   "Qradar Generic": {
    "dontMapEventToLabels": false,
    "internalMapping": {
-    "Asset Business Owner": {
-     "complex": {
-      "accessor": "Business Owner",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset Business Owner Contact": {
-     "complex": {
-      "accessor": "Business Contact",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset CVSS Availability Requirement": {
-     "complex": {
-      "accessor": "CVSS Availability Requirement",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset CVSS Collateral Damage CVSS Potential": {
-     "complex": {
-      "accessor": "CVSS Collateral Damage Potential",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset CVSS Confidentiality Requirement": {
-     "complex": {
-      "accessor": "CVSS Confidentiality Requirement",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset CVSS Integrity Requirement": {
-     "complex": {
-      "accessor": "CVSS Integrity Requirement",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset Compliance Notes": {
-     "complex": {
-      "accessor": "Compliance Notes",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset DNS Name": {
-     "complex": {
-      "accessor": "Unified Name",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset Description": {
-     "complex": {
-      "accessor": "Description",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset IP Address": {
-     "complex": {
-      "accessor": "value",
-      "filters": [
-
-      ],
-      "root": "assets.interfaces.ip_addresses",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset Location": {
-     "complex": {
-      "accessor": "Location",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset Mac Address": {
-     "complex": {
-      "accessor": "mac_address",
-      "filters": [
-
-      ],
-      "root": "assets.interfaces",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset Switch ID": {
-     "complex": {
-      "accessor": "Switch ID",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset Switch Port ID": {
-     "complex": {
-      "accessor": "Switch Port ID",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset Technical Owner": {
-     "complex": {
-      "accessor": "Technical Owner",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Asset Technical Owner Contact": {
-     "complex": {
-      "accessor": "Technical Contact",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Assets ID": {
-     "complex": {
-      "accessor": "id",
-      "filters": [
-
-      ],
-      "root": "assets",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
     "Assets Table": {
      "complex": {
       "accessor": "",
@@ -575,7 +269,7 @@
      },
      "simple": ""
     },
-    "Destination IP - Event": {
+    "Destination IPs": {
      "complex": {
       "accessor": "destinationip",
       "filters": [
@@ -665,25 +359,7 @@
      },
      "simple": ""
     },
-    "Destination Port": {
-     "complex": {
-      "accessor": "destinationport",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Destination Port - Event": {
+    "Destination Ports": {
      "complex": {
       "accessor": "destinationport",
       "filters": [
@@ -777,24 +453,6 @@
      },
      "simple": ""
     },
-    "Event Destination Port": {
-     "complex": {
-      "accessor": "destinationport",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
     "Event List Of Rules": {
      "complex": {
       "accessor": "rulename_creeventlist",
@@ -809,42 +467,6 @@
         },
         "operator": "uniq"
        },
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Event Log Source Name": {
-     "complex": {
-      "accessor": "logsourcename_logsourceid",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Event Log Source Type": {
-     "complex": {
-      "accessor": "logsourcetypename_devicetype",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
        {
         "args": {
 
@@ -876,60 +498,6 @@
     "Event Names": {
      "complex": {
       "accessor": "qidname_qid",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Event Source IP": {
-     "complex": {
-      "accessor": "sourceip",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Event Source Port": {
-     "complex": {
-      "accessor": "sourceport",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Event Username": {
-     "complex": {
-      "accessor": "username",
       "filters": [
 
       ],
@@ -1122,63 +690,9 @@
      },
      "simple": ""
     },
-    "Log Source Name - Event": {
-     "complex": {
-      "accessor": "logsourcename_logsourceid",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
     "Log Source Type": {
      "complex": {
       "accessor": "logsourcetypename_devicetype",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Log Source Type - Event": {
-     "complex": {
-      "accessor": "logsourcetypename_devicetype",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Log Sources": {
-     "complex": {
-      "accessor": "logsourcename_logsourceid",
       "filters": [
 
       ],
@@ -1363,19 +877,6 @@
     "Offense Number Of Flows": {
      "complex": null,
      "simple": "flow_count"
-    },
-    "Offense Number Of Log Sources": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "device_count",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
     },
     "Offense Relevance": {
      "complex": null,
@@ -1665,25 +1166,7 @@
      },
      "simple": ""
     },
-    "Source IP": {
-     "complex": {
-      "accessor": "sourceip",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Source IP - Event": {
+    "Source IPs": {
      "complex": {
       "accessor": "sourceip",
       "filters": [
@@ -1755,25 +1238,7 @@
      },
      "simple": ""
     },
-    "Source Port": {
-     "complex": {
-      "accessor": "sourceport",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-       {
-        "args": {
-
-        },
-        "operator": "uniq"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Source Port - Event": {
+    "Source Ports": {
      "complex": {
       "accessor": "sourceport",
       "filters": [

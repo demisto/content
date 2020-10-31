@@ -699,7 +699,7 @@
       "items": [
        {
         "endCol": 2,
-        "fieldId": "sourceipevent",
+        "fieldId": "sourceips",
         "height": 22,
         "id": "1f76f2c0-1307-11eb-96b6-ed7f6d78ed9f",
         "index": 0,
@@ -717,7 +717,7 @@
        },
        {
         "endCol": 2,
-        "fieldId": "sourceportevent",
+        "fieldId": "sourceports",
         "height": 22,
         "id": "8e6c3600-1306-11eb-96b6-ed7f6d78ed9f",
         "index": 2,
@@ -726,7 +726,7 @@
        },
        {
         "endCol": 2,
-        "fieldId": "destinationipevent",
+        "fieldId": "destinationips",
         "height": 22,
         "id": "2fc06990-1307-11eb-96b6-ed7f6d78ed9f",
         "index": 3,
@@ -753,7 +753,7 @@
        },
        {
         "endCol": 2,
-        "fieldId": "destinationportevent",
+        "fieldId": "destinationports",
         "height": 22,
         "id": "b08c0530-1306-11eb-96b6-ed7f6d78ed9f",
         "index": 6,
