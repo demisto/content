@@ -189,7 +189,6 @@ class Pack(object):
         """ str: pack latest version from sorted keys of changelog.json file.
         """
         if not self._latest_version:
-            print(f"{self._pack_name} no latest version, getting...")
             self._latest_version = self._get_latest_version()
             return self._latest_version
         else:
@@ -336,11 +335,9 @@ class Pack(object):
             str: Pack latest version.
 
         """
-        print(f"{self._pack_name} getting latest version...")
         changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
 
         if not os.path.exists(changelog_path):
-            print(f"{self._pack_name} changelog path {changelog_path} does not exist")
             return self.PACK_INITIAL_VERSION
 
         with open(changelog_path, "r") as changelog_file:
