@@ -7,6 +7,7 @@ from ldap3 import Server, Connection, Tls, BASE
 from ldap3.utils.dn import parse_dn
 from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError
 from ssl import CERT_REQUIRED
+from typing import Tuple
 
 ''' OpenLDAP CLIENT '''
 
@@ -92,7 +93,6 @@ class LdapClient:
         """
         return self._custom_attributes
 
-
     def _initialize_ldap_server(self):
         """
         Initializes ldap server object with given parameters. Supports both encrypted and non encrypted connection.
@@ -121,7 +121,7 @@ class LdapClient:
                 for ldap_group in ldap_group_entries]
 
     @staticmethod
-    def _parse_ldap_users_groups_entries(ldap_group_entries: List[dict]) -> List[dict]:
+    def _parse_ldap_users_groups_entries(ldap_group_entries: List[dict]) -> List[Optional[Any]]:
         """
             Returns parsed user's group entries.
         """
@@ -223,7 +223,7 @@ class LdapClient:
                 'Entries': parsed_ldap_entries
             }
 
-    def get_ldap_groups(self, specific_group: str = '') ->  dict:
+    def get_ldap_groups(self, specific_group: str = '') -> dict:
         """
             Implements ldap groups command.
         """
@@ -250,7 +250,7 @@ class LdapClient:
         else:
             raise Exception("OpenLDAP authentication connection failed")
 
-    def get_user_data(self, username: str, pull_name: str, pull_mail: str,
+    def get_user_data(self, username: str, pull_name: bool, pull_mail: bool,
                       name_attribute: str, mail_attribute: str, search_user_by_dn: bool = False) -> dict:
         """
             Returns data for given ldap user.
