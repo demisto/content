@@ -446,19 +446,17 @@ def _build_summary_table(packs_input_list, include_bucket_url=True, include_pack
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status",
-                    "Pack Bucket URL"] if include_pack_status \
-        else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
-    if not include_bucket_url:
-        table_fields.remove("Pack Bucket URL")
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
+    table_fields = table_fields + ["Pack Bucket URL"] if include_bucket_url else table_fields
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message,
-               pack.bucket_url] if include_pack_status \
-            else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version]
+        row = row + [pack.bucket_url] if include_bucket_url else row
         table.add_row(row)
 
     return table

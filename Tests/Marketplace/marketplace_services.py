@@ -843,7 +843,7 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True, None
 
-    def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack):
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack, latest_version):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
@@ -853,6 +853,7 @@ class Pack(object):
             production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
             override_pack (bool): whether to override existing pack.
+            latest_version (str): the pack's latest version.
 
         Returns:
             bool: whether the operation succeeded.
@@ -860,22 +861,21 @@ class Pack(object):
 
         """
         task_status = True
-        skipped_pack_uploading = False
 
-        build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, self.latest_version)
+        build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, latest_version)
 
         existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
         if not existing_bucket_version_files:
-            print_error(f"{self._pack_name} latest version ({self.latest_version}) was not found on build bucket at "
+            print_error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
                         f"path {build_version_pack_path}.")
-            return False, True
+            return False, False
 
-        prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, self.latest_version)
+        prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
         existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
         if existing_prod_version_files and not override_pack:
             print_warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
             print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-            return task_status, True
+            return True, True
 
         prod_full_file_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_full_file_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
@@ -892,7 +892,7 @@ class Pack(object):
         else:
             print_color(f"Uploaded {self._pack_name} pack to {prod_full_file_path} path.", LOG_COLORS.GREEN)
 
-        return task_status, skipped_pack_uploading
+        return task_status, False
 
     def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion]:
         """
@@ -1157,6 +1157,37 @@ class Pack(object):
                         f"Additional info: {e}")
         finally:
             return task_status, not_updated_build
+
+    def create_local_changelog(self, build_index_folder_path):
+        """
+        Copies the pack index changelog.json file to the pack path
+        Args:
+            build_index_folder_path: The path to the build index folder
+
+        Returns:
+            bool: whether the operation succeeded.
+
+        """
+        task_status = True
+
+        build_changelog_index_path = os.path.join(build_index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+        pack_changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
+
+        if os.path.exists(build_changelog_index_path):
+            try:
+                shutil.copyfile(src=build_changelog_index_path, dst=pack_changelog_path)
+                print_color(f"Successfully copied pack index changelog.json file from {build_changelog_index_path}"
+                            f" to {pack_changelog_path}.", LOG_COLORS.GREEN)
+            except shutil.Error as e:
+                task_status = False
+                print_error(f"Failed copying changelog.json file from {build_changelog_index_path} to "
+                            f"{pack_changelog_path}. Additional info: {str(e)}")
+                return task_status
+        else:
+            task_status = False
+            print_error(f"{self._pack_name} index changelog file is missing at path: {build_changelog_index_path}")
+
+        return task_status and self.is_changelog_exists()
 
     def collect_content_items(self):
         """ Iterates over content items folders inside pack and collects content items data.
@@ -1641,7 +1672,6 @@ class Pack(object):
         """
         task_status = True
 
-        # assuming that directories ends with a "/" and that all images are of type "png"
         build_integration_images_blobs = [f for f in
                                           build_bucket.list_blobs(
                                               prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
@@ -1655,6 +1685,9 @@ class Pack(object):
                 new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
             )
             task_status = task_status and copied_blob.exists()
+            if not task_status:
+                print_error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
+                            f"{copied_blob.name} blob failed.")
 
         if not task_status:
             print_error(f"Failed to upload {self._pack_name} pack integration images.")
@@ -1711,7 +1744,7 @@ class Pack(object):
                 print_color((f"Skipping uploading of {self._pack_name} pack author image "
                              f"and use default {GCPConfig.BASE_PACK} pack image"), LOG_COLORS.GREEN)
             else:
-                print(f"Skipping uploading of {self._pack_name} pack. "
+                print(f"Skipping uploading of {self._pack_name} pack author image. "
                       f"The pack is defined as {self.support_type} support type")
 
         except Exception as e:
@@ -1748,9 +1781,11 @@ class Pack(object):
         elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
             print_color((f"Skipping uploading of {self._pack_name} pack author image "
                          f"and use default {GCPConfig.BASE_PACK} pack image"), LOG_COLORS.GREEN)
+            return task_status
         else:
-            print_color(f"Skipping uploading of {self._pack_name} pack. The pack is defined as {self.support_type} "
-                        f"support type", LOG_COLORS.NATIVE)
+            print_color(f"Skipping uploading of {self._pack_name} pack author image. The pack is defined as "
+                        f"{self.support_type} support type", LOG_COLORS.NATIVE)
+            return task_status
 
         if not task_status:
             print_error(f"Failed uploading {self._pack_name} pack author image.")
@@ -1766,6 +1801,9 @@ class Pack(object):
         if os.path.exists(self._pack_path):
             shutil.rmtree(self._pack_path)
             print(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
+
+    def is_changelog_exists(self):
+        return os.path.isfile(os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
 
 
 # HELPER FUNCTIONS
