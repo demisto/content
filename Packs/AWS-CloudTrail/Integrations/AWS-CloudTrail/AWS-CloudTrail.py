@@ -124,6 +124,17 @@ def aws_session(service='cloudtrail', region=None, roleArn=None, roleSessionName
     return client
 
 
+def handle_returning_date_to_string(date_obj):
+    """Gets date object to string"""
+    # if the returning date is a string leave it as is.
+    if isinstance(date_obj, str):
+        return date_obj
+
+    # if event time is datetime object - convert it to string.
+    else:
+        return date_obj.isoformat()
+
+
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
     def default(self, obj):
@@ -376,19 +387,10 @@ def lookup_events(args):
     paginator = client.get_paginator('lookup_events')
     for response in paginator.paginate(**kwargs):
         for i, event in enumerate(response['Events']):
-
-            # if the returning event time is a string leave it as is.
-            if isinstance(event.get('EventTime', '01-01-01T00:00:00'), str):
-                event_time = event.get('EventTime', '01-01-01T00:00:00')
-
-            # if event time is datetime object - convert it to string.
-            else:
-                event_time = event.get('EventTime').isoformat()
-
             data.append({
                 'EventId': event['EventId'],
                 'EventName': event['EventName'],
-                'EventTime': event_time,
+                'EventTime': handle_returning_date_to_string(event.get('EventTime', '01-01-01T00:00:00')),
                 'EventSource': event['EventSource'],
                 'ResourceName': event['Resources'][0]['ResourceName'],
                 'ResourceType': event['Resources'][0]['ResourceType'],
