@@ -1434,7 +1434,7 @@ Get the policy name for a specific endpoint.
 
 #### Human Readable Output
 
->The policy name of endpoint f8a2f58846b542579c12090652e79f3d is Windows Default.
+The policy name of endpoint f8a2f58846b542579c12090652e79f3d is Windows Default.
 
 ### 16. xdr-get-endpoint-violations
 ***
