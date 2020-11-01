@@ -48,7 +48,7 @@ def test_ip_command(url, status_code, json_data, expected_output):
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False)
         results = ip_command(client, ip_to_check)
-        output = results.to_context().get('EntryContext', {})
+        output = results[0].to_context().get('EntryContext', {})
         DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
                    ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
         assert output.get('IP(val.Address && val.Address == obj.Address)', []) == expected_output.get('IP')
@@ -73,7 +73,7 @@ def test_ip_not_found(url, status_code, json_data, expected_output):
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False)
         results = ip_command(client, ip_to_check)
-        output = results.to_context().get('HumanReadable')
+        output = results[0].to_context().get('HumanReadable')
         assert "No results were found for ip 1.1.1.1" in output
 
 

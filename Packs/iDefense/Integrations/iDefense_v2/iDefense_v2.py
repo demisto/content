@@ -37,13 +37,12 @@ def _validate_args(indicator_type: str, values: list) -> list:
     """
     validate_indicators = []
     for value in values:
-        # is_valid = False
         if indicator_type == 'IP':
             if re.match(ipv4Regex, value):
                 validate_indicators.append(value)
-        if indicator_type == 'URL':
+        elif indicator_type == 'URL':
             if re.match(urlRegex, value):
-                is_valid = True
+                validate_indicators.append(value)
     return validate_indicators
 
 
@@ -97,10 +96,10 @@ def _extract_analysis_info(res: dict, dbot_score_type: str) -> Tuple[dict, Optio
                 desc = 'Match found in iDefense database'
                 dbot = Common.DBotScore(indicator_value, dbot_score_type, 'iDefense', dbot_score, desc)
                 analysis_info = {
-                    'Name': result_content.get('key', ''),
-                    'Dbot Reputation': dbot_score,
-                    'confidence': result_content.get('confidence', 0),
-                    'Threat Types': result_content.get('threat_types', '')
+                    'Name': result_content.get('display_text', ''),
+                    'DbotReputation': dbot_score,
+                    'Confidence': result_content.get('confidence', 0),
+                    'ThreatTypes': result_content.get('threat_types', '')
                 }
                 analysis_results.append({'analysis_info': analysis_info, 'dbot': dbot})
     return analysis_results
@@ -125,6 +124,14 @@ def test_module(client: Client) -> str:
 
 
 def _check_returned_results(res: dict) -> list:
+    """
+    Checks which indicator value founded on iDefense database.
+    Args:
+        res: api response
+
+    Returns: list of indicator values that returned from api request
+
+    """
     returned_values = []
     if res.get('total_size'):
         results_array = res.get('results', [])
@@ -134,7 +141,16 @@ def _check_returned_results(res: dict) -> list:
     return returned_values
 
 
-def _list_complete_values(all_inputs, res) -> list:
+def _check_no_match_values(all_inputs, res) -> list:
+    """
+
+    Args:
+        all_inputs: all indicator values received from the user
+        res: list of all indicator values that returned from api request
+
+    Returns: Which indicator has no match on iDefense database
+
+    """
     complete_values = []
 
     for val in all_inputs:
@@ -154,17 +170,12 @@ def ip_command(client: Client, args: dict):
     Returns: CommandResults containing the indicator, the response and a readable output
 
     """
-    # ip: list = argToList(args.get('ip'))
-    # ips: list = _validate_args('IP', argToList(args.get('ip')))
     ips: list = argToList(args.get('ip'))
-
-    # if not _validate_args('IP', ip):
-    #     raise DemistoException(f'Invalid parameter was given, argument value is {ip}')
 
     res = client.threat_indicator_search(url_suffix='/ip', data={'key.values': ips})
     analysis_results = _extract_analysis_info(res, DBotScoreType.IP)
     returned_ips = _check_returned_results(res)
-    no_result_values = _list_complete_values(ips, returned_ips)
+    no_match_values = _check_no_match_values(ips, returned_ips)
     command_results = []
 
     for analysis_result in analysis_results:
@@ -174,13 +185,13 @@ def ip_command(client: Client, args: dict):
         indicator: Optional[Common.IP] = None
 
         readable_output = tableToMarkdown('Results', analysis_info)
-        indicator = Common.IP(analysis_info.get('Name'), dbot)
+        indicator = Common.IP(analysis_info.get('display_text'), dbot)
 
         command_results.append(CommandResults(indicator=indicator,
                                               raw_response=res,
                                               readable_output=readable_output))
 
-    for val in no_result_values:
+    for val in no_match_values:
         readable_output = f"No results were found for ip {val}"
         command_results.append(CommandResults(readable_output=readable_output))
 
@@ -188,24 +199,32 @@ def ip_command(client: Client, args: dict):
 
 
 def url_command(client: Client, args: dict) -> CommandResults:
-    url: str = str(args.get('url'))
-    if not _validate_args('URL', url):
-        raise DemistoException(f'Invalid parameter was given, argument value is {url}')
+    urls: list = argToList(args.get('url'))
 
-    res = client.threat_indicator_search(url_suffix='/url', data={'key.values': url})
-    analysis_info, dbot = _extract_analysis_info(res, url, DBotScoreType.URL)
+    res = client.threat_indicator_search(url_suffix='/url', data={'key.values': urls})
+    analysis_results = _extract_analysis_info(res, DBotScoreType.URL)
+    returned_urls = _check_returned_results(res)
+    no_match_values = _check_no_match_values(urls, returned_urls)
+    command_results = []
 
-    indicator: Optional[Common.URL] = None
+    for analysis_result in analysis_results:
+        analysis_info = analysis_result.get('analysis_info')
+        dbot = analysis_result.get('dbot')
 
-    if len(analysis_info):
+        indicator: Optional[Common.URL] = None
+
         readable_output = tableToMarkdown('Results', analysis_info)
-        indicator = Common.URL(url, dbot)
-    else:
-        readable_output = f"No results were found for url {url}"
+        indicator = Common.URL(analysis_info.get('display_text'), dbot)
 
-    return CommandResults(indicator=indicator,
-                          raw_response=res,
-                          readable_output=readable_output)
+        command_results.append(CommandResults(indicator=indicator,
+                                              raw_response=res,
+                                              readable_output=readable_output))
+
+    for val in no_match_values:
+        readable_output = f"No results were found for url {val}"
+        command_results.append(CommandResults(readable_output=readable_output))
+
+    return command_results
 
 
 def domain_command(client: Client, args: dict) -> CommandResults:
@@ -265,10 +284,10 @@ def uuid_command(client: Client, args: dict) -> CommandResults:
             indicator = Common.URL(indicator_value, dbot)
 
         analysis_info = {
-            'Name': res.get('key'),
-            'Dbot Reputation': dbot_score,
-            'confidence': res.get('confidence'),
-            'Threat Types': res.get('threat_types')
+            'Name': res.get('display_text'),
+            'DbotReputation': dbot_score,
+            'Confidence': res.get('confidence'),
+            'ThreatTypes': res.get('threat_types')
         }
     return CommandResults(indicator=indicator,
                           raw_response=res,
@@ -280,8 +299,9 @@ def check_some(client, args):
     x = _validate_args('IP', x)
     data = {'key.values': x}
     try:
-        res = client.threat_indicator_search('ip', data)
-        res
+        x = ip_command(client, args)
+        # res = client.threat_indicator_search('ip', data)
+        x
     except Exception as e:
         print(e.args)
 
@@ -302,6 +322,7 @@ def main():
 
     try:
         client = Client(base_url, api_key, verify_certificate, proxy)
+        check_some(client,demisto.args())
         command = demisto.command()
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
