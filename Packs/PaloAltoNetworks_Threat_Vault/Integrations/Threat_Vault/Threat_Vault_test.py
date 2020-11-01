@@ -20,10 +20,22 @@ def test_dns_get_by_id(mocker):
             'antivirus': {'latestReleaseVersion': 0, 'firstReleaseVersion': 0}
         }
     }
-    print('gdfsbfd')
     mocker.patch.object(client, 'dns_signature_get_request', return_value=return_data)
     command_results = dns_signature_get(client, args={'domain': 'test.com'})
     output = command_results.to_context()
     print(str(output))
     # assert output.get('Domain(val.Name && val.Name == obj.Name)', []) == expected_result.get('Domain')
     # assert output.get(dbot_key, []) == expected_result.get('DBotScore')
+
+
+a = {
+    'metadata': {
+        'severity': 'medium',
+        'reference': 'http://www.microsoft.com/security/portal/Threat/Encyclopedia/Entry.aspx?Name=Win32/Autorun,http://blogs.technet.com/b/mmpc/archive/2011/02/08/breaking-up-the-romance-between-malware-and-autorun.aspx,http://nakedsecurity.sophos.com/2011/06/15/usb-autorun-malware-on-the-wane/',
+        'panOsMaximumVersion': '',
+        'description': 'This signature detects a variety of user-agents in HTTP request headers that have been known to be used by the Autorun family of malicious software, and not known to be used by legitimate clients. The request header should be inspected to investigate the suspect user-agent. If the user-agent is atypical or unexpected, the endpoint should be inspected to determine the user-agent used to generate the request on the machine (typically malware).',
+        'panOsMinimumVersion': '6.1.0', 'action': 'alert', 'category': 'spyware', 'changeData': ''
+    },
+    'cve': '', 'signatureName': 'Autorun User-Agent Traffic', 'vendor': '', 'signatureType': 'spyware',
+    'firstReleaseTime': '2011-05-23 UTC', 'signatureId': 10001, 'latestReleaseTime': '2020-10-30 UTC',
+    'latestReleaseVersion': 8338, 'status': 'released', 'firstReleaseVersion': 248}

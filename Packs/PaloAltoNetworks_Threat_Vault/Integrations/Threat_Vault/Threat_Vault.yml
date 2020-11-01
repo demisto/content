@@ -68,6 +68,51 @@ script:
       - contextPath: ThreatVault.DNS.signatureName
         description: DNS signature name.
         type: String
+  - arguments:
+    - default: false
+      description: ID of the antispyware signature.
+      isArray: false
+      name: signature_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get anti spyware signature.
+    execution: false
+    name: threatvault-antispyware-signature-get-by-id
+    outputs:
+    - contextPath: ThreatVault.AntiSpyware.firstReleaseVersion
+      description: first released version.
+      type: Number
+    - contextPath: ThreatVault.AntiSpyware.signatureName
+      description: AntiSpyware signature name.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.firstReleaseTime
+      description: First released time.
+      type: AntiSpyware
+    - contextPath: ThreatVault.AntiSpyware.vendor
+      description: AntiSpyware vendor.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.latestReleaseTime
+      description: Latest release time.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.metadata
+      description: TODO
+      type: Unknown
+    - contextPath: ThreatVault.AntiSpyware.signatureType
+      description: The signature type.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.cve
+      description: The AntiSpyware status CVE
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.status
+      description: The AntiSpyware status.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.signatureId
+      description: AntiSpyware signature ID.
+      type: Number
+    - contextPath: ThreatVault.AntiSpyware.latestReleaseVersion
+      description: Latest released version.
+      type: Number
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   longRunning: false

@@ -30,11 +30,22 @@ class Client(BaseClient):
         """Get DNS signature by sending a GET request.
 
         Args:
-            dns_signature_id: antivirus sha256.
+            dns_signature_id: DNS signature ID.
         Returns:
             Response from API.
         """
         return self._http_request(method='GET', url_suffix=f'/dns/signature/{dns_signature_id}', params=self._params)
+
+    def antispyware_get_by_id_request(self, signature_id: str) -> dict:
+        """Get DNS signature by sending a GET request.
+
+        Args:
+            signature_id: signature ID.
+        Returns:
+            Response from API.
+        """
+        return self._http_request(method='GET', url_suffix=f'/ips/signature/{signature_id}', params=self._params)
+
 
 def test_module(client: Client, *_) -> str:
     """Performs basic get request to get a DNS signature
@@ -47,6 +58,7 @@ def test_module(client: Client, *_) -> str:
     """
     client.dns_signature_get_request(dns_signature_id='325235352')
     return 'ok'
+
 
 def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
     """Get antivirus signature
@@ -101,6 +113,30 @@ def dns_get_by_id(client: Client, args: dict) -> CommandResults:
     )
 
 
+def antispyware_get_by_id(client: Client, args: dict) -> CommandResults:
+    """Get anti spyware signature
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        CommandResults.
+    """
+    signature_id = str(args.get('signature_id', ''))
+    response = client.antispyware_get_by_id_request(signature_id)
+    headers = ['signatureId', 'signatureName', 'signatureType', 'status', 'firstReleaseTime', 'latestReleaseTime']
+    readable_output = tableToMarkdown(name=f"Anti Spyware Signature:", t=response, headers=headers, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix=f'{client.name}.AntiSpyware',
+        outputs_key_field='signatureId',
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -117,6 +153,7 @@ def main():
         commands = {
             'threatvault-antivirus-signtature-get': antivirus_signature_get,
             'threatvault-dns-signature-get-by-id': dns_get_by_id,
+            'threatvault-antispyware-signature-get-by-id': antispyware_get_by_id,
         }
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
