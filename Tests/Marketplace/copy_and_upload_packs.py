@@ -11,6 +11,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, Pa
     IGNORED_FILES, PACKS_FOLDER, FAILED_PACKS_PATH_SUFFIX
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, upload_id_set, load_json, \
     get_packs_summary
+from demisto_sdk.commands.common.tools import str2bool
 
 
 def get_pack_names(target_packs):
@@ -265,7 +266,7 @@ def options_handler():
     parser.add_argument('-c', '--circle_branch',
                         help="CircleCi branch of current build", required=True)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        default=False, action='store_true', required=False)
+                        type=str2bool, default=False, required=True)
     parser.add_argument('-pbp', '--production_base_path', help="Production base path of the directory to upload to.",
                         required=False)
     # disable-secrets-detection-end
