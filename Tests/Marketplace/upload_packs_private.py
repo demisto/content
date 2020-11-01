@@ -731,7 +731,7 @@ def handle_github_response(response):
 
 
 def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
-                                       packs_dependencies_mapping, private_bucket_name,
+                                       packs_dependencies_mapping, storage_bucket_name, private_bucket_name,
                                        private_storage_bucket=None, content_repo=None, current_commit_hash='',
                                        remote_previous_commit_hash='', packs_statistic_df=None):
     build_number = upload_config.ci_build_number
@@ -824,7 +824,8 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
                                bucket_for_uploading, override_all_packs
                                or pack_was_modified, private_content=True)
     if full_pack_path is not None:
-        bucket_path = f'https://console.cloud.google.com/storage/browser/{private_bucket_name}/'
+        name_of_bucket_containing_packs = private_bucket_name if private_bucket_name else storage_bucket_name
+        bucket_path = f'https://console.cloud.google.com/storage/browser/{name_of_bucket_containing_packs}/'
         bucket_url = bucket_path + full_pack_path
     else:
         bucket_url = 'Pack was not uploaded.'
@@ -989,7 +990,7 @@ def main():
     # starting iteration over packs
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
-                                           packs_dependencies_mapping, private_bucket_name,
+                                           packs_dependencies_mapping, storage_bucket_name, private_bucket_name,
                                            private_storage_bucket=private_storage_bucket, content_repo=content_repo,
                                            current_commit_hash=current_commit_hash,
                                            remote_previous_commit_hash=remote_previous_commit_hash,
