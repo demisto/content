@@ -113,6 +113,27 @@ script:
     - contextPath: ThreatVault.AntiSpyware.latestReleaseVersion
       description: Latest released version.
       type: Number
+  - arguments:
+    - default: false
+      description: ip to search.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    deprecated: false
+    description: Get IP geolocation.
+    execution: false
+    name: threatvault-ip-geo-get
+    outputs:
+    - contextPath: ThreatVault.IP.CountryCode
+      description: Country code.
+      type: String
+    - contextPath: ThreatVault.IP.CountryName
+      description: Country name.
+      type: String
+    - contextPath: ThreatVault.IP.ipAddress
+      description: IP address.
+      type: String
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   longRunning: false

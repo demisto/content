@@ -10,7 +10,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, api_key: str, verify: bool, proxy: bool):
-        super().__init__(base_url='https://autofocus.paloaltonetworks.com/api/intel/v1/threatvault', verify=verify,
+        super().__init__(base_url='https://autofocus.paloaltonetworks.com/api/intel/v1', verify=verify,
                          proxy=proxy, headers={'Content-Type': 'application/json'})
         self._params = {'api_key': api_key}
         self.name = 'ThreatVault'
@@ -24,7 +24,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        return self._http_request(method='GET', url_suffix=f'/ips/signature/{sha256}', params=self._params)
+        return self._http_request(method='GET', url_suffix=f'/threatvault/ips/signature/{sha256}', params=self._params)
 
     def dns_signature_get_request(self, dns_signature_id: str) -> dict:
         """Get DNS signature by sending a GET request.
@@ -34,7 +34,8 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        return self._http_request(method='GET', url_suffix=f'/dns/signature/{dns_signature_id}', params=self._params)
+        return self._http_request(method='GET', url_suffix=f'/threatvault/dns/signature/{dns_signature_id}',
+                                  params=self._params)
 
     def antispyware_get_by_id_request(self, signature_id: str) -> dict:
         """Get DNS signature by sending a GET request.
@@ -44,7 +45,18 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        return self._http_request(method='GET', url_suffix=f'/ips/signature/{signature_id}', params=self._params)
+        return self._http_request(method='GET', url_suffix=f'/threatvault/ips/signature/{signature_id}',
+                                  params=self._params)
+
+    def ip_geo_get_request(self, ip_: str) -> dict:
+        """Get IP geolocation by sending a GET request.
+
+        Args:
+            ip_: ip address.
+        Returns:
+            Response from API.
+        """
+        return self._http_request(method='GET', url_suffix=f'/ip/{ip_}/geolocation', params=self._params)
 
 
 def test_module(client: Client, *_) -> str:
@@ -137,6 +149,30 @@ def antispyware_get_by_id(client: Client, args: dict) -> CommandResults:
     )
 
 
+def ip_geo_get(client: Client, args: dict) -> CommandResults:
+    """Get IP geo location
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        CommandResults.
+    """
+    ip_ = str(args.get('ip', ''))
+    response = client.ip_geo_get_request(ip_)
+    readable_output = tableToMarkdown(name=f"Anti Spyware Signature:", t=response, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix=f'{client.name}.IP',
+        outputs_key_field='ipAddress',
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -154,6 +190,7 @@ def main():
             'threatvault-antivirus-signtature-get': antivirus_signature_get,
             'threatvault-dns-signature-get-by-id': dns_get_by_id,
             'threatvault-antispyware-signature-get-by-id': antispyware_get_by_id,
+            'threatvault-ip-geo-get': ip_geo_get,
         }
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

@@ -1,4 +1,4 @@
-from Threat_Vault import Client, dns_get_by_id, antispyware_get_by_id
+from Threat_Vault import Client, dns_get_by_id, antispyware_get_by_id, ip_geo_get
 
 
 def test_dns_get_by_id(mocker):
@@ -60,6 +60,25 @@ def test_antispyware_get_by_id(mocker):
     }
     mocker.patch.object(client, 'antispyware_get_by_id_request', return_value=return_data)
     command_results = antispyware_get_by_id(client, args={'signature_id': '10001'})
+    output = command_results.to_context()
+    print(str(output))
+    # assert output.get('Domain(val.Name && val.Name == obj.Name)', []) == expected_result.get('Domain')
+    # assert output.get(dbot_key, []) == expected_result.get('DBotScore')
+
+
+def test_ip_geo_get(mocker):
+    """
+    Given:
+        - an ip
+    When:
+        - mocking the server response for an IP, running ip_geo_get
+    Then:
+        - validating the returned context data
+    """
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    return_data = {'ipAddress': '1.1.1.1', 'countryCode': 'AU', 'countryName': 'Australia'}
+    mocker.patch.object(client, 'ip_geo_get_request', return_value=return_data)
+    command_results = ip_geo_get(client, args={'ip': '1.1.1.1'})
     output = command_results.to_context()
     print(str(output))
     # assert output.get('Domain(val.Name && val.Name == obj.Name)', []) == expected_result.get('Domain')
