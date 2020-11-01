@@ -15,7 +15,7 @@ import logging
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe
+    get_packs_statistics_dataframe, FAILED_PACKS_PATH_SUFFIX
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 
@@ -588,26 +588,23 @@ def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_com
         sys.exit(1)
 
 
-def print_packs_summary(packs_list, comment_on_pr=True, include_bucket_url=True):
+def print_packs_summary(successful_packs, skipped_packs, failed_packs, comment_on_pr=True, include_bucket_url=True,
+                        include_pack_status=False):
     """Prints summary of packs uploaded to gcs.
 
     Args:
-        packs_list (list): list of initialized packs.
+        successful_packs (list): list of packs that were successfully uploaded.
+        skipped_packs (list): list of packs that were skipped during upload.
+        failed_packs (list): list of packs that were failed during upload.
         comment_on_pr (bool): indicates whether to comment on pr for external prs or not
         include_bucket_url (bool): indicates whether to include the bucket url column in the summary or not
+        include_pack_status (bool): indicates whether to include the pack status
 
     """
-    successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
-    skipped_packs = [pack for pack in packs_list if
-                     pack.status == PackStatus.PACK_ALREADY_EXISTS.name
-                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-                     or pack.status == PackStatus.FAILED_DETECTING_MODIFIED_FILES.name]
-    failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
-
     logging.info(
         f"""\n
 ------------------------------------------ Packs Upload Summary ------------------------------------------
-Total number of packs: {len(packs_list)}
+Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
 ----------------------------------------------------------------------------------------------------------""")
 
     if successful_packs:
@@ -615,7 +612,7 @@ Total number of packs: {len(packs_list)}
         logging.success(f"Number of successful uploaded packs: {len(successful_packs)}")
         logging.success(f"Uploaded packs:\n{successful_packs_table}")
     if skipped_packs:
-        skipped_packs_table = _build_summary_table(skipped_packs, include_bucket_url)
+        skipped_packs_table = _build_summary_table(skipped_packs, include_bucket_url, include_pack_status)
         logging.warning(f"Number of skipped packs: {len(skipped_packs)}")
         logging.warning(f"Skipped packs:\n{skipped_packs_table}")
     if failed_packs:
@@ -744,6 +741,34 @@ def get_last_upload_commit_hash(index_folder_path):
             sys.exit(1)
 
     return last_upload_commit_hash
+
+
+def get_packs_summary(packs_list, circle_artifacts_path, write_to_artifacts):
+    """
+    Returns the packs list divided into 3 lists by their status
+    Args:
+        packs_list (list): The full packs list
+        circle_artifacts_path (str): The path to the circle artifacts dir path
+        write_to_artifacts (bool): Indicates whether to write the failed packs to artifacts or not
+
+    Returns: 3 lists of packs - successful_packs, skipped_packs & failed_packs
+
+    """
+    successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
+    skipped_packs = [pack for pack in packs_list if
+                     pack.status == PackStatus.PACK_ALREADY_EXISTS.name
+                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+                     or pack.status == PackStatus.FAILED_DETECTING_MODIFIED_FILES.name]
+    failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
+
+    # save failed packs to circle ci env - to be used in Upload Packs job (Bucket Upload flow)
+    if write_to_artifacts:
+        with open(os.path.join(circle_artifacts_path, FAILED_PACKS_PATH_SUFFIX), "w") as f:
+            if failed_packs:
+                failed_packs_dict = {pack.name: pack.status for pack in failed_packs}
+                f.write(json.dumps(failed_packs_dict, indent=4))
+
+    return successful_packs, skipped_packs, failed_packs
 
 
 def main():
@@ -930,8 +955,11 @@ def main():
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
 
+    # get the lists of packs divided by their status
+    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list, packs_artifacts_path, True)
+
     # summary of packs status
-    print_packs_summary(packs_list)
+    print_packs_summary(successful_packs, skipped_packs, failed_packs)
 
 
 if __name__ == '__main__':

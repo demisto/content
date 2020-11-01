@@ -9,8 +9,9 @@ from datetime import datetime
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, Metadata, PACKS_FOLDER
-from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, upload_id_set, load_json
+    IGNORED_FILES, Metadata, PACKS_FOLDER, FAILED_PACKS_PATH_SUFFIX
+from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, upload_id_set, load_json, \
+    get_packs_summary
 
 
 def get_pack_names(target_packs):
@@ -132,7 +133,7 @@ def upload_core_packs_config(production_bucket, build_number, extract_destinatio
     logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
 
 
-def is_valid_pack(extract_destination_path, pack_name, production_bucket, build_bucket):
+def is_valid_pack(extract_destination_path, pack_name, production_bucket, build_bucket, failed_packs_file):
     """ Indicates whether a pack should be in the loop of uploads or not
 
     Args:
@@ -140,6 +141,7 @@ def is_valid_pack(extract_destination_path, pack_name, production_bucket, build_
         pack_name (str): The pack name
         production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
         build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+        failed_packs_file (dict): The failed packs file from Prepare Content step in Create Instances job
 
     Returns:
         bool: True if the pack should be considered to upload or False otherwise
@@ -150,7 +152,8 @@ def is_valid_pack(extract_destination_path, pack_name, production_bucket, build_
     build_pack_names = [f.name for f in build_bucket.list_blobs(prefix=GCPConfig.BUILD_BASE_PATH)]
     # if pack is in prod bucket and not in build bucket it should be deleted because upload packs
     # on prepare content step in create instances job has deleted it
-    is_in_prod_but_not_in_build = pack_name in prod_pack_names and pack_name not in build_pack_names
+    is_in_prod_but_not_in_build = pack_name in prod_pack_names and pack_name not in build_pack_names and \
+                                  pack_name not in failed_packs_file
     return is_in_artifacts and not is_in_prod_but_not_in_build
 
 
@@ -207,12 +210,26 @@ def download_and_extract_index(production_bucket, build_bucket, extract_destinat
 
         os.remove(download_build_index_path)
         logging.success(f"Finished downloading and extracting build {GCPConfig.INDEX_NAME} file to "
-                     f"{extract_destination_path}")
+                        f"{extract_destination_path}")
 
         return build_index_folder_path, prod_index_blob, build_index_blob, prod_index_generation, build_index_generation
     else:
         logging.error(f"Failed to download build {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
+
+
+def load_failed_packs_file(failed_packs_file_path):
+    """
+    Loads the failed_packs_prepare_content.txt file to get the failed packs list
+    Args:
+        failed_packs_file_path: The path to the file
+
+    Returns: The failed packs file
+
+    """
+    if os.path.exists(failed_packs_file_path):
+        return load_json(failed_packs_file_path)
+    return {}
 
 
 def options_handler():
@@ -282,21 +299,31 @@ def main():
 
     # TODO: what if no commit was found, for example: there was a squash of several master commits?
     # TODO: refactor force upload
-    # TODO: what if the commit is the same? i.e. between two uploaded the commit hasn't change? (nothing was merged)
-    # TODO: think what to do when pack is failing in prepare content step
 
     # download and extract build and prod index from build and prod buckets
     build_index_folder_path, prod_index_blob, build_index_blob, prod_index_generation, build_index_generation = \
         download_and_extract_index(production_bucket, build_bucket, extract_destination_path)
 
+    # get the failed packs list from Prepare Content step in Create Instances job
+    failed_packs_file = load_failed_packs_file(os.path.join(os.path.dirname(packs_artifacts_path),
+                                                            FAILED_PACKS_PATH_SUFFIX))
+
     # detect packs to upload
     pack_names = get_pack_names(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
-                  if is_valid_pack(extract_destination_path, pack_name, production_bucket, build_bucket)]
+                  if is_valid_pack(extract_destination_path, pack_name, production_bucket, build_bucket,
+                                   failed_packs_file)]
 
     # starting iteration over packs
     for pack in packs_list:
+        task_status, pack_status = pack.is_failed_to_upload(failed_packs_file)
+
+        if task_status:
+            pack.status = pack_status
+            pack.cleanup()
+            continue
+
         task_status, user_metadata = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
@@ -343,8 +370,13 @@ def main():
     # upload id_set.json to bucket
     upload_id_set(production_bucket, id_set_path)
 
+    # get the lists of packs divided by their status
+    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list, os.path.dirname(packs_artifacts_path),
+                                                                      write_to_artifacts=False)
+
     # summary of packs status
-    print_packs_summary(packs_list, comment_on_pr=False, include_bucket_url=False)
+    print_packs_summary(successful_packs, skipped_packs, failed_packs, comment_on_pr=False, include_bucket_url=False,
+                        include_pack_status=True)
 
 
 if __name__ == '__main__':

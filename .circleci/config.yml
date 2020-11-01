@@ -997,7 +997,7 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Upload Packs'
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' "$CIRCLE_ARTIFACTS/failed_packs_prepare_content.json" 'Upload Packs'
           when: always
       - *destroy_instances
       - *store_artifacts

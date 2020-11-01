@@ -56,7 +56,9 @@ else
   elif [ -n "${BUCKET_UPLOAD}" ]; then
     echo "Updating all content packs for upload packs to production..."
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -o -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt false --id_set_path $ID_SET -pb 'marketplace-dist-private'
+  [ -n "${BUCKET_UPLOAD}" ] && REMOVE_PBS=true || REMOVE_PBS=false
+  [ -n "${BUCKET_UPLOAD}" ] && OVERRIDE_ALL_PACKS=false || OVERRIDE_ALL_PACKS=true
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -pb 'marketplace-dist-private'
   echo "Finished updating content packs successfully."
 fi
 
