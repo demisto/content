@@ -17,7 +17,7 @@ Use the FireEye feed integration to fetch indicators from the FireEye Intelligen
     | Traffic Light Protocol color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp. |
     | Indicator Expiration Method | The method by which to expire indicators from this feed for this integration instance. |
     | Indicator Expiration Interval | How often to expire the indicators from this integration instance (in minutes). This only applies if the *feedExpirationPolicy* is set to **interval**.|
-    | Feed Fetch Interval | How often to fetch indicators from the feed for this integration instance (in minutes). Default is 240. | 
+    | Feed Fetch Interval | How often to fetch indicators from the feed for this integration instance (in minutes). Default is 60. | 
     | Public Key + Password | The credentials used to access the feed's data. | 
     | First Fetch Time | First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year). |
     | Malicious Threshold | The minimum score returned from the feed to determine whether the indicator is malicious. Default is 70. | 
