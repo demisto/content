@@ -618,21 +618,29 @@ def test_upload_entries_update_remote_system_command(mocker):
     update_remote_system_command(client, args, params)
 
 
+
 TICKET_FIELDS = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
         'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+        'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
+        'work_start': '0001-01-01T00:00:00Z'}
+
+def ticket_fields(*args, **kwargs):
+    assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+        'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
         'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '3',
+        'work_start': '0001-01-01T00:00:00Z'} == args[0]
+
+    return {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+        'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+        'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
         'work_start': '0001-01-01T00:00:00Z'}
 
 
 def update_ticket(*args):
-    assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-            'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '3',
-            'work_start': '0001-01-01T00:00:00Z'} == args[2]
     return {'short_description': 'Post parcel', 'close_notes': 'This is closed',
             'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
             'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
-            'sla_due': '0001-01-01T00:00:00Z', 'state': '1', 'urgency': '3', 'work_start': '0001-01-01T00:00:00Z'}
+            'sla_due': '0001-01-01T00:00:00Z', 'state': '3', 'urgency': '3', 'work_start': '0001-01-01T00:00:00Z'}
 
 
 def test_update_remote_data_sc_task(mocker):
@@ -651,7 +659,7 @@ def test_update_remote_data_sc_task(mocker):
                     ticket_type='sc_task', get_attachments=False, incident_name='description')
     params = {'ticket_type': 'sc_task', 'close_ticket': True}
     args = {'remoteId': '1234', 'data': TICKET_FIELDS, 'entries': [], 'incidentChanged': True, 'delta': {},
-            'inc_status': 2}
-    mocker.patch('ServiceNowv2.get_ticket_fields', return_value=TICKET_FIELDS)
+            'status': 2}
+    mocker.patch('ServiceNowv2.get_ticket_fields', side_effect=ticket_fields)
     mocker.patch.object(client, 'update', side_effect=update_ticket)
     update_remote_system_command(client, args, params)
