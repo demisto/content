@@ -669,7 +669,7 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        default=False, action='store_true', required=False)
+                        default=False, required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
@@ -956,7 +956,8 @@ def main():
     upload_id_set(storage_bucket, id_set_path)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list, packs_artifacts_path, True)
+    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list, os.path.dirname(packs_artifacts_path),
+                                                                      write_to_artifacts=True)
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs)
