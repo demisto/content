@@ -25,7 +25,7 @@ import pytest
     ('5be9245893ff486d98c3640879bb2657.protect@whoisguard.com', '', 'whoisguard.com'),
     ('test@www.bücher.de', 'www.bücher.de', 'bücher.de'),
     ('test@www[.]demisto[.]com', 'www.demisto.com', 'demisto.com'),
-    ('KZ@7Wh.Vt', '', ''),
+    ('AB@1Ab.Vt', '', ''),
 ])  # noqa: E124
 def test_extract_fqdn_or_domain(input, fqdn, domain):
     extracted_fqdn = extract_fqdn_or_domain(input, is_fqdn=True)
@@ -37,7 +37,7 @@ def test_extract_fqdn_or_domain(input, fqdn, domain):
 
 def test_extract_fqdn_or_domain_empty_indicators(mocker):
 
-    mocker.patch.object(demisto, 'args', return_value={'input': 'KZ@7Wh.Vt'})
+    mocker.patch.object(demisto, 'args', return_value={'input': 'AB@1Ab.Vt'})
     mocker.patch.object(demisto, 'results')
 
     main()
