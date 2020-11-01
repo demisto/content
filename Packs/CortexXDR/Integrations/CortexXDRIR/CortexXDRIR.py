@@ -2466,7 +2466,7 @@ def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]
     return (
         tableToMarkdown(name='Retrieve file Details', t=result, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
+            f'{INTEGRATION_CONTEXT_BRAND}.F(val.endpoint_id == obj.endpoint_id)': result
         },
         raw_result
     )
@@ -2542,12 +2542,12 @@ def run_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     parameters: dict = arg_to_dictionary(args.get('parameters'))
 
     result = client.run_script(script_uid, endpoint_ids, timeout, parameters)
-    obj = {'actionId': result.get('action_id')}
+    obj = {'action_id': result.get('action_id')}
 
     return (
         tableToMarkdown(name='Run Script Command', t=obj, removeNull=True, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.RunScript(val.actionId == obj.actionId)': obj
+            f'{INTEGRATION_CONTEXT_BRAND}.RunScript(val.action_id == obj.action_id)': obj
         },
         result
     )
