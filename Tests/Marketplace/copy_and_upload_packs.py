@@ -149,8 +149,11 @@ def is_valid_pack(extract_destination_path, pack_name, production_bucket, build_
     build_pack_names = [f.name for f in build_bucket.list_blobs(prefix=GCPConfig.BUILD_BASE_PATH)]
     # if pack is in prod bucket and not in build bucket it should be deleted because upload packs
     # on prepare content step in create instances job has deleted it
-    is_in_prod_but_not_in_build = pack_name in prod_pack_names and pack_name not in build_pack_names and \
-                                  pack_name not in failed_packs_file
+    is_in_prod_but_not_in_build = pack_name in prod_pack_names and pack_name not in build_pack_names
+    if is_in_prod_but_not_in_build:
+        is_successful_pack = pack_name not in failed_packs_file
+        # If pack is in prod but not in build because it failed during upload so we consider it as a valid pack
+        is_in_prod_but_not_in_build = is_in_prod_but_not_in_build and is_successful_pack
     return is_in_artifacts and not is_in_prod_but_not_in_build
 
 
