@@ -1851,8 +1851,7 @@ script:
       description: ID of action to retrieve files from selected endpoints.
       type: string
   - arguments:
-    - description: String the represents the Action ID of the Retrieve File request.
-        Action ID it is an output of Retrieve File request.
+    - description: Action ID retrieved from the retrieve file command.
       isArray: true
       name: action_id
       required: true
