@@ -782,6 +782,7 @@ def main():
     target_packs = option.pack_names if option.pack_names else ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
+    print(f"override all packs: {override_all_packs}")
     signature_key = option.key_string
     id_set_path = option.id_set_path
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
@@ -895,6 +896,7 @@ def main():
 
         task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
                                                               last_upload_commit_hash)
+        print(f"{pack.name} was modified: {pack_was_modified}, overriding: {override_all_packs or pack_was_modified}")
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
