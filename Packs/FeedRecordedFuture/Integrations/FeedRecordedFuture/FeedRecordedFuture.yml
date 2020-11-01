@@ -1,0 +1,212 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Recorded Future Feed
+  version: -1
+configuration:
+- display: Fetch indicators
+  name: feed
+  defaultvalue: 'true'
+  type: 8
+  required: false
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+- defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: suddenDeath
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- name: feedExpirationInterval
+  defaultvalue: "20160"
+  required: false
+  type: 1
+  display: ""
+- defaultvalue: '60'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: |-
+    When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Type of the indicator in the feed.
+  display: Indicator Type
+  hidden: false
+  name: indicator_type
+  options:
+  - domain
+  - ip
+  - hash
+  - url
+  required: true
+  type: 15
+- display: API token
+  hidden: false
+  name: api_token
+  required: true
+  type: 4
+- defaultvalue: connectApi
+  display: Services
+  hidden: false
+  name: services
+  options:
+  - connectApi
+  - fusion
+  required: true
+  type: 16
+- additionalinfo: |-
+    Limit the indicators list to a specific risk rule. To see available
+    risk rules run the rf-feed-get-risk-rules command. This parameter will only be
+    used for the 'connectApi' service.
+  display: Risk Rule
+  hidden: false
+  name: risk_rule
+  required: false
+  type: 0
+- additionalinfo: |-
+    Load a custom risklist from a specified Recorded Future file path.
+    If no file path is specified, the default risklist file is used. This parameter
+    will only be used for the 'fusion' service.
+  display: Fusion File Path
+  hidden: false
+  name: fusion_file_path
+  required: false
+  type: 0
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: Time in seconds before HTTP requests timeout.
+  defaultvalue: '20'
+  display: Request Timeout
+  hidden: false
+  name: polling_timeout
+  required: true
+  type: 0
+- additionalinfo: |-
+    The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details.
+  defaultvalue: '65'
+  display: Malicious Threshold
+  hidden: false
+  name: threshold
+  required: false
+  type: 0
+description: Ingests indicators from Recorded Future feeds into Demisto.
+display: Recorded Future RiskList Feed
+name: Recorded Future Feed
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: '10'
+      description: The maximum number of results to return. The default value is 10.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The indicator type. Can be "ip", "domain", "hash", or "url".
+      isArray: false
+      name: indicator_type
+      predefined:
+      - ip
+      - domain
+      - hash
+      - url
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from the feed.
+    execution: false
+    name: rf-feed-get-indicators
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The indicator type
+      isArray: false
+      name: indicator_type
+      predefined:
+      - ip
+      - domain
+      - hash
+      - url
+      required: true
+      secret: false
+    deprecated: false
+    description: |-
+      Get a list of the risk rules available for an indicator,
+      To limit the 'connectApi' service indicators list.
+    execution: false
+    name: rf-feed-get-risk-rules
+    outputs:
+    - contextPath: RecordedFutureFeed.RiskRule.Name
+      description: The risk rule name.
+      type: String
+    - contextPath: RecordedFutureFeed.RiskRule.Description
+      description: The risk rule description.
+      type: String
+    - contextPath: RecordedFutureFeed.RiskRule.Criticality
+      description: The risk rule criticality.
+      type: String
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- RecordedFutureFeed - Test
+fromversion: 5.5.0

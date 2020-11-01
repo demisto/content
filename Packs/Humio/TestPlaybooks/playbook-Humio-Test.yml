@@ -1,0 +1,768 @@
+id: Humio-Test
+version: -1
+name: Humio-Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: eac2e711-643a-42f2-86e8-95cb284a8a1f
+    type: start
+    task:
+      id: eac2e711-643a-42f2-86e8-95cb284a8a1f
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: 5fc27167-369b-4ca7-8a6b-1742398f8541
+    type: regular
+    task:
+      id: 5fc27167-369b-4ca7-8a6b-1742398f8541
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 684a8433-a6f8-4f0a-8b23-69eda87398fe
+    type: regular
+    task:
+      id: 684a8433-a6f8-4f0a-8b23-69eda87398fe
+      version: -1
+      name: humio-query
+      script: '|||humio-query'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      arguments: {}
+      end: {}
+      isLive: {}
+      queryString:
+        simple: foo=bar
+      repository:
+        simple: ${HumioRepository}
+      start: {}
+      timeZoneOffsetMinutes: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 5964fa09-620a-4c70-8193-ea69d0836299
+    type: condition
+    task:
+      id: 5964fa09-620a-4c70-8193-ea69d0836299
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Humio.Query
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: c74900c4-0a55-4016-89f0-6a270fb714df
+    type: regular
+    task:
+      id: c74900c4-0a55-4016-89f0-6a270fb714df
+      version: -1
+      name: humio-query-job
+      script: '|||humio-query-job'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      arguments: {}
+      end: {}
+      isLive: {}
+      queryString:
+        simple: foo=bar
+      repository:
+        simple: ${HumioRepository}
+      start: {}
+      timeZoneOffsetMinutes: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: d6daaad8-b164-4ebc-8f27-99439c89b408
+    type: regular
+    task:
+      id: d6daaad8-b164-4ebc-8f27-99439c89b408
+      version: -1
+      name: humio-poll
+      script: '|||humio-poll'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      id:
+        simple: ${Humio.Job.id}
+      repository:
+        simple: ${HumioRepository}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '7':
+    id: '7'
+    taskid: b7529d3c-1f7a-4ffd-83c5-0efdeef36618
+    type: condition
+    task:
+      id: b7529d3c-1f7a-4ffd-83c5-0efdeef36618
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '27'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Result
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Result.metaData
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Result.job_id
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: fe42cd39-1d57-48ed-83ce-6e33a6fab300
+    type: regular
+    task:
+      id: fe42cd39-1d57-48ed-83ce-6e33a6fab300
+      version: -1
+      name: humio-list-alerts
+      script: '|||humio-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      repository:
+        simple: ${HumioRepository}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2820\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '10':
+    id: '10'
+    taskid: e9528f0f-a193-43e0-8936-6ad25a388f66
+    type: condition
+    task:
+      id: e9528f0f-a193-43e0-8936-6ad25a388f66
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Humio.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Alert.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Humio.Alert.notifiers
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Humio.Alert.query.queryString
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Alert.throttleTimeMillis
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2995\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '11':
+    id: '11'
+    taskid: 002059ae-b3b5-48ef-8241-e092865070e3
+    type: regular
+    task:
+      id: 002059ae-b3b5-48ef-8241-e092865070e3
+      version: -1
+      name: humio-get-alert-by-id
+      script: '|||humio-get-alert-by-id'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments:
+      id:
+        simple: ${HumioAlert.id}
+      repository:
+        simple: ${HumioRepository}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3520\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '15':
+    id: '15'
+    taskid: ba4b18ed-0f7a-4e3b-806c-b03cf35c3c4a
+    type: regular
+    task:
+      id: ba4b18ed-0f7a-4e3b-806c-b03cf35c3c4a
+      version: -1
+      name: humio-list-notifiers
+      script: '|||humio-list-notifiers'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      repository:
+        simple: ${HumioRepository}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '16':
+    id: '16'
+    taskid: 9669fca5-1e33-4299-8d93-3eae361043f3
+    type: condition
+    task:
+      id: 9669fca5-1e33-4299-8d93-3eae361043f3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '33'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Notifier
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '23':
+    id: '23'
+    taskid: d4384346-e7fb-4101-88ee-531bcf8061fb
+    type: title
+    task:
+      id: d4384346-e7fb-4101-88ee-531bcf8061fb
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4045\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '24':
+    id: '24'
+    taskid: 09fecabf-4d98-4e44-826f-63a65dc69079
+    type: regular
+    task:
+      id: 09fecabf-4d98-4e44-826f-63a65dc69079
+      version: -1
+      name: humio-create-alert
+      description: Create an alert in Humio
+      script: Humio|||humio-create-alert
+      type: regular
+      iscommand: true
+      brand: Humio
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      description: {}
+      labels: {}
+      name:
+        simple: CreatedAlertTest
+      notifiers:
+        simple: ${Humio.Notifier.id}
+      queryString:
+        simple: foo=bar
+      repository:
+        simple: ${HumioRepository}
+      silenced:
+        simple: 'true'
+      start: {}
+      throttleTimeMillis: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2470\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '25':
+    id: '25'
+    taskid: 3badda14-57c8-44d2-8764-0d418ce3fca3
+    type: condition
+    task:
+      id: 3badda14-57c8-44d2-8764-0d418ce3fca3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Alert
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2645\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '26':
+    id: '26'
+    taskid: d8672e95-7760-49d6-8682-baae51615636
+    type: regular
+    task:
+      id: d8672e95-7760-49d6-8682-baae51615636
+      version: -1
+      name: humio-delete-alert
+      description: Delete alert in Humio
+      script: Humio|||humio-delete-alert
+      type: regular
+      iscommand: true
+      brand: Humio
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments:
+      id:
+        simple: ${Humio.Alert.id}
+      repository:
+        simple: ${HumioRepository}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3870\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '27':
+    id: '27'
+    taskid: 0daffcc7-7182-49d0-8f26-54db5ae74e49
+    type: regular
+    task:
+      id: 0daffcc7-7182-49d0-8f26-54db5ae74e49
+      version: -1
+      name: humio-delete-job
+      description: Issue a job delete command to Humio
+      script: Humio|||humio-delete-job
+      type: regular
+      iscommand: true
+      brand: Humio
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      id:
+        simple: ${Humio.Job.id}
+      repository:
+        simple: ${HumioRepository}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '28':
+    id: '28'
+    taskid: 24e6fe8b-1e41-40ef-81bb-f9f5b9f206b0
+    type: regular
+    task:
+      id: 24e6fe8b-1e41-40ef-81bb-f9f5b9f206b0
+      version: -1
+      name: humio-get-notifier-by-id
+      description: Get notifier from Humio by id
+      script: Humio|||humio-get-notifier-by-id
+      type: regular
+      iscommand: true
+      brand: Humio
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments:
+      id:
+        simple: ${HumioNotifier.id}
+      repository:
+        simple: ${HumioRepository}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '29':
+    id: '29'
+    taskid: e3d1abe1-1431-4dc5-8218-0955a8a46997
+    type: condition
+    task:
+      id: e3d1abe1-1431-4dc5-8218-0955a8a46997
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Humio.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Alert.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Humio.Alert.notifiers
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Humio.Alert.query.queryString
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Humio.Alert.throttleTimeMillis
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3695\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '30':
+    id: '30'
+    taskid: 01ef8213-1575-4f5f-884d-b0967998c0d2
+    type: regular
+    task:
+      id: 01ef8213-1575-4f5f-884d-b0967998c0d2
+      version: -1
+      name: Store alert ID
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments:
+      append: {}
+      key:
+        simple: HumioAlert
+      stringify: {}
+      value:
+        simple: ${Humio.Alert}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3170\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '31':
+    id: '31'
+    taskid: 8e665e9f-c6cf-4d10-840c-d9abaa4feb5b
+    type: regular
+    task:
+      id: 8e665e9f-c6cf-4d10-840c-d9abaa4feb5b
+      version: -1
+      name: Delete Humio Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      all:
+        simple: no
+      index: {}
+      key:
+        simple: Humio
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3345\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '32':
+    id: '32'
+    taskid: 936cbb70-216b-4372-88cb-11c6daaf8c0f
+    type: regular
+    task:
+      id: 936cbb70-216b-4372-88cb-11c6daaf8c0f
+      version: -1
+      name: Set Humio Repository
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      append: {}
+      key:
+        simple: HumioRepository
+      stringify: {}
+      value:
+        simple: xsoar_e2e
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '33':
+    id: '33'
+    taskid: 579acda4-86ee-4203-83bc-3956e3f5b66e
+    type: regular
+    task:
+      id: 579acda4-86ee-4203-83bc-3956e3f5b66e
+      version: -1
+      name: Store Notifier ID
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      append: {}
+      key:
+        simple: HumioNotifier
+      stringify: {}
+      value:
+        simple: ${Humio.Notifier}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '34':
+    id: '34'
+    taskid: bd5da2ab-68e8-45f6-8a68-8b61f2d5c1c8
+    type: regular
+    task:
+      id: bd5da2ab-68e8-45f6-8a68-8b61f2d5c1c8
+      version: -1
+      name: Clear Humio Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      all:
+        simple: no
+      index: {}
+      key:
+        simple: Humio
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 4060,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

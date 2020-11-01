@@ -1,0 +1,165 @@
+id: AlphaSOC-Wisdom-Test
+version: -1
+name: AlphaSOC Wisdom Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d976fcb3-d854-41f3-8fc6-8c551007355c
+    type: start
+    task:
+      id: d976fcb3-d854-41f3-8fc6-8c551007355c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 0e6073b2-cfbd-4ed3-83bb-533f9b7077f5
+    type: regular
+    task:
+      id: 0e6073b2-cfbd-4ed3-83bb-533f9b7077f5
+      version: -1
+      name: wisdom-domain-flags
+      description: Returns a list of flags (categories and features) assigned to a domain by AlphaSOC Threat Intelligence
+      script: AlphaSOC Wisdom|||wisdom-domain-flags
+      type: regular
+      iscommand: true
+      brand: AlphaSOC Wisdom
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      domain:
+        simple: facebook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    id: "2"
+    taskid: b45790b6-6968-47de-8d9d-11cb33268b79
+    type: regular
+    task:
+      id: b45790b6-6968-47de-8d9d-11cb33268b79
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue:
+        simple: '["trusted"]'
+      fields: {}
+      path:
+        simple: Wisdom.Flag
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+  "3":
+    id: "3"
+    taskid: e9d8c429-89ea-453e-815a-4b6fbb385b1c
+    type: regular
+    task:
+      id: e9d8c429-89ea-453e-815a-4b6fbb385b1c
+      version: -1
+      name: wisdom-ip-flags
+      description: Returns a list of flags (categories and features) assigned to an IP connection (defined by protocol, destination address and port number) by AlphaSOC Threat Intelligence
+      script: AlphaSOC Wisdom|||wisdom-ip-flags
+      type: regular
+      iscommand: true
+      brand: AlphaSOC Wisdom
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+      port:
+        simple: "53"
+      proto:
+        simple: tcp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 1b346468-7ddf-4d05-8ff9-4c7efe0a4b8b
+    type: regular
+    task:
+      id: 1b346468-7ddf-4d05-8ff9-4c7efe0a4b8b
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Wisdom.Flag
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

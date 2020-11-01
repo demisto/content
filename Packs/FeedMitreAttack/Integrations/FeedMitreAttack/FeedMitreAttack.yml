@@ -1,0 +1,164 @@
+commonfields:
+  id: MITRE ATT&CK
+  version: -1
+name: MITRE ATT&CK
+display: MITRE ATT&CK Feed
+category: Data Enrichment & Threat Intelligence
+description: Use the MITRE ATT&CK® feed to fetch MITRE’s Adversarial Tactics, Techniques,
+  and Common Knowledge (ATT&CK®) content. MITRE ATT&CK® is a globally-accessible knowledge
+  base of adversary tactics and techniques based on real-world observations. The ATT&CK
+  knowledge base is used as a foundation for the development of specific threat models
+  and methodologies in the private sector, in government, and in the cybersecurity
+  product and service community.
+configuration:
+- display: Include external actor references as indicators
+  name: includeAPT
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: This option will also create indicators using APT / actor name references
+    if they are part of a MITRE Intrusion Set
+- display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+  defaultvalue: 'true'
+- display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: A - Completely reliable
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- display: ''
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ''
+  name: feedExpirationInterval
+  defaultvalue: '20160'
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: '240'
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ''
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+script:
+  script: ''
+  type: python
+  commands:
+  - name: mitre-get-indicators
+    arguments:
+    - name: limit
+      required: true
+      description: The maximum number of indicators to return. The default is 10.
+      defaultValue: '10'
+    - name: raw
+      auto: PREDEFINED
+      predefined:
+      - 'False'
+      - 'True'
+      description: Output in raw JSON format. Can be "True" or "False". The default
+        is "False".
+      defaultValue: 'False'
+    description: Retreives a limited number of the indicators.
+  - name: mitre-show-feeds
+    arguments: []
+    description: Shows the feed names and IDs from TAXII.
+  - name: mitre-search-indicators
+    arguments:
+    - name: search
+      required: true
+      description: The search word.
+    - name: casesensitive
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      description: Whether the search is case sensitive. Can be "True" or "False". The
+        default is "False".
+      defaultValue: 'False'
+    outputs:
+    - contextPath: indicators.id
+      description: The ID of the MITRE indicator found.
+      type: string
+    - contextPath: indicators.value
+      description: THe value of the MITRE indicator found.
+      type: string
+    description: Performs a generic search across the MITRE ATT&CK indicators.
+  - name: mitre-reputation
+    arguments:
+    - name: indicator
+      required: true
+      default: true
+      description: Indicator to look up.
+    outputs:
+    - contextPath: MITRE.ATT&CK.value
+      description: The indicator value.
+      type: string
+    - contextPath: MITRE.ATT&CK.indicatorid
+      description: Indicator ID.
+      type: number
+    description: Lookup reputation in the indicators.
+  dockerimage: demisto/taxii2:1.0.0.11306
+  feed: true
+  runonce: false
+  subtype: python3
+fromversion: 5.5.0

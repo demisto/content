@@ -1,4 +1,4 @@
-version: 123
+version: -1
 name: Account Enrichment
 fromversion: 3.5.0
 description: Enrich the accounts under the Account context key with details from relevant

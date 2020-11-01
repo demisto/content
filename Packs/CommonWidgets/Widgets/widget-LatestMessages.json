@@ -1,0 +1,19 @@
+{
+ "id": "latest-messages",
+ "size": 10,
+ "fromVersion": "5.0.0",
+ "dataType": "messages",
+ "query": "",
+ "name": "Latest Messages",
+ "dateRange": {
+  "period": {
+   "byFrom": "days",
+   "fromValue": null
+  }
+ },
+ "isPredefined": true,
+ "version": -1,
+ "category": "others",
+ "widgetType": "list",
+ "description": ""
+}

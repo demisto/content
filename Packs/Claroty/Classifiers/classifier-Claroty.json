@@ -1,0 +1,17 @@
+{
+	"id": "Claroty",
+	"name": "Claroty - Classifier",
+	"type": "classification",
+	"description": "Classifies Claroty incidents.",
+	"defaultIncidentType": "",
+	"keyTypeMap": {
+		"Integrity": "Claroty Integrity Incident",
+		"Security": "Claroty Security Incident"
+	},
+	"transformer": {
+		"complex": null,
+		"simple": "Category"
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

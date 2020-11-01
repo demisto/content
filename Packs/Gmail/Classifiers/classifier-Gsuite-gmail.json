@@ -1,0 +1,16 @@
+{
+	"id": "Gmail",
+    "name": "Gmail - Classifier",
+    "type": "classification",
+    "description": "Classifies Gmail phishing email messages.",
+	"version": -1,
+	"defaultIncidentType": "",
+	"transformer": {
+		"simple": "Type",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"Gmail": "Phishing"
+	},
+	"fromVersion": "6.0.0"
+}

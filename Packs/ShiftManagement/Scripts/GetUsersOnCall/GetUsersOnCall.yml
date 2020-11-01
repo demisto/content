@@ -1,0 +1,16 @@
+comment: Retrieves users that are currently on-call (on shift).
+commonfields:
+  id: GetUsersOnCall
+  version: -1
+enabled: false
+name: GetUsersOnCall
+script: '-'
+tags:
+- Shift Management
+- widget
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.5.10845
+fromversion: 5.5.0

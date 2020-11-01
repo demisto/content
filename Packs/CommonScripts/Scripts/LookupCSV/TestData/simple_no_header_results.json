@@ -1,0 +1,38 @@
+{
+  "Type": 1,
+  "ContentsFormat": "json",
+  "Contents": [
+    [
+      "1.1.1.1",
+      "0"
+    ],
+    [
+      "2.2.2.2",
+      "1"
+    ],
+    [
+      "3.3.3.3",
+      "2"
+    ]
+  ],
+  "EntryContext": {
+    "LookupCSV": {
+      "FoundResult": false,
+      "SearchValue": "",
+      "Result": [
+        [
+          "1.1.1.1",
+          "0"
+        ],
+        [
+          "2.2.2.2",
+          "1"
+        ],
+        [
+          "3.3.3.3",
+          "2"
+        ]
+      ]
+    }
+  }
+}

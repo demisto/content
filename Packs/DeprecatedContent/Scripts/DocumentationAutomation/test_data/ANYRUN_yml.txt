@@ -1,0 +1,442 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: ANYRUN
+  version: -1
+configuration:
+- defaultvalue: https://api.any.run
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'true'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: ANY.RUN is a cloud-based sanbox with interactive access.
+display: ANY.RUN
+name: ANYRUN
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'false'
+      description: If true, gets team history. If empty, gets your submitted analyses
+        history.
+      isArray: false
+      name: team
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '0'
+      description: The number of analyses to skip.
+      isArray: false
+      name: skip
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '25'
+      description: Limits the history retrieved/searched to the specified number of
+        executed analyses. The range is 1-100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: File name, hash, or task ID by which to filter the task history.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Get analysis history.
+    execution: false
+    name: anyrun-get-history
+    outputs:
+    - contextPath: ANYRUN.Task.Name
+      description: Task name.
+      type: String
+    - contextPath: ANYRUN.Task.Verdict
+      description: ANY.RUN verdict for the submitted file's status.
+      type: String
+    - contextPath: ANYRUN.Task.Related
+      description: ANY.RUN link to a related file.
+      type: String
+    - contextPath: ANYRUN.Task.File
+      description: ANY.RUN link to download the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.Date
+      description: The date that the file was submitted for analysis.
+      type: Date
+    - contextPath: ANYRUN.Task.Hash.MD5
+      description: MD5 hash of the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.Hash.SHA1
+      description: SHA1 hash of the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.Hash.SHA256
+      description: SHA256 hash of the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.Hash.HeadHash
+      description: Head hash of the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.Hash.SSDeep
+      description: SSDeep hash of the submitted file.
+      type: String
+  - arguments:
+    - default: false
+      description: Unique task ID. A task ID is returned when submitting a file or
+        URL for analysis using the `anyrun-run-analysis` command. Task IDs can also
+        be located in the `ID` field of the output of executing the `anyrun-get-history`
+        command.
+      isArray: false
+      name: task
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the report of a task created for a submitted file or URL.
+    execution: false
+    name: anyrun-get-report
+    outputs:
+    - contextPath: ANYRUN.Task.AnalysisDate
+      description: Date and time the analysis was executed.
+      type: String
+    - contextPath: ANYRUN.Task.Behavior.Category
+      description: Category of a process behavior.
+      type: String
+    - contextPath: ANYRUN.Task.Behavior.Action
+      description: Actions performed by a process.
+      type: String
+    - contextPath: ANYRUN.Task.Behavior.ThreatLevel
+      description: Threat score associated with a process behavior.
+      type: Number
+    - contextPath: ANYRUN.Task.Behavior.ProcessUUID
+      description: Unique ID of the process whose behaviors are being profiled.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.Reputation
+      description: Connection reputation.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.ProcessUUID
+      description: ID of the process that created the connection.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.ASN
+      description: Connection autonomous system network.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.Country
+      description: Connection country.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.Protocol
+      description: Connection protocol.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.Port
+      description: Connection port number.
+      type: Number
+    - contextPath: ANYRUN.Task.Connection.IP
+      description: Connection IP number.
+      type: String
+    - contextPath: ANYRUN.Task.DnsRequest.Reputation
+      description: Reputation of the DNS request.
+      type: String
+    - contextPath: ANYRUN.Task.DnsRequest.IP
+      description: IP addresses associated with a DNS request.
+      type: Unknown
+    - contextPath: ANYRUN.Task.DnsRequest.Domain
+      description: Domain resolution of a DNS request.
+      type: String
+    - contextPath: ANYRUN.Task.Threat.ProcessUUID
+      description: Unique process ID from where the threat originated.
+      type: String
+    - contextPath: ANYRUN.Task.Threat.Msg
+      description: Threat message.
+      type: String
+    - contextPath: ANYRUN.Task.Threat.Class
+      description: Class of the threat.
+      type: String
+    - contextPath: ANYRUN.Task.Threat.SrcPort
+      description: Port on which the threat originated.
+      type: Number
+    - contextPath: ANYRUN.Task.Threat.DstPort
+      description: Destination port of the threat.
+      type: Number
+    - contextPath: ANYRUN.Task.Threat.SrcIP
+      description: Source IP address where the threat originated.
+      type: String
+    - contextPath: ANYRUN.Task.Threat.DstIP
+      description: Destination IP address of the threat.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.Reputation
+      description: Reputation of the HTTP request.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.Country
+      description: HTTP request country.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
+      description: ID of the process making the HTTP request.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.Body
+      description: HTTP request body parameters and details.
+      type: Unknown
+    - contextPath: ANYRUN.Task.HttpRequest.HttpCode
+      description: HTTP request response code.
+      type: Number
+    - contextPath: ANYRUN.Task.HttpRequest.Status
+      description: Status of the HTTP request.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
+      description: Whether the HTTP request was made through a proxy.
+      type: Boolean
+    - contextPath: ANYRUN.Task.HttpRequest.Port
+      description: HTTP request port.
+      type: Number
+    - contextPath: ANYRUN.Task.HttpRequest.IP
+      description: HTTP request IP address.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.URL
+      description: HTTP request URL.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.Host
+      description: HTTP request host.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.Method
+      description: HTTP request method type.
+      type: String
+    - contextPath: ANYRUN.Task.FileInfo
+      description: Details of the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.OS
+      description: OS of the sandbox in which the file was analyzed.
+      type: String
+    - contextPath: ANYRUN.Task.ID
+      description: The unique ID of the task.
+      type: String
+    - contextPath: ANYRUN.Task.MIME
+      description: The MIME of the file submitted for analysis.
+      type: String
+    - contextPath: ANYRUN.Task.MD5
+      description: The MD5 hash of the file submitted for analysis.
+      type: String
+    - contextPath: ANYRUN.Task.SHA1
+      description: The SHA1 hash of the file submitted for analysis.
+      type: String
+    - contextPath: ANYRUN.Task.SHA256
+      description: The SHA256 hash of the file submitted for analysis.
+      type: String
+    - contextPath: ANYRUN.Task.SSDeep
+      description: SSDeep hash of the file submitted for analysis.
+      type: String
+    - contextPath: ANYRUN.Task.Verdict
+      description: ANY.RUN verdict for the maliciousness of the submitted file or
+        URL.
+      type: String
+    - contextPath: ANYRUN.Task.Process.FileName
+      description: File name of the process.
+      type: String
+    - contextPath: ANYRUN.Task.Process.PID
+      description: Process identification number.
+      type: Number
+    - contextPath: ANYRUN.Task.Process.PPID
+      description: Parent process identification number.
+      type: Number
+    - contextPath: ANYRUN.Task.Process.ProcessUUID
+      description: Unique process ID (used by ANY.RUN).
+      type: String
+    - contextPath: ANYRUN.Task.Process.CMD
+      description: Process command.
+      type: String
+    - contextPath: ANYRUN.Task.Process.Path
+      description: Path of the executed command.
+      type: String
+    - contextPath: ANYRUN.Task.Process.User
+      description: User who executed the command.
+      type: String
+    - contextPath: ANYRUN.Task.Process.IntegrityLevel
+      description: The process integrity level.
+      type: String
+    - contextPath: ANYRUN.Task.Process.ExitCode
+      description: Process exit code.
+      type: Number
+    - contextPath: ANYRUN.Task.Process.MainProcess
+      description: Whether the process is the main process.
+      type: Boolean
+    - contextPath: ANYRUN.Task.Process.Version.Company
+      description: Company responsible for the program executed.
+      type: String
+    - contextPath: ANYRUN.Task.Process.Version.Description
+      description: Description of the type of program.
+      type: String
+    - contextPath: ANYRUN.Task.Process.Version.Version
+      description: Version of the program executed.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: Type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: String
+    - contextPath: File.Extension
+      description: Extension of the file submitted for analysis.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file submitted for analysis.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+      type: String
+    - contextPath: URL.Data
+      description: URL data.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+      type: String
+    - contextPath: ANYRUN.Task.Status
+      description: Task analysis status.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: file
+      description: Type of new task.
+      isArray: false
+      name: obj_type
+      predefined:
+      - file
+      - url
+      - remote file
+      required: false
+      secret: false
+    - default: false
+      description: EntryID of the file to analyze.
+      isArray: false
+      name: file
+      required: false
+      secret: false
+    - default: false
+      description: URL, used only if 'obj_type' command argument is 'url' or 'download'.
+        Permitted size is 5-512 characters long.
+      isArray: false
+      name: obj_url
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: '32'
+      description: Bitness of OS.
+      isArray: false
+      name: env_bitness
+      predefined:
+      - '32'
+      - '64'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Windows 7
+      description: Version of Windows OS.
+      isArray: false
+      name: env_version
+      predefined:
+      - Windows Vista
+      - Windows 7
+      - Windows 8.1
+      - Windows 10
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: complete
+      description: Environment preset type.
+      isArray: false
+      name: env_type
+      predefined:
+      - complete
+      - clean
+      - office
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'true'
+      description: Network connection state.
+      isArray: false
+      name: opt_network_connect
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'false'
+      description: Heavy evasion option.
+      isArray: false
+      name: opt_kernel_heavyevasion
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: owner
+      description: Privacy settings for generated task.
+      isArray: false
+      name: opt_privacy_type
+      predefined:
+      - owner
+      - bylink
+      - public
+      required: false
+      secret: false
+    deprecated: false
+    description: Submit a file or url for analysis.
+    execution: false
+    name: anyrun-run-analysis
+    outputs:
+    - contextPath: ANYRUN.Task.ID
+      description: ID of the task created to analyze the submission.
+      type: String
+  dockerimage: demisto/python3:3.7.3.221
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- ANYRUN-Test

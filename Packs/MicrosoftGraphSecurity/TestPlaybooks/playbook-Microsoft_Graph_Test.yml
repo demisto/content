@@ -1,0 +1,319 @@
+id: Microsoft Graph Security Test
+version: -1
+name: Microsoft Graph Security Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3865ebdd-d653-462b-8740-7c834c048ec1
+    type: start
+    task:
+      id: 3865ebdd-d653-462b-8740-7c834c048ec1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 55be4870-4d67-4777-8192-3684e32fb7e6
+    type: regular
+    task:
+      id: 55be4870-4d67-4777-8192-3684e32fb7e6
+      version: -1
+      name: msg-search-alerts
+      description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
+      script: '|||msg-search-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      category: {}
+      filter: {}
+      last_modified: {}
+      severity: {}
+      time_from: {}
+      time_to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 102ba941-173c-481e-88bb-b7cc01bdf9c6
+    type: regular
+    task:
+      id: 102ba941-173c-481e-88bb-b7cc01bdf9c6
+      version: -1
+      name: msg-get-alert-details
+      description: Get details for a specific alert.
+      script: '|||msg-get-alert-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: MsGraph
+          accessor: Alert.ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      fields_to_include: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3b5084ce-e28c-4a99-8b7c-f1aa40fcebfe
+    type: regular
+    task:
+      id: 3b5084ce-e28c-4a99-8b7c-f1aa40fcebfe
+      version: -1
+      name: msg-update-alert
+      description: Update an editable alert property within any integrated solution to keep alert status and assignments in sync across solutions using its reference ID.
+      script: '|||msg-update-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: MsGraph
+          accessor: Alert.ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      assigned_to: {}
+      closed_date_time: {}
+      comments: {}
+      feedback:
+        simple: truePositive
+      provider_information:
+        complex:
+          root: MsGraph
+          accessor: Alert.Provider
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      status: {}
+      tags: {}
+      vendor_information:
+        complex:
+          root: MsGraph
+          accessor: Alert.Vendor
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 830e04a0-9e00-4e5e-8785-2713775c44f2
+    type: title
+    task:
+      id: 830e04a0-9e00-4e5e-8785-2713775c44f2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 932bc8cd-90c3-4ec8-84e6-70e23e5bb15d
+    type: condition
+    task:
+      id: 932bc8cd-90c3-4ec8-84e6-70e23e5bb15d
+      version: -1
+      name: Verify msg-search-alerts output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraph
+                accessor: Alert.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 7b385756-6141-424e-8c8e-458733f0d29a
+    type: regular
+    task:
+      id: 7b385756-6141-424e-8c8e-458733f0d29a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 1135286e-e678-41ba-8f35-fe89152840db
+    type: regular
+    task:
+      id: 1135286e-e678-41ba-8f35-fe89152840db
+      version: -1
+      name: Sleep for 30 seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,21 @@
+!pihole-get-versions
+!pihole-get-version
+!pihole-get-type
+!pihole-get-summaryraw
+!pihole-get-overtimedata10mins
+!pihole-get-topitems
+!pihole-get-topclients
+!pihole-get-forward-destinations
+!pihole-get-query-types
+!pihole-get-topclientsblocked
+!pihole-get-cache-info
+!pihole-get-recent-blocked
+!pihole-get-overTimeDataQueryTypes
+!pihole-get-client-names
+!pihole-get-over-time-data-clients
+!pihole-status
+!pihole-enable
+!pihole-disable
+!pihole-get-list list=white
+!pihole-list-management list=white action=add domain=paloaltonetworks.com
+!pihole-list-management list=white action=sub domain=paloaltonetworks.com

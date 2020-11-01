@@ -1,0 +1,466 @@
+id: VxStream Test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: VxStream Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: d58baf06-33f9-4abf-83eb-bad9e8f87b17
+    type: start
+    task:
+      id: d58baf06-33f9-4abf-83eb-bad9e8f87b17
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 2309d94a-3867-466e-8f72-29aa622c9575
+    type: regular
+    task:
+      id: 2309d94a-3867-466e-8f72-29aa622c9575
+      version: -1
+      name: Get Environments
+      script: VxStream|||crowdstrike-get-environments
+      type: regular
+      iscommand: true
+      brand: VxStream
+      description: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 58a0f60c-c7eb-42d1-819b-5857c2637bf8
+    type: regular
+    task:
+      id: 58a0f60c-c7eb-42d1-819b-5857c2637bf8
+      version: -1
+      name: Search
+      script: VxStream|||crowdstrike-search
+      type: regular
+      iscommand: true
+      brand: VxStream
+      description: ''
+    nexttasks:
+      '#none#':
+      - '12'
+      - '14'
+    scriptarguments:
+      authentihash: {}
+      av_detect: {}
+      context: {}
+      country: {}
+      domain: {}
+      env_id: {}
+      filename: {}
+      filetype: {}
+      filetype_desc: {}
+      host: {}
+      imp_hash: {}
+      port: {}
+      query: {}
+      similar_to:
+        simple: b2ac43820cdf8634e1a437b9723ec110513d3dd7a2f8d4fa3192babe3eaa4b8e
+      ssdeep: {}
+      tag: {}
+      url: {}
+      verdict: {}
+      vx_family: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 43591c30-e6cf-4314-8c63-0cd0bdef647f
+    type: regular
+    task:
+      id: 43591c30-e6cf-4314-8c63-0cd0bdef647f
+      version: -1
+      name: Scan
+      script: VxStream|||crowdstrike-scan
+      type: regular
+      iscommand: true
+      brand: VxStream
+      description: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      file:
+        simple: 30d68d5f036e3edda345a0be211a14145fa763372620648d3dc2f8f7dbdf43c4
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1245\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 6806f2a1-0be2-4d0c-8250-f50b94a4943a
+    type: condition
+    task:
+      id: 6806f2a1-0be2-4d0c-8250-f50b94a4943a
+      version: -1
+      name: Exists scan
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    scriptarguments:
+      value:
+        complex:
+          root: File
+          accessor: environmentId
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: 4c9c6ce0-157f-4a79-8f56-a200a8fcb49e
+    type: regular
+    task:
+      id: 4c9c6ce0-157f-4a79-8f56-a200a8fcb49e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: a0d1b81c-dddd-4faf-8204-78707bd506e6
+    type: regular
+    task:
+      id: a0d1b81c-dddd-4faf-8204-78707bd506e6
+      version: -1
+      name: crowdstrike-submit-url
+      script: VxStream|||crowdstrike-submit-url
+      type: regular
+      iscommand: true
+      brand: VxStream
+      description: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      environmentID:
+        simple: '100'
+      extend-context:
+        simple: URL1_HASH=sha256
+      url:
+        simple: https://onedrive.live.com/?blahkey=%21AG6pRt%5FDkLiDBm5&blegh=8c90d345gGvf8asLdkfj&whocares=0CDfasdfajiog3%21105&darPd
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 6d970402-e601-4dfb-8266-974523ca18ae
+    type: condition
+    task:
+      id: 6d970402-e601-4dfb-8266-974523ca18ae
+      version: -1
+      name: Verify Context get-environments
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '3'
+    scriptarguments:
+      value:
+        complex:
+          root: CrowdStrike
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.ID
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.description
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.architecture
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.VMs_busy
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.analysisMode
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.groupicon
+                iscontext: true
+          accessor: Environment
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: cbe29cad-2aa5-4407-8e2a-1f5d5ba89136
+    type: regular
+    task:
+      id: cbe29cad-2aa5-4407-8e2a-1f5d5ba89136
+      version: -1
+      name: crowdstrike-submit-url
+      script: VxStream|||crowdstrike-submit-url
+      type: regular
+      iscommand: true
+      brand: VxStream
+      description: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      environmentID:
+        simple: '100'
+      extend-context:
+        simple: URL2_HASH=sha256
+      url:
+        simple: https://onedrive.live.com/?blahkey=%21AG6pRt%5FDkLiDBm5&blegh=8c90d345gGvf8asLdkfj&whocares=0CDfasdfajiog3%21105&darP5
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: 400a972e-0cbf-496c-8e98-b51f112e285c
+    type: condition
+    task:
+      id: 400a972e-0cbf-496c-8e98-b51f112e285c
+      version: -1
+      name: Verify different hashes for different submitted URLs
+      description: Ensure that the URL is being submitted correctly to crowdstrike
+        and not only the contents up until the first ampersand are being processed
+        by crowdstrike. If the two URLs (whose contents only differ after the ampersand)
+        get the same hash returned by crowdstrike it means that we are incorrectly
+        submitting the URLs and that their contents are getting cut off at the first
+        ampersand (this is bad, the desired behavior is that the hashes should differ).
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: URL1_HASH
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: URL2_HASH
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: ebefaee0-53a2-4bea-81a9-26a9ab01c06a
+    type: title
+    task:
+      id: ebefaee0-53a2-4bea-81a9-26a9ab01c06a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2295\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '17':
+    id: '17'
+    taskid: 35953efd-984d-4a6c-80e6-4b357f2f42a7
+    type: regular
+    task:
+      id: 35953efd-984d-4a6c-80e6-4b357f2f42a7
+      version: -1
+      name: Upload file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: yes
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/pdfworking.pdf
+      username: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '18':
+    id: '18'
+    taskid: a0167a82-9407-4dc7-8521-ae8515e86356
+    type: regular
+    task:
+      id: a0167a82-9407-4dc7-8521-ae8515e86356
+      version: -1
+      name: Submit file
+      description: Submit a file from investigation to analysis server
+      script: '|||crowdstrike-submit-sample'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      entryId:
+        simple: ${File.EntryID}
+      environmentID: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1945\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '19':
+    id: '19'
+    taskid: b29d493c-7ec7-412c-8c5e-fc37ad880e67
+    type: condition
+    task:
+      id: b29d493c-7ec7-412c-8c5e-fc37ad880e67
+      version: -1
+      name: Verify there's a new job
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.JobID
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '20':
+    id: '20'
+    taskid: e2fa1c7c-ca89-42b3-8c48-a05e00d0e854
+    type: regular
+    task:
+      id: e2fa1c7c-ca89-42b3-8c48-a05e00d0e854
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1595\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2310,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

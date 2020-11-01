@@ -1,0 +1,971 @@
+id: Flashpoint_forum-Test
+version: -1
+name: Flashpoint_forum-Test
+description: ""
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 35d2cdb3-2bd8-40f1-8277-a3cee50cd2ae
+    type: start
+    task:
+      id: 35d2cdb3-2bd8-40f1-8277-a3cee50cd2ae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 34167efc-a6ab-462f-830e-cf93a2541175
+    type: regular
+    task:
+      id: 34167efc-a6ab-462f-830e-cf93a2541175
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: b5e8bc45-1083-4af6-8ffc-27f84c133167
+    type: regular
+    task:
+      id: b5e8bc45-1083-4af6-8ffc-27f84c133167
+      version: -1
+      name: flashpoint-get-forum-details
+      description: Get forum details
+      script: Flashpoint|||flashpoint-get-forum-details
+      type: regular
+      iscommand: true
+      brand: Flashpoint
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      forum_id:
+        simple: ifY5BsXeXQqdTx3fafZbIg
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 822b286d-5c59-4571-8ed0-33ac9a5d9f27
+    type: condition
+    task:
+      id: 822b286d-5c59-4571-8ed0-33ac9a5d9f27
+      version: -1
+      name: Verify forum
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Name}
+            iscontext: true
+          right:
+            value:
+              simple: 0hack
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.ForumId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Description}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Hostname}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Name}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Tags}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Stats}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 6264ac51-c6ab-451b-8794-e46bc1483aa4
+    type: title
+    task:
+      id: 6264ac51-c6ab-451b-8794-e46bc1483aa4
+      version: -1
+      name: Process forum post detail
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 81281840-2df9-4237-8ce4-8da62aed13e2
+    type: regular
+    task:
+      id: 81281840-2df9-4237-8ce4-8da62aed13e2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 17b0c1a3-e45d-4ec5-8080-b4de01052cce
+    type: regular
+    task:
+      id: 17b0c1a3-e45d-4ec5-8080-b4de01052cce
+      version: -1
+      name: flashpoint-get-forum-post-details
+      description: Get post details
+      script: Flashpoint|||flashpoint-get-forum-post-details
+      type: regular
+      iscommand: true
+      brand: Flashpoint
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      post_id:
+        simple: PDo1xGiKXDebHGc8fZme6g
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 31f54f64-4c15-4063-8dd3-37b7233aec4a
+    type: condition
+    task:
+      id: 31f54f64-4c15-4063-8dd3-37b7233aec4a
+      version: -1
+      name: Verify forum post detail
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Post.PostId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.Forum}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.Room}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.User}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.PublishedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.Url}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 90c6b424-bc1c-4cd9-8b9e-d84241931a57
+    type: title
+    task:
+      id: 90c6b424-bc1c-4cd9-8b9e-d84241931a57
+      version: -1
+      name: Process forum user detail
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: d4432c4d-4780-4ea4-800c-2cfe9f96f379
+    type: regular
+    task:
+      id: d4432c4d-4780-4ea4-800c-2cfe9f96f379
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 725ed854-a498-4cfe-894f-34666499e555
+    type: regular
+    task:
+      id: 725ed854-a498-4cfe-894f-34666499e555
+      version: -1
+      name: flashpoint-get-forum-user-details
+      description: Get user details
+      script: Flashpoint|||flashpoint-get-forum-user-details
+      type: regular
+      iscommand: true
+      brand: Flashpoint
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      user_id:
+        simple: P3au_EzEX4-uctmRfdUYeA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 3e30fe2e-81ab-4eed-8d66-47d62a73def3
+    type: condition
+    task:
+      id: 3e30fe2e-81ab-4eed-8d66-47d62a73def3
+      version: -1
+      name: verify forum user detail
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.User.Name}
+            iscontext: true
+          right:
+            value:
+              simple: IllWillPub
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.User.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.User.Forum}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.User.Url}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.User.UserId}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: df610aa7-d485-46f2-89e9-a965774c79d1
+    type: title
+    task:
+      id: df610aa7-d485-46f2-89e9-a965774c79d1
+      version: -1
+      name: Process forum room detail
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: c1626efd-b5f7-43ac-8f95-8a423832db64
+    type: regular
+    task:
+      id: c1626efd-b5f7-43ac-8f95-8a423832db64
+      version: -1
+      name: flashpoint-get-forum-room-details
+      description: Get room details
+      script: Flashpoint|||flashpoint-get-forum-room-details
+      type: regular
+      iscommand: true
+      brand: Flashpoint
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      room_id:
+        simple: dBoQqur5XmGGYLxSrc8C9A
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 6300dcb7-f29d-409c-8338-314a51cf4e5b
+    type: condition
+    task:
+      id: 6300dcb7-f29d-409c-8338-314a51cf4e5b
+      version: -1
+      name: Verify forum room detail
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Room.Title}
+            iscontext: true
+          right:
+            value:
+              simple: Bank Carding
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Room.Url}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Room.RoomId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Room.Forum}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Room.Forum.id}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Room.Forum.hostname}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 2335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 8a9ee3a7-5710-4357-87dc-ebd05c65f15d
+    type: title
+    task:
+      id: 8a9ee3a7-5710-4357-87dc-ebd05c65f15d
+      version: -1
+      name: Process Search forum site
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 276cf5e2-2b34-485e-899f-05814362bf97
+    type: regular
+    task:
+      id: 276cf5e2-2b34-485e-899f-05814362bf97
+      version: -1
+      name: flashpoint-search-forum-sites
+      description: Search forum sites using a keyword
+      script: Flashpoint|||flashpoint-search-forum-sites
+      type: regular
+      iscommand: true
+      brand: Flashpoint
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      site_search:
+        simple: 0hack
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: b96e8727-6a0a-4365-8582-d41a4c9a747f
+    type: regular
+    task:
+      id: b96e8727-6a0a-4365-8582-d41a4c9a747f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 35e7fd3b-a0dc-49e7-8b4f-3adbc7756b0f
+    type: regular
+    task:
+      id: 35e7fd3b-a0dc-49e7-8b4f-3adbc7756b0f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: ae0a272c-970b-467a-8bd1-3ee2a9dc2876
+    type: condition
+    task:
+      id: ae0a272c-970b-467a-8bd1-3ee2a9dc2876
+      version: -1
+      name: Verify search result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Site.SiteId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Site.Description}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Site.Hostname}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Site.Name}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Site.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Site.Tags}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 05d6cb22-4952-4783-87b5-afb2938fc622
+    type: title
+    task:
+      id: 05d6cb22-4952-4783-87b5-afb2938fc622
+      version: -1
+      name: Process search-forum-posts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 3250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 3c998a7e-c101-479d-8414-a76c29f15ba9
+    type: regular
+    task:
+      id: 3c998a7e-c101-479d-8414-a76c29f15ba9
+      version: -1
+      name: flashpoint-search-forum-posts
+      description: Search forum posts using a keyword
+      script: Flashpoint|||flashpoint-search-forum-posts
+      type: regular
+      iscommand: true
+      brand: Flashpoint
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      post_search:
+        simple: The Courtyard Café
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 815c9379-c15a-4521-8a56-939bf039d50e
+    type: condition
+    task:
+      id: 815c9379-c15a-4521-8a56-939bf039d50e
+      version: -1
+      name: Verify post search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Post.Forum}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.Room}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.User}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.PostId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.PublishedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.Url}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 3560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 7a356ef5-1e83-439b-8691-fc5a07d76bbf
+    type: regular
+    task:
+      id: 7a356ef5-1e83-439b-8691-fc5a07d76bbf
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 3740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: a5b2cae7-b015-4e73-8bd7-e5fcae96e1f1
+    type: regular
+    task:
+      id: a5b2cae7-b015-4e73-8bd7-e5fcae96e1f1
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 3390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3855,
+        "width": 1210,
+        "x": 820,
+        "y": -20
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

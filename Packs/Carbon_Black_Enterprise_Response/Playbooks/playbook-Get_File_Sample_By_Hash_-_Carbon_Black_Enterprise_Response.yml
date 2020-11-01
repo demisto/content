@@ -1,0 +1,191 @@
+id: get_file_sample_by_hash_-_carbon_black_enterprise_Response
+version: -1
+name: Get File Sample By Hash - Carbon Black Enterprise Response
+fromversion: 5.0.0
+description: |-
+  Returns to the war-room a file sample correlating to MD5 hashes in the input using Carbon Black Enterprise Response integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 13be4945-ec82-4790-8892-a66b8b74111c
+    type: start
+    task:
+      id: 13be4945-ec82-4790-8892-a66b8b74111c
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 795290dd-889b-4ea6-8e83-7b04252bddf2
+    type: condition
+    task:
+      id: 795290dd-889b-4ea6-8e83-7b04252bddf2
+      version: -1
+      name: Is Carbon Black Enterprise Response enabled?
+      description: Checks if the Carbon Black Enterprise Response integration is enabled
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      extend-context: {}
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: carbonblack
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+          accessor: brand
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: d489fccb-fab0-471b-849c-3b64ab63e7ce
+    type: condition
+    task:
+      id: d489fccb-fab0-471b-849c-3b64ab63e7ce
+      version: -1
+      name: Do we have a MD5?
+      description: Checks for MD5 in context
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.MD5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 90947de7-db04-49c9-88f3-747e0ad4c026
+    type: title
+    task:
+      id: 90947de7-db04-49c9-88f3-747e0ad4c026
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 711
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 4241ccef-7acc-49f9-8976-e97a654bf89d
+    type: regular
+    task:
+      id: 4241ccef-7acc-49f9-8976-e97a654bf89d
+      version: -1
+      name: Get binary from MD5
+      description: ""
+      script: carbonblack|||cb-binary-get
+      type: regular
+      iscommand: true
+      brand: carbonblack
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      facet: {}
+      md5:
+        complex:
+          root: inputs.MD5
+      pid: {}
+      query: {}
+      rows: {}
+      segid: {}
+      sort: {}
+      start: {}
+      summary: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 309,
+          "y": 550
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 726,
+        "width": 639,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: 'Get file sample from input MD5 '
+outputs:
+- contextPath: File
+  description: File Sample
+  type: unknown
+tests:
+- no test

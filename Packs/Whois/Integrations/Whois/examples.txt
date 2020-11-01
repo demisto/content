@@ -1,0 +1,2 @@
+whois query=paloaltonetworks.com
+domain domain=google.com

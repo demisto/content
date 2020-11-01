@@ -1,0 +1,152 @@
+id: CVSS Calculator Test
+version: -1
+name: CVSS Calculator Test
+description: This playbook simply tests that the calculator works and does not error.
+  It makes use of all the input cariables possible.
+starttaskid: "0"
+fromversion: 5.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 2eb70546-f609-449e-8cc1-9f201052a607
+    type: start
+    task:
+      id: 2eb70546-f609-449e-8cc1-9f201052a607
+      version: -1
+      name: ""
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d7a5abaa-f15e-43be-8783-c897b2ca956c
+    type: regular
+    task:
+      id: d7a5abaa-f15e-43be-8783-c897b2ca956c
+      version: -1
+      name: CVSSCalculator
+      description: This script calculates the CVSS Base Score, Temporal Score and
+        Environmental Score using either the CVSS 3.0 or 3.1 calculator according
+        to https://www.first.org/cvss/ calculation documentation.
+      scriptName: CVSSCalculator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      A:
+        simple: H
+      AC:
+        simple: L
+      AR:
+        simple: H
+      AV:
+        simple: A
+      C:
+        simple: H
+      CR:
+        simple: H
+      E:
+        simple: H
+      I:
+        simple: H
+      IR:
+        simple: H
+      MA:
+        simple: "N"
+      MAC:
+        simple: L
+      MAV:
+        simple: A
+      MC:
+        simple: L
+      MI:
+        simple: "N"
+      MPR:
+        simple: "N"
+      MS:
+        simple: U
+      MUI:
+        simple: "N"
+      PR:
+        simple: L
+      RC:
+        simple: C
+      RL:
+        simple: W
+      S:
+        simple: U
+      UI:
+        simple: "N"
+      version:
+        simple: "3.1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b6e89089-cd88-40c2-8931-d6438a8280b2
+    type: title
+    task:
+      id: b6e89089-cd88-40c2-8931-d6438a8280b2
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      description: ""
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

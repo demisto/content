@@ -1,0 +1,704 @@
+id: Google_Vault-Search_And_Display_Results_test
+version: -1
+name: Google Vault - Search And Display Results test
+description: 'This is a test for Google Vault playbooks. It calls all search commands: Google Vault - Search Drive, Google Vault - Search Groups, Google Vault - Search Mail. In addition it uses: Google Vault - Search And Display Results with 3 different variations.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9c2fe40d-d707-4069-8ad3-bd28ae4b06c3
+    type: start
+    task:
+      id: 9c2fe40d-d707-4069-8ad3-bd28ae4b06c3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 9854eeba-3e06-4fff-861c-cae45e659a81
+    type: playbook
+    task:
+      id: 9854eeba-3e06-4fff-861c-cae45e659a81
+      version: -1
+      name: Google Vault - Search Mail
+      description: This is a playbook for performing Google Vault search in Mail accounts and display the results.
+      playbookName: Google Vault - Search Mail
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      dataScope:
+        simple: All Data
+      downloadFile:
+        simple: "true"
+      emails:
+        simple: admin@demistodev.com
+      endTime: {}
+      exportMBOX:
+        simple: "false"
+      exportName:
+        complex:
+          root: NEW_PASSWORD
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .='Mail_Export_' + val +'_Time_' + Date.now()
+      exportPST:
+        simple: "true"
+      includeDrafts:
+        simple: "true"
+      matterID:
+        simple: ${GoogleVault.Matter.MatterID}
+      maxResultForDisplay: {}
+      ou: {}
+      pollInterval:
+        simple: "1"
+      pollTimeout:
+        simple: "5"
+      searchMethod:
+        simple: Specific Accounts(requires emails argument)
+      startTime:
+        simple: 2020-07-10T00:00:00Z
+      terms:
+        simple: test*
+      timeFrame: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 402b61a6-8fa3-431e-8839-c193bc644302
+    type: playbook
+    task:
+      id: 402b61a6-8fa3-431e-8839-c193bc644302
+      version: -1
+      name: Google Vault - Search Groups
+      description: This is a playbook for performing Google Vault search in Groups and display the results.
+      playbookName: Google Vault - Search Groups
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      dataScope:
+        simple: All Data
+      downloadFile:
+        simple: "true"
+      endTime: {}
+      exportMBOX:
+        simple: "false"
+      exportName:
+        complex:
+          root: NEW_PASSWORD
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .='Groups_Export_' + val +'_Time_' + Date.now()
+      exportPST:
+        simple: "true"
+      groups:
+        simple: maya-group-test@demistodev.com,ido-group-test@demistodev.com
+      matterID:
+        simple: ${GoogleVault.Matter.MatterID}
+      maxResultForDisplay:
+        simple: "30"
+      pollInterval:
+        simple: "1"
+      pollTimeout:
+        simple: "5"
+      startTime: {}
+      terms: {}
+      timeFrame: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 82c88e57-cc16-43a1-888b-9fef09e55781
+    type: playbook
+    task:
+      id: 82c88e57-cc16-43a1-888b-9fef09e55781
+      version: -1
+      name: Google Vault - Search Drive
+      description: This is a playbook for performing Google Vault search in Drive accounts and display the results.
+      playbookName: Google Vault - Search Drive
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      dataScope:
+        simple: All Data
+      downloadFile:
+        simple: "true"
+      emails:
+        simple: test@demistodev.com,maya@demistodev.com
+      endTime: {}
+      exportMBOX:
+        simple: "false"
+      exportName:
+        complex:
+          root: NEW_PASSWORD
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .='Drive_Export_' + val +'_Time_' + Date.now()
+      exportPST:
+        simple: "true"
+      includeTeamDrives:
+        simple: "false"
+      matterID:
+        simple: ${GoogleVault.Matter.MatterID}
+      maxResultForDisplay:
+        simple: "30"
+      ou: {}
+      pollInterval:
+        simple: "2"
+      pollTimeout:
+        simple: "30"
+      searchMethod:
+        simple: Team Drive
+      startTime: {}
+      teamDrive:
+        simple: 0ANbMMsaWJNw2Uk9PVA,0AOM4L2G2JU4NUk9PVA
+      terms: {}
+      timeFrame: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: fa81357a-793b-4575-8e5e-80ae3bcfccc9
+    type: regular
+    task:
+      id: fa81357a-793b-4575-8e5e-80ae3bcfccc9
+      version: -1
+      name: Generate ID
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "2"
+      max_lcase:
+        simple: "2"
+      max_symbols:
+        simple: "0"
+      max_ucase:
+        simple: "2"
+      min_digits:
+        simple: "2"
+      min_lcase:
+        simple: "2"
+      min_symbols: {}
+      min_ucase:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 66884289-d722-40fc-8799-fed9cde01580
+    type: regular
+    task:
+      id: 66884289-d722-40fc-8799-fed9cde01580
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 58ca6734-0715-4d9f-80e4-e2fa049cf60b
+    type: playbook
+    task:
+      id: 58ca6734-0715-4d9f-80e4-e2fa049cf60b
+      version: -1
+      name: Google Vault - Display Results
+      description: This is a playbook for queuing and displaying vault search result
+      playbookName: Google Vault - Display Results
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ExportID:
+        simple: ${GoogleVault.Matter.Export.ExportID}
+      MatterID:
+        simple: ${GoogleVault.Matter.MatterID}
+      SearchtType:
+        simple: Groups
+      downloadFile:
+        simple: "false"
+      maxResultForDisplay:
+        simple: "30"
+      pollInterval:
+        simple: "2"
+      pollTimeout:
+        simple: "30"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ee2f949d-c277-4fd4-8523-0f70603e3d1c
+    type: playbook
+    task:
+      id: ee2f949d-c277-4fd4-8523-0f70603e3d1c
+      version: -1
+      name: Google Vault - Display Results
+      playbookName: Google Vault - Display Results
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      ExportID:
+        simple: ${GoogleVault.Matter.Export.ExportID}
+      MatterID:
+        simple: ${GoogleVault.Matter.MatterID}
+      SearchtType:
+        simple: Mail
+      downloadFile:
+        simple: "false"
+      maxResultForDisplay:
+        simple: "30"
+      pollInterval:
+        simple: "2"
+      pollTimeout:
+        simple: "30"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 112f3b9d-e39d-4d0a-81a9-0c90f1d11670
+    type: playbook
+    task:
+      id: 112f3b9d-e39d-4d0a-81a9-0c90f1d11670
+      version: -1
+      name: Google Vault - Display Results
+      playbookName: Google Vault - Display Results
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      ExportID:
+        simple: ${GoogleVault.Matter.Export.ExportID}
+      MatterID:
+        simple: ${GoogleVault.Matter.Export.MatterID}
+      SearchtType:
+        simple: Drive
+      downloadFile:
+        simple: "false"
+      maxResultForDisplay:
+        simple: "30"
+      pollInterval:
+        simple: "2"
+      pollTimeout:
+        simple: "30"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 56d68919-7802-4aa3-8b3f-a5ab6045f477
+    type: regular
+    task:
+      id: 56d68919-7802-4aa3-8b3f-a5ab6045f477
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 51f2cead-2bb0-492d-8194-05f0b0d0a4cb
+    type: regular
+    task:
+      id: 51f2cead-2bb0-492d-8194-05f0b0d0a4cb
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 8bbb6e7a-9762-46ee-897c-ca48a414d16e
+    type: regular
+    task:
+      id: 8bbb6e7a-9762-46ee-897c-ca48a414d16e
+      version: -1
+      name: Generate ID
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "2"
+      max_lcase:
+        simple: "2"
+      max_symbols:
+        simple: "0"
+      max_ucase:
+        simple: "2"
+      min_digits:
+        simple: "2"
+      min_lcase:
+        simple: "2"
+      min_symbols: {}
+      min_ucase:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 217e1b05-52d9-443b-8638-a6919d3fa96c
+    type: regular
+    task:
+      id: 217e1b05-52d9-443b-8638-a6919d3fa96c
+      version: -1
+      name: Generate ID
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "2"
+      max_lcase:
+        simple: "2"
+      max_symbols:
+        simple: "0"
+      max_ucase:
+        simple: "2"
+      min_digits:
+        simple: "2"
+      min_lcase:
+        simple: "2"
+      min_symbols: {}
+      min_ucase:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 98bd894a-101f-49e4-8524-247c902fcc89
+    type: regular
+    task:
+      id: 98bd894a-101f-49e4-8524-247c902fcc89
+      version: -1
+      name: gvault-create-matter
+      description: Creates a new matter with the specified name and description. The initial state is open, and the owner is the method caller. First, checks if a matter with the same name already exists.
+      script: '|||gvault-create-matter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      description:
+        simple: search_and_display_results_
+      name:
+        simple: ${.= 'search_and_display_results_' + new Date()}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 007af3fb-4ea7-42fc-8ea7-0ae9f26cab1e
+    type: regular
+    task:
+      id: 007af3fb-4ea7-42fc-8ea7-0ae9f26cab1e
+      version: -1
+      name: gvault-create-matter
+      description: Creates a new matter with the specified name and description. The initial state is open, and the owner is the method caller. First, checks if a matter with the same name already exists.
+      script: '|||gvault-create-matter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      description:
+        simple: search_and_display_results_
+      name:
+        simple: ${.= 'search_and_display_results_' + new Date()}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: c71047a5-24b2-4cd6-8902-dfa182b5502d
+    type: regular
+    task:
+      id: c71047a5-24b2-4cd6-8902-dfa182b5502d
+      version: -1
+      name: gvault-create-matter
+      description: Creates a new matter with the specified name and description. The initial state is open, and the owner is the method caller. First, checks if a matter with the same name already exists.
+      script: '|||gvault-create-matter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      description:
+        simple: search_and_display_results_
+      name:
+        simple: ${.= 'search_and_display_results_' + new Date()}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2690,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

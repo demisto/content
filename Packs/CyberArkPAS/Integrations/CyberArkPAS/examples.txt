@@ -1,0 +1,27 @@
+!cyberark-pas-user-add username="TestUser" password="12345Aa" change_password_on_the_next_logon=true description="new user for test" email="usertest@test.com" enable_user=true first_name="user" last_name="test" profession="testing integrations"
+!cyberark-pas-user-update user_id=148 change_password_on_the_next_logon=true description="updated description" email="update@test.com" first_name="test1" last_name="updated-name" username="TestUser1" profession="test1"
+!cyberark-pas-user-activate user_id=148
+!cyberark-pas-users-list
+
+!cyberark-pas-safe-add safe_name="TestSafe1" description="safe for tests" number_of_days_retention=100
+!cyberark-pas-safe-update safe_name=TestSafe safe_new_name=UpdatedName description=UpdatedSafe number_of_days_retention=150
+!cyberark-pas-get-safe-by-name safe_name=UpdatedName
+!cyberark-pas-safes-list
+!cyberark-pas-safe-get-by-name safe_name=UpdatedName
+
+!cyberark-pas-safe-member-add member_name="TestUser" safe_name="UpdatedName"
+!cyberark-pas-safe-member-update member_name="TestUser" safe_name="UpdatedName" permissions=UseAccounts
+!cyberark-pas-safe-members-list safe_name=UpdatedName
+!cyberark-pas-safe-member-delete member_name=TestUser safe_name=UpdatedName
+
+!cyberark-pas-account-add safe_name=TestSafe account_name=TestAccount1 address=/ password=12345Aa platform_id=WinServerLocal username=TestUser
+!cyberark-pas-account-update account_id=77_4 account_name=NewName
+!cyberark-pas-accounts-list limit=2
+!cyberark-pas-account-get-list-activity account_id=77_4
+
+
+!cyberark-pas-user-delete user_id=146
+!cyberark-pas-safe-delete safe_name=UpdatedName
+!cyberark-pas-account-delete account_id=77_4
+
+!cyberark-pas-security-events-get start_time="3 days" limit=2

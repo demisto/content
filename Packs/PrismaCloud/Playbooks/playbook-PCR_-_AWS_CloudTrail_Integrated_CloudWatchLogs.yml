@@ -1,0 +1,905 @@
+id: Prisma Cloud Remediation - AWS CloudTrail Is Not Integrated With CloudWatch
+  Logs
+version: -1
+fromversion: 5.0.0
+name: Prisma Cloud Remediation - AWS CloudTrail Is Not Integrated With CloudWatch
+  Logs
+description: |-
+  This playbook remediates the following Prisma Cloud AWS CloudTrail alerts.
+
+  Prisma Cloud policies remediated:
+
+   - AWS CloudTrail Is Not Integrated With CloudWatch Logs
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 305bea67-c7fc-4c7b-82e4-2fe016a2dc8d
+    type: start
+    task:
+      id: 305bea67-c7fc-4c7b-82e4-2fe016a2dc8d
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: db7aa259-3956-4937-833f-ef14ba111aae
+    type: regular
+    task:
+      id: db7aa259-3956-4937-833f-ef14ba111aae
+      version: -1
+      name: Get CloudTrail detail
+      description: Retrieves settings for the trail associated with the current region
+        for your account.
+      script: AWS - CloudTrail|||aws-cloudtrail-describe-trails
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      includeShadowTrails:
+        simple: "False"
+      region:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: regionId
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      trailNameList:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 4bbca790-07ae-46d0-875c-fbe36ec0fea1
+    type: title
+    task:
+      id: 4bbca790-07ae-46d0-875c-fbe36ec0fea1
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 13bb94c4-2f2c-43a3-8373-bbab36d37258
+    type: condition
+    task:
+      id: 13bb94c4-2f2c-43a3-8373-bbab36d37258
+      version: -1
+      name: Is AWS - CloudWatchLogs integration enabled?
+      description: |2-
+
+        Verifies that AWS - CloudWatchLogs integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - CloudWatchLogs
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: AWS - CloudWatchLogs
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 12fe4882-2be5-49fe-8100-76e69c256386
+    type: regular
+    task:
+      id: 12fe4882-2be5-49fe-8100-76e69c256386
+      version: -1
+      name: Create AWS CloudWatchLogs group
+      description: Creates a log group with the specified name.
+      script: AWS - CloudWatchLogs|||aws-logs-create-log-group
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      kmsKeyId: {}
+      logGroupName:
+        simple: CloudTrail/DefaultLogGroup
+      region:
+        complex:
+          root: AWS
+          accessor: CloudTrail.Trails.HomeRegion
+      roleArn:
+        complex:
+          root: AWS
+          accessor: IAM.Roles
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: CloudTrailCloudWatchLogsRole
+              field:
+                value:
+                  simple: RoleName
+              getField:
+                value:
+                  simple: Arn
+          - operator: FirstArrayElement
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: cd721010-a423-4862-8f1b-074b8e146b7d
+    type: regular
+    task:
+      id: cd721010-a423-4862-8f1b-074b8e146b7d
+      version: -1
+      name: Update CloudTrail
+      description: Updates the settings that specify delivery of log files. Changes
+        to a trail do not require stopping the CloudTrail service.
+      script: AWS - CloudTrail|||aws-cloudtrail-update-trail
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      cloudWatchLogsLogGroupArn:
+        complex:
+          root: AWS
+          accessor: CloudWatchLogs.LogGroups
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: CloudTrail/DefaultLogGroup
+              field:
+                value:
+                  simple: LogGroupName
+              getField:
+                value:
+                  simple: Arn
+          - operator: FirstArrayElement
+      cloudWatchLogsRoleArn:
+        complex:
+          root: AWS
+          accessor: IAM.Roles
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: CloudTrailCloudWatchLogsRole
+              field:
+                value:
+                  simple: RoleName
+              getField:
+                value:
+                  simple: Arn
+          - operator: FirstArrayElement
+      enableLogFileValidation: {}
+      includeGlobalServiceEvents: {}
+      isMultiRegionTrail: {}
+      kmsKeyId: {}
+      name:
+        complex:
+          root: AWS
+          accessor: CloudTrail.Trails.Name
+      region:
+        complex:
+          root: AWS
+          accessor: CloudTrail.Trails.HomeRegion
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      s3BucketName: {}
+      s3KeyPrefix: {}
+      snsTopicName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 84d70025-c146-4d08-867f-b61db82004ae
+    type: regular
+    task:
+      id: 84d70025-c146-4d08-867f-b61db82004ae
+      version: -1
+      name: Get CloudWatchLogs group name
+      description: Lists the specified log groups. You can list all your log groups
+        or filter the results by prefix. The results are ASCII-sorted by log group
+        name.
+      script: AWS - CloudWatchLogs|||aws-logs-describe-log-groups
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      limit: {}
+      logGroupNamePrefix:
+        simple: CloudTrail/DefaultLogGroup
+      region:
+        complex:
+          root: AWS
+          accessor: CloudTrail.Trails.HomeRegion
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: cf316b19-3168-4b7a-80a4-132ccbfe597b
+    type: regular
+    task:
+      id: cf316b19-3168-4b7a-80a4-132ccbfe597b
+      version: -1
+      name: Create IAM Role
+      description: Creates a new role for your AWS account.
+      script: AWS - IAM|||aws-iam-create-role
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      assumeRolePolicyDocument:
+        simple: |-
+          {
+                "Version": "2012-10-17",
+                "Statement": [
+                     {
+                        "Sid": "",
+                        "Effect": "Allow",
+                        "Principal": {
+                                  "Service": "cloudtrail.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                     }
+                ]
+          }
+      description:
+        simple: CloudTrail CloudWatchLogs IAM Role Demisto remediation
+      maxSessionDuration: {}
+      path:
+        simple: /
+      roleArn: {}
+      roleName:
+        simple: CloudTrailCloudWatchLogsRole
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 76f6593d-490d-4e29-84e4-d6893b8bfecc
+    type: regular
+    task:
+      id: 76f6593d-490d-4e29-84e4-d6893b8bfecc
+      version: -1
+      name: Check for existing IAM Role
+      description: Retrieves information about the specified role.
+      script: '|||aws-iam-get-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      roleArn: {}
+      roleName:
+        simple: CloudTrailCloudWatchLogsRole
+      roleSessionDuration: {}
+      roleSessionName: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 335239e3-2458-4ae9-8804-1f92537a259e
+    type: regular
+    task:
+      id: 335239e3-2458-4ae9-8804-1f92537a259e
+      version: -1
+      name: Get the IAM Role
+      description: Retrieves information about the specified role.
+      script: '|||aws-iam-get-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      roleArn: {}
+      roleName:
+        simple: CloudTrailCloudWatchLogsRole
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: cd7e483a-0888-42e6-8511-99302f67a3e5
+    type: regular
+    task:
+      id: cd7e483a-0888-42e6-8511-99302f67a3e5
+      version: -1
+      name: Wait for IAM resources
+      description: Pause for 10 seconds to allow AWS updates.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 05ecada6-dd9e-4739-818c-bcac9b62c8f8
+    type: regular
+    task:
+      id: 05ecada6-dd9e-4739-818c-bcac9b62c8f8
+      version: -1
+      name: Create Logs policy
+      description: Creates a new managed policy for your AWS account.  This operation
+        creates a policy version with a version identifier of v1 and sets v1 as the
+        policy's default version.
+      script: '|||aws-iam-create-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      description:
+        simple: CloudTrail CloudWatchLogs IAM Policy Demisto remediation
+      path: {}
+      policyDocument:
+        simple: |-
+          {
+              "Version": "2012-10-17",
+              "Statement": [
+                  {
+                        "Action": [
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*"
+                   }
+              ]
+          }
+      policyName:
+        simple: CloudTrailCloudWatchLogsPolicy
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 0bd48b6e-3af6-4abc-8075-d4f7789c0834
+    type: regular
+    task:
+      id: 0bd48b6e-3af6-4abc-8075-d4f7789c0834
+      version: -1
+      name: Attach Logs policy to IAM Role
+      description: Attaches the specified managed policy to the specified IAM Entity.
+      script: '|||aws-iam-attach-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      entityName:
+        complex:
+          root: AWS
+          accessor: IAM.Roles
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: CloudTrailCloudWatchLogsRole
+              field:
+                value:
+                  simple: RoleName
+              getField:
+                value:
+                  simple: RoleName
+          - operator: FirstArrayElement
+      policyArn:
+        complex:
+          root: AWS
+          accessor: IAM.Policies
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: CloudTrailCloudWatchLogsPolicy
+              field:
+                value:
+                  simple: PolicyName
+              getField:
+                value:
+                  simple: Arn
+          - operator: FirstArrayElement
+      type:
+        simple: Role
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 72f872ae-ca5a-46e8-8944-3c5453c1b3a1
+    type: regular
+    task:
+      id: 72f872ae-ca5a-46e8-8944-3c5453c1b3a1
+      version: -1
+      name: Check for existing Logs group
+      description: Lists the specified log groups. You can list all your log groups
+        or filter the results by prefix. The results are ASCII-sorted by log group
+        name.
+      script: AWS - CloudWatchLogs|||aws-logs-describe-log-groups
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      limit: {}
+      logGroupNamePrefix:
+        simple: CloudTrail/DefaultLogGroup
+      region:
+        complex:
+          root: AWS
+          accessor: CloudTrail.Trails.HomeRegion
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: c2d782bd-a10e-4ce2-8b2a-e50040152765
+    type: condition
+    task:
+      id: c2d782bd-a10e-4ce2-8b2a-e50040152765
+      version: -1
+      name: Missing Logs group?
+      description: If the CloudWatch Logs group is missing, we'll create one. Otherwise,
+        use the existing CloudWatch Logs group.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: AWS
+                accessor: CloudWatchLogs.LogGroups
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: CloudTrail/DefaultLogGroup
+                    field:
+                      value:
+                        simple: LogGroupName
+                    getField:
+                      value:
+                        simple: LogGroupName
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: CloudTrail/DefaultLogGroup
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 4aa7da8b-f708-45a0-8798-686de73fe6e3
+    type: condition
+    task:
+      id: 4aa7da8b-f708-45a0-8798-686de73fe6e3
+      version: -1
+      name: Missing IAM Role?
+      description: |+
+        If an error is returned, the IAM Role is missing and needs to be created. Otherwise, we'll use the existing IAM Role.
+
+
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "15"
+      "yes":
+      - "8"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: adf3a25b-7cd5-4bfb-805b-f83adedb0f12
+    type: condition
+    task:
+      id: adf3a25b-7cd5-4bfb-805b-f83adedb0f12
+      version: -1
+      name: Is AWS - CloudTrail integration enabled?
+      description: |2-
+
+        Verifies that AWS - CloudTrail integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - CloudTrail
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: AWS - CloudTrail
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 615b41ff-714f-465c-8ec2-4d9e953c3f35
+    type: condition
+    task:
+      id: 615b41ff-714f-465c-8ec2-4d9e953c3f35
+      version: -1
+      name: Is AWS - IAM integration enabled?
+      description: |2-
+
+        Verifies that AWS - IAM integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - IAM
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: AWS - IAM
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "24_5_yes": 0.51,
+      "24_7_#default#": 0.55,
+      "26_15_no": 0.28,
+      "26_8_yes": 0.51,
+      "27_28_yes": 0.56,
+      "27_3_#default#": 0.1,
+      "28_2_yes": 0.56,
+      "28_3_#default#": 0.14,
+      "4_3_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2945,
+        "width": 1290,
+        "x": -190,
+        "y": -290
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No Test

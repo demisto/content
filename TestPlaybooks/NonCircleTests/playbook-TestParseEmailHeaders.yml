@@ -1,5 +1,6 @@
 id: TestParseEmailHeaders
 version: -1
+fromversion: 5.0.0
 name: TestParseEmailHeaders
 starttaskid: "0"
 tasks:
@@ -199,7 +200,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/Scripts/ParseEmailFiles/test_data/utf_subject.msg
+        simple: https://github.com/demisto/content/raw/master/Packs/Legacy/Scripts/ParseEmailFiles/test_data/utf_subject.msg
       username: {}
     separatecontext: false
     view: |-

@@ -1,0 +1,853 @@
+id: DNSDB-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: DNSDB-Test
+description: Test suite for the DNSDB integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 51f509e3-c9cd-425a-8106-2066a14fac5c
+    type: start
+    task:
+      id: 51f509e3-c9cd-425a-8106-2066a14fac5c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 33196be3-67c4-4b61-8215-3218a53dadb5
+    type: regular
+    task:
+      id: 33196be3-67c4-4b61-8215-3218a53dadb5
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5b696fe7-089b-4a5b-8bc1-92fe6f79da58
+    type: regular
+    task:
+      id: 5b696fe7-089b-4a5b-8bc1-92fe6f79da58
+      version: -1
+      name: dnsdb-flex
+      description: DNSDB flex search
+      script: dnsdb-flex
+      type: regular
+      iscommand: true
+      brand: DNSDB_v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: rrnames
+      limit:
+        simple: "1"
+      method:
+        simple: regex
+      rrtype: {}
+      time_first_after: {}
+      time_first_before: {}
+      time_last_after: {}
+      time_last_before: {}
+      value:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 000bfd4f-28a6-4551-8363-8370b2be12a3
+    type: condition
+    task:
+      id: 000bfd4f-28a6-4551-8363-8370b2be12a3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.RRName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.RRType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4f5e495d-026b-4acd-8ce3-af67bd5746de
+    type: regular
+    task:
+      id: 4f5e495d-026b-4acd-8ce3-af67bd5746de
+      version: -1
+      name: dnsdb-summarize-rdata
+      script: '|||dnsdb-summarize-rdata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      aggr: {}
+      limit: {}
+      max_count: {}
+      rrtype: {}
+      time_first_after: {}
+      time_first_before: {}
+      time_last_after: {}
+      time_last_before: {}
+      type:
+        simple: ip
+      value:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c1cf7325-2dd8-4e88-8e4d-50069495e50f
+    type: condition
+    task:
+      id: c1cf7325-2dd8-4e88-8e4d-50069495e50f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Summary.Count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Summary.NumResults
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Summary.TimeFirst
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Summary.TimeLast
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Summary.FromZoneFile
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1b83f35f-5547-4c02-8ef8-aa274960b077
+    type: regular
+    task:
+      id: 1b83f35f-5547-4c02-8ef8-aa274960b077
+      version: -1
+      name: dnsdb-rrset
+      script: '|||dnsdb-rrset'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      aggr: {}
+      bailiwick: {}
+      limit: {}
+      offset: {}
+      owner_name:
+        simple: ns1.google.com
+      rrtype: {}
+      time_first_after: {}
+      time_first_before: {}
+      time_last_after: {}
+      time_last_before: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 33c868ed-72ac-45bd-8f89-ca717e0445f1
+    type: condition
+    task:
+      id: 33c868ed-72ac-45bd-8f89-ca717e0445f1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.RRName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.RRType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.Bailiwick
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.RData
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.Count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.TimeFirst
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.TimeLast
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.FromZoneFile
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 83f54b7d-8346-4e30-88f3-a8151947a386
+    type: regular
+    task:
+      id: 83f54b7d-8346-4e30-88f3-a8151947a386
+      version: -1
+      name: dnsdb-summarize-rrset
+      script: '|||dnsdb-summarize-rrset'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      aggr: {}
+      bailiwick: {}
+      limit: {}
+      max_count: {}
+      owner_name:
+        simple: ns1.google.com
+      rrtype: {}
+      time_first_after: {}
+      time_first_before: {}
+      time_last_after: {}
+      time_last_before: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 574fbc85-b65e-4dae-81c6-52dc19f3e020
+    type: condition
+    task:
+      id: 574fbc85-b65e-4dae-81c6-52dc19f3e020
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Summary.Count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Summary.NumResults
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Summary.TimeFirst
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Summary.TimeLast
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Summary.FromZoneFile
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 058c1071-6582-4c8c-833e-0f18963cac16
+    type: regular
+    task:
+      id: 058c1071-6582-4c8c-833e-0f18963cac16
+      version: -1
+      name: dnsdb-rate-limit
+      script: '|||dnsdb-rate-limit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3ff0f34c-a9af-47b3-828e-649962b4c460
+    type: condition
+    task:
+      id: 3ff0f34c-a9af-47b3-828e-649962b4c460
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Rate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d3ccb451-d72f-4389-811b-4cc82e1fa22a
+    type: title
+    task:
+      id: d3ccb451-d72f-4389-811b-4cc82e1fa22a
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: a9fbb422-d02f-4683-8d92-23ae3f8e6da0
+    type: regular
+    task:
+      id: a9fbb422-d02f-4683-8d92-23ae3f8e6da0
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5f5825a5-763a-492f-8696-5d147f4f66f8
+    type: regular
+    task:
+      id: 5f5825a5-763a-492f-8696-5d147f4f66f8
+      version: -1
+      name: dnsdb-rdata
+      script: '|||dnsdb-rdata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      aggr: {}
+      limit:
+        simple: "1"
+      offset: {}
+      rrtype: {}
+      time_first_after: {}
+      time_first_before: {}
+      time_last_after: {}
+      time_last_before: {}
+      type:
+        simple: ip
+      value:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 488ff170-5864-443e-8822-40c1a4a6cd01
+    type: condition
+    task:
+      id: 488ff170-5864-443e-8822-40c1a4a6cd01
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.RRName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.RRType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.RData
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.Count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.TimeFirst
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.TimeLast
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DNSDB.Record.FromZoneFile
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: d44b78b0-6be4-4322-83f3-b47ccfdacd19
+    type: regular
+    task:
+      id: d44b78b0-6be4-4322-83f3-b47ccfdacd19
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: afcff252-b475-449f-87bc-213d0d707fa3
+    type: regular
+    task:
+      id: afcff252-b475-449f-87bc-213d0d707fa3
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b58fc6f4-a6cc-42ba-858d-761cfe70ac66
+    type: regular
+    task:
+      id: b58fc6f4-a6cc-42ba-858d-761cfe70ac66
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 1d5dc264-d38c-4284-8827-50092df1bb21
+    type: regular
+    task:
+      id: 1d5dc264-d38c-4284-8827-50092df1bb21
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 1c192fb3-bd68-4acf-86ba-dd37ab252fe5
+    type: regular
+    task:
+      id: 1c192fb3-bd68-4acf-86ba-dd37ab252fe5
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_13_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3535,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

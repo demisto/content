@@ -1,0 +1,727 @@
+id: Uptycs - Outbound Connection to Threat IOC Incident
+version: -1
+name: Uptycs - Outbound Connection to Threat IOC Incident
+description: Get information about connections from IOC incidents.
+starttaskid: "0"
+fromversion: 5.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 7a3940a6-02d6-4bb0-8ab5-c5e2169663b4
+    type: start
+    task:
+      id: 7a3940a6-02d6-4bb0-8ab5-c5e2169663b4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: "Input for the playbook"
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7d20ba8f-86be-4bd7-8606-84db7ab6d00b
+    type: regular
+    task:
+      id: 7d20ba8f-86be-4bd7-8606-84db7ab6d00b
+      version: -1
+      name: Get Bad IP alert
+      description: Retrieve more information about the alert.
+      script: '|||uptycs-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alert_id:
+        simple: ${inputs.alert_id}
+      asset_id: {}
+      code: {}
+      end_window: {}
+      host_name:
+        simple: '"kyle-mbp-work"'
+      host_name_is: {}
+      host_name_like: {}
+      hostname:
+        simple: kyle-mbp-work
+      id:
+        simple: ${inputs.alert_id}
+      key: {}
+      limit: {}
+      start_window: {}
+      time_ago: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Bad IP Alert
+      occurred:
+        simple: ${inputs.alert_time}
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: occurred
+      output:
+        simple: ${Uptycs.Alerts.alert_time}
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 49f742db-f1e4-41d4-8da0-0f7aa7d9a41b
+    type: regular
+    task:
+      id: 49f742db-f1e4-41d4-8da0-0f7aa7d9a41b
+      version: -1
+      name: Get process Info
+      description: Get information about the process which opened the connection.
+      script: '|||uptycs-get-process-event-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "14"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.SocketEvents.upt_asset_id}
+      host_name_is: {}
+      pid:
+        simple: ${Uptycs.SocketEvents.pid}
+      time:
+        simple: ${Uptycs.SocketEvents.upt_time}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: bd742f8e-48d0-4e4e-89d2-62aaa81bc6be
+    type: regular
+    task:
+      id: bd742f8e-48d0-4e4e-89d2-62aaa81bc6be
+      version: -1
+      name: Get child processes
+      description: Get information about the child processes which were spawned from
+        the parent process of the process which opened the connection.
+      script: '|||uptycs-get-process-child-processes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "16"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.ParentEvent.upt_asset_id}
+      host_name_is: {}
+      limit: {}
+      parent:
+        simple: ${Uptycs.ParentEvent.pid}
+      parent_end_time: {}
+      parent_start_time:
+        simple: ${Uptycs.ParentEvent.upt_time}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 71b44774-88b0-4df2-8193-fface1788a74
+    type: regular
+    task:
+      id: 71b44774-88b0-4df2-8193-fface1788a74
+      version: -1
+      name: Get information about the connection that was opened
+      description: Get information about the connection which was opened.
+      script: '|||uptycs-get-socket-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "13"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Alerts.upt_asset_id}
+      end_window: {}
+      host_name_is: {}
+      host_name_like: {}
+      ip:
+        simple: ${Uptycs.Alerts.value}
+      limit: {}
+      start_window: {}
+      time:
+        simple: ${Uptycs.Alerts.alert_time}
+      time_ago: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: eb3582ce-edce-4a2c-8d03-f6feb37d02cf
+    type: regular
+    task:
+      id: eb3582ce-edce-4a2c-8d03-f6feb37d02cf
+      version: -1
+      name: Get parent event info
+      description: Get information about the parent process of the process which opened
+        the connection.
+      script: '|||uptycs-get-parent-event-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "15"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.ProcEvent.upt_asset_id}
+      child_add_time:
+        simple: ${Uptycs.ProcEvent.upt_time}
+      host_name_is: {}
+      parent:
+        simple: ${Uptycs.ProcEvent.parent}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 8d5d1cac-44b1-474c-8a42-703cd0423b9e
+    type: condition
+    task:
+      id: 8d5d1cac-44b1-474c-8a42-703cd0423b9e
+      version: -1
+      name: Rows in parent_events?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Uptycs.ParentEvent.pid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7bc91cbf-3fbc-41ca-876d-2f3c8718b606
+    type: regular
+    task:
+      id: 7bc91cbf-3fbc-41ca-876d-2f3c8718b606
+      version: -1
+      name: Get parent info
+      description: Get information about the parent process of the process which opened
+        the connection.
+      script: '|||uptycs-get-parent-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+      - "19"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.ProcEvent.upt_asset_id}
+      child_add_time:
+        simple: ${Uptycs.ProcEvent.upt_time}
+      host_name_is: {}
+      parent:
+        simple: ${Uptycs.ProcEvent.parent}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: aae7f985-ddda-4859-822a-998ace908d81
+    type: regular
+    task:
+      id: aae7f985-ddda-4859-822a-998ace908d81
+      version: -1
+      name: Get child processes
+      description: Get information about the child processes which were spawned from
+        the parent process of the process which opened the connection.
+      script: '|||uptycs-get-process-child-processes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "18"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Parent.upt_asset_id}
+      host_name_is: {}
+      limit: {}
+      parent:
+        simple: ${Uptycs.Parent.pid}
+      parent_end_time:
+        simple: ${Uptycs.Parent.upt_remove_time}
+      parent_start_time:
+        simple: ${Uptycs.Parent.upt_add_time}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 16256540-1f53-4275-80d8-25fdbf376f2b
+    type: title
+    task:
+      id: 16256540-1f53-4275-80d8-25fdbf376f2b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: d5505ebf-e527-4348-85f7-60ca0c9af16b
+    type: condition
+    task:
+      id: d5505ebf-e527-4348-85f7-60ca0c9af16b
+      version: -1
+      name: Any open connections?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.SocketEvents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: c073bb5d-9e60-477e-872a-54d8fb9bcf12
+    type: regular
+    task:
+      id: c073bb5d-9e60-477e-872a-54d8fb9bcf12
+      version: -1
+      name: Gather Evidence
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc: {}
+      description: {}
+      entryIDs:
+        simple: ${lastCompletedTaskEntries}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 209c2ce6-d7c4-4f35-8fe6-9975d9b6bc40
+    type: regular
+    task:
+      id: 209c2ce6-d7c4-4f35-8fe6-9975d9b6bc40
+      version: -1
+      name: Gather Evidence
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc: {}
+      description: {}
+      entryIDs:
+        simple: ${lastCompletedTaskEntries}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: da0838b5-ed41-43d9-8a43-d4485a35e5c7
+    type: regular
+    task:
+      id: da0838b5-ed41-43d9-8a43-d4485a35e5c7
+      version: -1
+      name: Gather Evidence
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc: {}
+      description: {}
+      entryIDs:
+        simple: ${lastCompletedTaskEntries}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: e89f4910-72bf-494e-8489-f2227a98edbf
+    type: regular
+    task:
+      id: e89f4910-72bf-494e-8489-f2227a98edbf
+      version: -1
+      name: Gather Evidence
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc: {}
+      description: {}
+      entryIDs:
+        simple: ${lastCompletedTaskEntries}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ff7ce920-2b49-42c2-890a-a5f67efbffb4
+    type: regular
+    task:
+      id: ff7ce920-2b49-42c2-890a-a5f67efbffb4
+      version: -1
+      name: Gather Evidence
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc: {}
+      description: {}
+      entryIDs:
+        simple: ${lastCompletedTaskEntries}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 4098a550-a2a6-4ef3-8bba-880f955a79d0
+    type: regular
+    task:
+      id: 4098a550-a2a6-4ef3-8bba-880f955a79d0
+      version: -1
+      name: Gather Evidence
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc: {}
+      description: {}
+      entryIDs:
+        simple: ${lastCompletedTaskEntries}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 5bcf7b7d-e75c-4703-8686-49f032ce7557
+    type: condition
+    task:
+      id: 5bcf7b7d-e75c-4703-8686-49f032ce7557
+      version: -1
+      name: Rows in parent_events?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Uptycs.Parent.pid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1815,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: alert_id
+  value:
+    simple: ${incident.labels.alertId}
+  required: true
+  description: Unique Uptycs ID for a particular alert
+  playbookInputQuery: null
+- key: alert_time
+  value:
+    simple: ${incident.labels.alertTime}
+  required: true
+  description: Time the alert was fired
+  playbookInputQuery: null
+outputs:
+- contextPath: Uptycs.ProcEvent.pid
+  description: pid for the process
+  type: number
+- contextPath: Uptycs.ProcEvent.upt_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.ParentEvent.pid
+  description: pid of the process (this is the same number as the input argument 'parent')
+  type: number
+- contextPath: Uptycs.ParentEvent.upt_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.Children.pid
+  description: pid of a child process
+  type: number
+- contextPath: Uptycs.Children.upt_add_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.Children.upt_remove_time
+  description: time that the process was removed
+  type: date
+sourceplaybookid: Uptycs - Outbound Connection to Threat IOC Incident
+tests:
+  - No tests

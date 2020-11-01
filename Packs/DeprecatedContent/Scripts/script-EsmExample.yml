@@ -1,0 +1,38 @@
+commonfields:
+  id: EsmExample
+  version: -1
+name: EsmExample
+script: >-
+  var queryLimit = '100';
+
+  if (args.limit) {
+      queryLimit = args.limit;
+  }
+
+  var ip = args.ip;
+
+  var filters = '[{  "type": "EsmFieldFilter",  "field": {"name": "SrcIP"},  "operator": "EQUALS",   "values": [{  "type": "EsmBasicValue",    "value": "'+ip+'"  }]  }]';
+
+  return executeCommand('search', {'using-brand': 'esm', limit: queryLimit, filters: filters, 'time_range': 'CURRENT_YEAR', fields: 'Alert.ID,Alert.LastTime'});
+type: javascript
+tags:
+- esm
+- nitro
+- siem
+- example
+comment: Deprecated. Example of using McAfee ESM (Nitro) with advanced filters
+system: true
+deprecated: true
+args:
+- name: ip
+  required: true
+  default: true
+  description: IP Address to find
+- name: limit
+  description: Query limit. If omitted, defaults to 100.
+scripttarget: 0
+dependson:
+  must:
+  - esm|||search
+timeout: 0s
+fromversion: 5.0.0

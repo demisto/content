@@ -1,0 +1,38 @@
+{
+ "id": "incident_cvss",
+ "version": -1,
+ "modified": "2018-08-23T18:31:06.436656554+03:00",
+ "name": "CVSS",
+ "ownerOnly": false,
+ "placeholder": "",
+ "description": "",
+ "cliName": "cvss",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "script": "",
+ "fieldCalcScript": "",
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": null,
+ "validationRegex": "",
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Vulnerability",
+  "Malware"
+ ],
+ "systemAssociatedTypes": [
+  "Vulnerability",
+  "Malware"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "fromVersion": "5.0.0"
+}

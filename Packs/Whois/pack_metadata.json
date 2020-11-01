@@ -1,0 +1,32 @@
+{
+    "name": "Whois",
+    "description": "This Content Pack helps you run Whois commands as playbook tasks or real-time actions within Cortex XSOAR to obtain valuable domain metadata.",
+    "support": "xsoar",
+    "currentVersion": "1.1.6",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-03-31T17:09:43Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "TIM"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "DomainTools": {
+            "mandatory": false,
+            "display_name": "DomainTools"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "JsonWhoIs": {
+            "mandatory": false,
+            "display_name": "JsonWhoIs"
+        }
+    }
+}

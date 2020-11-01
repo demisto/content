@@ -1,0 +1,7 @@
+kace-machines-list custom_filter="id gt 1"
+kace-assets-list custom_filter="name eq Mac"
+kace-queues-list custom_filter="id neq 1"
+kace-tickets-list custom_shaping="hd_ticket all,submitter limited,owner limited, asset limited,machine limited,priority limited,category limited, impact limited,status limited"
+kace-ticket-create title="test1" status="Opened" summary="test of Quest Kace integration ticket create" category="Network" queue_id=1
+kace-ticket-update ticket_id=11 title="updated test1"
+kace-ticket-delete ticket_id=11

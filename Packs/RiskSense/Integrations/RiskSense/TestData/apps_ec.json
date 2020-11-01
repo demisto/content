@@ -1,0 +1,124 @@
+{
+  "RiskSense.Application(val.ID == obj.ID)": [
+    {
+      "ID": 19391,
+      "GroupID": 7990,
+      "GroupName": "group name",
+      "Groups": [
+        {
+          "ID": 7990,
+          "Name": "group name"
+        }
+      ],
+      "Network": {
+        "ID": 91502,
+        "Name": "network name",
+        "Type": "network type"
+      },
+      "ClientID": 747,
+      "HostID": null,
+      "Uri": "uri",
+      "Name": "name",
+      "Description": null,
+      "NoteCount": 1,
+      "DiscoveredOn": "2019-06-12",
+      "LastFoundOn": "2019-06-11",
+      "Total": 325,
+      "Critical": 2,
+      "High": 20,
+      "Medium": 281,
+      "Low": 21,
+      "Info": 1,
+      "Icon": [
+        {
+          "Type": "icon type 1",
+          "OverlayText": null
+        },
+        {
+          "Type": "icon type 2",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 3",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 4",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 5",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 6",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 7",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 8",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 9",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 10",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 11",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 12",
+          "OverlayText": "overlay text"
+        },
+        {
+          "Type": "icon type 13",
+          "OverlayText": "overlay text"
+        }
+      ],
+      "TagCount": 0,
+      "UrlCount": 74,
+      "Href": "href",
+      "CMDB": {
+        "ManufacturedBy": null,
+        "Model": null,
+        "MacAddress": null,
+        "Location": null,
+        "ManagedBy": null,
+        "OwnedBy": null,
+        "SupportedBy": null,
+        "SupportGroup": null,
+        "SysID": null,
+        "OperatingSystem": null,
+        "LastScanDate": null,
+        "FerpaComplianceAsset": false,
+        "HipaaComplianceAsset": false,
+        "PciComplianceAsset": false
+      },
+      "Ticket": [],
+      "Source": [
+        {
+          "Name": "source name",
+          "UuID": "uuid",
+          "ScannerType": "scanner type"
+        }
+      ],
+      "Note": [
+        {
+          "UserID": 5969,
+          "UserName": "name",
+          "Note": "note",
+          "Date": "2020-01-28T12:21:06"
+        }
+      ],
+      "Tag": []
+    }
+  ]
+}

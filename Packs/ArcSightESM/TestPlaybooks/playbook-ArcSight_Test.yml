@@ -1,0 +1,654 @@
+id: ArcSight ESM v2 Test
+version: -1
+name: ArcSight ESM v2 Test
+description: Arcsight ESM Test.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b90dd7e7-23f4-47ab-8904-89afe700b274
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: b90dd7e7-23f4-47ab-8904-89afe700b274
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 820fa1b4-9296-4349-8c7d-177e0a52ada9
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 820fa1b4-9296-4349-8c7d-177e0a52ada9
+      version: -1
+      name: get all cases
+      script: '|||as-get-all-cases'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 24c727a7-3b48-449f-80a7-3a78833bfbe2
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 24c727a7-3b48-449f-80a7-3a78833bfbe2
+      version: -1
+      name: get case event ids
+      script: '|||as-get-case-event-ids'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      caseId:
+        simple: ${ArcSightESM.Cases.resourceid}
+      withCorrelatedEvents:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: bc9a877d-e3fb-46af-82ab-956c303d694a
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: bc9a877d-e3fb-46af-82ab-956c303d694a
+      version: -1
+      name: delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f3d748e3-e81e-4812-8bf2-4cbec2549a19
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: f3d748e3-e81e-4812-8bf2-4cbec2549a19
+      version: -1
+      name: get pre-existing case
+      script: '|||as-get-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      resourceId:
+        simple: 77ax-uGgBABCWb2puJdY8ZA==
+      withBaseEvents: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 2e0ec7db-a559-4df0-8c21-db7a104d3b05
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 2e0ec7db-a559-4df0-8c21-db7a104d3b05
+      version: -1
+      name: update case
+      script: '|||as-update-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      caseId:
+        simple: ${ArcSightESM.Cases.resourceid}
+      severity:
+        simple: INSIGNIFICANT
+      stage:
+        simple: QUEUED
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 7856ef18-0ed8-4daf-84cf-c44251625804
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 7856ef18-0ed8-4daf-84cf-c44251625804
+      version: -1
+      name: get entries
+      script: '|||as-get-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      entryFilter:
+        simple: name:do not delete
+      resourceId:
+        simple: H0LvlmWgBABCA5+HbRyHZoQ==
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7ad0099e-c34c-4942-806a-e3b823f53381
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 7ad0099e-c34c-4942-806a-e3b823f53381
+      version: -1
+      name: check case name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ArcSightESM.Cases.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: e87dbd7e-914f-4677-89a8-c6ef5645a896
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: e87dbd7e-914f-4677-89a8-c6ef5645a896
+      version: -1
+      name: check for events
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ArcSightESM.CaseEvents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: acc2f3e2-8004-487c-8b16-bd9e4246b3e1
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: acc2f3e2-8004-487c-8b16-bd9e4246b3e1
+      version: -1
+      name: 'check severity '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ArcSightESM
+                accessor: Cases.consequenceSeverity
+            iscontext: true
+          right:
+            value:
+              simple: INSIGNIFICANT
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: cb3cb8c1-4da7-4aa8-8811-bdad57b20dd5
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: cb3cb8c1-4da7-4aa8-8811-bdad57b20dd5
+      version: -1
+      name: add entries
+      script: '|||as-add-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      entries:
+        simple: '[{"name": "t3", "EventID": "9"},{"name": "t4", "EventID": "9"}]'
+      resourceId:
+        simple: H0LvlmWgBABCA5+HbRyHZoQ==
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 632adcd9-b811-4980-89a5-dc8b376ce76f
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 632adcd9-b811-4980-89a5-dc8b376ce76f
+      version: -1
+      name: get all query viewers
+      script: '|||as-get-all-query-viewers'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 42965bcc-addd-4479-8d7d-45990791b94c
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 42965bcc-addd-4479-8d7d-45990791b94c
+      version: -1
+      name: clear entries
+      script: '|||as-clear-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      resourceId:
+        simple: H0LvlmWgBABCA5+HbRyHZoQ==
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: d97c07af-ec06-45ba-8203-111ddf2fe3d8
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: d97c07af-ec06-45ba-8203-111ddf2fe3d8
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: b8556bb1-e420-437c-8594-ce74ad98a6c7
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: b8556bb1-e420-437c-8594-ce74ad98a6c7
+      version: -1
+      name: good luck
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 64814fc9-da70-4002-88d2-c3506ac557b0
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 64814fc9-da70-4002-88d2-c3506ac557b0
+      version: -1
+      name: get query viewer results
+      script: '|||as-get-query-viewer-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      id:
+        complex:
+          root: ArcSightESM
+          accessor: AllQueryViewers
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ba78e2f4-6b31-4558-8618-c0c6a363ced3
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: ba78e2f4-6b31-4558-8618-c0c6a363ced3
+      version: -1
+      name: get correlated events
+      script: '|||as-get-case-event-ids'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      caseId:
+        simple: 7eFVLV2kBABCUZExF9udWgw==
+      withCorrelatedEvents:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: d129dde1-d9c3-4ac6-8ac7-86a763e2c1c8
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: d129dde1-d9c3-4ac6-8ac7-86a763e2c1c8
+      version: -1
+      name: get correlated events 2
+      script: '|||as-get-case-event-ids'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      caseId:
+        simple: 7-TbDfGkBABCenF0601F2Ww==
+      withCorrelatedEvents:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 74bfff00-5d90-4323-841a-4b768de32aed
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 74bfff00-5d90-4323-841a-4b768de32aed
+      version: -1
+      name: get big amount of entries
+      description: Returns all entries in the Active List
+      script: '|||as-get-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      entryFilter: {}
+      resourceId:
+        simple: HLCxgJHABABCAIZQhf9uOtg==
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3225,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

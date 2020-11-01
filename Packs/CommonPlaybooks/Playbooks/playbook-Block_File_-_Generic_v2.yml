@@ -1,0 +1,389 @@
+id: Block File - Generic v2
+version: -1
+name: Block File - Generic v2
+description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 420a534c-a6e6-4cf5-8b86-ac7dd1a91441
+    type: start
+    task:
+      id: 420a534c-a6e6-4cf5-8b86-ac7dd1a91441
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+      - "10"
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 24babe11-954f-4415-8d3d-a1100cdbb3df
+    type: playbook
+    task:
+      id: 24babe11-954f-4415-8d3d-a1100cdbb3df
+      version: -1
+      name: Block File - Carbon Black Response
+      playbookName: Block File - Carbon Black Response
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c8476a84-8d87-4ff2-8d6c-1dd1cccc503a
+    type: title
+    task:
+      id: c8476a84-8d87-4ff2-8d6c-1dd1cccc503a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
+    type: playbook
+    task:
+      id: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
+      version: -1
+      name: Block File - Cybereason
+      description: This playbook accepts an MD5 hash and blocks the file using the Cybereason integration.
+      playbookName: Block File - Cybereason
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: a887370c-f94a-42f9-866f-2d80b7707f41
+    type: playbook
+    task:
+      id: a887370c-f94a-42f9-866f-2d80b7707f41
+      version: -1
+      name: Block File - Cylance Protect v2
+      description: This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine list using the Cylance Protect v2 integration.
+      playbookName: Block File - Cylance Protect v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 4e936a4c-b781-40a1-831a-be0c62a727d6
+    type: playbook
+    task:
+      id: 4e936a4c-b781-40a1-831a-be0c62a727d6
+      version: -1
+      name: Traps Blacklist File
+      playbookName: Traps Blacklist File
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ca09ee7f-ce03-43e9-8eed-0bfeef2b2ef3
+    type: playbook
+    task:
+      id: ca09ee7f-ce03-43e9-8eed-0bfeef2b2ef3
+      version: -1
+      name: Traps Quarantine Event
+      playbookName: Traps Quarantine Event
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e46175f0-26fc-4f24-87f7-d531354ca0dd
+    type: title
+    task:
+      id: e46175f0-26fc-4f24-87f7-d531354ca0dd
+      version: -1
+      name: Palo Alto Networks - Traps
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 32d4b47a-e972-4e30-875b-b563130cc4ca
+    type: title
+    task:
+      id: 32d4b47a-e972-4e30-875b-b563130cc4ca
+      version: -1
+      name: Cybereason
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 0c07d0e1-59b1-436c-8e90-f2d0410df813
+    type: title
+    task:
+      id: 0c07d0e1-59b1-436c-8e90-f2d0410df813
+      version: -1
+      name: Carbon Black Enterprise Response
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: dcc8e191-213c-4ffd-8bc7-a8e1bc8894d7
+    type: title
+    task:
+      id: dcc8e191-213c-4ffd-8bc7-a8e1bc8894d7
+      version: -1
+      name: Cylance Protect v2
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 530,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: The MD5 hash of the file you want to block.
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: EventId
+  value: {}
+  required: false
+  description: Traps event ID that contains the malicious file to block.
+  playbookInputQuery:
+outputs:
+- contextPath: CbResponse.BlockedHashes.LastBlock.Time
+  description: Last block time
+- contextPath: CbResponse.BlockedHashes.LastBlock.Hostname
+  description: Last block hostname
+- contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
+  description: Last block sensor ID
+fromversion: 5.0.0
+tests:
+- block_indicators_-_generic_-_test

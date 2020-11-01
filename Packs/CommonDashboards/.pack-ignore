@@ -1,0 +1,8 @@
+[file:dashboard-Incidents.json]
+ignore=BA101
+
+[file:dashboard-Home.json]
+ignore=BA101
+
+[file:dashboard-SLA.json]
+ignore=BA101

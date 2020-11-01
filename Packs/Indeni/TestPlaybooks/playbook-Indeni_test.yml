@@ -1,0 +1,485 @@
+id: Indeni_test
+version: -1
+name: Indeni_test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 0d6ca97a-4f90-4777-8308-eda916de5872
+    type: start
+    task:
+      id: 0d6ca97a-4f90-4777-8308-eda916de5872
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 3f56da7a-26dc-438d-8881-67ea4b629c75
+    type: regular
+    task:
+      id: 3f56da7a-26dc-438d-8881-67ea4b629c75
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 65cdd40d-3b4a-410a-857a-75173941c92b
+    type: regular
+    task:
+      id: 65cdd40d-3b4a-410a-857a-75173941c92b
+      version: -1
+      name: indeni-get-device-info
+      script: '|||indeni-get-device-info'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      device_id:
+        simple: 676447b9-2ef3-44f7-a038-6f3f29e05655
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 01e86b46-7ba3-451e-8523-a407eeb5b4ca
+    type: condition
+    task:
+      id: 01e86b46-7ba3-451e-8523-a407eeb5b4ca
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      'yes':
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Indeni.DeviceInfo.DeviceId
+            iscontext: true
+          right:
+            value:
+              simple: 676447b9-2ef3-44f7-a038-6f3f29e05655
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Indeni.DeviceInfo.DeviceIP
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.1.47
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Indeni.DeviceInfo.DeviceName
+            iscontext: true
+          right:
+            value:
+              simple: PAVM
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: c94a84c4-57e3-4e40-87a5-149c93d3fc44
+    type: regular
+    task:
+      id: c94a84c4-57e3-4e40-87a5-149c93d3fc44
+      version: -1
+      name: indeni-get-alert-info
+      script: '|||indeni-get-alert-info'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      alert_id:
+        simple: 390255f6-9432-4787-b48a-9e27fbf1f155
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: cc9cd817-c53f-457a-8028-848e138184ec
+    type: condition
+    task:
+      id: cc9cd817-c53f-457a-8028-848e138184ec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      'yes':
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Indeni.AlertInfo.AlertId
+            iscontext: true
+          right:
+            value:
+              simple: 390255f6-9432-4787-b48a-9e27fbf1f155
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indeni.AlertInfo.Headline
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Indeni.AlertInfo.DeviceId
+            iscontext: true
+          right:
+            value:
+              simple: 676447b9-2ef3-44f7-a038-6f3f29e05655
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 65dae3db-b7c7-477d-8968-a87778d465f6
+    type: regular
+    task:
+      id: 65dae3db-b7c7-477d-8968-a87778d465f6
+      version: -1
+      name: indeni-get-alert-summary
+      script: '|||indeni-get-alert-summary'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      alert_type_identifier:
+        simple: PanwSecurityPolicyBlockAnyRule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 73e2a5fe-9439-4fb2-8fc0-8df4d4c3b558
+    type: condition
+    task:
+      id: 73e2a5fe-9439-4fb2-8fc0-8df4d4c3b558
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      'yes':
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Indeni.AffectedDevices.Device.DeviceName
+            iscontext: true
+          right:
+            value:
+              simple: PAVM
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: a3fe5b48-4558-4da0-8ac7-2826be62d6ec
+    type: regular
+    task:
+      id: a3fe5b48-4558-4da0-8ac7-2826be62d6ec
+      version: -1
+      name: indeni-post-note
+      script: '|||indeni-post-note'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      alert_id:
+        simple: 390255f6-9432-4787-b48a-9e27fbf1f155
+      note:
+        simple: Test by Demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: 3f4737c4-e20d-47c8-87eb-d8ce11a182be
+    type: regular
+    task:
+      id: 3f4737c4-e20d-47c8-87eb-d8ce11a182be
+      version: -1
+      name: indeni-archive-issue
+      script: '|||indeni-archive-issue'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      alert_id:
+        simple: 390255f6-9432-4787-b48a-9e27fbf1f155
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: 610609df-2e75-4dea-8afb-fcf8e1e108a6
+    type: regular
+    task:
+      id: 610609df-2e75-4dea-8afb-fcf8e1e108a6
+      version: -1
+      name: indeni-unarchive-issue
+      script: '|||indeni-unarchive-issue'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      alert_id:
+        simple: 390255f6-9432-4787-b48a-9e27fbf1f155
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: 43c28236-b5df-4f51-84a9-c4b72de46754
+    type: regular
+    task:
+      id: 43c28236-b5df-4f51-84a9-c4b72de46754
+      version: -1
+      name: indeni-get-notes
+      script: '|||indeni-get-notes'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      alert_id:
+        simple: 390255f6-9432-4787-b48a-9e27fbf1f155
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: fe114938-1dba-4d52-88bf-823a7d94ba4d
+    type: condition
+    task:
+      id: fe114938-1dba-4d52-88bf-823a7d94ba4d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      'yes':
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indeni.AlertInfo.Note
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 2d4516d5-16c6-4056-847f-546c1edf926c
+    type: title
+    task:
+      id: 2d4516d5-16c6-4056-847f-546c1edf926c
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2815,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: ''
+fromversion: 5.0.0

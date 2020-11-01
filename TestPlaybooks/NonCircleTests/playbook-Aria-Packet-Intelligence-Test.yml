@@ -1,5 +1,6 @@
 id: ARIA Packet Intelligence - Test
-version: 24
+version: -1
+fromversion: 5.0.0
 name: ARIA Packet Intelligence - Test
 description: Use for testing the aria_packet_intelligence integration
 starttaskid: "0"

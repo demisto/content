@@ -1,0 +1,768 @@
+{
+ "id": "criticalAndHighIncidentsReport",
+ "name": "Critical and High incidents",
+ "description": "All critical and high severity incidents that may need the analyst attention.",
+ "fromVersion": "5.0.0",
+ "tags": [
+
+ ],
+ "createdBy": "DBot",
+ "type": "pdf",
+ "modified": "2018-01-24T15:27:36.431127302Z",
+ "startDate": "0001-01-01T00:00:00Z",
+ "times": 0,
+ "recurrent": false,
+ "endingDate": "0001-01-01T00:00:00Z",
+ "timezoneOffset": 0,
+ "cronView": false,
+ "scheduled": false,
+ "system": true,
+ "locked": false,
+ "sections": [
+  {
+   "layout": {
+    "i": "8cdc9e20-005c-11e8-831f-e7429aff1c69",
+    "rowPos": 0,
+    "columnPos": 0,
+    "w": 12,
+    "h": 1
+   },
+   "query": {
+    "type": "incident",
+    "filter": {
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "period": {
+      "byFrom": "days",
+      "fromValue": null,
+      "by": "day"
+     },
+     "fromDate": null,
+     "toDate": null
+    }
+   },
+   "data": "# **Critical and High incidents**\n\n{date}\n\n---",
+   "type": "placeholder",
+   "title": "criticalAndHighIncidents Headline"
+  },
+  {
+   "layout": {
+    "chartType": "pie",
+    "dimensions": {
+     "width": 340,
+     "height": 180
+    },
+    "chartProperties": {
+     "cy": 75,
+     "cx": 103.9,
+     "innerRadius": 54.43730482169373,
+     "maxRadius": 145.1661461911833,
+     "outerRadius": 72.58307309559164,
+     "layout": "horizontal"
+    },
+    "legendStyle": {
+     "verticalAlign": "top",
+     "align": "left",
+     "layout": "vertical",
+     "iconType": "circle",
+     "width": 112.2
+    },
+    "i": "91323ca0-005c-11e8-831f-e7429aff1c69",
+    "rowPos": 4,
+    "columnPos": 0,
+    "w": 6,
+    "h": 2
+   },
+   "query": {
+    "type": "incident",
+    "groupBy": [
+     "dbotDueDate"
+    ],
+    "filter": {
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "period": {
+      "byFrom": "days",
+      "fromValue": null,
+      "by": "day"
+     },
+     "fromDate": null,
+     "toDate": null
+    }
+   },
+   "type": "chart",
+   "title": "SLA"
+  },
+  {
+   "layout": {
+    "chartType": "pie",
+    "dimensions": {
+     "width": 340,
+     "height": 180
+    },
+    "chartProperties": {
+     "cy": 75,
+     "cx": 103.9,
+     "innerRadius": 54.43730482169373,
+     "maxRadius": 145.1661461911833,
+     "outerRadius": 72.58307309559164,
+     "layout": "horizontal"
+    },
+    "legendStyle": {
+     "verticalAlign": "top",
+     "align": "left",
+     "layout": "vertical",
+     "iconType": "circle",
+     "width": 112.2
+    },
+    "i": "921a79c0-005c-11e8-831f-e7429aff1c69",
+    "rowPos": 2,
+    "columnPos": 6,
+    "w": 6,
+    "h": 2
+   },
+   "query": {
+    "type": "incident",
+    "groupBy": [
+     "type"
+    ],
+    "filter": {
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "period": {
+      "byFrom": "days",
+      "fromValue": null,
+      "by": "day"
+     },
+     "fromDate": null,
+     "toDate": null
+    }
+   },
+   "type": "chart",
+   "title": "Type"
+  },
+  {
+   "layout": {
+    "chartType": "bar",
+    "chartProperties": {
+     "layout": "vertical",
+     "barSize": 15
+    },
+    "dimensions": {
+     "width": 340,
+     "height": 138
+    },
+    "legendStyle": {
+     "verticalAlign": "top",
+     "align": "center",
+     "layout": "horizontal",
+     "wrapperStyle": {
+      "maxHeight": 48,
+      "top": 5,
+      "width": "100%"
+     },
+     "iconType": "square",
+     "hideLegend": false
+    },
+    "i": "b1a51f20-005c-11e8-831f-e7429aff1c69",
+    "rowPos": 4,
+    "columnPos": 6,
+    "w": 6,
+    "h": 2
+   },
+   "query": {
+    "type": "incident",
+    "groupBy": [
+     "owner"
+    ],
+    "filter": {
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "period": {
+      "byFrom": "days",
+      "fromValue": null,
+      "by": "day"
+     },
+     "fromDate": null,
+     "toDate": null
+    }
+   },
+   "type": "chart",
+   "title": "Analyst"
+  },
+  {
+   "layout": {
+    "chartType": "pie",
+    "dimensions": {
+     "width": 340,
+     "height": 180
+    },
+    "chartProperties": {
+     "cy": 75,
+     "cx": 103.9,
+     "innerRadius": 54.43730482169373,
+     "maxRadius": 145.1661461911833,
+     "outerRadius": 72.58307309559164,
+     "layout": "horizontal"
+    },
+    "legendStyle": {
+     "verticalAlign": "top",
+     "align": "left",
+     "layout": "vertical",
+     "iconType": "circle",
+     "width": 112.2
+    },
+    "i": "b4738160-005c-11e8-831f-e7429aff1c69",
+    "rowPos": 2,
+    "columnPos": 0,
+    "w": 6,
+    "h": 2
+   },
+   "query": {
+    "type": "incident",
+    "groupBy": [
+     "severity"
+    ],
+    "filter": {
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "period": {
+      "byFrom": "days",
+      "fromValue": null,
+      "by": "day"
+     },
+     "fromDate": null,
+     "toDate": null
+    }
+   },
+   "type": "chart",
+   "title": "Severity"
+  },
+  {
+   "layout": {
+    "tableColumns": [
+     "name",
+     "occurred",
+     "type",
+     "owner",
+     "severity",
+     "status",
+     "dueDate"
+    ],
+    "readableHeaders": {
+     "name": "Name",
+     "occurred": "Occurred",
+     "type": "Type",
+     "owner": "Owner",
+     "severity": "Severity",
+     "status": "Status",
+     "dueDate": "Due Date"
+    },
+    "classes": "striped stackable small very compact",
+    "i": "14558e70-005d-11e8-831f-e7429aff1c69",
+    "rowPos": 6,
+    "columnPos": 0,
+    "w": 12,
+    "h": 2
+   },
+   "query": {
+    "type": "incident",
+    "filter": {
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "period": {
+      "byFrom": "days",
+      "fromValue": null,
+      "by": "day"
+     },
+     "fromDate": null,
+     "toDate": null
+    }
+   },
+   "type": "table",
+   "title": "Critical and High Incidents"
+  },
+  {
+   "layout": {
+    "i": "ab2a8d40-00ea-11e8-9b6f-436025e19450",
+    "rowPos": 1,
+    "columnPos": 0,
+    "w": 12,
+    "h": 1
+   },
+   "query": {
+    "type": "incident",
+    "filter": {
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "period": {
+      "byFrom": "days",
+      "fromValue": null,
+      "by": "day"
+     },
+     "fromDate": null,
+     "toDate": null
+    }
+   },
+   "data": "# Total open incidents: {0}",
+   "type": "placeholder",
+   "title": "criticalAndHighIncidents Headline"
+  }
+ ],
+ "recipients": [
+
+ ],
+ "orientation": "portrait",
+ "paperSize": "A4",
+ "runOnce": false,
+ "latestReportName": "",
+ "latestReportTime": "0001-01-01T00:00:00Z",
+ "latestScheduledReportTime": "0001-01-01T00:00:00Z",
+ "nextScheduledTime": "0001-01-01T00:00:00Z",
+ "latestReportUsername": "",
+ "decoder": {
+  "evidences.fetched": {
+   "type": "date",
+   "value": "02/01/06 3:04:05 PM"
+  },
+  "evidences.markedDate": {
+   "type": "date",
+   "value": "02/01/06 3:04:05 PM"
+  },
+  "evidences.occurred": {
+   "type": "date",
+   "value": "02/01/06 3:04:05 PM"
+  },
+  "incident.activated": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.closed": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.created": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.dueDate": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.occurred": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.openDuration": {
+   "type": "duration",
+   "value": ""
+  },
+  "incident.reminder": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.severity.0": {
+   "type": "string",
+   "value": "Unknown"
+  },
+  "incident.severity.0.5": {
+   "type": "string",
+   "value": "Informational"
+  },
+  "incident.severity.1": {
+   "type": "string",
+   "value": "Low"
+  },
+  "incident.severity.2": {
+   "type": "string",
+   "value": "Medium"
+  },
+  "incident.severity.3": {
+   "type": "string",
+   "value": "High"
+  },
+  "incident.severity.4": {
+   "type": "string",
+   "value": "Critical"
+  },
+  "incident.status.0": {
+   "type": "string",
+   "value": "Pending"
+  },
+  "incident.status.1": {
+   "type": "string",
+   "value": "Active"
+  },
+  "incident.status.2": {
+   "type": "string",
+   "value": "Closed"
+  },
+  "incident.status.3": {
+   "type": "string",
+   "value": "Closed"
+  },
+  "incident.status.4": {
+   "type": "string",
+   "value": "On Hold"
+  },
+  "indicators.score.0": {
+   "type": "string",
+   "value": "None"
+  },
+  "indicators.score.1": {
+   "type": "string",
+   "value": "Good"
+  },
+  "indicators.score.2": {
+   "type": "string",
+   "value": "suspicious"
+  },
+  "indicators.score.3": {
+   "type": "string",
+   "value": "Bad"
+  },
+  "investigation.closed": {
+   "type": "date",
+   "value": "02 Jan 2006"
+  },
+  "investigation.created": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "investigation.openDuration": {
+   "type": "duration",
+   "value": ""
+  },
+  "investigation.status.0": {
+   "type": "string",
+   "value": "Active"
+  },
+  "investigation.status.1": {
+   "type": "string",
+   "value": "Done"
+  },
+  "investigation.type.0": {
+   "type": "string",
+   "value": "Standard"
+  },
+  "investigation.type.1": {
+   "type": "string",
+   "value": "Restricted"
+  },
+  "investigation.type.9": {
+   "type": "string",
+   "value": "Playground"
+  }
+ },
+ "reportType": "",
+ "sensitive": false,
+ "runningUser": "",
+ "dashboard": {
+  "id": "",
+  "version": 0,
+  "modified": "0001-01-01T00:00:00Z",
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": null,
+   "field": ""
+  },
+  "fromDateLicense": "0001-01-01T00:00:00Z",
+  "name": "Critical and High incidents",
+  "layout": [
+   {
+    "id": "8cdc9e20-005c-11e8-831f-e7429aff1c69",
+    "forceRange": false,
+    "x": 0,
+    "y": 0,
+    "i": "8cdc9e20-005c-11e8-831f-e7429aff1c69",
+    "w": 12,
+    "h": 1,
+    "widget": {
+     "id": "58",
+     "version": 1,
+     "modified": "2018-01-23T16:42:36.157893339Z",
+     "name": "criticalAndHighIncidents Headline",
+     "dataType": "incidents",
+     "widgetType": "text",
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "isPredefined": false,
+     "dateRange": {
+      "fromDate": "0001-01-01T00:00:00Z",
+      "toDate": "0001-01-01T00:00:00Z",
+      "period": {
+       "byTo": "",
+       "byFrom": "days",
+       "toValue": null,
+       "fromValue": null,
+       "field": ""
+      },
+      "fromDateLicense": "0001-01-01T00:00:00Z"
+     },
+     "params": {
+      "text": "# **Critical and High incidents**\n\n{date}\n\n---"
+     },
+     "size": 0
+    }
+   },
+   {
+    "id": "91323ca0-005c-11e8-831f-e7429aff1c69",
+    "forceRange": false,
+    "x": 0,
+    "y": 4,
+    "i": "91323ca0-005c-11e8-831f-e7429aff1c69",
+    "w": 6,
+    "h": 2,
+    "widget": {
+     "id": "56",
+     "version": 1,
+     "modified": "2018-01-23T16:39:22.118144466Z",
+     "name": "SLA",
+     "dataType": "incidents",
+     "widgetType": "pie",
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "isPredefined": false,
+     "dateRange": {
+      "fromDate": "0001-01-01T00:00:00Z",
+      "toDate": "0001-01-01T00:00:00Z",
+      "period": {
+       "byTo": "",
+       "byFrom": "days",
+       "toValue": null,
+       "fromValue": null,
+       "field": ""
+      },
+      "fromDateLicense": "0001-01-01T00:00:00Z"
+     },
+     "params": {
+      "groupBy": [
+       "dbotDueDate"
+      ]
+     },
+     "size": 0
+    }
+   },
+   {
+    "id": "921a79c0-005c-11e8-831f-e7429aff1c69",
+    "forceRange": false,
+    "x": 6,
+    "y": 2,
+    "i": "921a79c0-005c-11e8-831f-e7429aff1c69",
+    "w": 6,
+    "h": 2,
+    "widget": {
+     "id": "55",
+     "version": 1,
+     "modified": "2018-01-23T16:39:12.317636559Z",
+     "name": "Type",
+     "dataType": "incidents",
+     "widgetType": "pie",
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "isPredefined": false,
+     "dateRange": {
+      "fromDate": "0001-01-01T00:00:00Z",
+      "toDate": "0001-01-01T00:00:00Z",
+      "period": {
+       "byTo": "",
+       "byFrom": "days",
+       "toValue": null,
+       "fromValue": null,
+       "field": ""
+      },
+      "fromDateLicense": "0001-01-01T00:00:00Z"
+     },
+     "params": {
+      "groupBy": [
+       "type"
+      ]
+     },
+     "size": 0
+    }
+   },
+   {
+    "id": "b1a51f20-005c-11e8-831f-e7429aff1c69",
+    "forceRange": false,
+    "x": 6,
+    "y": 4,
+    "i": "b1a51f20-005c-11e8-831f-e7429aff1c69",
+    "w": 6,
+    "h": 2,
+    "widget": {
+     "id": "57",
+     "version": 1,
+     "modified": "2018-01-23T16:39:38.370963043Z",
+     "name": "Analyst",
+     "dataType": "incidents",
+     "widgetType": "bar",
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "isPredefined": false,
+     "dateRange": {
+      "fromDate": "0001-01-01T00:00:00Z",
+      "toDate": "0001-01-01T00:00:00Z",
+      "period": {
+       "byTo": "",
+       "byFrom": "days",
+       "toValue": null,
+       "fromValue": null,
+       "field": ""
+      },
+      "fromDateLicense": "0001-01-01T00:00:00Z"
+     },
+     "params": {
+      "groupBy": [
+       "owner"
+      ]
+     },
+     "size": 0
+    }
+   },
+   {
+    "id": "b4738160-005c-11e8-831f-e7429aff1c69",
+    "forceRange": false,
+    "x": 0,
+    "y": 2,
+    "i": "b4738160-005c-11e8-831f-e7429aff1c69",
+    "w": 6,
+    "h": 2,
+    "widget": {
+     "id": "54",
+     "version": 1,
+     "modified": "2018-01-23T16:39:05.008744645Z",
+     "name": "Severity",
+     "dataType": "incidents",
+     "widgetType": "pie",
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "isPredefined": false,
+     "dateRange": {
+      "fromDate": "0001-01-01T00:00:00Z",
+      "toDate": "0001-01-01T00:00:00Z",
+      "period": {
+       "byTo": "",
+       "byFrom": "days",
+       "toValue": null,
+       "fromValue": null,
+       "field": ""
+      },
+      "fromDateLicense": "0001-01-01T00:00:00Z"
+     },
+     "params": {
+      "groupBy": [
+       "severity"
+      ]
+     },
+     "size": 0
+    }
+   },
+   {
+    "id": "14558e70-005d-11e8-831f-e7429aff1c69",
+    "forceRange": false,
+    "x": 0,
+    "y": 6,
+    "i": "14558e70-005d-11e8-831f-e7429aff1c69",
+    "w": 12,
+    "h": 2,
+    "widget": {
+     "id": "54",
+     "version": 1,
+     "modified": "2018-01-23T16:39:05.008744645Z",
+     "name": "Critical and High Incidents",
+     "dataType": "incidents",
+     "widgetType": "table",
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "isPredefined": false,
+     "dateRange": {
+      "fromDate": "0001-01-01T00:00:00Z",
+      "toDate": "0001-01-01T00:00:00Z",
+      "period": {
+       "byTo": "",
+       "byFrom": "days",
+       "toValue": null,
+       "fromValue": null,
+       "field": ""
+      },
+      "fromDateLicense": "0001-01-01T00:00:00Z"
+     },
+     "params": {
+      "tableColumns": [
+       {
+        "displayed": true,
+        "isDefault": true,
+        "key": "name",
+        "width": 300
+       },
+       {
+        "displayed": true,
+        "isDefault": true,
+        "key": "occurred",
+        "width": 200
+       },
+       {
+        "displayed": true,
+        "isDefault": true,
+        "key": "type",
+        "width": 200
+       },
+       {
+        "displayed": true,
+        "isDefault": true,
+        "key": "owner",
+        "width": 160
+       },
+       {
+        "displayed": true,
+        "isDefault": true,
+        "key": "severity",
+        "width": 80
+       },
+       {
+        "displayed": true,
+        "isDefault": true,
+        "key": "status",
+        "width": 120
+       },
+       {
+        "displayed": true,
+        "isDefault": true,
+        "key": "dueDate",
+        "width": 200
+       }
+      ]
+     },
+     "size": 0
+    }
+   },
+   {
+    "id": "ab2a8d40-00ea-11e8-9b6f-436025e19450",
+    "forceRange": false,
+    "x": 0,
+    "y": 1,
+    "i": "ab2a8d40-00ea-11e8-9b6f-436025e19450",
+    "w": 12,
+    "h": 1,
+    "widget": {
+     "id": "58",
+     "version": 1,
+     "modified": "2018-01-23T16:42:36.157893339Z",
+     "name": "criticalAndHighIncidents Headline",
+     "dataType": "incidents",
+     "widgetType": "text",
+     "query": "-status:Closed and (severity:High or severity:Critical)",
+     "isPredefined": false,
+     "dateRange": {
+      "fromDate": "0001-01-01T00:00:00Z",
+      "toDate": "0001-01-01T00:00:00Z",
+      "period": {
+       "byTo": "",
+       "byFrom": "days",
+       "toValue": null,
+       "fromValue": null,
+       "field": ""
+      },
+      "fromDateLicense": "0001-01-01T00:00:00Z"
+     },
+     "params": {
+      "text": "# Total open incidents: {0}"
+     },
+     "size": 0
+    }
+   }
+  ],
+  "isPredefined": false
+ }
+}

@@ -1,0 +1,651 @@
+category: Deception
+commonfields:
+  id: IllusiveNetworks
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  hidden: false
+  name: api_token
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: The initial time to fetch from
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: ALL
+  display: Fetch only incidents with forensics
+  hidden: false
+  name: has_forensics
+  options:
+  - 'True'
+  - 'False'
+  - ALL
+  required: true
+  type: 15
+description: The Illusive Attack Management API allows customers to retrieve detected incidents with a forensics timeline, attack surface insights, collect forensics on-demand, and manage a variety of operations with regard to deceptive entities, deception policies, and more.
+display: IllusiveNetworks
+name: IllusiveNetworks
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The desired incident ID
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: The starting date of the forensics timeline.
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: The last date of the forensics timeline.
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve forensics timeline for a specific incident
+    execution: false
+    name: illusive-get-forensics-timeline
+    outputs:
+    - contextPath: Illusive.Forensics.Evidence.details
+      description: The forensics evidence details
+      type: String
+    - contextPath: Illusive.Forensics.Evidence.eventId
+      description: The event ID
+      type: String
+    - contextPath: Illusive.Forensics.Evidence.id
+      description: The forensics evidence ID
+      type: String
+    - contextPath: Illusive.Forensics.Evidence.source
+      description: The Evidence source
+      type: String
+    - contextPath: Illusive.Forensics.Evidence.starred
+      description: Whether the forensics evidence has been starred
+      type: Boolean
+    - contextPath: Illusive.Forensics.Evidence.time
+      description: 'Date and time of the forensics evidence '
+      type: Date
+    - contextPath: Illusive.Forensics.Evidence.title
+      description: The forensics evidence description
+      type: String
+    - contextPath: Illusive.Forensics.IncidentId
+      description: The Incident Id
+      type: String
+    - contextPath: Illusive.Forensics.Status
+      description: The process progress ( Done, InProgress)
+      type: String
+    - contextPath: Illusive.Forensics.Evidence.date
+      description: The forensics evidence date
+      type: Date
+  - arguments:
+    - default: false
+      description: The hostname or IP address of the desired host
+      isArray: false
+      name: hostnameOrIp
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the specified host insights from Attack Surface Manager
+    execution: false
+    name: illusive-get-asm-host-insight
+    outputs:
+    - contextPath: Illusive.AttackSurfaceInsightsHost.DomainName
+      description: The host domain
+      type: String
+    - contextPath: Illusive.AttackSurfaceInsightsHost.HostName
+      description: The host hostname
+      type: String
+    - contextPath: Illusive.AttackSurfaceInsightsHost.HostType
+      description: The host type (Server, Workstation, Other)
+      type: String
+    - contextPath: Illusive.AttackSurfaceInsightsHost.IpAddresses
+      description: The host IP address
+      type: String
+    - contextPath: Illusive.AttackSurfaceInsightsHost.OperatingSystemName
+      description: The host operating system name
+      type: String
+    - contextPath: Illusive.AttackSurfaceInsightsHost.OperatingSystemVersion
+      description: The host operating system version
+      type: String
+    - contextPath: Illusive.AttackSurfaceInsightsHost.OrganizationalUnit
+      description: The host Active Directory Organizational Unit
+      type: String
+    - contextPath: Illusive.AttackSurfaceInsightsHost.SourceConnectivityExposure
+      description: The host Source Connectivity Exposure to crown jewels and domain user credentials
+      type: Number
+  - deprecated: false
+    description: Retrieve Crown-Jewels insights from Attack Surface Manager
+    execution: false
+    name: illusive-get-asm-cj-insight
+    outputs:
+    - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.data
+      description: The number of connections to this Crown Jewel per service type
+      type: Unknown
+    - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.hostname
+      description: The crown jewel hostname
+      type: String
+    - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.machineTagAndSubTags.tag
+      description: The List of a crown jewel category and subcategory couplings
+      type: String
+    - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.MachineTagAndSubTags.subTag
+      description: The List of a crown jewel category and subcategory couplings
+      type: String
+    - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.targetExposureRank
+      description: The crown jewel target exposure
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ALL
+      description: The status of the desired deceptive users (APPROVED, SUGGESTED, ALL)
+      isArray: false
+      name: type
+      predefined:
+      - ALL
+      - SUGGESTED
+      - APPROVED
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve a list of all deceptive users
+    execution: false
+    name: illusive-get-deceptive-users
+    outputs:
+    - contextPath: Illusive.DeceptiveUser.userName
+      description: The deceptive user name
+      type: String
+    - contextPath: Illusive.DeceptiveUser.domainName
+      description: The deceptive user domain
+      type: String
+    - contextPath: Illusive.DeceptiveUser.policyNames
+      description: The deception policies the deceptive user is assigned to
+      type: Unknown
+    - contextPath: Illusive.DeceptiveUser.password
+      description: The deceptive user password
+      type: String
+    - contextPath: Illusive.DeceptiveUser.deceptiveState
+      description: The deceptive user state (APPROVED, SUGGESTED, ALL)
+      type: String
+    - contextPath: Illusive.DeceptiveUser.adUser
+      description: Whether the deceptive user is a genuine user in Active Directory
+      type: Boolean
+    - contextPath: Illusive.DeceptiveUser.activeUser
+      description: In case the deceptive user is a real AD user, indicates whether he is active
+      type: Boolean
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ALL
+      description: The status of the desired deceptive servers (APPROVED, SUGGESTED, ALL)
+      isArray: false
+      name: type
+      predefined:
+      - ALL
+      - SUGGESTED
+      - APPROVED
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve a list of all deceptive servers
+    execution: false
+    name: illusive-get-deceptive-servers
+    outputs:
+    - contextPath: Illusive.DeceptiveServer.host
+      description: The deceptive server hostname
+      type: String
+    - contextPath: Illusive.DeceptiveServer.policyNames
+      description: The deception policies the deceptive server is assigned to
+      type: String
+    - contextPath: Illusive.DeceptiveServer.adHost
+      description: Whether the deceptive server is a genuine machine in Active Directory
+      type: Boolean
+    - contextPath: Illusive.DeceptiveServer.deceptiveState
+      description: The deceptive server state (APPROVED, SUGGESTED, ALL)
+      type: String
+    - contextPath: Illusive.DeceptiveServer.serviceTypes
+      description: The deception services the deceptive server is assigned to
+      type: String
+  - arguments:
+    - default: false
+      description: The username to be verified
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve whether a specified user is deceptive
+    execution: false
+    name: illusive-is-deceptive-user
+    outputs:
+    - contextPath: Illusive.IsDeceptive.Username
+      description: The checked username
+      type: String
+    - contextPath: Illusive.IsDeceptive.IsDeceptiveUser
+      description: Is the specified user conducted as a deceptive user
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The server hostname to be verified
+      isArray: false
+      name: hostname
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve whether a specified server is deceptive
+    execution: false
+    name: illusive-is-deceptive-server
+    outputs:
+    - contextPath: Illusive.IsDeceptive.IsDeceptiveServer
+      description: Is the specified server conducted as a deceptive server
+      type: Boolean
+    - contextPath: Illusive.IsDeceptive.Hostname
+      description: The checked server hostname
+      type: String
+  - arguments:
+    - default: false
+      description: The deceptive user domain
+      isArray: false
+      name: domain_name
+      required: true
+      secret: false
+    - default: false
+      description: The deceptive user password
+      isArray: false
+      name: password
+      required: true
+      secret: false
+    - default: false
+      description: The deception policies to be assigned to the new deceptive user
+      isArray: true
+      name: policy_names
+      required: false
+      secret: false
+    - default: false
+      description: The deceptive user name
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Add or approve deceptive users
+    execution: false
+    name: illusive-add-deceptive-users
+  - arguments:
+    - default: false
+      description: The deceptive server hostname
+      isArray: false
+      name: host
+      required: true
+      secret: false
+    - default: false
+      description: The deception policies to be assigned to the new deceptive server
+      isArray: true
+      name: policy_names
+      required: false
+      secret: false
+    - default: false
+      description: The deception services to be assigned to the new deceptive server
+      isArray: true
+      name: service_types
+      required: true
+      secret: false
+    deprecated: false
+    description: Add or approve deceptive servers
+    execution: false
+    name: illusive-add-deceptive-servers
+  - arguments:
+    - default: false
+      description: The list of deceptive users to delete
+      isArray: true
+      name: deceptive_users
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete deceptive users
+    execution: false
+    name: illusive-delete-deceptive-users
+  - arguments:
+    - default: false
+      description: The list of deceptive servers to delete
+      isArray: true
+      name: deceptive_hosts
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete deceptive servers
+    execution: false
+    name: illusive-delete-deceptive-servers
+  - arguments:
+    - default: false
+      description: Policy name to assign
+      isArray: false
+      name: policy_name
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        List of hosts to assign, in the following format: machine@domain.
+        Maximum number of hosts is 1000.
+      isArray: false
+      name: hosts
+      required: true
+      secret: false
+    deprecated: false
+    description: Assign a deception policy to domain hosts
+    execution: false
+    name: illusive-assign-host-to-policy
+  - arguments:
+    - default: false
+      description: |-
+        List of hosts to remove policy assignment from, in the following format: machine@domain.
+        Maximum number of hosts is 1000
+      isArray: false
+      name: hosts
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove deception policy assignment from domain hosts
+    execution: false
+    name: illusive-remove-host-from-policy
+  - arguments:
+    - default: false
+      description: The host fqdn or IP address on which to collect forensics
+      isArray: false
+      name: fqdn_or_ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Collect forensics on a specified host and retrieve the forensics timeline
+    execution: false
+    name: illusive-run-forensics-on-demand
+    outputs:
+    - contextPath: Illusive.Event.eventId
+      description: 'The created event ID of the operation '
+      type: Number
+  - arguments:
+    - default: false
+      description: |
+        The desired incident ID to retrieve.
+        If specified - other arguments are ignored and only a single incident can be retrieved
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: The list of hostnames to retrieve incidents
+      isArray: true
+      name: hostnames
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to retrieve incidents with forensics only
+      isArray: false
+      name: has_forensics
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Use offset and limit for pagination.
+        The maximum limit is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Use offset and limit for pagination.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: start date
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve incidents
+    execution: false
+    name: illusive-get-incidents
+    outputs:
+    - contextPath: Illusive.Incident.closed
+      description: Whether the incident has been closed
+      type: Boolean
+    - contextPath: Illusive.Incident.deceptionFamilies
+      description: |-
+        The deception families of the
+        deceptions used to trigger
+        the incident
+      type: String
+    - contextPath: Illusive.Incident.flagged
+      description: Whether the incident has been flagged
+      type: Boolean
+    - contextPath: Illusive.Incident.hasForensics
+      description: Whether incident has forensics
+      type: Boolean
+    - contextPath: Illusive.Incident.incidentId
+      description: The Incident ID
+      type: Number
+    - contextPath: Illusive.Incident.incidentTimeUTC
+      description: Date and time of the incident
+      type: Date
+    - contextPath: Illusive.Incident.incidentTypes
+      description: Type of events detected
+      type: Unknown
+    - contextPath: Illusive.Incident.lastSeenUser
+      description: The user who last reviewed the incident
+      type: String
+    - contextPath: Illusive.Incident.policyName
+      description: The compromised host's policy
+      type: String
+    - contextPath: Illusive.Incident.riskInsights.stepsToCrownJewel
+      description: The compromised host's lateral distance from Crown Jewels
+      type: Number
+    - contextPath: Illusive.Incident.riskInsights.stepsToDomainAdmin
+      description: The compromised host's lateral distance from domain admin accounts
+      type: Number
+    - contextPath: Illusive.Incident.sourceHostname
+      description: The compromised host's name
+      type: String
+    - contextPath: Illusive.Incident.sourceIp
+      description: The compromised host's IP address
+      type: String
+    - contextPath: Illusive.Incident.sourceOperatingSystem
+      description: The compromised host's operating system
+      type: String
+    - contextPath: Illusive.Incident.unread
+      description: Whether the incident has been read
+      type: Boolean
+    - contextPath: Illusive.Incident.userNotes
+      description: The analyst's comments
+      type: String
+  - arguments:
+    - default: false
+      description: The Event id
+      isArray: true
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the incident ID of an event
+    execution: false
+    name: illusive-get-event-incident-id
+    outputs:
+    - contextPath: Illusive.Event.incidentId
+      description: The Incident ID
+      type: Number
+    - contextPath: Illusive.Event.eventId
+      description: The given event ID
+      type: Number
+    - contextPath: Illusive.Event.status
+      description: The status command ( Done, InProgress)
+      type: String
+  - arguments:
+    - default: false
+      description: The incident ID on which to retrieve the associated events
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of events to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Use offset and limit for pagination
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve all the events that are associated with an incident
+    execution: false
+    name: illusive-get-incident-events
+    outputs:
+    - contextPath: Illusive.Incident.incidentId
+      description: The corresponding incident ID
+      type: Number
+    - contextPath: Illusive.Incident.eventsNumber
+      description: The number of associated events
+      type: Number
+    - contextPath: Illusive.Incident.Event.eventId
+      description: The event ID
+      type: Number
+    - contextPath: Illusive.Incident.Event.eventTimeUTC
+      description: The event time
+      type: Date
+    - contextPath: Illusive.Incident.Event.hasForensics
+      description: Whether the event has forensics
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The event ID to retrieve the forensics analyzers from
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve Illusive's forensics analyzers on a certain event
+    execution: false
+    name: illusive-get-forensics-analyzers
+    outputs:
+    - contextPath: Illusive.Event.incidentId
+      description: The corresponding incident ID
+      type: Number
+    - contextPath: Illusive.Event.eventId
+      description: The corresponding event ID
+      type: Number
+    - contextPath: Illusive.Event.ForensicsAnalyzers.analyzerName
+      description: The forensics analyzer name
+      type: String
+    - contextPath: Illusive.Event.ForensicsAnalyzers.analyzerValue
+      description: The forensics analyzer description
+      type: String
+  - arguments:
+    - default: false
+      description: The event ID to retrieve the triggering process information from
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the triggering process information from Illusive's forensics
+    execution: false
+    name: illusive-get-forensics-triggering-process-info
+    outputs:
+    - contextPath: Illusive.Event.incidentId
+      description: The corresponding incident ID
+      type: Number
+    - contextPath: Illusive.Event.eventId
+      description: The corresponding event ID
+      type: Number
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.commandLine
+      description: The triggering process command line
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.connectionsNum
+      description: The triggering process active connections
+      type: Number
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.md5
+      description: The triggering process md5
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.sha256
+      description: The triggering process sha256
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.name
+      description: The triggering process name
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.parent
+      description: The parent process of the triggering process
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.path
+      description: The triggering process path
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.startTime
+      description: The triggering process start time
+      type: Date
+  - arguments:
+    - default: false
+      description: The event ID to retrieve the forensics artifacts from
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: DESKTOP_SCREENSHOTS
+      description: 'The type of forensics artifact to retrieve'
+      isArray: false
+      name: artifact_type
+      predefined:
+      - DESKTOP_SCREENSHOTS
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve forensics artifacts from Illusive's forensics
+    execution: false
+    name: illusive-get-forensics-artifacts
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: Illusive Networks-mapper
+defaultclassifier: Illusive Networks
+fromversion: 5.0.0

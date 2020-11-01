@@ -1,0 +1,200 @@
+elasticcommonfields: {}
+id: CSV_Feed_Test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: CSV_Feed_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 629b23e0-7b34-4e9e-8709-e40d1033914a
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: 629b23e0-7b34-4e9e-8709-e40d1033914a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 98f6fb64-f10f-43bf-8036-10a293fa6916
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 98f6fb64-f10f-43bf-8036-10a293fa6916
+      version: -1
+      name: Get Indicators
+      description: Get the feed indicators.
+      script: CSVFeed|||csv-get-indicators
+      type: regular
+      iscommand: true
+      brand: CSVFeed
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: CSVFeed.value=value::CSVFeed.type=type
+      indicator_type:
+        simple: URL
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1190a77d-6173-4014-8380-21768b6146b2
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 1190a77d-6173-4014-8380-21768b6146b2
+      version: -1
+      name: Assert Output
+      description: Asserts output.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CSVFeed
+                accessor: value
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: CSVFeed
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: URL
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 012a601e-ed7e-4091-80ee-d9071f0c9937
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 012a601e-ed7e-4091-80ee-d9071f0c9937
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4e5d7a78-4f39-481d-8168-de2e970706e5
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 4e5d7a78-4f39-481d-8168-de2e970706e5
+      version: -1
+      name: Delete Context
+      description: Delete field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

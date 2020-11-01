@@ -1,0 +1,114 @@
+id: remedy_sr_test_pb
+version: -1
+name: remedy_sr_test_pb
+description: Testing the Remedy SR 1.6 integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 87ba94f0-538c-4ca2-86de-6d6c93a6e53d
+    type: start
+    task:
+      id: 87ba94f0-538c-4ca2-86de-6d6c93a6e53d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 0d4782cd-2819-4e8a-8220-34986d91a7cc
+    type: regular
+    task:
+      id: 0d4782cd-2819-4e8a-8220-34986d91a7cc
+      version: -1
+      name: remedy-create-ticket
+      description: Create a ticket
+      script: '|||remedy-create-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      details:
+        simple: lolo
+      requester_email:
+        simple: bark@demisto.com
+      requester_name:
+        simple: bar
+      requester_ntid:
+        simple: "12357894326"
+      requester_phone:
+        simple: "0506757883"
+      requester_work_city:
+        simple: TLV
+      requester_work_location:
+        simple: NYC
+      requester_work_street:
+        simple: Wall st
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: acc52239-63fb-45cd-8f39-ea27e94891f3
+    type: regular
+    task:
+      id: acc52239-63fb-45cd-8f39-ea27e94891f3
+      version: -1
+      name: remedy-get-ticket
+      script: '|||remedy-get-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      service_request_id:
+        complex:
+          root: Remedy
+          accessor: Ticket.ServiceRequestId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 505,
+        "width": 380,
+        "x": 450,
+        "y": 20
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

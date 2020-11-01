@@ -1,0 +1,29 @@
+From: Koko Demisto <koko@demisto.com>
+Content-Type: multipart/mixed;
+	boundary="Apple-Mail=_BDE60A45-737F-4DD9-B4BB-08441E472087"
+Mime-Version: 1.0 (Mac OS X Mail 12.2 \(3445.102.3\))
+Subject: Fwd: test - inner attachment eml (base64)
+X-Universally-Unique-Identifier: 6B4B16BE-DC6F-42A2-A4F9-8C4366D1CA30
+Message-Id: <77069121-C854-4CA3-ABC0-C98D010A8209@demisto.com>
+Date: Mon, 25 Feb 2019 10:41:41 +0200
+To: Wowo Demisto <wowo@demisto.com>
+
+
+--Apple-Mail=_BDE60A45-737F-4DD9-B4BB-08441E472087
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=us-ascii
+
+DONT REPLY - TEST EMAIL
+
+
+--Apple-Mail=_BDE60A45-737F-4DD9-B4BB-08441E472087
+Content-Type: application/octet-stream; name="message.eml"
+Content-Description: message.eml
+Content-Disposition: attachment; filename="message.eml"; size=15810;
+	creation-date="Thu, 13 Jun 2019 12:58:15 GMT";
+	modification-date="Thu, 13 Jun 2019 12:58:15 GMT"
+Content-Transfer-Encoding: base64
+
+RnJvbTogS29rbyBEZW1pc3RvIDxrb2tvQGRlbWlzdG8uY29tPgpDb250ZW50LVR5cGU6IG11bHRpcGFydC9taXhlZDsKCWJvdW5kYXJ5PSJBcHBsZS1NYWlsPV82QTEzRjUzRi02QkQyLTQ4NUMtODFBNS1FOTJGNjQyNkVERUMiCk1pbWUtVmVyc2lvbjogMS4wIChNYWMgT1MgWCBNYWlsIDEyLjIgXCgzNDQ1LjEwMi4zXCkpClN1YmplY3Q6IHRlc3QgLSBpbm5lciBhdHRhY2htZW50IGVtbApYLVVuaXZlcnNhbGx5LVVuaXF1ZS1JZGVudGlmaWVyOiA2QjRCMTZCRS1EQzZGLTQyQTItQTRGOS04QzQzNjZEMUNBMzAKTWVzc2FnZS1JZDogPDJGQzUwMTc5LTM2NjYtNDc3MC1BMzY1LTc0NDg4MkNEQTU0Q0BkZW1pc3RvLmNvbT4KRGF0ZTogTW9uLCAyNSBGZWIgMjAxOSAxMDozOTo1MCArMDIwMApDYzogTW9tbyBEZW1pc3RvIDxtb21vQGRlbWlzdG8uY29tPgpUbzogU29zbyBEZW1pc3RvIDxzb3NvQGRlbWlzdG8uY29tPgoKCi0tQXBwbGUtTWFpbD1fNkExM0Y1M0YtNkJEMi00ODVDLTgxQTUtRTkyRjY0MjZFREVDCkNvbnRlbnQtVHJhbnNmZXItRW5jb2Rpbmc6IDdiaXQKQ29udGVudC1UeXBlOiB0ZXh0L3BsYWluOwoJY2hhcnNldD11cy1hc2NpaQoKRE9OVCBSRVBMWQo=
+--Apple-Mail=_BDE60A45-737F-4DD9-B4BB-08441E472087

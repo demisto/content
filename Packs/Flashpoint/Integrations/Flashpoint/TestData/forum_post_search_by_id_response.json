@@ -1,0 +1,83 @@
+{
+  "thread": "/forums/threads/test_scan_forum_post_id",
+  "id": "test_scan_forum_post_id",
+  "forum": "/forums/sites/test_scan_forum_post_id",
+  "embed": {
+    "thread": {
+      "legacy_id": null,
+      "last_post": {
+        "author": "fake author",
+        "published_at": "2019-12-10T01:17:00+00:00",
+        "id": "test_scan_forum_post_id",
+        "post": "/forums/posts/test_scan_forum_post_id",
+        "author_id": "test_scan_forum_post_id"
+      },
+      "id": "test_scan_forum_post_id",
+      "forum": "/forums/sites/test_scan_forum_post_id",
+      "first_post": {
+        "author": "fake author",
+        "published_at": "2014-10-22T19:37:00+00:00",
+        "id": "test_scan_forum_post_id",
+        "post": "/forums/posts/test_scan_forum_post_id",
+        "author_id": "test_scan_forum_post_id"
+      },
+      "stats": {
+        "posts": 329,
+        "users": 224
+      },
+      "url": "fake url",
+      "platform_url": "http://123-fake-api.com/home/ddw/forums/threads/test_scan_forum_post_id",
+      "native_id": "fake native id",
+      "room": "/forums/rooms/test_scan_forum_post_id",
+      "title": "fake title"
+    },
+    "forum": {
+      "legacy_id": null,
+      "name": "fake title",
+      "id": "test_scan_forum_post_id",
+      "tags": [
+        {
+          "name": "fake tag name",
+          "id": 55,
+          "parent_tag": 17,
+          "uuid": "83a2e5d4-e591-42be-943f-4af7d5de30e4"
+        }
+      ],
+      "hostname": "fake host name",
+      "stats": {
+        "posts": 163710,
+        "threads": 13916,
+        "users": 71614,
+        "rooms": 1
+      },
+      "description": "fake description",
+      "platform_url": "http://123-fake-api.com/home/search/forums?forum_ids=test_scan_forum_post_id"
+    },
+    "room": {
+      "legacy_id": null,
+      "id": "test_scan_forum_post_id",
+      "forum": "/forums/sites/test_scan_forum_post_id",
+      "url": "forum",
+      "platform_url": "http://123-fake-api.com/home/search/forums?room_title=faketitle",
+      "native_id": "forum",
+      "title": "fake title"
+    },
+    "author": {
+      "legacy_id": null,
+      "name": "fake author name",
+      "id": "test_scan_forum_post_id",
+      "url": null,
+      "native_id": "fake native id",
+      "platform_url": "http://123-fake-api.com/home/search/forums?author_id=test_scan_forum_post_id"
+    }
+  },
+  "native_id": "c1713042",
+  "body": "fake body",
+  "legacy_id": null,
+  "platform_url": "http://123-fake-api.com/home/ddw/forums/threads/test_scan_forum_post_id",
+  "reply_number": null,
+  "published_at": "2019-12-10T01:17:00+00:00",
+  "url": "fake url",
+  "room": "/forums/rooms/test_scan_forum_post_id",
+  "author": "/forums/users/test_scan_forum_post_id"
+}

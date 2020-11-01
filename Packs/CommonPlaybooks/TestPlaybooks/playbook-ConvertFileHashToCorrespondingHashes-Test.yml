@@ -1,0 +1,135 @@
+id: Test Convert file hash to corresponding hashes
+version: -1
+name: Test Convert file hash to corresponding hashes
+fromversion: 5.0.0
+description: Test playbook for the "Convert file hash to corresponding hashes" playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9226a6fb-3a94-4edb-8697-d5fef2620be6
+    type: start
+    task:
+      id: 9226a6fb-3a94-4edb-8697-d5fef2620be6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: afe3ce00-503b-46fa-83cc-8e4dd1b1c688
+    type: playbook
+    task:
+      id: afe3ce00-503b-46fa-83cc-8e4dd1b1c688
+      version: -1
+      name: Convert file hash to corresponding hashes
+      description: |
+        The playbook allows to get all of the relevant file hash even if there is only one hash type available
+        For example if we have only the SHA256 hash the playbook will get the SHA1 and MD5 hashes
+      playbookName: Convert file hash to corresponding hashes
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5243cd03-39f6-48ef-8070-6d24927c232c
+    type: title
+    task:
+      id: 5243cd03-39f6-48ef-8070-6d24927c232c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 465,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SHA256
+  value:
+    simple: 37972f57e2d8dd4a808bee0f8355ce5bd11d25e922f5e325a5e23fbfd806f7f9
+  required: false
+  description: Test SHA256 hash.
+  playbookInputQuery:
+- key: SHA1
+  value:
+    simple: 1242814afcd7ddafa5b42e52e2fb0915c491f634
+  required: false
+  description: Test SHA1 hash.
+  playbookInputQuery:
+- key: MD5
+  value:
+    simple: 85a94aa9eb4cef9ad81150fe2bf0de37
+  required: false
+  description: Test MD5 hash.
+  playbookInputQuery:
+outputs: []

@@ -1,0 +1,28 @@
+{
+ "id": "open-tasks-per-user",
+ "version": -1,
+ "modified": "2018-01-14T22:59:42.479686738Z",
+ "name": "Open Tasks Per User",
+ "dataType": "tasks",
+ "widgetType": "column",
+ "query": "replaced:f and -assignee:\"\" and (state:Waiting or state:inprogress or state:error)",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  }
+ },
+ "params": {
+  "groupBy": [
+   "assignee"
+  ]
+ },
+ "description": "",
+ "fromVersion": "5.0.0"
+}

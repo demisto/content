@@ -1,0 +1,1081 @@
+id: Fidelis Endpoint - Test
+version: -1
+fromversion: 5.0.0
+contentitemfields:
+  propagationLabels:
+  - all
+name: Fidelis Endpoint - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: "32"
+    type: start
+    task:
+      id: "32"
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: "162"
+    type: regular
+    task:
+      id: "162"
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "6"
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "2":
+    id: "2"
+    taskid: "184"
+    type: regular
+    task:
+      id: "184"
+      version: -1
+      name: List alerts
+      description: get information about alerts.
+      script: '|||fidelis-endpoint-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      end_date: {}
+      facet_search: {}
+      limit:
+        simple: "5"
+      skip: {}
+      sort: {}
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "3":
+    id: "3"
+    taskid: "409"
+    type: regular
+    task:
+      id: "409"
+      version: -1
+      name: Get host info
+      description: Search for endpoints based on an IP Address or hostname.
+      script: '|||fidelis-endpoint-host-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      host: {}
+      ip_address:
+        simple: 10.128.0.5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "4":
+    id: "4"
+    taskid: "179"
+    type: title
+    task:
+      id: "179"
+      version: -1
+      name: Scripts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "5":
+    id: "5"
+    taskid: "185"
+    type: regular
+    task:
+      id: "185"
+      version: -1
+      name: List scripts
+      description: Get a list of all script packages
+      script: '|||fidelis-endpoint-list-scripts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "6":
+    id: "6"
+    taskid: "164"
+    type: title
+    task:
+      id: "164"
+      version: -1
+      name: Files
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "7":
+    id: "7"
+    taskid: "332"
+    type: regular
+    task:
+      id: "332"
+      version: -1
+      name: Search file
+      description: Search for files on multiple hosts, using file hash, extension,
+        file size, and other search criteria.
+      script: '|||fidelis-endpoint-file-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file_extension:
+        simple: .txt
+      file_path: {}
+      file_size:
+        simple: "0"
+      host:
+        simple: 10.128.0.5
+      md5:
+        simple: 098f6bcd4621d373cade4e832627b4f6
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "8":
+    id: "8"
+    taskid: "186"
+    type: regular
+    task:
+      id: "186"
+      version: -1
+      name: File search status
+      description: Get the file search job status.
+      script: '|||fidelis-endpoint-file-search-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      job_id:
+        simple: ${FidelisEndpoint.FileSearch.JobID}
+      job_result_id:
+        simple: ${FidelisEndpoint.FileSearch.JobResultID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "11":
+    id: "11"
+    taskid: "175"
+    type: regular
+    task:
+      id: "175"
+      version: -1
+      name: File result metadata
+      description: Get the job results metadata (max 50 results)
+      script: '|||fidelis-endpoint-file-search-result-metadata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      job_id:
+        simple: ${FidelisEndpoint.FileSearch.JobID}
+      job_result_id:
+        simple: ${FidelisEndpoint.FileSearch.JobResultID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "13":
+    id: "13"
+    taskid: "407"
+    type: regular
+    task:
+      id: "407"
+      version: -1
+      name: Get file
+      description: Get the file stream and download the file.
+      script: '|||fidelis-endpoint-get-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      file_id:
+        simple: ${FidelisEndpoint.File.ID}
+      file_name:
+        simple: ${FidelisEndpoint.File.FileName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "14":
+    id: "14"
+    taskid: "177"
+    type: regular
+    task:
+      id: "177"
+      version: -1
+      name: Delete file job
+      description: Removed the job to free-up space on the server.
+      script: '|||fidelis-endpoint-delete-file-search-job'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      job_id:
+        simple: ${FidelisEndpoint.FileSearch.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "15":
+    id: "15"
+    taskid: "403"
+    type: regular
+    task:
+      id: "403"
+      version: -1
+      name: Get script manifest
+      description: Get the script manifest
+      script: '|||fidelis-endpoint-get-script-manifest'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      script_id:
+        simple: 2d32a530-0716-4542-afdc-8da3bd47d8bf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "16":
+    id: "16"
+    taskid: "329"
+    type: regular
+    task:
+      id: "329"
+      version: -1
+      name: Execute Script
+      description: Execute script.
+      script: '|||fidelis-endpoint-execute-script'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      answer:
+        simple: "true"
+      endpoint_ip:
+        simple: 10.128.0.5
+      script_id:
+        simple: 2d32a530-0716-4542-afdc-8da3bd47d8bf
+      time_out:
+        simple: "300"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "17":
+    id: "17"
+    taskid: "324"
+    type: regular
+    task:
+      id: "324"
+      version: -1
+      name: Wait
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "18":
+    id: "18"
+    taskid: "161"
+    type: regular
+    task:
+      id: "161"
+      version: -1
+      name: Get script results
+      description: Get script job results.
+      script: '|||fidelis-endpoint-get-script-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      job_id:
+        simple: ${FidelisEndpoint.Script.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "19":
+    id: "19"
+    taskid: "326"
+    type: regular
+    task:
+      id: "326"
+      version: -1
+      name: Script job status
+      description: Get script execution status.
+      script: '|||fidelis-endpoint-script-job-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      job_result_id:
+        simple: ${FidelisEndpoint.Script.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "20":
+    id: "20"
+    taskid: "181"
+    type: title
+    task:
+      id: "181"
+      version: -1
+      name: Queries
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+      - "23"
+      - "25"
+      - "27"
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "21":
+    id: "21"
+    taskid: "170"
+    type: regular
+    task:
+      id: "170"
+      version: -1
+      name: Query file
+      description: Query behaviours - query file by hash.
+      script: '|||fidelis-endpoint-query-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      end_time: {}
+      file_hash:
+        simple: 8a0a29438052faed8a2532da50455756
+      logic:
+        simple: and
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "22":
+    id: "22"
+    taskid: "168"
+    type: condition
+    task:
+      id: "168"
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FidelisEndpoint.Query.Path
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "23":
+    id: "23"
+    taskid: "173"
+    type: regular
+    task:
+      id: "173"
+      version: -1
+      name: Query process
+      script: '|||fidelis-endpoint-query-process'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      end_time: {}
+      logic:
+        simple: and
+      process_name:
+        simple: svchost.exe
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "24":
+    id: "24"
+    taskid: "169"
+    type: condition
+    task:
+      id: "169"
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FidelisEndpoint.Query.PID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "25":
+    id: "25"
+    taskid: "327"
+    type: regular
+    task:
+      id: "327"
+      version: -1
+      name: Query by DNS request
+      description: Query by DNS request.
+      script: '|||fidelis-endpoint-query-by-dns'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      end_time:
+        simple: "2020-03-08T15:50:05.552Z"
+      logic:
+        simple: and
+      start_time:
+        simple: "2019-10-02T00:00:00.842Z"
+      url:
+        simple: login.live.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "26":
+    id: "26"
+    taskid: "171"
+    type: condition
+    task:
+      id: "171"
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FidelisEndpoint.Query.DnsAnswer
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "27":
+    id: "27"
+    taskid: "174"
+    type: regular
+    task:
+      id: "174"
+      version: -1
+      name: Query DNS by server IP
+      description: Query DNS by server IP.
+      script: '|||fidelis-endpoint-query-dns-by-server-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      end_time: {}
+      logic:
+        simple: or
+      remote_ip:
+        simple: 10.128.0.1
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2020,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "28":
+    id: "28"
+    taskid: "191"
+    type: condition
+    task:
+      id: "191"
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FidelisEndpoint.Query.DnsAnswer
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2020,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "29":
+    id: "29"
+    taskid: "328"
+    type: regular
+    task:
+      id: "328"
+      version: -1
+      name: Query DNS by source IP
+      description: Query DNS by source IP.
+      script: '|||fidelis-endpoint-query-dns-by-source-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      domain:
+        simple: www.virustotal.com
+      end_time:
+        simple: "2020-03-08T15:50:05.552Z"
+      logic:
+        simple: or
+      source_ip:
+        simple: 10.128.0.4
+      start_time:
+        simple: "2020-02-01T00:00:00.842Z"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "30":
+    id: "30"
+    taskid: "194"
+    type: condition
+    task:
+      id: "194"
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FidelisEndpoint.Query.DnsAnswer
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "31":
+    id: "31"
+    taskid: "192"
+    type: title
+    task:
+      id: "192"
+      version: -1
+      name: 'Success! '
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "37":
+    id: "37"
+    taskid: "325"
+    type: playbook
+    task:
+      id: "325"
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${FidelisEndpoint.FileSearch.JobResultID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_result_id
+      PollingCommandName:
+        simple: fidelis-endpoint-script-job-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: FidelisEndpoint.ScriptResult(val.Status!=='Completed').JobResultID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "38":
+    id: "38"
+    taskid: "331"
+    type: playbook
+    task:
+      id: "331"
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${FidelisEndpoint.ScriptResult.JobResultID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_result_id
+      PollingCommandName:
+        simple: fidelis-endpoint-script-job-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: FidelisEndpoint.ScriptResult(val.Status!='Completed').JobResultID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1685,
+        "width": 3870,
+        "x": -1010,
+        "y": -20
+      }
+    }
+  }
+inputs: []
+outputs: []

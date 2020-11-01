@@ -1,0 +1,19 @@
+{
+    "name": "Cofense Triage",
+    "description": "Use the Cofense Triage integration to manage reports and attachments.",
+    "support": "partner",
+    "currentVersion": "1.1.6",
+    "author": "Cofense",
+    "url": "https://cofense.com/contact-support/",
+    "email": "support@cofense.com",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "elebow"
+    ]
+}

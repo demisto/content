@@ -1,0 +1,10 @@
+cs-fx-upload-file file=172@07031695-ae27-49f6-8bb2-41943c7cb80c file_name=test.pdf comment="example" is_confidential="true" submit_file=no
+cs-fx-submit-uploaded-file sha256="a381a7b679119dee5b95c9c09993885e44ad2fd9cd52fa28bc116f8bdea71679" environment_id="160: Windows 10" action_script="default" command_line="command" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"
+cs-fx-submit-url url="https://www.google.com" environment_id="160: Windows 10" action_script="default" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"
+cs-fx-get-full-report ids="1c9fe398b2294301aa3080ede8d77356_8511c69fa47f4188bf59e3ab80f0f39f"
+cs-fx-get-report-summary ids="1c9fe398b2294301aa3080ede8d77356_8511c69fa47f4188bf59e3ab80f0f39f"
+cs-fx-get-analysis-status ids="1c9fe398b2294301aa3080ede8d77356_8cfaaf951fff412090df3d27d4b4193d"
+cs-fx-download-ioc id="cd1db2f53e8760792a48a2ec544a29e6f876643204598621783f71017f6b4266" name="test" accept_encoding="gzip"
+cs-fx-check-quota
+cs-fx-find-reports offset=1 limit=5
+cs-fx-find-submission-id offset=1 limit=5

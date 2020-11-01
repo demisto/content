@@ -1,0 +1,665 @@
+{
+	"id": "Threat Intelligence Management",
+	"version": -1,
+	"fromDate": "0001-01-01T00:00:00Z",
+	"toDate": "0001-01-01T00:00:00Z",
+	"period": {
+		"by": "",
+		"byTo": "",
+		"byFrom": "days",
+		"toValue": null,
+		"fromValue": 30,
+		"field": ""
+	},
+	"fromDateLicense": "0001-01-01T00:00:00Z",
+	"name": "Threat Intel Management",
+	"description": "",
+	"layout": [
+		{
+			"id": "a78dd890-36d0-11ea-bac2-cb1342f8efbb",
+			"forceRange": false,
+			"x": 3,
+			"y": 0,
+			"i": "a78dd890-36d0-11ea-bac2-cb1342f8efbb",
+			"w": 9,
+			"h": 2,
+			"widget": {
+				"id": "14e61cc5-3584-43d4-893b-16f9db4ef87f",
+				"version": 1,
+				"modified": "2020-01-14T13:20:34.180114532Z",
+				"name": "Active Indicator Volumes by Feed",
+				"dataType": "indicators",
+				"widgetType": "line",
+				"query": "expirationStatus:active",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"calculatedTime(d)",
+						"sourceBrands"
+					],
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "indicator_type",
+							"position": 1,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "value",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "score",
+							"position": 4,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "firstSeen",
+							"position": 5,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "lastSeen",
+							"position": 6,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "modifiedTime",
+							"position": 7,
+							"width": 180
+						},
+						{
+							"isDefault": true,
+							"key": "timestamp",
+							"position": 8,
+							"width": 190
+						},
+						{
+							"isDefault": true,
+							"key": "investigationIDs",
+							"position": 9,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "comment",
+							"position": 10,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expirationStatus",
+							"position": 14,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expiration",
+							"position": 15,
+							"width": 190
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "195929c0-36d1-11ea-bac2-cb1342f8efbb",
+			"forceRange": false,
+			"x": 0,
+			"y": 0,
+			"i": "195929c0-36d1-11ea-bac2-cb1342f8efbb",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "1c789a4b-d000-4439-85bb-b113dafbfac9",
+				"version": 1,
+				"modified": "2020-01-14T13:23:27.49284693Z",
+				"name": "Number of Active Indicators",
+				"dataType": "indicators",
+				"widgetType": "trend",
+				"query": "expirationStatus:active",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "indicator_type",
+							"position": 1,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "value",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "score",
+							"position": 4,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "firstSeen",
+							"position": 5,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "lastSeen",
+							"position": 6,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "modifiedTime",
+							"position": 7,
+							"width": 180
+						},
+						{
+							"isDefault": true,
+							"key": "timestamp",
+							"position": 8,
+							"width": 190
+						},
+						{
+							"isDefault": true,
+							"key": "investigationIDs",
+							"position": 9,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "comment",
+							"position": 10,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expirationStatus",
+							"position": 14,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expiration",
+							"position": 15,
+							"width": 190
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "4614e260-36d1-11ea-bac2-cb1342f8efbb",
+			"forceRange": false,
+			"x": 0,
+			"y": 1,
+			"i": "4614e260-36d1-11ea-bac2-cb1342f8efbb",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "530fa858-2e59-4ef9-8b44-f47db1011b36",
+				"version": 1,
+				"modified": "2020-01-14T13:24:57.840603414Z",
+				"name": "Number of Expired Indicators",
+				"dataType": "indicators",
+				"widgetType": "trend",
+				"query": "expirationStatus:expired",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "indicator_type",
+							"position": 1,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "value",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "score",
+							"position": 4,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "firstSeen",
+							"position": 5,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "lastSeen",
+							"position": 6,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "modifiedTime",
+							"position": 7,
+							"width": 180
+						},
+						{
+							"isDefault": true,
+							"key": "timestamp",
+							"position": 8,
+							"width": 190
+						},
+						{
+							"isDefault": true,
+							"key": "investigationIDs",
+							"position": 9,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "comment",
+							"position": 10,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expirationStatus",
+							"position": 14,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expiration",
+							"position": 15,
+							"width": 190
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "0295b860-36d2-11ea-bac2-cb1342f8efbb",
+			"forceRange": false,
+			"x": 3,
+			"y": 2,
+			"i": "0295b860-36d2-11ea-bac2-cb1342f8efbb",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "e0aded97-34a1-45f3-8b5b-a54b43c13f5f",
+				"version": 1,
+				"modified": "2020-01-14T13:30:13.387314353Z",
+				"name": "Active Indicators by Reputation",
+				"dataType": "indicators",
+				"widgetType": "pie",
+				"query": "(expirationStatus:active or expirationStatus:\"\")",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"score"
+					],
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "indicator_type",
+							"position": 1,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "value",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "score",
+							"position": 4,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "firstSeen",
+							"position": 5,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "lastSeen",
+							"position": 6,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "modifiedTime",
+							"position": 7,
+							"width": 180
+						},
+						{
+							"isDefault": true,
+							"key": "timestamp",
+							"position": 8,
+							"width": 190
+						},
+						{
+							"isDefault": true,
+							"key": "investigationIDs",
+							"position": 9,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "comment",
+							"position": 10,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expirationStatus",
+							"position": 14,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expiration",
+							"position": 15,
+							"width": 190
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "4d24a260-36d2-11ea-bac2-cb1342f8efbb",
+			"forceRange": false,
+			"x": 0,
+			"y": 4,
+			"i": "4d24a260-36d2-11ea-bac2-cb1342f8efbb",
+			"w": 12,
+			"h": 2,
+			"widget": {
+				"id": "8dd2c47e-84ec-4309-8ec7-8216c88aa004",
+				"version": 1,
+				"modified": "2020-01-14T13:32:18.782752002Z",
+				"name": "Indicators by Expiration Status",
+				"dataType": "indicators",
+				"widgetType": "line",
+				"query": "",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"calculatedTime(d)",
+						"expirationStatus"
+					],
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "indicator_type",
+							"position": 1,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "value",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "score",
+							"position": 4,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "firstSeen",
+							"position": 5,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "lastSeen",
+							"position": 6,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "modifiedTime",
+							"position": 7,
+							"width": 180
+						},
+						{
+							"isDefault": true,
+							"key": "timestamp",
+							"position": 8,
+							"width": 190
+						},
+						{
+							"isDefault": true,
+							"key": "investigationIDs",
+							"position": 9,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "comment",
+							"position": 10,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expirationStatus",
+							"position": 14,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expiration",
+							"position": 15,
+							"width": 190
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "878dcd60-36d6-11ea-bac2-cb1342f8efbb",
+			"forceRange": false,
+			"x": 0,
+			"y": 2,
+			"i": "878dcd60-36d6-11ea-bac2-cb1342f8efbb",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "0aaa7c20-668c-4cda-86d5-8e0744f9db1d",
+				"version": 1,
+				"modified": "2020-01-14T14:02:22.181828299Z",
+				"name": "Active Indicators by Type",
+				"dataType": "indicators",
+				"widgetType": "pie",
+				"query": "expirationStatus:active or expirationStatus:\"\"",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"type"
+					],
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "indicator_type",
+							"position": 1,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "value",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "score",
+							"position": 4,
+							"width": 120
+						},
+						{
+							"isDefault": true,
+							"key": "firstSeen",
+							"position": 5,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "lastSeen",
+							"position": 6,
+							"width": 275
+						},
+						{
+							"isDefault": true,
+							"key": "modifiedTime",
+							"position": 7,
+							"width": 180
+						},
+						{
+							"isDefault": true,
+							"key": "timestamp",
+							"position": 8,
+							"width": 190
+						},
+						{
+							"isDefault": true,
+							"key": "investigationIDs",
+							"position": 9,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "comment",
+							"position": 10,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expirationStatus",
+							"position": 14,
+							"width": 175
+						},
+						{
+							"isDefault": true,
+							"key": "expiration",
+							"position": 15,
+							"width": 190
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		}
+	],
+	"fromVersion": "5.5.0",
+	"isPredefined": true
+}

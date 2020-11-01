@@ -5,8 +5,9 @@ import json
 
 def parse_audit(raw_json):
     data = json.loads(raw_json)
-    if 'kind' not in data or data['kind'] != 'audit':
-        raise ValueError(f'Input should be a raw JSON audit Alert, received: {raw_json}')
+
+    if data.get('kind') != 'audit':
+        raise ValueError(f'Input should be a raw JSON audit alert, received: {raw_json}')
 
     outputs = {'PrismaCloudCompute.AuditAlert': data}
     readable_outputs = tableToMarkdown('Audit Information', data)

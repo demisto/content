@@ -1,0 +1,38 @@
+{
+  "Type": 1,
+  "ContentsFormat": "json",
+  "Contents": [
+    {
+      "sourceIP": "1.1.1.1",
+      "count": "0"
+    },
+    {
+      "sourceIP": "2.2.2.2",
+      "count": "1"
+    },
+    {
+      "sourceIP": "3.3.3.3",
+      "count": "2"
+    }
+  ],
+  "EntryContext": {
+    "LookupCSV": {
+      "FoundResult": false,
+      "SearchValue": "",
+      "Result": [
+        {
+          "sourceIP": "1.1.1.1",
+          "count": "0"
+        },
+        {
+          "sourceIP": "2.2.2.2",
+          "count": "1"
+        },
+        {
+          "sourceIP": "3.3.3.3",
+          "count": "2"
+        }
+      ]
+    }
+  }
+}

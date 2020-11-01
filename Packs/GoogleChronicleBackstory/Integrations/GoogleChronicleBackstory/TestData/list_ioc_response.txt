@@ -1,0 +1,53 @@
+{
+  "response": {
+    "matches": [
+      {
+        "artifact": {
+          "domainName": "test.com"
+        },
+        "sources": [
+          {
+            "source": "3rd Party",
+            "confidenceScore": {
+              "normalizedConfidenceScore": "Low",
+              "intRawConfidenceScore": 0
+            },
+            "rawSeverity": "Low",
+            "category": "Not Known"
+          },
+          {
+            "source": "3rd Party",
+            "confidenceScore": {
+              "normalizedConfidenceScore": "Low",
+              "intRawConfidenceScore": 0
+            },
+            "rawSeverity": "Low",
+            "category": "Not Known"
+          }
+        ],
+        "iocIngestTime": "2019-03-31T18:00:00Z",
+        "firstSeenTime": "2020-01-20T12:10:26Z",
+        "lastSeenTime": "2020-03-21T12:10:26Z"
+      },
+      {
+        "artifact": {
+          "domainName": "secondtest.com"
+        },
+        "sources": [
+          {
+            "source": "3rd Party",
+            "confidenceScore": {
+              "normalizedConfidenceScore": "Low",
+              "intRawConfidenceScore": 0
+            },
+            "rawSeverity": "Low",
+            "category": "Not Known"
+          }
+        ],
+        "iocIngestTime": "2019-03-30T18:00:00Z",
+        "firstSeenTime": "2020-01-21T12:10:26Z",
+        "lastSeenTime": "2020-01-21T12:10:26Z"
+      }
+    ]
+  }
+}

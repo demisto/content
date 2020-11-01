@@ -1,0 +1,1331 @@
+id: GooglePubSub_Test
+version: -1
+fromversion: 5.0.0
+name: GooglePubSub_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3fcb4368-cc9c-4fdb-8ec4-a54bbfb0d310
+    type: start
+    task:
+      id: 3fcb4368-cc9c-4fdb-8ec4-a54bbfb0d310
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 912ecb45-b0da-47da-825a-36023ce72aa5
+    type: regular
+    task:
+      id: 912ecb45-b0da-47da-825a-36023ce72aa5
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b14e0317-542f-4d40-81aa-164aaa05119a
+    type: regular
+    task:
+      id: b14e0317-542f-4d40-81aa-164aaa05119a
+      version: -1
+      name: gcp-pubsub-topics-list
+      script: '|||gcp-pubsub-topics-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      page_size: {}
+      page_token: {}
+      project_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d3e3c80f-e045-471a-8e70-3ed1dc8f815c
+    type: condition
+    task:
+      id: d3e3c80f-e045-471a-8e70-3ed1dc8f815c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubTopics.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4dad61ac-283d-4353-8549-2cfa97fabf15
+    type: regular
+    task:
+      id: 4dad61ac-283d-4353-8549-2cfa97fabf15
+      version: -1
+      name: gcp-pubsub-topic-publish-message
+      script: '|||gcp-pubsub-topic-publish-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      attributes: {}
+      data:
+        simple: 'The time is: ${TimeNow}'
+      project_id: {}
+      topic_id:
+        simple: dmst-test-topic
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 98067d69-9121-437f-82bd-7f6e3eeb8351
+    type: condition
+    task:
+      id: 98067d69-9121-437f-82bd-7f6e3eeb8351
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubPublishedMessages.messageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubPublishedMessages.topic
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c0ae5739-515b-47c1-81bb-16d51148171f
+    type: regular
+    task:
+      id: c0ae5739-515b-47c1-81bb-16d51148171f
+      version: -1
+      name: gcp-pubsub-topic-subscription-get-by-name
+      script: '|||gcp-pubsub-topic-subscription-get-by-name'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      project_id: {}
+      subscription_id:
+        simple: test_sub_2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 39871dd8-415a-4a17-86f0-954592680d2f
+    type: condition
+    task:
+      id: 39871dd8-415a-4a17-86f0-954592680d2f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.expirationPolicy.ttl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.messageRetentionDuration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.topic
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 17e85e86-55ae-4a69-84fb-1cb52513c395
+    type: regular
+    task:
+      id: 17e85e86-55ae-4a69-84fb-1cb52513c395
+      version: -1
+      name: gcp-pubsub-topic-subscriptions-list
+      script: '|||gcp-pubsub-topic-subscriptions-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      page_size: {}
+      page_token: {}
+      project_id: {}
+      topic_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 4a5bf097-8b13-4295-8fea-1b2843109eaf
+    type: condition
+    task:
+      id: 4a5bf097-8b13-4295-8fea-1b2843109eaf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.ackDeadlineSeconds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.expirationPolicy.ttl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.messageRetentionDuration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.topic
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.pushConfig.pushEndpoint
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 38d019c8-19e0-4452-8bed-35d9b328431f
+    type: regular
+    task:
+      id: 38d019c8-19e0-4452-8bed-35d9b328431f
+      version: -1
+      name: gcp-pubsub-topic-messages-pull
+      script: '|||gcp-pubsub-topic-messages-pull'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      ack:
+        simple: "true"
+      max_messages:
+        simple: "1"
+      project_id: {}
+      subscription_id:
+        simple: test_sub_2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 868f8cd6-84cb-435d-8b3e-ba594178a392
+    type: condition
+    task:
+      id: 868f8cd6-84cb-435d-8b3e-ba594178a392
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudPubSubPulledMessages.data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubPulledMessages.messageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubPulledMessages.publishTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 3728cadb-7b5d-483d-8bb2-23d520ae812c
+    type: regular
+    task:
+      id: 3728cadb-7b5d-483d-8bb2-23d520ae812c
+      version: -1
+      name: gcp-pubsub-topic-subscription-create
+      script: '|||gcp-pubsub-topic-subscription-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      ack_deadline_seconds: {}
+      expiration_ttl:
+        simple: 86400s
+      labels: {}
+      message_retention_duration: {}
+      project_id: {}
+      push_attributes: {}
+      push_endpoint: {}
+      retain_acked_messages: {}
+      subscription_id:
+        simple: test_sub_${TimeNowUnix}
+      topic_id:
+        simple: dmst-test-topic
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 8b8a8287-a692-47c5-8ee9-4e1c6d4daa2f
+    type: title
+    task:
+      id: 8b8a8287-a692-47c5-8ee9-4e1c6d4daa2f
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 6ad6bf96-e22a-4355-8aeb-3ff1a1f6c491
+    type: regular
+    task:
+      id: 6ad6bf96-e22a-4355-8aeb-3ff1a1f6c491
+      version: -1
+      name: Get Time Now
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: ISO
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: f20ff05d-9d04-47bc-890f-fecb325f657f
+    type: regular
+    task:
+      id: f20ff05d-9d04-47bc-890f-fecb325f657f
+      version: -1
+      name: Clean test_sub_2 Queue
+      script: '|||gcp-pubsub-topic-messages-pull'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      ack:
+        simple: "true"
+      max_messages:
+        simple: "100"
+      project_id: {}
+      subscription_id:
+        simple: test_sub_2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: c8b78ba2-243d-45ce-81c5-08077cf44fd7
+    type: condition
+    task:
+      id: c8b78ba2-243d-45ce-81c5-08077cf44fd7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 13c61b09-0850-4c5e-8e71-cbff60c0793e
+    type: regular
+    task:
+      id: 13c61b09-0850-4c5e-8e71-cbff60c0793e
+      version: -1
+      name: gcp-pubsub-topic-subscription-update
+      description: Update a subscription.
+      script: '|||gcp-pubsub-topic-subscription-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ack_deadline_seconds: {}
+      expiration_ttl: {}
+      labels:
+        simple: test=true
+      message_retention_duration: {}
+      project_id: {}
+      push_attributes: {}
+      push_endpoint: {}
+      retain_acked_messages: {}
+      subscription_id:
+        simple: test_sub_${TimeNowUnix}
+      topic_id:
+        simple: dmst-test-topic
+      update_mask:
+        simple: labels
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: a2fc705b-ae7e-4236-8ceb-575d15d4ab10
+    type: condition
+    task:
+      id: a2fc705b-ae7e-4236-8ceb-575d15d4ab10
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudPubSubSubscriptions.labels.test
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: bb55d7ee-4210-4516-8b54-8a07ed29f000
+    type: regular
+    task:
+      id: bb55d7ee-4210-4516-8b54-8a07ed29f000
+      version: -1
+      name: gcp-pubsub-topic-create
+      description: Create a topic.
+      script: '|||gcp-pubsub-topic-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      allowed_persistence_regions: {}
+      kms_key_name: {}
+      labels: {}
+      project_id: {}
+      topic_id:
+        simple: test_topic_${TimeNowUnix}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 8eb16746-20db-400a-875e-ac5ac953ed14
+    type: regular
+    task:
+      id: 8eb16746-20db-400a-875e-ac5ac953ed14
+      version: -1
+      name: gcp-pubsub-topic-update
+      description: Updates a topic.
+      script: '|||gcp-pubsub-topic-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      allowed_persistence_regions: {}
+      kms_key_name: {}
+      labels:
+        simple: test=true
+      project_id: {}
+      topic_id:
+        simple: test_topic_${TimeNowUnix}
+      update_mask:
+        simple: labels
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 714905bb-f0dd-4f1c-8692-f6467ee8a3e5
+    type: condition
+    task:
+      id: 714905bb-f0dd-4f1c-8692-f6467ee8a3e5
+      version: -1
+      name: Verify Outputs
+      description: Create a topic.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudPubSubTopics.labels.test
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: b08de031-7f70-417c-8dd5-20b911233d0e
+    type: regular
+    task:
+      id: b08de031-7f70-417c-8dd5-20b911233d0e
+      version: -1
+      name: gcp-pubsub-topic-delete
+      description: Delete a topic.
+      script: '|||gcp-pubsub-topic-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      project_id: {}
+      topic_id:
+        simple: test_topic_${TimeNowUnix}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 6d0739f5-f280-4d19-8d85-d17a2b835237
+    type: regular
+    task:
+      id: 6d0739f5-f280-4d19-8d85-d17a2b835237
+      version: -1
+      name: gcp-pubsub-topic-messages-seek
+      description: Seeks a subscription to a given point in time or to a given snapshot.
+      script: '|||gcp-pubsub-topic-messages-seek'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      project_id: {}
+      snapshot: {}
+      subscription_id:
+        simple: test_sub_2
+      time_string:
+        simple: ${TimeNow}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 6f33e238-5e18-4c7a-810b-401df6db67d0
+    type: condition
+    task:
+      id: 6f33e238-5e18-4c7a-810b-401df6db67d0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudPubSubPulledMessages.data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubPulledMessages.messageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudPubSubPulledMessages.publishTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 37a1bf1a-8919-4c0e-8d7f-0d1e9625ba58
+    type: regular
+    task:
+      id: 37a1bf1a-8919-4c0e-8d7f-0d1e9625ba58
+      version: -1
+      name: gcp-pubsub-topic-messages-pull
+      script: '|||gcp-pubsub-topic-messages-pull'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      ack:
+        simple: "true"
+      max_messages:
+        simple: "1"
+      project_id: {}
+      subscription_id:
+        simple: test_sub_2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 12f16cf8-fa79-425a-8232-05fa01139139
+    type: regular
+    task:
+      id: 12f16cf8-fa79-425a-8232-05fa01139139
+      version: -1
+      name: gcp-pubsub-topic-snapshot-create
+      description: Creates a snapshot from the requested subscription. Snapshots are
+        used in gcp-pubsub-topic-messages-seek command.
+      script: '|||gcp-pubsub-topic-snapshot-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      labels: {}
+      project_id: {}
+      snapshot_id:
+        simple: test_snapshot_${TimeNowUnix}
+      subscription_id:
+        simple: test_sub_2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 1f6ccec2-d16b-46bd-88ad-621f3bb51585
+    type: condition
+    task:
+      id: 1f6ccec2-d16b-46bd-88ad-621f3bb51585
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudPubSubSnapshots.topic
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudPubSubSnapshots.expireTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: b2afd66c-2479-47e0-875a-39b3c6c733e0
+    type: regular
+    task:
+      id: b2afd66c-2479-47e0-875a-39b3c6c733e0
+      version: -1
+      name: gcp-pubsub-topic-snapshot-update
+      description: Updates an existing snapshot. Snapshots are used in gcp-pubsub-topic-messages-seek
+        command.
+      script: '|||gcp-pubsub-topic-snapshot-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      expire_time: {}
+      labels:
+        simple: test=true
+      project_id: {}
+      snapshot_id:
+        simple: test_snapshot_${TimeNowUnix}
+      topic_id:
+        simple: dmst-test-topic
+      update_mask:
+        simple: labels
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 1f5aee29-edee-41f2-832f-d4937229e2b5
+    type: condition
+    task:
+      id: 1f5aee29-edee-41f2-832f-d4937229e2b5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudPubSubSnapshots.topic
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudPubSubSnapshots.expireTime
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudPubSubSnapshots.labels.test
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: f4778268-33e9-4e3a-8722-8deedd1ae089
+    type: regular
+    task:
+      id: f4778268-33e9-4e3a-8722-8deedd1ae089
+      version: -1
+      name: gcp-pubsub-topic-snapshot-delete
+      description: Removes an existing snapshot.
+      script: '|||gcp-pubsub-topic-snapshot-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      project_id: {}
+      snapshot_id:
+        complex:
+          root: GoogleCloudPubSubSnapshots
+          accessor: name
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: snapshots/(.*)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: da563063-26a6-4a04-8b85-05702b056686
+    type: condition
+    task:
+      id: da563063-26a6-4a04-8b85-05702b056686
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudPubSubSnapshots.topic
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudPubSubSnapshots.expireTime
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudPubSubSnapshots.labels.test
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 1a079293-da63-41f8-81a6-01d57ea86975
+    type: regular
+    task:
+      id: 1a079293-da63-41f8-81a6-01d57ea86975
+      version: -1
+      name: gcp-pubsub-topic-snapshots-list
+      description: Get a list of snapshots by project ID and topic ID.
+      script: '|||gcp-pubsub-topic-snapshots-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      page_size: {}
+      page_token: {}
+      project_id: {}
+      topic_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: d35f1f76-72b8-478b-8b8f-34b2c6161ccd
+    type: regular
+    task:
+      id: d35f1f76-72b8-478b-8b8f-34b2c6161ccd
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5810,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

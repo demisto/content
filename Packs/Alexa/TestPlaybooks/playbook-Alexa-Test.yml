@@ -1,0 +1,944 @@
+id: Alexa Test Playbook
+version: -1
+name: Alexa Test Playbook
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: c1ceaa59-278c-43f8-8175-03310414e6c8
+    type: start
+    task:
+      id: c1ceaa59-278c-43f8-8175-03310414e6c8
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: 91efb4bb-698c-4562-8018-d8bad241eb5d
+    type: regular
+    task:
+      id: 91efb4bb-698c-4562-8018-d8bad241eb5d
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      domain:
+        simple: google.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 10\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 17053e06-168d-4abf-8f19-78da953edd90
+    type: regular
+    task:
+      id: 17053e06-168d-4abf-8f19-78da953edd90
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: f99ee7fa-f064-4b05-88d6-8c5d833adfa2
+    type: condition
+    task:
+      id: f99ee7fa-f064-4b05-88d6-8c5d833adfa2
+      version: -1
+      name: Check Trusted Site
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '11'
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: '0'
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 150\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: 93d78d28-9552-468b-8eb8-0d795c07b581
+    type: regular
+    task:
+      id: 93d78d28-9552-468b-8eb8-0d795c07b581
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 965\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: 25c183ce-7dfd-4e50-8344-a987607fa63a
+    type: regular
+    task:
+      id: 25c183ce-7dfd-4e50-8344-a987607fa63a
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      domain:
+        simple: altcom.com.pl
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1140\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: e8af8ce2-aa08-4bf8-8d9a-16c76418811b
+    type: condition
+    task:
+      id: e8af8ce2-aa08-4bf8-8d9a-16c76418811b
+      version: -1
+      name: Check Low Ranking Site
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '15'
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1310\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '7':
+    id: '7'
+    taskid: 28add10d-974a-48ba-801d-e8820d58ee1a
+    type: regular
+    task:
+      id: 28add10d-974a-48ba-801d-e8820d58ee1a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: f58a1219-690c-4896-8c95-91fe4e86f4b9
+    type: regular
+    task:
+      id: f58a1219-690c-4896-8c95-91fe4e86f4b9
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      domain:
+        simple: shlepme.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2220\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 30ecd115-d2fe-4053-8841-952e377134d0
+    type: condition
+    task:
+      id: 30ecd115-d2fe-4053-8841-952e377134d0
+      version: -1
+      name: Check Unlisted Site
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '19'
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: '2'
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '10':
+    id: '10'
+    taskid: 2ece64be-8556-48d7-800b-cd7c11fefd1a
+    type: regular
+    task:
+      id: 2ece64be-8556-48d7-800b-cd7c11fefd1a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3160\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '11':
+    id: '11'
+    taskid: c80fe702-8c0f-4908-8eed-9531315aa354
+    type: regular
+    task:
+      id: c80fe702-8c0f-4908-8eed-9531315aa354
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      seconds:
+        simple: '5'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 320\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '12':
+    id: '12'
+    taskid: 4d2c4520-60a4-43a1-833b-1ba7564d5efd
+    type: regular
+    task:
+      id: 4d2c4520-60a4-43a1-833b-1ba7564d5efd
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      domain:
+        simple: google.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 605\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '13':
+    id: '13'
+    taskid: e73b66aa-6b52-496e-82ed-e397bbff801c
+    type: condition
+    task:
+      id: e73b66aa-6b52-496e-82ed-e397bbff801c
+      version: -1
+      name: Check Trusted Site
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '14':
+    id: '14'
+    taskid: 084f17d8-6c0c-4fb4-82f0-d08d7c01d050
+    type: regular
+    task:
+      id: 084f17d8-6c0c-4fb4-82f0-d08d7c01d050
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 455\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '15':
+    id: '15'
+    taskid: 31c8f111-9e1b-47b2-8434-c6a15afed8b7
+    type: regular
+    task:
+      id: 31c8f111-9e1b-47b2-8434-c6a15afed8b7
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      seconds:
+        simple: '5'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 1480\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '16':
+    id: '16'
+    taskid: ecd8c479-dd18-4cf2-8d67-e55e9612d410
+    type: regular
+    task:
+      id: ecd8c479-dd18-4cf2-8d67-e55e9612d410
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 1620\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '17':
+    id: '17'
+    taskid: 8c7e166b-0492-4d02-8ef2-0294ad677c7e
+    type: regular
+    task:
+      id: 8c7e166b-0492-4d02-8ef2-0294ad677c7e
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      domain:
+        simple: altcom.com.pl
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 1760\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '18':
+    id: '18'
+    taskid: d3b4b674-8490-45ca-89ca-db5483e93228
+    type: condition
+    task:
+      id: d3b4b674-8490-45ca-89ca-db5483e93228
+      version: -1
+      name: Check Low Ranking Site
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: '2'
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 1900\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '19':
+    id: '19'
+    taskid: 3c159dea-a72d-456e-8635-f25f7b1fdec6
+    type: regular
+    task:
+      id: 3c159dea-a72d-456e-8635-f25f7b1fdec6
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments:
+      seconds:
+        simple: '5'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 2550\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '20':
+    id: '20'
+    taskid: d2e52e8f-330e-44dc-8a4c-f3ff6226daf6
+    type: regular
+    task:
+      id: d2e52e8f-330e-44dc-8a4c-f3ff6226daf6
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 2700\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '21':
+    id: '21'
+    taskid: 16202bce-7d79-4931-8e2d-90397e4ddc52
+    type: regular
+    task:
+      id: 16202bce-7d79-4931-8e2d-90397e4ddc52
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments:
+      domain:
+        simple: shlepme.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 2840\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '22':
+    id: '22'
+    taskid: 2be9d206-4990-4cfd-8c07-ceaccafbc9a6
+    type: condition
+    task:
+      id: 2be9d206-4990-4cfd-8c07-ceaccafbc9a6
+      version: -1
+      name: Check Unlisted Site
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 2990\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '23':
+    id: '23'
+    taskid: d861697d-e055-46aa-8b9c-598ec9fccd86
+    type: regular
+    task:
+      id: d861697d-e055-46aa-8b9c-598ec9fccd86
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments:
+      domain:
+        simple: demisto.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3345\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '24':
+    id: '24'
+    taskid: 58034ac2-764d-4dcb-80ae-803d0d8ee6f2
+    type: condition
+    task:
+      id: 58034ac2-764d-4dcb-80ae-803d0d8ee6f2
+      version: -1
+      name: Check Valid Site Rank to not Equal 1
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      yes:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: Alexa
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Alexa.Domain.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: demisto.com
+                accessor: Domain.Rank
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3540\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '25':
+    id: '25'
+    taskid: 535fedb0-731b-4fb1-84be-1e1e79116ac8
+    type: regular
+    task:
+      id: 535fedb0-731b-4fb1-84be-1e1e79116ac8
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments:
+      seconds:
+        simple: '5'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 3790\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '26':
+    id: '26'
+    taskid: 6a287b86-8f63-40e6-89c2-f226765700db
+    type: regular
+    task:
+      id: 6a287b86-8f63-40e6-89c2-f226765700db
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 3980\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '27':
+    id: '27'
+    taskid: bfcb18ef-6514-4299-8125-419bccc72d46
+    type: regular
+    task:
+      id: bfcb18ef-6514-4299-8125-419bccc72d46
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      domain:
+        simple: demisto.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 4175\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '29':
+    id: '29'
+    taskid: 43381a17-1046-4f88-8000-db71f0736e8a
+    type: title
+    task:
+      id: 43381a17-1046-4f88-8000-db71f0736e8a
+      version: -1
+      name: DONE
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 4540\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '30':
+    id: '30'
+    taskid: 98ed13ef-0beb-46b7-81d2-0ecc791b35f6
+    type: condition
+    task:
+      id: 98ed13ef-0beb-46b7-81d2-0ecc791b35f6
+      version: -1
+      name: Check Valid Site Rank to not Equal 1
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: Alexa
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Alexa.Domain.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: demisto.com
+                accessor: Domain.Rank
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+    view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 4370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4835,\n      \"width\": 850,\n      \"x\": -20,\n      \"y\": -230\n    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

@@ -1,0 +1,47 @@
+{
+  "Flashpoint.Forum.Post(val.PostId == obj.PostId)": {
+    "PostId": "test_scan_forum_post_id",
+    "PublishedAt": "2019-12-10T01:17:00+00:00",
+    "Url": "fake url",
+    "PlatformUrl": "http://123-fake-api.com/home/ddw/forums/threads/test_scan_forum_post_id",
+    "Forum": {
+      "legacy_id": null,
+      "name": "fake title",
+      "id": "test_scan_forum_post_id",
+      "tags": [
+        {
+          "name": "fake tag name",
+          "id": 55,
+          "parent_tag": 17,
+          "uuid": "83a2e5d4-e591-42be-943f-4af7d5de30e4"
+        }
+      ],
+      "hostname": "fake host name",
+      "stats": {
+        "posts": 163710,
+        "threads": 13916,
+        "users": 71614,
+        "rooms": 1
+      },
+      "description": "fake description",
+      "platform_url": "http://123-fake-api.com/home/search/forums?forum_ids=test_scan_forum_post_id"
+    },
+    "Room": {
+      "legacy_id": null,
+      "id": "test_scan_forum_post_id",
+      "forum": "/forums/sites/test_scan_forum_post_id",
+      "url": "forum",
+      "platform_url": "http://123-fake-api.com/home/search/forums?room_title=faketitle",
+      "native_id": "forum",
+      "title": "fake title"
+    },
+    "User": {
+      "legacy_id": null,
+      "name": "fake author name",
+      "id": "test_scan_forum_post_id",
+      "url": null,
+      "native_id": "fake native id",
+      "platform_url": "http://123-fake-api.com/home/search/forums?author_id=test_scan_forum_post_id"
+    }
+  }
+}

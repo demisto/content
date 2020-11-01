@@ -35,7 +35,7 @@ To sync incidents between Demisto and Cortex XDR, you should use the **XDRSyncSc
 
 ## Configuration
 ---
-You need to collect several pieces of information in order to configure the integration on Demisto.
+You need to collect several pieces of information in order to configure the integration on Cortex XSOAR.
 
 #### Generate an API Key and API Key ID
 1. In your Cortex XDR platform, go to **Settings**.
@@ -58,12 +58,19 @@ You need to collect several pieces of information in order to configure the inte
     * __Server URL (copy URL from XDR - click ? to see more info.)__
     * __API Key ID__
     * __API Key__
+    * __Maximum number of incidents per fetch__
+    * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
+    * __HTTP Timeout__ (default is 120 seconds)
+    * __Fetch incident alerts and artifacts__
+    * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
+    * __Incidend Mirroring Direction__
+    * __Sync Incident Owners__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
+```
 incident_id:31
 creation_time:1564594008755
 modification_time:1566339537617
@@ -84,6 +91,43 @@ resolve_comment:null
 manual_severity:low
 manual_description:null
 xdr_url:https://1111.paloaltonetworks.com/incident-view/31
+```
+
+* Note: By checking the `Fetch incident alerts and artifacts` integration configuration parameter - fetched incidents will include additional data.
+
+## XDR Incident Mirroring
+**Note this feature is available from Cortex XSOAR version 6.0.0**
+
+You can enable incident mirroring between Cortex XSOAR incidents and Cortex XDR incidents.
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for Cortex XDR - IR and select your integration instance.
+3. Enable `Fetches incidents`.
+4. In the `Incident Mirroring Direction` integration parameter, select in which direction should incidents be mirrored:
+  * Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
+  * Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
+  * Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
+  * None - Choose this to turn off incident mirroring.
+5. Optional: Check the `Sync Incident Owners` integration parameter to sync the incident owners in both XDR and XSOAR.
+  * Note: This feature will only work if the same users are registered both in Cortex XSOAR and Cortex XDR.
+6. Newly fetched incidents will be mirrored in the chosen direction.
+  * Note: this will not effect existing incidents.
+
+### XDR Mirroring Notes, limitations and Troubleshooting
+
+* While you can mirror changes in incident fields both in and out in each incident, you can only mirror in a single direction at a time. For example:
+  If we have an incident with two fields (A and B) in XDR and XSOAR while *Incoming And Outgoing* mirroring is selected: 
+   * I can mirror field A from XDR to XSOAR and field B from XSOAR to XDR.
+   * I cannot mirror changes from field A in both directions.
+   
+  Initially all fields are mirrored in from XDR to XSOAR. Once they are changed in XSOAR, they can only be mirrored out.
+* **Do not use the `XDRSyncScript` automation nor any playbook that uses this automation** 
+  (e.g `Cortex XDR Incident Sync` or `Cortex XDR incident handling v2`), as it impairs the mirroring functionality.
+
+* When migrating an existing instance to the mirroring feature, or in case the mirroring does not work as expected, make sure that:
+   * The default playbook of the `Cortex XDR Incident` incident type is not `Cortex XDR Incident Sync`, change it to a 
+     different playbook that does not use `XDRSyncScript`.
+   * The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
 
 ## Commands
 ---
@@ -144,12 +188,9 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | PaloAltoNetworksXDR.Incident.alert_count | number | Total number of alerts in the incident. | 
 | PaloAltoNetworksXDR.Incident.med_severity_alert_count | number | Number of alerts with the severity MEDIUM. | 
 | PaloAltoNetworksXDR.Incident.user_count | number | Number of users involved in the incident. | 
-| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident
-"low","medium","high"
- | 
+| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Can be "low", "medium", or "high". | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive" or "resolved_other"
- | 
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new", "under_investigation", "resolved_threat_handled", "resolved_known_issue", "resolved_duplicate", "resolved_false_positive", or "resolved_other". | 
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 
@@ -242,9 +283,9 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 ### Incidents
 |alert_count|assigned_user_mail|assigned_user_pretty_name|creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | https://some.xdr.url.com/incident-view/4 |
-| 1 | woo@demisto.com | woo@demisto.com | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | https://some.xdr.url.com/incident-view/3 |
-| 2 |  |  | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | https://some.xdr.url.com/incident-view/2 |
+| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
+| 1 | woo@demisto.com | woo@demisto.com | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/3` |
+| 2 |  |  | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | `https://some.xdr.url.com/incident-view/2` |
 
 
 ### 2. xdr-get-incident-extra-data
@@ -347,6 +388,8 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.file_artifacts.type | String | The artifact type "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY" "HOSTNAME" | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256 | String | SHA-256 hash of the file | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name | String | File signature vendor name | 
+| Account.Username | String | The username in the relevant system. | 
+| Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
 
 
 ##### Command Example
@@ -355,6 +398,16 @@ Returns additional data for the specified incident, for example, related alerts,
 ##### Context Example
 ```
 {
+    "Account": {
+        "Username": [
+            null
+        ]
+    },
+    "Endpoint": {
+        "Hostname": [
+            null
+        ]
+    },
     "PaloAltoNetworksXDR.Incident": {
         "host_count": 1, 
         "manual_severity": "medium", 
@@ -639,16 +692,16 @@ Returns additional data for the specified incident, for example, related alerts,
 ### Incident 4
 |alert_count|assigned_user_mail|assigned_user_pretty_name|creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | https://some.xdr.url.com/incident-view/4 |
+| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
 
 ### Alerts
 |action|action_external_hostname|action_file_md5|action_file_path|action_file_sha256|action_local_ip|action_local_port|action_pretty|action_process_image_command_line|action_process_image_name|action_process_image_sha256|action_process_signature_status|action_process_signature_vendor|action_registry_data|action_registry_full_key|action_remote_ip|action_remote_port|actor_process_command_line|actor_process_image_name|actor_process_signature_status|actor_process_signature_vendor|alert_id|category|causality_actor_causality_id|causality_actor_process_command_line|causality_actor_process_image_name|causality_actor_process_signature_status|causality_actor_process_signature_vendor|description|detection_timestamp|event_type|fw_app_id|host_ip|host_name|is_whitelisted|name|severity|source|starred|user_name|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| VALUE_NA,<br>N/A |  |  |  |  | 196.168.0.1 | 7000 | VALUE_NA,<br>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 8000 |  |  | N/A | N/A | 6 |  |  |  |  | N/A | N/A | Test - alert generated by Test XDR Playbook | 1577276586921 | Network Event |  |  |  | No | Test - alert generated by Test XDR Playbook | medium | Cisco - Sandblast | false |  |
-| VALUE_NA,<br>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 7 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1577776701589 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
-| VALUE_NA,<br>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 8 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1577958479843 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
-| VALUE_NA,<br>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 9 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1578123895414 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
-| VALUE_NA,<br>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 10 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1578927443615 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
+| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.1 | 7000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 8000 |  |  | N/A | N/A | 6 |  |  |  |  | N/A | N/A | Test - alert generated by Test XDR Playbook | 1577276586921 | Network Event |  |  |  | No | Test - alert generated by Test XDR Playbook | medium | Cisco - Sandblast | false |  |
+| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 7 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1577776701589 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
+| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 8 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1577958479843 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
+| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 9 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1578123895414 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
+| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 10 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1578927443615 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
 
 ### Network Artifacts
 |alert_count|is_manual|network_country|network_domain|network_remote_ip|network_remote_port|type|
@@ -708,10 +761,10 @@ maximum of 60 alerts.
 | vendor | String value that defines the product. | Required | 
 | local_ip | String value for the source IP address | Optional | 
 | local_port | Integer value for the source port. | Required | 
-| remote_ip | String value of the destination IP<br>address. | Required | 
-| remote_port | Integer value for the destination<br>port. | Required | 
+| remote_ip | String value of the destination IP<br/>address. | Required | 
+| remote_port | Integer value for the destination<br/>port. | Required | 
 | event_timestampt | Integer value representing the epoch of the time the alert occurred in milliseconds or String value of date format 2019-10-23T10:00:00. If not set then the event time will be defined as now. | Optional | 
-| severity | String value of alert severity:<br>Informational, Low, Medium, High, or Unknown | Optional | 
+| severity | String value of alert severity:<br/>Informational, Low, Medium, High, or Unknown | Optional | 
 | alert_name | String defining the alert name | Required | 
 | alert_description | String defining the alert description | Optional | 
 
@@ -814,17 +867,17 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_id_list | A comma-separated list of endpoint IDs. | Optional | 
-| dist_name | A comma-separated list of distribution package names or installation package names. <br>Example: dist_name1,dist_name2 | Optional | 
-| ip_list | A comma-separated list of IP addresses.<br>Example: 8.8.8.8,1.1.1.1 | Optional | 
-| group_name | The group name to which the agent belongs.<br>Example: group_name1,group_name2 | Optional | 
+| dist_name | A comma-separated list of distribution package names or installation package names. <br/>Example: dist_name1,dist_name2 | Optional | 
+| ip_list | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1 | Optional | 
+| group_name | The group name to which the agent belongs.<br/>Example: group_name1,group_name2 | Optional | 
 | platform | The endpoint platform. Can be "windows", "linux", "macos", or "android".  | Optional | 
-| alias_name | A comma-separated list of alias names.<br>Examples: alias_name1,alias_name2 | Optional | 
+| alias_name | A comma-separated list of alias names.<br/>Examples: alias_name1,alias_name2 | Optional | 
 | isolate | "Specifies whether the endpoint was isolated or unisolated. Can be "isolated" or "unisolated". | Optional | 
-| hostname | Hostname<br>Example: hostname1,hostname2 | Optional | 
-| first_seen_gte | All the agents that were first seen after {first_seen_gte}.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
-| first_seen_lte | All the agents that were first seen before {first_seen_lte}.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
-| last_seen_gte | All the agents that were last seen before {last_seen_gte}.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
-| last_seen_lte | All the agents that were last seen before {last_seen_lte}.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
+| hostname | Hostname<br/>Example: hostname1,hostname2 | Optional | 
+| first_seen_gte | All the agents that were first seen after {first_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date) | Optional | 
+| first_seen_lte | All the agents that were first seen before {first_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date) | Optional | 
+| last_seen_gte | All the agents that were last seen before {last_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date) | Optional | 
+| last_seen_lte | All the agents that were last seen before {last_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date) | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of endpoints to return per page. The default and maximum is 30. | Optional | 
 | sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". | Optional | 
@@ -853,7 +906,11 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 | PaloAltoNetworksXDR.Endpoint.endpoint_version | String | Endpoint version. | 
 | PaloAltoNetworksXDR.Endpoint.is_isolated | String | Whether the endpoint is isolated. | 
 | PaloAltoNetworksXDR.Endpoint.group_name | String | The name of the group to which the endpoint belongs. | 
-
+| Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
+| Endpoint.ID | String | The unique ID within the tool retrieving the endpoint. | 
+| Endpoint.IPAddress | String | The IP address of the endpoint. | 
+| Endpoint.Domain | String | The domain of the endpoint. | 
+| Endpoint.OS | String | Endpoint OS. | 
 
 ##### Command Example
 ```!xdr-get-endpoints isolate="unisolated" first_seen_gte="3 month" page="0" limit="30" sort_order="asc"```
@@ -861,6 +918,26 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 ##### Context Example
 ```
 {
+    "Endpoint": [
+        {
+            "Domain": "WORKGROUP",
+            "Hostname": "aaaaa.compute.internal",
+            "ID": "ea303670c76e4ad09600c8b346f7c804",
+            "IPAddress": [
+                "172.31.11.11"
+            ],
+            "OS": "AGENT_OS_WINDOWS"
+        },
+        {
+            "Domain": "WORKGROUP",
+            "Hostname": "EC2AMAZ-P7PPOI4",
+            "ID": "f8a2f58846b542579c12090652e79f3d",
+            "IPAddress": [
+                "2.2.2.2"
+            ],
+            "OS": "AGENT_OS_WINDOWS"
+        }
+    ],
     "PaloAltoNetworksXDR.Endpoint": [
         {
             "domain": "", 
@@ -1005,8 +1082,8 @@ Creates an installation package. This is an asynchronous call that returns the d
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | A string representing the name of the installation package. | Required | 
-| platform | String, valid values are:<br>• windows <br>• linux<br>• macos <br>• android | Required | 
-| package_type | A string representing the type of package to create.<br>standalone - An installation for a new agent<br>upgrade - An upgrade of an agent from ESM | Required | 
+| platform | String, valid values are:<br/>• windows <br/>• linux<br/>• macos <br/>• android | Required | 
+| package_type | A string representing the type of package to create.<br/>standalone - An installation for a new agent<br/>upgrade - An upgrade of an agent from ESM | Required | 
 | agent_version | agent_version returned from xdr-get-distribution-versions. Not required for Android platfom | Required | 
 | description | Information about the package. | Optional | 
 
@@ -1054,8 +1131,8 @@ Gets the distribution URL for downloading the installation package.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| distribution_id | The ID of the installation package.<br>Copy the distribution_id from the "id" field on Endpoints > Agent Installation page. | Required | 
-| package_type | The installation package type. Valid<br>values are:<br>• upgrade<br>• sh - For Linux<br>• rpm - For Linux<br>• deb - For Linux<br>• pkg - For Mac<br>• x86 - For Windows<br>• x64 - For Windows | Required | 
+| distribution_id | The ID of the installation package.<br/>Copy the distribution_id from the "id" field on Endpoints > Agent Installation page. | Required | 
+| package_type | The installation package type. Valid<br/>values are:<br/>• upgrade<br/>• sh - For Linux<br/>• rpm - For Linux<br/>• deb - For Linux<br/>• pkg - For Mac<br/>• x86 - For Windows<br/>• x64 - For Windows | Required | 
 
 
 ##### Context Output
@@ -1133,8 +1210,8 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 | type | The audit log type. | Optional | 
 | sub_type | The audit log subtype. | Optional | 
 | result | Result type | Optional | 
-| timestamp_gte | Return logs for which the timestamp is after 'log_time_after'.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
-| timestamp_lte | Return logs for which the timestamp is before the 'log_time_after'.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
+| timestamp_gte | Return logs for which the timestamp is after 'log_time_after'.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date) | Optional | 
+| timestamp_lte | Return logs for which the timestamp is before the 'log_time_after'.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date) | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of audit logs to return per page. The default and maximum is 30. | Optional | 
 | sort_by | Specifies the field by which to sort the results. By default the sort is defined as creation-time and DESC. Can be "type", "sub_type", "result", or "timestamp". | Optional | 
@@ -1228,8 +1305,8 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 | type | The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status". | Optional | 
 | sub_type | The report subtype. | Optional | 
 | result | The result type. Can be "Success" or "Fail". If not passed, returns all event reports. | Optional | 
-| timestamp_gte | Return logs that their timestamp is greater than 'log_time_after'.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
-| timestamp_lte | Return logs for which the timestamp is before the 'timestamp_lte'.<br><br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
+| timestamp_gte | Return logs that their timestamp is greater than 'log_time_after'.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date) | Optional | 
+| timestamp_lte | Return logs for which the timestamp is before the 'timestamp_lte'.<br/><br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date) | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | The maximum number of reports to return. Default and maximum is 30. | Optional | 
 | sort_by | The field by which to sort results. Can be "type", "category", "trapsversion", "timestamp", or "domain"). | Optional | 
@@ -1301,11 +1378,5 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 | Audit | XDR Agent policy updated on aaaaa.compute.internal |  | ea303670c76e4ad09600c8b346f7c804 | aaaaa.compute.internal |  | 1579282965742.36 | Success | Policy Update | 1579280769141.43 | 7.0.0.1915 | Policy |
 
 
-## Additional Information
----
-
-## Known Limitations
----
-
 ## Troubleshooting
----
+ - In case you encounter ReadTimeoutError, we recommend increasing the HTTP request timeout by setting it in the **HTTP Timeout** integration parameter.

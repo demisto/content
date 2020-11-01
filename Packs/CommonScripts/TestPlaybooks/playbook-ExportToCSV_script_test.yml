@@ -1,0 +1,264 @@
+id: exporttocsv_script_test
+version: -1
+name: ExportToCSV script test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 544a3480-e5ce-4e9f-8eb9-28c3a5a152e1
+    type: start
+    task:
+      id: 544a3480-e5ce-4e9f-8eb9-28c3a5a152e1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 0894c5bd-8eab-4dbd-8a62-99af2b864f94
+    type: regular
+    task:
+      id: 0894c5bd-8eab-4dbd-8a62-99af2b864f94
+      version: -1
+      name: Test with input of simple list of values and headers
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      csvArray:
+        simple: '"rick",67,123'
+      fileName:
+        simple: test
+      headers:
+        simple: name,age,id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 1057d050-dfcb-40ec-8146-fc745f821603
+    type: regular
+    task:
+      id: 1057d050-dfcb-40ec-8146-fc745f821603
+      version: -1
+      name: Read file content
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      maxFileSize: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: f34e6966-69eb-4347-87a6-d04795352896
+    type: condition
+    task:
+      id: f34e6966-69eb-4347-87a6-d04795352896
+      version: -1
+      name: 'Compare file content to expected result '
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    scriptarguments:
+      left:
+        simple: ${FileData}
+      right:
+        simple: |-
+          name,age,id
+          rick,67,123
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 346f9d69-f8ca-4577-8cbf-2da032692ab0
+    type: regular
+    task:
+      id: 346f9d69-f8ca-4577-8cbf-2da032692ab0
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: a0c883ac-c6e5-4ca1-8408-7124a3b6a62d
+    type: regular
+    task:
+      id: a0c883ac-c6e5-4ca1-8408-7124a3b6a62d
+      version: -1
+      name: Test with list of JSON objects, missing value
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      csvArray:
+        simple: '[{"name":"rick", "age":57}, {"name":"morty","age":15, "status":"single"}]'
+      fileName:
+        simple: test
+      headers: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1185
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 9bd0e602-01dc-4cbc-890e-6e4419d073c8
+    type: regular
+    task:
+      id: 9bd0e602-01dc-4cbc-890e-6e4419d073c8
+      version: -1
+      name: Test with list of JSON objects, with headers specified
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      csvArray:
+        simple: '[{"name":"rick", "age":57}, {"name":"morty","age":15, "status":"single"}]'
+      fileName:
+        simple: test
+      headers:
+        simple: name,age
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 2cf268d1-3db9-4b42-83e5-549f51fabfe3
+    type: title
+    task:
+      id: 2cf268d1-3db9-4b42-83e5-549f51fabfe3
+      version: -1
+      name: Test with list of JSON objects (test execution, not validation)
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: fce83a06-61af-4f54-89a9-f826d87c0045
+    type: title
+    task:
+      id: fce83a06-61af-4f54-89a9-f826d87c0045
+      version: -1
+      name: Test and validate simpe list input
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,1047 @@
+<!DOCTYPE html>	
+
+<html class="hasSidebar hasPageActions hasBreadcrumb conceptual has-default-focus theme-light" lang="en-us" dir="ltr" data-css-variable-support="true" data-authenticated="false" data-auth-status-determined="false" data-target="docs" x-ms-format-detection="none">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="Azure AD Connect Health Agent installation" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-health-agent-install" />
+			<meta property="og:description" content="This is the Azure AD Connect Health page that describes the agent installation for AD FS and Sync." />
+		<meta property="og:image" content="https://docs.microsoft.com/en-us/media/logos/logo-ms-social.png" />
+		<meta property="og:image:alt" content="Microsoft Logo" />
+
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:site" content="@docsmsft" />
+
+
+	<meta name="author" content="zhiweiwangmsft" />
+<meta name="breadcrumb_path" content="/azure/bread/toc.json" />
+<meta name="depot_name" content="Azure.azure-documents" />
+<meta name="description" content="This is the Azure AD Connect Health page that describes the agent installation for AD FS and Sync." />
+<meta name="document_id" content="eb5cf254-9d8e-de7a-30e8-487b68205bc2" />
+<meta name="document_version_independent_id" content="28bc66e2-0de2-73e6-8cb8-243daab81628" />
+<meta name="documentationcenter" content="" />
+<meta name="editor" content="curtand" />
+<meta name="gitcommit" content="https://github.com/MicrosoftDocs/azure-docs-pr/blob/e8fdaecceaebd23985a8f287e5e488894786fbec/articles/active-directory/hybrid/how-to-connect-health-agent-install.md" />
+<meta name="learn_banner_products" content="azure" />
+<meta name="locale" content="en-us" />
+<meta name="manager" content="daveba" />
+<meta name="ms.assetid" content="1cc8ae90-607d-4925-9c30-6770a4bd1b4e" />
+<meta name="ms.author" content="billmath" />
+<meta name="ms.collection" content="M365-identity-device-management" />
+<meta name="ms.date" content="07/18/2017" />
+<meta name="ms.devlang" content="na" />
+<meta name="ms.service" content="active-directory" />
+<meta name="ms.subservice" content="hybrid" />
+<meta name="ms.tgt_pltfrm" content="na" />
+<meta name="ms.topic" content="conceptual" />
+<meta name="ms.workload" content="identity" />
+<meta name="original_content_git_url" content="https://github.com/MicrosoftDocs/azure-docs-pr/blob/live/articles/active-directory/hybrid/how-to-connect-health-agent-install.md" />
+<meta name="recommendations" content="true" />
+<meta name="search.ms_docsetname" content="azure-documents" />
+<meta name="search.ms_product" content="Azure" />
+<meta name="search.ms_sitename" content="Docs" />
+<meta name="services" content="active-directory" />
+<meta name="site_name" content="Docs" />
+<meta name="uhfHeaderId" content="azure" />
+<meta name="updated_at" content="2020-04-24 05:05 PM" />
+<meta name="page_type" content="conceptual" />
+<meta name="toc_rel" content="toc.json" />
+<meta name="pdf_url_template" content="https://docs.microsoft.com/pdfstore/en-us/Azure.azure-documents/{branchName}{pdfName}" />
+<meta name="word_count" content="3295" />
+
+
+	<meta name="scope" content="Azure" />
+<link href="https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-health-agent-install" rel="canonical">
+	<title>Azure AD Connect Health Agent installation | Microsoft Docs</title>
+
+		<link rel="stylesheet" href="/_themes/docs.theme/master/en-us/_themes/styles/c4e9f1e3.site-ltr.css ">
+
+	<link rel="stylesheet" href="/_themes/docs.theme/master/en-us/_themes/styles/f7aab81a.conceptual.css ">
+
+
+	<script>
+	var msDocs = {
+		data: {
+			timeOrigin: Date.now(),
+			contentLocale: 'en-us',
+			contentDir: 'ltr',
+			userLocale: 'en-us',
+			userDir: 'ltr',
+			pageTemplate: 'Conceptual',
+			brand: 'azure',
+			context: {
+
+			},
+			hasBinaryRating: true,
+			hasGithubIssues: true,
+			showFeedbackReport: false,
+			enableTutorialFeedback: false,
+			feedbackSystem: 'GitHub',
+			feedbackGitHubRepo: 'MicrosoftDocs/azure-docs',
+			feedbackProductUrl: 'https://feedback.azure.com/forums/169401-azure-active-directory',
+			contentGitUrl: 'https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/active-directory/hybrid/how-to-connect-health-agent-install.md',
+			extendBreadcrumb: false,
+			isEditDisplayable: true,
+			hideViewSource: false,
+			hasPageActions: true,
+			hasBookmark: true,
+			hasShare: true
+		},
+		functions:{}
+	};
+	</script>
+	<script nomodule src="/static/third-party/bluebird/3.5.0/bluebird.min.js" integrity="sha384-aD4BDeDGeLXLpPK4yKeqtZQa9dv4a/7mQ+4L5vwshIYH1Mc2BrXvHd32iHzYCQy5" crossorigin="anonymous"></script>
+	<script nomodule src="/static/third-party/fetch/3.0.0/fetch.umd.min.js" integrity="sha384-EQIXrC5K2+7X8nGgLkB995I0/6jfAvvyG1ieZ+WYGxgJHFMD/alsG9fSDWvzb5Y1" crossorigin="anonymous"></script>
+	<script nomodule src="/static/third-party/template/1.4.0/template.min.js" integrity="sha384-1zKzI6ldTVHMU7n0W2HpE/lhHI+UG4D9IIaxbj3kT2UhCWicdTuJkTtnKuu0CQzN" crossorigin="anonymous"></script>
+	<script nomodule src="/static/third-party/url/0.5.7/url.min.js" integrity="sha384-vn7xBMtpSTfzaTRWxj0kVq0UcsbBrTOgZ/M1ISHqe1V358elYva+lfiEC+T8jLPc" crossorigin="anonymous"></script>
+	<script nomodule src="/_themes/docs.theme/master/en-us/_themes/scripts/e482e449.index-polyfills.js"></script>
+		<script src="/_themes/docs.theme/master/en-us/_themes/scripts/2563b168.index-docs.js"></script>
+</head>
+
+<body lang="en-us" dir="ltr">
+<div class="header-holder has-default-focus">
+	<a href="#main" class="skip-to-main-link visually-hidden-until-focused is-fixed has-inner-focus focus-visible has-top-zero has-left-zero has-right-zero has-padding-medium has-text-centered has-body-background-medium" tabindex="1">Skip to main content</a>
+		<div id="headerAreaHolder" data-bi-name="header">
+<header role="banner" itemscope="itemscope" itemtype="http://schema.org/Organization">
+	<div class="nav-bar">
+		<a itemprop="url" href="https://www.microsoft.com" aria-label="Microsoft" class="nav-bar-button has-padding-left-medium-mobile">
+			<div class="nav-bar-logo has-background-image theme-display is-light" role="presentation" aria-hidden="true" itemprop="logo" itemscope="itemscope"></div>
+			<div class="nav-bar-logo has-background-image theme-display is-dark is-high-contrast" role="presentation" aria-hidden="true" itemprop="logo" itemscope="itemscope"></div>
+		</a>
+		<div class="nav-bar-item is-hidden-tablet">
+			<button class="nav-bar-button is-size-5 is-text has-body-background has-padding-none" title="Global navigation">
+				<span class="has-text-weight-semibold has-padding-left-small has-padding-bottom-extra-small"></span>
+				<div class="nav-bar-burger has-padding-none has-height-zero">
+					<span></span>
+					<span></span>
+					<span></span>
+					<span class="is-visually-hidden">Global navigation</span>
+				</div>
+			</button>
+		</div>
+		<nav class="nav-bar-nav" role="navigation" aria-label="Global">
+			<ul class="nav-bar-nav-list">
+				<li class="nav-bar-item is-category has-spacing">
+					<a class="nav-bar-button title has-hover-underline is-4" itemprop="url" href="/en-us/">
+						<span>Docs</span>
+					</a>
+				</li>
+				<li class="nav-bar-item">
+					<a class="nav-bar-button has-hover-underline" href="/en-us/">
+						<span>Documentation</span>
+					</a>
+				</li>
+				<li class="nav-bar-item">
+					<a class="nav-bar-button has-hover-underline" href="/en-us/learn/">
+						<span>Learn</span>
+					</a>
+				</li>
+				<li class="nav-bar-item">
+					<a class="nav-bar-button has-hover-underline" href="/en-us/samples/browse/">
+						<span>Code Samples</span>
+					</a>
+				</li>
+				<li class="dropdown nav-bar-item" hidden="">
+					<button aria-expanded="false" class="dropdown-trigger nav-bar-button has-hover-underline" aria-controls="ax-53">
+						<span>More</span>
+						<span class="nav-bar-button-chevron" aria-hidden="true">
+							<span class="docon docon-chevron-down-light expanded-indicator"></span>
+						</span>
+					</button>
+					<ul class="dropdown-menu" id="ax-53" aria-label="More">
+						<li class="nav-bar-item" hidden="">
+							<a class="nav-bar-button" href="/en-us/">Documentation</a>
+						</li>
+						<li class="nav-bar-item" hidden="">
+							<a class="nav-bar-button" href="/en-us/learn/">Learn</a>
+						</li>
+						<li class="nav-bar-item" hidden="">
+							<a class="nav-bar-button" href="/en-us/samples/browse/">Code Samples</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+		<span class="nav-bar-spacer is-hidden-mobile"></span>
+		<div class="nav-bar-item has-flex-grow-mobile has-flex-shrink-mobile">
+		</div>
+		<div class="nav-bar-item is-size-7 is-hidden-mobile">
+		</div>
+	</div>
+	<div class="nav-bar is-content is-hidden-mobile has-border-top">
+	</div>
+</header>		</div>
+		<div class="content-header uhf-container has-padding has-default-focus has-border-bottom-none" data-bi-name="content-header">
+			<nav class="has-padding-none has-padding-left-medium-tablet has-padding-right-medium-tablet has-padding-left-none-uhf-tablet has-padding-left-none-uhf-tablet has-padding-none-desktop has-flex-grow" data-bi-name="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList" role="navigation" aria-label="Breadcrumb">
+				<ul id="page-breadcrumbs" class="breadcrumbs">
+				</ul>
+			</nav>
+		<div class="content-header-controls">
+			<button type="button" class="contents-button button" data-bi-name="contents-expand" aria-haspopup="true">
+				<span class="icon"><span class="docon docon-menu" aria-hidden="true"></span></span>
+				<span>Contents</span>
+			</button>
+		</div>
+		<div class="content-header-controls exit-focus">
+			<button type="button" class="ap-collapse-behavior ap-expanded button" data-bi-name="ap-collapse" aria-controls="action-panel">
+				<span class="icon"><span class="docon docon-exit-mode" aria-hidden="true"></span></span>
+				<span>Exit focus mode</span>
+			</button>
+		</div>
+		<div class="has-padding-none-tablet has-padding-medium is-size-7 is-flex-touch has-flex-justify-content-space-between-touch has-flex-grow">
+			<ul class="is-hidden-mobile action-list has-flex-justify-content-start has-flex-justify-content-end-tablet is-flex is-flex-row has-flex-wrap has-flex-grow is-unstyled">
+				<li>
+					<button type="button" class="bookmark button is-text has-inner-focus is-small is-icon-only-touch" data-list-type="bookmarks" data-bi-name="bookmark" title="Bookmark this page">
+						<span class="icon" aria-hidden="true">
+							<span class="docon docon-single-bookmark"></span>
+						</span>
+						<span class="bookmark-status is-visually-hidden-touch is-hidden-portrait">Bookmark</span>
+					</button>
+				</li>
+					<li id="feedback-section-link">
+						<a href="#feedback" class="button is-text has-inner-focus is-small is-icon-only-touch" data-bi-name="comments" title="Send feedback about this page">
+							<span class="icon">
+								<span class="docon docon-comment-lines" aria-hidden="true"></span>
+							</span>
+							<span class="is-visually-hidden-touch is-hidden-portrait">Feedback</span>
+						</a>
+					</li>
+						<li id="contenteditbtn">
+							<a href="https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/active-directory/hybrid/how-to-connect-health-agent-install.md" class="button is-text has-inner-focus is-icon-only-touch is-small" title="Edit This Document" data-bi-name="edit" data-original_content_git_url="https://github.com/MicrosoftDocs/azure-docs-pr/blob/live/articles/active-directory/hybrid/how-to-connect-health-agent-install.md" data-original_content_git_url_template="{repo}/blob/{branch}/articles/active-directory/hybrid/how-to-connect-health-agent-install.md" data-pr_repo="" data-pr_branch="">
+							<span class="icon">
+								<span class="docon docon-edit-outline" aria-hidden="true"></span>
+							</span>
+							<span class="is-visually-hidden-touch is-hidden-portrait">Edit</span>
+						</a>
+					</li>
+				<li>
+<div class="sharing dropdown has-caret">
+	<button class="dropdown-trigger button is-text is-fullwidth has-flex-justify-content-start has-inner-focus is-small is-icon-only-touch" aria-controls="sharing-menu" aria-expanded="false" title="Share This Document" data-bi-name="share">
+		<span class="icon" aria-hidden="true">
+			<span class="docon docon-sharing"></span>
+		</span>
+		<span class="is-visually-hidden-touch is-hidden-portrait">Share</span>
+	</button>
+	<div class="dropdown-menu has-padding-small" id="sharing-menu">
+		<ul data-bi-name="share-links">
+			<li>
+				<a class="button is-text is-fullwidth has-flex-justify-content-start has-inner-focus is-small share-twitter" data-bi-name="twitter">
+					<span class="icon">
+						<span class="docon docon-brand-twitter has-text-primary" aria-hidden="true"></span>
+					</span>
+					<span>Twitter</span>
+				</a>
+			</li>
+			<li>
+				<a class="button is-text is-fullwidth has-flex-justify-content-start has-inner-focus is-small share-linkedin" data-bi-name="linkedin">
+					<span class="icon">
+						<span class="docon docon-brand-linkedin has-text-primary" aria-hidden="true"></span>
+					</span>
+					<span>LinkedIn</span>
+				</a>
+			</li>
+			<li>
+				<a class="button is-text is-fullwidth has-flex-justify-content-start has-inner-focus is-small share-facebook" data-bi-name="facebook">
+					<span class="icon">
+						<span class="docon docon-brand-facebook has-text-primary" aria-hidden="true"></span>
+					</span>
+					<span>Facebook</span>
+				</a>
+			</li>
+			<li>
+				<a class="button is-text is-fullwidth has-flex-justify-content-start has-inner-focus is-small share-email" data-bi-name="email">
+					<span class="icon">
+						<span class="docon docon-mail-message-fill has-text-primary" aria-hidden="true"></span>
+					</span>
+					<span>Email</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>				</li>
+			</ul>
+			<button type="button" class="has-border contents-button button is-small is-text is-hidden-tablet has-inner-focus" aria-label="Contents" data-bi-name="contents-expand">
+				<span class="icon">
+					<span class="docon docon-editor-list-bullet" aria-hidden="true"></span>
+				</span>
+				<span>Table of contents</span>
+			</button>
+			<div class="is-invisible"></div>
+			<div class="is-hidden-tablet level-item is-flexible level-right">
+				<button type="button" class="page-actions-button button is-small is-text is-hidden-tablet has-inner-focus has-border is-full-height  has-margin-left-small" aria-label="Page Actions" data-bi-name="pageactions">
+					<span class="icon">
+						<span class="docon docon-more-vertical" aria-hidden="true"></span>
+					</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="disclaimer-holder" class="has-overflow-hidden has-default-focus"></div>
+	</div>
+
+	<div class="mainContainer  uhf-container has-top-padding  has-default-focus" data-bi-name="body">
+
+		<div class="columns has-large-gaps is-gapless-mobile ">
+
+			<div id="left-container" class="left-container is-hidden-mobile column is-one-third-tablet is-one-quarter-desktop">
+				<nav id="affixed-left-container" class="is-fixed is-flex is-flex-column" role="navigation" aria-label="Primary"></nav>
+			</div>
+
+			<section class="primary-holder column is-two-thirds-tablet is-three-quarters-desktop">
+				<div class="columns is-gapless-mobile has-large-gaps ">
+
+
+				<div id="main-column" class="column  is-full is-four-fifths-desktop ">
+
+					<main id="main" role="main" class="content " data-bi-name="content" lang="en-us" dir="ltr">
+
+
+
+						<h1 id="azure-ad-connect-health-agent-installation">Azure AD Connect Health Agent Installation</h1>
+
+						<ul class="metadata page-metadata" data-bi-name="page info" lang="en-us" dir="ltr">
+							<li>
+								<time class="is-invisible" data-article-date aria-label="Article review date" datetime="2017-07-18T00:00:00.000Z" data-article-date-source="ms.date">07/18/2017</time>
+							</li>
+								<li class="readingTime">16 minutes to read</li>
+									<li class="contributors-holder">
+										<a href="https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/active-directory/hybrid/how-to-connect-health-agent-install.md" title="17 Contributors" aria-label="17 Contributors">
+											<ul class="contributors" data-bi-name="contributors" aria-hidden="true">
+														<li><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNMsAcAAQUAoVnxsV8AAAAASUVORK5CYII=" data-src="https://github.com/zhiweiwangmsft.png?size=32" role="presentation"/></li>
+														<li><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNMsAcAAQUAoVnxsV8AAAAASUVORK5CYII=" data-src="https://github.com/amanmcse.png?size=32" role="presentation"/></li>
+														<li><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNMsAcAAQUAoVnxsV8AAAAASUVORK5CYII=" data-src="https://github.com/TimShererWithAquent.png?size=32" role="presentation"/></li>
+														<li><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNMsAcAAQUAoVnxsV8AAAAASUVORK5CYII=" data-src="https://github.com/curtand.png?size=32" role="presentation"/></li>
+														<li><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNMsAcAAQUAoVnxsV8AAAAASUVORK5CYII=" data-src="https://github.com/shashishailaj.png?size=32" role="presentation"/></li>
+												<li><span class="is-size-8 has-text-subtle">+12</span></li>
+											</ul>
+										</a>
+									</li>
+						</ul>
+
+						<nav id="center-doc-outline" class="doc-outline is-hidden-desktop" data-bi-name="intopic toc" role="navigation" aria-label="Article Outline">
+							<h3>In this article</h3>
+						</nav>
+
+						<!-- <content> -->
+							<p>This document walks you through installing and configuring the Azure AD Connect Health Agents. You can download the agents from <a href="how-to-connect-install-roadmap#download-and-install-azure-ad-connect-health-agent" data-linktype="relative-path">here</a>.</p>
+<h2 id="requirements">Requirements</h2>
+<p>The following table is a list of requirements for using Azure AD Connect Health.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Azure AD Premium</td>
+<td>Azure AD Connect Health is an Azure AD Premium feature and requires Azure AD Premium. <br/><br/>For more information, see <a href="../fundamentals/active-directory-get-started-premium" data-linktype="relative-path">Getting started with Azure AD Premium</a> <br/>To start a free 30-day trial, see <a href="https://azure.microsoft.com/trial/get-started-active-directory/" data-linktype="external">Start a trial.</a></td>
+</tr>
+<tr>
+<td>You must be a global administrator of your Azure AD to get started with Azure AD Connect Health</td>
+<td>By default, only the global administrators can install and configure the health agents to get started, access the portal, and perform any operations within Azure AD Connect Health. For more information, see <a href="../fundamentals/active-directory-administer" data-linktype="relative-path">Administering your Azure AD directory</a>. <br/><br/> Using Role Based Access Control you can allow access to Azure AD Connect Health to other users in your organization. For more information, see <a href="how-to-connect-health-operations#manage-access-with-role-based-access-control" data-linktype="relative-path">Role Based Access Control for Azure AD Connect Health.</a> <br/><br/><strong>Important:</strong> The account used when installing the agents must be a work or school account. It cannot be a Microsoft account. For more information, see <a href="../fundamentals/sign-up-organization" data-linktype="relative-path">Sign up for Azure as an organization</a></td>
+</tr>
+<tr>
+<td>Azure AD Connect Health Agent is installed on each targeted server</td>
+<td>Azure AD Connect Health requires the Health Agents to be installed and configured on targeted servers to receive the data and provide the Monitoring and Analytics capabilities. <br/><br/>For example, to get data from your AD FS infrastructure, the agent must be installed on the AD FS and Web Application Proxy servers. Similarly, to get data on your on-premises AD DS infrastructure, the agent must be installed on the domain controllers. <br/><br/></td>
+</tr>
+<tr>
+<td>Outbound connectivity to the Azure service endpoints</td>
+<td>During installation and runtime, the agent requires connectivity to Azure AD Connect Health service endpoints. If outbound connectivity is blocked using Firewalls, ensure that the following endpoints are added to the allowed list. See <a href="how-to-connect-health-agent-install#outbound-connectivity-to-the-azure-service-endpoints" data-linktype="relative-path">outbound connectivity endpoints</a></td>
+</tr>
+<tr>
+<td>Outbound connectivity based on IP Addresses</td>
+<td>For IP address based filtering on firewalls, refer to the <a href="https://www.microsoft.com/download/details.aspx?id=41653" data-linktype="external">Azure IP Ranges</a>.</td>
+</tr>
+<tr>
+<td>TLS Inspection for outbound traffic is filtered or disabled</td>
+<td>The agent registration step or data upload operations may fail if there is TLS inspection or termination for outbound traffic at the network layer. Read more about <a href="https://technet.microsoft.com/library/ee796230.aspx" data-linktype="external">how to setup TLS inspection</a></td>
+</tr>
+<tr>
+<td>Firewall ports on the server running the agent</td>
+<td>The agent requires the following firewall ports to be open in order for the agent to communicate with the Azure AD Health service endpoints.<br/><br/><li>TCP port 443</li><li>TCP port 5671</li> <br/>Note that port 5671 is no longer required for the latest version of agent. Upgrade to the latest version so only port 443 is required. Read more about <a href="https://technet.microsoft.com/library/ms345310(v=sql.100).aspx" data-linktype="external">enable firewall ports</a></td>
+</tr>
+<tr>
+<td>Allow the following websites if IE Enhanced Security is enabled</td>
+<td>If IE Enhanced Security is enabled, then the following websites must be allowed on the server that is going to have the agent installed.<br/><br/><li>https://login.microsoftonline.com</li><li>https://secure.aadcdn.microsoftonline-p.com</li><li>https://login.windows.net</li><li>https://aadcdn.msftauth.net</li><li>The federation server for your organization trusted by Azure Active Directory. For example: https://sts.contoso.com</li> Read more about <a href="https://support.microsoft.com/help/815141/internet-explorer-enhanced-security-configuration-changes-the-browsing" data-linktype="external">how to configure IE</a>. In case you have a proxy within your network , please see note below.</td>
+</tr>
+<tr>
+<td>Ensure PowerShell v4.0 or newer is installed</td>
+<td><li>Windows Server 2008 R2 ships with PowerShell v2.0, which is insufficient for the agent. Update PowerShell as explained below under <a href="#agent-installation-on-windows-server-2008-r2-servers" data-linktype="self-bookmark">Agent installation on Windows Server 2008 R2 Servers</a>.</li><li>Windows Server 2012 ships with PowerShell v3.0, which is insufficient for the agent.  <a href="https://www.microsoft.com/download/details.aspx?id=40855" data-linktype="external">Update</a> the Windows Management Framework.</li><li>Windows Server 2012 R2 and later ship with a sufficiently recent version of PowerShell.</li></td>
+</tr>
+<tr>
+<td>Disable FIPS</td>
+<td>FIPS is not supported by Azure AD Connect Health agents.</td>
+</tr>
+</tbody>
+</table>
+<div class="NOTE">
+<p>Note</p>
+<p>If you have a highly locked-down and extremely restricted environment, you would require to whitelist the URLs mentioned in the Service endpoint lists below in addition to the ones listed in the Allowed IE enhanced Security configuration above.</p>
+</div>
+<h3 id="outbound-connectivity-to-the-azure-service-endpoints">Outbound connectivity to the Azure service endpoints</h3>
+<p>During installation and runtime, the agent requires connectivity to Azure AD Connect Health service endpoints. If outbound connectivity is blocked using Firewalls, make sure that the following URLs are not blocked by default. Do not disable security monitoring or inspection of these URLs, but allow them as you would other internet traffic. They permit communication with Azure AD Connect Health service endpoints. Learn how to <a href="/en-us/azure/active-directory/hybrid/how-to-connect-health-agent-install#test-connectivity-to-azure-ad-connect-health-service" data-linktype="absolute-path">check outbound connectivity with Test-AzureADConnectHealthConnectivity</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Domain Environment</th>
+<th>Required Azure service endpoints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>General Public</td>
+<td><li>*.blob.core.windows.net </li><li>*.aadconnecthealth.azure.com </li><li>*.servicebus.windows.net - Port: 5671 </li><li>*.adhybridhealth.azure.com/</li><li>https://management.azure.com </li><li>https://policykeyservice.dc.ad.msft.net/</li><li>https://login.windows.net</li><li>https://login.microsoftonline.com</li><li>https://secure.aadcdn.microsoftonline-p.com </li><li>https://www.office.com *this endpoint is only used for discovery purposes during registration.</li></td>
+</tr>
+<tr>
+<td>Azure Germany</td>
+<td><li>*.blob.core.cloudapi.de </li><li>*.servicebus.cloudapi.de </li> <li>*.aadconnecthealth.microsoftazure.de </li><li>https://management.microsoftazure.de </li><li>https://policykeyservice.aadcdi.microsoftazure.de </li><li>https://login.microsoftonline.de </li><li>https://secure.aadcdn.microsoftonline-p.de </li><li>https://www.office.de *this endpoint is only used for discovery purposes during registration.</li></td>
+</tr>
+<tr>
+<td>Azure Government</td>
+<td><li>*.blob.core.usgovcloudapi.net </li> <li>*.servicebus.usgovcloudapi.net </li> <li>*.aadconnecthealth.microsoftazure.us </li> <li>https://management.usgovcloudapi.net </li><li>https://policykeyservice.aadcdi.azure.us </li><li>https://login.microsoftonline.us </li><li>https://secure.aadcdn.microsoftonline-p.com </li><li>https://www.office.com *this endpoint is only used for discovery purposes during registration.</li></td>
+</tr>
+</tbody>
+</table>
+<h2 id="download-and-install-the-azure-ad-connect-health-agent">Download and install the Azure AD Connect Health Agent</h2>
+<ul>
+<li>Make sure that you <a href="how-to-connect-health-agent-install#requirements" data-linktype="relative-path">satisfy the requirements</a> for Azure AD Connect Health.</li>
+<li>Get started using Azure AD Connect Health for AD FS
+<ul>
+<li><a href="https://go.microsoft.com/fwlink/?LinkID=518973" data-linktype="external">Download Azure AD Connect Health Agent for AD FS.</a></li>
+<li><a href="#installing-the-azure-ad-connect-health-agent-for-ad-fs" data-linktype="self-bookmark">See the installation instructions</a>.</li>
+</ul>
+</li>
+<li>Get started using Azure AD Connect Health for sync
+<ul>
+<li><a href="https://go.microsoft.com/fwlink/?linkid=615771" data-linktype="external">Download and install the latest version of Azure AD Connect</a>. The Health Agent for sync will be installed as part of the Azure AD Connect installation (version 1.0.9125.0 or higher).</li>
+</ul>
+</li>
+<li>Get started using Azure AD Connect Health for AD DS
+<ul>
+<li><a href="https://go.microsoft.com/fwlink/?LinkID=820540" data-linktype="external">Download Azure AD Connect Health Agent for AD DS</a>.</li>
+<li><a href="#installing-the-azure-ad-connect-health-agent-for-ad-ds" data-linktype="self-bookmark">See the installation instructions</a>.</li>
+</ul>
+</li>
+</ul>
+<h2 id="installing-the-azure-ad-connect-health-agent-for-ad-fs">Installing the Azure AD Connect Health Agent for AD FS</h2>
+<div class="NOTE">
+<p>Note</p>
+<p>AD FS server should be different from your Sync server. Do not install AD FS agent to your Sync server.</p>
+</div>
+<p>Before installation, make sure your AD FS server host name is unique and not present in the AD FS service.
+To start the agent installation, double-click the .exe file that you downloaded. On the first screen, click Install.</p>
+<p><img src="media/how-to-connect-health-agent-install/install1.png" alt="Verify Azure AD Connect Health" data-linktype="relative-path"/></p>
+<p>Once the installation is finished, click Configure Now.</p>
+<p><img src="media/how-to-connect-health-agent-install/install2.png" alt="Verify Azure AD Connect Health" data-linktype="relative-path"/></p>
+<p>This launches a PowerShell window to initiate the agent registration process. When prompted, sign in with an Azure AD account that has access to perform agent registration. By default the Global Admin account has access.</p>
+<p><img src="media/how-to-connect-health-agent-install/install3.png" alt="Verify Azure AD Connect Health" data-linktype="relative-path"/></p>
+<p>After signing in, PowerShell will continue. Once it completes, you can close PowerShell and the configuration is complete.</p>
+<p>At this point, the agent services should be started automatically allowing the agent upload the required data to the cloud service in a secure manner.</p>
+<p>If you have not met all the pre-requisites outlined in the previous sections, warnings appear in the PowerShell window. Be sure to complete the <a href="how-to-connect-health-agent-install#requirements" data-linktype="relative-path">requirements</a> before installing the agent. The following screenshot is an example of these errors.</p>
+<p><img src="media/how-to-connect-health-agent-install/install4.png" alt="Verify Azure AD Connect Health" data-linktype="relative-path"/></p>
+<p>To verify the agent has been installed, look for the following services on the server. If you completed the configuration, they should already be running. Otherwise, they are stopped until the configuration is complete.</p>
+<ul>
+<li>Azure AD Connect Health AD FS Diagnostics Service</li>
+<li>Azure AD Connect Health AD FS Insights Service</li>
+<li>Azure AD Connect Health AD FS Monitoring Service</li>
+</ul>
+<p><img src="media/how-to-connect-health-agent-install/install5.png" alt="Verify Azure AD Connect Health" data-linktype="relative-path"/></p>
+<h3 id="agent-installation-on-windows-server-2008-r2-servers">Agent installation on Windows Server 2008 R2 Servers</h3>
+<p>Steps for Windows Server 2008 R2 servers:</p>
+<ol>
+<li>Ensure that the server is running at Service Pack 1 or higher.</li>
+<li>Turn off IE ESC for agent installation:</li>
+<li>Install Windows PowerShell 4.0 on each of the servers ahead of installing the AD Health agent. To install Windows PowerShell 4.0:
+<ul>
+<li>Install <a href="https://www.microsoft.com/download/details.aspx?id=40779" data-linktype="external">Microsoft .NET Framework 4.5</a> using the following link to download the offline installer.</li>
+<li>Install PowerShell ISE (From Windows Features)</li>
+<li>Install the <a href="https://www.microsoft.com/download/details.aspx?id=40855" data-linktype="external">Windows Management Framework 4.0.</a></li>
+<li>Install Internet Explorer version 10 or above on the server. (Required by the Health Service to authenticate, using your Azure Admin credentials.)</li>
+</ul>
+</li>
+<li>For more information on installing Windows PowerShell 4.0 on Windows Server 2008 R2, see the wiki article <a href="https://social.technet.microsoft.com/wiki/contents/articles/20623.step-by-step-upgrading-the-powershell-version-4-on-2008-r2.aspx" data-linktype="external">here</a>.</li>
+</ol>
+<h3 id="enable-auditing-for-ad-fs">Enable Auditing for AD FS</h3>
+<div class="NOTE">
+<p>Note</p>
+<p>This section only applies to AD FS servers. You do not have to follow these steps on the Web Application Proxy Servers.</p>
+</div>
+<p>In order for the Usage Analytics feature to gather and analyze data, the Azure AD Connect Health agent needs the information in the AD FS Audit Logs. These logs are not enabled by default. Use the following procedures to enable AD FS auditing and to locate the AD FS audit logs, on your AD FS servers.</p>
+<h4 id="to-enable-auditing-for-ad-fs-on-windows-server-2008-r2">To enable auditing for AD FS on Windows Server 2008 R2</h4>
+<ol>
+<li>Click <strong>Start</strong>, point to <strong>Programs</strong>, point to <strong>Administrative Tools</strong>, and then click <strong>Local Security Policy</strong>.</li>
+<li>Navigate to the <strong>Security Settings\Local Policies\User Rights Assignment</strong> folder, and then double-click <strong>Generate security audits</strong>.</li>
+<li>On the <strong>Local Security Setting</strong> tab, verify that the AD FS 2.0 service account is listed. If it is not present, click <strong>Add User or Group</strong> and add it to the list, and then click <strong>OK</strong>.</li>
+<li>To enable auditing, open a Command Prompt with elevated privileges and run the following command: <code>auditpol.exe /set /subcategory:{0CCE9222-69AE-11D9-BED3-505054503030} /failure:enable /success:enable</code></li>
+<li>Close <strong>Local Security Policy</strong>.
+<br/>   -- <strong>The following steps are only required for primary AD FS servers.</strong> -- <br/></li>
+<li>Open the <strong>AD FS Management</strong> snap-in. To open the AD FS Management snap-in, click <strong>Start</strong>, point to <strong>Programs</strong>, point to <strong>Administrative Tools</strong>, and then click <strong>AD FS 2.0 Management</strong>.</li>
+<li>In the <strong>Actions</strong> pane, click <strong>Edit Federation Service Properties</strong>.</li>
+<li>In the <strong>Federation Service Properties</strong> dialog box, click the <strong>Events</strong> tab.</li>
+<li>Select the <strong>Success audits</strong> and <strong>Failure audits</strong> check boxes.</li>
+<li>Click <strong>OK</strong>.</li>
+</ol>
+<h4 id="to-enable-auditing-for-ad-fs-on-windows-server-2012-r2">To enable auditing for AD FS on Windows Server 2012 R2</h4>
+<ol>
+<li>Open <strong>Local Security Policy</strong> by opening <strong>Server Manager</strong> on the Start screen, or Server Manager in the taskbar on the desktop, then click <strong>Tools/Local Security Policy</strong>.</li>
+<li>Navigate to the <strong>Security Settings\Local Policies\User Rights Assignment</strong> folder, and then double-click <strong>Generate security audits</strong>.</li>
+<li>On the <strong>Local Security Setting</strong> tab, verify that the AD FS service account is listed. If it is not present, click <strong>Add User or Group</strong> and add it to the list, and then click <strong>OK</strong>.</li>
+<li>To enable auditing, open a command prompt with elevated privileges and run the following command: <code>auditpol.exe /set /subcategory:{0CCE9222-69AE-11D9-BED3-505054503030} /failure:enable /success:enable</code></li>
+<li>Close <strong>Local Security Policy</strong>.
+<br/>   -- <strong>The following steps are only required for primary AD FS servers.</strong> -- <br/></li>
+<li>Open the <strong>AD FS Management</strong> snap-in (in Server Manager, click Tools, and then select AD FS Management).</li>
+<li>In the <strong>Actions</strong> pane, click <strong>Edit Federation Service Properties</strong>.</li>
+<li>In the <strong>Federation Service Properties</strong> dialog box, click the <strong>Events</strong> tab.</li>
+<li>Select the <strong>Success audits and Failure audits</strong> check boxes and then click <strong>OK</strong>.</li>
+</ol>
+<h4 id="to-enable-auditing-for-ad-fs-on-windows-server-2016">To enable auditing for AD FS on Windows Server 2016</h4>
+<ol>
+<li>Open <strong>Local Security Policy</strong> by opening <strong>Server Manager</strong> on the Start screen, or Server Manager in the taskbar on the desktop, then click <strong>Tools/Local Security Policy</strong>.</li>
+<li>Navigate to the <strong>Security Settings\Local Policies\User Rights Assignment</strong> folder, and then double-click <strong>Generate security audits</strong>.</li>
+<li>On the <strong>Local Security Setting</strong> tab, verify that the AD FS service account is listed. If it is not present, click <strong>Add User or Group</strong> and add the AD FS service account to the list, and then click <strong>OK</strong>.</li>
+<li>To enable auditing, open a command prompt with elevated privileges and run the following command: <code>auditpol.exe /set /subcategory:{0CCE9222-69AE-11D9-BED3-505054503030} /failure:enable /success:enable</code></li>
+<li>Close <strong>Local Security Policy</strong>.
+<br/>   -- <strong>The following steps are only required for primary AD FS servers.</strong> -- <br/></li>
+<li>Open the <strong>AD FS Management</strong> snap-in (in Server Manager, click Tools, and then select AD FS Management).</li>
+<li>In the <strong>Actions</strong> pane, click <strong>Edit Federation Service Properties</strong>.</li>
+<li>In the <strong>Federation Service Properties</strong> dialog box, click the <strong>Events</strong> tab.</li>
+<li>Select the <strong>Success audits and Failure audits</strong> check boxes and then click <strong>OK</strong>. This should be enabled by default.</li>
+<li>Open a PowerShell window and run the following command: <code>Set-AdfsProperties -AuditLevel Verbose</code>.</li>
+</ol>
+<p>Note that &quot;basic&quot; audit level is enabled by default. Read more about the <a href="/en-us/windows-server/identity/ad-fs/technical-reference/auditing-enhancements-to-ad-fs-in-windows-server" data-linktype="absolute-path">AD FS Audit enhancement in Windows Server 2016</a></p>
+<h4 id="to-locate-the-ad-fs-audit-logs">To locate the AD FS audit logs</h4>
+<ol>
+<li><p>Open <strong>Event Viewer</strong>.</p>
+</li>
+<li><p>Go to Windows Logs and select <strong>Security</strong>.</p>
+</li>
+<li><p>On the right, click <strong>Filter Current Logs</strong>.</p>
+</li>
+<li><p>Under Event Source, select <strong>AD FS Auditing</strong>.</p>
+<p>And quick <a href="reference-connect-health-faq#operations-questions" data-linktype="relative-path">FAQ note</a> for Audit logs.</p>
+</li>
+</ol>
+<p><img src="media/how-to-connect-health-agent-install/adfsaudit.png" alt="AD FS audit logs" data-linktype="relative-path"/></p>
+<div class="WARNING">
+<p>Warning</p>
+<p>A group policy can disable AD FS auditing. If AD FS auditing is disabled, usage analytics about login activities are not available. Ensure that you don’t have a group policy that disables AD FS auditing.&gt;</p>
+</div>
+<h2 id="installing-the-azure-ad-connect-health-agent-for-sync">Installing the Azure AD Connect Health agent for sync</h2>
+<p>The Azure AD Connect Health agent for sync is installed automatically in the latest build of Azure AD Connect. To use Azure AD Connect for sync, you need to download the latest version of Azure AD Connect and install it. You can download the latest version <a href="https://www.microsoft.com/download/details.aspx?id=47594" data-linktype="external">here</a>.</p>
+<p>To verify the agent has been installed, look for the following services on the server. If you completed the configuration, they should already be running. Otherwise, they are stopped until the configuration is complete.</p>
+<ul>
+<li>Azure AD Connect Health Sync Insights Service</li>
+<li>Azure AD Connect Health Sync Monitoring Service</li>
+</ul>
+<p><img src="media/how-to-connect-health-agent-install/services.png" alt="Verify Azure AD Connect Health for Sync" data-linktype="relative-path"/></p>
+<div class="NOTE">
+<p>Note</p>
+<p>Remember that using Azure AD Connect Health requires Azure AD Premium. If you do not have Azure AD Premium, you are unable to complete the configuration in the Azure portal. For more information, see the <a href="how-to-connect-health-agent-install#requirements" data-linktype="relative-path">requirements page</a>.</p>
+</div>
+<h2 id="manual-azure-ad-connect-health-for-sync-registration">Manual Azure AD Connect Health for Sync registration</h2>
+<p>If the Azure AD Connect Health for Sync agent registration fails after successfully installing Azure AD Connect, you can use the following PowerShell command to manually register the agent.</p>
+<div class="IMPORTANT">
+<p>Important</p>
+<p>Using this PowerShell command is only required if the agent registration fails after installing Azure AD Connect.</p>
+</div>
+<p>The following PowerShell command is required ONLY when the health agent registration fails even after a successful installation and configuration of Azure AD Connect. The Azure AD Connect Health services will start after the agent has been successfully registered.</p>
+<p>You can manually register the Azure AD Connect Health agent for sync using the following PowerShell command:</p>
+<p><code>Register-AzureADConnectHealthSyncAgent -AttributeFiltering $false -StagingMode $false</code></p>
+<p>The command takes following parameters:</p>
+<ul>
+<li>AttributeFiltering: $true (default) - if Azure AD Connect is not syncing the default attribute set and has been customized to use a filtered attribute set. $false otherwise.</li>
+<li>StagingMode: $false (default) - if the Azure AD Connect server is NOT in staging mode, $true if the server is configured to be in staging mode.</li>
+</ul>
+<p>When prompted for authentication you should use the same global admin account (such as admin@domain.onmicrosoft.com) that was used for configuring Azure AD Connect.</p>
+<h2 id="installing-the-azure-ad-connect-health-agent-for-ad-ds">Installing the Azure AD Connect Health Agent for AD DS</h2>
+<p>To start the agent installation, double-click the .exe file that you downloaded. On the first screen, click Install.</p>
+<p><img src="media/how-to-connect-health-agent-install/aadconnect-health-adds-agent-install1.png" alt="Verify Azure AD Connect Health" data-linktype="relative-path"/></p>
+<p>Once the installation is finished, click Configure Now.</p>
+<p><img src="media/how-to-connect-health-agent-install/aadconnect-health-adds-agent-install2.png" alt="Verify Azure AD Connect Health" data-linktype="relative-path"/></p>
+<p>A command prompt is launched, followed by some PowerShell that executes Register-AzureADConnectHealthADDSAgent. When prompted to sign in to Azure, go ahead and sign in.</p>
+<p><img src="media/how-to-connect-health-agent-install/aadconnect-health-adds-agent-install3.png" alt="Verify Azure AD Connect Health" data-linktype="relative-path"/></p>
+<p>After signing in, PowerShell will continue. Once it completes, you can close PowerShell and the configuration is complete.</p>
+<p>At this point, the services should be started automatically allowing the agent to monitor and gather data. If you have not met all the pre-requisites outlined in the previous sections, warnings appear in the PowerShell window. Be sure to complete the <a href="how-to-connect-health-agent-install#requirements" data-linktype="relative-path">requirements</a> before installing the agent. The following screenshot is an example of these errors.</p>
+<p><img src="media/how-to-connect-health-agent-install/aadconnect-health-adds-agent-install4.png" alt="Verify Azure AD Connect Health for AD DS" data-linktype="relative-path"/></p>
+<p>To verify the agent has been installed, look for the following services on the domain controller.</p>
+<ul>
+<li>Azure AD Connect Health AD DS Insights Service</li>
+<li>Azure AD Connect Health AD DS Monitoring Service</li>
+</ul>
+<p>If you completed the configuration, these services should already be running. Otherwise, they are stopped until the configuration is complete.</p>
+<p><img src="media/how-to-connect-health-agent-install/aadconnect-health-adds-agent-install5.png" alt="Verify Azure AD Connect Health" data-linktype="relative-path"/></p>
+<h3 id="quick-agent-installation-in-multiple-servers">Quick agent installation in multiple servers</h3>
+<ol>
+<li>Create a user account in Azure AD with a password.</li>
+<li>Assign the <strong>Owner</strong> role for this local AAD account in Azure AD Connect Health via the portal. Follow the steps <a href="how-to-connect-health-operations#manage-access-with-role-based-access-control" data-linktype="relative-path">here</a>. Assign the role to all service instances.</li>
+<li>Download the .exe MSI file in local domain controller for installation.</li>
+<li>Run the following script to registration. Replace the parameters with the new user account created and its password.</li>
+</ol>
+<pre><code class="lang-powershell">AdHealthAddsAgentSetup.exe /quiet
+Start-Sleep 30
+$userName = &quot;NEWUSER@DOMAIN&quot;
+$secpasswd = ConvertTo-SecureString &quot;PASSWORD&quot; -AsPlainText -Force
+$myCreds = New-Object System.Management.Automation.PSCredential ($userName, $secpasswd)
+import-module &quot;C:\Program Files\Azure Ad Connect Health Adds Agent\PowerShell\AdHealthAdds&quot;
+ 
+Register-AzureADConnectHealthADDSAgent -Credential $myCreds
+
+</code></pre>
+<ol>
+<li>Once you are done, you can remove access for the local account by doing one or more of the following:
+<ul>
+<li>Remove the role assignment for the local account for AAD Connect Health</li>
+<li>Rotate the password for the local account.</li>
+<li>Disable the AAD local account</li>
+<li>Delete the AAD local account</li>
+</ul>
+</li>
+</ol>
+<h2 id="agent-registration-using-powershell">Agent Registration using PowerShell</h2>
+<p>After installing the appropriate agent setup.exe, you can perform the agent registration step using the following PowerShell commands depending on the role. Open a PowerShell Window and execute the appropriate command:</p>
+<pre><code class="lang-powershell">    Register-AzureADConnectHealthADFSAgent
+    Register-AzureADConnectHealthADDSAgent
+    Register-AzureADConnectHealthSyncAgent
+
+</code></pre>
+<p>These commands accept &quot;Credential&quot; as a parameter to complete the registration in a non-interactive manner or on a Server-Core machine.</p>
+<ul>
+<li>The Credential can be captured in a PowerShell variable that is passed as a parameter.</li>
+<li>You can provide any Azure AD Identity that has access to register the agents and does NOT have MFA enabled.</li>
+<li>By default Global Admins have access to perform agent registration. You can also allow other less privileged identities to perform this step. Read more about <a href="how-to-connect-health-operations#manage-access-with-role-based-access-control" data-linktype="relative-path">Role Based Access Control</a>.</li>
+</ul>
+<pre><code class="lang-powershell">    $cred = Get-Credential
+    Register-AzureADConnectHealthADFSAgent -Credential $cred
+
+</code></pre>
+<h2 id="configure-azure-ad-connect-health-agents-to-use-http-proxy">Configure Azure AD Connect Health Agents to use HTTP Proxy</h2>
+<p>You can configure Azure AD Connect Health Agents to work with an HTTP Proxy.</p>
+<div class="NOTE">
+<p>Note</p>
+<ul>
+<li>Using “Netsh WinHttp set ProxyServerAddress” is not supported as the agent uses System.Net to make web requests instead of Microsoft Windows HTTP Services.</li>
+<li>The configured Http Proxy address is used to pass-through encrypted Https messages.</li>
+<li>Authenticated proxies (using HTTPBasic) are not supported.</li>
+</ul>
+</div>
+<h3 id="change-health-agent-proxy-configuration">Change Health Agent Proxy Configuration</h3>
+<p>You have the following options to configure Azure AD Connect Health Agent to use an HTTP Proxy.</p>
+<div class="NOTE">
+<p>Note</p>
+<p>All Azure AD Connect Health Agent services must be restarted, in order for the proxy settings to be updated. Run the following command:<br/>
+Restart-Service AzureADConnectHealth*</p>
+</div>
+<h4 id="import-existing-proxy-settings">Import existing proxy Settings</h4>
+<h5 id="import-from-internet-explorer">Import from Internet Explorer</h5>
+<p>Internet Explorer HTTP proxy settings can be imported, to be used by the Azure AD Connect Health Agents. On each of the servers running the Health agent, execute the following PowerShell command:</p>
+<pre><code>Set-AzureAdConnectHealthProxySettings -ImportFromInternetSettings
+</code></pre>
+<h5 id="import-from-winhttp">Import from WinHTTP</h5>
+<p>WinHTTP proxy settings can be imported, to be used by the Azure AD Connect Health Agents. On each of the servers running the Health agent, execute the following PowerShell command:</p>
+<pre><code>Set-AzureAdConnectHealthProxySettings -ImportFromWinHttp
+</code></pre>
+<h4 id="specify-proxy-addresses-manually">Specify Proxy addresses manually</h4>
+<p>You can manually specify a proxy server on each of the servers running the Health Agent, by executing the following PowerShell command:</p>
+<pre><code>Set-AzureAdConnectHealthProxySettings -HttpsProxyAddress address:port
+</code></pre>
+<p>Example: <em>Set-AzureAdConnectHealthProxySettings -HttpsProxyAddress myproxyserver: 443</em></p>
+<ul>
+<li>&quot;address&quot; can be a DNS resolvable server name or an IPv4 address</li>
+<li>&quot;port&quot; can be omitted. If omitted then 443 is chosen as default port.</li>
+</ul>
+<h4 id="clear-existing-proxy-configuration">Clear existing proxy configuration</h4>
+<p>You can clear the existing proxy configuration by running the following command:</p>
+<pre><code>Set-AzureAdConnectHealthProxySettings -NoProxy
+</code></pre>
+<h3 id="read-current-proxy-settings">Read current proxy settings</h3>
+<p>You can read the currently configured proxy settings by running the following command:</p>
+<pre><code>Get-AzureAdConnectHealthProxySettings
+</code></pre>
+<h2 id="test-connectivity-to-azure-ad-connect-health-service">Test Connectivity to Azure AD Connect Health Service</h2>
+<p>It is possible that issues may arise that cause the Azure AD Connect Health agent to lose connectivity with the Azure AD Connect Health service. These include network issues, permission issues, or various other reasons.</p>
+<p>If the agent is unable to send data to the Azure AD Connect Health service for longer than two hours, it is indicated with the following alert in the portal: &quot;Health Service data is not up to date.&quot; You can confirm if the affected Azure AD Connect Health agent is able to upload data to the Azure AD Connect Health service by running the following PowerShell command:</p>
+<pre><code>Test-AzureADConnectHealthConnectivity -Role ADFS
+</code></pre>
+<p>The role parameter currently takes the following values:</p>
+<ul>
+<li>ADFS</li>
+<li>Sync</li>
+<li>ADDS</li>
+</ul>
+<div class="NOTE">
+<p>Note</p>
+<p>To use the connectivity tool, you must first complete the agent registration. If you are not able to complete the agent registration, make sure that you have met all the <a href="how-to-connect-health-agent-install#requirements" data-linktype="relative-path">requirements</a> for Azure AD Connect Health. This connectivity test is performed by default during agent registration.</p>
+</div>
+<h2 id="related-links">Related links</h2>
+<ul>
+<li><a href="whatis-hybrid-identity-health" data-linktype="relative-path">Azure AD Connect Health</a></li>
+<li><a href="how-to-connect-health-operations" data-linktype="relative-path">Azure AD Connect Health Operations</a></li>
+<li><a href="how-to-connect-health-adfs" data-linktype="relative-path">Using Azure AD Connect Health with AD FS</a></li>
+<li><a href="how-to-connect-health-sync" data-linktype="relative-path">Using Azure AD Connect Health for sync</a></li>
+<li><a href="how-to-connect-health-adds" data-linktype="relative-path">Using Azure AD Connect Health with AD DS</a></li>
+<li><a href="reference-connect-health-faq" data-linktype="relative-path">Azure AD Connect Health FAQ</a></li>
+<li><a href="reference-connect-health-version-history" data-linktype="relative-path">Azure AD Connect Health Version History</a></li>
+</ul>
+
+						<!-- </content> -->
+
+						</main>
+
+						<!-- recommended content page section -->
+
+							<nav data-bi-name="recommendation-bottom" hidden id="recommended-content-center" class="is-hidden-desktop" aria-labelledby="recommended-content-center-title">
+								<h3 id="recommended-content-center-title" class="is-size-2 has-margin-top-large has-margin-bottom-small">Related Articles</h3>
+							</nav>
+
+						<!-- end recommended content page section -->
+
+						<!-- page rating section -->
+								<div class="is-hidden-desktop has-border-top has-margin-top-large has-padding-top-small">
+									
+									
+<div class="feedback-verbatim has-border-bottom has-padding-bottom-small has-margin-bottom-small" data-bi-name="rating">
+    <div class="binary-rating">
+        <div class="binary-rating-buttons">
+            <h3 class="has-text-weight-semibold has-margin-top-none has-margin-bottom-small">Is this page helpful?</h3>
+            <div>
+                <button class="thumb-rating like has-inner-focus has-padding-left-extra-small has-padding-right-extra-small" title="Yes" data-bi-name="rating-yes" aria-expanded="false" data-bi-sat="1" aria-controls="rating-container-mobile">
+                    <span aria-hidden="true" class="icon docon docon-like"></span>
+                    <span>Yes</span>
+                </button>
+                <button class="thumb-rating dislike has-inner-focus has-padding-none has-padding-right-extra-small" title="No" data-bi-name="rating-no" data-bi-sat="0" aria-expanded="false" aria-controls="rating-container-mobile">
+                    <span aria-hidden="true" class="icon docon docon-dislike"></span>
+                    <span>No</span>
+                </button>
+            </div>
+        </div>
+        <form class="feedback-verbatim-form is-hidden" id="rating-container-mobile">
+            <div class="verbatim-textarea box is-relative has-box-shadow-none has-border has-margin-top-small has-padding-extra-small is-size-8">
+                <label for="rating-textarea-mobile" class="visually-hidden">Any additional feedback?</label>
+                <textarea id="rating-textarea-mobile" rows="4" maxlength="999" placeholder="Any additional feedback?" required class="textarea has-border-none has-box-shadow-none has-inner-focus"></textarea>
+            </div>
+            <div class="buttons is-right has-margin-top-medium has-margin-right-extra-small">
+                <button class="skip-rating button is-text is-link is-small" type="button">Skip</button>
+                <button class="submit-rating button is-primary is-small" data-bi-name="rating-verbatim" disabled type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div class="thankyou-rating is-hidden" tabindex="-1">
+        <p>Thank you.</p>
+    </div>
+</div>								</div>
+						<!-- end page rating section -->
+
+
+						<!-- feedback section -->
+<section class="feedback-section is-relative" data-bi-name="feedback-section">
+
+    <h2 id="feedback" class="is-size-2 has-margin-top-large">Feedback</h2>
+
+    <div class="alert choose-feedback-type has-margin-top-small has-margin-bottom-none">
+        <p aria-hidden="true" id="send-feedback-about" class="has-margin-top-none has-margin-bottom-none">Submit and view feedback for</p>
+
+        <div class="choose-feedback-buttons has-margin-top-large has-margin-bottom-none">
+                <a class="button feedback-type-product has-margin-bottom-small" aria-label="Send feedback about this product" href="https://feedback.azure.com/forums/169401-azure-active-directory" data-bi-name="product-feedback">
+                    <span>This product</span>
+                    <span aria-hidden="true" class="icon docon docon-navigate-external is-size-2 has-margin-left-none"></span>
+                </a>
+
+			<a class="button feedback-type-product has-margin-bottom-small github-link" aria-label="Send feedback about this page" data-bi-name="create-issue-on-github">
+				<span aria-hidden="true" class="docon docon-brand-github has-padding-right-extra-small"></span>
+				<span>This page</span>
+			</a>
+        </div>
+    </div>
+
+    <div class="action-container is-flex has-flex-justify-content-end has-margin-top-small has-margin-bottom-small">
+        <a class="view-on-github" data-bi-name="view-on-github" href="https://github.com/MicrosoftDocs/azure-docs/issues">
+            <span aria-hidden="true" class="docon docon-brand-github"></span>
+            <span>View all page feedback</span>
+            <span aria-hidden="true" class="icon docon docon-navigate-external is-size-3"></span>
+        </a>
+    </div>
+</section>
+
+						<!-- end feedback section -->
+
+						<!-- feedback report section -->
+						<!-- end feedback report section -->
+
+						<div class="footerContainer is-visible-interactive has-default-focus ">
+<footer id="footer-interactive" data-bi-name="footer" class="footer-layout">
+
+    <div class="is-flex is-full-height has-padding-right-extra-large-desktop">
+			<a data-mscc-ic="false" class="locale-selector-link has-flex-shrink-none" href="#" data-bi-name="select-locale"><span class="icon docon docon-world is-size-4 has-margin-right-small" aria-hidden="true"></span><span class="local-selector-link-text"></span></a>
+		<div class="has-margin-left-medium has-margin-right-medium has-flex-shrink-none">
+<div class="dropdown has-caret-up">
+	<button class="dropdown-trigger button is-transparent is-small is-icon-only-touch has-inner-focus theme-dropdown-trigger"
+		aria-controls="theme-menu-interactive" aria-expanded="false" title="Theme" data-bi-name="theme">
+		<span class="icon">
+			<span class="docon docon-sun" aria-hidden="true"></span>
+		</span>
+		<span>Theme</span>
+	</button>
+	<div class="dropdown-menu" id="theme-menu-interactive" role="menu">
+		<ul class="theme-selector has-padding-small">
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="light">
+					<span class="theme-light has-margin-right-small">
+						<span
+							class="theme-selector-icon css-variable-support has-border is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+Light					</span>
+				</button>
+			</li>
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="dark">
+					<span class="theme-dark has-margin-right-small">
+						<span
+							class="has-border theme-selector-icon css-variable-support is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+Dark					</span>
+				</button>
+			</li>
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="high-contrast">
+					<span class="theme-high-contrast has-margin-right-small">
+						<span
+							class="has-border theme-selector-icon css-variable-support is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+High contrast					</span>
+				</button>
+			</li>
+		</ul>
+	</div>
+</div>		</div>
+	</div>
+
+    <ul class="links" data-bi-name="footerlinks">
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/previous-versions/" data-bi-name="archivelink">Previous Version Docs</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/teamblog" data-bi-name="bloglink">Blog</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/contribute" data-bi-name="contributorGuide">Contribute</a></li>
+				<li><a data-mscc-ic="false" href="https://go.microsoft.com/fwlink/?LinkId=521839" data-bi-name="privacy">Privacy &amp; Cookies</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/legal/termsofuse" data-bi-name="termsofuse">Terms of Use</a></li>
+		<li><a data-mscc-ic="false" href="https://aka.ms/sitefeedback" data-bi-name="feedback">Site Feedback</a></li>
+			<li><a data-mscc-ic="false" href="https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/EN-US.aspx" data-bi-name="trademarks">Trademarks</a></li>
+		<li>&copy; Microsoft 2020</li>
+    </ul>
+</footer>
+						</div>
+					</div>
+
+					<div class="is-size-7 right-container column is-one-quarter is-one-fifth-desktop is-hidden-mobile is-hidden-tablet-only" data-bi-name="pageactions" role="complementary" aria-label="Page Actions">
+						<div id="affixed-right-container" class="doc-outline is-fixed is-vertically-scrollable">
+								
+								
+<div class="feedback-verbatim has-border-bottom has-padding-bottom-small has-margin-bottom-small" data-bi-name="rating">
+    <div class="binary-rating">
+        <div class="binary-rating-buttons">
+            <h3 class="has-text-weight-semibold has-margin-top-none has-margin-bottom-small">Is this page helpful?</h3>
+            <div>
+                <button class="thumb-rating like has-inner-focus has-padding-left-extra-small has-padding-right-extra-small" title="Yes" data-bi-name="rating-yes" aria-expanded="false" data-bi-sat="1" aria-controls="rating-container-desktop">
+                    <span aria-hidden="true" class="icon docon docon-like"></span>
+                    <span>Yes</span>
+                </button>
+                <button class="thumb-rating dislike has-inner-focus has-padding-none has-padding-right-extra-small" title="No" data-bi-name="rating-no" data-bi-sat="0" aria-expanded="false" aria-controls="rating-container-desktop">
+                    <span aria-hidden="true" class="icon docon docon-dislike"></span>
+                    <span>No</span>
+                </button>
+            </div>
+        </div>
+        <form class="feedback-verbatim-form is-hidden" id="rating-container-desktop">
+            <div class="verbatim-textarea box is-relative has-box-shadow-none has-border has-margin-top-small has-padding-extra-small is-size-8">
+                <label for="rating-textarea-desktop" class="visually-hidden">Any additional feedback?</label>
+                <textarea id="rating-textarea-desktop" rows="4" maxlength="999" placeholder="Any additional feedback?" required class="textarea has-border-none has-box-shadow-none has-inner-focus"></textarea>
+            </div>
+            <div class="buttons is-right has-margin-top-medium has-margin-right-extra-small">
+                <button class="skip-rating button is-text is-link is-small" type="button">Skip</button>
+                <button class="submit-rating button is-primary is-small" data-bi-name="rating-verbatim" disabled type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div class="thankyou-rating is-hidden" tabindex="-1">
+        <p>Thank you.</p>
+    </div>
+</div>								<nav data-bi-name="recommendation-sidebar" hidden id="recommended-content-nav" role="navigation" aria-labelledby="recommended-content-nav-title">
+									<h3 id="recommended-content-nav-title">Related Articles</h3>
+								</nav>
+							<nav id="side-doc-outline" data-bi-name="intopic toc" role="navigation" aria-label="Article Outline">
+								<h3>In this article</h3>
+							</nav>
+						</div>
+					</div>
+
+					<!--end of div.columns -->
+				</div>
+
+			<!--end of .primary-holder -->
+			</section>
+
+			<aside id="interactive-container" class="interactive-container is-visible-interactive column has-body-background-dark ">
+			</aside>
+		</div>
+
+		<!--end of .mainContainer -->
+	</div>
+
+	<div id="openFeedbackContainer" class="openfeedback-container"></div>
+
+	<div class="footerContainer has-default-focus is-hidden-interactive ">
+<footer id="footer" data-bi-name="footer" class="footer-layout uhf-container has-padding" role="contentinfo">
+
+    <div class="is-flex is-full-height has-padding-right-extra-large-desktop">
+			<a data-mscc-ic="false" class="locale-selector-link has-flex-shrink-none" href="#" data-bi-name="select-locale"><span class="icon docon docon-world is-size-4 has-margin-right-small" aria-hidden="true"></span><span class="local-selector-link-text"></span></a>
+		<div class="has-margin-left-medium has-margin-right-medium has-flex-shrink-none">
+<div class="dropdown has-caret-up">
+	<button class="dropdown-trigger button is-transparent is-small is-icon-only-touch has-inner-focus theme-dropdown-trigger"
+		aria-controls="theme-menu" aria-expanded="false" title="Theme" data-bi-name="theme">
+		<span class="icon">
+			<span class="docon docon-sun" aria-hidden="true"></span>
+		</span>
+		<span>Theme</span>
+	</button>
+	<div class="dropdown-menu" id="theme-menu" role="menu">
+		<ul class="theme-selector has-padding-small">
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="light">
+					<span class="theme-light has-margin-right-small">
+						<span
+							class="theme-selector-icon css-variable-support has-border is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+Light					</span>
+				</button>
+			</li>
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="dark">
+					<span class="theme-dark has-margin-right-small">
+						<span
+							class="has-border theme-selector-icon css-variable-support is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+Dark					</span>
+				</button>
+			</li>
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="high-contrast">
+					<span class="theme-high-contrast has-margin-right-small">
+						<span
+							class="has-border theme-selector-icon css-variable-support is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+High contrast					</span>
+				</button>
+			</li>
+		</ul>
+	</div>
+</div>		</div>
+	</div>
+    <ul class="links" data-bi-name="footerlinks">
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/previous-versions/" data-bi-name="archivelink">Previous Version Docs</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/teamblog" data-bi-name="bloglink">Blog</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/contribute" data-bi-name="contributorGuide">Contribute</a></li>
+				<li><a data-mscc-ic="false" href="https://go.microsoft.com/fwlink/?LinkId=521839" data-bi-name="privacy">Privacy &amp; Cookies</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/legal/termsofuse" data-bi-name="termsofuse">Terms of Use</a></li>
+		<li><a data-mscc-ic="false" href="https://aka.ms/sitefeedback" data-bi-name="feedback">Site Feedback</a></li>
+			<li><a data-mscc-ic="false" href="https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/EN-US.aspx" data-bi-name="trademarks">Trademarks</a></li>
+		<li>&copy; Microsoft 2020</li>
+    </ul>
+</footer>
+	</div>
+
+	<div id="action-panel" role="region" aria-label="Action Panel" class="action-panel has-default-focus" tabindex="-1"></div>
+</body>
+</html>

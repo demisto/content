@@ -1,0 +1,28 @@
+{
+ "id": "indicators-activity",
+ "version": -1,
+ "name": "Indicators Activity",
+ "dataType": "indicators",
+ "widgetType": "line",
+ "size": 1000,
+ "query": "",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  }
+ },
+ "params": {
+  "groupBy": [
+   "calculatedTime"
+  ]
+ },
+ "description": "",
+ "fromVersion": "5.0.0"
+}

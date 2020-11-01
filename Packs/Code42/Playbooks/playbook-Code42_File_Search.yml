@@ -1,0 +1,378 @@
+id: Code42 File Search
+version: -1
+name: Code42 File Search
+description: This playbook searches for files via Code42 security events by either
+  MD5 or SHA256 hash. The data is output to the Code42.SecurityData context for use.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: d045a003-2e7f-4f47-80c7-3882baf399b6
+    type: start
+    task:
+      id: d045a003-2e7f-4f47-80c7-3882baf399b6
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
+    type: condition
+    task:
+      id: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
+      version: -1
+      name: Is Code42 Integration Active?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '7'
+      'yes':
+      - '2'
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Code42
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 935cb1d6-e328-4a8e-888f-347c3b33ce11
+    type: condition
+    task:
+      id: 935cb1d6-e328-4a8e-888f-347c3b33ce11
+      version: -1
+      name: Does SHA256 Exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '7'
+      'yes':
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
+    type: condition
+    task:
+      id: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
+      version: -1
+      name: Does MD5 Exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '7'
+      'yes':
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 532.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: e03a5e72-1695-4322-8072-22f076aeceed
+    type: regular
+    task:
+      id: e03a5e72-1695-4322-8072-22f076aeceed
+      version: -1
+      name: Code42 Search by SHA256
+      description: ''
+      script: '|||code42-securitydata-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      exposure: {}
+      hash:
+        simple: ${inputs.SHA256}
+      hostname: {}
+      json: {}
+      results: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 9eda738e-0108-4e18-8d30-d3a20089c0a6
+    type: regular
+    task:
+      id: 9eda738e-0108-4e18-8d30-d3a20089c0a6
+      version: -1
+      name: Code42 Search by MD5
+      description: ''
+      script: '|||code42-securitydata-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      exposure: {}
+      hash:
+        simple: ${inputs.MD5}
+      hostname: {}
+      json: {}
+      results: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 532.5,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+    type: title
+    task:
+      id: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 892.5,
+        "x": 20,
+        "y": -140
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+      transformers:
+      - operator: uniq
+  required: false
+  description: MD5 hash to search for
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+      transformers:
+      - operator: uniq
+  required: false
+  description: SHA256 hash to search for
+outputs:
+- contextPath: Code42.SecurityData
+  description: Returned File Results
+  type: unknown
+- contextPath: Code42.SecurityData.EventTimestamp
+  description: Timestamp for event
+- contextPath: Code42.SecurityData.FileCreated
+  description: File creation date
+- contextPath: Code42.SecurityData.EndpointID
+  description: Code42 device ID
+- contextPath: Code42.SecurityData.DeviceUsername
+  description: Username that device is associated with in Code42
+- contextPath: Code42.SecurityData.EmailFrom
+  description: Sender email address for email exfiltration events
+- contextPath: Code42.SecurityData.EmailTo
+  description: Recipient email address for email exfiltration events
+- contextPath: Code42.SecurityData.EmailSubject
+  description: Email subject line for email exfiltration events
+- contextPath: Code42.SecurityData.EventID
+  description: Security Data event ID
+- contextPath: Code42.SecurityData.EventType
+  description: Type of Security Data event
+- contextPath: Code42.SecurityData.FileCategory
+  description: Type of file as determined by Code42 engine
+- contextPath: Code42.SecurityData.FileOwner
+  description: Owner of file
+- contextPath: Code42.SecurityData.FileName
+  description: File name
+- contextPath: Code42.SecurityData.FilePath
+  description: Path to file
+- contextPath: Code42.SecurityData.FileSize
+  description: Size of file in bytes
+- contextPath: Code42.SecurityData.FileModified
+  description: File modification date
+- contextPath: Code42.SecurityData.FileMD5
+  description: MD5 hash of file
+- contextPath: Code42.SecurityData.FileHostname
+  description: Hostname where file event was captured
+- contextPath: Code42.SecurityData.DevicePrivateIPAddress
+  description: Private IP addresses of device where event was captured
+- contextPath: Code42.SecurityData.DevicePublicIPAddress
+  description: Public IP address of device where event was captured
+- contextPath: Code42.SecurityData.RemovableMediaType
+  description: Type of removable media
+- contextPath: Code42.SecurityData.RemovableMediaCapacity
+  description: Total capacity of removable media in bytes
+- contextPath: Code42.SecurityData.RemovableMediaMediaName
+  description: Full name of removable media
+- contextPath: Code42.SecurityData.RemovableMediaName
+  description: Name of removable media
+- contextPath: Code42.SecurityData.RemovableMediaSerialNumber
+  description: Serial number for removable medial device
+- contextPath: Code42.SecurityData.RemovableMediaVendor
+  description: Vendor name for removable device
+- contextPath: Code42.SecurityData.FileSHA256
+  description: SHA256 hash of file
+- contextPath: Code42.SecurityData.FileShared
+  description: Whether file is shared using cloud file service
+- contextPath: Code42.SecurityData.FileSharedWith
+  description: Accounts that file is shared with on cloud file service
+- contextPath: Code42.SecurityData.Source
+  description: Source of file event, Cloud or Endpoint
+- contextPath: Code42.SecurityData.ApplicationTabURL
+  description: URL associated with application read event
+- contextPath: Code42.SecurityData.ProcessName
+  description: Process name for application read event
+- contextPath: Code42.SecurityData.ProcessOwner
+  description: Process owner for application read event
+- contextPath: Code42.SecurityData.WindowTitle
+  description: Process name for application read event
+- contextPath: Code42.SecurityData.FileURL
+  description: URL of file on cloud file service
+- contextPath: Code42.SecurityData.Exposure
+  description: Exposure type for event
+- contextPath: Code42.SecurityData.SharingTypeAdded
+  description: Type of sharing added to file
+- contextPath: File
+  description: The file object.
+  type: unknown
+- contextPath: File.Name
+  description: File name
+- contextPath: File.Path
+  description: File path
+- contextPath: File.Size
+  description: File size in bytes
+- contextPath: File.MD5
+  description: MD5 hash of file
+- contextPath: File.SHA256
+  description: SHA256 hash of file
+- contextPath: File.Hostname
+  description: Hostname where file event was captured
+sourceplaybookid: Code42 File Search
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

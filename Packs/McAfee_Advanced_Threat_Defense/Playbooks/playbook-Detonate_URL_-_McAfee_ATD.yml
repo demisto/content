@@ -1,0 +1,578 @@
+id: detonate_url_-_mcafee_atd
+version: -1
+name: Detonate URL - McAfee ATD
+fromversion: 5.0.0
+description: Detonates a URL using the McAfee Advanced Threat Defense sandbox integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d2f4d7dc-4562-4517-8d63-3539676ca81d
+    type: start
+    task:
+      id: d2f4d7dc-4562-4517-8d63-3539676ca81d
+      version: -1
+      name: ""
+      description: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 1ffe1273-53cc-4196-85ee-aeb00cdc3683
+    type: regular
+    task:
+      id: 1ffe1273-53cc-4196-85ee-aeb00cdc3683
+      version: -1
+      name: McAfee ATD Upload URL
+      description: Uploads the submission to McAfee ATD.
+      script: '|||atd-file-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      analyzeAgain: {}
+      dstIp: {}
+      entryID: {}
+      fileName: {}
+      filePriorityQ: {}
+      messageId: {}
+      skipTaskId: {}
+      srcIp: {}
+      submitType:
+        simple: "1"
+      url:
+        complex:
+          root: inputs.URL
+      vmProfileList: {}
+      xMode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: d774d782-52bb-4667-8842-9401535bdf2f
+    type: playbook
+    task:
+      id: d774d782-52bb-4667-8842-9401535bdf2f
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      Ids:
+        complex:
+          root: ATD
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ATD.Task.taskId
+                iscontext: true
+              right:
+                value:
+                  simple: "-1"
+          accessor: Task
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: taskId
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: taskId
+      PollingCommandName:
+        simple: atd-check-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: ATD.Task(val.status != 'Completed').taskId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 139bb8bd-8c59-483e-8632-aa1031236b24
+    type: regular
+    task:
+      id: 139bb8bd-8c59-483e-8632-aa1031236b24
+      version: -1
+      name: McAfee ATD Get Report
+      description: Retrieve the reports from McAfee ATD.
+      script: '|||atd-get-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      jobId: {}
+      taskId:
+        complex:
+          root: ATDTask
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ATDTask.status
+                iscontext: true
+              right:
+                value:
+                  simple: Completed
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: taskId
+      threshold: {}
+      type:
+        simple: pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 7aef66ab-1f28-4a35-89d8-173760f509c5
+    type: condition
+    task:
+      id: 7aef66ab-1f28-4a35-89d8-173760f509c5
+      version: -1
+      name: Is there a URL to detonate?
+      description: Checks that there is a URL in the playbook’s input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
+    type: title
+    task:
+      id: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: bd6b3429-b5e0-4bf5-8aa7-5b6305b016dc
+    type: condition
+    task:
+      id: bd6b3429-b5e0-4bf5-8aa7-5b6305b016dc
+      version: -1
+      name: Filter taskId
+      description: Checks that valid URLs only have been sent to detonation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ATD
+                filters:
+                - - operator: isNotEqualNumber
+                    left:
+                      value:
+                        simple: ATD.Task.taskId
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "-1"
+                accessor: Task
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: taskId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 35d8af19-10dd-43fa-855d-1a99e08bbf12
+    type: condition
+    task:
+      id: 35d8af19-10dd-43fa-855d-1a99e08bbf12
+      version: -1
+      name: Is McAfee ATD sandbox enabled?
+      description: |
+        Verify that there is a valid instance of McAfee ATD enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: McAfee Advanced Threat Defense
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: d9cb6357-65d3-489e-829a-32db7a9e54f1
+    type: regular
+    task:
+      id: d9cb6357-65d3-489e-829a-32db7a9e54f1
+      version: -1
+      name: atd-check-status
+      description: Updates the status of the tasks in the context.
+      script: '|||atd-check-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      jobId: {}
+      taskId:
+        complex:
+          root: ATD
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ATD.Task.taskId
+                iscontext: true
+              right:
+                value:
+                  simple: "-1"
+          accessor: Task.taskId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: e67fe4e6-2060-46ff-8f61-c87a4b88cf93
+    type: regular
+    task:
+      id: e67fe4e6-2060-46ff-8f61-c87a4b88cf93
+      version: -1
+      name: Set Context
+      description: '-'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ATDTask
+      value:
+        complex:
+          root: ATD
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ATD.Task.taskId
+                iscontext: true
+              right:
+                value:
+                  simple: "-1"
+          accessor: Task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "8_2_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate.
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+outputs:
+- contextPath: ATD.Task.taskId
+  description: The task ID of the sample uploaded
+  type: string
+- contextPath: ATD.Task.jobId
+  description: The job ID of the sample uploaded
+  type: string
+- contextPath: ATD.Task.messageId
+  description: The message Id relevant to the sample uploaded
+  type: string
+- contextPath: ATD.Task.url
+  description: The URL detonated
+  type: string
+- contextPath: ATD.Task.srcIp
+  description: Source IPv4 address
+  type: string
+- contextPath: ATD.Task.destIp
+  description: Destination IPv4 address
+  type: string
+- contextPath: ATD.Task.MD5
+  description: MD5 of the sample uploaded
+  type: string
+- contextPath: ATD.Task.SHA1
+  description: SHA1 of the sample uploaded
+  type: string
+- contextPath: ATD.Task.SHA256
+  description: SHA256 of the sample uploaded
+  type: string
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file
+  type: string
+- contextPath: InfoFile.Extension
+  description: The extension of the report file
+  type: string
+- contextPath: InfoFile.Name
+  description: The name of the report file
+  type: string
+- contextPath: InfoFile.Info
+  description: The info of the report file
+  type: string
+- contextPath: InfoFile.Size
+  description: The size of the report file
+  type: number
+- contextPath: InfoFile.Type
+  description: The type of the report file
+  type: string
+- contextPath: File
+  description: File object
+  type: unknown
+- contextPath: File.Malicious
+  description: File Malicious object
+  type: unknown
+- contextPath: DBotScore
+  description: DBotScore object
+  type: unknown
+- contextPath: InfoFile
+  description: Report file object
+  type: unknown
+- contextPath: URL.Malicious
+  description: URL Malicious object
+  type: unknown
+tests:
+- Test Playbook McAfee ATD
+- Detonate URL - Generic Test

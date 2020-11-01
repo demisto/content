@@ -2,18 +2,21 @@ import sys
 import os
 import json
 import subprocess
-from Tests.test_utils import print_warning, print_error
+from demisto_sdk.commands.common.tools import print_warning, print_error
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 
 
 def main():
     circle_aritfact = sys.argv[1]
     env_file = sys.argv[2]
-
+    instance_role = sys.argv[3]
+    time_to_live = sys.argv[4]
     with open(env_file, 'r') as json_file:
         env_results = json.load(json_file)
 
-    for env in env_results:
+    filtered_results = [env_result for env_result in env_results if env_result["Role"] == instance_role]
+    for env in filtered_results:
+        print(f'Downloading server log from {env.get("Role", "Unknown role")}')
         ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
                      '"sudo chmod -R 755 /var/log/demisto"'
         scp_string = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ' \
@@ -27,22 +30,27 @@ def main():
             print(exc.output)
 
         try:
+            server_ip = env["InstanceDNS"].split('.')[0]
             subprocess.check_output(
                 scp_string.format(
                     env["SSHuser"],
                     env["InstanceDNS"],
-                    "{}/server_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''))),
+                    "{}/server_{}_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''), server_ip)),
                 shell=True)
 
         except subprocess.CalledProcessError as exc:
             print(exc.output)
 
+        if time_to_live:
+            print(f'Skipping - Time to live was set to {time_to_live} minutes')
+            return
         if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
+            print(f'Destroying instance {env.get("Role", "Unknown role")}')
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
                 print_error(rminstance)
         else:
-            print_warning("Tests failed on {} ,keeping instance alive".format(env["Role"]))
+            print_warning(f'Tests failed on {env.get("Role", "Unknown role")}, keeping instance alive')
 
 
 if __name__ == "__main__":

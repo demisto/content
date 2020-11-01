@@ -1,0 +1,19 @@
+{
+  "remove_identifier_data_application_type": {
+    "CreatedBy": {
+      "Application": {
+        "ID": "test",
+        "DisplayName": "MS Graph Files Dev"
+      }
+    }
+  },
+  "remove_identifier_data_user_type": {
+    "CreatedBy": {
+      "User": {
+        "DisplayName": "MS Graph Files Dev"
+      }
+    }
+  },
+  "valid_next_link_url": "https://graph.microsoft.com/v1.0/drives/1234/root/children?top=1&$skiptoken=1234fsff",
+  "invalid_next_link_url": "https://url/v1.0/drives/1234/root/children?top=1&"
+}

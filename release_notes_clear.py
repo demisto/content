@@ -4,10 +4,11 @@ import argparse
 from datetime import datetime
 import yaml
 
-from Tests.scripts.constants import UNRELEASE_HEADER, INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,\
-    DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
-from Tests.test_utils import server_version_compare, run_command, get_release_notes_file_path, print_warning
-from Tests.scripts.validate_files import FilesValidator
+from demisto_sdk.commands.common.constants import UNRELEASE_HEADER, INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, \
+    REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, INDICATOR_TYPES_DIR
+from demisto_sdk.commands.common.tools import server_version_compare, run_command, get_release_notes_file_path, \
+    print_warning
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from release_notes import LAYOUT_TYPE_TO_NAME
 
 
@@ -28,7 +29,7 @@ def get_changed_content_entities(modified_files, added_files):
 def get_file_data(file_path):
     extension = os.path.splitext(file_path)[1]
     if extension not in FILE_TYPE_DICT:
-        return False
+        return {}
 
     load_function = FILE_TYPE_DICT[extension]
     with open(file_path, 'r') as file_obj:
@@ -44,6 +45,8 @@ def should_clear(file_path, current_server_version="0.0.0"):
     :param current_server_version: current server version
     """
     data = get_file_data(file_path)
+    if not data:
+        return False
 
     version = data.get('fromversion') or data.get('fromVersion')
     if version and server_version_compare(current_server_version, str(version)) < 0:
@@ -73,7 +76,8 @@ def get_new_header(file_path):
         # should have RN when added
         INCIDENT_FIELDS_DIR: ('Incident Field', data.get('name', '')),
         CLASSIFIERS_DIR: ('Classifier', data.get('brandName', '')),
-        MISC_DIR: ('Reputation', data.get('id', data.get('name', ''))),  # reputations.json has name at first layer
+        # reputations.json has name at first layer
+        INDICATOR_TYPES_DIR: ('Reputation', data.get('id', data.get('name', ''))),
     }
 
     for entity_dir in mapping:
@@ -96,9 +100,9 @@ def main():
     date = args.date if args.date else datetime.now().strftime('%Y-%m-%d')
 
     # get changed yaml/json files (filter only relevant changed files)
-    files_validator = FilesValidator()
+    validate_manager = ValidateManager()
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
-    modified_files, added_files, _, _ = files_validator.get_modified_files(change_log)
+    modified_files, added_files, _, _, _ = validate_manager.filter_changed_files(change_log)
 
     for file_path in get_changed_content_entities(modified_files, added_files):
         if not should_clear(file_path, args.server_version):

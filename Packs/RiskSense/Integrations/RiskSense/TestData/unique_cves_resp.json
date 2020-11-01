@@ -1,0 +1,349 @@
+{
+  "errors": [],
+  "page": {
+    "size": 10,
+    "totalElements": 1,
+    "totalPages": 1,
+    "number": 0
+  },
+  "_embedded": {
+    "hostFindings": [
+      {
+        "id": 115469608,
+        "source": "source name",
+        "sourceId": "source id",
+        "title": "title",
+        "port": 3389,
+        "description": "description",
+        "services": [
+          "service 1",
+          "service 2"
+        ],
+        "group": {
+          "id": 7990,
+          "name": "group name"
+        },
+        "groups": [
+          {
+            "id": 7990,
+            "name": "group name"
+          }
+        ],
+        "host": {
+          "hostId": 3569992,
+          "hostName": "host name",
+          "ipAddress": "ip address",
+          "criticality": 5,
+          "external": true,
+          "ports": [
+            {
+              "id": 42841207,
+              "number": 80
+            },
+            {
+              "id": 42841299,
+              "number": 135
+            },
+            {
+              "id": 42841305,
+              "number": 445
+            },
+            {
+              "id": 42841218,
+              "number": 1433
+            },
+            {
+              "id": 42841233,
+              "number": 3389
+            }
+          ],
+          "rs3": 515
+        },
+        "network": {
+          "id": 78038,
+          "name": "network name",
+          "type": "network type"
+        },
+        "statusEmbedded": {
+          "state": "state",
+          "stateName": "state name",
+          "stateDescription": "state description",
+          "status": true,
+          "userIds": [],
+          "durationInDays": "953",
+          "dueDate": "",
+          "expirationDate": ""
+        },
+        "assessments": [
+          {
+            "id": 67442,
+            "name": "assessment name",
+            "date": "assessment date"
+          }
+        ],
+        "assignments": [],
+        "vulnerabilities": {
+          "vulnInfoList": [
+            {
+              "cve": "cve",
+              "baseScore": 5.0,
+              "threatCount": 8,
+              "summary": "cve summary",
+              "attackVector": "attack vector type",
+              "accessComplexity": "access complexity",
+              "authentication": "authentication",
+              "confidentialityImpact": "confidentiality impact",
+              "integrity": "integrity",
+              "availabilityImpact": "availability impact",
+              "trending": false,
+              "vulnLastTrendingOn": null
+            }
+          ],
+          "vulnLastTrendingOn": null,
+          "trending": false
+        },
+        "vulnerabilitiesWithV3": [
+          {
+            "cve": "cve",
+            "baseScore": 7.5,
+            "threatCount": 8,
+            "summary": "cve summary",
+            "attackVector": "attack vector type",
+            "attackComplexity": "attack complexity",
+            "privilegesRequired": "privileges required",
+            "userInteraction": "user interaction",
+            "scope": "scope",
+            "confidentialityImpact": "confidentiality impact",
+            "integrityImpact": "Integrity impact",
+            "availabilityImpact": "availability impact"
+          }
+        ],
+        "threats": {
+          "manualExploits": [],
+          "threats": [
+            {
+              "title": "threat title 1",
+              "category": "category 1",
+              "severity": null,
+              "description": "threat description",
+              "details": "",
+              "cves": [
+                "cve 1"
+              ],
+              "source": "source",
+              "published": "2017-09-18T00:00:00",
+              "updated": "2019-12-14T17:36:22",
+              "threatLastTrendingOn": null,
+              "trending": false
+            },
+            {
+              "title": "threat title 2",
+              "category": "category 2",
+              "severity": null,
+              "description": "threat description",
+              "details": "",
+              "cves": [
+                "cve 1"
+              ],
+              "source": "source",
+              "published": "2016-12-29T07:50:07",
+              "updated": "2019-12-13T15:57:28",
+              "threatLastTrendingOn": null,
+              "trending": false
+            },
+            {
+              "title": "threat title 3",
+              "category": "category 3",
+              "severity": null,
+              "description": "threat description",
+              "details": "",
+              "cves": [
+                "cve 1"
+              ],
+              "source": "source",
+              "published": "2017-05-30T00:00:00",
+              "updated": "2019-12-20T15:49:02",
+              "threatLastTrendingOn": null,
+              "trending": false
+            },
+            {
+              "title": "threat title 4",
+              "category": "category 4",
+              "severity": null,
+              "description": "threat description",
+              "details": "",
+              "cves": [
+                "cve 1"
+              ],
+              "source": "source",
+              "published": "2016-12-23T00:00:00",
+              "updated": "2019-12-14T17:36:01",
+              "threatLastTrendingOn": null,
+              "trending": false
+            },
+            {
+              "title": "threat title 5",
+              "category": "threat category 2",
+              "severity": null,
+              "description": "threat description",
+              "details": "",
+              "cves": [
+                "cve 1"
+              ],
+              "source": "source",
+              "published": "2016-12-12T00:00:00",
+              "updated": "2019-12-14T17:36:10",
+              "threatLastTrendingOn": null,
+              "trending": false
+            },
+            {
+              "title": "threat title 6",
+              "category": "threat category 6",
+              "severity": null,
+              "description": "threat description",
+              "details": "",
+              "cves": [
+                "cve 1"
+              ],
+              "source": "source",
+              "published": "2017-07-31T00:00:00",
+              "updated": "2019-12-14T17:36:05",
+              "threatLastTrendingOn": null,
+              "trending": false
+            },
+            {
+              "title": "threat title 7",
+              "category": "threat category 7",
+              "severity": null,
+              "description": "threat description",
+              "details": "",
+              "cves": [
+                "cve 1"
+              ],
+              "source": "source",
+              "published": "2017-04-19T00:30:26",
+              "updated": "2019-12-14T17:36:14",
+              "threatLastTrendingOn": null,
+              "trending": false
+            },
+            {
+              "title": "threat title 8",
+              "category": "threat category 2",
+              "severity": null,
+              "description": "threat description",
+              "details": "",
+              "cves": [
+                "cve 1"
+              ],
+              "source": "source",
+              "published": "2017-12-11T00:00:00",
+              "updated": "2019-12-14T17:36:26",
+              "threatLastTrendingOn": null,
+              "trending": false
+            }
+          ],
+          "threatLastTrendingOn": null,
+          "trending": false
+        },
+        "manualFindingReports": [],
+        "solution": "solution",
+        "patches": [],
+        "tags": [
+          {
+            "id": 215551,
+            "name": "data center 1",
+            "category": "category 1",
+            "description": "",
+            "created": "2019-04-24T21:35:12",
+            "updated": "2019-06-19T19:23:08",
+            "color": "color 1"
+          },
+          {
+            "id": 215557,
+            "name": "data center 2",
+            "category": "category 2",
+            "description": "",
+            "created": "2019-04-24T21:42:34",
+            "updated": "2019-04-24T21:42:34",
+            "color": "color 2"
+          },
+          {
+            "id": 225744,
+            "name": "data center 3",
+            "category": "category 3",
+            "description": "",
+            "created": "2019-08-28T17:27:15",
+            "updated": "2019-08-28T17:27:15",
+            "color": "color 3"
+          },
+          {
+            "id": 232334,
+            "name": "data center 4",
+            "category": "category 4",
+            "description": "",
+            "created": "2019-12-17T20:56:02",
+            "updated": "2019-12-17T20:56:02",
+            "color": "color 4"
+          }
+        ],
+        "tagsAsset": [
+          {
+            "id": 215551,
+            "name": "data center 5",
+            "category": "category 5",
+            "description": "",
+            "created": "2019-04-24T21:35:12",
+            "updated": "2019-06-19T19:23:08",
+            "color": "color 5"
+          },
+          {
+            "id": 215557,
+            "name": "data center 6",
+            "category": "category 6",
+            "description": "",
+            "created": "2019-04-24T21:42:34",
+            "updated": "2019-04-24T21:42:34",
+            "color": "color 6"
+          }
+        ],
+        "tickets": [],
+        "notes": [],
+        "authScanDetail": null,
+        "authScanHistory": [],
+        "output": "output",
+        "severity": 5.0,
+        "severityEmbedded": {
+          "combined": 5.0,
+          "overridden": false,
+          "scanner": "3",
+          "cvssV2": 5.0,
+          "cvssV3": 7.5,
+          "aggregated": 5.0,
+          "state": null,
+          "stateName": null,
+          "expirationDate": ""
+        },
+        "riskRating": 7.05,
+        "xrs3Impact": null,
+        "xrs3ImpactOnCategory": null,
+        "lastFoundOn": "2017-06-11",
+        "discoveredOn": "2017-06-11",
+        "resolvedOn": "",
+        "scannerName": "scanner name",
+        "findingType": "finding type",
+        "machineId": "",
+        "detailedDescription": "",
+        "detailedSolution": "",
+        "cloudSecurityGroups": [],
+        "cloudScalingGroups": [],
+        "scannerPluginStatus": "",
+        "additionalInfo": null
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "href"
+    }
+  }
+}

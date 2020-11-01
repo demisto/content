@@ -1,0 +1,417 @@
+id: VerifyJSON - Test
+version: -1
+name: VerifyJSON - Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 49549c67-2aee-4fbb-81a9-7c8d6ac12ad0
+    type: start
+    task:
+      id: 49549c67-2aee-4fbb-81a9-7c8d6ac12ad0
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: f2cd5cb5-33e2-4295-8911-fb0322414345
+    type: regular
+    task:
+      id: f2cd5cb5-33e2-4295-8911-fb0322414345
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: e4873ea1-979a-40d5-8482-37a923339732
+    type: regular
+    task:
+      id: e4873ea1-979a-40d5-8482-37a923339732
+      version: -1
+      name: Valid Json
+      description: Verfiy a JSON string is valid and optionally verify against a provided
+        schema. Utilizes Powershell's Test-JSON cmdlet.
+      scriptName: VerifyJSON
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      json:
+        simple: '{"test": "good"}'
+      schema: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 26608542-8b55-48c8-82a9-b1d0ed109bb5
+    type: condition
+    task:
+      id: 26608542-8b55-48c8-82a9-b1d0ed109bb5
+      version: -1
+      name: Verify context result
+      description: Verfiy a JSON string is valid and optionally verify against a provided
+        schema. Utilizes Powershell's Test-JSON cmdlet.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: VerifyJSON.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: 47074bc4-4e22-4cdb-8ae0-1dee1955e3b6
+    type: regular
+    task:
+      id: 47074bc4-4e22-4cdb-8ae0-1dee1955e3b6
+      version: -1
+      name: Invalid Json
+      description: Verfiy a JSON string is valid and optionally verify against a provided
+        schema. Utilizes Powershell's Test-JSON cmdlet.
+      scriptName: VerifyJSON
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      json:
+        simple: '{"test: "bad"}'
+      schema: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: 3e511091-1db5-42a7-8c44-a403881cd892
+    type: regular
+    task:
+      id: 3e511091-1db5-42a7-8c44-a403881cd892
+      version: -1
+      name: Failed verify context
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      message:
+        simple: Failed verifying context VerifyJSON.Result
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: 393b45df-12a9-46ca-8333-121bd1260afe
+    type: condition
+    task:
+      id: 393b45df-12a9-46ca-8333-121bd1260afe
+      version: -1
+      name: Verify Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'no':
+      - '8'
+      'yes':
+      - '7'
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '7':
+    id: '7'
+    taskid: 9e3a2abe-4aea-4e3b-8065-efe13fececb8
+    type: regular
+    task:
+      id: 9e3a2abe-4aea-4e3b-8065-efe13fececb8
+      version: -1
+      name: Verify Schema with bad json
+      description: Verfiy a JSON string is valid and optionally verify against a provided
+        schema. Utilizes Powershell's Test-JSON cmdlet.
+      scriptName: VerifyJSON
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      json:
+        simple: '{"name": "Ashley", "age": "25"}'
+      schema:
+        simple: |-
+          {
+              "definitions": {},
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "$id": "http://example.com/root.json",
+              "type": "object",
+              "title": "The Root Schema",
+              "required": [
+              "name",
+              "age"
+              ],
+              "properties": {
+              "name": {
+                  "$id": "#/properties/name",
+                  "type": "string",
+                  "title": "The Name Schema",
+                  "default": "",
+                  "examples": [
+                  "Ashley"
+                  ],
+                  "pattern": "^(.*)$"
+              },
+              "age": {
+                  "$id": "#/properties/age",
+                  "type": "integer",
+                  "title": "The Age Schema",
+                  "default": 0,
+                  "examples": [
+                  25
+                  ]
+              }
+              }
+          }
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: 8664dce8-90a4-43f7-8d09-0027d67074e3
+    type: regular
+    task:
+      id: 8664dce8-90a4-43f7-8d09-0027d67074e3
+      version: -1
+      name: Error entry not created
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      message:
+        simple: Error entry not created
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 7b3896ad-2cd3-44f9-805f-086a78cac17a
+    type: condition
+    task:
+      id: 7b3896ad-2cd3-44f9-805f-086a78cac17a
+      version: -1
+      name: Verify error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '10'
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '10':
+    id: '10'
+    taskid: 76a5bdd2-e873-4613-83f7-2d5a1a49b605
+    type: regular
+    task:
+      id: 76a5bdd2-e873-4613-83f7-2d5a1a49b605
+      version: -1
+      name: All good
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: All is good
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1835,
+        "width": 950,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: ''
+fromversion: 5.5.0

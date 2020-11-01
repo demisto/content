@@ -1,0 +1,11 @@
+[file:playbook-Search_And_Delete_Emails_-_EWS.yml]
+ignore=BA101
+
+[file:playbook-Process_Email_-_EWS.yml]
+ignore=BA101
+
+[file:EWSO365.yml]
+ignore=IN126
+
+[file:EWSv2.yml]
+ignore=IN126

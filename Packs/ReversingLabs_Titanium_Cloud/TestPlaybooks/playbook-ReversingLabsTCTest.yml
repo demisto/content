@@ -1,0 +1,162 @@
+id: ReversingLabsTCTest
+version: -1
+name: ReversingLabsTCTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73567af4-0afa-4cf3-81c4-5fdc924196a6
+    type: start
+    task:
+      id: 73567af4-0afa-4cf3-81c4-5fdc924196a6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: d1e05047-de13-42f5-8465-ef6b13a7287a
+    type: regular
+    task:
+      id: d1e05047-de13-42f5-8465-ef6b13a7287a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 92290c34-af32-4cbb-87ae-0440af5da104
+    type: regular
+    task:
+      id: 92290c34-af32-4cbb-87ae-0440af5da104
+      version: -1
+      name: Get file reputation from TC
+      description: Check IP reputation (when information is available, returns a JSON with details).  Uses all configured Threat Intelligence feeds
+      script: ReversingLabs Titanium Cloud|||file
+      type: regular
+      iscommand: true
+      brand: ReversingLabs Titanium Cloud
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    scriptarguments:
+      extended:
+        simple: "true"
+      file:
+        simple: 6a95d3d00267c9fd80bd42122738e726
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: eb72cb5d-9290-42ab-84e5-5550ecfefeb7
+    type: regular
+    task:
+      id: eb72cb5d-9290-42ab-84e5-5550ecfefeb7
+      version: -1
+      name: VerifyContext DBotScore
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: DBotScore(val.Indicator === '6a95d3d00267c9fd80bd42122738e726' && val.Score == 3)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: e016bde7-4393-418b-83f8-3aec173cbda3
+    type: regular
+    task:
+      id: e016bde7-4393-418b-83f8-3aec173cbda3
+      version: -1
+      name: VerifyContext File
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: MD5,SHA1,SHA256,Size,SSDeep,Malicious
+      path:
+        simple: File(val.MD5 === '6a95d3d00267c9fd80bd42122738e726')
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

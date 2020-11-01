@@ -1,0 +1,14 @@
+{
+    "name": "Shift Management",
+    "description": "Shift management related content",
+    "support": "xsoar",
+    "currentVersion": "1.1.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-01T08:30:00Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

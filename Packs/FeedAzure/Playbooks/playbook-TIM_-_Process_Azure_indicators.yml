@@ -1,0 +1,737 @@
+id: TIM - Process Azure indicators
+version: -1
+fromversion: 5.5.0
+name: TIM - Process Azure indicators
+description: This playbook handles the tagging of Azure indicators. Specify the tag
+  to apply to these indicators in the playbook inputs. An example tag will be approved_white.
+  If no inputs are specified, the indicators will be tagged for manual review. The
+  user can specify whether a manual review incident is required.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 44e624ee-accf-4938-8f08-d76451581986
+    type: start
+    task:
+      id: 44e624ee-accf-4938-8f08-d76451581986
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 419b007e-2a1f-44d5-8b77-b6271e554f4e
+    type: title
+    task:
+      id: 419b007e-2a1f-44d5-8b77-b6271e554f4e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 92e7d5e2-3945-47fd-8c25-f3c0c8ba7016
+    type: condition
+    task:
+      id: 92e7d5e2-3945-47fd-8c25-f3c0c8ba7016
+      version: -1
+      name: Is there a AzureIndicatorTagName input?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.AzureIndicatorTagName
+            iscontext: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: inputs.AzureIndicatorTagName
+            iscontext: true
+          right:
+            value:
+              simple: whitelist_review
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 0d364681-1c79-4711-867d-a16d074d4f06
+    type: regular
+    task:
+      id: 0d364681-1c79-4711-867d-a16d074d4f06
+      version: -1
+      name: Tag Azure indicators with tag from inputs
+      description:   Adds the tag provided in the input to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: ${inputs.AzureIndicatorTagName}
+      indicatorsValues:
+        complex:
+          root: ${playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.sourceBrands
+                iscontext: true
+              right:
+                value:
+                  simple: AzureFeed
+          accessor: value}
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: a2c6b6c9-2a94-46e2-80bd-09f28823f1b2
+    type: condition
+    task:
+      id: a2c6b6c9-2a94-46e2-80bd-09f28823f1b2
+      version: -1
+      name: Are there filtered results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.sourceBrands
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AzureFeed
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 1292e6d7-2cc0-440b-81f7-fb4e08d35f0c
+    type: regular
+    task:
+      id: 1292e6d7-2cc0-440b-81f7-fb4e08d35f0c
+      version: -1
+      name: Tag Azure indicators with tag whitelist review
+      description: Adds the whitelist_review tag to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: whitelist_review
+      indicatorsValues:
+        complex:
+          root: ${playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.sourceBrands
+                iscontext: true
+              right:
+                value:
+                  simple: AzureFeed
+          accessor: value}
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 4e0a4d74-1cf0-48b3-831f-a75573f85d45
+    type: condition
+    task:
+      id: 4e0a4d74-1cf0-48b3-831f-a75573f85d45
+      version: -1
+      name: Open manual review incident?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: inputs.OpenIncidentToReviewIndicatorsManually
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 9368bd73-e75d-4cc3-8240-acf2b6057b50
+    type: regular
+    task:
+      id: 9368bd73-e75d-4cc3-8240-acf2b6057b50
+      version: -1
+      name: Create Process Indicators Manually incident
+      description: Open new manual review incident
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      dest: {}
+      desthostname: {}
+      destinationip: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      entryIDs: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      infectedhosts: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name:
+        simple: Review Indicators Manually For Whitelisting
+      niststage: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      safebreachsimulationid: {}
+      samaccountname: {}
+      sansstage: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type:
+        simple: Review Indicators Manually For Whitelisting
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "28":
+    id: "28"
+    taskid: 19ee32ed-d9a1-4c46-8a44-75af0fd656b7
+    type: title
+    task:
+      id: 19ee32ed-d9a1-4c46-8a44-75af0fd656b7
+      version: -1
+      name: Auto Approve
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 9a9e74b1-d4e7-430e-8345-3ee4952b8b7a
+    type: title
+    task:
+      id: 9a9e74b1-d4e7-430e-8345-3ee4952b8b7a
+      version: -1
+      name: Manually review
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1285,
+        "width": 1500,
+        "x": -610,
+        "y": -260
+      }
+    }
+  }
+inputs:
+- key: AzureIndicatorTagName
+  value: {}
+  required: false
+  description: 'Use this input to define which tag to apply to Azure indicators. An
+    example tag can be whitelist_review. If no tags are specified in the input, the
+    tag whitelist_review will be used. '
+  playbookInputQuery: null
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: sourceBrands:AzureFeed
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: OpenIncidentToReviewIndicatorsManually
+  value:
+    simple: "No"
+  required: false
+  description: This input determines if processed indicators that have the whitelist_review tag are reviewed in a new incident.
+    To create an incident, enter any value other than 'No'.
+  playbookInputQuery: null
+outputs: []
+quiet: true
+tests:
+- No test

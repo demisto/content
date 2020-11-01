@@ -1,0 +1,459 @@
+id: 67b0f25f-b061-4468-8613-43ab13147173
+version: -1
+name: CbP-PlayBook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bd94baef-08a0-4ef0-8cc0-7162e08cc66b
+    type: start
+    task:
+      id: bd94baef-08a0-4ef0-8cc0-7162e08cc66b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -119
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7cfce34b-34b3-425e-81e6-0fe10f71a771
+    type: regular
+    task:
+      id: 7cfce34b-34b3-425e-81e6-0fe10f71a771
+      version: -1
+      name: cbp-connector-search
+      description: commands.server.cbp.ConnectorSearch.description
+      script: carbonblackprotection|||cbp-connector-search
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      group: {}
+      limit: {}
+      offset: {}
+      query:
+        simple: id:2
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e3c839a1-c546-46f1-890c-c7faa8907b54
+    type: regular
+    task:
+      id: e3c839a1-c546-46f1-890c-c7faa8907b54
+      version: -1
+      name: cbp-connector-get
+      description: commands.server.cbp.ConnectorGet.description
+      script: carbonblackprotection|||cbp-connector-get
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        simple: ${CbP.Connector.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ca6c90fa-e16d-43e6-8410-81871eb665da
+    type: regular
+    task:
+      id: ca6c90fa-e16d-43e6-8410-81871eb665da
+      version: -1
+      name: cbp-fileAnalysis-createOrUpdate
+      description: commands.server.cbp.fileAnalysisPost.description
+      script: carbonblackprotection|||cbp-fileAnalysis-createOrUpdate
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      analysisStatus: {}
+      analysisTarget: {}
+      computerId: {}
+      connectorId:
+        simple: ${CbP.Connector.ID}
+      fileCatalogId:
+        simple: "26866"
+      priority: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d992be28-403e-4ab9-8312-bd2e7b10316c
+    type: regular
+    task:
+      id: d992be28-403e-4ab9-8312-bd2e7b10316c
+      version: -1
+      name: cbp-fileAnalysis-get
+      description: commands.server.cbp.fileAnalysisGet.description
+      script: carbonblackprotection|||cbp-fileAnalysis-get
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      id:
+        simple: ${CbP.FileAnalysis.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: bf45144a-6ad5-4a06-84f6-b804e00b2978
+    type: regular
+    task:
+      id: bf45144a-6ad5-4a06-84f6-b804e00b2978
+      version: -1
+      name: cbp-fileUpload-createOrUpdate
+      description: commands.server.cbp.FileUploadPost.description
+      script: carbonblackprotection|||cbp-fileUpload-createOrUpdate
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      computerId: {}
+      fileCatalogId:
+        simple: "26866"
+      priority: {}
+      uploadStatus: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1c5d2193-43de-4d12-83b0-3e594d35723c
+    type: regular
+    task:
+      id: 1c5d2193-43de-4d12-83b0-3e594d35723c
+      version: -1
+      name: cbp-fileUpload-get
+      description: commands.server.cbp.FileUploadGet.description
+      script: carbonblackprotection|||cbp-fileUpload-get
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        simple: ${CbP.FileUpload.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: adc1f041-6b2b-4a75-8560-131bcb1fc147
+    type: regular
+    task:
+      id: adc1f041-6b2b-4a75-8560-131bcb1fc147
+      version: -1
+      name: cbp-fileUpload-download
+      description: commands.server.cbp.FileUploadGet.description
+      script: carbonblackprotection|||cbp-fileUpload-download
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id:
+        simple: ${CbP.FileUpload.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2379e04f-71c0-4f0b-8544-c1d459317c09
+    type: regular
+    task:
+      id: 2379e04f-71c0-4f0b-8544-c1d459317c09
+      version: -1
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ID,FileName,PathName,FileCatalogId,AnalysisResult,AnalysisStatus,ConnectorId,AnalysisTarget,ComputerId,DateModified,DateCreated,Priority
+      isArray:
+        simple: "true"
+      path:
+        simple: CbP.FileAnalysis
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: bda09352-7e80-4815-8c3f-f8300727f6f2
+    type: regular
+    task:
+      id: bda09352-7e80-4815-8c3f-f8300727f6f2
+      version: -1
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      fields:
+        simple: ID,FileName,PathName,UploadStatus,FileCatalogId,ComputerId,UploadedFileSize,UploadPath,CreatedBy,CreatedByUserId,DateCreated,DateModified,Priority
+      isArray:
+        simple: "true"
+      path:
+        simple: CbP.FileUpload
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1419
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 48ffb19b-32fa-4647-8fd2-b86d13c6e752
+    type: regular
+    task:
+      id: 48ffb19b-32fa-4647-8fd2-b86d13c6e752
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 85bce2ff-18b7-4d70-86fa-5388e786c5f7
+    type: regular
+    task:
+      id: 85bce2ff-18b7-4d70-86fa-5388e786c5f7
+      version: -1
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      fields:
+        simple: Size,SHA1,SHA256,Name,SSDeep,EntryID
+      isArray:
+        simple: "true"
+      path:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1943
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: b8abb944-63bc-41dd-8193-5bd6abb9bf35
+    type: regular
+    task:
+      id: b8abb944-63bc-41dd-8193-5bd6abb9bf35
+      version: -1
+      name: VerifyContext
+      description: |+
+        Verify path in context
+        - Verify path existence
+        - If matching object is array - verify fields exists in each object in array
+        - If matching object is not array - verify fields exists in matching object
+        - if 'expectedValue' supplied - ensure that given value equal to context path
+
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: ${CbP.Connector.ID}${CbP.Connector.Enabled}${CbP.Connector.ConnectorVersion}${CbP.Connector.CanAnalyze}${CbP.Connector.AnalysisTargets}${CbP.Connector.AnalysisName}${CbP.Connector.AnalysisEnabled}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 369
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2157,
+        "width": 760,
+        "x": 50,
+        "y": -119
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

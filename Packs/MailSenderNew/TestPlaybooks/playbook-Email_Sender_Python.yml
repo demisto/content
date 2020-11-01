@@ -1,0 +1,1649 @@
+id: Mail Sender (New) Test
+version: -1
+name: Mail Sender (New) Test
+description: |-
+  Email sender - python.
+  Tested against googleapps mail.
+  Sends mail to user -> verify info against the client's mail.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c039607f-bc62-4387-889a-94c98bc25bd7
+    type: start
+    task:
+      id: c039607f-bc62-4387-889a-94c98bc25bd7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f1328f1d-6264-47f0-8e9b-2a4402aceb7d
+    type: regular
+    task:
+      id: f1328f1d-6264-47f0-8e9b-2a4402aceb7d
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7837c901-1148-4c8b-8492-20b3643c1579
+    type: regular
+    task:
+      id: 7837c901-1148-4c8b-8492-20b3643c1579
+      version: -1
+      name: Send mail using python
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: this is a test by playbook
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: special test via playbook (1)
+      templateParams: {}
+      to:
+        simple: yarden@demistodev.com
+      transientFile:
+        simple: test.txt
+      transientFileCID: {}
+      transientFileContent:
+        simple: this is a test text inside a test attachment mail!
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 63088bd8-6c01-4ec0-883f-15386f712440
+    type: regular
+    task:
+      id: 63088bd8-6c01-4ec0-883f-15386f712440
+      version: -1
+      name: Wait for mail to be received
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 0872fa13-5569-4e94-899c-322cf597ef7e
+    type: regular
+    task:
+      id: 0872fa13-5569-4e94-899c-322cf597ef7e
+      version: -1
+      name: Search for email sent and get ID
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 07a74cd4-d19b-4abc-87cc-fa50dad85b1e
+    type: condition
+    task:
+      id: 07a74cd4-d19b-4abc-87cc-fa50dad85b1e
+      version: -1
+      name: Check if email was found (if ID exists)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 5d18e77f-c6bc-4172-86da-f7ae813360f1
+    type: regular
+    task:
+      id: 5d18e77f-c6bc-4172-86da-f7ae813360f1
+      version: -1
+      name: Delete email list from context
+      description: |-
+        Because of how the googleapps integration is built, both fetching meta-data about the email ID and fetching the email itself, create record under Email key, which in turn duplicated a record with the same key&value of ID, thus preventing us from verifying our data later.
+
+        The simple solution: delete the old entry after the ID was stored in the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Gmail
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 832fe995-8180-4257-8feb-b99eaecb55dc
+    type: regular
+    task:
+      id: 832fe995-8180-4257-8feb-b99eaecb55dc
+      version: -1
+      name: Save the retrieved mail's ID under a key for search in inbox
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Testmail.ID
+      stringify: {}
+      value:
+        simple: ${Gmail.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 2d17be52-9418-4527-8336-d1d5864a8ebf
+    type: regular
+    task:
+      id: 2d17be52-9418-4527-8336-d1d5864a8ebf
+      version: -1
+      name: Wait for mail to receive
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: a2509cf0-bc77-467b-8b47-72385f5cecda
+    type: condition
+    task:
+      id: a2509cf0-bc77-467b-8b47-72385f5cecda
+      version: -1
+      name: Check if email was found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: aa89c1d1-00e5-4c96-8a55-35e487bd2b4e
+    type: regular
+    task:
+      id: aa89c1d1-00e5-4c96-8a55-35e487bd2b4e
+      version: -1
+      name: Fetch email from google mail using message ID
+      description: Retrieves the Gmail message sent to a specified user.
+      script: '|||gmail-get-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      format: {}
+      message-id:
+        simple: ${Testmail.ID}
+      user-id:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 49200cf0-da80-45ec-829e-9685467b041c
+    type: condition
+    task:
+      id: 49200cf0-da80-45ec-829e-9685467b041c
+      version: -1
+      name: Check for attachments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.Attachments
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 3f9c3a12-1b51-4568-84c1-09c73814ef75
+    type: title
+    task:
+      id: 3f9c3a12-1b51-4568-84c1-09c73814ef75
+      version: -1
+      name: Test email was found with the attachment!
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b8a35408-9973-4275-819a-0948bddf0a3f
+    type: regular
+    task:
+      id: b8a35408-9973-4275-819a-0948bddf0a3f
+      version: -1
+      name: Email found without attachment
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: No attachment found.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 032246da-2987-4a48-877d-062017d41cd9
+    type: regular
+    task:
+      id: 032246da-2987-4a48-877d-062017d41cd9
+      version: -1
+      name: Test failed
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual: {}
+      details: {}
+      error:
+        simple: Mail was not found after 30 sec.
+      expected: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: b1a109ac-0c72-4e88-8f2b-0379235f2512
+    type: regular
+    task:
+      id: b1a109ac-0c72-4e88-8f2b-0379235f2512
+      version: -1
+      name: Wait for mail to receive
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 23c567e2-d0ff-4306-8251-75d34d7f8b0b
+    type: regular
+    task:
+      id: 23c567e2-d0ff-4306-8251-75d34d7f8b0b
+      version: -1
+      name: Search for email sent (ID)
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works OR mockpoc@demisto.works subject:special test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 5eb2c56f-c0bf-4667-8d2e-6fecdf078777
+    type: condition
+    task:
+      id: 5eb2c56f-c0bf-4667-8d2e-6fecdf078777
+      version: -1
+      name: Check if email was found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 9d288529-b919-4544-84f1-47c73152ed04
+    type: regular
+    task:
+      id: 9d288529-b919-4544-84f1-47c73152ed04
+      version: -1
+      name: Start Over - Send several files
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 1342069a-edf9-4c67-8376-0cb349064271
+    type: regular
+    task:
+      id: 1342069a-edf9-4c67-8376-0cb349064271
+      version: -1
+      name: Send mail using python
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs:
+        simple: ${File.EntryID}
+      attachNames:
+        simple: attach.txt
+      bcc: {}
+      body:
+        simple: this is a test by playbook
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: special test via playbook (2)
+      templateParams: {}
+      to:
+        simple: yarden@demistodev.com
+      transientFile:
+        simple: test.txt,test2.txt
+      transientFileCID: {}
+      transientFileContent:
+        simple: this is a test text inside a test attachment mail!,another mail content.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 71005cf6-3723-4b2f-84b3-47fa475d1b9b
+    type: regular
+    task:
+      id: 71005cf6-3723-4b2f-84b3-47fa475d1b9b
+      version: -1
+      name: Wait for mail to be received
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: b6db2e2d-e708-4908-841a-036e9465a355
+    type: condition
+    task:
+      id: b6db2e2d-e708-4908-841a-036e9465a355
+      version: -1
+      name: Check if email was found (if ID exists)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: bef22571-dca1-4a2c-8de3-f0acdbf1e150
+    type: regular
+    task:
+      id: bef22571-dca1-4a2c-8de3-f0acdbf1e150
+      version: -1
+      name: Wait for mail to be received
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: d4384905-f8c5-4461-8fbc-661a7019a1b7
+    type: condition
+    task:
+      id: d4384905-f8c5-4461-8fbc-661a7019a1b7
+      version: -1
+      name: Check if email was found (if ID exists)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: b8d20cc9-b523-4dee-8715-abf9876445aa
+    type: condition
+    task:
+      id: b8d20cc9-b523-4dee-8715-abf9876445aa
+      version: -1
+      name: Check if email was found (if ID exists)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 0206825f-fb08-46d4-86a4-ad32a41811f3
+    type: regular
+    task:
+      id: 0206825f-fb08-46d4-86a4-ad32a41811f3
+      version: -1
+      name: Wait for mail to be received
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: bb7aab29-94d4-488a-8f69-9c003f9f34c0
+    type: regular
+    task:
+      id: bb7aab29-94d4-488a-8f69-9c003f9f34c0
+      version: -1
+      name: Save the retrieved mail's ID under a key for search in inbox
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Testmail.ID
+      stringify: {}
+      value:
+        simple: ${Gmail.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 52c01191-e0d7-4830-81e0-1dbcc0d22b98
+    type: regular
+    task:
+      id: 52c01191-e0d7-4830-81e0-1dbcc0d22b98
+      version: -1
+      name: Delete email list from context
+      description: |-
+        Because of how the gmail integration is built, both fetching meta-data about the email ID and fetching the email itself, create record under Email key, which in turn duplicated a record with the same key&value of ID, thus preventing us from verifying our data later.
+
+        The simple solution: delete the old entry after the ID was stored in the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all: {}
+      key:
+        simple: Email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 6fdd80e3-1a3f-4b8d-866e-6226a786ea8b
+    type: regular
+    task:
+      id: 6fdd80e3-1a3f-4b8d-866e-6226a786ea8b
+      version: -1
+      name: Fetch email from google mail using message ID
+      description: Retrieves the Gmail message sent to a specified user.
+      script: '|||gmail-get-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      format: {}
+      message-id:
+        simple: ${Testmail.ID}
+      user-id:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: ae889d06-1ec9-45e0-8531-324eacac0901
+    type: regular
+    task:
+      id: ae889d06-1ec9-45e0-8531-324eacac0901
+      version: -1
+      name: Create a new File
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      data:
+        simple: WarRoom File
+      entryId: {}
+      filename:
+        simple: attachment1.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 0ad8eb45-31db-4be3-8e7a-c7ca178dea1b
+    type: condition
+    task:
+      id: 0ad8eb45-31db-4be3-8e7a-c7ca178dea1b
+      version: -1
+      name: Check for attachments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.Attachments
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: d74d1676-2c9d-4a2c-8051-48eebb8b06fc
+    type: regular
+    task:
+      id: d74d1676-2c9d-4a2c-8051-48eebb8b06fc
+      version: -1
+      name: Email found without attachment
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        complex:
+          root: Email
+          accessor: Attachments
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+          - operator: count
+      details: {}
+      error:
+        simple: Not all attachments found.
+      expected:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: cd05ea79-7898-4998-8aaf-ccdb761954eb
+    type: title
+    task:
+      id: cd05ea79-7898-4998-8aaf-ccdb761954eb
+      version: -1
+      name: Finished Successfully
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 6510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 95b9ba66-d735-4893-8953-0b8b704527b2
+    type: condition
+    task:
+      id: 95b9ba66-d735-4893-8953-0b8b704527b2
+      version: -1
+      name: Check for attachments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.Attachments
+            iscontext: true
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: '[0].Attachments'
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 64a53e44-77d3-48c4-841c-53abb9c36d00
+    type: regular
+    task:
+      id: 64a53e44-77d3-48c4-841c-53abb9c36d00
+      version: -1
+      name: Get Time Now
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: ISO
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: f4de843a-a45e-4541-89c6-69e737f4c3c0
+    type: regular
+    task:
+      id: f4de843a-a45e-4541-89c6-69e737f4c3c0
+      version: -1
+      name: Search for email sent and get ID
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works OR mockpoc@demisto.works subject:special test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 526e4a7f-7800-4a34-8caa-a39c2ff86d43
+    type: regular
+    task:
+      id: 526e4a7f-7800-4a34-8caa-a39c2ff86d43
+      version: -1
+      name: Get Time Now
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: ISO
+      hoursAgo: {}
+      minutesAgo:
+        simple: "2"
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 2903dbc1-fe6d-4b8e-84f8-5c86f7121d85
+    type: regular
+    task:
+      id: 2903dbc1-fe6d-4b8e-84f8-5c86f7121d85
+      version: -1
+      name: Search for email sent and get ID
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works OR mockpoc@demisto.works subject:special test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 059d2bc7-cc19-4d6d-8299-ff4c1ece1159
+    type: regular
+    task:
+      id: 059d2bc7-cc19-4d6d-8299-ff4c1ece1159
+      version: -1
+      name: Search for email sent and get ID
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 75495819-dc02-4101-8d20-ad7d3c3e5351
+    type: regular
+    task:
+      id: 75495819-dc02-4101-8d20-ad7d3c3e5351
+      version: -1
+      name: Search for email sent and get ID
+      description: Searches for Gmail records of a specified Google user.
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: division
+            args:
+              by:
+                value:
+                  simple: "1000"
+          - operator: floor
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special test via playbook after:'
+              suffix: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 12633f68-24dd-4bc2-858f-7a70c7108c14
+    type: condition
+    task:
+      id: 12633f68-24dd-4bc2-858f-7a70c7108c14
+      version: -1
+      name: Check for attachments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.Attachments
+            iscontext: true
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: '[1].Attachments'
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 1052.5,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_16_#default#": 0.9,
+      "10_7_yes": 0.34,
+      "18_7_yes": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6525,
+        "width": 1382.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

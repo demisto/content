@@ -1,0 +1,442 @@
+id: Search Endpoints By Hash - Generic V2
+version: -1
+name: Search Endpoints By Hash - Generic V2
+description: Hunt using available tools
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c485e19b-c83a-48e4-892c-8bd91e17ced2
+    type: start
+    task:
+      id: c485e19b-c83a-48e4-892c-8bd91e17ced2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c185447e-549c-476e-8477-98c461dadd16
+    type: playbook
+    task:
+      id: c185447e-549c-476e-8477-98c461dadd16
+      version: -1
+      name: Search Endpoints By Hash - CrowdStrike
+      description: Hunt for endpoint activity involving hash and domain IOCs, using Crowdstrike Falcon Host
+      playbookName: Search Endpoints By Hash - CrowdStrike
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      MD5Hash:
+        complex:
+          root: inputs
+          accessor: MD5Hash
+      SHA1Hash:
+        complex:
+          root: inputs
+          accessor: SHA1Hash
+      SHA256Hash:
+        complex:
+          root: inputs
+          accessor: SHA256Hash
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 63,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d3865a5d-6516-4d22-8134-a4cfca96bd3c
+    type: playbook
+    task:
+      id: d3865a5d-6516-4d22-8134-a4cfca96bd3c
+      version: -1
+      name: Search Endpoints By Hash - Carbon Black Protection
+      description: Hunt for endpoint activity involving hash IOCs, using Carbon Black Protection.
+      playbookName: Search Endpoints By Hash - Carbon Black Protection
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      Hash:
+        complex:
+          root: inputs
+          accessor: MD5Hash
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9510dbd8-98c3-4611-802f-333acf31875b
+    type: title
+    task:
+      id: 9510dbd8-98c3-4611-802f-333acf31875b
+      version: -1
+      name: MD5 Only
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1148,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: ce67117f-133a-4da3-84be-14e4a831756a
+    type: title
+    task:
+      id: ce67117f-133a-4da3-84be-14e4a831756a
+      version: -1
+      name: MD5 / SHA1 / SHA256
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "13"
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 63,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 05df1d6e-f77e-4b06-8c62-2750064f5b00
+    type: condition
+    task:
+      id: 05df1d6e-f77e-4b06-8c62-2750064f5b00
+      version: -1
+      name: Is MD5 hash?
+      description: Is MD5 hash?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "8"
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: MD5Hash
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1148,
+          "y": 309
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: f2a05482-2b17-4a09-8813-be48459935c3
+    type: title
+    task:
+      id: f2a05482-2b17-4a09-8813-be48459935c3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 8d49d868-d88a-4e69-85d4-44e38c7ef0e7
+    type: playbook
+    task:
+      id: 8d49d868-d88a-4e69-85d4-44e38c7ef0e7
+      version: -1
+      name: Search Endpoints By Hash - TIE
+      description: |-
+        Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
+
+        Input:
+        * Hash (default, takes all deferent hashes from context)
+
+        Output:
+        * All agents that files with "Hash" has been executed on (TIE)
+        * Enrich Agents info from ePO
+      playbookName: Search Endpoints By Hash - TIE
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      Hash:
+        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f]; }).reduce(function(a, b){ return a.concat(b); }, [])}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 974d2e04-3c66-445c-844d-be5ebdbc218e
+    type: title
+    task:
+      id: 974d2e04-3c66-445c-844d-be5ebdbc218e
+      version: -1
+      name: No MD5
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 30440c37-3692-4f92-8974-dadc57ef392a
+    type: playbook
+    task:
+      id: 30440c37-3692-4f92-8974-dadc57ef392a
+      version: -1
+      name: Search Endpoints By Hash - Cybereason
+      description: Hunt for endpoint activity involving hash, using Cybereason.
+      playbookName: Search Endpoints By Hash - Cybereason
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      MD5Hash:
+        complex:
+          root: inputs.MD5Hash
+      SHA1Hash:
+        complex:
+          root: inputs.SHA1Hash
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 5caac167-7b08-469e-8ad3-eb20356b2e30
+    type: playbook
+    task:
+      id: 5caac167-7b08-469e-8ad3-eb20356b2e30
+      version: -1
+      name: Search Endpoints By Hash - Carbon Black Response V2
+      playbookName: Search Endpoints By Hash - Carbon Black Response V2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_16_yes": 0.47,
+      "11_8_yes": 0.58
+    },
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 2500,
+        "x": -350,
+        "y": -50
+      }
+    }
+  }
+inputs:
+- key: MD5Hash
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: MD5 Hash
+  playbookInputQuery:
+- key: SHA1Hash
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+  required: false
+  description: SHA1 Hash
+  playbookInputQuery:
+- key: SHA256Hash
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: SHA256 Hash
+  playbookInputQuery:
+outputs:
+- contextPath: Endpoint.Hostname
+  description: Device hostname
+  type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown
+fromversion: 5.0.0
+tests:
+- No tests

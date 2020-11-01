@@ -1,0 +1,28 @@
+[
+  {
+    "created": "2019-05-26T16:18:32.000Z",
+    "id": "indicator--893eac0c-3232-4219-91bb-97f9a6b0de6c",
+    "labels": [
+      "url"
+    ],
+    "modified": "2019-05-26T16:18:32.000Z",
+    "pattern": "[url:value = 'http://demisto.com']",
+    "score": "None",
+    "source": "",
+    "type": "indicator",
+    "valid_from": "2019-05-28T16:38:17.837119Z"
+  },
+  {
+    "created": "2019-05-26T16:11:08.000Z",
+    "id": "indicator--7ed80192-4b84-4954-8b41-6268290cd5c7",
+    "labels": [
+      "email"
+    ],
+    "modified": "2019-05-26T16:11:08.000Z",
+    "pattern": "[email-message:sender_ref.value = 'user@example.com']",
+    "score": "None",
+    "source": "",
+    "type": "indicator",
+    "valid_from": "2019-05-28T16:38:17.840274Z"
+  }
+]

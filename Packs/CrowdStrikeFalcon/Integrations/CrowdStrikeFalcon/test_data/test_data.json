@@ -1,0 +1,30 @@
+{
+  "response_for_get_indicator_device_id": {
+    "errors": [
+        {
+            "code": 0,
+            "id": "string",
+            "message": "string"
+        }
+    ],
+    "meta": {
+        "entity": "string",
+        "pagination": {
+            "limit": 0,
+            "next_page": "string",
+            "total": 0
+        },
+        "query_time": 0,
+        "trace_id": "string"
+    },
+    "resources": [
+        "111111",
+        "222222",
+        "333333"
+    ]
+},
+
+
+"context_output_for_get_indicator_device_id": ["111111", "222222", "333333"]
+
+}

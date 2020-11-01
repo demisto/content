@@ -1,0 +1,866 @@
+id: Carbon Black Enterprise EDR Test
+version: -1
+fromversion: 5.0.0
+contentitemfields:
+  propagationLabels:
+  - all
+name: Carbon Black Enterprise EDR Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: "313"
+    type: start
+    task:
+      id: "313"
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: "314"
+    type: regular
+    task:
+      id: "314"
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "2":
+    id: "2"
+    taskid: "327"
+    type: regular
+    task:
+      id: "327"
+      version: -1
+      name: List Watchlists
+      description: Retrieve all watchlists.
+      script: Carbon Black Enterprise EDR|||cb-eedr-watchlist-list
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "3":
+    id: "3"
+    taskid: "418"
+    type: regular
+    task:
+      id: "418"
+      version: -1
+      name: Create new watchlist
+      description: Create a new report or classifier watchlist.
+      script: '|||cb-eedr-watchlist-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alerts_enabled:
+        simple: "false"
+      classifier_key: {}
+      classifier_value: {}
+      description:
+        simple: This is a test
+      report_ids:
+        simple: ${CarbonBlackEEDR.Report.ID}
+      tags_enabled:
+        simple: "false"
+      watchlist_name:
+        simple: Test watchlist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "4":
+    id: "4"
+    taskid: "329"
+    type: regular
+    task:
+      id: "329"
+      version: -1
+      name: Get watchlist by ID
+      description: Get watchlist information by id.
+      script: '|||cb-eedr-get-watchlist-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      watchlist_id:
+        simple: ${CarbonBlackEEDR.Watchlist.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "5":
+    id: "5"
+    taskid: "414"
+    type: regular
+    task:
+      id: "414"
+      version: -1
+      name: Update the watchlist
+      description: Update watchlist with watchlist_id. This will update the tags and
+        alert status as well as any reports or classifiers attached to the watchlist.
+      script: Carbon Black Enterprise EDR|||cb-eedr-watchlist-update
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      alerts_enabled:
+        simple: "true"
+      classifier_key: {}
+      classifier_value: {}
+      description: {}
+      report_ids: {}
+      tags_enabled: {}
+      watchlist_id:
+        simple: ${CarbonBlackEEDR.Watchlist.id}
+      watchlist_name:
+        simple: new
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "6":
+    id: "6"
+    taskid: "325"
+    type: regular
+    task:
+      id: "325"
+      version: -1
+      name: Get updated watchlist
+      description: Get watchlist information by id.
+      script: Carbon Black Enterprise EDR|||cb-eedr-get-watchlist-by-id
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      watchlist_id:
+        simple: ${CarbonBlackEEDR.Watchlist.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "7":
+    id: "7"
+    taskid: "415"
+    type: condition
+    task:
+      id: "415"
+      version: -1
+      name: Check updated watchlist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CarbonBlackEEDR.Watchlist.name
+            iscontext: true
+          right:
+            value:
+              simple: new
+      - - operator: isTrue
+          left:
+            value:
+              simple: CarbonBlackEEDR.Watchlist.Alerts_enabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "9":
+    id: "9"
+    taskid: "359"
+    type: regular
+    task:
+      id: "359"
+      version: -1
+      name: Create new report
+      description: Add a new watchlist report.
+      script: Carbon Black Enterprise EDR|||cb-eedr-report-create
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      description:
+        simple: Testing new report creation
+      dns: {}
+      ioc_query: {}
+      ipv4:
+        simple: 2.2.2.2,3.3.3.3
+      ipv6: {}
+      md5: {}
+      severity:
+        simple: "5"
+      tags:
+        simple: one,two,three
+      timestamp:
+        simple: 2019-01-01T00:00:16
+      title:
+        simple: Report test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "10":
+    id: "10"
+    taskid: "345"
+    type: regular
+    task:
+      id: "345"
+      version: -1
+      name: Get new report
+      description: Retrieve report with report_id.
+      script: Carbon Black Enterprise EDR|||cb-eedr-report-get
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      report_id:
+        simple: ${CarbonBlackEEDR.Report.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "11":
+    id: "11"
+    taskid: "413"
+    type: regular
+    task:
+      id: "413"
+      version: -1
+      name: Update report
+      description: Update report with report_id.
+      script: Carbon Black Enterprise EDR|||cb-eedr-report-update
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      description:
+        simple: Different description.
+      dns: {}
+      ioc_query: {}
+      ipv4:
+        simple: 3.3.3.3
+      ipv6: {}
+      md5: {}
+      report_id:
+        simple: ${CarbonBlackEEDR.Report.ID}
+      severity:
+        simple: "5"
+      tags:
+        simple: hello,world
+      timestamp:
+        simple: 2019-05-01T00:00:16
+      title:
+        simple: ${CarbonBlackEEDR.Report.Title}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "12":
+    id: "12"
+    taskid: "348"
+    type: regular
+    task:
+      id: "348"
+      version: -1
+      name: Get updated report
+      description: Retrieve report with report_id.
+      script: '|||cb-eedr-report-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      report_id:
+        simple: ${CarbonBlackEEDR.Report.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "13":
+    id: "13"
+    taskid: "365"
+    type: condition
+    task:
+      id: "365"
+      version: -1
+      name: Check updated report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: CarbonBlackEEDR
+                accessor: Report.Tags
+            iscontext: true
+          right:
+            value:
+              simple: hello
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CarbonBlackEEDR.Report.Description
+            iscontext: true
+          right:
+            value:
+              simple: Different description.
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "14":
+    id: "14"
+    taskid: "351"
+    type: regular
+    task:
+      id: "351"
+      version: -1
+      name: Delete the report
+      description: Remove report with report_id.
+      script: Carbon Black Enterprise EDR|||cb-eedr-report-remove
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      report_id:
+        simple: ${CarbonBlackEEDR.Report.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "15":
+    id: "15"
+    taskid: "352"
+    type: regular
+    task:
+      id: "352"
+      version: -1
+      name: Remove watchlist
+      description: Remove watchlist with watchlist_id.
+      script: Carbon Black Enterprise EDR|||cb-eedr-watchlist-delete
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      watchlist_id:
+        simple: ${CarbonBlackEEDR.Watchlist.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "16":
+    id: "16"
+    taskid: "412"
+    type: regular
+    task:
+      id: "412"
+      version: -1
+      name: List alerts
+      description: List alerts.
+      script: Carbon Black Enterprise EDR|||cb-eedr-list-alerts
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      alert_category: {}
+      alert_id: {}
+      alert_tag: {}
+      alert_type: {}
+      device_id:
+        simple: "3366007"
+      device_name: {}
+      device_os:
+        simple: LINUX
+      device_os_version: {}
+      device_username: {}
+      end_time: {}
+      group_results: {}
+      limit:
+        simple: "5"
+      minimum_severity: {}
+      policy_id: {}
+      policy_name: {}
+      process_name: {}
+      process_sha256: {}
+      reputation: {}
+      sort_field:
+        simple: first_event_time
+      sort_order: {}
+      start_time: {}
+      workflow: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "17":
+    id: "17"
+    taskid: "366"
+    type: regular
+    task:
+      id: "366"
+      version: -1
+      name: List devices
+      description: List devidces based on the search query.
+      script: Carbon Black Enterprise EDR|||cb-eedr-devices-list
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      ad_group_id: {}
+      device_id: {}
+      device_os:
+        simple: WINDOWS
+      end_time: {}
+      limit: {}
+      policy_id: {}
+      sort_field: {}
+      sort_order: {}
+      start_time: {}
+      status: {}
+      target_priority: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "18":
+    id: "18"
+    taskid: "355"
+    type: regular
+    task:
+      id: "355"
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "19":
+    id: "19"
+    taskid: "367"
+    type: condition
+    task:
+      id: "367"
+      version: -1
+      name: Check context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Watchlist.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Watchlist.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "20":
+    id: "20"
+    taskid: "374"
+    type: condition
+    task:
+      id: "374"
+      version: -1
+      name: Check context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Alert.device_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Alert.device_os
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Alert.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "21":
+    id: "21"
+    taskid: "371"
+    type: condition
+    task:
+      id: "371"
+      version: -1
+      name: Check device context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CarbonBlackEEDR.Device.os
+            iscontext: true
+          right:
+            value:
+              simple: WINDOWS
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Device.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Device.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "22":
+    id: "22"
+    taskid: "368"
+    type: title
+    task:
+      id: "368"
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 4140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4155,
+        "width": 390,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

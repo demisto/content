@@ -1,0 +1,14 @@
+{
+    "id": "OnboardingIntegration",
+    "name": "Onboarding Integration - Classifier",
+    "type": "classification",
+    "description": "Classifies Onboarding integration incidents.",
+    "version": -1,
+	"defaultIncidentType": "Phishing",
+	"transformer": {
+		"simple": "",
+		"complex": null
+	},
+	"keyTypeMap": {},
+	"fromVersion": "6.0.0"
+}

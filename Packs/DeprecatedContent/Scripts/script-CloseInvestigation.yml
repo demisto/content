@@ -1,0 +1,33 @@
+commonfields:
+  id: CloseInvestigation
+  version: -1
+name: CloseInvestigation
+script: >-
+  var dArgs = {};
+
+  if (args.reason) {
+      dArgs.closeReason = args.reason;
+  }
+
+  if (args.notes) {
+      dArgs.closeNotes = args.notes;
+  }
+
+  return executeCommand('closeInvestigation', dArgs);
+type: javascript
+tags:
+- server
+- management
+comment: Deprecated. Close an investigation
+system: true
+args:
+- name: reason
+  default: true
+  description: Reason for closing the investigation
+- name: notes
+  description: Free text where you can add notes for closing the investigation.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0

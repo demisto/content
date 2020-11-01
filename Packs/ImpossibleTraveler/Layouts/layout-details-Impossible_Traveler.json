@@ -1,0 +1,571 @@
+{
+	"TypeName": "Impossible Traveler",
+	"kind": "details",
+	"fromVersion": "5.0.0",
+	"layout": {
+		"TypeName": "",
+		"id": "Impossible Traveler",
+		"kind": "details",
+		"modified": "2019-11-17T14:58:53.435100789Z",
+		"name": "",
+		"system": false,
+		"tabs": [
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 24,
+								"id": "incident-type-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 24,
+								"id": "incident-severity-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 24,
+								"id": "incident-owner-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotsource",
+								"height": 24,
+								"id": "incident-source-field",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 24,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 24,
+								"id": "incident-sourceInstance-field",
+								"index": 5,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 24,
+								"id": "incident-playbookId-field",
+								"index": 6,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 1,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"moved": false,
+						"name": "Evidence",
+						"static": false,
+						"type": "evidence",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 24,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 24,
+								"id": "incident-modified-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 24,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 24,
+								"id": "incident-created-field",
+								"index": 0,
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 24,
+								"id": "incident-closed-field",
+								"index": 1,
+								"startCol": 1
+							}
+						],
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 24,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 24,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 24,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 24,
+								"id": "incident-details-field",
+								"index": 0,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Investigation Data",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			},
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"hidden": false,
+				"id": "sl6z3tlmim",
+				"name": "Investigation",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "username",
+								"height": 24,
+								"id": "1f0181f0-0487-11ea-8cae-45b27192ac66",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "previouscoordinates",
+								"height": 24,
+								"id": "0c9128f0-0486-11ea-b103-7ba5e7ae90b3",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "coordinates",
+								"height": 24,
+								"id": "0b80f170-0486-11ea-b103-7ba5e7ae90b3",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "previoussourceip",
+								"height": 24,
+								"id": "126b6ba0-0486-11ea-b103-7ba5e7ae90b3",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceip",
+								"height": 24,
+								"id": "151703a0-0486-11ea-b103-7ba5e7ae90b3",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "previouscountry",
+								"height": 24,
+								"id": "91718fb0-094a-11ea-9384-35aa869eba47",
+								"index": 5,
+								"listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "country",
+								"height": 24,
+								"id": "8e1b5fd0-094a-11ea-9384-35aa869eba47",
+								"index": 6,
+								"listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "previoussignindatetime",
+								"height": 24,
+								"id": "24686960-0487-11ea-8cae-45b27192ac66",
+								"index": 7,
+								"listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "signindatetime",
+								"height": 24,
+								"id": "237779b0-0487-11ea-8cae-45b27192ac66",
+								"index": 8,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "destinationip",
+								"height": 24,
+								"id": "a07c53e0-0487-11ea-8cae-45b27192ac66",
+								"index": 9,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "travelmaplink",
+								"height": 24,
+								"id": "b92f58e0-0489-11ea-b56e-27b3581f8973",
+								"index": 10,
+								"listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Travel Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 4,
+						"hideName": false,
+						"i": "sl6z3tlmim-bae81750-0487-11ea-8cae-45b27192ac66",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Bad or Suspicious Indicators",
+						"query": "reputation:Bad or reputation:Suspicious",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 2,
+						"x": 1,
+						"y": 4
+					},
+					{
+						"h": 4,
+						"hideName": false,
+						"i": "sl6z3tlmim-c0813250-0487-11ea-8cae-45b27192ac66",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Travel Map",
+						"query": {
+							"categories": [
+								"attachments"
+							],
+							"lastId": "",
+							"pageSize": 100,
+							"tags": [],
+							"users": []
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"h": 4,
+						"hideName": false,
+						"i": "sl6z3tlmim-e00e21a0-0487-11ea-8cae-45b27192ac66",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Travel Distance \u0026 Time",
+						"query": {
+							"tags": [
+								"eventduration",
+								"geodistance"
+							]
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 4,
+						"hideName": false,
+						"i": "sl6z3tlmim-0d156cc0-0489-11ea-aaf8-2db208b493bd",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 2,
+						"y": 8
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "sl6z3tlmim-8db43690-0489-11ea-b56e-27b3581f8973",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 1,
+						"y": 8
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "sl6z3tlmim-9271bea0-0489-11ea-b56e-27b3581f8973",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Evidence",
+						"static": false,
+						"type": "evidence",
+						"w": 1,
+						"x": 0,
+						"y": 7
+					},
+					{
+						"h": 4,
+						"hideName": false,
+						"i": "sl6z3tlmim-25f2dd20-048b-11ea-b56e-27b3581f8973",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "User Details",
+						"query": {
+							"tags": [
+								"userinfo"
+							]
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			}
+		],
+		"typeId": "Impossible Traveler",
+		"version": -1
+	},
+	"typeId": "Impossible Traveler",
+	"version": -1,
+	"toVersion": "5.9.9"
+}

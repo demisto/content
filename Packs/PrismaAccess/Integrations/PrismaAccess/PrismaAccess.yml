@@ -1,0 +1,98 @@
+commonfields:
+  id: Prisma Access
+  version: -1
+name: Prisma Access
+display: Prisma Access
+category: Network Security
+description: |+
+  Integrate with Prisma Access to monitor the status of the Service, alert and take actions.
+
+configuration:
+- display: Server Host or IP (e.g.,  10.1.1.9 or panorama.my.domain)
+  name: server
+  type: 0
+  required: true
+- display: API Port (e.g 443)
+  name: port
+  defaultvalue: "443"
+  type: 0
+  required: false
+- display: API Key
+  name: key
+  type: 4
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Device group - Panorama instances only (write shared for Shared location)
+  name: device_group
+  type: 0
+  required: false
+- display: Vsys - Firewall instances only
+  name: vsys
+  type: 0
+  required: false
+- display: SSH Port
+  name: sshport
+  type: 0
+  required: false
+- display: SSH Credentials for CLI
+  name: Username
+  type: 9
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: prisma-access-logout-user
+    arguments:
+    - name: user
+      required: true
+      default: true
+      description: Username to logout. (Without domain name - e.g. jsmith)
+    - name: domain
+      required: true
+      description: Domain name of the user to logout.
+    - name: computer
+      required: true
+      description: Computer name to logout.
+    outputs:
+    - contextPath: PrismaAccess.LogoutUser
+      description: LogoutUser command results
+    description: Force logout a specific user from Prisma Access
+  - name: prisma-access-query
+    arguments:
+    - name: query
+      required: true
+      description: 'Query to run. Example input: querystring limit=2000 action getGPaaSLast90DaysUniqueUsers'
+    outputs:
+    - contextPath: PrismaAccess.QueryResults
+      description: Query results
+    description: Run a query via the Prisma Access CLI
+  - name: prisma-access-cli-command
+    arguments:
+    - name: cmd
+      required: true
+      description: CLI command to run (e.g. debug plugins cloud_services gpcs query
+        querystring limit=9000 action getGPaaSLast90DaysUniqueUsers)
+    description: Run a custom CLI command on Prisma Access
+    deprecated: true
+  - name: prisma-access-active-users
+    arguments:
+    - name: limit
+      description: Maximum number of entries to return. Default is 20.
+      defaultValue: "20"
+    outputs:
+    - contextPath: PrismaAccess.ActiveUsers
+      description: Active Users on Prisma Access
+    description: Query currently active users.
+    deprecated: true
+  dockerimage: demisto/netmiko:1.0.0.11159
+  runonce: false
+  subtype: python3
+fromversion: 5.5.0

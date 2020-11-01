@@ -1,0 +1,3747 @@
+id: Palo Alto Networks - Hunting And Threat Detection
+version: -1
+fromversion: 5.0.0
+name: Palo Alto Networks - Hunting And Threat Detection
+description: "This is a multipurpose playbook used for hunting and threat detection.
+  The playbook receives inputs based on hashes, IP addresses, or domain names provided
+  manually or from outputs by other playbooks. \nWith the received indicators, the
+  playbook leverages data received by PANW products including, Cortex Data Lake, Autofocus
+  and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe
+  output provided by the playbook facilitates pivoting searches for possibly affected
+  IP addresses or users."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: efd174b1-c3ae-48ce-8d14-52e397954612
+    type: start
+    task:
+      id: efd174b1-c3ae-48ce-8d14-52e397954612
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+      - "5"
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4fd04e78-7273-4c82-89a7-fbee29694195
+    type: playbook
+    task:
+      id: 4fd04e78-7273-4c82-89a7-fbee29694195
+      version: -1
+      name: Convert file hash to corresponding hashes
+      playbookName: Convert file hash to corresponding hashes
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "96"
+      - "108"
+      - "109"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e9e3c480-3070-4f6b-870c-840f29c66708
+    type: condition
+    task:
+      id: e9e3c480-3070-4f6b-870c-840f29c66708
+      version: -1
+      name: Is there a hash?
+      description: Header
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA256
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 731d19be-18c2-4a11-81c6-409d8e59a631
+    type: title
+    task:
+      id: 731d19be-18c2-4a11-81c6-409d8e59a631
+      version: -1
+      name: Hash hunting done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "153"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4b82d0f8-dd5f-43cc-8168-60d0f45add20
+    type: condition
+    task:
+      id: 4b82d0f8-dd5f-43cc-8168-60d0f45add20
+      version: -1
+      name: Is there an ip?
+      description: Hedaer
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "112"
+      - "90"
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IPAddresses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -940,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 62cfbf13-0d5f-4aaa-8db7-43920fbb0127
+    type: condition
+    task:
+      id: 62cfbf13-0d5f-4aaa-8db7-43920fbb0127
+      version: -1
+      name: Is there a domain/url?
+      description: Is there an domain/url?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "111"
+      - "93"
+      - "110"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URLDomain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 40a05796-6e85-4c73-8fd2-f893c6326afd
+    type: condition
+    task:
+      id: 40a05796-6e85-4c73-8fd2-f893c6326afd
+      version: -1
+      name: Is Autofocus enabled?
+      description: Is Autofocus enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "100"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: AutoFocus V2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": -1230,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 0dcc38bf-5be7-4253-86c4-0ae975892c33
+    type: condition
+    task:
+      id: 0dcc38bf-5be7-4253-86c4-0ae975892c33
+      version: -1
+      name: Are there related sessions in Autofocus?
+      description: Are there related sessions in Autofocus?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.dst_ip
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.src_ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1230,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 5b6b48aa-f06b-4243-8142-28c3ed2be14d
+    type: title
+    task:
+      id: 5b6b48aa-f06b-4243-8142-28c3ed2be14d
+      version: -1
+      name: IP hunting done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "153"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -940,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: d7a17411-eeaf-42c9-8876-8983a01d526a
+    type: regular
+    task:
+      id: d7a17411-eeaf-42c9-8876-8983a01d526a
+      version: -1
+      name: Search in Cortex Data Lake threat logs
+      description: Searches the Cortex Data Lake Threat table, which is the threat logs
+        table for PAN-OS/Panorama.
+      script: '|||cdl-query-threat-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      action: {}
+      dest_ip: {}
+      dest_port: {}
+      end_time: {}
+      fields:
+        simple: all
+      file_name: {}
+      file_sha_256: {}
+      from_zone: {}
+      ip:
+        complex:
+          root: inputs.IPAddresses
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      limit: {}
+      port: {}
+      query: {}
+      rule_matched: {}
+      source_ip: {}
+      source_port: {}
+      start_time: {}
+      time_range: {}
+      to_zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3120,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: dfdcd4ea-d29d-4f46-874f-de63890673b1
+    type: condition
+    task:
+      id: dfdcd4ea-d29d-4f46-874f-de63890673b1
+      version: -1
+      name: Is IP address detected in Cortex Data Lake threat logs?
+      description: Is the IP address detected in Cortex Data Lake threat logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: inputs.IPAddresses
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+            iscontext: true
+          right:
+            value:
+              simple: CDL.Logging.Threat.SourceIP
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: inputs.IPAddresses
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+            iscontext: true
+          right:
+            value:
+              simple: CDL.Logging.Threat.DestinationIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -3120,
+          "y": 1765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 60d10a58-cb8c-4fa9-8f9c-b6caf57bbb24
+    type: regular
+    task:
+      id: 60d10a58-cb8c-4fa9-8f9c-b6caf57bbb24
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "161"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          accessor: Logging.Threat.SourceIP
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: CDL.Logging.Threat.DestinationIP
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3370,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: ddbf993a-2930-4958-89bd-3fbeb535c1cc
+    type: regular
+    task:
+      id: ddbf993a-2930-4958-89bd-3fbeb535c1cc
+      version: -1
+      name: Set detected users
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append: {}
+      key:
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: CDL.Logging.Threat.Users
+                iscontext: true
+              right:
+                value:
+                  simple: (?!\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b)
+          accessor: Logging.Threat.Users
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3370,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 57ddc9f1-376e-4658-86d9-db5638d0de0a
+    type: regular
+    task:
+      id: 57ddc9f1-376e-4658-86d9-db5638d0de0a
+      version: -1
+      name: Search in Cortex Data Lake Traffic logs
+      description: Searches the Cortex Data Lake traffic table. Traffic logs contain
+        entries for the end of each network session
+      script: '|||cdl-query-traffic-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      action: {}
+      dest_ip: {}
+      dest_port: {}
+      end_time: {}
+      fields:
+        simple: all
+      from_zone: {}
+      ip:
+        complex:
+          root: inputs.IPAddresses
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      limit: {}
+      port: {}
+      query: {}
+      rule: {}
+      source_ip: {}
+      source_port: {}
+      start_time: {}
+      time_range: {}
+      to_zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2620,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: c99f4352-e1a8-4d7e-8c19-3c216fa0a81f
+    type: condition
+    task:
+      id: c99f4352-e1a8-4d7e-8c19-3c216fa0a81f
+      version: -1
+      name: Is IP detected in Cortex Data Lake traffic logs?
+      description: Is the IP address detected in Cortex Data Lake traffic logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "159"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: inputs.IPAddresses
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+            iscontext: true
+          right:
+            value:
+              simple: CDL.Logging.Traffic.SourceIP
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: inputs.IPAddresses
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+            iscontext: true
+          right:
+            value:
+              simple: CDL.Logging.Traffic.DestinationIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2620,
+          "y": 1765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 480f1243-d2ba-4576-8848-403a6ff9d5de
+    type: condition
+    task:
+      id: 480f1243-d2ba-4576-8848-403a6ff9d5de
+      version: -1
+      name: Is PAN-OS enabled?
+      description: Is PAN-OS enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "141"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 19e4e525-4811-453c-8b0e-abd9d7a133bf
+    type: condition
+    task:
+      id: 19e4e525-4811-453c-8b0e-abd9d7a133bf
+      version: -1
+      name: Are there related sessions in Autofocus?
+      description: Are there related sessions in Autofocus?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.dst_ip
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.src_ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 9574ea38-cbc0-47ff-8cfd-b9c6ab4c8eff
+    type: regular
+    task:
+      id: 9574ea38-cbc0-47ff-8cfd-b9c6ab4c8eff
+      version: -1
+      name: Search for the hash in Cortex Data Lake Threat logs
+      description: Searches the Cortex Data Lake threat table, which is the threat logs
+        table for PAN-OS/Panorama.
+      script: '|||cdl-query-threat-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      action: {}
+      dest_ip: {}
+      dest_port: {}
+      end_time: {}
+      fields: {}
+      file_name: {}
+      file_sha_256:
+        simple: ${File.SHA256}
+      from_zone: {}
+      ip: {}
+      limit: {}
+      port: {}
+      query: {}
+      rule_matched: {}
+      source_ip: {}
+      source_port: {}
+      start_time: {}
+      time_range: {}
+      to_zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: d15d25fe-3b36-468b-8dfb-ad65419f700b
+    type: condition
+    task:
+      id: d15d25fe-3b36-468b-8dfb-ad65419f700b
+      version: -1
+      name: Is hash detected by Cortex Data Lake Threat logs?
+      description: Is the hash detected by Cortex Data Lake Threat logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "94"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: CDL.Logging.Threat.FileSHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 84c08f15-90e2-4c85-8d4e-4002ef2509bf
+    type: title
+    task:
+      id: 84c08f15-90e2-4c85-8d4e-4002ef2509bf
+      version: -1
+      name: Domain/Url hunting done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "153"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 32f59534-bc77-42f4-8c10-d4e2dffde9f3
+    type: regular
+    task:
+      id: 32f59534-bc77-42f4-8c10-d4e2dffde9f3
+      version: -1
+      name: Search domain in Cortex Data Lake URL logs
+      description: Searches the Cortex Data Lake URL log table.
+      script: '|||cdl-query-url-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      action: {}
+      dest_ip: {}
+      dest_port: {}
+      end_time: {}
+      fields:
+        simple: all
+      from_zone: {}
+      ip: {}
+      limit: {}
+      port: {}
+      query: {}
+      rule_matched: {}
+      source_ip: {}
+      source_port: {}
+      start_time: {}
+      time_range: {}
+      to_zone: {}
+      url:
+        simple: ${inputs.URLDomain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: bbc9bcbd-fbd1-4c23-8fea-a582c9ea7a4b
+    type: regular
+    task:
+      id: bbc9bcbd-fbd1-4c23-8fea-a582c9ea7a4b
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "164"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          accessor: Logging.URL.SourceIP
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: CDL.Logging.URL.DestinationIP
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 940cb3ab-a2ab-462f-8b23-e4d5d84bd262
+    type: regular
+    task:
+      id: 940cb3ab-a2ab-462f-8b23-e4d5d84bd262
+      version: -1
+      name: Set detected users
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          accessor: Logging.URL.SrcUser
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: CDL.Logging.URL.DstUser
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 8f36d29e-53a8-40a4-819d-20d9c9dfff34
+    type: condition
+    task:
+      id: 8f36d29e-53a8-40a4-819d-20d9c9dfff34
+      version: -1
+      name: Is Panorama enabled?
+      description: Is Panorama enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "140"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": -5110,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 5ca2f308-313c-4513-8290-bb4d50a3fa00
+    type: condition
+    task:
+      id: 5ca2f308-313c-4513-8290-bb4d50a3fa00
+      version: -1
+      name: Is Panorama enabled?
+      description: Is Panorama enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "142"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 5c3e164b-98bf-4b51-808b-7595db30a868
+    type: condition
+    task:
+      id: 5c3e164b-98bf-4b51-808b-7595db30a868
+      version: -1
+      name: Is Autofocus enabled?
+      description: Is Autofocus enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "99"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: AutoFocus V2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 38c609ba-71d2-4578-8127-66d187c1d5a5
+    type: condition
+    task:
+      id: 38c609ba-71d2-4578-8127-66d187c1d5a5
+      version: -1
+      name: Is Autofocus enabled?
+      description: Is Autofocus enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "101"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: AutoFocus V2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 5020,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: fb2fc09c-71c0-4a5f-8c6f-bc1390d6ad43
+    type: condition
+    task:
+      id: fb2fc09c-71c0-4a5f-8c6f-bc1390d6ad43
+      version: -1
+      name: Is Cortex Data Lake enabled?
+      description: Is Cortex Data Lake enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "30"
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Cortex Data Lake
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": -2620,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 3d0b0175-d39a-41f7-80c8-39ad83ce6402
+    type: condition
+    task:
+      id: 3d0b0175-d39a-41f7-80c8-39ad83ce6402
+      version: -1
+      name: Is Cortex Data Lake enabled?
+      description: Is Cortex Data Lake enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Cortex Data Lake
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 38938eae-d197-4b34-8ad1-835b8ac3c77f
+    type: regular
+    task:
+      id: 38938eae-d197-4b34-8ad1-835b8ac3c77f
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: ${AutoFocus
+          accessor: SessionsResults.src_ip}
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ${AutoFocus.SessionsResults.dst_ip}
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: 02bdd4c9-a777-4aac-8309-87825430c2aa
+    type: regular
+    task:
+      id: 02bdd4c9-a777-4aac-8309-87825430c2aa
+      version: -1
+      name: Set detected users
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: CDL.Logging.Threat.Users
+                iscontext: true
+              right:
+                value:
+                  simple: (?!\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b)
+          accessor: Logging.Threat.Users
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 8ca7216e-47f5-4f0a-8104-e8d3b486d356
+    type: regular
+    task:
+      id: 8ca7216e-47f5-4f0a-8104-e8d3b486d356
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: Panorama
+          accessor: Monitor.Logs.SourceAddress
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Panorama.Monitor.Logs.DestinationAddress
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: 451306d0-c373-4707-80a9-c3be35f72671
+    type: condition
+    task:
+      id: 451306d0-c373-4707-80a9-c3be35f72671
+      version: -1
+      name: Is hash detected by Panorama Wildfire?
+      description: Is the hash detected by Panorama Wildfire?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Panorama
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: Panorama.Monitor.Logs.DestinationAddress
+                      iscontext: true
+                  - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: Panorama.Monitor.Logs.SourceAddress
+                      iscontext: true
+                accessor: Monitor.Logs.DestinationAddress
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: Panorama.Monitor.Logs.DestinationAddress
+                      iscontext: true
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: f57f5c5b-d440-4847-85cf-996b9bbbaad7
+    type: regular
+    task:
+      id: f57f5c5b-d440-4847-85cf-996b9bbbaad7
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: detecteddestinationsips
+      stringify: {}
+      value:
+        complex:
+          root: ${AutoFocus
+          accessor: SessionsResults.dst_ip}
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ${AutoFocus.SessionsResults.dst_ip}
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5020,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: 9c33eecb-7e04-476f-8042-df44b73456f5
+    type: condition
+    task:
+      id: 9c33eecb-7e04-476f-8042-df44b73456f5
+      version: -1
+      name: Are there related sessions in Autofocus?
+      description: Are there related sessions in Autofocus?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.dst_ip
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.src_ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 5020,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 61c46324-3bf4-4bbe-810a-1b8619d74ba6
+    type: condition
+    task:
+      id: 61c46324-3bf4-4bbe-810a-1b8619d74ba6
+      version: -1
+      name: Is domain detected by Cortex Data Lake URL logs?
+      description: Is the domain detected by Cortex Data Lake URL logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CDL.Logging.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 1745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: f3a9c2a6-45f0-421c-8cb4-71042f5f134a
+    type: regular
+    task:
+      id: f3a9c2a6-45f0-421c-8cb4-71042f5f134a
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: ${AutoFocus
+          accessor: SessionsResults.src_ip}
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1230,
+          "y": 2155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: 3a493326-906a-43e6-85dc-d8a0c428818c
+    type: title
+    task:
+      id: 3a493326-906a-43e6-85dc-d8a0c428818c
+      version: -1
+      name: Cortex Data Lake IP searches
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2620,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "92":
+    id: "92"
+    taskid: 067f91b0-9593-4a0f-857e-cd712daec23e
+    type: condition
+    task:
+      id: 067f91b0-9593-4a0f-857e-cd712daec23e
+      version: -1
+      name: Is Cortex Data Lake enabled?
+      description: Is Cortex Data Lake enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Cortex Data Lake
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: 99bd8837-39bf-484e-867d-d55a6dce53e0
+    type: title
+    task:
+      id: 99bd8837-39bf-484e-867d-d55a6dce53e0
+      version: -1
+      name: Cortex Data Lake domain search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "92"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: 059eba21-9993-490a-8c2a-8e1a08aaca2c
+    type: regular
+    task:
+      id: 059eba21-9993-490a-8c2a-8e1a08aaca2c
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "163"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          accessor: Logging.Threat.SourceIP
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: CDL.Logging.Threat.DestinationIP
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: 8f850785-2523-4821-8a1c-0e8a9e66a266
+    type: title
+    task:
+      id: 8f850785-2523-4821-8a1c-0e8a9e66a266
+      version: -1
+      name: PAN-OS hash search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: 20ea7647-9e20-42ca-8452-1631b2c9d24e
+    type: regular
+    task:
+      id: 20ea7647-9e20-42ca-8452-1631b2c9d24e
+      version: -1
+      name: Set detected users
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: Panorama
+          accessor: Monitor.Logs.DestinationUser
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Panorama.Monitor.Logs.SourceUser
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "99":
+    id: "99"
+    taskid: c537fc45-5e32-4933-8e7a-bd8f11b78b77
+    type: playbook
+    task:
+      id: c537fc45-5e32-4933-8e7a-bd8f11b78b77
+      version: -1
+      name: Autofocus Query Samples, Sessions and Tags
+      playbookName: Autofocus Query Samples, Sessions and Tags
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      Commodity: {}
+      Domain: {}
+      Hash:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: toUpperCase
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      IP: {}
+      Sample first seen: {}
+      Sample last modified: {}
+      SampleQuery: {}
+      Scope: {}
+      Search Type:
+        simple: session
+      SessionQuery: {}
+      Sessions time after: {}
+      Sessions time before: {}
+      Tags class: {}
+      Tags private: {}
+      Tags public: {}
+      Tags scope: {}
+      URL: {}
+      Unit 42: {}
+      Wildfire Verdict: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "100":
+    id: "100"
+    taskid: ba675c58-ac65-4301-8335-c618d772b2d6
+    type: playbook
+    task:
+      id: ba675c58-ac65-4301-8335-c618d772b2d6
+      version: -1
+      name: Autofocus Query Samples, Sessions and Tags
+      playbookName: Autofocus Query Samples, Sessions and Tags
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      Commodity: {}
+      Domain: {}
+      Hash: {}
+      IP:
+        complex:
+          root: inputs.IP addresses
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      Sample first seen: {}
+      Sample last modified: {}
+      SampleQuery: {}
+      Scope: {}
+      Search Type:
+        simple: session
+      SessionQuery: {}
+      Sessions time after: {}
+      Sessions time before: {}
+      Tags class: {}
+      Tags private: {}
+      Tags public: {}
+      Tags scope: {}
+      URL: {}
+      Unit 42: {}
+      Wildfire Verdict: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -1230,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "101":
+    id: "101"
+    taskid: 2eb947e7-5df0-4696-8af5-c69e58297b02
+    type: playbook
+    task:
+      id: 2eb947e7-5df0-4696-8af5-c69e58297b02
+      version: -1
+      name: Autofocus Query Samples, Sessions and Tags
+      playbookName: Autofocus Query Samples, Sessions and Tags
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      Commodity: {}
+      Domain: {}
+      Hash: {}
+      IP: {}
+      Sample first seen: {}
+      Sample last modified: {}
+      SampleQuery: {}
+      Scope: {}
+      Search Type:
+        simple: session
+      SessionQuery: {}
+      Sessions time after: {}
+      Sessions time before: {}
+      Tags class: {}
+      Tags private: {}
+      Tags public: {}
+      Tags scope: {}
+      URL:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      Unit 42: {}
+      Wildfire Verdict: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 5020,
+          "y": 1695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "104":
+    id: "104"
+    taskid: 0875678b-51fb-4d3c-8882-37861c5120dd
+    type: condition
+    task:
+      id: 0875678b-51fb-4d3c-8882-37861c5120dd
+      version: -1
+      name: Are there Pan-OS search results?
+      description: Are there relevant IP's
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "105"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Panorama
+                accessor: Monitor.Logs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "105":
+    id: "105"
+    taskid: f6eaa5f8-c04a-4a24-8ed5-6c76ee2c8f39
+    type: regular
+    task:
+      id: f6eaa5f8-c04a-4a24-8ed5-6c76ee2c8f39
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "107"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: Panorama
+          accessor: Monitor.Logs.SourceAddress
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Panorama.Monitor.Logs.DestinationAddress
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 2185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "107":
+    id: "107"
+    taskid: ed78b99c-85e3-4659-87dc-9440b3d2dfbf
+    type: regular
+    task:
+      id: ed78b99c-85e3-4659-87dc-9440b3d2dfbf
+      version: -1
+      name: Set detected users
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: Panorama
+          accessor: Monitor.Logs.DestinationUser
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Panorama.Monitor.Logs.SourceUser
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 2445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "108":
+    id: "108"
+    taskid: bf03de85-aaf8-41d4-81f7-7f5ca5814ee0
+    type: title
+    task:
+      id: bf03de85-aaf8-41d4-81f7-7f5ca5814ee0
+      version: -1
+      name: Autofocus hash search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: c35b5e37-813f-472e-8ec8-ee41b091b463
+    type: title
+    task:
+      id: c35b5e37-813f-472e-8ec8-ee41b091b463
+      version: -1
+      name: Cortex Data Lake hash search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "110":
+    id: "110"
+    taskid: 6d241144-3dc7-40c1-8b2d-f01d3bb9c9aa
+    type: title
+    task:
+      id: 6d241144-3dc7-40c1-8b2d-f01d3bb9c9aa
+      version: -1
+      name: Autofocus domain search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "69"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5020,
+          "y": 985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "111":
+    id: "111"
+    taskid: 3d88479c-bc21-4821-812a-d9d3027ea6d6
+    type: title
+    task:
+      id: 3d88479c-bc21-4821-812a-d9d3027ea6d6
+      version: -1
+      name: PAN-OS domain/url search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "112":
+    id: "112"
+    taskid: 346194fe-e8bb-4833-8388-75cc8d787238
+    type: title
+    task:
+      id: 346194fe-e8bb-4833-8388-75cc8d787238
+      version: -1
+      name: Autofocus IP seach
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1230,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "113":
+    id: "113"
+    taskid: 80c54910-0a39-49c2-882a-0ffa04b79371
+    type: title
+    task:
+      id: 80c54910-0a39-49c2-882a-0ffa04b79371
+      version: -1
+      name: PAN-OS IP search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5110,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "129":
+    id: "129"
+    taskid: 0e1d4ac9-fbf3-4d7c-86ea-c3a38d79b42f
+    type: condition
+    task:
+      id: 0e1d4ac9-fbf3-4d7c-86ea-c3a38d79b42f
+      version: -1
+      name: Are there relevant IPs?
+      description: Are there relevant IP's
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Panorama
+                accessor: Monitor.Logs.DestinationAddress
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Panorama
+                accessor: Monitor.Logs.SourceAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -5110,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "132":
+    id: "132"
+    taskid: aebbada3-8599-4fab-868d-d30c1792cdf9
+    type: regular
+    task:
+      id: aebbada3-8599-4fab-868d-d30c1792cdf9
+      version: -1
+      name: Set detected users
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: Panorama
+          accessor: Monitor.Logs.DestinationUser
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Panorama.Monitor.Logs.SourceUser
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5110,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "136":
+    id: "136"
+    taskid: 13f7fc7e-1933-456d-8153-eedac64f8e2a
+    type: regular
+    task:
+      id: 13f7fc7e-1933-456d-8153-eedac64f8e2a
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "132"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: Panorama
+          accessor: Monitor.Logs.SourceAddress
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Panorama.Monitor.Logs.DestinationAddress
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5110,
+          "y": 2015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "140":
+    id: "140"
+    taskid: 273e49e6-6789-4a94-8cb3-ae4fc8cd77ba
+    type: playbook
+    task:
+      id: 273e49e6-6789-4a94-8cb3-ae4fc8cd77ba
+      version: -1
+      name: PAN-OS Query Logs For Indicators
+      playbookName: PAN-OS Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "129"
+    scriptarguments:
+      filedigest: {}
+      ip:
+        complex:
+          root: inputs.IPAddresses
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      url: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -5110,
+          "y": 1425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "141":
+    id: "141"
+    taskid: 338e1c6d-6211-4b2b-8451-a3866009d5f9
+    type: playbook
+    task:
+      id: 338e1c6d-6211-4b2b-8451-a3866009d5f9
+      version: -1
+      name: PAN-OS Query Logs For Indicators
+      playbookName: PAN-OS Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      filedigest:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      ip: {}
+      url: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "142":
+    id: "142"
+    taskid: 474cedfa-d0a3-4d70-860e-665c94e1e48b
+    type: playbook
+    task:
+      id: 474cedfa-d0a3-4d70-860e-665c94e1e48b
+      version: -1
+      name: PAN-OS Query Logs For Indicators
+      playbookName: PAN-OS Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      filedigest: {}
+      ip: {}
+      url:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "153":
+    id: "153"
+    taskid: 382d70fe-526c-496f-8d18-e2f5f338c5f2
+    type: title
+    task:
+      id: 382d70fe-526c-496f-8d18-e2f5f338c5f2
+      version: -1
+      name: Sort results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "166"
+      - "167"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "154":
+    id: "154"
+    taskid: 6c2a64aa-076a-4007-8cb8-65cffd4a588a
+    type: condition
+    task:
+      id: 6c2a64aa-076a-4007-8cb8-65cffd4a588a
+      version: -1
+      name: Are there detected IP addresses?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "155"
+      "yes":
+      - "156"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANWHunting.DetectedIPs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "155":
+    id: "155"
+    taskid: be26c6c7-7a52-4aa5-8b33-bfdcaa92ac5c
+    type: title
+    task:
+      id: be26c6c7-7a52-4aa5-8b33-bfdcaa92ac5c
+      version: -1
+      name: Done sorting IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "169"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "156":
+    id: "156"
+    taskid: be19db5f-10f8-40f3-8eea-c7ddb40f3b0a
+    type: regular
+    task:
+      id: be19db5f-10f8-40f3-8eea-c7ddb40f3b0a
+      version: -1
+      name: Determine whether the IP address is internal or external
+      description: Returns yes if the IP is in one of the ranges provided, returns
+        no otherwise.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "157"
+    scriptarguments:
+      ip:
+        simple: ${PANWHunting.DetectedIPs}
+      ipRanges:
+        simple: ${inputs.InternalRange}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 3310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "157":
+    id: "157"
+    taskid: 81e6910a-e975-4c4e-8a56-e1e696fe617d
+    type: regular
+    task:
+      id: 81e6910a-e975-4c4e-8a56-e1e696fe617d
+      version: -1
+      name: Set detected IP addresses as internal
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "158"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedInternalIPs
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 3560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "158":
+    id: "158"
+    taskid: 5c171b1f-1edc-4404-831d-f029dcd9e57f
+    type: regular
+    task:
+      id: 5c171b1f-1edc-4404-831d-f029dcd9e57f
+      version: -1
+      name: Set detected IP addresses as external
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "155"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedExternalIPs
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "159":
+    id: "159"
+    taskid: 8636b5c9-c31e-465b-87ab-d36980dc2b49
+    type: regular
+    task:
+      id: 8636b5c9-c31e-465b-87ab-d36980dc2b49
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "162"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          accessor: Logging.Traffic.SourceIP
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: CDL.Logging.Threat.DestinationIP
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2320,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "160":
+    id: "160"
+    taskid: 5def5f66-3f4a-4f80-8fbe-d2897f117050
+    type: regular
+    task:
+      id: 5def5f66-3f4a-4f80-8fbe-d2897f117050
+      version: -1
+      name: Set detected users
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append: {}
+      key:
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: CDL.Logging.Traffic.Users
+                iscontext: true
+              right:
+                value:
+                  simple: (?!\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b)
+          accessor: Logging.Traffic.Users
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2320,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "161":
+    id: "161"
+    taskid: 41a69d1b-1b4b-45fb-871f-089026fa2888
+    type: regular
+    task:
+      id: 41a69d1b-1b4b-45fb-871f-089026fa2888
+      version: -1
+      name: Set detected hosts
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedHosts
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          accessor: Logging.Threat.SourceDeviceHost
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: CDL.Logging.Threat.DestDeviceHost
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3370,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "162":
+    id: "162"
+    taskid: 84a23cb9-81d6-439a-84ee-a260e82ad5a8
+    type: regular
+    task:
+      id: 84a23cb9-81d6-439a-84ee-a260e82ad5a8
+      version: -1
+      name: Set detected hosts
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "160"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedHosts
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          accessor: Logging.Traffic.SourceDeviceHost
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: CDL.Logging.Traffic.DestDeviceHost
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2320,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "163":
+    id: "163"
+    taskid: 0a357f18-a20e-4707-8655-c6f1abf070bf
+    type: regular
+    task:
+      id: 0a357f18-a20e-4707-8655-c6f1abf070bf
+      version: -1
+      name: Set detected hosts
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedHosts
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          accessor: Logging.Threat.SourceDeviceHost
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: CDL.Logging.Threat.DestDeviceHost
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "164":
+    id: "164"
+    taskid: ed9a77e6-32a8-4ee4-89bc-2e66f6bd0698
+    type: regular
+    task:
+      id: ed9a77e6-32a8-4ee4-89bc-2e66f6bd0698
+      version: -1
+      name: Set detected hosts
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedHosts
+      stringify: {}
+      value:
+        complex:
+          root: CDL
+          accessor: Logging.URL.SourceDeviceHost
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: CDL.Logging.URL.DestDeviceHost
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "165":
+    id: "165"
+    taskid: 4c4def01-9539-45c9-8f4d-76367c796741
+    type: condition
+    task:
+      id: 4c4def01-9539-45c9-8f4d-76367c796741
+      version: -1
+      name: Are there detected host names?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "168"
+      "yes":
+      - "173"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANWHunting.DetectedHosts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "166":
+    id: "166"
+    taskid: 862f2b4a-cce5-4a30-8c75-4d1d3462e39e
+    type: title
+    task:
+      id: 862f2b4a-cce5-4a30-8c75-4d1d3462e39e
+      version: -1
+      name: Sort internal and external IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "154"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "167":
+    id: "167"
+    taskid: 453ba73b-e72a-4d4d-8e58-90fbb6b321d9
+    type: title
+    task:
+      id: 453ba73b-e72a-4d4d-8e58-90fbb6b321d9
+      version: -1
+      name: Sort internal and external host names
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "165"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "168":
+    id: "168"
+    taskid: 4e6cdb41-535b-4c2b-8c73-460598245b11
+    type: title
+    task:
+      id: 4e6cdb41-535b-4c2b-8c73-460598245b11
+      version: -1
+      name: Done sorting host names
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "169"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "169":
+    id: "169"
+    taskid: 7a083e57-9f8e-477b-8098-b4bdcee6d4f2
+    type: title
+    task:
+      id: 7a083e57-9f8e-477b-8098-b4bdcee6d4f2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "170":
+    id: "170"
+    taskid: 171610e5-c5b4-4f96-8bee-374e829810ca
+    type: regular
+    task:
+      id: 171610e5-c5b4-4f96-8bee-374e829810ca
+      version: -1
+      name: Determine whether the host name is internal or external
+      description: Checks if the supplied hostnames match either the organization's
+        internal naming convention or the domain suffix.
+      scriptName: IsInternalHostName
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "171"
+    scriptarguments:
+      domainName:
+        simple: ${inputs.InternalDomainName}
+      hostName:
+        complex:
+          root: PANWHunting
+          accessor: DetectedHosts
+          transformers:
+          - operator: uniq
+      internalRegex:
+        simple: ${inputs.InternalHostRegex}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "171":
+    id: "171"
+    taskid: b36c2d2e-e655-42cd-882e-1b94360f88a8
+    type: regular
+    task:
+      id: b36c2d2e-e655-42cd-882e-1b94360f88a8
+      version: -1
+      name: Set detected host names as internal
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "172"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedInternalHosts
+      stringify: {}
+      value:
+        complex:
+          root: Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Endpoint.IsInternal
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "172":
+    id: "172"
+    taskid: 38f7b2e5-2e9f-4497-88b0-deb234b95eed
+    type: regular
+    task:
+      id: 38f7b2e5-2e9f-4497-88b0-deb234b95eed
+      version: -1
+      name: Set detected host names as external
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "168"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedExternalHosts
+      stringify: {}
+      value:
+        complex:
+          root: Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Endpoint.IsInternal
+                iscontext: true
+              right:
+                value:
+                  simple: "false"
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "173":
+    id: "173"
+    taskid: ba6b97e9-3769-4e1d-8aa4-730142613533
+    type: condition
+    task:
+      id: ba6b97e9-3769-4e1d-8aa4-730142613533
+      version: -1
+      name: Has the domain name been provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "174"
+      "yes":
+      - "170"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.InternalDomainName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 3310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "174":
+    id: "174"
+    taskid: 9c90d795-19b6-42a6-8dc4-5792e7af2e0e
+    type: regular
+    task:
+      id: 9c90d795-19b6-42a6-8dc4-5792e7af2e0e
+      version: -1
+      name: Set detected host names as internal
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "168"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedInternalHosts
+      stringify: {}
+      value:
+        simple: ${PANWHunting.DetectedHosts}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_55_#default#": 0.19,
+      "26_23_#default#": 0.81,
+      "3_4_#default#": 0.82,
+      "43_4_#default#": 0.61,
+      "48_4_#default#": 0.8,
+      "5_23_#default#": 0.79,
+      "84_55_#default#": 0.81,
+      "92_55_#default#": 0.79
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4225,
+        "width": 10510,
+        "x": -5110,
+        "y": 10
+      }
+    }
+  }
+inputs:
+- key: SHA256
+  value: {}
+  required: false
+  description: SHA256 hash of the indicator to hunt.
+  playbookInputQuery: null
+- key: MD5
+  value: {}
+  required: false
+  description: MD5 hash of the indicator to hunt.
+  playbookInputQuery: null
+- key: SHA1
+  value: {}
+  required: false
+  description: SHA1 hash of the indicator to hunt.
+  playbookInputQuery: null
+- key: IPAddresses
+  value: {}
+  required: false
+  description: List of IP addresses.
+  playbookInputQuery: null
+- key: URLDomain
+  value: {}
+  required: false
+  description: List of domains or urls.
+  playbookInputQuery: null
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
+  playbookInputQuery: null
+- key: InternalDomainName
+  value: {}
+  required: false
+  description: The organizations internal domain name. This is provided for the script
+    IsInternalHostName that checks if the detected host names are internal or external
+    if the hosts contain the internal domains suffix. For example demisto.com. If
+    there is more than one domain, use the | character to separate values such as
+    (demisto.com|test.com)
+  playbookInputQuery: null
+- key: InternalHostRegex
+  value: {}
+  required: false
+  description: This is provided for the script IsInternalHostName that checks if the
+    detected host names are internal or external. If the hosts match the organization's
+    naming convention. For example the host testpc1 will have the following regex
+    \w{6}\d{1}
+  playbookInputQuery: null
+outputs:
+- contextPath: PANWHunting.DetectedUsers
+  description: User or array of users that were detected during hunting.
+  type: string
+- contextPath: PANWHunting.DetectedInternalIPs
+  description: Internal IP addresses detected based on fields and inputs in your search.
+  type: string
+- contextPath: PANWHunting.DetectedExternalIPs
+  description: External IP addresses detected based on fields and inputs in your search.
+  type: string
+- contextPath: PANWHunting.DetectedInternalHosts
+  description: Internal host names detected based on fields and inputs in your search.
+  type: string
+- contextPath: PANWHunting.DetectedExternalHosts
+  description: External host names detected based on fields and inputs in your search.
+  type: string
+tests:
+- No tests

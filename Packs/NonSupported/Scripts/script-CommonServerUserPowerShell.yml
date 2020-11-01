@@ -1,0 +1,17 @@
+commonfields:
+  id: CommonServerUserPowerShell
+  version: -1
+name: CommonServerUserPowerShell
+script: ""
+type: powershell
+tags:
+- infra
+- server
+comment: Common user defined code that will be merged into each server script when
+  it runs
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.5.0
+tests:
+  - No test - No need

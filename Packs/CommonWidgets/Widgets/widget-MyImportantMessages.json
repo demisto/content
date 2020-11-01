@@ -1,0 +1,18 @@
+{
+ "id": "my-important-messages",
+ "size": 10,
+ "fromVersion": "5.0.0",
+ "dataType": "messages",
+ "query": "type:investigation* or type:newContentAvailable or type:mention*",
+ "name": "My Messages",
+ "dateRange": {
+  "period": {
+   "byFrom": "days",
+   "fromValue": null
+  }
+ },
+ "isPredefined": true,
+ "version": -1,
+ "widgetType": "list",
+ "description": ""
+}

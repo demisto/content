@@ -1,0 +1,11 @@
+{
+  "Broadcast_address": "2002::1234:abcd:ffff:c0a8:101",
+  "CIDR": "2002::1234:abcd:ffff:c0a8:101/127",
+  "First_address": "2002::1234:abcd:ffff:c0a8:100",
+  "Last_address": "2002::1234:abcd:ffff:c0a8:101",
+  "Max_prefix_len": 128,
+  "Num_addresses": 2,
+  "Private": false,
+  "Version": 6
+}
+

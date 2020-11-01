@@ -1,0 +1,29 @@
+commonfields:
+  id: BetweenDates
+  version: -1
+name: BetweenDates
+fromversion: 5.0.0
+comment: Whether value is within a date range.
+script: ''
+type: python
+tags:
+- transformer
+- date
+enabled: true
+args:
+- name: value
+  required: true
+  description: Value to check
+- name: begin_date
+  required: true
+  description: Lower date range
+- name: end_date
+  required: true
+  description: Upper date range
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.2.6981
+runas: DBotWeakRole
+tests:
+  - No test

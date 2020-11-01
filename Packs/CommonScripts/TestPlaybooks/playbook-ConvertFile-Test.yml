@@ -1,0 +1,624 @@
+id: ConvertFile-Test
+version: -1
+name: ConvertFile-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3b8208d2-3505-44e3-8359-5f3c434bf1ac
+    type: start
+    task:
+      id: 3b8208d2-3505-44e3-8359-5f3c434bf1ac
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 7dc4db1b-2b0f-4842-82b8-fb203b59be74
+    type: regular
+    task:
+      id: 7dc4db1b-2b0f-4842-82b8-fb203b59be74
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 97ae87a0-8381-4a97-8daf-df16c4631e88
+    type: regular
+    task:
+      id: 97ae87a0-8381-4a97-8daf-df16c4631e88
+      version: -1
+      name: Get file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test-document.docx
+      headers: {}
+      insecure:
+        simple: "true"
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/41a4882debfb658567bf95f91d47f0eb242a2785/Scripts/ConvertFile/test_data/MS-DOCX-190319.docx
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 3746b34b-20b0-49d2-82b3-c9f626c90102
+    type: regular
+    task:
+      id: 3746b34b-20b0-49d2-82b3-c9f626c90102
+      version: -1
+      name: Convert to pdf
+      description: 'Convert a file from one format to another. Use''s Libre Office convert-to function. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
+      scriptName: ConvertFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all_files: {}
+      entry_id:
+        simple: ${File.EntryID}
+      format: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: e66825a1-bf40-440e-8c23-3065f64e94af
+    type: condition
+    task:
+      id: e66825a1-bf40-440e-8c23-3065f64e94af
+      version: -1
+      name: PDF file added
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Extension
+            iscontext: true
+          right:
+            value:
+              simple: pdf
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 3fff4e2b-8368-401d-8934-3978ceaf1f6a
+    type: regular
+    task:
+      id: 3fff4e2b-8368-401d-8934-3978ceaf1f6a
+      version: -1
+      name: PDF file not found
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: PDF file not found
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 9d5b8a4a-0a49-4490-8304-4226a43616f3
+    type: title
+    task:
+      id: 9d5b8a4a-0a49-4490-8304-4226a43616f3
+      version: -1
+      name: PDF File Found
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 69aefb45-7680-4640-87bd-bbf8a1e4902a
+    type: regular
+    task:
+      id: 69aefb45-7680-4640-87bd-bbf8a1e4902a
+      version: -1
+      name: Read PDF
+      description: Load a PDF file's content and metadata into context.
+      scriptName: ReadPDFFileV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+          accessor: EntryID
+      maxImages:
+        simple: "0"
+      userPassword: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 55ded992-bf6b-4034-8bf1-92c195b10bb1
+    type: condition
+    task:
+      id: 55ded992-bf6b-4034-8bf1-92c195b10bb1
+      version: -1
+      name: Verify PDF text
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: File.Text
+            iscontext: true
+          right:
+            value:
+              simple: Extensions to the Office Open XML
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: f98a2b10-3ab9-4986-8082-0408de8dafa8
+    type: title
+    task:
+      id: f98a2b10-3ab9-4986-8082-0408de8dafa8
+      version: -1
+      name: PDF Verification Success
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: c47c2541-131a-4017-8cde-e088d6837d77
+    type: regular
+    task:
+      id: c47c2541-131a-4017-8cde-e088d6837d77
+      version: -1
+      name: PDF Text Verify Failed
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: PDF Text Verify Failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: b563389c-7804-4739-8b28-3bd42735d97d
+    type: regular
+    task:
+      id: b563389c-7804-4739-8b28-3bd42735d97d
+      version: -1
+      name: Convert to HTML
+      description: 'Convert a file from one format to another. Use''s Libre Office convert-to function. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
+      scriptName: ConvertFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all_files: {}
+      entry_id:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: docx
+          accessor: EntryID
+      format:
+        simple: html
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 0d1e4180-54f3-48d3-85b4-b6d4d6b2526d
+    type: condition
+    task:
+      id: 0d1e4180-54f3-48d3-85b4-b6d4d6b2526d
+      version: -1
+      name: HTML file added
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Extension
+            iscontext: true
+          right:
+            value:
+              simple: html
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 0454b423-7786-44b0-8278-09e599edaf75
+    type: regular
+    task:
+      id: 0454b423-7786-44b0-8278-09e599edaf75
+      version: -1
+      name: Read HTML file
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      encoding: {}
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: html
+          accessor: EntryID
+      maxFileSize:
+        simple: "5000"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: cc949e97-c7b4-4402-8dc8-d130af605ca1
+    type: regular
+    task:
+      id: cc949e97-c7b4-4402-8dc8-d130af605ca1
+      version: -1
+      name: Failed verifying html file
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed verifying html file
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 9ddde79c-44d8-4ec5-86fd-6ccf58ec172b
+    type: condition
+    task:
+      id: 9ddde79c-44d8-4ec5-86fd-6ccf58ec172b
+      version: -1
+      name: Check HTML Text
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: FileData
+            iscontext: true
+          right:
+            value:
+              simple: Extensions to the Office Open XML
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 712d7a27-20cb-4811-8a02-e706bf5c4492
+    type: title
+    task:
+      id: 712d7a27-20cb-4811-8a02-e706bf5c4492
+      version: -1
+      name: HTML Verification Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: bba2876d-96b1-4879-8ef4-fdc71a964af3
+    type: regular
+    task:
+      id: bba2876d-96b1-4879-8ef4-fdc71a964af3
+      version: -1
+      name: Failed HTML Verification
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed html verify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2475,
+        "width": 830,
+        "x": 350,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,24 @@
+{
+    "totalSize": 103,
+    "done": true,
+    "records": [
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__Category__c",
+                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__Category__c/a212w000000UFfhAAG"
+            },
+            "Id": "a212w000000UFfhAAG",
+            "Name": "Mobile Phone Request",
+            "BMCServiceDesk__children__c": 0
+        },
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__Category__c",
+                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__Category__c/a212w000000UFfmAAG"
+            },
+            "Id": "a212w000000UFfmAAG",
+            "Name": "Voice Mail Issue",
+            "BMCServiceDesk__children__c": 0
+        }
+    ]
+}

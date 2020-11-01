@@ -1,0 +1,547 @@
+id: Google Chronicle Backstory Reputation - Test
+version: -1
+name: Google Chronicle Backstory Reputation - Test
+description: This playbook uses the Google Chronicle Backstory integration and tests the various scenarios of the reputation command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1c855b81-bae7-4121-83c6-671b8810a4d2
+    type: start
+    task:
+      id: 1c855b81-bae7-4121-83c6-671b8810a4d2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 7bf61226-1d2e-4f2b-87b0-4568fd7dbea9
+    type: regular
+    task:
+      id: 7bf61226-1d2e-4f2b-87b0-4568fd7dbea9
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 93c1aa4c-55be-481b-80a8-dd28ca782cd2
+    type: regular
+    task:
+      id: 93c1aa4c-55be-481b-80a8-dd28ca782cd2
+      version: -1
+      name: IP
+      description: Checks the reputation of an IP Address.
+      script: Google Chronicle Backstory|||ip
+      type: regular
+      iscommand: true
+      brand: Google Chronicle Backstory
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        simple: 23.20.239.12
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: b8de4270-0440-4f0f-8433-e18550b4ca07
+    type: condition
+    task:
+      id: b8de4270-0440-4f0f-8433-e18550b4ca07
+      version: -1
+      name: Verify result for IP reputation command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: 23.20.239.12
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Type
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: ip
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Vendor
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: Google Chronicle Backstory
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: Address
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: 23.20.239.12
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IP.IoCQueried
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: 23.20.239.12
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IP.Sources.Address.IpAddress
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: 23.20.239.12
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IP.Sources.Category
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IP.Sources.ConfidenceScore
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IP.Sources.FirstAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IP.Sources.FirstAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IP.Sources.LastAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IP.Sources.Severity
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 9e1d6c6c-dbaa-45a8-80b0-301b0542593c
+    type: regular
+    task:
+      id: 9e1d6c6c-dbaa-45a8-80b0-301b0542593c
+      version: -1
+      name: Domain
+      description: Checks the reputation of the domain.
+      script: Google Chronicle Backstory|||domain
+      type: regular
+      iscommand: true
+      brand: Google Chronicle Backstory
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: bing.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 9dc042be-c434-42b0-8132-2cee52b2ac27
+    type: condition
+    task:
+      id: 9dc042be-c434-42b0-8132-2cee52b2ac27
+      version: -1
+      name: Verify result for Domain reputation command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: bing.com
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Type
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Vendor
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: Google Chronicle Backstory
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Name
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: bing.com
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Domain.IoCQueried
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: bing.com
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Domain.Sources.Address.Domain
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: bing.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Domain.Sources.Category
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Domain.Sources.ConfidenceScore
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Domain.Sources.FirstAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Domain.Sources.LastAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Domain.Sources.Severity
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: ff07973b-96b4-42de-89ff-a0d0d3668a2d
+    type: regular
+    task:
+      id: ff07973b-96b4-42de-89ff-a0d0d3668a2d
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: d0b591ad-0916-42e1-864b-b24138be24c6
+    type: regular
+    task:
+      id: d0b591ad-0916-42e1-864b-b24138be24c6
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: d99ce9e0-ba36-45a4-81c5-1885797d0b2c
+    type: title
+    task:
+      id: d99ce9e0-ba36-45a4-81c5-1885797d0b2c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

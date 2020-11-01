@@ -1,0 +1,14 @@
+[
+  {
+    "$device": "22ddf738-7e1c-4f20-a9c7-07620d1f2110",
+    "$host": "DESKTOP-U0QSLQ8",
+    "$time": 1594637579,
+    "$type": "csv",
+    "install_update_date": "2020-05-21",
+    "name": "VMware Tools",
+    "os_type": "1",
+    "program_exists": "Found On Disk",
+    "publisher": "VMware, Inc.",
+    "version": "11.0.5.15389592"
+  }
+]

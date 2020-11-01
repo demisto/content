@@ -1,0 +1,42 @@
+{
+    "id": "Cymulate",
+    "name": "Cymulate - Classifier",
+    "type": "classification",
+    "description": "Classifies Cymulate threats.",
+	"defaultIncidentType": "Cymulate Immediate Threats",
+	"keyTypeMap": {
+		"Immediate Threats Intelligence": "Cymulate Immediate Threats"
+	},
+	"transformer": {
+		"complex": {
+			"accessor": "",
+			"filters": [
+				[
+					{
+						"ignoreCase": false,
+						"left": {
+							"isContext": true,
+							"value": {
+								"complex": null,
+								"simple": "Module"
+							}
+						},
+						"operator": "isEqualString",
+						"right": {
+							"isContext": false,
+							"value": {
+								"complex": null,
+								"simple": "Immediate Threats Intelligence"
+							}
+						}
+					}
+				]
+			],
+			"root": "Module",
+			"transformers": []
+		},
+		"simple": ""
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

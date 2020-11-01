@@ -1,0 +1,276 @@
+id: UnEscapeIPs-Test
+version: -1
+name: UnEscapeIPs-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f566c040-0f5c-4643-8473-82ce6c04a7e5
+    type: start
+    task:
+      id: f566c040-0f5c-4643-8473-82ce6c04a7e5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: f0543dbd-902b-4fab-86c6-9af6cb5768b2
+    type: regular
+    task:
+      id: f0543dbd-902b-4fab-86c6-9af6cb5768b2
+      version: -1
+      name: UnEscapeIPs - test multiple IPs input
+      description: |-
+        Remove escaping chars from IP
+        127[.]0[.]0[.]1 -> 127.0.0.1
+      scriptName: UnEscapeIPs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    scriptarguments:
+      input:
+        simple: 123[.]222[.]1[.]2, 200[.]200[.]200[.]200
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: f1ce3ecd-86f0-4cf1-8504-1d2288846392
+    type: regular
+    task:
+      id: f1ce3ecd-86f0-4cf1-8504-1d2288846392
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: cfb80284-6476-4279-8e83-f99aa97019ae
+    type: regular
+    task:
+      id: cfb80284-6476-4279-8e83-f99aa97019ae
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      substring:
+        simple: 123.222.1.2 # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: bb04d1d6-6c8f-4835-868a-a428cf73eb06
+    type: regular
+    task:
+      id: bb04d1d6-6c8f-4835-868a-a428cf73eb06
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      substring:
+        simple: 200.200.200.200 # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 233f6603-7f1a-426e-8e5c-16752d4a53b4
+    type: regular
+    task:
+      id: 233f6603-7f1a-426e-8e5c-16752d4a53b4
+      version: -1
+      name: UnEscapeIPs - test single input
+      description: |-
+        Remove escaping chars from IP
+        127[.]0[.]0[.]1 -> 127.0.0.1
+      scriptName: UnEscapeIPs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      input:
+        simple: 200[.]200[.]200[.]200
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 9cf59031-9941-4758-8765-ab712591fb2f
+    type: regular
+    task:
+      id: 9cf59031-9941-4758-8765-ab712591fb2f
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: 200.200.200.200 # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 7c1fb5ef-6115-4f04-8516-470bb0c251a2
+    type: title
+    task:
+      id: 7c1fb5ef-6115-4f04-8516-470bb0c251a2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

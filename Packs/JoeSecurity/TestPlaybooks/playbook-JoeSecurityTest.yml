@@ -1,0 +1,471 @@
+id: JoeSecurityTestPlaybook
+version: -1
+name: JoeSecurityTestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 26ea8a78-103c-49d7-8034-25638309261f
+    type: start
+    task:
+      id: 26ea8a78-103c-49d7-8034-25638309261f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a511ca8b-a267-4ab1-87c6-ffd93bbf8207
+    type: regular
+    task:
+      id: a511ca8b-a267-4ab1-87c6-ffd93bbf8207
+      version: -1
+      name: Start fresh
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 99dd7269-b1b8-4b4c-841d-77379a02fab6
+    type: regular
+    task:
+      id: 99dd7269-b1b8-4b4c-841d-77379a02fab6
+      version: -1
+      name: Validate instance is working
+      script: '|||joe-is-online'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 74c1e9f0-e8f8-43c8-8a5c-563bf10c1fef
+    type: regular
+    task:
+      id: 74c1e9f0-e8f8-43c8-8a5c-563bf10c1fef
+      version: -1
+      name: Analyse a file using a url without waiting
+      script: Joe Security|||joe-analysis-submit-sample
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      comments: {}
+      file_id: {}
+      internet-access: {}
+      sample_url:
+        simple: http://www.tutorialspoint.com/java/java_tutorial.pdf
+      should_wait: {}
+      systems: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 96d71934-7869-4547-8807-c95ab3e36f1e
+    type: regular
+    task:
+      id: 96d71934-7869-4547-8807-c95ab3e36f1e
+      version: -1
+      name: Analyse a url without waiting
+      script: Joe Security|||joe-analysis-submit-url
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      comments: {}
+      internet-access: {}
+      should_wait:
+        simple: "False"
+      systems: {}
+      url:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 14aa4fcd-e9e7-4cb8-828f-2fedf2cca3d5
+    type: regular
+    task:
+      id: 14aa4fcd-e9e7-4cb8-828f-2fedf2cca3d5
+      version: -1
+      name: Get info on the file analysis
+      script: Joe Security|||joe-analysis-info
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      webid:
+        simple: ${Joe.Analysis.[1].WebID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1462577b-a8b5-4c3c-8b08-eed1b8ad61cb
+    type: regular
+    task:
+      id: 1462577b-a8b5-4c3c-8b08-eed1b8ad61cb
+      version: -1
+      name: Get info on the URL analysis
+      script: Joe Security|||joe-analysis-info
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      webid:
+        simple: ${Joe.Analysis.[2].WebID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: cd1182f2-a2f4-4212-8e0b-f1e56e1795da
+    type: regular
+    task:
+      id: cd1182f2-a2f4-4212-8e0b-f1e56e1795da
+      version: -1
+      name: Create sample file
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      data:
+        simple: qwerty
+      entryId: {}
+      filename:
+        simple: zaq.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: e88619e0-d356-40ec-8c3c-d0c59c56b961
+    type: regular
+    task:
+      id: e88619e0-d356-40ec-8c3c-d0c59c56b961
+      version: -1
+      name: Search command
+      script: Joe Security|||joe-search
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "14"
+      - "16"
+      - "17"
+    scriptarguments:
+      query:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b067f7de-4967-4793-8570-c8f6b0b8a6bc
+    type: regular
+    task:
+      id: b067f7de-4967-4793-8570-c8f6b0b8a6bc
+      version: -1
+      name: Download url Report - XML
+      script: Joe Security|||joe-download-report
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      type:
+        simple: xml
+      webid:
+        complex:
+          root: ${Joe
+          accessor: Analysis(val.Status == "finished")}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: WebID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 2a3255d2-9b09-4f30-8b96-a417ec6705ff
+    type: regular
+    task:
+      id: 2a3255d2-9b09-4f30-8b96-a417ec6705ff
+      version: -1
+      name: Download url Report - JSON
+      script: Joe Security|||joe-download-report
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    scriptarguments:
+      type:
+        simple: json
+      webid:
+        complex:
+          root: ${Joe
+          accessor: Analysis(val.Status == "finished")}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: WebID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ebf685a2-5055-4e9d-8ec7-121780feb044
+    type: regular
+    task:
+      id: ebf685a2-5055-4e9d-8ec7-121780feb044
+      version: -1
+      name: Download url Report - HTML
+      script: Joe Security|||joe-download-report
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    scriptarguments:
+      type:
+        simple: html
+      webid:
+        complex:
+          root: ${Joe
+          accessor: Analysis(val.Status == "finished")}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: WebID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 5f79523d-a8a1-4b00-8d7c-58d05a312129
+    type: condition
+    task:
+      id: 5f79523d-a8a1-4b00-8d7c-58d05a312129
+      version: -1
+      name: verify output DBotScore.Indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1790,
+        "width": 1280,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

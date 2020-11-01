@@ -1,0 +1,147 @@
+id: GDPRContactAuthorities Test
+version: -1
+name: GDPRContactAuthorities Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4cc4191b-7074-4f65-8eba-094b73b9f582
+    type: start
+    task:
+      id: 4cc4191b-7074-4f65-8eba-094b73b9f582
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: a14ff0ec-6227-4d46-8d60-252283559e98
+    type: regular
+    task:
+      id: a14ff0ec-6227-4d46-8d60-252283559e98
+      version: -1
+      name: GDPRContactAuthorities
+      description: |-
+        GDPR Data Protection Supervisory Authority Listing.
+
+        "‘supervisory authority’ means an independent public authority which is established by a Member State pursuant to Article 51;
+
+        ‘supervisory authority concerned’ means a supervisory authority which is concerned by the processing of personal data because:
+        (a) the controller or processor is established on the territory of the Member State of that supervisory authority;
+        (b) data subjects residing in the Member State of that supervisory authority are substantially affected or likely to be substantially affected by the processing; or
+        (c) a complaint has been lodged with that supervisory authority;"
+
+        GDPR - Art. 4 - https://gdpr-info.eu/art-4-gdpr/
+      scriptName: GDPRContactAuthorities
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      country:
+        simple: Croatia
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 523d411d-c510-4a78-8579-fe6a176ecbff
+    type: condition
+    task:
+      id: 523d411d-c510-4a78-8579-fe6a176ecbff
+      version: -1
+      name: Check authority name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GDPR.Authority.Name
+            iscontext: true
+          right:
+            value:
+              simple: Croatian Personal Data Protection Agency
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: ffdfcd82-debe-4d60-8641-39c17a7fe93d
+    type: regular
+    task:
+      id: ffdfcd82-debe-4d60-8641-39c17a7fe93d
+      version: -1
+      name: Untitled Task
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: ${GDPR.Authority.Country} - ${GDPR.Authority.Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

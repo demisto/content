@@ -1,0 +1,144 @@
+id: Test-BPA_Integration
+version: -1
+fromversion: 5.0.0
+contentitemfields:
+  propagationLabels: []
+name: Test-BPA_Integration
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 5515df32-fe99-44e2-89ae-11a2ef02fc6b
+    type: start
+    task:
+      id: 5515df32-fe99-44e2-89ae-11a2ef02fc6b
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '1':
+    id: '1'
+    taskid: 5a068753-4ae5-471e-8622-91d5845298a9
+    type: regular
+    task:
+      id: 5a068753-4ae5-471e-8622-91d5845298a9
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: 1a806e78-3570-4fc6-8f43-6f6407799a61
+    type: condition
+    task:
+      id: 1a806e78-3570-4fc6-8f43-6f6407799a61
+      version: -1
+      name: Test BPA Checks Are Returned
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${PAN-OS-BPA.JobResults(val.Status==='complete').Checks}
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: fe488812-5d32-4845-85aa-05de3b86e3a2
+    type: regular
+    task:
+      id: fe488812-5d32-4845-85aa-05de3b86e3a2
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: '8'
+    taskid: 2553eebc-777a-4018-8595-f55c16a1fcfb
+    type: playbook
+    task:
+      id: 2553eebc-777a-4018-8595-f55c16a1fcfb
+      version: -1
+      name: Run Panorama Best Practice Assessment
+      playbookName: Run Panorama Best Practice Assessment
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 765,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
+inputs: []
+outputs: []
+description: ''

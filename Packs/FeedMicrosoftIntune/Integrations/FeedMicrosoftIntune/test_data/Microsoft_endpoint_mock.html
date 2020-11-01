@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html class="hasSidebar hasPageActions hasBreadcrumb conceptual has-default-focus theme-light" lang="en-us" dir="ltr" data-css-variable-support="true" data-authenticated="false" data-auth-status-determined="false" data-target="docs" x-ms-format-detection="none">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="Network endpoints for Microsoft Intune" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://docs.microsoft.com/en-us/mem/intune/fundamentals/intune-endpoints" />
+			<meta property="og:description" content="Review endpoints for Intune." />
+		<meta property="og:image" content="https://docs.microsoft.com/en-us/media/logos/logo-ms-social.png" />
+		<meta property="og:image:alt" content="Microsoft Logo" />
+
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:site" content="@docsmsft" />
+
+
+	<meta name="author" content="ErikjeMS" />
+<meta name="breadcrumb_path" content="/mem/breadcrumb/toc.json" />
+<meta name="depot_name" content="MSDN.memdocs" />
+<meta name="description" content="Review endpoints for Intune." />
+<meta name="document_id" content="4c9c3475-56d4-026b-349f-f9cbc258537c" />
+<meta name="document_version_independent_id" content="9c6476ed-8a47-bcb4-dfbf-25ba305c3b24" />
+<meta name="gitcommit" content="https://github.com/MicrosoftDocs/memdocs-pr/blob/0231b8cf57486517687e2801d0f76625c5fb899d/memdocs/intune/fundamentals/intune-endpoints.md" />
+<meta name="keywords" content="" />
+<meta name="locale" content="en-us" />
+<meta name="manager" content="dougeby" />
+<meta name="ms.assetid" content="b8d9aef2-8757-4e22-9b24-a0833d27304c" />
+<meta name="ms.author" content="erikje" />
+<meta name="ms.collection" content="M365-identity-device-management" />
+<meta name="ms.custom" content="intune-classic; get-started" />
+<meta name="ms.date" content="04/20/2020" />
+<meta name="ms.localizationpriority" content="high" />
+<meta name="ms.reviewer" content="kerimh" />
+<meta name="ms.service" content="microsoft-intune" />
+<meta name="ms.subservice" content="fundamentals" />
+<meta name="ms.suite" content="ems" />
+<meta name="ms.topic" content="conceptual" />
+<meta name="original_content_git_url" content="https://github.com/MicrosoftDocs/memdocs-pr/blob/live/memdocs/intune/fundamentals/intune-endpoints.md" />
+<meta name="search.appverid" content="MET150" />
+<meta name="search.ms_docsetname" content="memdocs" />
+<meta name="search.ms_product" content="MSDN" />
+<meta name="search.ms_sitename" content="Docs" />
+<meta name="site_name" content="Docs" />
+<meta name="updated_at" content="2020-04-20 05:42 PM" />
+<meta name="page_type" content="conceptual" />
+<meta name="toc_rel" content="toc.json" />
+<meta name="pdf_url_template" content="https://docs.microsoft.com/pdfstore/en-us/MSDN.memdocs/{branchName}{pdfName}" />
+<meta name="word_count" content="676" />
+
+
+	<meta name="scope" content="Intune" />
+<link href="https://docs.microsoft.com/en-us/mem/intune/fundamentals/intune-endpoints" rel="canonical">
+	<title>Network endpoints for Microsoft Intune | Microsoft Docs</title>
+
+		<link rel="stylesheet" href="/_themes/docs.theme/master/en-us/_themes/styles/3a60cd3c.site-ltr.css ">
+
+	<link rel="stylesheet" href="/_themes/docs.theme/master/en-us/_themes/styles/f7aab81a.conceptual.css ">
+
+
+	<script>
+	var msDocs = {
+		data: {
+			timeOrigin: Date.now(),
+			azureHeaderLocale: 'en-us',
+			contentLocale: 'en-us',
+			contentDir: 'ltr',
+			userLocale: 'en-us',
+			userDir: 'ltr',
+			pageTemplate: 'Conceptual',
+			brand: 'Microsoft Endpoint Manager',
+			context: {
+
+			},
+			hasBinaryRating: true,
+			hasGithubIssues: true,
+			showFeedbackReport: false,
+			enableTutorialFeedback: false,
+			feedbackSystem: 'GitHub',
+			feedbackGitHubRepo: 'MicrosoftDocs/memdocs',
+			feedbackProductUrl: 'https://microsoftintune.uservoice.com/',
+			contentGitUrl: 'https://github.com/MicrosoftDocs/memdocs/blob/master/memdocs/intune/fundamentals/intune-endpoints.md',
+			extendBreadcrumb: false,
+			isEditDisplayable: true,
+			hideViewSource: false,
+			hasPageActions: true,
+			hasBookmark: true,
+			hasShare: true
+		},
+		functions:{}
+	};
+	</script>
+	<script nomodule src="/static/third-party/bluebird/3.5.0/bluebird.min.js" integrity="sha384-aD4BDeDGeLXLpPK4yKeqtZQa9dv4a/7mQ+4L5vwshIYH1Mc2BrXvHd32iHzYCQy5" crossorigin="anonymous"></script>
+	<script nomodule src="/static/third-party/fetch/3.0.0/fetch.umd.min.js" integrity="sha384-EQIXrC5K2+7X8nGgLkB995I0/6jfAvvyG1ieZ+WYGxgJHFMD/alsG9fSDWvzb5Y1" crossorigin="anonymous"></script>
+	<script nomodule src="/static/third-party/template/1.4.0/template.min.js" integrity="sha384-1zKzI6ldTVHMU7n0W2HpE/lhHI+UG4D9IIaxbj3kT2UhCWicdTuJkTtnKuu0CQzN" crossorigin="anonymous"></script>
+	<script nomodule src="/static/third-party/url/0.5.7/url.min.js" integrity="sha384-vn7xBMtpSTfzaTRWxj0kVq0UcsbBrTOgZ/M1ISHqe1V358elYva+lfiEC+T8jLPc" crossorigin="anonymous"></script>
+	<script nomodule src="/_themes/docs.theme/master/en-us/_themes/scripts/3d316e17.index-polyfills.js"></script>
+	<script src="/static/third-party/jquery/3.3.1/jquery.min.js" integrity="sha384-Q4GEli30r5Awgb/ITt925nE8buHKjVWM/x3DX8t5JwRLT9P/C2r7u7XzNwvpTTGw" crossorigin="anonymous"></script>
+		<script src="/_themes/docs.theme/master/en-us/_themes/scripts/3ac143ac.index-docs.js"></script>
+</head>
+
+<body lang="en-us" dir="ltr">
+<div class="header-holder has-default-focus">
+	<a href="#main" class="skip-to-main-link visually-hidden-until-focused is-fixed has-inner-focus focus-visible has-top-zero has-left-zero has-right-zero has-padding-medium has-text-centered has-body-background-medium" tabindex="1">Skip to main content</a>
+	<div id="build-banner-holder" class="has-default-focus has-overflow-hidden">
+	</div>
+		<div id="headerAreaHolder" data-bi-name="header">
+<header role="banner" itemscope="itemscope" itemtype="http://schema.org/Organization">
+	<div class="nav-bar">
+		<a itemprop="url" href="https://www.microsoft.com" aria-label="Microsoft" class="nav-bar-button has-padding-left-medium-mobile">
+			<div class="nav-bar-logo has-background-image theme-display is-light" role="presentation" aria-hidden="true" itemprop="logo" itemscope="itemscope"></div>
+			<div class="nav-bar-logo has-background-image theme-display is-dark is-high-contrast" role="presentation" aria-hidden="true" itemprop="logo" itemscope="itemscope"></div>
+		</a>
+		<div class="nav-bar-item is-hidden-tablet">
+			<button class="nav-bar-button is-size-5 is-text has-body-background has-padding-none" title="Global navigation">
+				<span class="has-text-weight-semibold has-padding-left-small has-padding-bottom-extra-small"></span>
+				<div class="nav-bar-burger has-padding-none has-height-zero">
+					<span></span>
+					<span></span>
+					<span></span>
+					<span class="is-visually-hidden">Global navigation</span>
+				</div>
+			</button>
+		</div>
+		<nav class="nav-bar-nav" role="navigation" aria-label="Global">
+			<ul class="nav-bar-nav-list">
+				<li class="nav-bar-item is-category has-spacing">
+					<a class="nav-bar-button title has-hover-underline is-4" itemprop="url" href="/en-us/">
+						<span>Docs</span>
+					</a>
+				</li>
+				<li class="nav-bar-item">
+					<a class="nav-bar-button has-hover-underline" href="/en-us/">
+						<span>Documentation</span>
+					</a>
+				</li>
+				<li class="nav-bar-item">
+					<a class="nav-bar-button has-hover-underline" href="/en-us/learn/">
+						<span>Learn</span>
+					</a>
+				</li>
+				<li class="nav-bar-item">
+					<a class="nav-bar-button has-hover-underline" href="/en-us/samples/browse/">
+						<span>Code Samples</span>
+					</a>
+				</li>
+				<li class="dropdown nav-bar-item" hidden="">
+					<button aria-expanded="false" class="dropdown-trigger nav-bar-button has-hover-underline" aria-controls="ax-53">
+						<span>More</span>
+						<span class="nav-bar-button-chevron" aria-hidden="true">
+							<span class="docon docon-chevron-down-light expanded-indicator"></span>
+						</span>
+					</button>
+					<ul class="dropdown-menu" id="ax-53" aria-label="More">
+						<li class="nav-bar-item" hidden="">
+							<a class="nav-bar-button" href="/en-us/">Documentation</a>
+						</li>
+						<li class="nav-bar-item" hidden="">
+							<a class="nav-bar-button" href="/en-us/learn/">Learn</a>
+						</li>
+						<li class="nav-bar-item" hidden="">
+							<a class="nav-bar-button" href="/en-us/samples/browse/">Code Samples</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+		<span class="nav-bar-spacer is-hidden-mobile"></span>
+		<div class="nav-bar-item has-flex-grow-mobile has-flex-shrink-mobile">
+		</div>
+		<div class="nav-bar-item is-size-7 is-hidden-mobile">
+		</div>
+	</div>
+	<div class="nav-bar is-content is-hidden-mobile has-border-top">
+	</div>
+</header>		</div>
+		<div class="content-header uhf-container has-padding has-default-focus has-border-bottom-none" data-bi-name="content-header">
+			<nav class="has-padding-none has-padding-left-medium-tablet has-padding-right-medium-tablet has-padding-left-none-uhf-tablet has-padding-left-none-uhf-tablet has-padding-none-desktop has-flex-grow" data-bi-name="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList" role="navigation" aria-label="Breadcrumb">
+				<ul id="page-breadcrumbs" class="breadcrumbs">
+				</ul>
+			</nav>
+		<div class="content-header-controls">
+			<button type="button" class="contents-button button" data-bi-name="contents-expand" aria-haspopup="true">
+				<span class="icon"><span class="docon docon-menu" aria-hidden="true"></span></span>
+				<span>Contents</span>
+			</button>
+		</div>
+		<div class="content-header-controls exit-focus">
+			<button type="button" class="ap-collapse-behavior ap-expanded button" data-bi-name="ap-collapse" aria-controls="action-panel">
+				<span class="icon"><span class="docon docon-exit-mode" aria-hidden="true"></span></span>
+				<span>Exit focus mode</span>
+			</button>
+		</div>
+		<div class="has-padding-none-tablet has-padding-medium is-size-7 is-flex-touch has-flex-justify-content-space-between-touch has-flex-grow">
+			<ul class="is-hidden-mobile action-list has-flex-justify-content-start has-flex-justify-content-end-tablet is-flex is-flex-row has-flex-wrap has-flex-grow is-unstyled">
+				<li>
+					<button type="button" class="bookmark button is-text has-inner-focus is-small is-icon-only-touch" data-list-type="bookmarks" data-bi-name="bookmark" title="Bookmark this page">
+						<span class="icon" aria-hidden="true">
+							<span class="docon docon-single-bookmark"></span>
+						</span>
+						<span class="bookmark-status is-visually-hidden-touch is-hidden-portrait">Bookmark</span>
+					</button>
+				</li>
+					<li id="feedback-section-link">
+						<a href="#feedback" class="button is-text has-inner-focus is-small is-icon-only-touch" data-bi-name="comments" title="Send feedback about this page">
+							<span class="icon">
+								<span class="docon docon-comment-lines" aria-hidden="true"></span>
+							</span>
+							<span class="is-visually-hidden-touch is-hidden-portrait">Feedback</span>
+						</a>
+					</li>
+						<li id="contenteditbtn">
+							<a href="https://github.com/MicrosoftDocs/memdocs/blob/master/memdocs/intune/fundamentals/intune-endpoints.md" class="button is-text has-inner-focus is-icon-only-touch is-small" title="Edit This Document" data-bi-name="edit" data-original_content_git_url="https://github.com/MicrosoftDocs/memdocs-pr/blob/live/memdocs/intune/fundamentals/intune-endpoints.md" data-original_content_git_url_template="{repo}/blob/{branch}/memdocs/intune/fundamentals/intune-endpoints.md" data-pr_repo="" data-pr_branch="">
+							<span class="icon">
+								<span class="docon docon-edit-outline" aria-hidden="true"></span>
+							</span>
+							<span class="is-visually-hidden-touch is-hidden-portrait">Edit</span>
+						</a>
+					</li>
+				<li>
+<div class="sharing dropdown has-caret">
+	<button class="dropdown-trigger button is-text is-fullwidth has-flex-justify-content-start has-inner-focus is-small is-icon-only-touch" aria-controls="sharing-menu" aria-expanded="false" title="Share This Document" data-bi-name="share">
+		<span class="icon" aria-hidden="true">
+			<span class="docon docon-sharing"></span>
+		</span>
+		<span class="is-visually-hidden-touch is-hidden-portrait">Share</span>
+	</button>
+	<div class="dropdown-menu has-padding-small" id="sharing-menu">
+		<ul data-bi-name="share-links">
+			<li>
+				<a class="button is-text is-fullwidth has-flex-justify-content-start has-inner-focus is-small share-twitter" data-bi-name="twitter">
+					<span class="icon">
+						<span class="docon docon-brand-twitter has-text-primary" aria-hidden="true"></span>
+					</span>
+					<span>Twitter</span>
+				</a>
+			</li>
+			<li>
+				<a class="button is-text is-fullwidth has-flex-justify-content-start has-inner-focus is-small share-linkedin" data-bi-name="linkedin">
+					<span class="icon">
+						<span class="docon docon-brand-linkedin has-text-primary" aria-hidden="true"></span>
+					</span>
+					<span>LinkedIn</span>
+				</a>
+			</li>
+			<li>
+				<a class="button is-text is-fullwidth has-flex-justify-content-start has-inner-focus is-small share-facebook" data-bi-name="facebook">
+					<span class="icon">
+						<span class="docon docon-brand-facebook has-text-primary" aria-hidden="true"></span>
+					</span>
+					<span>Facebook</span>
+				</a>
+			</li>
+			<li>
+				<a class="button is-text is-fullwidth has-flex-justify-content-start has-inner-focus is-small share-email" data-bi-name="email">
+					<span class="icon">
+						<span class="docon docon-mail-message-fill has-text-primary" aria-hidden="true"></span>
+					</span>
+					<span>Email</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>				</li>
+			</ul>
+			<button type="button" class="has-border contents-button button is-small is-text is-hidden-tablet has-inner-focus" aria-label="Contents" data-bi-name="contents-expand">
+				<span class="icon">
+					<span class="docon docon-editor-list-bullet" aria-hidden="true"></span>
+				</span>
+				<span>Table of contents</span>
+			</button>
+			<div class="is-invisible"></div>
+			<div class="is-hidden-tablet level-item is-flexible level-right">
+				<button type="button" class="page-actions-button button is-small is-text is-hidden-tablet has-inner-focus has-border is-full-height  has-margin-left-small" aria-label="Page Actions" data-bi-name="pageactions">
+					<span class="icon">
+						<span class="docon docon-more-vertical" aria-hidden="true"></span>
+					</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="banner-holder" class="has-default-focus has-overflow-hidden">
+	</div>
+
+	<div id="disclaimer-holder" class="has-overflow-hidden has-default-focus"></div>
+	</div>
+
+	<div class="mainContainer  uhf-container has-top-padding  has-default-focus" data-bi-name="body">
+
+		<div class="columns has-large-gaps is-gapless-mobile ">
+
+			<div id="left-container" class="left-container is-hidden-mobile column is-one-third-tablet is-one-quarter-desktop">
+				<nav id="affixed-left-container" class="is-fixed is-flex is-flex-column" role="navigation" aria-label="Primary"></nav>
+			</div>
+
+			<section class="primary-holder column is-two-thirds-tablet is-three-quarters-desktop">
+				<div class="columns is-gapless-mobile has-large-gaps ">
+
+
+				<div id="main-column" class="column  is-full is-four-fifths-desktop ">
+
+					<main id="main" role="main" class="content " data-bi-name="content" lang="en-us" dir="ltr">
+
+
+
+						<h1 id="network-endpoints-for-microsoft-intune">Network endpoints for Microsoft Intune</h1>
+
+						<ul class="metadata page-metadata" data-bi-name="page info" lang="en-us" dir="ltr">
+							<li>
+								<time class="is-invisible" data-article-date aria-label="Article review date" datetime="2020-04-20T00:00:00.000Z" data-article-date-source="ms.date">04/20/2020</time>
+							</li>
+								<li class="readingTime">3 minutes to read</li>
+								<li class="contributors-holder">
+									<a href="https://github.com/MicrosoftDocs/memdocs/blob/master/memdocs/intune/fundamentals/intune-endpoints.md" title="3 Contributors" aria-label="3 Contributors">
+										<ul class="contributors" data-bi-name="contributors" aria-hidden="true">
+													<li><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNMsAcAAQUAoVnxsV8AAAAASUVORK5CYII=" data-src="https://github.com/ErikjeMS.png?size=32" role="presentation"/></li>
+													<li><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNMsAcAAQUAoVnxsV8AAAAASUVORK5CYII=" data-src="https://github.com/Brenduns.png?size=32" role="presentation"/></li>
+													<li><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNMsAcAAQUAoVnxsV8AAAAASUVORK5CYII=" data-src="https://github.com/dougeby.png?size=32" role="presentation"/></li>
+										</ul>
+									</a>
+								</li>
+						</ul>
+
+						<nav id="center-doc-outline" class="doc-outline is-hidden-desktop" data-bi-name="intopic toc" role="navigation" aria-label="Article Outline">
+							<h3>In this article</h3>
+						</nav>
+
+						<!-- <content> -->
+
+<p>This page lists IP addresses and port settings needed for proxy settings in your Intune deployments.</p>
+<p>As a cloud-only service, Intune doesn't require on-premises infrastructure such as servers or gateways.</p>
+<h2 id="access-for-managed-devices">Access for managed devices</h2>
+<p>To manage devices behind firewalls and proxy servers, you must enable communication for Intune.</p>
+<div class="NOTE">
+<p>Note</p>
+<p>The information in section also applies to the Microsoft Intune Certificate Connector. The connector has the same network requirements as managed devices</p>
+</div>
+<ul>
+<li>The proxy server must support both <strong>HTTP (80)</strong> and <strong>HTTPS (443)</strong> because Intune clients use both protocols. Windows Information Protection uses port 444.</li>
+<li>For some tasks (like downloading software updates for the classic pc agent), Intune requires unauthenticated proxy server access to manage.microsoft.com</li>
+</ul>
+<p>You can modify proxy server settings on individual client computers. You can also use Group Policy settings to change settings for all client computers located behind a specified proxy server.</p>
+<!--
+> [!NOTE] If Windows 8.1 devices haven't cached proxy server credentials, enrollment might fail because the request doesn't prompt for credentials. Enrollment fails without warning as the request wait for a connection. If users might experience this issue, instruct them to open their browser settings and save proxy server settings to enable a connection.   -->
+<p>Managed devices require configurations that let <strong>All Users</strong> access services through firewalls.</p>
+<p>The following tables list the ports and services that the Intune client accesses:</p>
+<table>
+<thead>
+<tr>
+<th>Domains</th>
+<th>IP address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>login.microsoftonline.com <br> *.officeconfig.msocdn.com <br> config.office.com <br> graph.windows.net</td>
+<td>More information <a href="https://support.office.com/article/Office-365-URLs-and-IP-address-ranges-8548a211-3fe7-47cb-abb1-355ea5aa88a2" data-linktype="external">Office 365 URLs and IP address ranges</a></td>
+</tr>
+<tr>
+<td>portal.manage.microsoft.com<br> m.manage.microsoft.com</td>
+<td>52.175.12.209<br>20.188.107.228<br>52.138.193.149<br>51.144.161.187<br>52.160.70.20<br>52.168.54.64 <br>13.72.226.202<br>52.189.220.232</td>
+</tr>
+<tr>
+<td>sts.manage.microsoft.com</td>
+<td>13.93.223.241 <br>52.170.32.182 <br>52.164.224.159 <br>52.174.178.4 <br>13.75.122.143 <br>52.163.120.84<br>13.73.112.122<br>52.237.192.112</td>
+</tr>
+<tr>
+<td>Manage.microsoft.com <br>i.manage.microsoft.com <br>r.manage.microsoft.com <br>a.manage.microsoft.com <br>p.manage.microsoft.com <br>EnterpriseEnrollment.manage.microsoft.com <br>EnterpriseEnrollment-s.manage.microsoft.com</td>
+<td>40.83.123.72<br>13.76.177.110<br>52.169.9.87<br>52.174.26.23<br>104.40.82.191<br>13.82.96.212<br>52.147.8.239<br>40.115.69.185</td>
+</tr>
+<tr>
+<td>portal.fei.msua01.manage.microsoft.com <br>m.fei.msua01.manage.microsoft.com<br>portal.fei.msua02.manage.microsoft.com<br>m.fei.msua02.manage.microsoft.com<br>portal.fei.msua04.manage.microsoft.com <br>m.fei.msua04.manage.microsoft.com<br>portal.fei.msua05.manage.microsoft.com <br>m.fei.msua05.manage.microsoft.com<br>portal.fei.amsua0502.manage.microsoft.com <br>m.fei.amsua0502.manage.microsoft.com<br>portal.fei.msua06.manage.microsoft.com <br>m.fei.msua06.manage.microsoft.com<br>portal.fei.amsua0602.manage.microsoft.com <br>m.fei.amsua0602.manage.microsoft.com<br>fei.amsua0202.manage.microsoft.com <br>portal.fei.amsua0202.manage.microsoft.com <br>m.fei.amsua0202.manage.microsoft.com<br>portal.fei.amsua0402.manage.microsoft.com <br>m.fei.amsua0402.manage.microsoft.com</td>
+<td>52.160.70.20<br>52.168.54.64</td>
+</tr>
+<tr>
+<td>portal.fei.msub01.manage.microsoft.com <br>m.fei.msub01.manage.microsoft.com<br>portal.fei.amsub0102.manage.microsoft.com <br>m.fei.amsub0102.manage.microsoft.com<br>fei.msub02.manage.microsoft.com <br>portal.fei.msub02.manage.microsoft.com <br>m.fei.msub02.manage.microsoft.com<br>portal.fei.msub03.manage.microsoft.com <br>m.fei.msub03.manage.microsoft.com<br>portal.fei.msub05.manage.microsoft.com <br>m.fei.msub05.manage.microsoft.com<br>portal.fei.amsub0202.manage.microsoft.com <br>m.fei.amsub0202.manage.microsoft.com<br>portal.fei.amsub0302.manage.microsoft.com <br>m.fei.amsub0302.manage.microsoft.com<br>portal.fei.amsub0502.manage.microsoft.com<br>m.fei.amsub0502.manage.microsoft.com</td>
+<td>52.138.193.149<br>51.144.161.187</td>
+</tr>
+<tr>
+<td>portal.fei.msuc01.manage.microsoft.com <br>m.fei.msuc01.manage.microsoft.com<br>portal.fei.msuc02.manage.microsoft.com <br>m.fei.msuc02.manage.microsoft.com<br>portal.fei.msuc03.manage.microsoft.com <br>m.fei.msuc03.manage.microsoft.com<br>portal.fei.msuc05.manage.microsoft.com <br>m.fei.msuc05.manage.microsoft.com</td>
+<td>52.175.12.209<br>20.188.107.228</td>
+</tr>
+<tr>
+<td>portal.fei.amsud0101.manage.microsoft.com<br>m.fei.amsud0101.manage.microsoft.com</td>
+<td>13.72.226.202</td>
+</tr>
+<tr>
+<td>fef.msua01.manage.microsoft.com</td>
+<td>138.91.243.97</td>
+</tr>
+<tr>
+<td>fef.msua02.manage.microsoft.com</td>
+<td>52.177.194.236</td>
+</tr>
+<tr>
+<td>fef.msua04.manage.microsoft.com</td>
+<td>23.96.112.28</td>
+</tr>
+<tr>
+<td>fef.msua05.manage.microsoft.com</td>
+<td>138.91.244.151</td>
+</tr>
+<tr>
+<td>fef.msua06.manage.microsoft.com</td>
+<td>13.78.185.97</td>
+</tr>
+<tr>
+<td>fef.msua07.manage.microsoft.com</td>
+<td>52.175.208.218</td>
+</tr>
+<tr>
+<td>fef.msub01.manage.microsoft.com</td>
+<td>137.135.128.214</td>
+</tr>
+<tr>
+<td>fef.msub02.manage.microsoft.com</td>
+<td>137.135.130.29</td>
+</tr>
+<tr>
+<td>fef.msub03.manage.microsoft.com</td>
+<td>52.169.82.238</td>
+</tr>
+<tr>
+<td>fef.msub05.manage.microsoft.com</td>
+<td>23.97.166.52</td>
+</tr>
+<tr>
+<td>fef.msuc01.manage.microsoft.com</td>
+<td>52.230.19.86</td>
+</tr>
+<tr>
+<td>fef.msuc02.manage.microsoft.com</td>
+<td>23.98.66.118</td>
+</tr>
+<tr>
+<td>fef.msuc03.manage.microsoft.com</td>
+<td>23.101.0.100</td>
+</tr>
+<tr>
+<td>fef.msuc05.manage.microsoft.com</td>
+<td>52.230.16.180</td>
+</tr>
+<tr>
+<td>fef.amsua0202.manage.microsoft.com</td>
+<td>52.165.165.17</td>
+</tr>
+<tr>
+<td>fef.amsua0402.manage.microsoft.com</td>
+<td>40.69.157.122</td>
+</tr>
+<tr>
+<td>fef.amsua0502.manage.microsoft.com</td>
+<td>13.85.68.142</td>
+</tr>
+<tr>
+<td>fef.amsua0602.manage.microsoft.com</td>
+<td>52.161.28.64</td>
+</tr>
+<tr>
+<td>fef.amsub0102.manage.microsoft.com</td>
+<td>40.118.98.207</td>
+</tr>
+<tr>
+<td>fef.amsub0202.manage.microsoft.com</td>
+<td>40.69.208.122</td>
+</tr>
+<tr>
+<td>fef.amsub0302.manage.microsoft.com</td>
+<td>13.74.145.65</td>
+</tr>
+<tr>
+<td>enterpriseregistration.windows.net</td>
+<td>52.175.211.189</td>
+</tr>
+<tr>
+<td>fef.amsua0102.manage.microsoft.com</td>
+<td>52.242.211.0</td>
+</tr>
+<tr>
+<td>fef.amsua0702.manage.microsoft.com</td>
+<td>52.232.225.75</td>
+</tr>
+<tr>
+<td>fef.amsub0502.manage.microsoft.com</td>
+<td>40.67.219.144</td>
+</tr>
+<tr>
+<td>fef.msud01.manage.microsoft.com</td>
+<td>20.40.178.139</td>
+</tr>
+<tr>
+<td>Admin.manage.microsoft.com</td>
+<td>52.224.221.227<br>52.161.162.117<br>52.178.44.195<br>52.138.206.56<br>52.230.21.208<br>13.75.125.10</td>
+</tr>
+<tr>
+<td>wip.mam.manage.microsoft.com</td>
+<td>52.187.76.84<br>13.76.5.121<br>52.165.160.237<br>40.86.82.163<br>52.233.168.142<br>168.63.101.57<br>52.187.196.98<br>52.237.196.51</td>
+</tr>
+<tr>
+<td>mam.manage.microsoft.com</td>
+<td>104.40.69.125<br>13.90.192.78<br>40.85.174.177<br>40.85.77.31<br>137.116.229.43<br>52.163.215.232<br>52.174.102.180<br>52.187.196.173<br>52.156.162.48</td>
+</tr>
+<tr>
+<td>*.manage.microsoft.com</td>
+<td>40.82.248.224/28<br>20.189.105.0/24<br>20.37.153.0/24<br>20.37.192.128/25<br>20.38.81.0/24<br>20.41.1.0/24<br>20.42.1.0/24<br>20.42.130.0/24<br>20.42.224.128/25<br>20.43.129.0/24<br>40.119.8.128/25<br>40.74.25.0/24<br>40.82.249.128/25<br>40.80.184.128/25<br>52.150.137.0/25</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-requirements-for-powershell-scripts-and-win32-apps">Network requirements for PowerShell scripts and Win32 apps</h2>
+<p>If you're using Intune to deploy PowerShell scripts or Win32 apps, you'll also need to grant access to endpoints in which your tenant currently resides.</p>
+<table>
+<thead>
+<tr>
+<th>ASU</th>
+<th>Storage name</th>
+<th>CDN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AMSUA0601<br>AMSUA0602<br>AMSUA0101<br>AMSUA0102<br>AMSUA0201<br>AMSUA0202<br>AMSUA0401<br>AMSUA0402<br>AMSUA0501<br>AMSUA0502<br>AMSUA0701<br>AMSUA0702</td>
+<td>naprodimedatapri<br>naprodimedatasec<br>naprodimedatahotfix</td>
+<td>naprodimedatapri.azureedge.net<br>naprodimedatasec.azureedge.net<br>naprodimedatahotfix.azureedge.net</td>
+</tr>
+<tr>
+<td>AMSUB0101<br>AMSUB0102<br>AMSUB0201<br>AMSUB0202<br>AMSUB0301<br>AMSUB0302<br>AMSUB0501<br>AMSUB0502</td>
+<td>euprodimedatapri<br>euprodimedatasec<br>euprodimedatahotfix</td>
+<td>euprodimedatapri.azureedge.net<br>euprodimedatasec.azureedge.net<br>euprodimedatahotfix.azureedge.net</td>
+</tr>
+<tr>
+<td>AMSUC0101<br>AMSUC0201<br>AMSUC0301<br>AMSUC0501<br>AMSUD0101</td>
+<td>approdimedatapri<br>approdimedatasec<br>approdimedatahotifx</td>
+<td>approdimedatapri.azureedge.net<br>approdimedatasec.azureedge.net<br>approdimedatahotfix.azureedge.net</td>
+</tr>
+</tbody>
+</table>
+<h2 id="windows-push-notification-services-wns">Windows Push Notification Services (WNS)</h2>
+<p>For Intune-managed Windows devices managed using Mobile Device Management (MDM), device actions and other immediate activities require the use of Windows Push Notification Services (WNS). For more information, see <a href="https://docs.microsoft.com/windows/uwp/design/shell/tiles-and-notifications/firewall-allowlist-config" data-linktype="external">Allowing Windows Notification traffic through enterprise firewalls</a>.</p>
+<h2 id="delivery-optimization-port-requirements">Delivery Optimization port requirements</h2>
+<h3 id="port-requirements">Port requirements</h3>
+<p>For peer-to-peer traffic, Delivery Optimization uses 7680 for TCP/IP or 3544 for NAT traversal (optionally Teredo).
+For client-service communication, it uses HTTP or HTTPS over port 80/443.</p>
+<h3 id="proxy-requirements">Proxy requirements</h3>
+<p>To use Delivery Optimization, you must allow Byte Range requests. For more information, see <a href="https://docs.microsoft.com/windows/deployment/update/windows-update-troubleshooting" data-linktype="external">Proxy requirements for Windows Update</a>.</p>
+<h3 id="firewall-requirements">Firewall requirements</h3>
+<p>Allow the following hostnames through your firewall to support Delivery Optimization.
+For communication between clients and the Delivery Optimization cloud service:</p>
+<ul>
+<li>*.do.dsp.mp.microsoft.com</li>
+</ul>
+<p>For Delivery Optimization metadata:</p>
+<ul>
+<li>*.dl.delivery.mp.microsoft.com</li>
+<li>*.emdl.ws.microsoft.com</li>
+</ul>
+<h2 id="apple-device-network-information">Apple device network information</h2>
+<table>
+<thead>
+<tr>
+<th>Used for</th>
+<th>Hostname (IP address/subnet)</th>
+<th>Protocol</th>
+<th>Port</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Retrieving and displaying content from Apple servers</td>
+<td>itunes.apple.com<br>*.itunes.apple.com<br>*.mzstatic.com<br>*.phobos.apple.com<br> *.phobos.itunes-apple.com.akadns.net</td>
+<td>HTTP</td>
+<td>80</td>
+</tr>
+<tr>
+<td>Communications with APNS servers</td>
+<td>#-courier.push.apple.com<br>'#' is a random number from 0 to 50.</td>
+<td>TCP</td>
+<td>5223 and 443</td>
+</tr>
+<tr>
+<td>Various functionalities including accessing the World Wide Web, iTunes store, macOS app store, iCloud, messaging, etc.</td>
+<td>phobos.apple.com<br>ocsp.apple.com<br>ax.itunes.apple.com<br>ax.itunes.apple.com.edgesuite.net</td>
+<td>HTTP/HTTPS</td>
+<td>80 or 443</td>
+</tr>
+</tbody>
+</table>
+<p>For more information, see Apple's <a href="https://support.apple.com/HT202944" data-linktype="external">TCP and UDP ports used by Apple software products</a>, <a href="https://support.apple.com/HT201999" data-linktype="external">About macOS, iOS/iPadOS, and iTunes server host connections and iTunes background processes</a>, and <a href="https://support.apple.com/HT203609" data-linktype="external">If your macOS and iOS/iPadOS clients aren't getting Apple push notifications</a>.</p>
+
+						<!-- </content> -->
+
+						</main>
+
+						<!-- recommended content page section -->
+
+							<nav data-bi-name="recommendation-bottom" hidden id="recommended-content-center" class="is-hidden-desktop" aria-labelledby="recommended-content-center-title">
+								<h3 id="recommended-content-center-title" class="is-size-2 has-margin-top-large has-margin-bottom-small">Related Articles</h3>
+							</nav>
+
+						<!-- end recommended content page section -->
+
+						<!-- page rating section -->
+								<div class="is-hidden-desktop has-border-top has-margin-top-large has-padding-top-small">
+
+
+<div class="feedback-verbatim has-border-bottom has-padding-bottom-small has-margin-bottom-small" data-bi-name="rating">
+    <div class="binary-rating">
+        <div class="binary-rating-buttons">
+            <h3 class="has-text-weight-semibold has-margin-top-none has-margin-bottom-small">Is this page helpful?</h3>
+            <div>
+                <button class="thumb-rating like has-inner-focus has-padding-left-extra-small has-padding-right-extra-small" title="Yes" data-bi-name="rating-yes" aria-expanded="false" data-bi-sat="1" aria-controls="rating-container-mobile">
+                    <span aria-hidden="true" class="icon docon docon-like"></span>
+                    <span>Yes</span>
+                </button>
+                <button class="thumb-rating dislike has-inner-focus has-padding-none has-padding-right-extra-small" title="No" data-bi-name="rating-no" data-bi-sat="0" aria-expanded="false" aria-controls="rating-container-mobile">
+                    <span aria-hidden="true" class="icon docon docon-dislike"></span>
+                    <span>No</span>
+                </button>
+            </div>
+        </div>
+        <form class="feedback-verbatim-form is-hidden" id="rating-container-mobile">
+            <div class="verbatim-textarea box is-relative has-box-shadow-none has-border has-margin-top-small has-padding-extra-small is-size-8">
+                <label for="rating-textarea-mobile" class="visually-hidden">Any additional feedback?</label>
+                <textarea id="rating-textarea-mobile" rows="4" maxlength="999" placeholder="Any additional feedback?" required class="textarea has-border-none has-box-shadow-none has-inner-focus"></textarea>
+            </div>
+            <div class="buttons is-right has-margin-top-medium has-margin-right-extra-small">
+                <button class="skip-rating button is-text is-link is-small" type="button">Skip</button>
+                <button class="submit-rating button is-primary is-small" data-bi-name="rating-verbatim" disabled type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div class="thankyou-rating is-hidden" tabindex="-1">
+        <p>Thank you.</p>
+    </div>
+</div>								</div>
+						<!-- end page rating section -->
+
+
+						<!-- feedback section -->
+<section class="feedback-section" data-bi-name="feedback-section">
+
+    <h2 id="feedback">Feedback</h2>
+
+    <div class="alert choose-feedback-type">
+        <p aria-hidden="true" id="send-feedback-about">Send feedback about</p>
+
+        <div class="choose-feedback-buttons">
+                <a class="button feedback-type-product has-margin-bottom-small" aria-label="Send feedback about this product" href="https://microsoftintune.uservoice.com/" data-bi-name="product-feedback">
+                    <span>This product</span>
+                    <span aria-hidden="true" class="icon docon docon-navigate-external"></span>
+                </a>
+
+            <div class="field is-inline-flex has-margin-bottom-small">
+                <div class="control has-margin-top-none has-margin-bottom-none">
+                    <button class="button feedback-sign-in-button has-text-wrap" aria-label="Send feedback about this page" data-bi-name="feedback-sign-in">
+                        <span aria-hidden="true" class="icon docon docon-brand-github"></span>
+                        <span>This page</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="field is-inline-flex has-margin-bottom-small" hidden>
+                <div class="control has-margin-top-none has-margin-bottom-none">
+                    <button aria-controls="feedback-form" aria-describedby="send-feedback-about" aria-expanded="false" class="button feedback-form-toggle" data-bi-name="documentation-feedback">
+                        <span aria-hidden="true" class="icon docon docon-brand-github"></span>
+This page                        <span aria-hidden="true" class="icon">
+                            <span class="expanded-indicator docon docon-chevron-down-light"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <p>You may also leave feedback directly on <a data-bi-name="create-issue-on-github" class="github-link">GitHub <span class="docon docon-navigate-external" aria-hidden="true"></span></a>.</p>
+        </div>
+    </div>
+
+    <form accept-charset="UTF-8" action="javascript:" autocomplete="off" class="feedback-form" hidden id="feedback-form">
+        <h3 class="feedback-form-heading current-user">
+            <img class="avatar" alt="Avatar" width="36" height="36" aria-hidden="true">
+            <span aria-hidden="true" class="username"></span>
+            <span class="visually-hidden">Send feedback about this page</span>
+        </h3>
+
+        <label>
+            <span class="visually-hidden">Title</span>
+            <input class="input is-radiusless has-margin-bottom-small" name="title" type="text" placeholder="Title" required pattern=".*[^\s]+.*">
+        </label>
+        <label>
+            <span class="visually-hidden">Leave a comment</span>
+            <textarea name="body" placeholder="Leave a comment" class="textarea is-radiusless" required></textarea>
+        </label>
+
+        <div class="action-container">
+            <button class="button is-primary" name="submit" type="submit">Submit feedback</button>
+        </div>
+    </form>
+
+    <div class="feedback-status alert is-loading">
+        <p>Loading feedback...</p>
+    </div>
+
+    <div class="feedback-tab-group tabGroup" data-tab-group-independent hidden>
+        <ul role="tablist">
+            <li role="presentation">
+                <a aria-controls="tabpanel-issues-open" data-tab="issues-open" href="#tabpanel-issues-open" role="tab"></a>
+            </li>
+            <li role="presentation">
+                <a aria-controls="tabpanel-issues-closed" data-tab="issues-closed" href="#tabpanel-issues-closed" role="tab"></a>
+            </li>
+        </ul>
+        <section data-tab="issues-open" id="tabpanel-issues-open" role="tabpanel">
+            <div class="no-issues-placeholder">There are no open issues</div>
+            <ul class="github-issues-list" aria-label="Open Issues"></ul>
+        </section>
+        <section data-tab="issues-closed" id="tabpanel-issues-closed" role="tabpanel">
+            <div class="no-issues-placeholder">There are no closed issues</div>
+            <ul class="github-issues-list" aria-label="Closed Issues"></ul>
+        </section>
+    </div>
+    <div class="action-container">
+        <a class="view-on-github" data-bi-name="view-on-github" hidden href="https://github.com/MicrosoftDocs/memdocs/issues">
+            <span aria-hidden="true" class="docon docon-brand-github"></span>
+            <span>View on GitHub</span>
+            <span aria-hidden="true" class="docon docon-navigate-external"></span>
+        </a>
+    </div>
+</section>
+
+						<!-- end feedback section -->
+
+						<!-- feedback report section -->
+						<!-- end feedback report section -->
+
+						<div class="footerContainer is-visible-interactive has-default-focus ">
+<footer id="footer-interactive" data-bi-name="footer" class="footer-layout">
+
+    <div class="is-flex is-full-height has-padding-right-extra-large-desktop">
+			<a data-mscc-ic="false" class="locale-selector-link has-flex-shrink-none" href="#" data-bi-name="select-locale"><span class="icon docon docon-world is-size-4 has-margin-right-small" aria-hidden="true"></span><span class="local-selector-link-text"></span></a>
+		<div class="has-margin-left-medium has-margin-right-medium has-flex-shrink-none">
+<div class="dropdown has-caret-up">
+	<button class="dropdown-trigger button is-transparent is-small is-icon-only-touch has-inner-focus theme-dropdown-trigger"
+		aria-controls="theme-menu" aria-expanded="false" title="Theme" data-bi-name="theme">
+		<span class="icon">
+			<span class="docon docon-sun" aria-hidden="true"></span>
+		</span>
+		<span>Theme</span>
+	</button>
+	<div class="dropdown-menu" id="theme-menu" role="menu">
+		<ul class="theme-selector has-padding-small">
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="light">
+					<span class="theme-light has-margin-right-small">
+						<span
+							class="theme-selector-icon css-variable-support has-border is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+Light					</span>
+				</button>
+			</li>
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="dark">
+					<span class="theme-dark has-margin-right-small">
+						<span
+							class="has-border theme-selector-icon css-variable-support is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+Dark					</span>
+				</button>
+			</li>
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="high-contrast">
+					<span class="theme-high-contrast has-margin-right-small">
+						<span
+							class="has-border theme-selector-icon css-variable-support is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+High contrast					</span>
+				</button>
+			</li>
+		</ul>
+	</div>
+</div>		</div>
+	</div>
+
+    <ul class="links" data-bi-name="footerlinks">
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/previous-versions/" data-bi-name="archivelink">Previous Version Docs</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/teamblog" data-bi-name="bloglink">Blog</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/contribute" data-bi-name="contributorGuide">Contribute</a></li>
+				<li><a data-mscc-ic="false" href="https://go.microsoft.com/fwlink/?LinkId=521839" data-bi-name="privacy">Privacy &amp; Cookies</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/legal/termsofuse" data-bi-name="termsofuse">Terms of Use</a></li>
+		<li><a data-mscc-ic="false" href="https://aka.ms/sitefeedback" data-bi-name="feedback">Site Feedback</a></li>
+			<li><a data-mscc-ic="false" href="https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/EN-US.aspx" data-bi-name="trademarks">Trademarks</a></li>
+		<li>&copy; Microsoft 2020</li>
+    </ul>
+</footer>
+						</div>
+					</div>
+
+					<div class="is-size-7 right-container column is-one-quarter is-one-fifth-desktop is-hidden-mobile is-hidden-tablet-only" data-bi-name="pageactions" role="complementary" aria-label="Page Actions">
+						<div id="affixed-right-container" class="doc-outline is-fixed is-vertically-scrollable">
+
+
+<div class="feedback-verbatim has-border-bottom has-padding-bottom-small has-margin-bottom-small" data-bi-name="rating">
+    <div class="binary-rating">
+        <div class="binary-rating-buttons">
+            <h3 class="has-text-weight-semibold has-margin-top-none has-margin-bottom-small">Is this page helpful?</h3>
+            <div>
+                <button class="thumb-rating like has-inner-focus has-padding-left-extra-small has-padding-right-extra-small" title="Yes" data-bi-name="rating-yes" aria-expanded="false" data-bi-sat="1" aria-controls="rating-container-desktop">
+                    <span aria-hidden="true" class="icon docon docon-like"></span>
+                    <span>Yes</span>
+                </button>
+                <button class="thumb-rating dislike has-inner-focus has-padding-none has-padding-right-extra-small" title="No" data-bi-name="rating-no" data-bi-sat="0" aria-expanded="false" aria-controls="rating-container-desktop">
+                    <span aria-hidden="true" class="icon docon docon-dislike"></span>
+                    <span>No</span>
+                </button>
+            </div>
+        </div>
+        <form class="feedback-verbatim-form is-hidden" id="rating-container-desktop">
+            <div class="verbatim-textarea box is-relative has-box-shadow-none has-border has-margin-top-small has-padding-extra-small is-size-8">
+                <label for="rating-textarea-desktop" class="visually-hidden">Any additional feedback?</label>
+                <textarea id="rating-textarea-desktop" rows="4" maxlength="999" placeholder="Any additional feedback?" required class="textarea has-border-none has-box-shadow-none has-inner-focus"></textarea>
+            </div>
+            <div class="buttons is-right has-margin-top-medium has-margin-right-extra-small">
+                <button class="skip-rating button is-text is-link is-small" type="button">Skip</button>
+                <button class="submit-rating button is-primary is-small" data-bi-name="rating-verbatim" disabled type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div class="thankyou-rating is-hidden" tabindex="-1">
+        <p>Thank you.</p>
+    </div>
+</div>								<nav data-bi-name="recommendation-sidebar" hidden id="recommended-content-nav" role="navigation" aria-labelledby="recommended-content-nav-title">
+									<h3 id="recommended-content-nav-title">Related Articles</h3>
+								</nav>
+							<nav id="side-doc-outline" data-bi-name="intopic toc" role="navigation" aria-label="Article Outline">
+								<h3>In this article</h3>
+							</nav>
+						</div>
+					</div>
+
+					<!--end of div.columns -->
+				</div>
+
+			<!--end of .primary-holder -->
+			</section>
+
+			<aside id="interactive-container" class="interactive-container is-visible-interactive column has-body-background-dark ">
+			</aside>
+		</div>
+
+		<!--end of .mainContainer -->
+	</div>
+
+	<div id="openFeedbackContainer" class="openfeedback-container"></div>
+
+	<div class="footerContainer has-default-focus is-hidden-interactive ">
+<footer id="footer" data-bi-name="footer" class="footer-layout uhf-container has-padding" role="contentinfo">
+
+    <div class="is-flex is-full-height has-padding-right-extra-large-desktop">
+			<a data-mscc-ic="false" class="locale-selector-link has-flex-shrink-none" href="#" data-bi-name="select-locale"><span class="icon docon docon-world is-size-4 has-margin-right-small" aria-hidden="true"></span><span class="local-selector-link-text"></span></a>
+		<div class="has-margin-left-medium has-margin-right-medium has-flex-shrink-none">
+<div class="dropdown has-caret-up">
+	<button class="dropdown-trigger button is-transparent is-small is-icon-only-touch has-inner-focus theme-dropdown-trigger"
+		aria-controls="theme-menu" aria-expanded="false" title="Theme" data-bi-name="theme">
+		<span class="icon">
+			<span class="docon docon-sun" aria-hidden="true"></span>
+		</span>
+		<span>Theme</span>
+	</button>
+	<div class="dropdown-menu" id="theme-menu" role="menu">
+		<ul class="theme-selector has-padding-small">
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="light">
+					<span class="theme-light has-margin-right-small">
+						<span
+							class="theme-selector-icon css-variable-support has-border is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+Light					</span>
+				</button>
+			</li>
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="dark">
+					<span class="theme-dark has-margin-right-small">
+						<span
+							class="has-border theme-selector-icon css-variable-support is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+Dark					</span>
+				</button>
+			</li>
+			<li class="theme is-block">
+				<button class="button is-text is-small theme-control is-fullwidth has-flex-justify-content-start"
+					data-theme-to="high-contrast">
+					<span class="theme-high-contrast has-margin-right-small">
+						<span
+							class="has-border theme-selector-icon css-variable-support is-inline-block has-body-background"
+							aria-hidden="true">
+							<svg class="svg" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 22 14">
+								<rect width="22" height="14" class="has-fill-body-background" />
+								<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+								<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+								<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+								<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+								<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+								<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+							</svg>
+						</span>
+					</span>
+					<span role="menuitem">
+High contrast					</span>
+				</button>
+			</li>
+		</ul>
+	</div>
+</div>		</div>
+	</div>
+    <ul class="links" data-bi-name="footerlinks">
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/previous-versions/" data-bi-name="archivelink">Previous Version Docs</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/teamblog" data-bi-name="bloglink">Blog</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/contribute" data-bi-name="contributorGuide">Contribute</a></li>
+				<li><a data-mscc-ic="false" href="https://go.microsoft.com/fwlink/?LinkId=521839" data-bi-name="privacy">Privacy &amp; Cookies</a></li>
+		<li><a data-mscc-ic="false" href="https://docs.microsoft.com/en-us/legal/termsofuse" data-bi-name="termsofuse">Terms of Use</a></li>
+		<li><a data-mscc-ic="false" href="https://aka.ms/sitefeedback" data-bi-name="feedback">Site Feedback</a></li>
+			<li><a data-mscc-ic="false" href="https://www.microsoft.com/en-us/legal/intellectualproperty/Trademarks/EN-US.aspx" data-bi-name="trademarks">Trademarks</a></li>
+		<li>&copy; Microsoft 2020</li>
+    </ul>
+</footer>
+	</div>
+
+	<div id="action-panel" role="region" aria-label="Action Panel" class="action-panel has-default-focus" tabindex="-1"></div>
+</body>
+</html>

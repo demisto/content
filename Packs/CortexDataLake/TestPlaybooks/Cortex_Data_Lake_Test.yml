@@ -1,0 +1,552 @@
+id: Cortex Data Lake Test
+version: -1
+name: Cortex Data Lake Test
+description: The Palo Alto Networks Cortex Test playbook tests Cortex Data Lake main
+  usecases
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6a7468f0-3c02-401a-8d1b-44837e7506c7
+    type: start
+    task:
+      id: 6a7468f0-3c02-401a-8d1b-44837e7506c7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b6562244-6b46-4594-8aa3-7b6d239ed139
+    type: regular
+    task:
+      id: b6562244-6b46-4594-8aa3-7b6d239ed139
+      version: -1
+      name: Query Logs
+      description: Runs a query on the Cortex logging service.
+      script: Cortex Data Lake|||cdl-query-logs
+      type: regular
+      iscommand: true
+      brand: Cortex Data Lake
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit: {}
+      query:
+        simple: SELECT * FROM `firewall.traffic`
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 792c55d0-b304-4af8-82d0-b0256bad7305
+    type: condition
+    task:
+      id: 792c55d0-b304-4af8-82d0-b0256bad7305
+      version: -1
+      name: Verify Query Logs Outputs
+      description: Verify Query Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CDL.Logging.Action
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CDL.Logging.App
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CDL.Logging.DestinationIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CDL.Logging.RuleMatched
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CDL.Logging.SourceIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CDL.Logging.SourceLocation
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 59439316-3233-4717-8ad1-1b847e65bcee
+    type: title
+    task:
+      id: 59439316-3233-4717-8ad1-1b847e65bcee
+      version: -1
+      name: Success
+      description: Query Cortex Logging service according to pre-set queries
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 67c79548-9039-4bd1-84a7-2da6f3c733c5
+    type: regular
+    task:
+      id: 67c79548-9039-4bd1-84a7-2da6f3c733c5
+      version: -1
+      name: Fetch events
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: Cortex Data Lake
+      error_msg_in_incident:
+        simple: 'Error:'
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e52565d4-3dfa-4620-89f8-f4cf4a303238
+    type: regular
+    task:
+      id: e52565d4-3dfa-4620-89f8-f4cf4a303238
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 046bef0e-87d5-486b-8662-a3cc05a6f962
+    type: condition
+    task:
+      id: 046bef0e-87d5-486b-8662-a3cc05a6f962
+      version: -1
+      name: Verify Query Threat Logs Outputs
+      description: Verify Query Threat Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CDL
+                accessor: Logging.Threat.SourceIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CDL
+                accessor: Logging.Threat.DestinationIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CDL
+                accessor: Logging.Threat.RuleMatched
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 66a1d2e2-04e1-45b6-840e-bd700f30a0ec
+    type: regular
+    task:
+      id: 66a1d2e2-04e1-45b6-840e-bd700f30a0ec
+      version: -1
+      name: cdl-query-traffic-logs
+      description: Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session
+      script: Cortex Data Lake|||cdl-query-traffic-logs
+      type: regular
+      iscommand: true
+      brand: Cortex Data Lake
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      action: {}
+      dest_ip: {}
+      dest_port: {}
+      end_time:
+        simple: "2020-03-25 10:01:13"
+      fields: {}
+      from_zone: {}
+      limit: {}
+      query: {}
+      rule: {}
+      source_ip: {}
+      source_port: {}
+      start_time:
+        simple: "2019-11-06 09:59:39"
+      time_range: {}
+      to_zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 337df9d9-1137-4fb9-83b0-0bfeadfc44b9
+    type: condition
+    task:
+      id: 337df9d9-1137-4fb9-83b0-0bfeadfc44b9
+      version: -1
+      name: Verify Query Traffic Logs Outputs
+      description: Verify Query Traffic Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CDL
+                accessor: Logging.Traffic.SourceIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CDL
+                accessor: Logging.Traffic.DestinationIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CDL
+                accessor: Logging.Traffic.RuleMatched
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: dd4cfff2-a9c3-49d4-8fba-0a484e792353
+    type: regular
+    task:
+      id: dd4cfff2-a9c3-49d4-8fba-0a484e792353
+      version: -1
+      name: cdl-query-threat-logs
+      description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
+      script: '|||cdl-query-threat-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      action: {}
+      dest_ip: {}
+      dest_port: {}
+      end_time:
+        simple: "2020-03-25 10:01:13"
+      fields: {}
+      file_name: {}
+      file_sha_256: {}
+      from_zone: {}
+      limit: {}
+      query: {}
+      rule_matched: {}
+      source_ip: {}
+      source_port: {}
+      start_time:
+        simple: "2019-11-06 09:59:39"
+      time_range: {}
+      to_zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1ee0cb39-9fe3-48fc-84da-1d0521ad06fb
+    type: regular
+    task:
+      id: 1ee0cb39-9fe3-48fc-84da-1d0521ad06fb
+      version: -1
+      name: cdl-query-file-data
+      description: Searches the Cortex firewall.file_data table.
+      script: '|||cdl-query-file-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      action: {}
+      app:
+        simple: web-browsing
+      app_category: {}
+      dest_device_host: {}
+      dest_dynamic_address_group: {}
+      dest_edl: {}
+      dest_ip: {}
+      dest_location: {}
+      dest_port: {}
+      dest_user: {}
+      end_time: {}
+      file_name: {}
+      file_sha_256: {}
+      file_type: {}
+      from_zone: {}
+      is_server_to_client: {}
+      is_url_denied: {}
+      limit:
+        simple: "1"
+      log_type: {}
+      nat_dest: {}
+      nat_dest_port: {}
+      nat_source: {}
+      nat_source_port: {}
+      rule_matched: {}
+      rule_matched_uuid: {}
+      severity: {}
+      source_device_host: {}
+      source_dynamic_address_group: {}
+      source_edl: {}
+      source_ip: {}
+      source_location: {}
+      source_port: {}
+      source_user: {}
+      start_time: {}
+      sub_type: {}
+      time_range:
+        simple: 1 year
+      url_category: {}
+      url_domain: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 4881978e-2bd7-4058-87cc-9ac964e173eb
+    type: condition
+    task:
+      id: 4881978e-2bd7-4058-87cc-9ac964e173eb
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CDL.Logging.File.App
+            iscontext: true
+          right:
+            value:
+              simple: web-browsing
+      - - operator: isExists
+          left:
+            value:
+              simple: CDL.Logging.File.SourceIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2030,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

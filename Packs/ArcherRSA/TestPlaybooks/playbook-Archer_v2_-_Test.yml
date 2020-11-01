@@ -1,0 +1,1330 @@
+id: Archer v2 - Test
+version: -1
+name: Archer v2 - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eac44f95-e9a0-4a17-85cb-e79b1d53c2eb
+    type: start
+    task:
+      id: eac44f95-e9a0-4a17-85cb-e79b1d53c2eb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e09675d6-3c12-401a-8b05-7fae1a86d951
+    type: regular
+    task:
+      id: e09675d6-3c12-401a-8b05-7fae1a86d951
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 333541de-5c29-4f2f-83f4-85b75351e009
+    type: regular
+    task:
+      id: 333541de-5c29-4f2f-83f4-85b75351e009
+      version: -1
+      name: archer-search-applications
+      script: '|||archer-search-applications'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      retry-count:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a490c90d-885a-4944-8a1b-635b9a0cbbbb
+    type: condition
+    task:
+      id: a490c90d-885a-4944-8a1b-635b9a0cbbbb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.Application.Guid
+            iscontext: true
+          right:
+            value:
+              simple: 982fc3be-7c43-4d79-89a1-858ed262b930
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.Application.Id
+            iscontext: true
+          right:
+            value:
+              simple: "75"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.Application.Status
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.Application.Type
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.Application.Name
+            iscontext: true
+          right:
+            value:
+              simple: Incidents
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c8da5ffb-a254-4f40-8c26-4257c687398a
+    type: regular
+    task:
+      id: c8da5ffb-a254-4f40-8c26-4257c687398a
+      version: -1
+      name: archer-get-application-fields
+      script: '|||archer-get-application-fields'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      application-id:
+        simple: "75"
+      applicationId:
+        simple: "75"
+      retry-count:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: eed9c7b6-5e99-470b-86e4-ce59a508e4a4
+    type: condition
+    task:
+      id: eed9c7b6-5e99-470b-86e4-ce59a508e4a4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.ApplicationField.FieldId
+            iscontext: true
+          right:
+            value:
+              simple: "296"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.ApplicationField.FieldName
+            iscontext: true
+          right:
+            value:
+              simple: Incident ID
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.ApplicationField.FieldType
+            iscontext: true
+          right:
+            value:
+              simple: TrackingID
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.ApplicationField.LevelID
+            iscontext: true
+          right:
+            value:
+              simple: "67"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 072140e7-6198-42be-8376-57582333814e
+    type: regular
+    task:
+      id: 072140e7-6198-42be-8376-57582333814e
+      version: -1
+      name: archer-get-field
+      script: '|||archer-get-field'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      fieldID:
+        simple: "304"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3ec5098b-638b-4012-8217-d5e9d22655bb
+    type: condition
+    task:
+      id: 3ec5098b-638b-4012-8217-d5e9d22655bb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.ApplicationField.FieldId
+            iscontext: true
+          right:
+            value:
+              simple: "304"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.ApplicationField.FieldName
+            iscontext: true
+          right:
+            value:
+              simple: Priority
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.ApplicationField.FieldType
+            iscontext: true
+          right:
+            value:
+              simple: Values List
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.ApplicationField.LevelID
+            iscontext: true
+          right:
+            value:
+              simple: "67"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7185aa81-ca94-4d34-823a-858f6227940c
+    type: regular
+    task:
+      id: 7185aa81-ca94-4d34-823a-858f6227940c
+      version: -1
+      name: archer-get-mapping-by-level
+      script: '|||archer-get-mapping-by-level'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      level:
+        simple: "67"
+      retry-count:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: a92cbd63-eeb8-49dc-88ab-c56779739c84
+    type: condition
+    task:
+      id: a92cbd63-eeb8-49dc-88ab-c56779739c84
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Archer.LevelMapping.Id
+            iscontext: true
+          right:
+            value:
+              simple: "302"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.LevelMapping.Name
+            iscontext: true
+          right:
+            value:
+              simple: Incident ID
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.LevelMapping.Type
+            iscontext: true
+          right:
+            value:
+              simple: Values List
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Archer.LevelMapping.LevelId
+            iscontext: true
+          right:
+            value:
+              simple: "67"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: b004b8e8-ef89-4b86-88aa-71148121beca
+    type: regular
+    task:
+      id: b004b8e8-ef89-4b86-88aa-71148121beca
+      version: -1
+      name: archer-get-record
+      script: '|||archer-get-record'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      retry-count:
+        simple: "4"
+      applicationId:
+        simple: "75"
+      contentId:
+        complex:
+          root: Archer
+          accessor: Record.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6664ed2e-0b1a-4ff8-8c7e-5e3611bf6e29
+    type: condition
+    task:
+      id: 6664ed2e-0b1a-4ff8-8c7e-5e3611bf6e29
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Archer.Record.Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 511c4311-98c5-412a-843c-fa108eb31067
+    type: regular
+    task:
+      id: 511c4311-98c5-412a-843c-fa108eb31067
+      version: -1
+      name: ArcherCreateRecordExample
+      description: This script is an example script of how to create Incident in Archer.
+        The script generates the create incident data in JSON format and execute the
+        command archer-create-record.
+      scriptName: ArcherCreateIncidentExample
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      category:
+        simple: Physical
+      priority:
+        simple: High
+      summary:
+        simple: '`This is the incident summary`'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 0726bbac-1dc1-4ba3-80b6-5da46e78f702
+    type: regular
+    task:
+      id: 0726bbac-1dc1-4ba3-80b6-5da46e78f702
+      version: -1
+      name: archer-delete-record
+      script: '|||archer-delete-record'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      retry-count:
+        simple: "4"
+      applicationId: {}
+      contentId:
+        complex:
+          root: Archer
+          accessor: Record.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: d85648f7-fada-4bac-8832-5c05c8d1f352
+    type: regular
+    task:
+      id: d85648f7-fada-4bac-8832-5c05c8d1f352
+      version: -1
+      name: archer-update-record
+      script: '|||archer-update-record'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      applicationId:
+        simple: "75"
+      contentId:
+        complex:
+          root: Archer
+          accessor: Record.Id
+      fieldsToValues:
+        simple: '{"Incident Summary":"updated summary"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 65ab3b9b-8988-4ca6-8d8b-bdb9b51c561b
+    type: regular
+    task:
+      id: 65ab3b9b-8988-4ca6-8d8b-bdb9b51c561b
+      version: -1
+      name: archer-execute-statistic-search-by-report
+      script: '|||archer-execute-statistic-search-by-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      max-results: {}
+      maxResults:
+        simple: "100"
+      reportGuid:
+        simple: e4b18575-52c0-4f70-b41b-3ff8b6f13b1c
+      retry-count:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: e015be7d-b9cb-4d1f-86dd-f9f99451cdb6
+    type: regular
+    task:
+      id: e015be7d-b9cb-4d1f-86dd-f9f99451cdb6
+      version: -1
+      name: archer-get-search-options-by-guid
+      script: '|||archer-get-search-options-by-guid'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      reportGuid:
+        simple: bce4222c-ecfe-4cef-a556-fe746e959f12
+      retry-count:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 5ea27291-603b-46a8-8033-46da203c5e4a
+    type: regular
+    task:
+      id: 5ea27291-603b-46a8-8033-46da203c5e4a
+      version: -1
+      name: archer-reset-cache
+      script: '|||archer-reset-cache'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 161a9a7f-f57a-4952-806a-db8691f83b6d
+    type: regular
+    task:
+      id: 161a9a7f-f57a-4952-806a-db8691f83b6d
+      version: -1
+      name: archer-get-valuelist
+      script: '|||archer-get-valuelist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      fieldID:
+        simple: "302"
+      retry-count:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: d7c7e978-d7d8-4c49-899a-f6cd968a27f4
+    type: condition
+    task:
+      id: d7c7e978-d7d8-4c49-899a-f6cd968a27f4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Archer
+                filters:
+                - - operator: isEqualNumber
+                    left:
+                      value:
+                        simple: Archer.ApplicationField.FieldId
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "302"
+                accessor: ApplicationField.ValuesList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 08000134-8584-498d-8399-d7fa4270df18
+    type: regular
+    task:
+      id: 08000134-8584-498d-8399-d7fa4270df18
+      version: -1
+      name: archer-get-file
+      script: '|||archer-get-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      fileId:
+        simple: "125"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 7e146c04-ef7d-4271-8628-34eb32fdf8fd
+    type: regular
+    task:
+      id: 7e146c04-ef7d-4271-8628-34eb32fdf8fd
+      version: -1
+      name: archer-list-users
+      script: '|||archer-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      retry-count:
+        simple: "4"
+      user-id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 612c1f46-da79-471d-8581-481bac54676f
+    type: condition
+    task:
+      id: 612c1f46-da79-471d-8581-481bac54676f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.User.DisplayName
+            iscontext: true
+          right:
+            value:
+              simple: Brecher, Isaac
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Archer.User.Id
+            iscontext: true
+          right:
+            value:
+              simple: "202"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.User.UserName
+            iscontext: true
+          right:
+            value:
+              simple: ibrecher
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: dae939e6-a86d-4e84-8e8f-d8e7a1923afc
+    type: regular
+    task:
+      id: dae939e6-a86d-4e84-8e8f-d8e7a1923afc
+      version: -1
+      name: archer-search-records
+      script: '|||archer-search-records'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      applicationId:
+        simple: "84"
+      date-operator: {}
+      dateOperator: {}
+      field-to-search-on: {}
+      fieldToSearchOn: {}
+      fieldsToDisplay:
+        simple: Name (Full),Title
+      fieldsToGet:
+        simple: Name (Full),Title
+      full-data: {}
+      fullData: {}
+      getInnerRecords: {}
+      isDescending: {}
+      max-results: {}
+      maxResults: {}
+      numeric-operator: {}
+      numericOperator: {}
+      retry-count:
+        simple: "5"
+      search-value: {}
+      searchValue: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: f158a43b-0a8b-49cb-8ff7-8179db335755
+    type: condition
+    task:
+      id: f158a43b-0a8b-49cb-8ff7-8179db335755
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Archer.Record
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Archer.Record.Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 1e03656f-da3b-4e5d-878c-a9a537e1d85c
+    type: regular
+    task:
+      id: 1e03656f-da3b-4e5d-878c-a9a537e1d85c
+      version: -1
+      name: archer-search-records-by-report
+      script: '|||archer-search-records-by-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      reportGuid:
+        simple: bce4222c-ecfe-4cef-a556-fe746e959f12
+      retry-count:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 3f1a351d-64c4-4ca9-8da5-08dda7d1d42b
+    type: title
+    task:
+      id: 3f1a351d-64c4-4ca9-8da5-08dda7d1d42b
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: c7c0e911-9d2c-454c-8bbf-968f0da1f9a8
+    type: regular
+    task:
+      id: c7c0e911-9d2c-454c-8bbf-968f0da1f9a8
+      version: -1
+      name: archer-search-application by Id
+      script: '|||archer-search-applications'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      applicationId:
+        simple: "75"
+      findById: {}
+      findByName: {}
+      limit: {}
+      retry-count:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 5b80cba3-61d4-49eb-86e0-013509c9f379
+    type: condition
+    task:
+      id: 5b80cba3-61d4-49eb-86e0-013509c9f379
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Archer.Record.Incident Summary
+            iscontext: true
+          right:
+            value:
+              simple: updated summary
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 0c1c46ad-e46d-45f3-8098-9abf10de138a
+    type: regular
+    task:
+      id: 0c1c46ad-e46d-45f3-8098-9abf10de138a
+      version: -1
+      name: archer-get-record
+      script: '|||archer-get-record'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      retry-count:
+        simple: "4"
+      applicationId:
+        simple: "75"
+      contentId:
+        complex:
+          root: Archer
+          accessor: Record.Id
+      incidentId: {}
+      record-id:
+        complex:
+          root: Archer
+          accessor: Record.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: d33ec124-55a3-4ce9-8483-1779e118fa74
+    type: regular
+    task:
+      id: d33ec124-55a3-4ce9-8483-1779e118fa74
+      version: -1
+      name: archer-list-users by user
+      script: '|||archer-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      retry-count:
+        simple: "4"
+      userId:
+        simple: "202"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 866342e8-e106-452b-853a-d21f09a41956
+    type: regular
+    task:
+      id: 866342e8-e106-452b-853a-d21f09a41956
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: c4b2f7ca-7edb-42b7-8dbe-6cf1fcd0784f
+    type: regular
+    task:
+      id: c4b2f7ca-7edb-42b7-8dbe-6cf1fcd0784f
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 62a411f1-fd1c-442c-8e9f-6b092c6dc78d
+    type: regular
+    task:
+      id: 62a411f1-fd1c-442c-8e9f-6b092c6dc78d
+      version: -1
+      name: archer-print-cache
+      description: prints Archer's integration cache.
+      script: '|||archer-print-cache'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5810,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

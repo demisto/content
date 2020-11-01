@@ -1,0 +1,31 @@
+commonfields:
+  id: GenerateEmail
+  version: -1
+name: GenerateEmail
+script: >-
+  import string
+
+  import random
+
+  dArgs = demisto.args()
+
+  if "emailLength" not in dArgs:
+      dArgs["emailLength"] = 15
+  email = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(int(dArgs["emailLength"]))) + '@demistomockemail.com'
+
+  demisto.results({
+      'Type': entryTypes['note'],
+      'Contents': email,
+      'ContentsFormat': formats['json'],
+      'ReadableContentsFormat': formats['markdown'],
+      'HumanReadable': email,
+      'EntryContext': {'GeneratedEmail': email}
+  })
+type: python
+subtype: python2
+tags: []
+comment: Creates a random 15 character email @demistomockemail.com
+enabled: true
+scripttarget: 0
+runonce: false
+fromversion: 5.0.0

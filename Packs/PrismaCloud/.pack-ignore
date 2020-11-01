@@ -1,0 +1,5 @@
+[file:playbook-PrismaCloudRemediation_-_AWSSecurityGroupsTrafficToTCPPort.yml]
+ignore=BA101
+
+[file:RedLock.yml]
+ignore=IN126

@@ -1,0 +1,500 @@
+id: PAN-OS - Add Static Routes
+version: -1
+fromversion: 5.0.0
+name: PAN-OS - Add Static Routes
+description: This playbook accepts a PAN-OS static route configuration and creates it
+  in the PAN-OS instance.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4282a1cd-35ca-4031-88d9-111acf2a5cb2
+    type: start
+    task:
+      id: 4282a1cd-35ca-4031-88d9-111acf2a5cb2
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": -430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: e6625b7f-fcb0-46cb-86d0-b57c20848d19
+    type: title
+    task:
+      id: e6625b7f-fcb0-46cb-86d0-b57c20848d19
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 038dc480-8b32-4550-8c6d-058d70737423
+    type: condition
+    task:
+      id: 038dc480-8b32-4550-8c6d-058d70737423
+      version: -1
+      name: Auto commit configuration?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCommit
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 4eb055fe-49c6-4342-8433-052cf08a445d
+    type: regular
+    task:
+      id: 4eb055fe-49c6-4342-8433-052cf08a445d
+      version: -1
+      name: PAN-OS - add static route
+      description: Adds a static route.
+      script: '|||panorama-add-static-route'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      destination:
+        complex:
+          root: inputs.destination
+      interface:
+        complex:
+          root: inputs.interface_name
+      metric: {}
+      nexthop_type:
+        complex:
+          root: inputs.nexthop_type
+      nexthop_value:
+        complex:
+          root: inputs.nexthop_value
+      static_route:
+        complex:
+          root: inputs.route_name
+      template: {}
+      virtual_router:
+        complex:
+          root: inputs.virtual_router_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 70e27352-85ec-441a-8bfb-5f0a081be379
+    type: condition
+    task:
+      id: 70e27352-85ec-441a-8bfb-5f0a081be379
+      version: -1
+      name: Route already exists?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.route_name
+            iscontext: true
+          right:
+            value:
+              simple: Panorama.StaticRoutes.Name
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.destination
+            iscontext: true
+          right:
+            value:
+              simple: Panorama.StaticRoutes.Destination
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.nexthop_value
+            iscontext: true
+          right:
+            value:
+              simple: Panorama.StaticRoutes.NextHop
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 5d3ddcff-fac4-4f3b-8b2f-6929ec9d7cdc
+    type: regular
+    task:
+      id: 5d3ddcff-fac4-4f3b-8b2f-6929ec9d7cdc
+      version: -1
+      name: Manually commit PAN-OS configuration
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: e892374b-5d9a-4ee0-8c4d-1b0635a0cb3d
+    type: regular
+    task:
+      id: e892374b-5d9a-4ee0-8c4d-1b0635a0cb3d
+      version: -1
+      name: PAN-OS - list static routes
+      description: Lists the static routes for a virtual router.
+      script: '|||panorama-list-static-routes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      show_uncommitted:
+        simple: "true"
+      template: {}
+      virtual_router:
+        complex:
+          root: inputs.virtual_router_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: b5380bb4-1443-429c-8527-953af1f9c9c2
+    type: condition
+    task:
+      id: b5380bb4-1443-429c-8527-953af1f9c9c2
+      version: -1
+      name: 'Is the static route committed? '
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Panorama
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.StaticRoutes.Uncommitted
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "true"
+                accessor: StaticRoutes.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 2eca67d5-8fb7-4f23-8d90-d72df5cb0a06
+    type: condition
+    task:
+      id: 2eca67d5-8fb7-4f23-8d90-d72df5cb0a06
+      version: -1
+      name: Auto commit configuration?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCommit
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: a9c880bb-1b94-44bc-8fc5-73df62b9078e
+    type: regular
+    task:
+      id: a9c880bb-1b94-44bc-8fc5-73df62b9078e
+      version: -1
+      name: Manually commit PAN-OS configuration
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 29837cb1-15ca-46c5-8125-33c1ec5cca38
+    type: playbook
+    task:
+      id: 29837cb1-15ca-46c5-8125-33c1ec5cca38
+      version: -1
+      name: PAN-OS Commit Configuration
+      description: ""
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 1747d07c-17c1-4627-80cd-6f713a149085
+    type: playbook
+    task:
+      id: 1747d07c-17c1-4627-80cd-6f713a149085
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_28_yes": 0.57,
+      "11_29_#default#": 0.59,
+      "27_26_#default#": 0.49,
+      "27_31_yes": 0.63,
+      "31_33_#default#": 0.44,
+      "31_7_yes": 0.23
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 1910,
+        "x": -410,
+        "y": -430
+      }
+    }
+  }
+inputs:
+- key: virtual_router_name
+  value: {}
+  required: true
+  description: Name of the virtual router to configure the static routes for.
+- key: route_name
+  value: {}
+  required: true
+  description: Enter a name to identify the static route (up to 31 characters). The
+    name is case-sensitive and must be unique. Use only letters, numbers, spaces,
+    hyphens, and underscores.
+- key: interface_name
+  value: {}
+  required: false
+  description: Interface name where the static route will be added.
+- key: destination
+  value: {}
+  required: true
+  description: 'Enter an IP address and network mask in CIDR notation: ip_address/mask (for example, 192.168.2.0/24 for IPv4 or 2001:db8::/32
+    for IPv6).'
+- key: nexthop_type
+  value: {}
+  required: true
+  description: 'The type for the nexthop. Can be: "ip-address", "next-vr", "fqdn"
+    or "discard".'
+- key: nexthop_value
+  value: {}
+  required: true
+  description: The next hop value.
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: This input determines whether to auto-commit the configuration to
+    PAN-OS. Specify Yes/No.
+outputs: []
+tests:
+  - No test

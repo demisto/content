@@ -1,0 +1,348 @@
+id: Autofocus Query Samples, Sessions and Tags Test Playbook
+version: -1
+name: Autofocus Query Samples, Sessions and Tags Test Playbook
+fromversion: 5.0.0
+description: |-
+  This is a test playbook to the the functionality of the Autofocus Query
+  Samples and Sessions playbook. The test playbook checks for Autofocus query inputs,
+  Direct queries for IP and also tag searches.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d08b4bf4-7994-47d6-8f94-93df7be5748b
+    type: start
+    task:
+      id: d08b4bf4-7994-47d6-8f94-93df7be5748b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: cb181534-f342-4c03-8cb4-566dddb9db80
+    type: playbook
+    task:
+      id: cb181534-f342-4c03-8cb4-566dddb9db80
+      version: -1
+      name: Autofocus Query Samples and Sessions
+      description: |-
+        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+
+        The playbook supports searching both the Samples API and the sessions API.
+      playbookName: Autofocus Query Samples, Sessions and Tags
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Commodity:
+        simple: "false"
+      Domain: {}
+      Hash: {}
+      IP:
+        simple: 54.215.248.188,52.8.161.117
+      Sample first seen: {}
+      Sample last modified: {}
+      SampleQuery: {}
+      Scope:
+        simple: Global
+      Search Type:
+        simple: all
+      SessionQuery: {}
+      Sessions time after: {}
+      Sessions time before: {}
+      Tags class:
+        simple: Exploit
+      Tags private:
+        simple: "false"
+      Tags public:
+        simple: "True"
+      Tags scope:
+        simple: all
+      URL: {}
+      Unit 42:
+        simple: "false"
+      Wildfire Verdict: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 6d2eedd4-cd83-4b14-8fa6-e29a41832e6f
+    type: title
+    task:
+      id: 6d2eedd4-cd83-4b14-8fa6-e29a41832e6f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: dcfccbc1-f549-4986-85bc-427c1f67ccfe
+    type: condition
+    task:
+      id: dcfccbc1-f549-4986-85bc-427c1f67ccfe
+      version: -1
+      name: Got Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                accessor: SessionsResults
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                accessor: SamplesResults
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 4191158f-76ba-4367-8716-7b63bab27089
+    type: title
+    task:
+      id: 4191158f-76ba-4367-8716-7b63bab27089
+      version: -1
+      name: Test IP and tags input
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: e3c76b3f-6fa1-48ad-8fa1-2b33f51ca3a3
+    type: playbook
+    task:
+      id: e3c76b3f-6fa1-48ad-8fa1-2b33f51ca3a3
+      version: -1
+      name: Autofocus Query Samples and Sessions
+      description: |-
+        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+
+        The playbook supports searching both the Samples API and the sessions API.
+      playbookName: Autofocus Query Samples, Sessions and Tags
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Commodity: {}
+      Domain: {}
+      Hash: {}
+      IP: {}
+      Sample first seen: {}
+      Sample last modified: {}
+      SampleQuery: {}
+      Scope:
+        simple: Global
+      Search Type:
+        simple: session
+      SessionQuery:
+        complex:
+          root: inputs.SessionQuery
+      Sessions time after: {}
+      Sessions time before: {}
+      Tags class: {}
+      Tags private: {}
+      Tags public: {}
+      Tags scope: {}
+      URL: {}
+      Unit 42: {}
+      Wildfire Verdict: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 69e6e7e0-cf65-4fc1-8492-c23cc21ee523
+    type: condition
+    task:
+      id: 69e6e7e0-cf65-4fc1-8492-c23cc21ee523
+      version: -1
+      name: Got Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                accessor: SessionsResults
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                accessor: SamplesResults
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 3056dcc6-0990-4b00-8bb2-dc097bef11e2
+    type: title
+    task:
+      id: 3056dcc6-0990-4b00-8bb2-dc097bef11e2
+      version: -1
+      name: Test Query input
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_2_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 790,
+        "x": 270,
+        "y": -90
+      }
+    }
+  }
+inputs:
+- key: Scope
+  value: {}
+  required: false
+  description: ""
+- key: SampleQuery
+  value:
+    simple: '{"operator":"any","children":[{"field":"sample.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"sample.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
+  required: false
+  description: '{"operator":"any","children":[{"field":"sample.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"sample.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
+- key: SessionQuery
+  value:
+    simple: '{"operator":"any","children":[{"field":"session.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"session.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
+  required: false
+  description: '{"operator":"any","children":[{"field":"session.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"session.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
+outputs:
+- contextPath: AutoFocus.SessionsResults
+  type: string
+- contextPath: AutoFocus.SamplesResults
+  type: string
+- contextPath: AutoFocus.TopTagResults
+  type: unknown

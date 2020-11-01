@@ -1,0 +1,556 @@
+versionedfields: {}
+commonfields:
+  id: DomainTools
+  version: -1
+name: DomainTools
+fromversion: 5.0.0
+display: DomainTools
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAARCAMAAAAhQZhyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAYBQTFRFenp6u7u72trasLCwRkZGxcXFv7+/hoaGqamp1tbWlpaWdXV1PDw8Xl5eZmZmrq6ulJSU0NDQi4uLn5+fg4ODCwsLtbW1jo6OExMToKCgIiIiAQEBa2trJiYmLi4ukpKSHh4eQEBAWVlZYWFhOTk5NjY2Kioq/////v7+/f39/Pz8+fn5+/v7f39/9PT0+vr63NzcfHx8eHh4jY2N9vb2gYGB5+fnw8PD8/PziYmJ8vLyd3d38fHx+Pj47e3t6enpwsLC4eHh3t7era2tq6urgICAdnZ2vLy8m5ubhYWF2dnZt7e3fn5+7u7utra2xsbGpqameXl59fX1fX194ODgkJCQwcHB5eXlz8/P6+vr1NTUhISEycnJsrKy9/f37+/v0tLSpKSk4+PjmZmZ8PDw6Ojox8fH6urq5OTkzs7O4uLis7Ozvb29uLi4nJyc5ubm3d3dysrK2NjY1dXVjIyMrKyswMDAqqqqmpqaiIiIp6enTU1N39/fo6Ojzc3N////mmwwVQAAAIB0Uk5T/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wA4BUtnAAADRklEQVR42ryVZ0MiMRCGF1BB0LOBolFOvdPJ7gpIly5KB8Heey/Xe5+/fpOw+BPIh+Ql2cwzmZkEBRF9nwDVHyvY0aYgavnkU+xXMLLQafBaM7QRHDkZdObCWkfBeKiMLQHCwY7jqnNkBTLvy8koQsKP3Ka0wJla3vKJS6l9q4xnhFjZBeqH9uXsyls5rMXI39IZqd5thNzn6mLvIVmAg+5mBuQX4YfdbWGILxpH0vebUY7gSyl7g456gdJ78bKh8lBUrlrYi363JyXqbmLKOstMpCLsAfGOdYl1Ps0EDU0uQM6mafesFyH2fUzJ23SEUW+PSakJsjloiYV2/IhqMNXiHj3Fjj4ibFeVrz3DdS9tNe1dN/Dmp3TM8po+feEhz2b6yd8mW0PcYW4NXrN+sf55qn9LjMsTBJ5nrwAnQzIQV6I/LBAprVQRN4tZ8vJinS6Nd0mCF4dpQiXrmnK8e2wrHiDun6NNh5CTJJ7MUbfJopgQSERPmU7seBUZ6LP/Fr+73iwxvQ2errnXDfCinToY6xX6nx3wdkQoX9D/DE4kSxluFBdvflNWAfes3RE/rjp62mCVVTEq7eNsAHFrWGcsVRKhzrA09NnaYFc2y+69X1pgii8vyHzl4oC1UaEWlPAzGNe+Fpx7RlWHLbbkH1TNt3eI5QFuhBpzzIc6OxcpdZUQ6wo2BnFVgK3M42ETvA1ewVXXnP0ZDOMloUe/U8lZRaLfB1QC+9rlzA+3uHGdogOBwGOrCJPHYjjx+PWqy0oq5HpU05PTlPnABgJgfoYKhN1eXm67qL53JfgDwiR79wzGjOMD5+ZigoJ2VNP4dWCIlPdOVVXAm48a3Nfb4FQwEki+TanqmX2jIbaamNvl/isUp5piXSJM3oAwLU68PiPUSB9gbKp1YtTmWye+kpfovmKtxLNCnZYjP70PNKnGj+LxShgT5cqY87L9ZC6vF8cvisH4sLLhdOREek/Dp6oRGT2bkNYW5IuqUs7TsvJ5mGo1TZFNC/81ucqNy8o3N1sVhHDqk3OwQM0vEqH71PbLBecN8013bGSrHurp/nHdwScTfAjZ5eMvwRyYlzr5VreC8iZfeOzsv5PRht798ncQ/F+AAQCqnR8RUnHvswAAAABJRU5ErkJggg==
+description: Domain name, DNS and Internet OSINT-based cyber threat intelligence and cybercrime forensics products and data
+configuration:
+- display: DomainTools API URL
+  name: server
+  defaultvalue: http://api.domaintools.com/
+  type: 0
+  required: true
+- display: API Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: >-
+    var toCamelCase = function(string){
+        var str = ' '+string.trim();
+        str=str.replace(/ ([a-z,A-Z])/g, function (g) { return g[1].toUpperCase(); });
+        return str;
+    };
+
+
+    var sendRequest = function(url) {
+        var res = http(
+            url,
+            {
+                Method: 'GET',
+                Headers: {
+                    Accept: ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        try {
+            return JSON.parse(res.Body);
+        }
+        catch (err) {
+            throw 'Failed to parse JSON';
+        }
+    };
+
+
+    var addKeyToJson = function(cur, toAdd){
+        if(!cur){
+            return toAdd;
+        }
+        if(!Array.isArray(cur)){
+            return [cur, toAdd];
+        }
+        cur.push(toAdd);
+        return cur;
+    };
+
+
+    var changeKeys = function(conv, obj){
+        var output = {};
+        for (var i in obj) {
+            if (Object.prototype.toString.apply(obj[i]) === '[object Object]') {
+                output[conv(i)] = changeKeys(conv, obj[i]);
+            } else {
+                output[conv(i)] = obj[i];
+            }
+        }
+        return output;
+    };
+
+
+    var callWhoIs = function(query, parsed,url){
+        var res = sendRequest(url + query + '/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+        var error = res.response.error;
+        if(error && error.code === 206){
+            parsed = false;
+            log('error code 206');
+        }
+        var splitRes = res.response.whois.record.split('\n');
+        var md = '### DomainTools whois result for '+ query + '\n';
+        var resMap = {};
+        splitRes.forEach(function(entry){
+            splitEntry = entry.split(/:\s(.+)/);
+            if(splitEntry[1]){
+                splitEntry[0] = toCamelCase(splitEntry[0]);
+                md += '**'+splitEntry[0]+':** '+splitEntry[1]+'\n';
+                resMap[splitEntry[0]] = addKeyToJson(resMap[splitEntry[0]], splitEntry[1]);
+            }
+        });
+
+        var context;
+        if(parsed === 'false'){
+            context = {'Domain': {'Name': res.response.record_source, 'Whois': resMap}};
+        }else{
+            context = {'Domain': {'Name': res.response.record_source, 'Whois': changeKeys(toCamelCase, res.response.parsed_whois)}};
+        }
+
+        return {
+                Type: entryTypes.note,
+                Contents: res,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: md,
+                EntryContext: context
+            };
+    };
+
+
+    var scoreConv = function(score, threshold){
+        if(threshold){
+            return score>=threshold ? 3 : 1;
+        }
+        if(score === 0)
+            return 1;
+        if(score > 0 && score <=69)
+            return 2;
+        if(score >= 70)
+            return 3;
+        return -1;
+    };
+
+
+    var callDomain = function(url, domain, threshold){
+        var repRes = sendRequest(url + 'reputation/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'domain' : domain}));
+        var md = 'Domain '+repRes.response.domain+' found with risk score of '+ repRes.response.risk_score +'.';
+        var context = {
+            'DBotScore' : {
+                'Indicator' : domain,
+                'Score' : scoreConv(repRes.response.risk_score, threshold),
+                'Type': 'domain',
+                'Vendor': 'domaintools'
+            }
+        };
+        if(context.DBotScore.Score === 3){
+            addMalicious(context, outputPaths.domain, {'Name' : domain, 'RiskScore': repRes.response.risk_score ,'Malicious' : {'Vendor' : 'DomainTools'}});
+        }
+
+        return {
+                Type: entryTypes.note,
+                Contents: repRes,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                ReadableContentsFormat: formats.markdown,
+                EntryContext: context
+            };
+    };
+
+
+    var callProfile= function(url, domain){
+        var domRes = sendRequest(url + domain + '/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+        return {
+                Type: entryTypes.note,
+                Contents: domRes,
+                ContentsFormat: formats.json
+            };
+    };
+
+
+    var argToUrlParam = function(string){
+        var map = {
+            'exclude':'exclude_query',
+            'maxLength':'max_length',
+            'minLength':'min_length',
+            'hesHyphen':'has_hyphen',
+            'hasNumber':'has_number',
+            'activeOnly':'active_only',
+            'deletedOnly':'deleted_only',
+            'anchorLeft':'anchor_left',
+            'anchorRight':'anchor_right',
+            'pageNumber':'page'
+        };
+        return map[string] ? map[string] : string;
+    };
+
+
+    var callDomainSearch = function(url, args){
+        args = changeKeys(argToUrlParam,args);
+        args.api_username = params.username;
+        args.api_key = params.key;
+        var res = sendRequest(url +  'domain-search/'+encodeToURLQuery(args));
+        var results = res.response.results;
+
+        var md = '';
+        var numDomains = 0;
+        var context = {'Domain' : []};
+        if(results && results.length > 0){
+            results.forEach(function(result){
+                if(result.hashad_tlds && result.hashad_tlds.length > 0){
+                    result.hashad_tlds.forEach(function(tld){
+                        md+='* '+result.sld+'.'+tld+'\n';
+                        numDomains++;
+                        context.Domain.push({'Name' : result.sld+'.'+tld});
+                    });
+                }
+            });
+        }
+
+        return {
+                Type: entryTypes.note,
+                Contents: res,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: 'Found '+numDomains +' domains:\n'+md,
+                EntryContext: context
+            };
+    };
+
+
+    var callReverseIP = function(url, args){
+        var md = '';
+        var context = {'Domain' : []};
+        var res;
+        var addresses;
+        if(args.domain){
+            res = sendRequest(url + args.domain+'/reverse-ip/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'limit': args.limit? args.limit : 50}));
+
+        }
+        else if(args.ip){
+            res = sendRequest(url + args.ip+'/host-domains/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'limit': args.limit? args.limit : 50}));
+        }
+        addresses = res.response.ip_addresses;
+        if(!Array.isArray(addresses)){
+            addresses = [addresses];
+        }
+
+        addresses.forEach(function(address){
+            md+= '\nFound ' + address.domain_count + ' domains for ' +address.ip_address + '\n';
+            address.domain_names.forEach(function(domain){
+                md += '* ' + domain + '\n';
+                context.Domain.push({'Name': domain, 'DNS' : {'Address' : address.ip_address}});
+            });
+        });
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    }
+
+
+    var callReverseNameServer = function(url, server, limit){
+        var res = sendRequest(url +server + '/name-server-domains/' + encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'limit': limit? limit : 50}));
+        var md = 'Found ' +  res.response.primary_domains.length + ' domains\n';
+        var context = {'Domain' : []};
+        res.response.primary_domains.forEach(function(domain){
+            md += '* ' + domain + '\n';
+            context.Domain.push({'Name' : domain});
+        });
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    }
+
+
+    var callReverseWhoIs = function(url, args){
+        args.api_username = params.username;
+        args.api_key = params.key;
+        args.mode = args.quoteMode;
+        args.scope = 'current';
+        if(args.onlyHistoricScope === 'true'){
+            args.scope = 'historic';
+        }
+        delete args.quoteModel
+        delete args.onlyHistoricScope;
+
+        var res = sendRequest(url + encodeToURLQuery(args));
+        var context = {'Domain' : []};
+        var md = 'Found '+res.response.domains.length+ ' domains: \n';
+        res.response.domains.forEach(function(domain){
+            md += '* ' + domain + '\n';
+            context.Domain.push({'Name' : domain});
+        });
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    }
+
+
+    /*http://api.domaintools.com/v1/domaintools.com/whois/history/*/
+
+    var callWhoisHistory = function(url, domain){
+        var res = sendRequest(url+domain+'/whois/history/'+ encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+        var splitRecord;
+        var context = {'Domain' : {'Name' : domain, 'WhoisHistory' : []}};
+        var md = '';
+        var entryContext, record;
+        res.response.history.forEach(function(entry){
+            entryContext = {};
+            record = entry.whois.record;
+            if(record){
+                var splitRecord = record.split('\n');
+                splitRecord.forEach(function(pair){
+                    splitEntry = pair.split(/:\s(.+)/);
+                        if(splitEntry[1]){
+                            splitEntry[0] = toCamelCase(splitEntry[0]);
+                            md += '**'+splitEntry[0]+':** '+splitEntry[1]+'\n';
+                            entryContext[splitEntry[0]] = splitEntry[1];
+                        }
+                });
+            }
+            context.Domain.WhoisHistory.push(entryContext);
+        });
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    }
+
+
+    var url = params.server.replace(/[\/]+$/, '');
+
+    switch (command) {
+        case 'test-module':
+                var res = sendRequest(url + '/v1/demisto.com/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+                if(res.response.error){
+                    log('Something went wrong - error code ' + error.code);
+                }
+                return 'ok';
+        case 'domain':
+            return callDomain(url+'/v1/', args.domain, args.threshold);
+        case 'domainSearch':
+            return callDomainSearch(url+'/v2/', args);
+        case 'reverseIP':
+            return callReverseIP(url+'/v1/', args);
+        case 'reverseNameServer':
+            return callReverseNameServer(url+'/v1/', args.nameServer, args.limit);
+        case 'reverseWhois':
+            return callReverseWhoIs(url + '/v1/reverse-whois/', args);
+        case 'whois':
+            return callWhoIs(args.query, args.parsed, url+'/v1/');
+        case 'whoisHistory':
+            return callWhoisHistory(url+'/v1/', args.domain);
+        case 'domainProfile':
+            return callProfile(url+'/v1/', args.domain);
+    }
+  type: javascript
+  commands:
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: Domain name to check reputation
+    - name: long
+      description: Should we return full response with detected URLs
+    - name: sampleSize
+      description: The number of samples from each type (resolutions, detections, etc.) to display for long format
+    - name: threshold
+      description: 'If number of positive detected domains is bigger than the threshold we will consider it malicious'
+    - name: wait
+      description: Wait time between tries if we reach the API rate limit in seconds
+    - name: retries
+      description: Number of retries for API rate limit
+    outputs:
+    - contextPath: Domain.Name
+      description: The tested domain
+    - contextPath: Domain.RiskScore
+      description: The reputation returned from DomainTools
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    description: Retrieve domain information.
+  - name: domainSearch
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: (mandatory and default) Query strings. Each term in the query string must be at least three characters long. Use spaces to separate multiple terms
+    - name: pageNumber
+      description: 'Sets the page of results to retrieve from the server. Each page is limited to 100 results. Default: 1'
+      defaultValue: "1"
+    - name: maxLength
+      description: 'Limit the maximum domain character count. Default: 25'
+      defaultValue: "25"
+    - name: minLength
+      description: 'Limit the minimum domain character count. Default: 1'
+      defaultValue: "1"
+    - name: hesHyphen
+      description: '(true or false) Return results with hyphens in the domain name. Default: true'
+    - name: exclude
+      description: Terms to exclude from matching
+    - name: activeOnly
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: '(true or false) Return only domains currently registered.Default: false'
+      defaultValue: "false"
+    - name: deletedOnly
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: '(true or false) Return only domains previously registered but not currently registered. Default: false'
+      defaultValue: "false"
+    - name: anchorLeft
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: '(true or false) Return only domains that start with the query term. Default: false'
+      defaultValue: "false"
+    - name: anchorRight
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: '(true or false) Return only domains that end with the query term. Default: false'
+      defaultValue: "false"
+    - name: hasNumber
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: '(true or false) Return results with numbers in the domain name. Default: true'
+      defaultValue: "true"
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain found by command
+    description: Search for domain based on the given parameters
+  - name: reverseIP
+    arguments:
+    - name: ip
+      default: true
+      description: (default) specify IP address
+    - name: domain
+      description: 'If you provide a domain name, DomainTools will respond with the list of other domains that share the same IP'
+    - name: limit
+      description: Limits the size of the domain list than can appear in a response. The limit is applied per-IP address, not for the entire request.
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.DNS.Address
+      description: IP address
+    description: Reverse loopkup of an IP address
+  - name: reverseNameServer
+    arguments:
+    - name: nameServer
+      required: true
+      default: true
+      description: '(default and mandatory) specify the name of the primary or secondary name server'
+    - name: limit
+      description: Limit the size of the domain list than can appear in a response
+    outputs:
+    - contextPath: Domain.Name
+      description: Name of domain
+    description: Reverse nameserver lookup
+  - name: reverseWhois
+    arguments:
+    - name: terms
+      required: true
+      default: true
+      description: '(mandatory and default) List of one or more terms to search for in the Whois record, separated with the pipe character ( | ).'
+    - name: exclude
+      description: Domain names with Whois records that match these terms will be excluded from the result set. Separate multiple terms with the pipe character ( | ).
+    - name: onlyHistoricScope
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Show only historic records
+      defaultValue: "false"
+    - name: quoteMode
+      description: 'Only lists the size and retail price of the query if you have per-domain pricing access purchase : includes the complete list of domain names that match the query'
+      defaultValue: purchase
+    outputs:
+    - contextPath: Domain.Name
+      description: Name of domain
+    description: Reverse lookup of whois information
+  - name: whois
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: '(mandatory and default) enter domain (do not use full URL). e.g. !whois [query=]demisto.com'
+    - name: parsed
+      description: Should return parsed or raw response. Default is true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+    outputs:
+    - contextPath: Domain.Name
+      description: Requested domain name
+    - contextPath: Domain.Whois
+      description: Whois data
+    description: Provides registration details about a domain
+  - name: whoisHistory
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Specify domain e.g. mycompany.com
+    outputs:
+    - contextPath: Domain.Name
+      description: Name of domain
+    - contextPath: Domain.WhoisHistory
+      description: Domain Whois history data
+    description: Display a history of whois for a given domain
+  - name: domainProfile
+    description: Display profile for a given domain
+    arguments:
+    - name: domain
+      description: Specify domain e.g. mycompany.com

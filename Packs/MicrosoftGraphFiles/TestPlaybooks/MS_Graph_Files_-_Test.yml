@@ -1,0 +1,1681 @@
+id: test_MsGraphFiles
+version: -1
+name: test_MsGraphFiles
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5a84b8d3-9296-433d-81b0-5ecefebda1f3
+    type: start
+    task:
+      id: 5a84b8d3-9296-433d-81b0-5ecefebda1f3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: cbb13684-d442-40c1-8e2d-699f0a24042e
+    type: regular
+    task:
+      id: cbb13684-d442-40c1-8e2d-699f0a24042e
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ea86ac96-86b8-4cf9-8f15-d1c2d7606a63
+    type: regular
+    task:
+      id: ea86ac96-86b8-4cf9-8f15-d1c2d7606a63
+      version: -1
+      name: Upload New File To Demisto
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      data:
+        simple: test ms graph file
+      entryId: {}
+      filename:
+        simple: playbook1.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e27848a5-a470-49fb-8a5b-6b2cab20cf44
+    type: regular
+    task:
+      id: e27848a5-a470-49fb-8a5b-6b2cab20cf44
+      version: -1
+      name: Upload New File To Ms Graph
+      script: '|||msgraph-upload-new-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: File
+          accessor: EntryID
+      file_name:
+        simple: playbook1.txt
+      object_type:
+        simple: drives
+      object_type_id:
+        simple: b!ZAovhtvn4Eapf5FWtPaT7lybnnqOkQpPspFV4riUtXuy_S3BgrgsSp0DNvpsLWoV
+      parent_id:
+        simple: 01VX7CPKF6Y2GOVW7725BZO354PWSELRRZ
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d2351fe3-dba0-42f5-8974-eecc2d902ecb
+    type: condition
+    task:
+      id: d2351fe3-dba0-42f5-8974-eecc2d902ecb
+      version: -1
+      name: Test If File Was Uploaded In Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MsGraphFiles.UploadedFiles.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbook1.txt
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: UploadedFiles.ParentReference.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: UploadedFiles.DownloadUrl
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: UploadedFiles.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: UploadedFiles.LastModifiedBy.Type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: ccd7cd19-bf26-4509-888a-e2fb05f70bf9
+    type: regular
+    task:
+      id: ccd7cd19-bf26-4509-888a-e2fb05f70bf9
+      version: -1
+      name: Upload New File To Demisto
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      data:
+        simple: test playbook 2
+      entryId: {}
+      filename:
+        simple: playbook2.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 93830c3c-d00c-472c-833a-300b15f65a1d
+    type: regular
+    task:
+      id: 93830c3c-d00c-472c-833a-300b15f65a1d
+      version: -1
+      name: Replace File's Content In MS Graph
+      script: Microsoft_Graph_Files|||msgraph-replace-existing-file
+      type: regular
+      iscommand: true
+      brand: Microsoft_Graph_Files
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: File
+          accessor: EntryID
+      item_id:
+        complex:
+          root: UploadedFileID
+      object_type:
+        simple: groups
+      object_type_id:
+        simple: 83900b2c-617f-4642-b778-17303be19009
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 23125e2a-66a7-4de2-8057-40d0caf0139d
+    type: title
+    task:
+      id: 23125e2a-66a7-4de2-8057-40d0caf0139d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a7276442-a251-4fa7-8032-fac72fa9d71e
+    type: regular
+    task:
+      id: a7276442-a251-4fa7-8032-fac72fa9d71e
+      version: -1
+      name: Delete File Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: File
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 79e0cccc-34cc-4c23-89fa-0c6c46d03b12
+    type: regular
+    task:
+      id: 79e0cccc-34cc-4c23-89fa-0c6c46d03b12
+      version: -1
+      name: Save File ID
+      description: Sets key/value pair in incident's context
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: UploadedFileID
+      value:
+        complex:
+          root: MsGraphFiles
+          accessor: UploadedFiles.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: b3f800b2-94a5-4133-8932-0f142d602f10
+    type: regular
+    task:
+      id: b3f800b2-94a5-4133-8932-0f142d602f10
+      version: -1
+      name: Delete MsGraphFiles Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: ${MsGraphFiles}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: d189e57f-3be9-4675-8c73-1ca8c67f3fea
+    type: condition
+    task:
+      id: d189e57f-3be9-4675-8c73-1ca8c67f3fea
+      version: -1
+      name: Test If Replace Command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MsGraphFiles.ReplacedFiles.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbook1.txt
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ReplacedFiles.ParentReference.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ReplacedFiles.OdataContext
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ReplacedFiles.File.Hashes
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 759f6a3e-5b88-420d-8c54-629913065339
+    type: title
+    task:
+      id: 759f6a3e-5b88-420d-8c54-629913065339
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 35cac969-b427-4c63-8ab7-c099a429c39c
+    type: regular
+    task:
+      id: 35cac969-b427-4c63-8ab7-c099a429c39c
+      version: -1
+      name: Create New Folder In MS Graph
+      script: Microsoft_Graph_Files|||msgraph-create-new-folder
+      type: regular
+      iscommand: true
+      brand: Microsoft_Graph_Files
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      folder_name:
+        simple: playbook_folder
+      object_type:
+        simple: drives
+      object_type_id:
+        simple: b!RDctFH7NTE-76fPa5-vcg-ouY54nVzJCtors1LmkYNRucDgOdrfDSYsD6zrQj9zi
+      parent_id:
+        simple: 01YGQTXW56Y2GOVW7725BZO354PWSELRRZ
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 7d159278-59f2-47a3-85a7-a3feccabb31f
+    type: condition
+    task:
+      id: 7d159278-59f2-47a3-85a7-a3feccabb31f
+      version: -1
+      name: Test If New Folder Was Uploaded
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: CreatedFolders.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbook_folder
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: CreatedFolders.Folder.ChildCount
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: CreatedFolders.WebUrl
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: CreatedFolders.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: c7e01e35-1a4e-4998-8d03-ab9bd13a3ef2
+    type: regular
+    task:
+      id: c7e01e35-1a4e-4998-8d03-ab9bd13a3ef2
+      version: -1
+      name: Save Folder ID In Context
+      description: Sets key/value pair in incident's context
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      key:
+        simple: UploadedFolderID
+      value:
+        complex:
+          root: MsGraphFiles
+          accessor: CreatedFolders.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: a34fe2f9-29d8-432d-8e74-61dc6897e6c0
+    type: title
+    task:
+      id: a34fe2f9-29d8-432d-8e74-61dc6897e6c0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 00826119-620e-4878-891b-d0da68f9c4fe
+    type: regular
+    task:
+      id: 00826119-620e-4878-891b-d0da68f9c4fe
+      version: -1
+      name: Test Download File From Graph
+      script: Microsoft_Graph_Files|||msgraph-download-file
+      type: regular
+      iscommand: true
+      brand: Microsoft_Graph_Files
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      item_id:
+        complex:
+          root: UploadedFileID
+      object_type:
+        simple: drives
+      object_type_id:
+        simple: b!ZAovhtvn4Eapf5FWtPaT7lybnnqOkQpPspFV4riUtXuy_S3BgrgsSp0DNvpsLWoV
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 25dc81c0-147f-46a6-855e-cc232c83adb1
+    type: regular
+    task:
+      id: 25dc81c0-147f-46a6-855e-cc232c83adb1
+      version: -1
+      name: Delete File Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: File
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 112c41f2-bb8b-4330-8259-1c689763a504
+    type: condition
+    task:
+      id: 112c41f2-bb8b-4330-8259-1c689763a504
+      version: -1
+      name: Test If File Was Downloaded
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: UploadedFileID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 696b7b2f-f7ab-4727-83f3-c7a3ec318ba3
+    type: title
+    task:
+      id: 696b7b2f-f7ab-4727-83f3-c7a3ec318ba3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 341a5dc1-8989-4149-8987-fe6c0d1da0b2
+    type: regular
+    task:
+      id: 341a5dc1-8989-4149-8987-fe6c0d1da0b2
+      version: -1
+      name: Test List Sites
+      description: Returns a list of the tenant sites.
+      script: Microsoft_Graph_Files|||msgraph-list-sharepoint-sites
+      type: regular
+      iscommand: true
+      brand: Microsoft_Graph_Files
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 35bdc65e-ac8c-413a-8644-bfd5e252b537
+    type: condition
+    task:
+      id: 35bdc65e-ac8c-413a-8644-bfd5e252b537
+      version: -1
+      name: Test If Got Sites In Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListSites.Value.[0].CreatedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListSites.Value.[0].ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListSites.Value.[0].LastModifiedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListSites.Value.[0].WebUrl
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: b576aaa8-3935-4cae-8569-d9359ca5001a
+    type: title
+    task:
+      id: b576aaa8-3935-4cae-8569-d9359ca5001a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: d25f0187-0753-4131-8049-301622a952a5
+    type: regular
+    task:
+      id: d25f0187-0753-4131-8049-301622a952a5
+      version: -1
+      name: List Drives In Site
+      script: Microsoft_Graph_Files|||msgraph-list-drives-in-site
+      type: regular
+      iscommand: true
+      brand: Microsoft_Graph_Files
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      limit:
+        simple: "1"
+      next_page_url: {}
+      site_id:
+        simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: d96490a5-93ba-42a7-8c60-d3df57834326
+    type: condition
+    task:
+      id: d96490a5-93ba-42a7-8c60-d3df57834326
+      version: -1
+      name: Test If Site's Drives Are Saved In Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListDrives.Value.[0].CreatedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListDrives.Value.[0].Owner.Group.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListDrives.Value.[0].ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListDrives.Value.[0].CreatedBy.DisplayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListDrives.Value.[0].LastModifiedBy.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 0dcbded7-637b-4209-87d4-deba74f0e8ba
+    type: title
+    task:
+      id: 0dcbded7-637b-4209-87d4-deba74f0e8ba
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 5cbf59ef-414f-4145-8a69-d334fa972965
+    type: regular
+    task:
+      id: 5cbf59ef-414f-4145-8a69-d334fa972965
+      version: -1
+      name: List All Drive's Children
+      description: This command list all the drive's files and folders
+      script: Microsoft_Graph_Files|||msgraph-list-drive-content
+      type: regular
+      iscommand: true
+      brand: Microsoft_Graph_Files
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      item_id: {}
+      limit:
+        simple: "3"
+      next_page_url: {}
+      object_type:
+        simple: sites
+      object_type_id:
+        simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 65f131b2-e233-4c36-8acb-cd6a819f38cd
+    type: condition
+    task:
+      id: 65f131b2-e233-4c36-8acb-cd6a819f38cd
+      version: -1
+      name: Test If Drive Children List In Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListChildren.Children.Value.[0].ParentReference.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListChildren.ParentID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListChildren.Children.Value.[0].ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListChildren.Children.Value.[1].LastModifiedBy.DisplayName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 2cf4d006-a2a7-4f7e-8601-e48542658a30
+    type: title
+    task:
+      id: 2cf4d006-a2a7-4f7e-8601-e48542658a30
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 71ee01af-4387-43b5-895d-a1b9b19a108e
+    type: regular
+    task:
+      id: 71ee01af-4387-43b5-895d-a1b9b19a108e
+      version: -1
+      name: Delete File From Graph
+      script: Microsoft_Graph_Files|||msgraph-delete-file
+      type: regular
+      iscommand: true
+      brand: Microsoft_Graph_Files
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      item_id:
+        complex:
+          root: UploadedFileID
+      object_type:
+        simple: drives
+      object_type_id:
+        complex:
+          root: UploadedFileParent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 90c64134-b49e-4045-8ae2-93ff14de25d9
+    type: regular
+    task:
+      id: 90c64134-b49e-4045-8ae2-93ff14de25d9
+      version: -1
+      name: Save File DriveID
+      description: Sets key/value pair in incident's context
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: UploadedFileParent
+      value:
+        complex:
+          root: MsGraphFiles
+          accessor: UploadedFiles.ParentReference.DriveId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 9f407fcb-1998-43b0-828a-f3a179805268
+    type: regular
+    task:
+      id: 9f407fcb-1998-43b0-828a-f3a179805268
+      version: -1
+      name: Save Folder Parent ID
+      description: Sets key/value pair in incident's context
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: UploadedFolderParentID
+      value:
+        complex:
+          root: MsGraphFiles
+          accessor: CreatedFolders.ParentReference.DriveId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: f77de60c-a11f-4403-859d-f73b0cf4804c
+    type: regular
+    task:
+      id: f77de60c-a11f-4403-859d-f73b0cf4804c
+      version: -1
+      name: Delete Folder From Graph
+      script: Microsoft_Graph_Files|||msgraph-delete-file
+      type: regular
+      iscommand: true
+      brand: Microsoft_Graph_Files
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      item_id:
+        complex:
+          root: UploadedFolderID
+      object_type:
+        simple: drives
+      object_type_id:
+        complex:
+          root: UploadedFolderParentID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 58d66b99-491e-42ee-8ec8-7f48804ac495
+    type: regular
+    task:
+      id: 58d66b99-491e-42ee-8ec8-7f48804ac495
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 56323dc2-851b-4746-8ff9-d5c14ce9f633
+    type: regular
+    task:
+      id: 56323dc2-851b-4746-8ff9-d5c14ce9f633
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      seconds:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 0361783c-5cd4-4c5c-860e-a35cb14422ae
+    type: regular
+    task:
+      id: 0361783c-5cd4-4c5c-860e-a35cb14422ae
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      seconds:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 39b83b71-f144-484e-8844-9a791a143a04
+    type: regular
+    task:
+      id: 39b83b71-f144-484e-8844-9a791a143a04
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 6435d52b-e15c-4c47-8bfc-6d42fdb99cbc
+    type: regular
+    task:
+      id: 6435d52b-e15c-4c47-8bfc-6d42fdb99cbc
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 131cde02-8588-46e6-8130-88b588e8c577
+    type: regular
+    task:
+      id: 131cde02-8588-46e6-8130-88b588e8c577
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: b2660242-da9f-46c9-812c-31472bea0e8c
+    type: regular
+    task:
+      id: b2660242-da9f-46c9-812c-31472bea0e8c
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 45ce639e-4f3b-4c10-88d1-25a9a1d17bc1
+    type: regular
+    task:
+      id: 45ce639e-4f3b-4c10-88d1-25a9a1d17bc1
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 4f2b93b3-7fd3-4c30-8509-5c9f701ba40d
+    type: regular
+    task:
+      id: 4f2b93b3-7fd3-4c30-8509-5c9f701ba40d
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      seconds:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: b73fb110-b842-456d-8d04-1eaaffa55228
+    type: title
+    task:
+      id: b73fb110-b842-456d-8d04-1eaaffa55228
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 1da7d48e-4558-4e8d-80c0-5a9c65b509f2
+    type: regular
+    task:
+      id: 1da7d48e-4558-4e8d-80c0-5a9c65b509f2
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7525,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: test_MsGraphFiles
+fromversion: 5.0.0

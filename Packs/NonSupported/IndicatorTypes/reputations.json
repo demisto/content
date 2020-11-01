@@ -1,0 +1,190 @@
+{
+  "name": "reputations",
+  "version": -1,
+  "reputations": [
+    {
+      "id": "fileRep",
+      "file": true,
+      "version": -1,
+      "regex": "",
+      "details": "File enhancement scripts",
+      "enhancementScriptNames": [
+        "Strings",
+        "CYFileRep",
+        "SandboxDetonateFile",
+        "ParseEmailFiles"
+      ]
+    },
+    {
+      "id": "ipRep",
+      "version": -1,
+      "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
+      "reputationScriptName": "DataIPReputation",
+      "details": "IP",
+      "enhancementScriptNames": [
+        "IPReputation",
+        "SplunkSearch"
+      ],
+      "toVersion": "3.0.1"
+    },
+    {
+      "id": "ipRep",
+      "version": -1,
+      "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
+      "reputationCommand": "ip",
+      "details": "IP",
+      "contextValue": "Address",
+      "contextPath": "IP(val.Address && val.Address === obj.Address)",
+      "enhancementScriptNames": [
+        "IPReputation"
+      ],
+      "fromVersion": "3.1.0",
+      "toVersion": "4.5.0"
+    },
+    {
+      "id": "ipRepEscaped",
+      "version": -1,
+      "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\[\\.\\]){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
+      "reputationCommand": "ip",
+      "details": "IP",
+      "contextValue": "Address",
+      "contextPath": "IP(val.Address && val.Address === obj.Address)",
+      "enhancementScriptNames": [
+        "IPReputation",
+        "SplunkPySearch"
+      ],
+      "formatScript": "UnEscapeIPs",
+      "fromVersion": "3.5.1",
+      "toVersion": "4.5.0"
+    },
+    {
+      "id": "emailRep",
+      "version": -1,
+      "regex": "\\b[A-Za-z0-9._%=+\\p{L}-]+@[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
+      "details": "Email",
+      "reputationCommand": "email",
+      "contextValue": "Address",
+      "contextPath": "Account.Email(val.Address && val.Address === obj.Address)",
+      "enhancementScriptNames": [
+        "EmailReputation"
+      ],
+      "toVersion": "4.5.0"
+    },
+    {
+      "id": "urlRep",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp):\\/\\/|www\\.|ftp\\.)(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[-A-Z0-9+&@#\\/%=~_$?!:,.])*(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[A-Z0-9+&@#\\/%=~_$])",
+      "reputationScriptName": "DataURLReputation",
+      "details": "URL",
+      "enhancementScriptNames": [
+        "URLReputation",
+        "SplunkSearch"
+      ],
+      "toVersion": "3.0.1"
+    },
+    {
+      "id": "urlRep",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp):\\/\\/|www\\.|ftp\\.)(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[-A-Z0-9+&@#\\/%=~_$?!:,.])*(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[A-Z0-9+&@#\\/%=~_$])",
+      "reputationCommand": "url",
+      "details": "URL",
+      "contextPath": "URL(val.Data && val.Data === obj.Data)",
+      "contextValue": "Data",
+      "enhancementScriptNames": [
+        "URLReputation",
+        "SplunkSearch"
+      ],
+      "fromVersion": "3.1.0",
+      "toVersion": "3.5.0"
+    },
+    {
+      "id": "urlRep",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp|hxxps?):(\\/?\\/?\\\\?\\\\?)|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*|\\?))+[-\\d\\p{L}+&@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]+)?",
+      "reputationCommand": "url",
+      "details": "URL",
+      "enhancementScriptNames": [
+        "URLReputation",
+        "SplunkPySearch"
+      ],
+      "formatScript": "UnEscapeURLs",
+      "contextPath": "URL(val.Data && val.Data === obj.Data)",
+      "contextValue": "Data",
+      "fromVersion": "3.5.1",
+      "toVersion": "4.5.0"
+    },
+    {
+      "id": "registryRep",
+      "version": -1,
+      "regex": "((?i)hk((EY_(CLASSES_ROOT|PERFORMANCE_DATA|LOCAL_MACHINE|CURRENT_(CONFIG|USER)|USERS))|LM|CR|CU|U|CC|PD))\\\\[\\\\\\w\\}\\{\\.\\-\\ \\*]+",
+      "reputationScriptName": "RegPathReputationBasicLists",
+      "details": "Registry Path Reputation",
+      "enhancementScriptNames": [
+        "RegCollectValues",
+        "CBEvents"
+      ]
+    },
+    {
+      "id": "cveScore",
+      "version": -1,
+      "regex": "CVE-\\d{4}-\\d{4,7}",
+      "reputationScriptName": "cveReputation",
+      "details": "CVE CVSS Score",
+      "contextValue": "ID",
+      "contextPath": "CVE(val.ID && val.ID === obj.ID)",
+      "enhancementScriptNames": [
+        "cveSearch"
+      ],
+      "toVersion": "4.9.9"
+    },
+    {
+      "id": "hostnameRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "hostname",
+      "enhancementScriptNames": [
+        "ADGetComputer"
+      ]
+    },
+    {
+      "id": "usernameRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "username",
+      "enhancementScriptNames": [
+        "ADGetUser"
+      ]
+    },
+    {
+      "id": "domainRep",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp|hxxps?):(\\/?\\/?\\\\?\\\\?)|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*|\\?))+[-\\d\\p{L}+&@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]+)?|\\b[A-Za-z0-9._%=+\\p{L}-]+@[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
+      "reputationCommand": "domain",
+      "details": "Domain",
+      "contextValue": "Name",
+      "contextPath": "Domain(val.Name && val.Name === obj.Name)",
+      "enhancementScriptNames": [
+        "DomainReputation"
+      ],
+      "formatScript": "ExtractFQDNFromUrlAndEmail",
+      "toVersion": "4.5.0"
+    },
+    {
+      "id": "domainRep2",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp|hxxps?):(\\/?\\/?\\\\?\\\\?)|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*|\\?))+[-\\d\\p{L}+&@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]+)?|\\b[A-Za-z0-9._%=+\\p{L}-]+@[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
+      "reputationCommand": "domain",
+      "details": "Domain",
+      "contextValue": "Name",
+      "contextPath": "Domain(val.Name && val.Name === obj.Name)",
+      "enhancementScriptNames": [
+        "DomainReputation"
+      ],
+      "formatScript": "ExtractDomainFromUrlAndEmail",
+      "fromVersion": "3.6",
+      "toVersion": "5.4.9"
+    }
+  ]
+}

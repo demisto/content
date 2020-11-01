@@ -1,0 +1,331 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Whois
+  version: -1
+configuration:
+- display: Return Errors
+  name: with_error
+  required: false
+  type: 8
+- display: Proxy URL. Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080)
+  name: proxy_url
+  required: false
+  type: 0
+description: Provides data enrichment for domains.
+display: Whois
+name: Whois
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The domain to enrich.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for domains.
+    execution: false
+    name: whois
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: string
+    - contextPath: Domain.Whois.Name
+      description: The domain name.
+      type: string
+    - contextPath: Domain.Whois.DomainStatus
+      description: The domain status.
+      type: string
+    - contextPath: Domain.Whois.DNSSec
+      description: The domain name system security extension (DNSSEC).
+      type: string
+    - contextPath: Domain.Whois.NameServers
+      description: The name servers.
+      type: string
+    - contextPath: Domain.Whois.CreationDate
+      description: The date that the domain was created.
+      type: date
+    - contextPath: Domain.Whois.UpdatedDate
+      description: The date that the domain was last updated.
+      type: date
+    - contextPath: Domain.Whois.ExpirationDate
+      description: The date that the domain expires.
+      type: date
+    - contextPath: Domain.Whois.Registrar.Name
+      description: The name of the registrar.
+      type: string
+    - contextPath: Domain.Whois.Emails
+      description: The abuse emails.
+      type: string
+    - contextPath: Domain.Whois.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: string
+    - contextPath: Domain.Whois.Registrant.name
+      description: The name of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.email
+      description: The email address of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Raw
+      description: The raw output.
+      type: string
+    - contextPath: Domain.Whois.Administrator.country
+      description: The country of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.name
+      description: The name of domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.state
+      description: The state of domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.email
+      description: The email address of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.organization
+      description: The organization of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.postalcode
+      description: The postal code of the domain administrator
+      type: string
+    - contextPath: Domain.Whois.Administrator.street
+      description: The street of the domain admin
+      type: string
+    - contextPath: Domain.Whois.Administrator.phone
+      description: The phone number of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.city
+      description: The city of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.country
+      description: The country of tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.name
+      description: The name of tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.state
+      description: The state of tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.email
+      description: The email address of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.organization
+      description: The organization of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.postalcode
+      description: The postal code of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.street
+      description: The street of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.phone
+      description: The phone number of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.city
+      description: The city of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.Registrant.country
+      description: The country of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.state
+      description: The state of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.organization
+      description: The organization of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.postalcode
+      description: The postal code of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.street
+      description: The street of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.phone
+      description: The phone number of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.city
+      description: The city of the registrant.
+      type: string
+    - contextPath: Domain.Whois.ID
+      description: The ID of the domain.
+      type: string
+    - contextPath: Domain.Whois.QueryStatus
+      description: The result of the command ("Success" or "Failed").
+      type: string
+    - contextPath: Domain.Whois.QueryValue
+      description: The query requested by the user.
+      type: string
+    - contextPath: Domain.Whois.QueryResult
+      description: Whether the query found a matching result.
+      type: Boolean
+  - arguments:
+    - default: true
+      description: The domain to enrich.
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for domains.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: string
+    - contextPath: Domain.Whois.Name
+      description: The domain name.
+      type: string
+    - contextPath: Domain.Whois.DomainStatus
+      description: The domain status.
+      type: string
+    - contextPath: Domain.Whois.DNSSec
+      description: The domain name system security extension (DNSSEC).
+      type: string
+    - contextPath: Domain.Whois.NameServers
+      description: The name servers.
+      type: string
+    - contextPath: Domain.Whois.CreationDate
+      description: The date that the domain was created.
+      type: date
+    - contextPath: Domain.Whois.UpdatedDate
+      description: The date that the domain was last updated.
+      type: date
+    - contextPath: Domain.Whois.ExpirationDate
+      description: The date that the domain expires.
+      type: date
+    - contextPath: Domain.Whois.Registrar.Name
+      description: The name of the registrar.
+      type: string
+    - contextPath: Domain.Whois.Emails
+      description: The abuse emails.
+      type: string
+    - contextPath: Domain.Whois.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: string
+    - contextPath: Domain.Whois.Registrant.name
+      description: The name of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.email
+      description: The email address of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Raw
+      description: The raw output.
+      type: string
+    - contextPath: Domain.Whois.Administrator.country
+      description: The country of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.name
+      description: The name of domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.state
+      description: The state of domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.email
+      description: The email address of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.organization
+      description: The organization of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.postalcode
+      description: The postal code of the domain administrator
+      type: string
+    - contextPath: Domain.Whois.Administrator.street
+      description: The street of the domain admin
+      type: string
+    - contextPath: Domain.Whois.Administrator.phone
+      description: The phone number of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.city
+      description: The city of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.country
+      description: The country of tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.name
+      description: The name of tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.state
+      description: The state of tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.email
+      description: The email address of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.organization
+      description: The organization of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.postalcode
+      description: The postal code of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.street
+      description: The street of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.phone
+      description: The phone number of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.city
+      description: The city of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.Registrant.country
+      description: The country of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.state
+      description: The state of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.organization
+      description: The organization of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.postalcode
+      description: The postal code of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.street
+      description: The street of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.phone
+      description: The phone number of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.city
+      description: The city of the registrant.
+      type: string
+    - contextPath: Domain.Whois.ID
+      description: The ID of the domain.
+      type: string
+    - contextPath: Domain.Whois.QueryStatus
+      description: The result of the command ("Success" or "Failed").
+      type: string
+    - contextPath: Domain.Whois.QueryResult
+      description: Whether the query found a matching result.
+      type: Boolean
+  dockerimage: demisto/ippysocks:1.0.0.11896
+  isfetch: false
+  runonce: false
+  script: ''
+  type: python
+  subtype: python2
+defaultEnabled: false
+tests:
+- whois_test
+fromversion: 5.0.0

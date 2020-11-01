@@ -1,0 +1,385 @@
+id: Silverfort Update Risk for Domain Admins Incidents
+version: -1
+name: Silverfort Update Risk for Domain Admins Incidents
+description: This playbook gets an incident related to an account. If it is a domain
+  admin, updates Silverfort risk.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 193ff948-e457-4ab4-8183-9348c1c894c5
+    type: start
+    task:
+      id: 193ff948-e457-4ab4-8183-9348c1c894c5
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 0d8c48d5-4deb-498e-859b-83da67f5621a
+    type: title
+    task:
+      id: 0d8c48d5-4deb-498e-859b-83da67f5621a
+      version: -1
+      name: Update User Risk in Silverfort
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 6fc11e93-f83c-44e1-8fe6-e64fb2d27d58
+    type: regular
+    task:
+      id: 6fc11e93-f83c-44e1-8fe6-e64fb2d27d58
+      version: -1
+      name: Update the user risk in Silverfort
+      description: User risk commands - update the user entity risk
+      script: '|||silverfort-update-user-risk'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      description:
+        simple: Suspicious activity
+      domain:
+        complex:
+          root: ${ActiveDirectory
+          accessor: Users.dn}
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: DC=([^,]*)
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: .
+      email: {}
+      risk_name:
+        simple: activity_risk
+      sam_account:
+        simple: ${ActiveDirectory.Users.sAMAccountName}
+      severity:
+        simple: medium
+      upn: {}
+      valid_for:
+        simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: 5c01d009-7c4b-4871-8a53-c9c6cf32cd7c
+    type: playbook
+    task:
+      id: 5c01d009-7c4b-4871-8a53-c9c6cf32cd7c
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: 18b08b98-887a-4f4c-8524-11a3938e0dd9
+    type: title
+    task:
+      id: 18b08b98-887a-4f4c-8524-11a3938e0dd9
+      version: -1
+      name: Silverfort Risk Updated Successfully
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 1839c91e-04a8-4f84-8103-6d5df7f3e190
+    type: condition
+    task:
+      id: 1839c91e-04a8-4f84-8103-6d5df7f3e190
+      version: -1
+      name: Is the Account a Domain Admin?
+      description: Check if the account is a domain admin
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '1'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ADMembership
+            iscontext: true
+          right:
+            value:
+              simple: Domain Admins
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 7459d73d-89fa-4483-804c-536b4964bb81
+    type: title
+    task:
+      id: 7459d73d-89fa-4483-804c-536b4964bb81
+      version: -1
+      name: Do Nothing
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: 1c741b57-0f6f-41e8-8944-047c8df3c3e9
+    type: title
+    task:
+      id: 1c741b57-0f6f-41e8-8944-047c8df3c3e9
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '17':
+    id: '17'
+    taskid: ac1c41e2-21af-4ee1-882a-d779063f1373
+    type: regular
+    task:
+      id: ac1c41e2-21af-4ee1-882a-d779063f1373
+      version: -1
+      name: ExtractADMembership
+      description: Extract membership information from Active Directory
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      append: {}
+      key:
+        simple: ADMembership
+      stringify: {}
+      value:
+        simple: ${ActiveDirectory.Users.memberOf}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '18':
+    id: '18'
+    taskid: 3e166dca-6dee-472e-8674-7a717b1b33d2
+    type: condition
+    task:
+      id: 3e166dca-6dee-472e-8674-7a717b1b33d2
+      version: -1
+      name: Is Silverfort enabled ?
+      description: Check if Silverfort is enabled
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Silverfort
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1375,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Username
+  value:
+    complex:
+      root: Account
+      accessor: Username
+      transformers:
+      - operator: uniq
+  required: false
+  description: Account Username
+outputs: []
+fromversion: 5.0.0
+tests:
+  - No Tests

@@ -1,0 +1,5 @@
+[file:Expanse_Incident_Playbook.yml]
+ignore=BA101
+
+[file:Expanse.yml]
+ignore=IN126

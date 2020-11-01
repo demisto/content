@@ -1,0 +1,483 @@
+id: Test Playbook TrendMicroDDA
+version: -1
+name: Test Playbook TrendMicroDDA
+description: Test playbook for Trend Micro DDA integration, including the detonate File/URL playbooks.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cac5e409-9f5f-4ee1-8f36-70819f33b627
+    type: start
+    task:
+      id: cac5e409-9f5f-4ee1-8f36-70819f33b627
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: b536bfcb-65c4-41ea-80ae-f0266b3ec006
+    type: regular
+    task:
+      id: b536bfcb-65c4-41ea-80ae-f0266b3ec006
+      version: -1
+      name: get-sample-list
+      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-sample-list
+      type: regular
+      iscommand: true
+      brand: Trend Micro Deep Discovery Analyzer
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      interval_end:
+        simple: 2008-11-22 19:53:59
+      interval_start:
+        simple: 2008-11-22 19:53:42
+      interval_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: f83a1490-70bb-4ec9-8bf2-93096b23cd3b
+    type: regular
+    task:
+      id: f83a1490-70bb-4ec9-8bf2-93096b23cd3b
+      version: -1
+      name: FileCreateAndUpload
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      data:
+        simple: qwerty6
+      entryId: {}
+      filename:
+        simple: test_file.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 25336071-2e11-45aa-866e-e6b7378a7bd1
+    type: regular
+    task:
+      id: 25336071-2e11-45aa-866e-e6b7378a7bd1
+      version: -1
+      name: upload-file
+      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-upload-file
+      type: regular
+      iscommand: true
+      brand: Trend Micro Deep Discovery Analyzer
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      EntryID:
+        simple: ${File.EntryID}
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 2e89f1f0-ccde-416f-8175-1b25c774f6a3
+    type: condition
+    task:
+      id: 2e89f1f0-ccde-416f-8175-1b25c774f6a3
+      version: -1
+      name: get-report AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    scriptarguments:
+      left:
+        complex:
+          root: TrendMicroDDA
+          accessor: Submission.RiskLevel
+      right:
+        simple: "-1"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 4183fa35-576e-41b2-8d2a-9fd0ad62728b
+    type: regular
+    task:
+      id: 4183fa35-576e-41b2-8d2a-9fd0ad62728b
+      version: -1
+      name: get-sample
+      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-sample
+      type: regular
+      iscommand: true
+      brand: Trend Micro Deep Discovery Analyzer
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      archive_name: {}
+      encrypted: {}
+      filename: {}
+      sample_sha1:
+        simple: 571AD0F7D5056F68D0F2B795EAF4618C082A89D9
+      sha1:
+        simple: 571ad0f7d5056f68d0f2b795eaf4618c082a89d9
+      type: {}
+      type_origin: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1565
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: c5382a0a-70ba-46ba-8ea1-cee235e5ff55
+    type: regular
+    task:
+      id: c5382a0a-70ba-46ba-8ea1-cee235e5ff55
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1822
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 0f31cae0-ecc0-4009-8938-a65d9caf1192
+    type: title
+    task:
+      id: 0f31cae0-ecc0-4009-8938-a65d9caf1192
+      version: -1
+      name: Test Playbook TrendMicroADD
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 6b323d98-d937-45c3-8eb3-975db9f29e01
+    type: title
+    task:
+      id: 6b323d98-d937-45c3-8eb3-975db9f29e01
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2440
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: c6b92a06-2180-48f0-8894-f925ec986fbb
+    type: regular
+    task:
+      id: c6b92a06-2180-48f0-8894-f925ec986fbb
+      version: -1
+      name: get-report
+      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-report
+      type: regular
+      iscommand: true
+      brand: Trend Micro Deep Discovery Analyzer
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      sha1:
+        simple: 571ad0f7d5056f68d0f2b795eaf4618c082a89d9
+      threshold: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 8f1f6e95-3a23-4793-80b1-4e7ec2d31757
+    type: regular
+    task:
+      id: 8f1f6e95-3a23-4793-80b1-4e7ec2d31757
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1390
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: 07f5d0a6-616c-41ae-886b-ac74353656f2
+    type: regular
+    task:
+      id: 07f5d0a6-616c-41ae-886b-ac74353656f2
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      data:
+        simple: |-
+          Ooh
+          You can dance
+          You can jive
+          Having the time of your life
+          Ooh, see that girl
+          Watch that scene
+          Dig in the dancing queen
+          Friday night and the lights are low
+          Looking out for a place to go
+          Where they play the right music
+          Getting in the swing
+          You come to look for a king
+          Anybody could be that guy
+          Night is young and the music's high
+          With a bit of rock music
+          Everything is fine
+          You're in the mood for a dance
+          And when you get the chance
+          You are the dancing queen
+          Young and sweet
+          Only seventeen
+          Dancing queen
+          Feel the beat from the tambourine, oh yeah
+          You can dance
+          You can jive
+          Having the time of your life
+          Ooh, see that girl
+          Watch that scene
+          Dig in the dancing queen
+          You're a teaser, you turn 'em on
+          Leave 'em burning and then you're gone
+          Looking out…
+      entryId: {}
+      filename:
+        simple: abba.exe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: c98e55b2-5370-4e5d-870f-3fa2eefc5b0b
+    type: regular
+    task:
+      id: c98e55b2-5370-4e5d-870f-3fa2eefc5b0b
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 86700a5d-f744-402d-8201-69812002210e
+    type: playbook
+    task:
+      id: 86700a5d-f744-402d-8201-69812002210e
+      version: -1
+      name: Detonate File - Trend Micro Deep Discovery Analyzer
+      playbookName: Detonate File - Trend Micro Deep Discovery Analyzer Beta
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 927cfb35-eb2b-4d84-85cf-1d21a0cf855d
+    type: playbook
+    task:
+      id: 927cfb35-eb2b-4d84-85cf-1d21a0cf855d
+      version: -1
+      name: Detonate URL - Trend Micro Deep Discovery Analyzer
+      playbookName: Detonate URL - Trend Micro Deep Discovery Analyzer Beta
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      URL:
+        simple: https://github.com
+      interval:
+        simple: "1"
+      timeput:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2265
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2455,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

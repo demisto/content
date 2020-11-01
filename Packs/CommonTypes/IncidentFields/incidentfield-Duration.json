@@ -1,0 +1,36 @@
+{
+ "id": "incident_duration",
+ "version": -1,
+ "modified": "2018-08-23T18:31:06.397705995+03:00",
+ "name": "Duration",
+ "ownerOnly": false,
+ "placeholder": "",
+ "description": "",
+ "cliName": "duration",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "script": "",
+ "fieldCalcScript": "",
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": null,
+ "validationRegex": "",
+ "useAsKpi": true,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Access"
+ ],
+ "systemAssociatedTypes": [
+  "Access"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "fromVersion": "5.0.0"
+}

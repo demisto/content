@@ -1,0 +1,322 @@
+id: GetValuesOfMultipleFIelds Test
+version: -1
+fromversion: 5.0.0
+name: GetValuesOfMultipleFIelds Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 18aecdb4-ba4d-4bc3-89cc-bcf7aa8bd3f3
+    type: start
+    task:
+      id: 18aecdb4-ba4d-4bc3-89cc-bcf7aa8bd3f3
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: fbfa8995-f3da-4561-814f-1c471d51205a
+    type: regular
+    task:
+      id: fbfa8995-f3da-4561-814f-1c471d51205a
+      version: -1
+      name: Delete
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      all:
+        simple: 'no'
+      index: {}
+      key:
+        simple: Tests
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: cc2e09be-8b67-44e6-8545-b48c4e5e5c93
+    type: regular
+    task:
+      id: cc2e09be-8b67-44e6-8545-b48c4e5e5c93
+      version: -1
+      name: Set Values final
+      description: Checks if the specified value exists in context. If the value exists, it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Tests
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              key:
+                value:
+                  simple: Test.result
+                iscontext: true
+              list:
+                value:
+                  simple: inputs.list
+                iscontext: true
+          - operator: GetValuesOfMultipleFields
+            args:
+              key:
+                value:
+                  simple: Test.results
+                iscontext: true
+              list:
+                value:
+                  simple: key3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 97861aa8-6413-4082-8da5-e0c313cc145e
+    type: regular
+    task:
+      id: 97861aa8-6413-4082-8da5-e0c313cc145e
+      version: -1
+      name: Set tests 1
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Test.result.key1
+      stringify: {}
+      value:
+        simple: a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: fede22f5-e666-4cbf-8d76-d6e1c8dfa440
+    type: regular
+    task:
+      id: fede22f5-e666-4cbf-8d76-d6e1c8dfa440
+      version: -1
+      name: Set tests 2
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Test.result.key1
+      stringify: {}
+      value:
+        simple: b
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 0c56d2a2-0d8e-45a8-8ebd-553b5c34b5dd
+    type: regular
+    task:
+      id: 0c56d2a2-0d8e-45a8-8ebd-553b5c34b5dd
+      version: -1
+      name: Set tests 3
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Test.results.key3
+      stringify: {}
+      value:
+        simple: bla
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 3fb0abf6-2966-4b0d-80f3-f831e935a8ea
+    type: condition
+    task:
+      id: 3fb0abf6-2966-4b0d-80f3-f831e935a8ea
+      version: -1
+      name: Are there relevant values in context?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: a
+          right:
+            value:
+              simple: Tests
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: b
+          right:
+            value:
+              simple: Tests
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: bla
+          right:
+            value:
+              simple: Tests
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: f726c2a2-3102-4ff2-806e-193d8d5610e2
+    type: title
+    task:
+      id: f726c2a2-3102-4ff2-806e-193d8d5610e2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1235,
+        "width": 380,
+        "x": 450,
+        "y": 190
+      }
+    }
+  }
+inputs:
+- key: list
+  value:
+    simple: key1,key2
+  required: false
+  description: ''
+outputs: []

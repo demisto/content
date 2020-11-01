@@ -17,7 +17,7 @@ OK_CODES = (200, 201, 202)
 
 CLIENT_ID = 'dummy_client'
 CLIENT_SECRET = 'dummy_secret'
-APP_URL = 'mock://app_url'
+APP_URL = 'https://login.microsoftonline.com/dummy_tenant/oauth2/v2.0/token'
 SCOPE = 'https://graph.microsoft.com/.default'
 RESOURCE = 'https://defender.windows.com/shtak'
 
@@ -30,8 +30,8 @@ def oproxy_client_tenant():
     base_url = BASE_URL
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_oproxy(auth_id, enc_key, app_name, tenant_id=tenant_id,
-                                       base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+    return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                           tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
 def oproxy_client_refresh():
@@ -42,23 +42,20 @@ def oproxy_client_refresh():
     base_url = BASE_URL
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_oproxy(auth_id, enc_key, app_name, refresh_token=refresh_token,
-                                       base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+    return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                           refresh_token=refresh_token, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
 def self_deployed_client():
     tenant_id = TENANT
     client_id = CLIENT_ID
     client_secret = CLIENT_SECRET
-    app_url = APP_URL
     base_url = BASE_URL
-    scope = SCOPE
     resource = RESOURCE
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_self_deployed(tenant_id, client_id, client_secret, app_url=app_url, resource=resource,
-                                              scope=scope, base_url=base_url,
-                                              verify=True, proxy=False, ok_codes=ok_codes)
+    return MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
+                           resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
 def test_error_parser():
@@ -82,9 +79,13 @@ def test_epoch_seconds(mocker):
                                                        'current_refresh_token': REFRESH_TOKEN}),
                                                      (oproxy_client_tenant(), (TOKEN, 3600, ''),
                                                       {'access_token': TOKEN,
-                                                       'valid_until': 3605}), (self_deployed_client(), (TOKEN, 3600),
-                                                                               {'access_token': TOKEN,
-                                                                                'valid_until': 3605})])
+                                                       'valid_until': 3605,
+                                                       'current_refresh_token': ''}),
+                                                     (self_deployed_client(),
+                                                      (TOKEN, 3600, REFRESH_TOKEN),
+                                                      {'access_token': TOKEN,
+                                                       'valid_until': 3605,
+                                                       'current_refresh_token': REFRESH_TOKEN})])
 def test_get_access_token_no_context(mocker, client, tokens, context):
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
     mocker.patch.object(demisto, 'setIntegrationContext')
@@ -110,10 +111,12 @@ def test_get_access_token_no_context(mocker, client, tokens, context):
                                                        'current_refresh_token': REFRESH_TOKEN}),
                                                      (oproxy_client_tenant(), (TOKEN, 3600, ''),
                                                       {'access_token': TOKEN,
-                                                       'valid_until': 3605}),
-                                                     (self_deployed_client(), (TOKEN, 3600),
+                                                       'valid_until': 3605,
+                                                       'current_refresh_token': REFRESH_TOKEN}),
+                                                     (self_deployed_client(), (TOKEN, 3600, REFRESH_TOKEN),
                                                       {'access_token': TOKEN,
-                                                       'valid_until': 3605})])
+                                                       'valid_until': 3605,
+                                                       'current_refresh_token': REFRESH_TOKEN})])
 def test_get_access_token_with_context_valid(mocker, client, tokens, context):
     # Set
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=context)
@@ -146,11 +149,22 @@ def test_get_access_token_with_context_valid(mocker, client, tokens, context):
                            {'access_token': TOKEN,
                             'valid_until': 8595,
                             'current_refresh_token': REFRESH_TOKEN}),
-                          (oproxy_client_tenant(), (TOKEN, 3600, ''), {'access_token': TOKEN, 'valid_until': 3605},
-                           {'access_token': TOKEN, 'valid_until': 8595}), (self_deployed_client(), (TOKEN, 3600),
-                                                                           {'access_token': TOKEN, 'valid_until': 3605},
-                                                                           {'access_token': TOKEN,
-                                                                            'valid_until': 8595})])
+                          (oproxy_client_tenant(),
+                           (TOKEN, 3600, ''),
+                           {'access_token': TOKEN,
+                            'valid_until': 3605,
+                            'current_refresh_token': REFRESH_TOKEN},
+                           {'access_token': TOKEN,
+                            'valid_until': 8595,
+                            'current_refresh_token': ''}),
+                          (self_deployed_client(),
+                           (TOKEN, 3600, ''),
+                           {'access_token': TOKEN,
+                            'valid_until': 3605,
+                            'current_refresh_token': ''},
+                           {'access_token': TOKEN,
+                            'valid_until': 8595,
+                            'current_refresh_token': ''})])
 def test_get_access_token_with_context_invalid(mocker, client, tokens, context_invalid, context_valid):
     # Set
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=context_invalid)
@@ -186,7 +200,8 @@ def test_oproxy_request(mocker, requests_mock, client, enc_content, tokens, res)
     body = {
         'app_name': APP_NAME,
         'registration_id': AUTH_ID,
-        'encrypted_token': enc_content + ENC_KEY
+        'encrypted_token': enc_content + ENC_KEY,
+        'scope': None
     }
     mocker.patch.object(client, '_add_info_headers')
     mocker.patch.object(client, 'get_encrypted', side_effect=get_encrypted)
@@ -222,4 +237,4 @@ def test_self_deployed_request(requests_mock):
     req_res = client._get_self_deployed_token()
     req_body = requests_mock._adapter.last_request._request.body
     assert req_body == urllib.parse.urlencode(body)
-    assert req_res == (TOKEN, 3600)
+    assert req_res == (TOKEN, 3600, '')

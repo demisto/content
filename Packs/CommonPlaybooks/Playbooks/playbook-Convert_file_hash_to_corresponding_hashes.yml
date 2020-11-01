@@ -1,0 +1,429 @@
+id: Convert file hash to corresponding hashes
+version: -1
+fromversion: 5.0.0
+name: Convert file hash to corresponding hashes
+description: |
+  The playbook enables you to get all of the corresponding file hashes for a file even if there is only one hash type available.
+  For example, if we have only the SHA256 hash, the playbook will get the SHA1 and MD5 hashes as long as the
+  original searched hash is recognized by any our the threat intelligence integrations.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f3d44d02-1482-4dd0-8055-34128346e4ec
+    type: start
+    task:
+      id: f3d44d02-1482-4dd0-8055-34128346e4ec
+      version: -1
+      name: ""
+      description: Start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+      - "36"
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: d0c581d2-789c-4a12-8940-37f17a47b4f6
+    type: title
+    task:
+      id: d0c581d2-789c-4a12-8940-37f17a47b4f6
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: b797fdc7-1704-442a-8605-ee06bfb0bf54
+    type: condition
+    task:
+      id: b797fdc7-1704-442a-8605-ee06bfb0bf54
+      version: -1
+      name: Does SHA256 hash exist?
+      description: Does SHA256 hash exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: f7142eb2-9483-4546-8d07-a828d636d0ad
+    type: condition
+    task:
+      id: f7142eb2-9483-4546-8d07-a828d636d0ad
+      version: -1
+      name: Does MD5 hash exist?
+      description: Does MD5 hash exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: eff5d9b7-ea36-4310-8650-5e26fa38209e
+    type: condition
+    task:
+      id: eff5d9b7-ea36-4310-8650-5e26fa38209e
+      version: -1
+      name: Does SHA1 hash exist?
+      description: Does SHA1 hash exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 65ff1c51-6bc1-4171-8bde-eb6ecb862f4e
+    type: regular
+    task:
+      id: 65ff1c51-6bc1-4171-8bde-eb6ecb862f4e
+      version: -1
+      name: Get hashes by SHA1
+      description: Uses the SHA1 hash as a reference to check for other corresponding hashes of the same file.
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      confidenceThreshold: {}
+      file:
+        complex:
+          root: inputs.SHA1
+      include_inactive: {}
+      long: {}
+      md5: {}
+      owners: {}
+      ratingThreshold: {}
+      retries: {}
+      sha256: {}
+      threshold: {}
+      wait: {}
+    reputationcalc: 2
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 9e3c8b51-dbc6-464a-8af7-f5d43b663bd4
+    type: regular
+    task:
+      id: 9e3c8b51-dbc6-464a-8af7-f5d43b663bd4
+      version: -1
+      name: Get hashes by MD5
+      description: Uses the MD5 hash as a reference to check for other corresponding hashes of the same file.
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      confidenceThreshold: {}
+      file:
+        complex:
+          root: inputs.MD5
+      include_inactive: {}
+      long: {}
+      md5: {}
+      owners: {}
+      ratingThreshold: {}
+      retries: {}
+      sha256: {}
+      threshold: {}
+      wait: {}
+    reputationcalc: 2
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 29ef7703-de75-4ff3-844c-a852e333bdbe
+    type: regular
+    task:
+      id: 29ef7703-de75-4ff3-844c-a852e333bdbe
+      version: -1
+      name: Get Hashes by SHA256
+      description: Uses the SHA256 hash as a reference to check for other corresponding hashes of the same file.
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      confidenceThreshold: {}
+      file:
+        complex:
+          root: inputs.SHA256
+      include_inactive: {}
+      long: {}
+      md5: {}
+      owners: {}
+      ratingThreshold: {}
+      retries: {}
+      sha256: {}
+      threshold: {}
+      wait: {}
+    reputationcalc: 2
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: fdfd1cd9-3095-455b-8481-072b140ee5de
+    type: title
+    task:
+      id: fdfd1cd9-3095-455b-8481-072b140ee5de
+      version: -1
+      name: MD5
+      description: MD5
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: a75bc19c-d514-44ab-885d-fb6664dd0b29
+    type: title
+    task:
+      id: a75bc19c-d514-44ab-885d-fb6664dd0b29
+      version: -1
+      name: SHA1
+      description: SHA1
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: a2d56e80-d468-46a0-891d-3792a6bf0bd9
+    type: title
+    task:
+      id: a2d56e80-d468-46a0-891d-3792a6bf0bd9
+      version: -1
+      name: SHA256
+      description: SHA256
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_15_yes": 0.55,
+      "9_16_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1135,
+        "width": 2100,
+        "x": -490,
+        "y": -100
+      }
+    }
+  }
+inputs:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: The SHA256 hash on which to search.
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+  required: false
+  description: The SHA1 hash on which to search.
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: The MD5 hash on which to search.
+outputs:
+- contextPath: File.SHA256
+  description: Output for detected SHA256 hash.
+  type: string
+- contextPath: File.SHA1
+  description: Output for detected SHA1 hash.
+  type: string
+- contextPath: File.MD5
+  description: Output for detected MD5 hash.
+  type: string
+
+tests:
+- Test Convert file hash to corresponding hashes

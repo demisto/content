@@ -1,0 +1,74 @@
+commonfields:
+  id: CommonIntegration
+  version: -1
+name: CommonIntegration
+script: >-
+  function encodeToURLQuery(args) {
+          var query = '';
+          if (args) {
+              var keys = Object.keys(args);
+              if (keys.length > 0) {
+                  query = '?';
+                  for (var i = 0; i<keys.length; i++) {
+                      if (i !== 0) {
+                          query += '&';
+                      }
+                      query += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(args[keys[i]]);
+                  }
+              }
+          }
+          return query;
+  };
+
+
+  function replaceInTemplates(input, args) {
+    var res = input;
+    var keys = Object.keys(args);
+    for (var i = 0; i < keys.length; i++) {
+      res = res.split('%' + keys[i] + '%').join(args[keys[i]]);
+    }
+    return res;
+  };
+
+
+  function replaceInTemplatesAndRemove(input, args) {
+      var res = input;
+      var keys = Object.keys(args);
+      for (var i = 0; i < keys.length; i++) {
+        if (res.indexOf('%' +  keys[i] + '%') !== -1) {
+          res = res.split('%' + keys[i] + '%').join(args[keys[i]]);
+          delete(args[keys[i]]);
+        }
+      }
+      return res;
+  };
+
+
+  var xmlReservedChars = {
+    '&': '&amp;',
+    '\"': '&quot;',
+    '\'': '&apos;',
+    '<': '&lt;',
+    '>': '&gt;'
+  };
+
+
+  function escapeXMLChars(input) {
+      var res = input;
+      var keys = Object.keys(xmlReservedChars);
+      for (var i = 0; i < keys.length; i++) {
+          res = res.split(keys[i]).join(xmlReservedChars[keys[i]]);
+      }
+      return res;
+  };
+type: javascript
+tags:
+- infra
+- server
+comment: Deprecated. Common code that will be merged into each server integration when it runs
+system: true
+deprecated: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0

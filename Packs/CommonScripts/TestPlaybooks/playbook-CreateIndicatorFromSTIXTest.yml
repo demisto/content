@@ -1,0 +1,228 @@
+id: CreateIndicatorFromSTIXTest
+version: -1
+name: CreateIndicatorFromSTIXTest
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 2fa6a6ae-9533-492f-832f-68b7633e52f3
+    type: start
+    task:
+      id: 2fa6a6ae-9533-492f-832f-68b7633e52f3
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '1':
+    id: '1'
+    taskid: 9fa0045c-09ba-4891-b33e-d63635360117
+    type: regular
+    task:
+      id: 9fa0045c-09ba-4891-b33e-d63635360117
+      version: -1
+      name: Get STIX1 file
+      description: ''
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      body: {}
+      filename:
+        simple: stix1.xml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: 'yes'
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/Packs/Base/Scripts/StixParser/TestData/stix1/file-stix-ioc.xml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: '2'
+    taskid: 9568d14b-cccd-4667-95ae-be628b736d46
+    type: regular
+    task:
+      id: 9568d14b-cccd-4667-95ae-be628b736d46
+      version: -1
+      name: Get STIX2 file
+      description: ''
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      body: {}
+      filename:
+        simple: stix2.xml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: 'yes'
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/Packs/Base/Scripts/StixParser/TestData/stix2.json
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: c7ff874a-1ac3-4ed3-984c-88c94088da61
+    type: regular
+    task:
+      id: c7ff874a-1ac3-4ed3-984c-88c94088da61
+      version: -1
+      name: Run CreateIndicatorFromSTIX
+      script: CreateIndicatorsFromSTIX
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      entry_id:
+        complex:
+          root: File
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: '4'
+    taskid: 49bf33ef-0d36-4d74-a307-bdeb9894d8dd
+    type: title
+    task:
+      id: 49bf33ef-0d36-4d74-a307-bdeb9894d8dd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: f8ec30e4-6341-4edb-ac04-e84ac35b9d1f
+    type: regular
+    task:
+      id: f8ec30e4-6341-4edb-ac04-e84ac35b9d1f
+      version: -1
+      name: Delete Context
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+      - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: ''
+fromversion: 5.0.0

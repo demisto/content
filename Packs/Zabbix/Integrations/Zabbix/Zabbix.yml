@@ -1,0 +1,466 @@
+commonfields:
+  id: Zabbix
+  version: -1
+name: Zabbix
+display: Zabbix
+category: Utilities
+description: Allow integration with Zabbix api
+configuration:
+- display: Url
+  name: url
+  defaultvalue: http://example.net
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+script:
+  commands:
+  - name: zabbix-execute-command
+    arguments:
+    - name: method
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - host.get
+      description: Method to call on Zabbix API
+    - name: params
+      description: JSON with params to send with call
+    outputs:
+    - contextPath: Zabbix.Execute
+      description: result
+      type: Unknown
+    description: Execute command on Zabbix API
+  - name: test-module
+    arguments: []
+    description: Test if module is working
+  - name: zabbix-hostgroup-get
+    arguments:
+    - name: params_graphids
+      description: Return only host groups that contain hosts or templates with the given graphs.
+    - name: params_groupids
+      description: Return only host groups with the given host group IDs.
+    - name: params_hostids
+      description: Return only host groups that contain the given hosts.
+    - name: params_maintenanceids
+      description: Return only host groups that are affected by the given maintenances.
+    - name: params_monitored_hosts
+      description: Return only host groups that contain monitored hosts.
+    - name: params_real_hosts
+      description: Return only host groups that contain hosts.
+    - name: params_templated_hosts
+      description: Return only host groups that contain templates.
+    - name: params_templateids
+      description: Return only host groups that contain the given templates.
+    - name: params_triggerids
+      description: Return only host groups that contain hosts or templates with the given triggers.
+    - name: params_with_applications
+      description: Return only host groups that contain hosts with applications.
+    - name: params_with_graphs
+      description: Return only host groups that contain hosts with graphs.
+    - name: params_with_hosts_and_templates
+      description: Return only host groups that contain hosts or templates.
+    - name: params_with_httptests
+      description: Return only host groups that contain hosts with web checks.
+    - name: params_with_items
+      description: Return only host groups that contain hosts or templates with items.
+    - name: params_with_monitored_httptests
+      description: Return only host groups that contain hosts with enabled web checks.
+    - name: params_with_monitored_items
+      description: Return only host groups that contain hosts or templates with enabled items.
+    - name: params_with_monitored_triggers
+      description: Return only host groups that contain hosts with enabled triggers. All of the items used in the trigger must also be enabled.
+    - name: params_with_simple_graph_items
+      description: Return only host groups that contain hosts with numeric items.
+    - name: params_with_triggers
+      description: Return only host groups that contain hosts with triggers.
+    outputs:
+    - contextPath: Zabbix.Hostgroup.groupid
+      description: ID of the host group
+      type: string
+    - contextPath: Zabbix.Hostgroup.name
+      description: Name of the host group
+      type: string
+    - contextPath: Zabbix.Hostgroup.flags
+      description: Origin of the host group
+      type: number
+    - contextPath: Zabbix.Hostgroup.internal
+      description: Whether the group is used internally by the system.
+      type: number
+    description: Get host groups
+  - name: zabbix-host-get
+    arguments:
+    - name: params_groupids
+      description: Return only hosts that belong to the given groups.
+    - name: params_applicationids
+      description: Return only hosts that have the given applications.
+    - name: params_dserviceids
+      description: Return only hosts that are related to the given discovered services.
+    - name: params_graphids
+      description: Return only hosts that have the given graphs.
+    - name: params_hostids
+      description: Return only hosts with the given host IDs.
+    - name: params_httptestids
+      description: Return only hosts that have the given web checks.
+    - name: params_interfaceids
+      description: Return only hosts that use the given interfaces.
+    - name: params_itemids
+      description: Return only hosts that have the given items.
+    - name: params_maintenanceids
+      description: Return only hosts that are affected by the given maintenances.
+    - name: params_monitored_hosts
+      description: Return only monitored hosts.
+    - name: params_proxy_hosts
+      description: Return only proxies.
+    - name: params_proxyids
+      description: Return only hosts that are monitored by the given proxies.
+    - name: params_templated_hosts
+      description: Return both hosts and templates.
+    - name: params_templateids
+      description: Return only hosts that are linked to the given templates.
+    - name: params_triggerids
+      description: Return only hosts that have the given triggers.
+    - name: params_with_items
+      description: Return only hosts that have items.
+    - name: params_with_applications
+      description: Return only hosts that have applications.
+    - name: params_with_graphs
+      description: Return only hosts that have graphs.
+    - name: params_with_httptests
+      description: Return only hosts that have web checks.
+    - name: params_with_monitored_httptests
+      description: Return only hosts that have enabled web checks.
+    - name: params_with_monitored_items
+      description: Return only hosts that have enabled items.
+    - name: params_with_monitored_triggers
+      description: Return only hosts that have enabled triggers. All of the items used in the trigger must also be enabled.
+    - name: params_with_simple_graph_items
+      description: Return only hosts that have items with numeric type of information.
+    - name: params_with_triggers
+      description: Return only hosts that have triggers.
+    - name: params_withInventory
+      description: Return only hosts that have inventory data.
+    outputs:
+    - contextPath: Zabbix.Host.hostid
+      description: ID of the host.
+      type: string
+    - contextPath: Zabbix.Host.host
+      description: Technical name of the host.
+      type: string
+    - contextPath: Zabbix.Host.available
+      description: Availability of Zabbix agent.
+      type: number
+    - contextPath: Zabbix.Host.description
+      description: Description of the host.
+      type: string
+    - contextPath: Zabbix.Host.disable_until
+      description: The next polling time of an unavailable Zabbix agent.
+      type: date
+    - contextPath: Zabbix.Host.error
+      description: Error text if Zabbix agent is unavailable.
+      type: string
+    - contextPath: Zabbix.Host.errors_from
+      description: Time when Zabbix agent became unavailable.
+      type: date
+    - contextPath: Zabbix.Host.flags
+      description: Origin of the host.
+      type: number
+    - contextPath: Zabbix.Host.inventory_mode
+      description: (writeonly) Host inventory population mode.
+      type: number
+    - contextPath: Zabbix.Host.ipmi_authtype
+      description: IPMI authentication algorithm.
+      type: number
+    - contextPath: Zabbix.Host.ipmi_available
+      description: Availability of IPMI agent.
+      type: number
+    - contextPath: Zabbix.Host.ipmi_disable_until
+      description: The next polling time of an unavailable IPMI agent.
+      type: date
+    - contextPath: Zabbix.Host.ipmi_error
+      description: Error text if IPMI agent is unavailable.
+      type: string
+    - contextPath: Zabbix.Host.ipmi_errors_from
+      description: Time when IPMI agent became unavailable.
+      type: date
+    - contextPath: Zabbix.Host.ipmi_password
+      description: IPMI password.
+      type: string
+    - contextPath: Zabbix.Host.ipmi_privilege
+      description: IPMI privilege level.
+      type: number
+    - contextPath: Zabbix.Host.ipmi_username
+      description: IPMI username.
+      type: string
+    - contextPath: Zabbix.Host.jmx_available
+      description: Availability of JMX agent.
+      type: number
+    - contextPath: Zabbix.Host.jmx_disable_until
+      description: The next polling time of an unavailable JMX agent.
+      type: date
+    - contextPath: Zabbix.Host.jmx_error
+      description: Error text if JMX agent is unavailable.
+      type: string
+    - contextPath: Zabbix.Host.jmx_errors_from
+      description: Time when JMX agent became unavailable.
+      type: date
+    - contextPath: Zabbix.Host.maintenance_from
+      description: Starting time of the effective maintenance.
+      type: date
+    - contextPath: Zabbix.Host.maintenance_status
+      description: Effective maintenance status.
+      type: number
+    - contextPath: Zabbix.Host.maintenance_type
+      description: Effective maintenance type.
+      type: number
+    - contextPath: Zabbix.Host.maintenanceid
+      description: ID of the maintenance that is currently in effect on the host.
+      type: string
+    - contextPath: Zabbix.Host.name
+      description: Visible name of the host.
+      type: string
+    - contextPath: Zabbix.Host.proxy_hostid
+      description: ID of the proxy that is used to monitor the host.
+      type: string
+    - contextPath: Zabbix.Host.snmp_available
+      description: Availability of SNMP agent.
+      type: number
+    - contextPath: Zabbix.Host.snmp_disable_until
+      description: The next polling time of an unavailable SNMP agent.
+      type: date
+    - contextPath: Zabbix.Host.snmp_error
+      description: Error text if SNMP agent is unavailable.
+      type: string
+    - contextPath: Zabbix.Host.snmp_errors_from
+      description: Time when SNMP agent became unavailable.
+      type: date
+    - contextPath: Zabbix.Host.status
+      description: Status and function of the host.
+      type: number
+    - contextPath: Zabbix.Host.tls_connect
+      description: Connections to host.
+      type: number
+    - contextPath: Zabbix.Host.tls_accept
+      description: Connections from host.
+      type: number
+    - contextPath: Zabbix.Host.tls_issuer
+      description: Certificate issuer.
+      type: string
+    - contextPath: Zabbix.Host.tls_subject
+      description: Certificate subject.
+      type: string
+    - contextPath: Zabbix.Host.tls_psk_identity
+      description: PSK identity. Required if either tls_connect or tls_accept has PSK enabled.
+      type: string
+    - contextPath: Zabbix.Host.tls_psk
+      description: The preshared key, at least 32 hex digits. Required if either tls_connect or tls_accept has PSK enabled.
+      type: string
+    description: Get hosts
+  - name: zabbix-trigger-get
+    arguments:
+    - name: params_triggerids
+      description: Return only triggers with the given IDs.
+    - name: params_groupids
+      description: Return only triggers that belong to hosts from the given host groups.
+    - name: params_templateids
+      description: Return only triggers that belong to the given templates.
+    - name: params_hostids
+      description: Return only triggers that belong to the given hosts.
+    - name: params_itemids
+      description: Return only triggers that contain the given items.
+    - name: params_applicationids
+      description: Return only triggers that contain items from the given applications.
+    - name: params_functions
+      description: Return only triggers that use the given functions.
+    - name: params_group
+      description: Return only triggers that belong to hosts from the host group with the given name.
+    - name: params_host
+      description: Return only triggers that belong to host with the given name.
+    - name: params_inherited
+      description: If set to true return only triggers inherited from a template.
+    - name: params_templated
+      description: If set to true return only triggers that belong to templates.
+    - name: params_monitored
+      description: Return only enabled triggers that belong to monitored hosts and contain only enabled items.
+    - name: params_active
+      description: Return only enabled triggers that belong to monitored hosts.
+    - name: params_maintenance
+      description: If set to true return only enabled triggers that belong to hosts in maintenance.
+    - name: params_withUnacknowledgedEvents
+      description: Return only triggers that have unacknowledged events.
+    - name: params_withAcknowledgedEvents
+      description: Return only triggers with all events acknowledged.
+    - name: params_withLastEventUnacknowledged
+      description: Return only triggers with the last event unacknowledged.
+    - name: params_skipDependent
+      description: Skip triggers in a problem state that are dependent on other triggers. Note that the other triggers are ignored if disabled, have disabled items or disabled item hosts.
+    - name: params_lastChangeSince
+      description: Return only triggers that have changed their state after the given time (use timestamp format).
+    - name: params_lastChangeTill
+      description: Return only triggers that have changed their state before the given time (use timestamp format).
+    - name: params_only_true
+      description: Return only triggers that have recently been in a problem state.
+    - name: params_min_severity
+      description: Return only triggers with severity greater or equal than the given severity.
+    - name: params_evaltype
+      description: Rules for tag searching.
+    - name: params_tags
+      description: Return only triggers with given tags. Exact match by tag and case-sensitive or case-insensitive search by tag value depending on operator value.
+    outputs:
+    - contextPath: Zabbix.Trigger.triggerid
+      description: ID of the trigger.
+      type: string
+    - contextPath: Zabbix.Trigger.description
+      description: Name of the trigger.
+      type: string
+    - contextPath: Zabbix.Trigger.expression
+      description: Reduced trigger expression.
+      type: string
+    - contextPath: Zabbix.Trigger.comments
+      description: Additional description of the trigger.
+      type: string
+    - contextPath: Zabbix.Trigger.error
+      description: Error text if there have been any problems when updating the state of the trigger.
+      type: string
+    - contextPath: Zabbix.Trigger.flags
+      description: Origin of the trigger.
+      type: number
+    - contextPath: Zabbix.Trigger.lastchange
+      description: Time when the trigger last changed its state.
+      type: date
+    - contextPath: Zabbix.Trigger.priority
+      description: Severity of the trigger.
+      type: number
+    - contextPath: Zabbix.Trigger.state
+      description: State of the trigger.
+      type: number
+    - contextPath: Zabbix.Trigger.status
+      description: Whether the trigger is enabled or disabled.
+      type: number
+    - contextPath: Zabbix.Trigger.templateid
+      description: ID of the parent template trigger.
+      type: string
+    - contextPath: Zabbix.Trigger.type
+      description: Whether the trigger can generate multiple problem events.
+      type: number
+    - contextPath: Zabbix.Trigger.url
+      description: URL associated with the trigger.
+      type: string
+    - contextPath: Zabbix.Trigger.value
+      description: Whether the trigger is in OK or problem state.
+      type: number
+    - contextPath: Zabbix.Trigger.recovery_mode
+      description: OK event generation mode.
+      type: number
+    - contextPath: Zabbix.Trigger.recovery_expression
+      description: Reduced trigger recovery expression.
+      type: string
+    - contextPath: Zabbix.Trigger.correlation_mode
+      description: OK event closes.
+      type: number
+    - contextPath: Zabbix.Trigger.correlation_tag
+      description: Tag for matching.
+      type: string
+    - contextPath: Zabbix.Trigger.manual_close
+      description: Allow manual close.
+      type: number
+    description: Get triggers
+  - name: zabbix-event-get
+    arguments:
+    - name: params_eventids
+      description: Return only events with the given IDs.
+    - name: params_groupids
+      description: Return only events created by objects that belong to the given host groups.
+    - name: params_hostids
+      description: Return only events created by objects that belong to the given hosts.
+    - name: params_objectids
+      description: Return only events created by the given objects.
+    - name: params_applicationids
+      description: Return only events created by objects that belong to the given applications. Applies only if object is trigger or item.
+    - name: params_source
+      description: Return only events with the given type.
+    - name: params_object
+      description: Return only events created by objects of the given type.
+    - name: params_acknowledged
+      description: If set to true return only acknowledged events.
+    - name: params_suppressed
+      description: true - return only suppressed events;
+    - name: params_severities
+      description: Return only events with given event severities. Applies only if object is trigger.
+    - name: params_evaltype
+      description: Rules for tag searching.
+    - name: params_tags
+      description: Return only events with given tags. Exact match by tag and case-insensitive search by value and operator.
+    - name: params_eventid_from
+      description: Return only events with IDs greater or equal to the given ID.
+    - name: params_eventid_till
+      description: Return only events with IDs less or equal to the given ID.
+    - name: params_time_from
+      description: Return only events that have been created after or at the given time (use timestamp format).
+    - name: params_time_till
+      description: Return only events that have been created before or at the given time (use timestamp format).
+    - name: params_problem_time_from
+      description: Returns only events that were in the problem state starting with problem_time_from. Applies only if the source is trigger event and object is trigger. Mandatory if problem_time_till is specified (use timestamp format).
+    - name: params_problem_time_till
+      description: Returns only events that were in the problem state until problem_time_till. Applies only if the source is trigger event and object is trigger. Mandatory if problem_time_from is specified (use timestamp format).
+    - name: params_value
+      description: Return only events with the given values.
+    outputs:
+    - contextPath: Zabbix.Event.eventid
+      description: ID of the event.
+      type: string
+    - contextPath: Zabbix.Event.source
+      description: Type of the event.
+      type: number
+    - contextPath: Zabbix.Event.object
+      description: Type of object that is related to the event.
+      type: number
+    - contextPath: Zabbix.Event.objectid
+      description: ID of the related object.
+      type: string
+    - contextPath: Zabbix.Event.acknowledged
+      description: Whether the event has been acknowledged.
+      type: number
+    - contextPath: Zabbix.Event.clock
+      description: Time when the event was created.
+      type: date
+    - contextPath: Zabbix.Event.ns
+      description: Nanoseconds when the event was created.
+      type: number
+    - contextPath: Zabbix.Event.name
+      description: Resolved event name.
+      type: string
+    - contextPath: Zabbix.Event.value
+      description: State of the related object.
+      type: number
+    - contextPath: Zabbix.Event.severity
+      description: Event current severity.
+      type: number
+    - contextPath: Zabbix.Event.r_eventid
+      description: Recovery event ID
+      type: string
+    - contextPath: Zabbix.Event.c_eventid
+      description: ID of the event that was used to override (close) current event under global correlation rule. See correlationid to identify exact correlation rule.
+      type: string
+    - contextPath: Zabbix.Event.correlationid
+      description: ID of the correlation rule that generated closing of the problem.
+      type: string
+    - contextPath: Zabbix.Event.userid
+      description: User ID if the event was manually closed.
+      type: string
+    - contextPath: Zabbix.Event.suppressed
+      description: Whether the event is suppressed.
+      type: number
+    description: Get events
+  dockerimage: demisto/zabbix:1.0.0.7067
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+fromversion: 5.0.0

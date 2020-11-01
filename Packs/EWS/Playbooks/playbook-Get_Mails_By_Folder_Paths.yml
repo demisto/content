@@ -1,0 +1,194 @@
+id: Get Mails By Folder Paths
+version: -1
+name: Get Mails By Folder Paths
+description: Get emails from specific folders and pre-process them using EWS.
+starttaskid: "0"
+fromversion: "5.0.0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c7b3e2c4-ce81-4d45-8caf-5ea2d9051225
+    type: start
+    task:
+      id: c7b3e2c4-ce81-4d45-8caf-5ea2d9051225
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 9bdfffbb-4627-4356-8a25-fe115d066809
+    type: regular
+    task:
+      id: 9bdfffbb-4627-4356-8a25-fe115d066809
+      version: -1
+      name: Get Emails
+      description: Retrieves emails from specific folders using EWS
+      scriptName: GetEWSFolder
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      foldersPaths:
+        simple: ${inputs.foldersPaths}${inputs.foldersPathsGlobal}
+      hashSeed: {}
+      isPublic: {}
+      limit:
+        simple: ${inputs.limit}
+      targetMailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: ce40f8b2-bcc9-44f0-8fd3-c00638b8fa34
+    type: regular
+    task:
+      id: ce40f8b2-bcc9-44f0-8fd3-c00638b8fa34
+      version: -1
+      name: Save to Base64List
+      description: |
+        Encode a file as base64 and store it in a Demisto list.
+      scriptName: FileToBase64List
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+      listName:
+        simple: ${inputs.listName}
+      zipFile: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 20d3dd3f-7529-4bca-8698-b541466bf852
+    type: regular
+    task:
+      id: 20d3dd3f-7529-4bca-8698-b541466bf852
+      version: -1
+      name: Preprocess emails
+      description: Pre-process text data for the machine learning text classifier.
+      scriptName: DBotPreProcessTextData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cleanHTML: {}
+      dedupThreshold: {}
+      hashSeed: {}
+      input:
+        simple: ${lastCompletedTaskEntries}
+      inputType: {}
+      outputFormat: {}
+      preProcessType: {}
+      removeShortTextThreshold: {}
+      textFields:
+        simple: subject,textBody|body
+      whitelistFields: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 287d3f66-c5ff-446a-8486-e41cf24f0879
+    type: title
+    task:
+      id: 287d3f66-c5ff-446a-8486-e41cf24f0879
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: foldersPathsGlobal
+  value:
+    simple: inbox,inbox\TESTATTACH
+  required: true
+  description: "A comma-separated List of folder paths from the Inbox. \nFor example: inbox,inbox\\\\folder"
+- key: listName
+  value: {}
+  required: true
+  description: Name of the list in which mails will be saved.
+- key: limit
+  value:
+    simple: "10"
+  required: false
+  description: Maximum number of emails to fetch from each folder.
+outputs: []
+tests:
+- Get EWS Folder Test

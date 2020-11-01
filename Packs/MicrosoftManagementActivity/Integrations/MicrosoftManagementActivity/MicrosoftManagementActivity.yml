@@ -1,0 +1,249 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Microsoft Management Activity API (O365 Azure Events)
+  version: -1
+configuration:
+- defaultvalue: https://manage.office.com/api/v1.0/
+  display: Base URL
+  name: base_url
+  required: false
+  type: 0
+- display: ID (received from the authorization step - see Detailed Instructions (?)
+    section)
+  name: auth_id
+  required: false
+  type: 4
+- display: Key (received from the authorization step - see Detailed Instructions (?)
+    section)
+  name: enc_key
+  required: false
+  type: 4
+- display: Token (received from the authorization step - see Detailed Instructions
+    (?) section)
+  name: refresh_token
+  required: false
+  type: 4
+- display: Use a self-deployed Azure application
+  name: self_deployed
+  required: false
+  type: 8
+- display: The authentication code you got for the service. For instructions on how
+    to receive it, see the detailed description ('?') section.
+  name: auth_code
+  required: false
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 10 minutes
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  name: first_fetch_delta
+  required: false
+  type: 0
+- display: Content types to fetch
+  name: content_types_to_fetch
+  options:
+  - Audit.AzureActiveDirectory
+  - Audit.Exchange
+  - Audit.SharePoint
+  - Audit.General
+  required: false
+  type: 16
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Record types to fetch (Comma-separated list of the record types you wish
+    to fetch. Content records with a record  type that isn't specified will not be
+    fetched. If this field is left empty, all record types will be fetched.)
+  name: record_types_filter
+  required: false
+  type: 0
+- display: Workloads to fetch (Comma-separated list of the workloads you wish to fetch.
+    Content records with a workload that isn't specified will not be fetched. If this
+    field is left empty, all workloads will be fetched.)
+  name: workloads_filter
+  required: false
+  type: 0
+- display: Operations to (Comma-separated list of the operations you wish to fetch.
+    Content records with an operation that isn't specified will not be fetched. If
+    this field is left empty, all operations will be fetched.)
+  name: operations_filter
+  required: false
+  type: 0
+description: The Microsoft Management Activity API integration enables you to subscribe
+  or unsubscribe to different audits, receive their content and fetch new content
+  as incidents.
+display: Microsoft Management Activity API (O365 Azure Events)
+name: Microsoft Management Activity API (O365 Azure Events)
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The content type to subscribe to.
+      isArray: false
+      name: content_type
+      predefined:
+      - Audit.AzureActiveDirectory
+      - Audit.Exchange
+      - Audit.SharePoint
+      - Audit.General
+      required: true
+      secret: false
+    deprecated: false
+    description: Starts a subscription to a given content type
+    execution: false
+    name: ms-management-activity-start-subscription
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The content type to unsubscribe from.
+      isArray: false
+      name: content_type
+      predefined:
+      - Audit.AzureActiveDirectory
+      - Audit.Exchange
+      - Audit.SharePoint
+      - Audit.General
+      required: true
+      secret: false
+    deprecated: false
+    description: Stops a subscription to a given content type
+    execution: false
+    name: ms-management-activity-stop-subscription
+  - deprecated: false
+    description: List the content types you are currently subscribed to
+    execution: false
+    name: ms-management-activity-list-subscriptions
+    outputs:
+    - contextPath: MicrosoftManagement.Subscription
+      description: List of current subscriptions
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The content type for which to receive content.
+      isArray: false
+      name: content_type
+      predefined:
+      - Audit.AzureActiveDirectory
+      - Audit.Exchange
+      - Audit.SharePoint
+      - Audit.General
+      required: true
+      secret: false
+    - default: false
+      description: 'The earliest time to get content from. If start_time is specified,
+        end_time must also be specified. The start_time must be before the end_time,
+        can be at most 7 days ago, and has to be within 24 hours from end_time. Required
+        format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours
+        ago.'
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: 'The latest time to get content from. If end_time is specified,
+        start_time must be also specified. The start_time must be before the end_time
+        and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS.
+        If not specified, end_time will be now.'
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the record types to fetch. Content records
+        with a record  type that isn't specified will not be fetched. If this field
+        is left empty, all record types will be fetched.
+      isArray: false
+      name: record_types_filter
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the workloads to fetch. Content records
+        with a workload that isn't specified will not be fetched. If this field is
+        left empty, all workloads will be fetched.
+      isArray: false
+      name: workloads_filter
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the operations to fetch. Content records
+        with an operation that isn't specified will not be fetched. If this field
+        is left empty, all operations will be fetched.
+      isArray: false
+      name: operations_filter
+      required: false
+      secret: false
+    - default: false
+      description: The timeout (in seconds) for the content requesting HTTP call. Default is 10 seconds.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all content of a specific content type.
+    execution: false
+    name: ms-management-activity-list-content
+    outputs:
+    - contextPath: MicrosoftManagement.ContentRecord.ID
+      description: The ID of the record.
+      type: number
+    - contextPath: MicrosoftManagement.ContentRecord.CreationTime
+      description: The creation time of the record.
+      type: date
+    - contextPath: MicrosoftManagement.ContentRecord.RecordType
+      description: The type of the record.
+      type: string
+    - contextPath: MicrosoftManagement.ContentRecord.Operation
+      description: The operation described in the record.
+      type: string
+    - contextPath: MicrosoftManagement.ContentRecord.UserType
+      description: The type of the related user.
+      type: string
+    - contextPath: MicrosoftManagement.ContentRecord.OrganizationID
+      description: The ID of the organization relevant to the record.
+      type: number
+    - contextPath: MicrosoftManagement.ContentRecord.UserKey
+      description: The key of the related user.
+      type: string
+    - contextPath: MicrosoftManagement.ContentRecord.ClientIP
+      description: The IP of the record's client.
+      type: string
+    - contextPath: MicrosoftManagement.ContentRecord.Scope
+      description: The scope of the record.
+      type: string
+    - contextPath: MicrosoftManagement.ContentRecord.Workload
+      description: The workload of the record.
+      type: string
+    - contextPath: MicrosoftManagement.ContentRecord.ResultsStatus
+      description: The results status of the record.
+      type: string
+    - contextPath: MicrosoftManagement.ContentRecord.ObjectID
+      description: The ID of the record's object.
+      type: string
+    - contextPath: MicrosoftManagement.ContentRecord.UserID
+      description: The ID of the record's user.
+      type: string
+  dockerimage: demisto/pyjwt3:1.0.0.10828
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No test
+fromversion: 5.0.0

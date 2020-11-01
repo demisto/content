@@ -1,0 +1,2441 @@
+{
+  "ews-get-searchable-mailboxes": {
+    "EWS.Mailboxes": [
+      {
+        "mailbox": "aaaaa@demistodev.onmicrosoft.com",
+        "mailboxId": "/o=ExchangeLabs/ou=Exchange Administrative Group",
+        "displayName": "aaaa",
+        "isExternal": "false",
+        "externalEmailAddress": null
+      }
+    ]
+  },
+  "ews-find-folders": {
+    "EWS.Folders(val.id == obj.id)": [
+      {
+        "name": "Favorites",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Top of Information Store",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 19,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Calendar",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 2,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "Birthdays",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "United States holidays",
+        "totalCount": 175,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "Contacts",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 7,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "{A9E2BC46-B3A0-4243-B315-60D991004455}",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "{06967759-274D-40B2-A3EB-D7F9E73727D7}",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "Recipient Cache",
+        "totalCount": 21,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "Companies",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "GAL Contacts",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "Organizational Contacts",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "PeopleCentricConversation Buddies",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "Conversation History",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Team Chat",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Deleted Items",
+        "totalCount": 7,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Drafts",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Inbox",
+        "totalCount": 6,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 5
+      },
+      {
+        "name": "Journal",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Junk Email",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Notes",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Outbox",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Sent Items",
+        "totalCount": 7,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Tasks",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Archive",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Conversation Action Settings",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ExternalContacts",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "Files",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "PersonMetadata",
+        "totalCount": 21,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": null
+      },
+      {
+        "name": "Test",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Test1",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Yammer Root",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 3,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Feeds",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Inbound",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Outbound",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "My Contacts",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "PeopleConnect",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Recoverable Items",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 5,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Deletions",
+        "totalCount": 12,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 1
+      },
+      {
+        "name": "Purges",
+        "totalCount": 7,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 1
+      },
+      {
+        "name": "Versions",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Audits",
+        "totalCount": 14,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Calendar Logging",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Finder",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 3,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Voice Mail",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "OwaFV15.1AllFocusedAQMkAGZiODc1MGY3LTBiODEtNDQAN2QtOWM3Yy1lZGI4YjIxZTE5NTAALgAAA3ge9qbo93dKqujtIHDxPSgBAOP1fdDThA5Nh/9sF3X5QNkAAAIBDAAAAA==",
+        "totalCount": 6,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 5
+      },
+      {
+        "name": "OwaFV15.1AllOtherAQMkAGZiODc1MGY3LTBiODEtNDQAN2QtOWM3Yy1lZGI4YjIxZTE5NTAALgAAA3ge9qbo93dKqujtIHDxPSgBAOP1fdDThA5Nh/9sF3X5QNkAAAIBDAAAAA==",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "To-Do Search",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "System",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "AllCategorizedItems",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "AllContacts",
+        "totalCount": 21,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "AllItems",
+        "totalCount": 237,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 5
+      },
+      {
+        "name": "AllPersonMetadata",
+        "totalCount": 21,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ApplicationDataRoot",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 23,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "00000002-0000-0ff1-ce00-000000000000",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 3,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "13937bba-652e-4c46-b222-3003f4d1ff97",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateContextData",
+        "totalCount": 11,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "1caee58f-eb14-4a6b-9339-1fe2ddf6692b",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 2,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Recent",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Settings",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "2a486b53-dbd2-49c0-a2bc-278bdfc30833",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "PersonalGrammars",
+        "totalCount": 5,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "32d4b5e5-7d33-4e7f-b073-f8cffbbb47a1",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "outlookfavorites",
+        "totalCount": 3,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "35d54a08-36c9-4847-9018-93934c62740c",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "PeoplePredictions.profile",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "394866fc-eedb-4f01-8536-3ff84b16be2a",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "InsightInstancesActions",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "3b2e5a14-128d-48aa-b581-482aac616d32",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "3c896ded-22c5-450f-91f6-3d1ef0848f6e",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 20,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ActivitiesDaily",
+        "totalCount": 61,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ActivitiesWeekly",
+        "totalCount": 9,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "AfterHoursEmailImpact",
+        "totalCount": 54,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "AutomaticRepliesHistory",
+        "totalCount": 20,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ChatsInterruptionStatistics",
+        "totalCount": 53,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ComputeLogs",
+        "totalCount": 22,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "CumulativeNetworkSnapshot",
+        "totalCount": 3,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "CumulativeOutOfOfficeClustering",
+        "totalCount": 108,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "DailyAppointments",
+        "totalCount": 86,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "DailyInteractions",
+        "totalCount": 54,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "DailyNetworkSnapshot",
+        "totalCount": 54,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "DetailedMeetings",
+        "totalCount": 54,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "EmailActionStatistics",
+        "totalCount": 54,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "HeterogeneousItems",
+        "totalCount": 11,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ImportantContact",
+        "totalCount": 5,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ManagementOperationExecutionRecords",
+        "totalCount": 4,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "MeetingActionStatistics",
+        "totalCount": 9,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "OutOfOffice",
+        "totalCount": 47,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "WeeklyInteractions",
+        "totalCount": 7,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "WeeklyOutOfOfficeAndWorkingDay",
+        "totalCount": 7,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "441509e5-a165-4363-8ee7-bcf0b7d26739",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 9,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "GenericWorkflowProcessor.SessionManager.Data",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Idf",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "IdfMeeting",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SimpleAcronymsIndex",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "UserDocKpeStats",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "UserDocWithKpes",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "UserKpes",
+        "totalCount": 2,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "UserKpeState",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "UserStatistics",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "48af08dc-f6d2-435f-b2a7-069abd99c086",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "InsightsProvidersSettings",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "49499048-0129-47f5-b95e-f9d315b861a6",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "OutlookAccountCloudSettings",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "4e445925-163e-42ca-b801-9073bfa46d17",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "NewsSubscriptionSourcesv2",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "644c1b11-f63f-45fa-826b-a9d2801db711",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 3,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "_PolicyContainer",
+        "totalCount": 2,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "dGVzdGJveEBkZW1pc3RvZGV2Lm9ubWljcm9zb2Z0LmNvbQ==_LabelFile",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "dGVzdGJveEBkZW1pc3RvZGV2Lm9ubWljcm9zb2Z0LmNvbQ==_PolicyContainer",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "66a88757-258c-4c72-893c-3e8bed4d6899",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 15,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.CalendarEvents",
+        "totalCount": 2,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.EmailEntities",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.EmailTokens",
+        "totalCount": 22,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.FreshHistory",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.GroupsRoomsMiscIndex",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.People",
+        "totalCount": 6,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.PeopleIndex",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.SearchHistory.Main",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.SearchHistoryBootstrapStateV2",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.SearchHistoryState",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.SharePointDocuments",
+        "totalCount": 3,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.SsaSessionManager",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.TeamsAndChannels",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.TeamsChats",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateSearch.TeamsEntities",
+        "totalCount": 3,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "766ef332-38e5-4cb4-920c-baa478e39fd9",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "CrawlerExecutionInfoCollection",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "7ae974c5-1af7-4923-af3a-fb1fd14dcb7e",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 5,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "GetStartedStore",
+        "totalCount": 15,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "lightning",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "LightningSharedStore",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "LightningStore",
+        "totalCount": 44,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "WhatsNewStore",
+        "totalCount": 34,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "80723a00-368e-4d64-8281-210e49e593a8",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ActivityFeed_201905",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "8c22b648-ee54-4ece-a4ca-3015b6d24f8e",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 2,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Images",
+        "totalCount": 2,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Profiles",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ae8e128e-080f-4086-b0e3-4c19301ada69",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Scheduling",
+        "totalCount": 2,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "b669c6ea-1adf-453f-b8bc-6d526592b419",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "FocusedInboxMailboxData",
+        "totalCount": 2,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "d71dfe16-1070-48f3-bd3a-c3ec919d34e7",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 2,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "TxpAutoblocking",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "TxpUserSettings",
+        "totalCount": 10,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "e69932cd-f814-4087-8ab1-5ab3f1ad18eb",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 3,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "PhishingBootstrap",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "BrokerSubscriptions",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "BulkActions",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "CalendarItemSnapshots",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "CalendarSharingCacheCollection",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Common Views",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ComplianceMetadata",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Connectors",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ConnectorConfigurations",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "CrawlerData",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "DefaultFoldersChangeHistory",
+        "totalCount": 389,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Deferred Action",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Document Centric Conversations",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ExchangeODataSyncData",
+        "totalCount": 36,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ExchangeSyncData",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "FileCollectionCache",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Folder Memberships",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Freebusy Data",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "FreeBusyLocalCache",
+        "totalCount": 2,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "FreeBusyLocalCacheSubscriptions",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "GraphFilesAndWorkingSetSearchFolder",
+        "totalCount": 3,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "GraphStore",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 6,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "GraphEdges",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "GraphNodes",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "GraphNonSecureDrafts",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "GraphNonSecureTransactions",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "GraphRelations",
+        "totalCount": 4,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Inference",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Location",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "MailboxAssociations",
+        "totalCount": 3,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "MeetingSapces",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "MergedViewFolderCollection",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "MessageIngestion",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Yammer",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "O365 Suite Notifications",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "O365 Suite Storage",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "OneDriveRoot",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Orion Notes",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "PACE",
+        "totalCount": 2,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "DelveNotifications",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ParkedMessages",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Pass-Through Search Results",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "PdpProfile",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "PdpProfileV2",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "People I Know",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "PeopleInsights",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "PeoplePublicData",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "QuarantinedEmail",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 1,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "QuarantinedEmailDefaultCategory",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 4,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "QedcDefaultRetention",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "QedcLongRetention",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "QedcMediumRetention",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "QedcShortRetention",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "RelevantContacts",
+        "totalCount": 21,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Reminders",
+        "totalCount": 12,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Schedule",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ShardRelevancyFolder",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SharedFilesSearchFolder",
+        "totalCount": 3,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SharePointNotifications",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Sharing",
+        "totalCount": 1,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Shortcuts",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SkypeSpacesData",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 2,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SkypeMessages",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "TeamsMeetings",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SmsAndChatsSync",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Spooler Queue",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SpoolsSearchFolder",
+        "totalCount": 9,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SubstrateFiles",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 3,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "ClassicAttachments",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "GraphWorkingSet",
+        "totalCount": 3,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SPOOLS",
+        "totalCount": 9,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SuggestedUserGroupAssociations",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "SwssItems",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 3,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "TeamChatHistory",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "TeamsMessagesData",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "TemporarySaves",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "UserCuratedContacts",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "UserSocialActivityNotifications",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "Views",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "XrmActivityClientInstrumentation",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "XrmActivityServerInstrumentation",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "XrmActivityStream",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "XrmActivityStreamSearch",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "XrmCompanySearch",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "XrmDealSearch",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "XrmDeletedItems",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "XrmInsights",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "XrmProjects",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "XrmSearch",
+        "totalCount": 21,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      },
+      {
+        "name": "YammerData",
+        "totalCount": 0,
+        "id": "id",
+        "childrenFolderCount": 0,
+        "changeKey": "changekey",
+        "unreadCount": 0
+      }
+    ]
+  },
+  "ews-search-mailbox": {
+    "EWS.Items(val.itemId === obj.itemId || (val.messageId && obj.messageId && val.messageId === obj.messageId))": [
+      {
+        "itemId": "itemId",
+        "datetimeCreated": "2020-05-21T12:36:24Z",
+        "datetimeReceived": "2020-05-21T12:36:25Z",
+        "datetimeSent": "2020-05-21T12:35:18Z",
+        "sender": "darbel@paloaltonetworks.com",
+        "hasAttachments": false,
+        "importance": "Normal",
+        "messageId": "messageId",
+        "lastModifiedTime": "2020-05-24T10:30:33Z",
+        "size": 57321,
+        "subject": "test with attachment",
+        "textBody": "\r\nDean Arbel\r\nStaff Software Engineer, Content Team, Demisto\r\nEmail: darbel@paloaltonetworks.com<mailto:darbel@paloaltonetworks.com>\r\nPhone: +972.54.7209916\r\n[https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png]\r\n",
+        "headers": [
+          {
+            "name": "Received",
+            "value": "from VI1PR07MB5728.eurprd07.prod.outlook.com (2603:10a6:20b:f0::25) by AM5PR0701MB2388.eurprd07.prod.outlook.com with HTTPS via AM6PR04CA0048.EURPRD04.PROD.OUTLOOK.COM; Thu, 21 May 2020 12:36:24 +0000"
+          },
+          {
+            "name": "Received",
+            "value": "from AM6PR02CA0035.eurprd02.prod.outlook.com (2603:10a6:20b:6e::48) by VI1PR07MB5728.eurprd07.prod.outlook.com (2603:10a6:803:d4::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.13; Thu, 21 May 2020 12:36:23 +0000"
+          },
+          {
+            "name": "Received",
+            "value": "from VE1EUR01FT047.eop-EUR01.prod.protection.outlook.com (2603:10a6:20b:6e:cafe::20) by AM6PR02CA0035.outlook.office365.com (2603:10a6:20b:6e::48) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.26 via Frontend Transport; Thu, 21 May 2020 12:36:22 +0000"
+          },
+          {
+            "name": "Received",
+            "value": "from mx0b-00169c01.pphosted.com (67.231.156.123) by VE1EUR01FT047.mail.protection.outlook.com (10.152.3.80) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Thu, 21 May 2020 12:36:21 +0000"
+          },
+          {
+            "name": "Received",
+            "value": "from pps.filterd (m0048188.ppops.net [127.0.0.1])\tby mx0b-00169c01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04LCYwj1030495\tfor <testbox@demistodev.onmicrosoft.com>; Thu, 21 May 2020 05:36:20 -0700"
+          },
+          {
+            "name": "Received",
+            "value": "from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])\tby mx0b-00169c01.pphosted.com with ESMTP id 312j0ajtmj-1\t(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)\tfor <testbox@demistodev.onmicrosoft.com>; Thu, 21 May 2020 05:36:20 -0700"
+          },
+          {
+            "name": "Received",
+            "value": "by mail-oo1-f69.google.com with SMTP id l21so3325823oos.22        for <testbox@demistodev.onmicrosoft.com>; Thu, 21 May 2020 05:36:20 -0700 (PDT)"
+          },
+          {
+            "name": "Authentication-Results",
+            "value": "spf=pass (sender IP is 67.231.156.123) smtp.mailfrom=paloaltonetworks.com; demistodev.onmicrosoft.com; dkim=pass (signature was verified) header.d=paloaltonetworks.com;demistodev.onmicrosoft.com; dmarc=pass action=none header.from=paloaltonetworks.com;compauth=pass reason=100"
+          },
+          {
+            "name": "Received-SPF",
+            "value": "Pass (protection.outlook.com: domain of paloaltonetworks.com designates 67.231.156.123 as permitted sender) receiver=protection.outlook.com; client-ip=67.231.156.123; helo=mx0b-00169c01.pphosted.com;"
+          },
+          {
+            "name": "DKIM-Signature",
+            "value": "v=1; a=rsa-sha256; c=relaxed/relaxed; d=paloaltonetworks.com; h=mime-version : from : date : message-id : subject : to : content-type; s=PPS12012017; bh=3V1MY5tIy0u3WVuB2TCXSM7iWtDLNm025KA+8pHonYQ=; b=YGiaV+dbdkA2+ttEOBtgdPSwPLUmr/EQRS+oBQ+Z7eEA56HF7aEQ48DYSpJhNKa5nTMW FiJ0bEWi9XmA2+dKy0A0ZtyJrodqpY1W8xnWRVKaO4MIsvVTyUTJSfJKDBVw6clv652/ Q9NagmlnQf6lfSF/0h/rc0BvFQoWlQ23ApabaSz2agtfWLFsvf36l14UqNCHfrwoQHcY YIDEofGu37O29lDwnDky+VJTg0jKN5BguRctMd4cFPe0xbo3M0RMijzsqCrKKTtRVF7O IcP3llqEigi5wEtawxMb4NQlZbvL6VP1G5aSdYDallFtZm5qj7aFyNpjOKyNffN6oVxX qg== "
+          },
+          {
+            "name": "DKIM-Signature",
+            "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=paloaltonetworks-com.20150623.gappssmtp.com; s=20150623;        h=mime-version:from:date:message-id:subject:to;        bh=3V1MY5tIy0u3WVuB2TCXSM7iWtDLNm025KA+8pHonYQ=;        b=2Dtn+BoifCZ57s/MHyQJwITiYpW2HRGC8rx9kFP+/8I9Sa55DrjlSrupAqKFkmgi2e         hUq56LW6PXK20T02gOFjkf6ja+f9x8/F3VoBG4ADX7rLAgbWc7YXbLjOfUohau+1UITd         aMWswug+4rY7L8QTdpeQiEj8nfCB5t+/RNCoLCMV4zwvjeKQ8Nkg6sWuU/LSb+t4W5l+         67Fq4osfFUQPwbXPBeAKhpmi4NYldZKc54MTOKi1sHyaXzADB475VZ0b9d7D++8ulxXb         E3qTeWi7KYySygm45+sMZ/4AYNlgjiT6Gmx4SkQGTmvN/VqjlXLpWLs0Q3xDxNW+Ggsh         M47Q=="
+          },
+          {
+            "name": "X-Google-DKIM-Signature",
+            "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20161025;        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;        bh=3V1MY5tIy0u3WVuB2TCXSM7iWtDLNm025KA+8pHonYQ=;        b=B+AzxBw/moiaMpD/h5HMIwigEukmQdzOVjIEAuFpRW1V1FdKQinxprXMalv39PQlDD         WUJlmAQYCvvifA5VaUkkAuYUETq++2yVLaVSd6YW0jKwcm+yvQp10MpatmEVBBPwuRfr         8YF3L9Qhzd8bSlcg0v6UTLTs/j18jHFceBI7UNasFpsag5yVAdAiF4HTYLAO4FV8syif         Ee/EaO8/qRyzzxdnqT4WyksZF1dFcgBj3Ii8E3QnbpEkElsrcOo8yFhtgiKWesQxilyK         bt5y+BdwYB9dAKzAw3yxxuBYQBuJ0VPVW585moHfUJ5YvjLHsIGkag2PmRPyKpmSPUJk         A6+A=="
+          },
+          {
+            "name": "X-Gm-Message-State",
+            "value": "AOAM533KzEt3TBZth3vp/FoX67aS/igSrt7HFh+PVgZkcp1b8+Ro1jD0\tURWuKgm2VcXOnOHyWyiWgpl3L3JwGXAqFtrnEG7z6nReZEzWeyjNLm0zEXFArNjNdu5cf01PGec\tS7r8Rn5VIPtO+4Cejj6uuuZ06XpMLXmWhT8xRG54CGvL6vSZ/"
+          },
+          {
+            "name": "X-Received",
+            "value": "by 2002:a05:6808:106:: with SMTP id b6mr6740225oie.142.1590064579748;        Thu, 21 May 2020 05:36:19 -0700 (PDT)"
+          },
+          {
+            "name": "X-Received",
+            "value": "by 2002:a05:6808:106:: with SMTP id b6mr6740179oie.142.1590064578767; Thu, 21 May 2020 05:36:18 -0700 (PDT)"
+          },
+          {
+            "name": "X-Google-Smtp-Source",
+            "value": "ABdhPJycyvGbCUwXro6NGtBzPoJPyFIRPmnnjz60CS0xnuEXr6ubn//2nkXr6vikUMIWmI5gZY7fW0EQD1/Wo//8eeQ="
+          },
+          {
+            "name": "MIME-Version",
+            "value": "1.0"
+          },
+          {
+            "name": "Date",
+            "value": "Thu, 21 May 2020 15:35:18 +0300"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<CALOVw6vw2eOojGdALXwyz_McutDOuDfs_qecQSkph0yxwY_5tg@mail.gmail.com>"
+          },
+          {
+            "name": "Subject",
+            "value": "test with attachment"
+          },
+          {
+            "name": "Content-Type",
+            "value": "multipart/mixed"
+          },
+          {
+            "name": "X-Proofpoint-Virus-Version",
+            "value": "vendor=fsecure engine=2.50.10434:6.0.216,18.0.676 definitions=2020-05-21_06:2020-05-21,2020-05-21 signatures=0"
+          },
+          {
+            "name": "X-Proofpoint-Spam-Details",
+            "value": "rule=outbound_spam_notspam policy=outbound_spam score=0 malwarescore=0 priorityscore=1501 bulkscore=0 cotscore=-2147483648 phishscore=0 spamscore=0 clxscore=1011 adultscore=0 mlxlogscore=438 mlxscore=0 suspectscore=0 lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000 definitions=main-2005210093"
+          },
+          {
+            "name": "Return-Path",
+            "value": "darbel@paloaltonetworks.com"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-ExpirationStartTime",
+            "value": "21 May 2020 12:36:22.4651 (UTC)"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-ExpirationStartTimeReason",
+            "value": "OriginalSubmit"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-ExpirationInterval",
+            "value": "1:00:00:00.0000000"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-ExpirationIntervalReason",
+            "value": "OriginalSubmit"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-Network-Message-Id",
+            "value": "33e1ab54-578d-45ad-6123-08d7fd8391c9"
+          },
+          {
+            "name": "X-EOPAttributedMessage",
+            "value": "0"
+          },
+          {
+            "name": "X-EOPTenantAttributedMessage",
+            "value": "ebac1a16-81bf-449b-8d43-5732c3c1d999:0"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-MessageDirectionality",
+            "value": "Incoming"
+          },
+          {
+            "name": "X-Forefront-Antispam-Report",
+            "value": "CIP:67.231.156.123;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mx0b-00169c01.pphosted.com;PTR:mx0b-00169c01.pphosted.com;CAT:NONE;SFTY:;SFS:(4636009)(564344004)(86362001)(7636003)(42186006)(22186003)(33964004)(356005)(26005)(336012)(7596003)(3480700007)(7116003)(9686003)(8676002)(2160300002)(5660300002)(1096003)(6916009)(55446002)(58800400005)(133083001);DIR:INB;SFP:;"
+          },
+          {
+            "name": "X-MS-PublicTrafficType",
+            "value": "Email"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthSource",
+            "value": "VE1EUR01FT047.eop-EUR01.prod.protection.outlook.com"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthAs",
+            "value": "Anonymous"
+          },
+          {
+            "name": "X-MS-Office365-Filtering-Correlation-Id",
+            "value": "33e1ab54-578d-45ad-6123-08d7fd8391c9"
+          },
+          {
+            "name": "X-MS-TrafficTypeDiagnostic",
+            "value": "VI1PR07MB5728:"
+          },
+          {
+            "name": "X-MS-Exchange-AtpMessageProperties",
+            "value": "SA"
+          },
+          {
+            "name": "X-MS-Oob-TLC-OOBClassifiers",
+            "value": "OLM:1728;"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-SCL",
+            "value": "1"
+          },
+          {
+            "name": "X-Microsoft-Antispam",
+            "value": "BCL:0;"
+          },
+          {
+            "name": "X-MS-Exchange-CrossTenant-OriginalArrivalTime",
+            "value": "21 May 2020 12:36:21.9939 (UTC)"
+          },
+          {
+            "name": "X-MS-Exchange-CrossTenant-Network-Message-Id",
+            "value": "33e1ab54-578d-45ad-6123-08d7fd8391c9"
+          },
+          {
+            "name": "X-MS-Exchange-CrossTenant-Id",
+            "value": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+          },
+          {
+            "name": "X-MS-Exchange-CrossTenant-FromEntityHeader",
+            "value": "Internet"
+          },
+          {
+            "name": "X-MS-Exchange-Transport-CrossTenantHeadersStamped",
+            "value": "VI1PR07MB5728"
+          },
+          {
+            "name": "X-MS-Exchange-Transport-EndToEndLatency",
+            "value": "00:00:02.6143909"
+          },
+          {
+            "name": "X-MS-Exchange-Processed-By-BccFoldering",
+            "value": "15.20.3021.019"
+          },
+          {
+            "name": "X-Microsoft-Antispam-Mailbox-Delivery",
+            "value": "ucf:0;jmr:0;auth:0;dest:I;ENG:(20160514016)(750128)(520011016)(944506383)(944626604);"
+          },
+          {
+            "name": "X-Microsoft-Antispam-Message-Info",
+            "value": "GYMxyfjbkGHsUpWSD/+/zAqqyIHrTe+HHUexgZpYTm2UkhmvRqDi9kkwrPOItdlPtZe+zWuoZ9Dvl5I0jxgdawDRZH0/67UGmNlGddyF/PIYT6LdJsV3CBqK7h4PMRref2rqtG6LO401erigCiu8DdIxE6ikgqOkTJ9TB7/qiyNh5RcBLQqW9WKQ0wJb0HhebecR1qOIYMqSkJO11n8jv+/yAtFGpj17XsDuotY/vZVMFZWiUaQVPkqReO2Dwz6XWNsQtI5F5omzCdxpf60/MHVVDA/A1qcZI+a1Xj+ipeFYUalyzXkK5rUKXaAZtlcfY7muB2a0R+m+M0IDfEW99Fj0r0xC9ncQ5QZxoMxWBEjMhkNRXPt1YikazW7TKA43FGxow2K0PGSzZjeffQ+RgAcsnIp4+BEJBdpQK1zE4MHmlhgZ/WJPFi43qUZX0vL51H2dae8hlPHKcjogRTlecqsqhjSYujN46pKgbZ849S5negxD+yoFN1HAn9hjcban05Wz0n8SdK9eevySMrbobjBWvSKb+ZMNYLVD8UwAatsYm+5+tzgZEdxO6OOatf9Mx8/g5+/Q8F6Z859doJDTJ2oZptzvQjbVfhPw0+Hv777s6kzbUydnBxaDxQh+X95RCFcDXHurOhS+sch65hmJqkjR5IsoEmiukpsZNeHfBwmZq7KpqUE74nbTcSwfxLZvP1Wzd+1Hc0Qrq0IPQQsgdgUlgdeEZPZ7SciSXE2em++/9BnU36rFKOimEp/DQokD/1e0qsZG5FkFIifpgc9ghpROWkUMHj5sAuhq6lbs8RADc7ErAjKIppfJBMJzYu+RiTvyvxfLm0bxVQsl9ONXgfMqvJk2+Nliu8tkotPgz9SMEztVkS4kinhDrnjhF0LPZoBeJEPHVM/k1g7A4i1kEEevvJJdnmaLQ8JKNTKMFqPryQc2Tch8jDzUCEkxCrIiHVqLzHfUfGfeGx1sVLLoVjTUq2jY100+s9DCkEOsFemtxYduN32OR5rPBl2ruwqyhBnpPrEbCwSZySoZ+CK+PKdnTr6U1OQEAVvIdI/QjnqvYaoExUC2cu8whC+q/VlKk46P0DxPQHEmrlbvU2BTAlNfMBeReIJ1qKZ+Mw9rpeHbxOYi9F+zJ08COmcWqfaIeCBQxA3bnARzYBwFLbQCWBPiTTunLlZhHDl8BAaFb4qhaShjtAKaFILg1V/jJNi5uPOpazmhHCTgrQGN6BX8nQ=="
+          }
+        ],
+        "body": "<html><head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body><div dir=\"ltr\"><br clear=\"all\"><div><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><div><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><p class=\"MsoNormal\"><b><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Dean Arbel</span></b><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Staff Software Engineer, Content Team, Demisto</span><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"color:black;font-family:Arial,sans-serif;font-size:11pt\">Email:&nbsp;<a href=\"mailto:darbel@paloaltonetworks.com\" target=\"_blank\">darbel@paloaltonetworks.com</a></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Phone: &#43;972.54.7209916</span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\"><img src=\"https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png\" width=\"200\" height=\"56\"><br></span></p></div></div></div></div></div></div></div></div></div></div></div></div></body></html>",
+        "isRead": true,
+        "receivedBy": "testbox@demistodev.onmicrosoft.com",
+        "author": "darbel@paloaltonetworks.com",
+        "toRecipients": [
+          "testbox@demistodev.onmicrosoft.com"
+        ],
+        "mailbox": "testbox@demistodev.onmicrosoft.com"
+      }
+    ]
+  },
+  "ews-get-contacts": {
+    "Account.Email(val.Address == obj.originMailbox).EwsContacts": [
+      {
+        "itemClass": "IPM.Contact",
+        "subject": "Avishai Brandeis",
+        "sensitivity": "Normal",
+        "textBody": "\r\n\r\n",
+        "body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta name=\"Generator\" content=\"Microsoft Exchange Server\">\r\n<!-- converted from rtf -->\r\n<style><!-- .EmailQuote { margin-left: 1pt; padding-left: 4pt; border-left: #800000 2px solid; } --></style>\r\n</head>\r\n<body>\r\n<font face=\"Calibri\" size=\"2\"><span style=\"font-size:11pt;\">\r\n<div>&nbsp;</div>\r\n<div>&nbsp;</div>\r\n</span></font>\r\n</body>\r\n</html>\r\n",
+        "datetimeReceived": "2019-10-19T14:38:51Z",
+        "importance": "Normal",
+        "datetimeSent": "2019-10-19T14:38:51Z",
+        "datetimeCreated": "2019-10-19T14:38:53Z",
+        "culture": "en-US",
+        "lastModifiedName": "Avishai Brandeis",
+        "lastModifiedTime": "2019-10-19T14:42:54Z",
+        "webClientReadFormQueryString": "webClientReadFormQueryString",
+        "uniqueBody": "<html><body></body></html>",
+        "fileAs": "Brandeis, Avishai",
+        "fileAsMapping": "LastCommaFirst",
+        "displayName": "Avishai Brandeis",
+        "givenName": "Avishai",
+        "initials": "A.B.",
+        "jobTitle": "test",
+        "postalAddressIndex": "None",
+        "surname": "Brandeis",
+        "emailAddresses": [
+          "avishai@demistodev.onmicrosoft.com"
+        ],
+        "originMailbox": null
+      }
+    ]
+  },
+  "ews-get-items-from-folder": {
+    "EWS.Items(val.itemId === obj.itemId || (val.messageId && obj.messageId && val.messageId === obj.messageId))": [
+      {
+        "itemId": "itemId",
+        "datetimeCreated": "2020-05-24T12:05:22Z",
+        "datetimeReceived": "2020-05-24T12:05:23Z",
+        "datetimeSent": "2020-05-24T12:04:16Z",
+        "sender": "darbel@paloaltonetworks.com",
+        "hasAttachments": true,
+        "importance": "Normal",
+        "messageId": "messageId",
+        "lastModifiedTime": "2020-05-24T12:05:23Z",
+        "size": 96501,
+        "subject": "second fetch",
+        "textBody": "\r\nDean Arbel\r\nStaff Software Engineer, Content Team, Demisto\r\nEmail: darbel@paloaltonetworks.com<mailto:darbel@paloaltonetworks.com>\r\nPhone: +972.54.7209916\r\n[https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png]\r\n",
+        "headers": [
+          {
+            "name": "Received",
+            "value": "from AM6PR07MB5256.eurprd07.prod.outlook.com (2603:10a6:20b:2e::32) by AM5PR0701MB2388.eurprd07.prod.outlook.com with HTTPS via AM6PR05CA0019.EURPRD05.PROD.OUTLOOK.COM; Sun, 24 May 2020 12:05:22 +0000"
+          },
+          {
+            "name": "Received",
+            "value": "from DB7PR03CA0105.eurprd03.prod.outlook.com (2603:10a6:10:72::46) by AM6PR07MB5256.eurprd07.prod.outlook.com (2603:10a6:20b:6c::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.8; Sun, 24 May 2020 12:05:21 +0000"
+          },
+          {
+            "name": "Received",
+            "value": "from DB5EUR01FT016.eop-EUR01.prod.protection.outlook.com (2603:10a6:10:72:cafe::cb) by DB7PR03CA0105.outlook.office365.com (2603:10a6:10:72::46) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.26 via Frontend Transport; Sun, 24 May 2020 12:05:21 +0000"
+          },
+          {
+            "name": "Received",
+            "value": "from mx0b-00169c01.pphosted.com (67.231.156.123) by DB5EUR01FT016.mail.protection.outlook.com (10.152.4.255) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Sun, 24 May 2020 12:05:20 +0000"
+          },
+          {
+            "name": "Received",
+            "value": "from pps.filterd (m0048188.ppops.net [127.0.0.1])\tby mx0b-00169c01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04OC5DAh017336\tfor <testbox@demistodev.onmicrosoft.com>; Sun, 24 May 2020 05:05:20 -0700"
+          },
+          {
+            "name": "Received",
+            "value": "from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])\tby mx0b-00169c01.pphosted.com with ESMTP id 316ygbt5we-1\t(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)\tfor <testbox@demistodev.onmicrosoft.com>; Sun, 24 May 2020 05:05:19 -0700"
+          },
+          {
+            "name": "Received",
+            "value": "by mail-oo1-f69.google.com with SMTP id z190so8178136ooa.19        for <testbox@demistodev.onmicrosoft.com>; Sun, 24 May 2020 05:05:19 -0700 (PDT)"
+          },
+          {
+            "name": "Authentication-Results",
+            "value": "spf=pass (sender IP is 67.231.156.123) smtp.mailfrom=paloaltonetworks.com; demistodev.onmicrosoft.com; dkim=pass (signature was verified) header.d=paloaltonetworks.com;demistodev.onmicrosoft.com; dmarc=pass action=none header.from=paloaltonetworks.com;compauth=pass reason=100"
+          },
+          {
+            "name": "Received-SPF",
+            "value": "Pass (protection.outlook.com: domain of paloaltonetworks.com designates 67.231.156.123 as permitted sender) receiver=protection.outlook.com; client-ip=67.231.156.123; helo=mx0b-00169c01.pphosted.com;"
+          },
+          {
+            "name": "DKIM-Signature",
+            "value": "v=1; a=rsa-sha256; c=relaxed/relaxed; d=paloaltonetworks.com; h=mime-version : from : date : message-id : subject : to : content-type; s=PPS12012017; bh=oKMkuNMg4AOkAcDm/TJAqh+DBFvZo76l5u80led3OuQ=; b=nX2L66T91eUzH+H2NOmbtH7OvFR8SPAkHv3HkC9nIgHkHBhP+0y75T9tnswbcngJ1YH4 1t1GpME1af9yXTZvlHZ33aP446gH2cai/OSYh0AyMmSJ/gcMKnfvvYB55IOofGm29UVB UQax0+RRUdAsplVfjOKp90w9ZOMC3iMfs7DNLzc3mYuwfzmDgqaoxdW9LYsva+D47Jh6 PUIvNaQtJ5gnBTRM3dS/HOj8/8qOtk1BFiQrlfSdrUlyf/YW1zA7Rgjr9camjFpRO/ug +ohq7uxL1XBbuQGGHHATOIcT1/Utb130VABe5NMOhaSaaMv6SUw4D9CMzThKJMmPwKT3 Og== "
+          },
+          {
+            "name": "DKIM-Signature",
+            "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=paloaltonetworks-com.20150623.gappssmtp.com; s=20150623;        h=mime-version:from:date:message-id:subject:to;        bh=oKMkuNMg4AOkAcDm/TJAqh+DBFvZo76l5u80led3OuQ=;        b=zhHz86wU6AlPStMpUoctv8sqwn6RPVSqTXUR4l2o47CTg3JTG8Zzg8zPx+SEJ7TCQo         2P4XzUOgy8FwjlMmKub6YRb0MRKSV//MArs1rRpuprvEk7cPVddvVhNlq39Z2G9g0bkC         I8V0yHNkK0g1PnCi16K+zkEvIniGu9Z4XTc+Gtrqte33NyrcIcQHaSDIt+rx6FA3wjqq         DCuLh+QLLLLZQ0blCMIrUQndZKtqgy8TKvxAAE6lA+o4MrqKQCSNWLR8It8lfD1/kACi         56u8993bfz+ygncyZKoJnvOnN1xYMwtjReMrTGPE7DQaV9dT/8OnZMalAoPpgZJsV2c4         pnYA=="
+          },
+          {
+            "name": "X-Google-DKIM-Signature",
+            "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20161025;        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;        bh=oKMkuNMg4AOkAcDm/TJAqh+DBFvZo76l5u80led3OuQ=;        b=mqyRLna0nlMpWHgCGcSnUQQJwYwLGfVLcsefOEwHpNFCALI2axWh/g2R/bNNSnCbht         YKPRSfwjnnMV7R29v+URpaFsfUIYGtvktYyA/Gpgk6UBpoqOvOTgziFxPDptPjXFUXqH         3tF5zK6Httt2C4hv3uJ7szNY2bnu21966L4Oq0OAJDJpJWt116ebwVyrtH8L95a0a+WK         ymjTh7VFrWgSxvtuFGBIkpdEgbcz4Nwf6LmZ3d9QkDM4V3BE1LLdQyMr54BqesB2ZwW5         TQZ3Sy1PjbA3oAc7ClajCyuHk9vJ2TonYimF2EBsopDxrrB2x4ZC45bnllRswFsvPXJm         u/AA=="
+          },
+          {
+            "name": "X-Gm-Message-State",
+            "value": "AOAM530mhUfg9mbd/vLieicJ0PorcrLLS01V62u9nuJ96XD4gPIwHiF2\tE65GOXDh+NjlrqQTRpFCeU1EwMrkJPlRkRa+Zdb6YDwfg7T9ZRmi48TeVHS45ws3UeofplUK/H+\t/BwKWU0i7NmgwdJty+kdaAdKXVfABBAKyQ0a0FKYDv7Yeqjnt"
+          },
+          {
+            "name": "X-Received",
+            "value": "by 2002:a05:6808:106:: with SMTP id b6mr8634827oie.142.1590321918013;        Sun, 24 May 2020 05:05:18 -0700 (PDT)"
+          },
+          {
+            "name": "X-Received",
+            "value": "by 2002:a05:6808:106:: with SMTP id b6mr8634794oie.142.1590321917402; Sun, 24 May 2020 05:05:17 -0700 (PDT)"
+          },
+          {
+            "name": "X-Google-Smtp-Source",
+            "value": "ABdhPJyd3hDsiXnVW3uD+Am05+DCdgZ5nYUWSas3oQpGK7s6UXHxeEiBT58TFD7hfNvVejB0M8kUPg29m+om6RSsjAA="
+          },
+          {
+            "name": "MIME-Version",
+            "value": "1.0"
+          },
+          {
+            "name": "Date",
+            "value": "Sun, 24 May 2020 15:04:16 +0300"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<CALOVw6uFpJ2pBoehvve4TwavOUe0BY-KRXnDkwbBh2hKEyQeYg@mail.gmail.com>"
+          },
+          {
+            "name": "Subject",
+            "value": "second fetch"
+          },
+          {
+            "name": "Content-Type",
+            "value": "multipart/mixed"
+          },
+          {
+            "name": "X-Proofpoint-Virus-Version",
+            "value": "vendor=fsecure engine=2.50.10434:6.0.216,18.0.676 definitions=2020-05-24_02:2020-05-22,2020-05-24 signatures=0"
+          },
+          {
+            "name": "X-Proofpoint-Spam-Details",
+            "value": "rule=outbound_spam_notspam policy=outbound_spam score=0 malwarescore=0 bulkscore=0 priorityscore=1501 spamscore=0 mlxscore=0 suspectscore=0 mlxlogscore=479 lowpriorityscore=0 adultscore=0 phishscore=0 impostorscore=0 cotscore=-2147483648 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000 definitions=main-2005240103"
+          },
+          {
+            "name": "Return-Path",
+            "value": "darbel@paloaltonetworks.com"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-ExpirationStartTime",
+            "value": "24 May 2020 12:05:21.3150 (UTC)"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-ExpirationStartTimeReason",
+            "value": "OriginalSubmit"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-ExpirationInterval",
+            "value": "1:00:00:00.0000000"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-ExpirationIntervalReason",
+            "value": "OriginalSubmit"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-Network-Message-Id",
+            "value": "04736eb5-a8f0-4eca-aa89-08d7ffdabbb1"
+          },
+          {
+            "name": "X-EOPAttributedMessage",
+            "value": "0"
+          },
+          {
+            "name": "X-EOPTenantAttributedMessage",
+            "value": "ebac1a16-81bf-449b-8d43-5732c3c1d999:0"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-MessageDirectionality",
+            "value": "Incoming"
+          },
+          {
+            "name": "X-Forefront-Antispam-Report",
+            "value": "CIP:67.231.156.123;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mx0b-00169c01.pphosted.com;PTR:mx0b-00169c01.pphosted.com;CAT:NONE;SFTY:;SFS:(4636009)(336012)(564344004)(55446002)(356005)(5660300002)(8676002)(2160300002)(3480700007)(1096003)(42186006)(7596003)(26005)(33964004)(6666004)(86362001)(7636003)(9686003)(6916009)(7116003);DIR:INB;SFP:;"
+          },
+          {
+            "name": "X-MS-PublicTrafficType",
+            "value": "Email"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthSource",
+            "value": "DB5EUR01FT016.eop-EUR01.prod.protection.outlook.com"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-AuthAs",
+            "value": "Anonymous"
+          },
+          {
+            "name": "X-MS-Office365-Filtering-Correlation-Id",
+            "value": "04736eb5-a8f0-4eca-aa89-08d7ffdabbb1"
+          },
+          {
+            "name": "X-MS-TrafficTypeDiagnostic",
+            "value": "AM6PR07MB5256:"
+          },
+          {
+            "name": "X-MS-Exchange-AtpMessageProperties",
+            "value": "SA"
+          },
+          {
+            "name": "X-MS-Oob-TLC-OOBClassifiers",
+            "value": "OLM:1728;"
+          },
+          {
+            "name": "X-MS-Exchange-Organization-SCL",
+            "value": "1"
+          },
+          {
+            "name": "X-Microsoft-Antispam",
+            "value": "BCL:0;"
+          },
+          {
+            "name": "X-MS-Exchange-CrossTenant-OriginalArrivalTime",
+            "value": "24 May 2020 12:05:20.9502 (UTC)"
+          },
+          {
+            "name": "X-MS-Exchange-CrossTenant-Network-Message-Id",
+            "value": "04736eb5-a8f0-4eca-aa89-08d7ffdabbb1"
+          },
+          {
+            "name": "X-MS-Exchange-CrossTenant-Id",
+            "value": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+          },
+          {
+            "name": "X-MS-Exchange-CrossTenant-FromEntityHeader",
+            "value": "Internet"
+          },
+          {
+            "name": "X-MS-Exchange-Transport-CrossTenantHeadersStamped",
+            "value": "AM6PR07MB5256"
+          },
+          {
+            "name": "X-MS-Exchange-Transport-EndToEndLatency",
+            "value": "00:00:01.7736787"
+          },
+          {
+            "name": "X-MS-Exchange-Processed-By-BccFoldering",
+            "value": "15.20.3045.009"
+          },
+          {
+            "name": "X-Microsoft-Antispam-Mailbox-Delivery",
+            "value": "ucf:0;jmr:0;auth:0;dest:I;ENG:(20160514016)(750128)(520011016)(944506383)(944626604);"
+          },
+          {
+            "name": "X-Microsoft-Antispam-Message-Info",
+            "value": "8W3SISohCZB2jQsUVcqhQbQIXqqgocGxEoacfDww85zYoebJ4CFEHyfPsjUv+LWjYSozYrGJD2/XqethtTTJJW6GWACydYyIZsou4z883d0qB1DF7GfQQfgrAupBUcIj89jZALyqlQso/er4YUyuYWcW+5pUomBty6xvEErGMJYS7fxrR/7/Yt5pUoh8ZA77zrvssAXTcVkTw3kQwzzVYyvNwbAf0v4gKAoDzFaxij+5Agi89r8g9TTgz/V2b5uozJjCaJGdF8OOTEuZynKMlIv1PvIMBbZk+ODD3N+BfGPgIrRGtzDh8+mq95cFJL88feiiZk6WzkEDdmKa2UdxnZ/WWHIqUtqpukSXt7V7jxpl49ZxSU0gKeZ7O9SKBRsMtLtsCyg2lSr49/pZhIh08i0cQ05etP6iRnfI3LZyOMLKrb/MklGtS0YpnYO6fLUpUDcXZOaHkdnN5G981RHyh0SX5fZlApq90HPhgSWtNVC2Oa3P4v033t8YWR0w7SiQu4F1rYG6f0b7P7AlKLfBnNNhN7LFFEbJ6Dx/3TXZSm6Ayxmh2McwOGGTnBOBnJ5uBSXFtn7SZ83I13G1IK7YvSH0E4OpvNsZR/IlBmypFSZu9d/6/fO4IIDbn0xtGeFz0mw0gRQEKkoqYWjFNQAUQUKUoDJRV4zbBKaQrzoCHlEzcWaLURomBTq4DToNt6CC6mEqEy2//FDOAqmUgmkscmJyUYRWGvuH/rWL40IYzwULxK+sUxj7wyv2zYMFiRE0rygZn417GM9tNG1IKdxV+70QMLaNu/d2POwIEdth+yUMnnP9PCDoaQlwhIYSUlaVJM7LBHXatKf5wpu/SQQdkq5GAf6bXjowjBdrxSZqAxuI1hoCjhx4FipRCfseqyhKqBcBSKTH4fh3+xGbarFdcWnklgvya4m6ydpbg5yyXQclOOcB1hjuLL5P9/UM1jI/4EPYRHPfzC2hhO+Ncn3mznUJSuJksNz9Yw13wHynU509CyTRBbLNRxwnCzrrpYjTROeOWgP1SfhaoX5q+JPDbXeuPK+oYyXzVZeLuOuBt15euPvxeNR0Sqnhc+sQy8BRhBZcTfcKbS4RZ/tFTrmsknkaGp3wXycjVdYRGgNWv5iRBMXtpHHYly9BRqY2FXNE2F4B5Xx75VLtBQfyWaIORB7nI/tG0AbriXC/mFfE/us="
+          }
+        ],
+        "body": "<html><head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body><div dir=\"ltr\"><br clear=\"all\"><div><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><div><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><p class=\"MsoNormal\"><b><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Dean Arbel</span></b><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Staff Software Engineer, Content Team, Demisto</span><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"color:black;font-family:Arial,sans-serif;font-size:11pt\">Email:&nbsp;<a href=\"mailto:darbel@paloaltonetworks.com\" target=\"_blank\">darbel@paloaltonetworks.com</a></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Phone: &#43;972.54.7209916</span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\"><img src=\"https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png\" width=\"200\" height=\"56\"><br></span></p></div></div></div></div></div></div></div></div></div></div></div></div></body></html>",
+        "isRead": false,
+        "receivedBy": "testbox@demistodev.onmicrosoft.com",
+        "author": "darbel@paloaltonetworks.com",
+        "toRecipients": [
+          "testbox@demistodev.onmicrosoft.com"
+        ],
+        "FileAttachments": [
+          {
+            "originalItemId": "originalItemId",
+            "attachmentId": "attachmentId",
+            "attachmentName": "anar (1).jpeg",
+            "attachmentSHA256": "afc8f82063b4985b57292f07682c3010eef0d3cf3132482d418ad47df2993cca",
+            "attachmentContentType": "image/jpeg",
+            "attachmentContentId": "f_kal0kd8h0",
+            "attachmentContentLocation": null,
+            "attachmentSize": 31555,
+            "attachmentLastModifiedTime": "2020-05-24T15:05:22+03:00",
+            "attachmentIsInline": false,
+            "attachmentType": "FileAttachment"
+          }
+        ],
+        "mailbox": "testbox@demistodev.onmicrosoft.com"
+      }
+    ]
+  },
+  "ews-expand-group": {
+    "EWS.ExpandGroup": {
+      "name": "testgroup-1@demistodev.onmicrosoft.com",
+      "members": [
+        {
+          "mailbox": "avishai@demistodev.onmicrosoft.com",
+          "displayName": "Avishai Brandeis",
+          "mailboxType": "Mailbox"
+        },
+        {
+          "mailbox": "testbox@demistodev.onmicrosoft.com",
+          "displayName": "test box",
+          "mailboxType": "Mailbox"
+        }
+      ]
+    }
+  }
+}

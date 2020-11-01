@@ -1,0 +1,11 @@
+{
+  "id": "UsersOnCall",
+  "name": "Users On-Call",
+  "dataType": "scripts",
+  "widgetType": "text",
+  "query": "GetUsersOnCall",
+  "version": -1,
+  "description": "Details of the users that are currently on-call",
+  "isPredefined": true,
+  "fromVersion": "5.5.0"
+}

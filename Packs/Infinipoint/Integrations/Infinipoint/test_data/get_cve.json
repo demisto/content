@@ -1,0 +1,96 @@
+{
+  "campaign_intelligence": [
+    {
+      "apt": "Publicly Available Exploit",
+      "description": "SMBLost Remote Kernel Memory Read POC (Author: Unknown)",
+      "targeted_countries": [
+        ""
+      ],
+      "targeted_industries": [
+        ""
+      ]
+    }
+  ],
+  "cve_description": "A remote code execution vulnerability exists in the way that the Microsoft Server Message Block 1.0 (SMBv1) server handles certain requests, aka Windows SMB Remote Code Execution Vulnerability.",
+  "cve_dynamic_data": {
+    "base_metric_v2": {
+      "ac_insuf_info": "False",
+      "access_vector": "NETWORK",
+      "attack_complexity": "LOW",
+      "authentication": "SINGLE",
+      "availability_impact": "PARTIAL",
+      "base_score": "6.5",
+      "confidentiality_impact": "PARTIAL",
+      "exploitability_score": "8.0",
+      "impact_score": "6.4",
+      "integrity_impact": "PARTIAL",
+      "obtain_all_privilege": "False",
+      "obtain_other_privilege": "False",
+      "obtain_user_privilege": "False",
+      "severity": "MEDIUM",
+      "user_interaction_required": "False",
+      "vector_string": "AV:N/AC:L/Au:S/C:P/I:P/A:P"
+    },
+    "base_metric_v3": {
+      "attack_complexity": "LOW",
+      "attack_vector": "NETWORK",
+      "availability_impact": "HIGH",
+      "base_score": "8.8",
+      "base_severity": "HIGH",
+      "confidentiality_impact": "HIGH",
+      "exploitability_score": "2.8",
+      "impact_score": "5.9",
+      "integrity_impact": "HIGH",
+      "privileges_required": "LOW",
+      "scope": "UNCHANGED",
+      "user_interaction": "NONE",
+      "vector_string": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+    },
+    "infinipoint_base_metric": {
+      "attack_complexity": "6.03",
+      "campaigns": 1,
+      "device_count": 1,
+      "exploitability_risk": "8.0",
+      "exploits": 1,
+      "risk_label": "High",
+      "risk_level": 6.03,
+      "risk_type": 3,
+      "trends_level": "3.06"
+    }
+  },
+  "cve_id": "CVE-2020-1301",
+  "cwe_description": "None",
+  "cwe_id": "NVD-CWE-noinfo",
+  "devices": [
+    {
+      "$device": "22ddf738-7e1c-4f20-a9c7-07620d1f2110",
+      "device_name_string": "DESKTOP-U0QSLQ8",
+      "device_os": "Microsoft Windows 10 Enterprise Evaluation",
+      "device_risk": 6.03,
+      "is_managed": true,
+      "map_id": "22ddf738-7e1c-4f20-a9c7-07620d1f2110CVE-2020-1301",
+      "vulnerableProduct": "Microsoft Windows 10 Enterprise Evaluation",
+      "vulnerableVersion": "10.0.17763.1282"
+    }
+  ],
+  "scan_date": null,
+  "software_list": [
+    {
+      "cpe_name_string": "Microsoft Windows 10 Enterprise Evaluation 17763",
+      "cpe_strings": [],
+      "cpe_type": "OS_ONLY"
+    }
+  ],
+  "top_devices": [
+    {
+      "$device": "22ddf738-7e1c-4f20-a9c7-07620d1f2110",
+      "device_name_string": "DESKTOP-U0QSLQ8",
+      "device_os": "Microsoft Windows 10 Enterprise Evaluation",
+      "device_risk": 6.03,
+      "is_managed": true,
+      "map_id": "22ddf738-7e1c-4f20-a9c7-07620d1f2110CVE-2020-1301",
+      "vulnerableProduct": "Microsoft Windows 10 Enterprise Evaluation",
+      "vulnerableVersion": "10.0.17763.1282"
+    }
+  ]
+}

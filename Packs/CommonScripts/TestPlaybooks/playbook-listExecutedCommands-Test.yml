@@ -1,0 +1,303 @@
+id: listExecutedCommands-Test
+version: -1
+name: listExecutedCommands-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8cef38ca-8ef8-478b-89f2-9d1d2cac5aad
+    type: start
+    task:
+      id: 8cef38ca-8ef8-478b-89f2-9d1d2cac5aad
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8a4a1e56-afd9-4ec3-8802-1030eddc814b
+    type: regular
+    task:
+      id: 8a4a1e56-afd9-4ec3-8802-1030eddc814b
+      version: -1
+      name: Print Hello World
+      description: Prints text to war room (Markdown supprted)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: Hello World
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 054f3ec5-2acb-4773-8a55-fce4757234bd
+    type: regular
+    task:
+      id: 054f3ec5-2acb-4773-8a55-fce4757234bd
+      version: -1
+      name: Get list of manual commands
+      scriptName: listExecutedCommands
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      source:
+        simple: Manual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 96fa6799-1ad0-48a0-8218-409ffd58a729
+    type: regular
+    task:
+      id: 96fa6799-1ad0-48a0-8218-409ffd58a729
+      version: -1
+      name: Save response to context
+      description: "Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. \nFor accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      contextKey:
+        simple: noData
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+      listSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4790839a-0c67-428b-87b4-3832b6126e0b
+    type: condition
+    task:
+      id: 4790839a-0c67-428b-87b4-3832b6126e0b
+      version: -1
+      name: Check that we didn't get any commands
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      left:
+        simple: ${noData=val.trim()}
+      right:
+        simple: No commands found
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 71594c4a-8f49-46c4-84ff-2b46cbfa6277
+    type: regular
+    task:
+      id: 71594c4a-8f49-46c4-84ff-2b46cbfa6277
+      version: -1
+      name: Get playbook commands
+      scriptName: listExecutedCommands
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      source:
+        simple: Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 79f3ae5c-f55d-4c61-83ec-9d64075eebda
+    type: regular
+    task:
+      id: 79f3ae5c-f55d-4c61-83ec-9d64075eebda
+      version: -1
+      name: Save response to context
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      contextKey:
+        simple: withData
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+      listSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: d9feb548-f773-40cc-8bca-fd87ec8187db
+    type: condition
+    task:
+      id: d9feb548-f773-40cc-8bca-fd87ec8187db
+      version: -1
+      name: Check that we got commands
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "8"
+    scriptarguments:
+      left:
+        simple: ${withData=val.trim()}
+      right:
+        simple: No commands found
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: eaa2c7f0-ad0f-40b2-81ed-466ec3f35474
+    type: title
+    task:
+      id: eaa2c7f0-ad0f-40b2-81ed-466ec3f35474
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

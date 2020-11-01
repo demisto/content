@@ -1,0 +1,20 @@
+{
+ "id": "text-placeholder",
+ "dataType": "incidents",
+ "name": "Text Widget",
+ "dateRange": {
+  "period": {
+   "byFrom": "days",
+   "fromValue": null
+  }
+ },
+ "isPredefined": true,
+ "version": -1,
+ "category": "utility",
+ "widgetType": "text",
+ "params": {
+  "text": "Place your text here.."
+ },
+ "description": "",
+ "fromVersion": "5.0.0"
+}

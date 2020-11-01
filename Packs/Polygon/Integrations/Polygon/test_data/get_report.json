@@ -1,0 +1,297 @@
+{
+    "goo_monitor": {
+        "processes": [
+            {
+                "stdout": [],
+                "basename": "wscript.exe",
+                "files_renamed": [],
+                "pid": "972",
+                "cmdline": "\"C:\\Users\\John\\AppData\\Local\\Temp\\tmps8zsgu\\\u011e\u009f\u011e\u0090\u011e\u009e \u00c2\u00ab\u011e\u0093\u00d1\u0080\u00d1\u0083\u011e\u00bf\u011e\u00bf\u011e\u00b0 \u011e\u009a\u011e\u00be\u011e\u00bc\u011e\u00bf\u011e\u00b0\u011e\u00bd\u011e\u00b8\u011e\u00b9 \u011e\u009f\u011e\u0098\u011e\u009a\u00c2\u00bb \u011e\u00bf\u011e\u00be\u011e\u00b4\u00d1\u0080\u011e\u00be\u011e\u00b1\u011e\u00bd\u011e\u00be\u00d1\u0081\u00d1\u0082\u011e\u00b8 \u011e\u00b7\u011e\u00b0\u011e\u00ba\u011e\u00b0\u011e\u00b7\u011e\u00b0.js\"",
+                "files_deleted": [],
+                "started_at": 132343803741562500,
+                "id": 1,
+                "buffers": [],
+                "filename": "C:\\Windows\\System32\\wscript.exe",
+                "parent_id": 0,
+                "is_initial": true,
+                "exited_at": 132343804138750000,
+                "files": [],
+                "regkeys": [
+                    {
+                        "action": "regkey_written",
+                        "ioc": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Tracing\\wscript_RASAPI32\\EnableFileTracing",
+                        "type": "REG_DWORD",
+                        "value": 0,
+                        "size": 4
+                    },
+                    {
+                        "action": "regkey_written",
+                        "ioc": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Tracing\\wscript_RASAPI32\\EnableConsoleTracing",
+                        "type": "REG_DWORD",
+                        "value": 0,
+                        "size": 4
+                    }
+                ],
+                "started": true,
+                "is_unnecessary": false,
+                "mutexes": [
+                    "Local\\ZonesCacheCounterMutex",
+                    "Local\\_!MSFTHISTORY!_",
+                    "Local\\WininetConnectionMutex",
+                    "RasPbFile",
+                    "Local\\c:!users!john!appdata!local!microsoft!windows!history!history.ie5!",
+                    "Local\\c:!users!john!appdata!roaming!microsoft!windows!ietldcache!",
+                    "Local\\ZoneAttributeCacheCounterMutex",
+                    "Local\\ZonesLockedCacheCounterMutex",
+                    "Local\\ZonesCounterMutex",
+                    "IESQMMUTEX_0_208",
+                    "Local\\c:!users!john!appdata!local!microsoft!windows!temporary internet files!content.ie5!",
+                    "Local\\WininetStartupMutex",
+                    "Local\\c:!users!john!appdata!roaming!microsoft!windows!cookies!",
+                    "Local\\WininetProxyRegistryMutex",
+                    "Local\\!IETld!Mutex"
+                ],
+                "integrity_levels": [
+                    "0x00003000"
+                ],
+                "event_count": 3168,
+                "files_written": [],
+                "is_dropped": false,
+                "dumps": [],
+                "stderr": [],
+                "exited": true
+            },
+            {
+                "stdout": [],
+                "basename": "(null)",
+                "files_renamed": [],
+                "pid": "4",
+                "cmdline": "",
+                "files_deleted": [],
+                "started_at": null,
+                "id": 2,
+                "buffers": [],
+                "filename": "(null)",
+                "parent_id": null,
+                "is_initial": false,
+                "exited_at": null,
+                "files": [],
+                "regkeys": [],
+                "started": false,
+                "is_unnecessary": true,
+                "mutexes": [],
+                "integrity_levels": [],
+                "event_count": 1707,
+                "files_written": [],
+                "is_dropped": false,
+                "dumps": [],
+                "stderr": [],
+                "exited": false
+            }
+        ]
+    },
+    "info": {
+        "ended": "2020-05-19 09:48:27",
+        "families": [],
+        "meta": {
+            "filename": "url.txt"
+        },
+        "probability": 68.0,
+        "score": 24.0,
+        "started": "2020-05-19 09:46:15",
+        "verdict": true,
+        "internet_available": true
+    },
+    "network": {
+        "dns": [
+            {
+                "request": "svettenkirch.de",
+                "type": "null",
+                "answers": [
+                    {
+                        "type": "A",
+                        "data": "217.114.216.252"
+                    }
+                ]
+            },
+            {
+                "request": "super.esu.as",
+                "type": "null",
+                "answers": [
+                    {
+                        "type": "A",
+                        "data": "79.98.29.14"
+                    }
+                ]
+            }
+        ],
+        "ftp": [],
+        "hosts": [
+            "8.8.8.8",
+            "79.98.29.14",
+            "217.114.216.252"
+        ],
+        "http": [
+            {
+                "count": 1,
+                "body": "",
+                "uri": "http://super.esu.as/wp-content/themes/twentyeleven/inc/images/msg.jpg",
+                "user-agent": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)",
+                "port": 80,
+                "host": "super.esu.as",
+                "version": "1.1",
+                "path": "/wp-content/themes/twentyeleven/inc/images/msg.jpg",
+                "data": "GET /wp-content/themes/twentyeleven/inc/images/msg.jpg HTTP/1.1\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)\r\nHost: super.esu.as\r\nConnection: Keep-Alive\r\n\r\n",
+                "method": "GET"
+            }
+        ],
+        "icmp": [],
+        "irc": [],
+        "smtp": [],
+        "tcp": [],
+        "udp": [],
+        "dead_hosts": [
+            [
+                "217.114.216.252",
+                443
+            ]
+        ]
+    },
+    "packages": [
+        {
+            "shell": false,
+            "success": false,
+            "package": "TextFile",
+            "args": [],
+            "file_info": {
+                "yara": [],
+                "sha1": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
+                "name": "url.txt",
+                "av": [
+                    {}
+                ],
+                "path": "/ssd/storage/tmp/upload_7o7qXg/url.txt",
+                "ssdeep": "3:N1KMULqn:CMULq",
+                "sha256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
+                "type": "ASCII text, with no line terminators",
+                "md5": "9b52c8a74353d82ef1ebca42c9a7358c",
+                "size": 23
+            },
+            "reason": null,
+            "summary": {
+                "files": [],
+                "workdir": null,
+                "text": "http://reqw.xyz/pik.zip",
+                "filename": "url.txt",
+                "references": {
+                    "hyperlinks": [
+                        "http://reqw.xyz/pik.zip"
+                    ]
+                },
+                "sanitized_filename": "url.txt",
+                "tempdir": "/ssd/storage/analyses/24442847/tmp/tmpIFuwfg"
+            },
+            "guest_path": "C:\\Users\\John\\AppData\\Local\\Temp\\tmpjpice2\\url.txt",
+            "application": "Notepad",
+            "is_executable": false,
+            "parent_id": null,
+            "id": 0
+        },
+        {
+            "shell": false,
+            "success": false,
+            "package": "References",
+            "args": [],
+            "file_info": {
+                "yara": [],
+                "sha1": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
+                "name": "tmpwDwvW_",
+                "av": [
+                    {}
+                ],
+                "path": "/ssd/storage/analyses/24442847/tmp/tmpIFuwfg/tmpwDwvW_",
+                "ssdeep": "3:N1KMULqn:CMULq",
+                "sha256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
+                "type": "ASCII text, with no line terminators",
+                "md5": "9b52c8a74353d82ef1ebca42c9a7358c",
+                "size": 23
+            },
+            "reason": null,
+            "summary": {
+                "files": [
+                    {
+                        "yara": [],
+                        "sha1": "3a29353e30ddd1af92f07ee0f61a3a706ee09a64",
+                        "name": "pik.zip",
+                        "av": [
+                            {
+                                "meta": {
+                                    "severity": 50
+                                },
+                                "name": "JS:Trojan.Agent.DQBF"
+                            }
+                        ],
+                        "path": "/ssd/storage/analyses/24442847/tmp/tmps712L8/3a29353e30ddd1af92f07ee0f61a3a706ee09a64/pik.zip",
+                        "ssdeep": "48:9Hf3ckjDcDXJDOzUmZsPVqQwbw6fXLh45DhPrrFzbf5IEXMUiednJRL2pjHP3jrb:xlcDXlgUMlbgDhT9Cm+ALgjfjrtLLB",
+                        "sha256": "c296d2895ac541ba16a237b2ad344b28e803b6990b7713c4c73faa9f722cf9fc",
+                        "type": "Zip archive data, at least v2.0 to extract",
+                        "md5": "3641c180f1a2c3f41fb1d974687e3553",
+                        "size": 3684
+                    }
+                ],
+                "workdir": null,
+                "filename": "url.txt",
+                "references": [
+                    {
+                        "url": "http://reqw.xyz/pik.zip",
+                        "download": {
+                            "status": "success",
+                            "reason": "only_one",
+                            "sha1": "3a29353e30ddd1af92f07ee0f61a3a706ee09a64",
+                            "package": "zip"
+                        },
+                        "phishing": {},
+                        "text": null
+                    }
+                ],
+                "sanitized_filename": "url.txt",
+                "tempdir": "/ssd/storage/analyses/24442847/tmp/tmps712L8"
+            },
+            "guest_path": "C:\\Users\\John\\AppData\\Local\\Temp\\tmpjp1kge\\url.txt",
+            "application": null,
+            "is_executable": false,
+            "parent_id": 0,
+            "id": 1
+        }
+    ],
+    "performance": {},
+    "signatures": [
+        {
+            "description": "Static rules",
+            "displayed": true,
+            "marks": [
+                {
+                    "category": "rule",
+                    "ioc": "JS:Trojan.Agent.DQBF",
+                    "file": null,
+                    "drop": null,
+                    "info": null
+                }
+            ],
+            "name": "yara_rules",
+            "severity": 100,
+            "mitre": []
+        }
+    ],
+    "target": {
+        "file": {
+            "name": "url.txt",
+            "md5": "9b52c8a74353d82ef1ebca42c9a7358c",
+            "sha1": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
+            "sha256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
+            "size": 23,
+            "type": "ASCII text, with no line terminators"
+        }
+    },
+    "mitre": {}
+}

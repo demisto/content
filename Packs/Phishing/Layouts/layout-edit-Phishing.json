@@ -1,0 +1,296 @@
+{
+ "typeId": "Phishing",
+ "kind": "edit",
+ "layout": {
+  "id": "Phishing",
+  "version": -1,
+  "modified": "2018-04-11T11:36:52.796615032Z",
+  "name": "",
+  "sections": [
+   {
+    "id": "",
+    "version": -1,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Basic Information",
+    "type": "",
+    "isVisible": true,
+    "readOnly": false,
+    "fields": [
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_name",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_occurred",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_reminder",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_owner",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_roles",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_type",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_severity",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_playbookid",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_phase",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_details",
+      "isVisible": true
+     }
+    ],
+    "description": "",
+    "query": null,
+    "queryType": ""
+   },
+   {
+    "id": "",
+    "version": -1,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Email Fields",
+    "type": "",
+    "isVisible": true,
+    "readOnly": false,
+    "fields": [
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailto",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailcc",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailbcc",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailfrom",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailsenderip",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailsubject",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailreceived",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailtocount",
+      "isVisible": true
+     }
+    ],
+    "description": "",
+    "query": null,
+    "queryType": ""
+   },
+   {
+    "id": "",
+    "version": -1,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Email Attachment",
+    "type": "",
+    "isVisible": true,
+    "readOnly": false,
+    "fields": [
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_attachmentname",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_attachment",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_attachmenthash",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_attachmentcount",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_attachmentextension",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_attachmentid",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_attachmenttype",
+      "isVisible": true
+     }
+    ],
+    "description": "",
+    "query": null,
+    "queryType": ""
+   },
+   {
+    "id": "",
+    "version": -1,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Email Extended Fields",
+    "type": "",
+    "isVisible": true,
+    "readOnly": false,
+    "fields": [
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailmessageid",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailurlclicked",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailsize",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailsource",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailclientname",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailreturnpath",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": -1,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_emailreplyto",
+      "isVisible": true
+     }
+    ],
+    "description": "",
+    "query": null,
+    "queryType": ""
+   }
+  ],
+  "typeId": "Phishing"
+ },
+ "toVersion": "5.9.9",
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

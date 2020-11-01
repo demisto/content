@@ -1,0 +1,879 @@
+id: okta_test_playbook
+version: -1
+name: Okta test playbook
+description: Test the functionality of Okta
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c5042acb-6529-48df-8d74-7299f23aba58
+    type: start
+    task:
+      id: c5042acb-6529-48df-8d74-7299f23aba58
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 3918103c-ff9a-4cbb-8a89-0a774b77d03d
+    type: regular
+    task:
+      id: 3918103c-ff9a-4cbb-8a89-0a774b77d03d
+      version: -1
+      name: okta-get-group-assignments
+      description: Get events for when a user was added to a group.
+      script: '|||okta-get-group-assignments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      limit:
+        simple: "1"
+      since: {}
+      sortOrder: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 713285be-82a0-4c72-8a12-cb294596b311
+    type: regular
+    task:
+      id: 713285be-82a0-4c72-8a12-cb294596b311
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 730f6595-f217-49a9-8e7a-24a82153848a
+    type: regular
+    task:
+      id: 730f6595-f217-49a9-8e7a-24a82153848a
+      version: -1
+      name: okta-get-groups
+      description: Get all user groups
+      script: '|||okta-get-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      username:
+        simple: test@this.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 1d334229-0499-4ca4-8e02-a94e130874fa
+    type: condition
+    task:
+      id: 1d334229-0499-4ca4-8e02-a94e130874fa
+      version: -1
+      name: Group exists
+      description: Check if group exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Group.ID
+            iscontext: true
+          right:
+            value:
+              simple: 00g8mo0l5wuTxmoIC0h7
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 427e9cd2-bd00-45b0-8e5b-5e2b29010fa7
+    type: regular
+    task:
+      id: 427e9cd2-bd00-45b0-8e5b-5e2b29010fa7
+      version: -1
+      name: okta-remove-from-group
+      description: Removes a user from a group with OKTA_GROUP type.
+      script: '|||okta-remove-from-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      groupId:
+        simple: 00g8mo0l5wuTxmoIC0h7
+      groupName: {}
+      userId:
+        simple: ${Account.ID}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 77a355ba-75e1-4683-8f43-d829cfed84c4
+    type: regular
+    task:
+      id: 77a355ba-75e1-4683-8f43-d829cfed84c4
+      version: -1
+      name: okta-add-to-group
+      description: Adds a user to a group with OKTA_GROUP type.
+      script: '|||okta-add-to-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      groupId:
+        simple: 00g8mo0l5wuTxmoIC0h7
+      groupName: {}
+      userId:
+        simple: ${Account.ID}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: f68d9bce-5aeb-4a7f-87b7-04b0278d0e9a
+    type: regular
+    task:
+      id: f68d9bce-5aeb-4a7f-87b7-04b0278d0e9a
+      version: -1
+      name: okta-update-user
+      description: Update user with a given login, all fields are optional, fields which are not set will not be overriden
+      script: '|||okta-update-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      city: {}
+      costCenter: {}
+      countryCode: {}
+      department: {}
+      displayName:
+        simple: test1
+      division: {}
+      email: {}
+      employeeNumber: {}
+      firstName: {}
+      honorificPrefix: {}
+      honorificSuffix: {}
+      lastName: {}
+      locale: {}
+      manager: {}
+      managerId: {}
+      middleName: {}
+      mobilePhone: {}
+      nickName: {}
+      organization: {}
+      password: {}
+      passwordAnswer: {}
+      passwordQuestion: {}
+      postalAddress: {}
+      "preferredLanguage\t": {}
+      primaryPhone: {}
+      profileUrl: {}
+      providerName: {}
+      providerType: {}
+      secondEmail: {}
+      state: {}
+      streetAddress: {}
+      "timezone\t": {}
+      title: {}
+      userType: {}
+      username:
+        simple: test@this.com
+      zipCode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 8a3616b5-5822-4f2d-8e74-825d7bc6d61c
+    type: regular
+    task:
+      id: 8a3616b5-5822-4f2d-8e74-825d7bc6d61c
+      version: -1
+      name: okta-get-failed-logins
+      description: Get events for when Okta issued a session to a user who is authenticating and the user failed to log-in
+      script: '|||okta-get-failed-logins'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      limit:
+        simple: "1"
+      since: {}
+      sortOrder: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 6abfad4e-be1f-4424-85ef-aaef5f220ffa
+    type: regular
+    task:
+      id: 6abfad4e-be1f-4424-85ef-aaef5f220ffa
+      version: -1
+      name: okta-get-application-authentication
+      description: Get events for when a user attempted to SSO to an application managed in Okta
+      script: '|||okta-get-application-authentication'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      limit:
+        simple: "1"
+      since: {}
+      sortOrder: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 9a40c54f-1c79-40c7-8fc1-b29c195fa3fe
+    type: regular
+    task:
+      id: 9a40c54f-1c79-40c7-8fc1-b29c195fa3fe
+      version: -1
+      name: okta-get-application-assignments
+      description: Get events for when a user was assigned to an application.
+      script: '|||okta-get-application-assignments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      limit:
+        simple: "1"
+      since: {}
+      sortOrder: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 913d0982-6921-4136-8889-fc9ace543953
+    type: regular
+    task:
+      id: 913d0982-6921-4136-8889-fc9ace543953
+      version: -1
+      name: okta-remove-from-group
+      description: Removes a user from a group with OKTA_GROUP type.
+      script: '|||okta-remove-from-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      groupId: {}
+      groupName:
+        simple: test1
+      userId: {}
+      username:
+        simple: test@this.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: c1f0c686-75a5-48ca-8e3d-aea9801ad5b9
+    type: regular
+    task:
+      id: c1f0c686-75a5-48ca-8e3d-aea9801ad5b9
+      version: -1
+      name: okta-add-to-group with username
+      description: Adds a user to a group with OKTA_GROUP type.
+      script: '|||okta-add-to-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      groupId: {}
+      groupName:
+        simple: test1
+      userId: {}
+      username:
+        simple: test@this.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 33adffc5-95a9-4d73-897d-e138f246fdfd
+    type: regular
+    task:
+      id: 33adffc5-95a9-4d73-897d-e138f246fdfd
+      version: -1
+      name: okta-list-groups
+      description: Enumerates groups in your organization. A subset of groups can be returned that match a supported filter expression or query.
+      script: '|||okta-list-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      filter: {}
+      limit:
+        simple: "2"
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 8b2a54b5-9946-4435-87d8-da4a79dd593f
+    type: regular
+    task:
+      id: 8b2a54b5-9946-4435-87d8-da4a79dd593f
+      version: -1
+      name: okta-get-group-members
+      description: Enumerates all users that are members of a group
+      script: '|||okta-get-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      groupId: {}
+      groupName:
+        simple: test1
+      limit: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: dfdbd8c1-3754-4df4-8a44-25bd2f462c0b
+    type: regular
+    task:
+      id: dfdbd8c1-3754-4df4-8a44-25bd2f462c0b
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: e99e591b-1c45-4ffb-8efe-6d3adb5262c6
+    type: regular
+    task:
+      id: e99e591b-1c45-4ffb-8efe-6d3adb5262c6
+      version: -1
+      name: okta-suspend-user
+      description: Suspends a user.  This operation can only be performed on users with an ACTIVE status. The user has a status of SUSPENDED when the process is complete.
+      script: '|||okta-suspend-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      username:
+        simple: test@this.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: a0a73ef9-29f3-4308-8df1-675fa37623ba
+    type: regular
+    task:
+      id: a0a73ef9-29f3-4308-8df1-675fa37623ba
+      version: -1
+      name: okta-unsuspend-user
+      description: Unsuspends a user and returns them to the ACTIVE state.  This operation can only be performed on users that have a SUSPENDED status.
+      script: '|||okta-unsuspend-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      username:
+        simple: test@this.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: ee546774-1b53-4c93-8923-db377114859a
+    type: regular
+    task:
+      id: ee546774-1b53-4c93-8923-db377114859a
+      version: -1
+      name: okta-get-user-factors
+      description: Enumerates all the enrolled factors for the specified user.
+      script: '|||okta-get-user-factors'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      userId: {}
+      username:
+        simple: test@this.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 4ca680c4-c576-47a4-8be4-870d6d752955
+    type: title
+    task:
+      id: 4ca680c4-c576-47a4-8be4-870d6d752955
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 8982abb7-d5c0-404d-8048-5daf9fcf26a3
+    type: condition
+    task:
+      id: 8982abb7-d5c0-404d-8048-5daf9fcf26a3
+      version: -1
+      name: Test - okta-get-user-factors
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Factor
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: b473a2b2-bb72-4cbb-8a61-7ecf085bf050
+    type: regular
+    task:
+      id: b473a2b2-bb72-4cbb-8a61-7ecf085bf050
+      version: -1
+      name: okta-get-user
+      description: Fetches a specific user given you know the user’s login, please note that one of the parameters bellow is mandatory.
+      script: '|||okta-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      userid: {}
+      username:
+        simple: test@this.com
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: dfa32c84-f31a-4841-86aa-faeefb2292b8
+    type: condition
+    task:
+      id: dfa32c84-f31a-4841-86aa-faeefb2292b8
+      version: -1
+      name: Test - okta-get-user status
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: PROVISIONED
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 52d6c0bd-29a7-4396-86c4-6cb1dc692349
+    type: condition
+    task:
+      id: 52d6c0bd-29a7-4396-86c4-6cb1dc692349
+      version: -1
+      name: Test okta-list-groups
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Okta
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: Okta.Group.Type
+                      iscontext: true
+                accessor: Group
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: f4c419c9-a1af-48a7-8cf6-8040e5272d5f
+    type: condition
+    task:
+      id: f4c419c9-a1af-48a7-8cf6-8040e5272d5f
+      version: -1
+      name: Test okta-get-group-members
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Account
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: Account.ID
+                      iscontext: true
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: Account.Type
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4235,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

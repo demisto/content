@@ -1,0 +1,52 @@
+commonfields:
+  id: GetFieldsByIncidentType
+  version: -1
+name: GetFieldsByIncidentType
+script: ''
+type: python
+tags: []
+comment: Returns the incident field names associated to the specified incident type.
+enabled: true
+args:
+- name: incident_type
+  required: true
+  description: The incident type for which to return incident field names.
+- name: short_names
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to shorten the incident field names. If "true", will cause output to use shortened field names. The default value is "false".
+  defaultValue: "false"
+- name: exclude_system
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to only return non-system fields. If "true", will only output non-system fields. The default value is "false".
+  defaultValue: "false"
+- name: explicit_only
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to only include fields that are explicitly associated to the incident type. If "true", only fields which are explicitly associated to the incident type will be included (i.e., excludes fields for which the "associate to any" checkbox is selected). The default value is "false".
+  defaultValue: "false"
+- name: pprint
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Pretty-prints the output.
+  defaultValue: "true"
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - '|||demisto-api-get'
+runonce: false
+dockerimage: demisto/python3:3.7.5.4583
+runas: DBotWeakRole
+tests:
+- No test - unit test
+fromversion: 5.0.0

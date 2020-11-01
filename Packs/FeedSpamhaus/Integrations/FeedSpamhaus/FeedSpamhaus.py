@@ -5,7 +5,7 @@ def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
     feed_url_to_config = {
-        # TODO: Add this sub feed once we have an indicator type of ASN
+        # TODO: Add this service once we have an indicator type of ASN
         'https://www.spamhaus.org/drop/asndrop.txt': {
             'indicator_type': 'ASN',
             'indicator': {
@@ -27,13 +27,13 @@ def main():
             ]
         },
         'https://www.spamhaus.org/drop/drop.txt': {
-            'indicator_type': FeedIndicatorType.IP,
+            'indicator_type': FeedIndicatorType.CIDR,
             'indicator': {
                 'regex': r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}'
             }
         },
         'https://www.spamhaus.org/drop/edrop.txt': {
-            'indicator_type': FeedIndicatorType.IP,
+            'indicator_type': FeedIndicatorType.CIDR,
             'indicator': {
                 'regex': r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}'
             }

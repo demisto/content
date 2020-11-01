@@ -1,0 +1,7 @@
+!sent-notification channel=General message="hello world!" team=DemistoTeam
+!microsoft-teams-create-channel channel_name="example channel" team=DemistoTeam description="this is my new channel"
+!microsoft-teams-add-user-to-channel channel="example channel" member=itayadmin team=DemistoTeam
+!close-channel channel="example channel"
+!microsoft-teams-integration-health
+!microsoft-teams-ring-user username="Avishai Brandeis"
+!mirror-investigation team=DemistoTeam channel_name=General mirror_type=chat direction=ToDemisto

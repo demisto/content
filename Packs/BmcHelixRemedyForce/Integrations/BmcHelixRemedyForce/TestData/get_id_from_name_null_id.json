@@ -1,0 +1,14 @@
+{
+    "totalSize": 1,
+    "done": true,
+    "records": [
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__Incident__c",
+                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__Incident__c/a2U2x000000cM3NEAU"
+            },
+          "Id": [],
+          "Name": "123"
+        }
+    ]
+}

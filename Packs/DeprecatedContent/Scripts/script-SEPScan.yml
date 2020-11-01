@@ -1,0 +1,82 @@
+commonfields:
+  id: 2aa9f737-8c7c-42f5-815f-4d104bb3af06
+  version: -1
+name: SEPScan
+deprecated: true
+script: >-
+  SCAN_DEFAULT_TIMEOUT = 600;
+
+  SCAN_DEFAULT_INTERVAL = 30;
+
+
+  if (!args.ip && !args.hostname) {
+      throw 'Please provide an IP address or a hostname.'
+  }
+
+
+  var response = executeCommand("sep-scan", {scanType: args.scanType, ip: args.ip, hostname: args.hostname});
+
+
+  var timeout = args.timeout ? parseInt(args.timeout) : SCAN_DEFAULT_TIMEOUT;
+
+  var interval = args.interval ? parseInt(args.interval) : SCAN_DEFAULT_INTERVAL;
+
+  var retries = timeout / interval;
+
+  var isDone = false;
+
+  for (var i = 0; i < retries; i++) {
+      response = executeCommand("sep-command-status", {commandId: response[0].Contents.commandId});
+      var stateId = response[0].Contents.cmdStatusDetail.stateId;
+      if (stateId == '2' || stateId == '3') {
+          isDone = true;
+          break;
+      }
+
+      wait(interval);
+  }
+
+
+  endpoint = args.hostname ? args.hostname : args.ip;
+
+  response[0].HumanReadable = '## Launched scan command for endpoint {0}, here is the output.\n'.format(endpoint) + response[0].HumanReadable;
+
+
+  if (!isDone) {
+      response[0].HumanReadable += '\n\n### Command timed out after {0} seconds.'.format(timeout);
+  }
+
+
+  return response;
+type: javascript
+tags:
+- sep
+- symantec
+comment: Deprecated. Scans ip/hostname with Symantec Endpoint Protection. DEPRECATED - this automation is deprecated as it was replaced by `sep-scan-endpoint` command in 'Symantec Endpoint Protection V2' integration.
+enabled: true
+args:
+- name: scanType
+  required: true
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - ScanNow_Quick
+  - ScanNow_Full
+  - ScanNow_Custom
+  description: Type of scan.
+- name: ip
+  description: The IP address of the endpoint.
+- name: hostname
+  description: The hostname of the endpoint.
+- name: timeout
+  description: The timeout of the command.
+- name: interval
+  description: The polling interval of the command.
+scripttarget: 0
+timeout: 600ns
+tests:
+- No test - deprecated
+dependson:
+  must:
+  - sep-command-status
+fromversion: 5.0.0

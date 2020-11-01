@@ -1,0 +1,1313 @@
+id: Recorded Future Test Playbook
+version: -1
+name: Recorded Future Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3103bede-9ac0-4642-8d4b-9ee8cbcc28bc
+    type: start
+    task:
+      id: 3103bede-9ac0-4642-8d4b-9ee8cbcc28bc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 6a74e05b-878a-46fc-8787-7ee23c8c31f0
+    type: regular
+    task:
+      id: 6a74e05b-878a-46fc-8787-7ee23c8c31f0
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 222b90f2-381c-47ed-862b-5d1ac450bd8c
+    type: regular
+    task:
+      id: 222b90f2-381c-47ed-862b-5d1ac450bd8c
+      version: -1
+      name: domain
+      script: 'Recorded Future v2|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: wgwuhauaqcrx.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c03fc3e0-d4ac-45fa-85d4-8a81a094f378
+    type: condition
+    task:
+      id: c03fc3e0-d4ac-45fa-85d4-8a81a094f378
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Domain.riskScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Domain.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Domain.Evidence.rule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Domain.Evidence.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Domain.Evidence.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Domain.Evidence.level
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Domain.Evidence.ruleid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Domain.maxRules
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Domain.ruleCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f45803d1-98a4-4380-877e-e6450a6aadf2
+    type: regular
+    task:
+      id: f45803d1-98a4-4380-877e-e6450a6aadf2
+      version: -1
+      name: ip
+      script: 'Recorded Future v2|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        simple: 199.188.201.124
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 36a16ef5-ac8d-47cf-8271-ef7b3e7f5acb
+    type: condition
+    task:
+      id: 36a16ef5-ac8d-47cf-8271-ef7b3e7f5acb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.riskScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.Evidence.rule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.Evidence.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.Evidence.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.Evidence.level
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.Evidence.ruleid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.maxRules
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.ruleCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 6953142d-6cbf-4dba-8171-451ac8be9c8c
+    type: regular
+    task:
+      id: 6953142d-6cbf-4dba-8171-451ac8be9c8c
+      version: -1
+      name: file
+      script: 'Recorded Future v2|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file:
+        simple: fa964842244e752950fd4ed711759382a8950e13cc2794d6f73ab7eb9169e5ee
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 5a1e28cd-732f-4bc8-8a9d-c8eef6c028bc
+    type: condition
+    task:
+      id: 5a1e28cd-732f-4bc8-8a9d-c8eef6c028bc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.File.riskScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.File.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.File.Evidence.rule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.File.Evidence.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.File.Evidence.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.File.Evidence.level
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.File.Evidence.ruleid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.File.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.File.maxRules
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.File.ruleCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e15df64a-2cfc-440f-8129-9bd2db87315c
+    type: regular
+    task:
+      id: e15df64a-2cfc-440f-8129-9bd2db87315c
+      version: -1
+      name: cve
+      script: 'Recorded Future v2|||cve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      cve:
+        simple: CVE-2018-8174
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2ec9e978-d9fe-468f-8b9a-f8cbd6f6db39
+    type: condition
+    task:
+      id: 2ec9e978-d9fe-468f-8b9a-f8cbd6f6db39
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.CVE.riskScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.CVE.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.CVE.Evidence.rule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.CVE.Evidence.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.CVE.Evidence.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.CVE.Evidence.level
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.CVE.Evidence.ruleid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.CVE.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.CVE.maxRules
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.CVE.ruleCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 2a0eda4f-5517-41c1-85a1-f646a0b21460
+    type: regular
+    task:
+      id: 2a0eda4f-5517-41c1-85a1-f646a0b21460
+      version: -1
+      name: url
+      script: 'Recorded Future v2|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      url:
+        simple: http://lasdamas.com/DKndhFG72
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 45cc44be-894c-4043-89a4-c74da20c5e4d
+    type: condition
+    task:
+      id: 45cc44be-894c-4043-89a4-c74da20c5e4d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.URL.riskScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.URL.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.URL.Evidence.rule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.URL.Evidence.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.URL.Evidence.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.URL.Evidence.level
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.URL.Evidence.ruleid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.URL.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.URL.maxRules
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.URL.ruleCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 164a5018-6477-41d2-887c-23e54486bf6b
+    type: regular
+    task:
+      id: 164a5018-6477-41d2-887c-23e54486bf6b
+      version: -1
+      name: recordedfuture-threat-assessment
+      script: '|||recordedfuture-threat-assessment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      context:
+        simple: phishing
+      cve: {}
+      domain: {}
+      file: {}
+      ip:
+        simple: 116.89.241.221,199.188.201.124
+      url: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 0f9bac99-885c-46cd-8295-957efc6d99ae
+    type: condition
+    task:
+      id: 0f9bac99-885c-46cd-8295-957efc6d99ae
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.verdict
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.context
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.riskScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Entities.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Entities.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Entities.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Entities.score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Entities.Evidence.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Entities.Evidence.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Entities.Evidence.rule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Entities.Evidence.level
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: a7c38d92-4e0a-4911-8087-5659749cc73a
+    type: regular
+    task:
+      id: a7c38d92-4e0a-4911-8087-5659749cc73a
+      version: -1
+      name: recordedfuture-alert-rules
+      script: '|||recordedfuture-alert-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 47810134-6b4c-4840-8b3a-e9979685d82b
+    type: condition
+    task:
+      id: 47810134-6b4c-4840-8b3a-e9979685d82b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.AlertRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.AlertRule.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 3e73e1b2-7d17-4141-8f75-6a64155a4206
+    type: regular
+    task:
+      id: 3e73e1b2-7d17-4141-8f75-6a64155a4206
+      version: -1
+      name: recordedfuture-alerts
+      script: '|||recordedfuture-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 580d09b3-1a5f-48dc-87e0-839dab17bfb5
+    type: condition
+    task:
+      id: 580d09b3-1a5f-48dc-87e0-839dab17bfb5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Alert.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Alert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Alert.triggered
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Alert.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Alert.rule
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 57c98765-6bca-45cf-8a79-391011d8239a
+    type: regular
+    task:
+      id: 57c98765-6bca-45cf-8a79-391011d8239a
+      version: -1
+      name: recordedfuture-intelligence
+      script: '|||recordedfuture-intelligence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      entity:
+        simple: 8.8.8.8
+      entity_type:
+        simple: ip
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 87102bd9-f690-4b1f-87cc-b7765b82ebdc
+    type: condition
+    task:
+      id: 87102bd9-f690-4b1f-87cc-b7765b82ebdc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.ASN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Geo.Country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.criticality
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.criticalityLabel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.riskString
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.riskSummary
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.rules
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.intelCard
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.location.asn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.location.cidr.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.location.cidr.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.location.cidr.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.location.location.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.location.location.continent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.location.location.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.location.organization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.metrics.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.metrics.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.threatLists.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.threatLists.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.threatLists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.IP.threatLists.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: b0c2b1fd-0009-4111-8742-a1d603f7a855
+    type: title
+    task:
+      id: b0c2b1fd-0009-4111-8742-a1d603f7a855
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4015,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

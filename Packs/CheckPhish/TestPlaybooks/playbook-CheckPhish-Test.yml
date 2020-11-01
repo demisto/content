@@ -1,0 +1,609 @@
+id: CheckPhish-Test
+version: -1
+name: CheckPhish-Test
+starttaskid: "0"
+description: Test Playbook for CheckPhish integration
+tasks:
+  "0":
+    id: "0"
+    taskid: 12b7cde2-d5d4-4c2a-8c30-e41904914635
+    type: start
+    task:
+      id: 12b7cde2-d5d4-4c2a-8c30-e41904914635
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 21d34889-a141-4bbd-82a9-81533a18a4f2
+    type: regular
+    task:
+      id: 21d34889-a141-4bbd-82a9-81533a18a4f2
+      version: -1
+      name: CheckPhish-check-urls
+      description: Get the results of the check in CheckPhish
+      script: CheckPhish|||CheckPhish-check-urls
+      type: regular
+      iscommand: true
+      brand: CheckPhish
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: http://demisto.com,paypal-secure.online,https://github.com,http://www.w3.org,http://www.yahoo.com,www.fontedevidaeterna.org.br,www.pharmacymall.net
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 764a2702-f52d-42b1-8f7e-f2042c791d15
+    type: regular
+    task:
+      id: 764a2702-f52d-42b1-8f7e-f2042c791d15
+      version: -1
+      name: CheckPhish-check-urls
+      description: Get the results of the check in CheckPhish
+      script: CheckPhish|||CheckPhish-check-urls
+      type: regular
+      iscommand: true
+      brand: CheckPhish
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      url:
+        simple: www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8e46356a-dbb2-449b-8eac-84a49800cd5a
+    type: condition
+    task:
+      id: 8e46356a-dbb2-449b-8eac-84a49800cd5a
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    scriptarguments:
+      left:
+        complex:
+          root: CheckPhish
+          accessor: URL
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: http://demisto.com/
+              field:
+                value:
+                  simple: url
+              getField:
+                value:
+                  simple: disposition
+      right:
+        simple: clean
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: fe25f51d-093b-4cd1-8429-8c5a6f3daddd
+    type: condition
+    task:
+      id: fe25f51d-093b-4cd1-8429-8c5a6f3daddd
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      left:
+        complex:
+          root: CheckPhish
+          accessor: URL
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: http://paypal-secure.online/
+              field:
+                value:
+                  simple: url
+              getField:
+                value:
+                  simple: disposition
+      right:
+        simple: likely_phish
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 6e4276ec-723e-4eaa-8311-eeb649f1f4d6
+    type: condition
+    task:
+      id: 6e4276ec-723e-4eaa-8311-eeb649f1f4d6
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    scriptarguments:
+      left:
+        complex:
+          root: CheckPhish
+          accessor: URL
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: http://www.fontedevidaeterna.org.br/
+              field:
+                value:
+                  simple: url
+              getField:
+                value:
+                  simple: disposition
+      right:
+        simple: clean
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f4fd148c-3f36-405e-832a-3fd3ab148377
+    type: condition
+    task:
+      id: f4fd148c-3f36-405e-832a-3fd3ab148377
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      left:
+        complex:
+          root: CheckPhish
+          accessor: URL
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: http://www.pharmacymall.net/
+              field:
+                value:
+                  simple: url
+              getField:
+                value:
+                  simple: disposition
+      right:
+        simple: drug_spam
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 7d27b6bb-868d-4d72-8c19-4816fd1647d9
+    type: regular
+    task:
+      id: 7d27b6bb-868d-4d72-8c19-4816fd1647d9
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: '*CheckPhish multiple URLs are all done and correct*'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3f53cf70-42c8-412c-8fc8-fa2df836aad5
+    type: regular
+    task:
+      id: 3f53cf70-42c8-412c-8fc8-fa2df836aad5
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      value:
+        simple: '*CheckPhish single URL is done and correct*'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 01facdeb-8f1b-4684-81e4-67f801086703
+    type: condition
+    task:
+      id: 01facdeb-8f1b-4684-81e4-67f801086703
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    scriptarguments:
+      left:
+        complex:
+          root: CheckPhish
+          accessor: URL
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: http://www.demisto.com/
+              field:
+                value:
+                  simple: url
+              getField:
+                value:
+                  simple: disposition
+      right:
+        simple: clean
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 683fc5e7-956b-4e4e-82fd-53ebd62e0bc3
+    type: condition
+    task:
+      id: 683fc5e7-956b-4e4e-82fd-53ebd62e0bc3
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    scriptarguments:
+      left:
+        complex:
+          root: CheckPhish
+          accessor: URL
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: https://github.com/
+              field:
+                value:
+                  simple: url
+              getField:
+                value:
+                  simple: disposition
+      right:
+        simple: clean
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: ba309d4c-da11-4b19-8497-facdcae092cf
+    type: condition
+    task:
+      id: ba309d4c-da11-4b19-8497-facdcae092cf
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      left:
+        complex:
+          root: CheckPhish
+          accessor: URL
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: http://www.w3.org/
+              field:
+                value:
+                  simple: url
+              getField:
+                value:
+                  simple: disposition
+      right:
+        simple: clean
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1dafcee3-fc03-4de2-82e9-408bfecf1830
+    type: condition
+    task:
+      id: 1dafcee3-fc03-4de2-82e9-408bfecf1830
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      left:
+        complex:
+          root: CheckPhish
+          accessor: URL
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: http://www.yahoo.com/
+              field:
+                value:
+                  simple: url
+              getField:
+                value:
+                  simple: disposition
+      right:
+        simple: clean
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: de35b375-2a52-47c4-89f8-c19808ada7ce
+    type: regular
+    task:
+      id: de35b375-2a52-47c4-89f8-c19808ada7ce
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 820,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

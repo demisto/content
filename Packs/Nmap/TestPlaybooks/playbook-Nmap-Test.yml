@@ -1,0 +1,256 @@
+id: Nmap - Test
+version: -1
+name: Nmap - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b71b221d-c057-448d-8166-dbdda28e1923
+    type: start
+    task:
+      id: b71b221d-c057-448d-8166-dbdda28e1923
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 57b76811-53f9-40f1-84db-34073d8decdc
+    type: regular
+    task:
+      id: 57b76811-53f9-40f1-84db-34073d8decdc
+      version: -1
+      name: nmap-scan
+      description: Scan targets with the given parameters
+      script: nmap|||nmap-scan
+      type: regular
+      iscommand: true
+      brand: nmap
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      options:
+        simple: -sV
+      targets:
+        simple: scanme.nmap.org
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2c9015ee-deb7-4008-8ad4-d36df37aa554
+    type: condition
+    task:
+      id: 2c9015ee-deb7-4008-8ad4-d36df37aa554
+      version: -1
+      name: Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${NMAP.Scan.Hosts.Services.Port(val==22)}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 63bf6238-d1c2-4a43-81b6-cc13014a8d75
+    type: title
+    task:
+      id: 63bf6238-d1c2-4a43-81b6-cc13014a8d75
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c84fe071-c5e8-4177-874c-fbd94d2b2c8c
+    type: regular
+    task:
+      id: c84fe071-c5e8-4177-874c-fbd94d2b2c8c
+      version: -1
+      name: Oops, problem
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Service not found
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8cad128d-8595-4434-8691-3cf64fde55ee
+    type: regular
+    task:
+      id: 8cad128d-8595-4434-8691-3cf64fde55ee
+      version: -1
+      name: nmap-scan
+      description: Scan targets with the given parameters
+      script: '|||nmap-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      options:
+        simple: -sn
+      targets:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1b55deeb-0356-43ca-8dc9-803c125d8269
+    type: condition
+    task:
+      id: 1b55deeb-0356-43ca-8dc9-803c125d8269
+      version: -1
+      name: check Hostname
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NMAP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: NMAP.Scan.Hosts.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8
+                accessor: Scan.Hosts.Hostname
+            iscontext: true
+          right:
+            value:
+              simple: dns.google
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_no": 0.26,
+      "6_3_yes": 0.63
+    },
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 1180,
+        "x": 170,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

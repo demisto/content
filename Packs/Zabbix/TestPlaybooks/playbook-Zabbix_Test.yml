@@ -1,0 +1,68 @@
+id: Zabbix - Test
+version: -1
+name: Zabbix - Test
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 69b932fb-e047-4c83-8bd0-42d197c52913
+    type: start
+    task:
+      id: 69b932fb-e047-4c83-8bd0-42d197c52913
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 32665f69-95a5-4cd8-85e3-0bef554aebe9
+    type: regular
+    task:
+      id: 32665f69-95a5-4cd8-85e3-0bef554aebe9
+      version: -1
+      name: test-module
+      description: Test if module is working
+      script: Zabbix|||test-module
+      type: regular
+      iscommand: true
+      brand: Zabbix
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

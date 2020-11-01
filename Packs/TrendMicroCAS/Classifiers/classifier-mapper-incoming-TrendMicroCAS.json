@@ -1,0 +1,71 @@
+{
+ "id": "TrendMicroCAS-incoming-mapper",
+ "name": "TrendMicroCAS - incoming - mapper",
+ "type": "mapping-incoming",
+ "description": "Maps incoming Trend Micro CAS fields",
+ "version": -1,
+ "mapping": {
+  "Trend Micro CAS Event": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "Attachment Name": {
+     "complex": null,
+     "simple": "message.mail_message_file_name"
+    },
+    "Blocked Action": {
+     "complex": null,
+     "simple": "message.action_result"
+    },
+    "Cloud Service": {
+     "complex": null,
+     "simple": "service"
+    },
+    "Email From": {
+     "complex": null,
+     "simple": "message.mail_message_sender"
+    },
+    "Email Subject": {
+     "complex": null,
+     "simple": "message.mail_message_subject"
+    },
+    "Email To": {
+     "complex": null,
+     "simple": "message.mail_message_recipient"
+    },
+    "Event Type": {
+     "complex": null,
+     "simple": "event"
+    },
+    "File Hash": {
+     "complex": null,
+     "simple": "message.file_sha1"
+    },
+    "File Name": {
+     "complex": null,
+     "simple": "message.file_name"
+    },
+    "Malware Name": {
+     "complex": null,
+     "simple": "message.ransomware_name"
+    },
+    "Policy Details": {
+     "complex": null,
+     "simple": "message.triggered_policy_name"
+    },
+    "Resource Name": {
+     "complex": null,
+     "simple": "message.location"
+    },
+    "Risk Score": {
+     "complex": null,
+     "simple": "message.risk_level"
+    },
+    "Username": {
+     "complex": null,
+     "simple": "message.affected_user"
+    }
+   }
+  }
+ },
+ "fromVersion": "6.0.0"
+}

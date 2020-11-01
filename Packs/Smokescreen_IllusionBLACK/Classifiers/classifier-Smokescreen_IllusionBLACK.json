@@ -1,0 +1,16 @@
+{
+	"id": "Smokescreen IllusionBLACK",
+    "name": "Smokescreen IllusionBLACK - Classifier",
+    "type": "classification",
+    "description": "Classifies Smokescreen IllusionBLACK events.",
+	"defaultIncidentType": "",
+	"keyTypeMap": {
+		"IllusionBLACK": "IllusionBLACK"
+	},
+	"transformer": {
+		"complex": null,
+		"simple": "source"
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
