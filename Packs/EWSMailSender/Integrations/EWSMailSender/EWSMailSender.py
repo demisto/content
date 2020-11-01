@@ -1,5 +1,3 @@
-from exchangelib.errors import ErrorItemNotFound
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -61,6 +59,7 @@ from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2,
     EXCHANGE_2016  # noqa: E402
 from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
     BASIC, DIGEST, Version, DELEGATE  # noqa: E402
+from exchangelib.errors import ErrorItemNotFound     # noqa: E402
 
 IS_TEST_MODULE = False
 
@@ -194,47 +193,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     manualAttachObj = manualAttachObj if manualAttachObj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
-    file_entries_for_attachments = []  # type: list
-    attachments_names = []  # type: list
-
-    if attachIDs:
-        file_entries_for_attachments = attachIDs if isinstance(attachIDs, list) else attachIDs.split(",")
-        if attachNames:
-            attachments_names = attachNames if isinstance(attachNames, list) else attachNames.split(",")
-        else:
-            for att_id in file_entries_for_attachments:
-                att_name = demisto.getFilePath(att_id)['name']
-                if isinstance(att_name, list):
-                    att_name = att_name[0]
-                attachments_names.append(att_name)
-        if len(file_entries_for_attachments) != len(attachments_names):
-            raise Exception("attachIDs and attachNames lists should be the same length")
-
-    attachments = collect_manual_attachments(manualAttachObj)
-
-    if attachCIDs:
-        file_entries_for_attachments_inline = attachCIDs if isinstance(attachCIDs, list) else attachCIDs.split(",")
-        for att_id_inline in file_entries_for_attachments_inline:
-            try:
-                file_info = demisto.getFilePath(att_id_inline)
-            except Exception as ex:
-                demisto.info("EWS error from getFilePath: {}".format(ex))
-                raise Exception("entry %s does not contain a file" % att_id_inline)
-            att_name_inline = file_info["name"]
-            with open(file_info["path"], 'rb') as f:
-                attachments.append(FileAttachment(content=f.read(), name=att_name_inline, is_inline=True,
-                                                  content_id=att_name_inline))
-
-    for i in range(0, len(file_entries_for_attachments)):
-        entry_id = file_entries_for_attachments[i]
-        attachment_name = attachments_names[i]
-        try:
-            res = demisto.getFilePath(entry_id)
-        except Exception as ex:
-            raise Exception("entry {} does not contain a file: {}".format(entry_id, str(ex)))
-        file_path = res["path"]
-        with open(file_path, 'rb') as f:
-            attachments.append(FileAttachment(content=f.read(), name=attachment_name))
+    attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
 
     send_email_to_mailbox(account, to, subject, body, bcc, cc, replyTo, htmlBody, attachments)
     result_object = {
@@ -253,18 +212,11 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     }
 
 
-def reply_email(to, item_id, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
-                attachNames="", from_mailbox=None, manualAttachObj=None):
-    account = get_account(from_mailbox or ACCOUNT_EMAIL)
-    bcc = bcc.split(",") if bcc else None
-    cc = cc.split(",") if cc else None
-    to = to.split(",") if to else None
-    manualAttachObj = manualAttachObj if manualAttachObj is not None else []
-    subject = subject[:252] + '...' if len(subject) > 255 else subject
-
+def process_attachments(attachCIDs="", attachIDs="", attachNames="", manualAttachObj=None):
+    if manualAttachObj is None:
+        manualAttachObj = []
     file_entries_for_attachments = []  # type: list
     attachments_names = []  # type: list
-
     if attachIDs:
         file_entries_for_attachments = attachIDs if isinstance(attachIDs, list) else attachIDs.split(",")
         if attachNames:
@@ -277,9 +229,7 @@ def reply_email(to, item_id, body="", subject="", bcc=None, cc=None, htmlBody=No
                 attachments_names.append(att_name)
         if len(file_entries_for_attachments) != len(attachments_names):
             raise Exception("attachIDs and attachNames lists should be the same length")
-
     attachments = collect_manual_attachments(manualAttachObj)
-
     if attachCIDs:
         file_entries_for_attachments_inline = attachCIDs if isinstance(attachCIDs, list) else attachCIDs.split(",")
         for att_id_inline in file_entries_for_attachments_inline:
@@ -292,7 +242,6 @@ def reply_email(to, item_id, body="", subject="", bcc=None, cc=None, htmlBody=No
             with open(file_info["path"], 'rb') as f:
                 attachments.append(FileAttachment(content=f.read(), name=att_name_inline, is_inline=True,
                                                   content_id=att_name_inline))
-
     for i in range(0, len(file_entries_for_attachments)):
         entry_id = file_entries_for_attachments[i]
         attachment_name = attachments_names[i]
@@ -303,6 +252,19 @@ def reply_email(to, item_id, body="", subject="", bcc=None, cc=None, htmlBody=No
         file_path = res["path"]
         with open(file_path, 'rb') as f:
             attachments.append(FileAttachment(content=f.read(), name=attachment_name))
+    return attachments, attachments_names
+
+
+def reply_email(to, item_id, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
+                attachNames="", from_mailbox=None, manualAttachObj=None):
+    account = get_account(from_mailbox or ACCOUNT_EMAIL)
+    bcc = bcc.split(",") if bcc else None
+    cc = cc.split(",") if cc else None
+    to = to.split(",") if to else None
+    manualAttachObj = manualAttachObj if manualAttachObj is not None else []
+    subject = subject[:252] + '...' if len(subject) > 255 else subject
+
+    attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
 
     send_email_reply_to_mailbox(account, item_id, to, body, subject, bcc, cc, htmlBody, attachments)
     result_object = {
@@ -362,7 +324,7 @@ def test_module():
     global IS_TEST_MODULE
     IS_TEST_MODULE = True
     BaseProtocol.TIMEOUT = 20
-    get_account(ACCOUNT_EMAIL)
+    get_account(ACCOUNT_EMAIL).root    #type: Account
     demisto.results('ok')
 
 
