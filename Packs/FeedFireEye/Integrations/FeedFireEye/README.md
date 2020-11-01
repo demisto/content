@@ -38,7 +38,7 @@ Gets the feed indicators and reports.
 
 ##### Base Command
 
-***!fireeye-get-indicators***
+`!fireeye-get-indicators`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,4 +49,26 @@ Gets the feed indicators and reports.
 ##### Context Output
 
 There is no context output for this command.
+
+
+### fireeye-reset-fetch-indicators
+***
+WARNING: This command will reset your fetch history.
+
+#### Base Command
+
+`fireeye-reset-fetch-indicators`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!fireeye-reset-fetch-indicators```
+
+#### Human Readable Output
+Fetch was reset successfully. Your next indicator fetch will collect indicators from the configured "First Fetch Time"
 

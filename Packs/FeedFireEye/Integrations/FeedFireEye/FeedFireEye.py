@@ -664,7 +664,8 @@ def reset_fetch_command():
     integration_context.pop('last_reports_fetch_time', None)
     demisto.setIntegrationContext(integration_context)
 
-    return 'Fetch was reset successfully', {}, {}
+    return 'Fetch was reset successfully. Your next indicator fetch will collect indicators ' \
+           'from the configured "First Fetch Time"', {}, {}
 
 
 def handle_first_fetch_timestamp():
