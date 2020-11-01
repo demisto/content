@@ -1057,7 +1057,7 @@ def test_get_policy(requests_mock):
         'endpoint_id': 'aeec6a2cc92e46fab3b6f621722e9916',
         'policy_name': 'test'
     }
-    run_script_expected_result = {'PaloAltoNetworksXDR.policyName(val.endpoint_id == obj.endpoint_id)': expected_context}
+    run_script_expected_result = {'PaloAltoNetworksXDR.Policy(val.endpoint_id == obj.endpoint_id)': expected_context}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_policy/', json={'reply': {
         'policy_name': 'test'}})
 
@@ -1114,7 +1114,7 @@ def test_retrieve_files_command(requests_mock):
     """
     from CortexXDRIR import retrieve_files_command, Client
 
-    retrieve_expected_result = {'PaloAltoNetworksXDR.retrievedFiles.actionId(val.actionId == obj.actionId)': 1773}
+    retrieve_expected_result = {'PaloAltoNetworksXDR.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/file_retrieval/', json={"reply": {"action_id": 1773}})
 
     client = Client(
@@ -1383,7 +1383,7 @@ def test_action_status_get_command(requests_mock):
             "status": data.get(item)
         })
     action_status_get_command_expected_result = {
-        'PaloAltoNetworksXDR.getActionStatus(val.actionId == obj.actionId)':
+        'PaloAltoNetworksXDR.GetActionStatus(val.action_id == obj.action_id)':
             result}
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/get_action_status/',

@@ -2490,7 +2490,7 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
         linux=linux,
         macos=macos
     )
-    result = {'action_id' = reply.get('action_id')}
+    result = {'action_id': reply.get('action_id')}
     return (
         tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
         {
@@ -2501,7 +2501,7 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
 
 
 def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]:
-    action_id_list = argToList(args.get('action_id'), '')
+    action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
     result = []
@@ -2656,7 +2656,7 @@ def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, An
 
 
 def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
-    action_id_list = argToList(args.get('action_id'))
+    action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
     result = []
@@ -2666,7 +2666,7 @@ def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
         for endpoint_id, status in data.items():
             result.append({
                 "action_id": action_id,
-                "endpoint_id": id,
+                "endpoint_id": endpoint_id,
                 "status": status
             })
 
