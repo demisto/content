@@ -154,8 +154,8 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
     human_readable += csr_matrix_no_thresh_readable
     human_readable = '\n'.join(human_readable)
     contents = {'threshold': found_threshold,
-                'csr_matrix_at_threshold': csr_matrix_at_threshold.to_json(),
-                'csr_matrix_no_threshold': csr_matrix_no_threshold.to_json(),
+                'csr_matrix_at_threshold': csr_matrix_at_threshold.to_json(orient='index'),
+                'csr_matrix_no_threshold': csr_matrix_no_threshold.to_json(orient='index'),
                 'metrics_df': metrics_df.to_json()}
     entry = {
         'Type': entryTypes['note'],
@@ -166,8 +166,8 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
         'EntryContext': {
             'GetMLModelEvaluation': {
                 'Threshold': found_threshold,
-                'ConfusionMatrixAtThreshold': csr_matrix_at_threshold.to_json(),
-                'ConfusionMatrixNoThreshold': csr_matrix_no_threshold.to_json(),
+                'ConfusionMatrixAtThreshold': csr_matrix_at_threshold.to_json(orient='index'),
+                'ConfusionMatrixNoThreshold': csr_matrix_no_threshold.to_json(orient='index'),
                 'Metrics': metrics_df.to_json()
             }
         }

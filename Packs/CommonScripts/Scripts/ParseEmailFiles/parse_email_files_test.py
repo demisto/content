@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import print_function
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
     data_to_md, create_headers_map
@@ -430,6 +431,43 @@ def test_email_raw_headers(mocker):
     assert results[0]['EntryContext']['Email']['To'] == 'test@test.com, example1@example.com'
     assert results[0]['EntryContext']['Email']['CC'] == 'test@test.com, example1@example.com'
     assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == 'Guy Test <test@test.com>'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['To'] == 'Guy Test <test@test.com>' \
+                                                                      ', Guy Test1 <example1@example.com>'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['CC'] == 'Guy Test <test@test.com>, ' \
+                                                                      'Guy Test1 <example1@example.com>'
+
+
+def test_email_raw_headers_from_is_cyrillic_characters(mocker):
+    """
+    Given:
+     - The email message the should pe parsed.
+     - Checking an email file that contains '\r\n' in it's 'From' header.
+
+    When:
+     - After parsed email file into Email object
+
+    Then:
+     - Validate that all raw headers are valid.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '1'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('multiple_to_cc_from_Cyrillic'
+                                                                                     '_characters.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['From'] == 'no-reply@google.com'
+    assert results[0]['EntryContext']['Email']['To'] == 'test@test.com, example1@example.com'
+    assert results[0]['EntryContext']['Email']['CC'] == 'test@test.com, example1@example.com'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == u'"✅✅✅ ВА ! ' \
+                                                                        u'https://example.com  ." ' \
+                                                                        u'<no-reply@google.com>'
     assert results[0]['EntryContext']['Email']['HeadersMap']['To'] == 'Guy Test <test@test.com>' \
                                                                       ', Guy Test1 <example1@example.com>'
     assert results[0]['EntryContext']['Email']['HeadersMap']['CC'] == 'Guy Test <test@test.com>, ' \
