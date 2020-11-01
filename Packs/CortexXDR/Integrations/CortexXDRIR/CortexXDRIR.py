@@ -1113,45 +1113,13 @@ class Client(BaseClient):
 
     def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
                     linux_supported, macos_supported, is_high_risk):
-        filters: list = [
-            {
-                "field": "is_high_risk",
-                "operator": "in",
-                "value": [is_high_risk]
-            },
-            {
-                "field": "macos_supported",
-                "operator": "in",
-                "value": [macos_supported]
-            },
-            {
-                "field": "linux_supported",
-                "operator": "in",
-                "value": [linux_supported]
-            },
-            {
-                "field": "windows_supported",
-                "operator": "in",
-                "value": [windows_supported]
-            },
-            {
-                "field": "name",
-                "operator": "in",
-                "value": name
-            },
-            {
-                "field": "description",
-                "operator": "in",
-                "value": description
-            },
-            {
-                "field": "created_by",
-                "operator": "in",
-                "value": created_by
-            }
-        ]
-
-        filters = list(filter(lambda x: x['value'] and x['value'][0], filters))
+        # We iterate over the function arguments using `locals()`and crate a list of dicts of the form: {"field": "arg_name", "operator": "in", "value": arg_val}
+        
+        filters: list = [{
+            "field": "arg_key",
+             "operator": "in",
+             "value": arg_val"
+        } for arg_key, arg_val in locals().items() if arg_val and arg_val[0]]
 
         request_data: Dict[str, Any] = {
             "filters": filters
