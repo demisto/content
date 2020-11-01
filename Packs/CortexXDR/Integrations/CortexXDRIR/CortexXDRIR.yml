@@ -1769,8 +1769,7 @@ script:
     name: xdr-get-endpoint-violations
     outputs:
     - contextPath: PaloAltoNetworksXDR.EndpointViolations
-      description: Number of total results of this filter without paging, Number of
-        alerts actually returned as result (integer),  A list of violations (list).
+      description: Get endpoint violations command results.
     - contextPath: PaloAltoNetworksXDR.EndpointViolations.total_count
       description: Number of total results of this filter without paging.
     - contextPath: PaloAltoNetworksXDR.EndpointViolations.result_count
