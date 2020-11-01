@@ -123,7 +123,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix=f'{INTEGRATION_NAME}.Email',
         outputs_key_field='id',
         outputs=email_data,
-        indicators=[account_context]
+        indicator=account_context
     )
 
 
