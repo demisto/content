@@ -1,9 +1,9 @@
 {
     "name": "Google Drive",
     "description": "Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity and view change logs performed by the users.",
-    "support": "partner",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
-    "author": "Google Drive",
+    "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-08-14T10:49:54Z",

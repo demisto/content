@@ -32,11 +32,11 @@ def test_test_function(mocker, gsuite_client):
     Then:
     - Ensure 'ok' should be return.
     """
-    from GoogleDrive import test_function, GSuiteClient, service_account, demisto
+    from GoogleDrive import test_module, GSuiteClient, service_account, demisto
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
     mocker.patch.object(service_account.Credentials, 'refresh')
     gsuite_client.credentials.token = True
-    assert test_function(gsuite_client, demisto.getLastRun(), {}) == 'ok'
+    assert test_module(gsuite_client, demisto.getLastRun(), {}) == 'ok'
 
 
 def test_test_function_error(mocker, gsuite_client):
@@ -52,12 +52,12 @@ def test_test_function_error(mocker, gsuite_client):
     Then:
     - Ensure message should be as expected.
     """
-    from GoogleDrive import test_function, GSuiteClient, service_account, MESSAGES, demisto
+    from GoogleDrive import test_module, GSuiteClient, service_account, MESSAGES, demisto
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
     mocker.patch.object(service_account.Credentials, 'refresh')
     gsuite_client.credentials.token = None
     with pytest.raises(DemistoException, match=MESSAGES['TEST_FAILED_ERROR']):
-        test_function(gsuite_client, demisto.getLastRun(), {})
+        test_module(gsuite_client, demisto.getLastRun(), {})
 
 
 @patch(MOCKER_HTTP_METHOD)

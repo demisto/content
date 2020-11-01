@@ -594,7 +594,7 @@ def validate_params_for_fetch_incidents(params: Dict[str, Any]) -> None:
 
 
 @logger
-def test_function(gsuite_client, last_run: Dict, params: Dict[str, Any]) -> str:
+def test_module(gsuite_client, last_run: Dict, params: Dict[str, Any]) -> str:
     """
     Performs test connectivity by valid http response
 
@@ -793,7 +793,7 @@ def fetch_incidents(client, last_run: Dict, params: Dict, is_test: bool = False)
         incidents.append(incident)
 
         timestamp = int(
-            dateparser.parse(  # type: ignore
+            dateparser.parse(
                 activity.get('timestamp', activity.get('timeRange', {}).get('endTime', ''))).timestamp() * 1000)
 
         if timestamp > last_fetch:
@@ -838,8 +838,7 @@ def main() -> None:
 
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
-
-            result = test_function(gsuite_client, demisto.getLastRun(), params)
+            result = test_module(gsuite_client, demisto.getLastRun(), params)
             demisto.results(result)
         elif demisto.command() == 'fetch-incidents':
 

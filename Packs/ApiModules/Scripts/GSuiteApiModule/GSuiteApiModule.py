@@ -221,16 +221,6 @@ class GSuiteClient:
             raise ValueError(COMMON_MESSAGES['JSON_PARSE_ERROR'])
 
     @staticmethod
-    def strip_dict(args: Dict[str, str]) -> Dict[str, str]:
-        """
-        Remove leading and trailing white spaces from dictionary values and remove empty entries.
-
-        :param args: Arguments dict.
-        :return: Dictionary with whitespaces and empty entries removed.
-        """
-        return {key: value.strip() for (key, value) in args.items() if value and value.strip()}
-
-    @staticmethod
     def validate_set_boolean_arg(args: Dict[str, Any], arg: str, arg_name: Optional[str] = None) -> None:
         """
         Set and validate boolean arguments.
@@ -243,11 +233,9 @@ class GSuiteClient:
         :raises ValueError: if boolean arg value is invalid.
         """
         if arg in args:
-            if args[arg].lower() == 'true':
-                args[arg] = True
-            elif args[arg].lower() == 'false':
-                args[arg] = False
-            else:
+            try:
+                args[arg] = argToBoolean(args[arg])
+            except ValueError:
                 raise ValueError(COMMON_MESSAGES['BOOLEAN_ERROR'].format(arg_name if arg_name else arg))
 
     @staticmethod
@@ -269,17 +257,6 @@ class GSuiteClient:
         else:
             return {key: value for key, value in ((key, GSuiteClient.remove_empty_entities(value))
                                                   for key, value in d.items()) if not empty(value)}
-
-    @staticmethod
-    def dict_keys_snake_to_camelcase(dictionary: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Converts all dictionary keys from snake case (dict_key) to lower camel case(dictKey).
-        :param dictionary: Dictionary which may contain keys in snake_case
-        :return: Dictionary with snake_case keys converted to lowerCamelCase
-        """
-        underscore_pattern = re.compile(r'_([a-z])')
-        return {underscore_pattern.sub(lambda i: i.group(1).upper(), key.lower()): value for (key, value) in
-                dictionary.items()}
 
     @staticmethod
     def validate_get_int(max_results: Optional[str], message: str, limit: int = 0) -> Optional[int]:
@@ -304,3 +281,13 @@ class GSuiteClient:
             except ValueError:
                 raise ValueError(message)
         return None
+
+    @staticmethod
+    def strip_dict(args: Dict[str, str]) -> Dict[str, str]:
+        """
+        Remove leading and trailing white spaces from dictionary values and remove empty entries.
+
+        :param args: Arguments dict.
+        :return: Dictionary with whitespaces and empty entries removed.
+        """
+        return {key: value.strip() for (key, value) in args.items() if value and value.strip()}

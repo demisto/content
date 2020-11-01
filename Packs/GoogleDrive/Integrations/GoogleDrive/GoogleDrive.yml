@@ -1713,7 +1713,7 @@ script:
     - contextPath: GoogleDrive.DriveActivity.timeRange.endTime
       description: The end of the time range.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.12264
+  dockerimage: demisto/googleapi-python3:1.0.0.12698
   feed: false
   isfetch: true
   longRunning: false
