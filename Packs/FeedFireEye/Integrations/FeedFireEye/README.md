@@ -38,7 +38,7 @@ Gets the feed indicators and reports.
 
 ##### Base Command
 
-`!fireeye-get-indicators`
+`fireeye-get-indicators`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,6 +49,9 @@ Gets the feed indicators and reports.
 ##### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!fireeye-get-indicators limit=10```
 
 
 ### fireeye-reset-fetch-indicators
