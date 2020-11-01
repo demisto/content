@@ -124,6 +124,17 @@ def aws_session(service='cloudtrail', region=None, roleArn=None, roleSessionName
     return client
 
 
+def handle_returning_date_to_string(date_obj):
+    """Gets date object to string"""
+    # if the returning date is a string leave it as is.
+    if isinstance(date_obj, str):
+        return date_obj
+
+    # if event time is datetime object - convert it to string.
+    else:
+        return date_obj.isoformat()
+
+
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
     def default(self, obj):
@@ -379,7 +390,7 @@ def lookup_events(args):
             data.append({
                 'EventId': event['EventId'],
                 'EventName': event['EventName'],
-                'EventTime': datetime.strptime(event['EventTime'], '%Y-%m-%dT%H:%M:%S'),
+                'EventTime': handle_returning_date_to_string(event.get('EventTime', '01-01-01T00:00:00')),
                 'EventSource': event['EventSource'],
                 'ResourceName': event['Resources'][0]['ResourceName'],
                 'ResourceType': event['Resources'][0]['ResourceType'],
@@ -422,9 +433,9 @@ try:
 except ResponseParserError as e:
     return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
         error=type(e)))
-    LOG(str(e))
+    demisto.error(traceback.format_exc())
 
 except Exception as e:
-    LOG(str(e))
+    demisto.error(traceback.format_exc())
     return_error('Error has occurred in the AWS CloudTrail Integration: {code}\n {message}'.format(
         code=type(e), message=str(e)))
