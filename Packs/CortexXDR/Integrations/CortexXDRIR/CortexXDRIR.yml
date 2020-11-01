@@ -1689,9 +1689,7 @@ script:
     name: xdr-get-scripts
     outputs:
     - contextPath: PaloAltoNetworksXDR.Scripts
-      description: 'An array of scripts containing the following information: name,  description,
-        modification_date, created_by, windows_supported, linux_supported, macos_supported,
-        is_high_risk.'
+      description: 'Get scripts command results'
     - contextPath: PaloAltoNetworksXDR.Scripts.script_id
       description: Script ID
     - contextPath: PaloAltoNetworksXDR.Scripts.name
@@ -1839,7 +1837,7 @@ script:
     name: xdr-retrieve-file-details
     outputs:
     - contextPath: PaloAltoNetworksXDR.retrievedFileDetails
-      description: Data — Link to the file retrieved by Retrieve File request.
+      description: Retrieve file details command results.
     - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.endpoint_id
       description: Endpoint ID.
       type: string
@@ -2011,12 +2009,8 @@ script:
       - D
       - E
       - F
-    - description: 'JSON array of objects representing the vendors from which this
-        IOC was obtained. Each field in the array is: vendor_name = String representing
-        the name of the vendor who reported this indicator. reputation = Keyword representing
-        the vendor''s reputation. Valid values are: GOOD BAD SUSPICIOUS UNKNOWN. reliability
-        = Character representing the vendor''s reliability rating. Valid values are
-        A - F. A is the most reliable, F is the least.'
+    - description: ' Comma seperated list of JSON objects representing the vendors from which this
+        IOC was obtained. This argument should be of the following form: [{"vendor_name": <vendor_name>, "reputation": <reputation>, "reliability": <reliability>}]'. Where "vendor_name" is the name of the vendor who reported this indicator, "reputation" is the vendor's reputation (valid values are GOOD, BAD, SUSPICIOUS, UNKNOWN), and "reliability" is the vendor's reliability rating (valid values are A - F. A is the most reliable, F is the least). For example: [{"vendor_name": "PANW", "reputation": "GOOD", "reliablity": "B"},...]
       name: vendors
     - description: String representing the indicator class (for example, 'Malware').
       name: class
