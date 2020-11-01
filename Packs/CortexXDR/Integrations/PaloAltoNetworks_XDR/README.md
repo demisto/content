@@ -129,7 +129,7 @@ To setup the mirroring follow these instructions:
      different playbook that does not use `XDRSyncScript`.
    * The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
 
-* The API includes a limit rate of 10 API requests per minute. Therefore, in a case of a rate limit exception, the sync loop will be stopped and will resume from the last incident. 
+* The API includes a limit rate of 10 API requests per minute. Therefore, in a case of a limit rate exception, the sync loop will stop and will resume from the last incident. 
 
 ## Commands
 ---
