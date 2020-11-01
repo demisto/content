@@ -454,6 +454,62 @@ class TestChangelogCreation:
         assert task_status is True
         assert not_updated_build is False
 
+    def test_assert_production_bucket_version_matches_release_notes_version_positive(self, dummy_pack):
+        """
+           Given:
+               - Changelog from production bucket and the current branch's latest version of a given pack
+           When:
+               - current branch's latest version is higher than the production bucket version
+           Then:
+               - assertion should pass, since this branch probably adds a new version to the pack
+       """
+        changelog = {
+            "1.0.0": {
+                "releaseNotes": "First release notes",
+                "displayName": "1.0.0",
+                "released": "2020-05-05T13:39:33Z"
+            },
+            "2.0.0": {
+                "releaseNotes": "Second release notes",
+                "displayName": "2.0.0",
+                "released": "2020-06-05T13:39:33Z"
+            }
+        }
+        branch_latest_version = '2.0.1'
+        Pack.assert_production_bucket_version_matches_release_notes_version(dummy_pack,
+                                                                            changelog,
+                                                                            branch_latest_version)
+
+    def test_assert_production_bucket_version_matches_release_notes_version_negative(self, dummy_pack):
+        """
+           Given:
+               - Changelog from production bucket and the current branch's latest version of a given pack
+           When:
+               - current branch's latest version is lower than the production bucket version
+           Then:
+               - assertion should fail since this branch is not updated from master
+       """
+        changelog = {
+            "1.0.0": {
+                "releaseNotes": "First release notes",
+                "displayName": "1.0.0",
+                "released": "2020-05-05T13:39:33Z"
+            },
+            "2.0.0": {
+                "releaseNotes": "Second release notes",
+                "displayName": "2.0.0",
+                "released": "2020-06-05T13:39:33Z"
+            }
+        }
+        branch_latest_version = '1.9.9'
+        try:
+            Pack.assert_production_bucket_version_matches_release_notes_version(dummy_pack,
+                                                                                changelog,
+                                                                                branch_latest_version)
+            assert False, 'should fail because current branch pack version is lower than production bucket branch'
+        except AssertionError:
+            pass
+
     def test_clean_release_notes_lines(self):
         original_rn = '''
 ### Integration
