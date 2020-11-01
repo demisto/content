@@ -10,11 +10,10 @@ class Client(BaseClient):
     """
 
     def __init__(self, api_key: str, verify: bool, proxy: bool):
-        super().__init__(base_url='https://autofocus.paloaltonetworks.com/api/intel/v1', verify=verify,
-                         proxy=proxy, headers={'Content-Type': 'application/json'})
+        super().__init__(base_url='https://autofocus.paloaltonetworks.com/api/intel/v1', verify=verify, proxy=proxy,
+                         headers={'Content-Type': 'application/json'})
         self._params = {'api_key': api_key}
         self.name = 'ThreatVault'
-        self._a = api_key
 
     def antivirus_signature_get_request(self, sha256: str) -> dict:
         """Get antivirus signature by sending a GET request.
@@ -172,7 +171,6 @@ def ip_geo_get(client: Client, args: dict) -> CommandResults:
     )
 
 
-
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -187,7 +185,7 @@ def main():
         LOG(f'Command being called is {demisto.command()}')
         client = Client(api_key=api_key, verify=verify, proxy=proxy)
         commands = {
-            'threatvault-antivirus-signtature-get': antivirus_signature_get,
+            'threatvault-antivirus-signature-get': antivirus_signature_get,
             'threatvault-dns-signature-get-by-id': dns_get_by_id,
             'threatvault-antispyware-signature-get-by-id': antispyware_get_by_id,
             'threatvault-ip-geo-get': ip_geo_get,
