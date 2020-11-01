@@ -376,10 +376,19 @@ def lookup_events(args):
     paginator = client.get_paginator('lookup_events')
     for response in paginator.paginate(**kwargs):
         for i, event in enumerate(response['Events']):
+
+            # if the returning event time is a string leave it as is.
+            if isinstance(event.get('EventTime', '01-01-01T00:00:00'), str):
+                event_time = event.get('EventTime', '01-01-01T00:00:00')
+
+            # if event time is datetime object - convert it to string.
+            else:
+                event_time = event.get('EventTime').isoformat()
+
             data.append({
                 'EventId': event['EventId'],
                 'EventName': event['EventName'],
-                'EventTime': datetime.strptime(event['EventTime'], '%Y-%m-%dT%H:%M:%S'),
+                'EventTime': event_time,
                 'EventSource': event['EventSource'],
                 'ResourceName': event['Resources'][0]['ResourceName'],
                 'ResourceType': event['Resources'][0]['ResourceType'],
@@ -422,9 +431,9 @@ try:
 except ResponseParserError as e:
     return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
         error=type(e)))
-    LOG(str(e))
+    demisto.error(traceback.format_exc())
 
 except Exception as e:
-    LOG(str(e))
+    demisto.error(traceback.format_exc())
     return_error('Error has occurred in the AWS CloudTrail Integration: {code}\n {message}'.format(
         code=type(e), message=str(e)))
