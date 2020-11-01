@@ -1,535 +1,565 @@
 {
-    "name": "STIX Report",
-    "id": "STIX Report",
-    "group": "indicator",
-    "description": "",
-    "indicatorsDetails": {
-        "tabs": [
-            {
-                "id": "main",
-                "name": "Summary",
-                "sections": [
-                    {
-                        "columns": [
-                            {
-                                "displayed": true,
-                                "isDefault": false,
-                                "key": "id",
-                                "width": 110
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "name",
-                                "width": 300
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": false,
-                                "key": "severity",
-                                "width": 80
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "type",
-                                "width": 200
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "status",
-                                "width": 80
-                            }
-                        ],
-                        "displayType": "ROW",
-                        "h": 3,
-                        "hideName": false,
-                        "i": "main-c1f3f0d0-a09d-11e9-8956-390f602b039a",
-                        "isVisible": true,
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Related Incidents",
-                        "readOnly": true,
-                        "static": false,
-                        "type": "relatedIncidents",
-                        "w": 2,
-                        "x": 0,
-                        "y": 11
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "comment",
-                                "height": 22,
-                                "id": "0b9dd200-a09e-11e9-8956-390f602b039a",
-                                "index": 0,
-                                "listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "firstseen",
-                                "height": 22,
-                                "id": "4ccc29d0-ccca-11ea-a049-6b4b59f3b34f",
-                                "index": 0,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "modified",
-                                "height": 22,
-                                "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
-                                "index": 1,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "published",
-                                "height": 22,
-                                "id": "9f819ad0-d188-11ea-a049-6b4b59f3b34f",
-                                "index": 0,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "stixid",
-                                "height": 22,
-                                "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 1,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Report Details",
-                        "static": false,
-                        "w": 2,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "h": 5,
-                        "i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Timeline",
-                        "static": false,
-                        "type": "indicatorTimeline",
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "h": 5,
-                        "i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Comments",
-                        "static": false,
-                        "type": "comments",
-                        "w": 1,
-                        "x": 2,
-                        "y": 9
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": false,
-                        "hideName": false,
-                        "i": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 53,
-                                "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
-                                "index": 0,
-                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {
-                                    "field": {
-                                        "simple": "tags"
-                                    }
-                                },
-                                "endCol": 1,
-                                "fieldId": "",
-                                "height": 53,
-                                "id": "f1f63340-aa49-11ea-9e46-5ff91c1cf9b7",
-                                "index": 1,
-                                "name": "Add tags",
-                                "scriptId": "Builtin|||appendIndicatorField",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "trafficlightprotocol",
-                                "height": 53,
-                                "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 2,
-                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {
-                                    "field": {
-                                        "simple": "tags"
-                                    }
-                                },
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 53,
-                                "id": "fb499720-aa49-11ea-9e46-5ff91c1cf9b7",
-                                "index": 1,
-                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
-                                "name": "Remove tags",
-                                "scriptId": "Builtin|||removeIndicatorField",
-                                "sectionItemType": "button",
-                                "startCol": 1
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Tags and TLP",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 1
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "main-d59381d0-aa49-11ea-9e46-5ff91c1cf9b7",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Actions",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
-                    },
-                    {
-                        "description": "",
-                        "displayType": "CARD",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "main-b915e930-b6dd-11ea-842d-c3903a6d3bd1",
-                        "items": [
-                            {
-                                "endCol": 1,
-                                "fieldId": "assigneduser",
-                                "height": 53,
-                                "id": "c78c26a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "assignedrole",
-                                "height": 53,
-                                "id": "c5ba4cd0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 1,
-                                "listId": "main-b915e930-b6dd-11ea-842d-c3903a6d3bd1",
-                                "sectionItemType": "field",
-                                "startCol": 1
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Assignee",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 3
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 7,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "stixdescription",
-                                "height": 106,
-                                "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 0,
-                                "listId": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Report Description",
-                        "static": false,
-                        "w": 2,
-                        "x": 0,
-                        "y": 2
-                    },
-                    {
-                        "h": 2,
-                        "i": "main-af6868b0-dbcf-11ea-894b-59859b6b5482",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Feed Related Indicators",
-                        "query": "FeedRelatedIndicatorsWidget",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamicIndicator",
-                        "w": 2,
-                        "x": 0,
-                        "y": 9
-                    }
-                ],
-                "type": "custom"
-            },
-            {
-                "hidden": false,
-                "id": "lkddep3o3f",
-                "name": "Additional Details",
-                "sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 9,
-                        "i": "lkddep3o3f-27940e50-ba17-11ea-96e1-0b84fdedf11e",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Extended Details",
-                        "static": false,
-                        "type": "extendedDetails",
-                        "w": 2,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 9,
-                        "i": "lkddep3o3f-28a72c00-ba17-11ea-96e1-0b84fdedf11e",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Custom Details",
-                        "static": false,
-                        "type": "customDetails",
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
-                    }
-                ],
-                "type": "custom"
-            }
-        ]
-    },
-    "indicatorsQuickView": {
-        "tabs": [
-            {
-                "id": "indicator-quick-view-info",
-                "name": "Info",
-                "sections": [
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": false,
-                        "i": "indicator-quick-view-info-tags-section",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 53,
-                                "id": "indicator-quick-view-info-tags-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "trafficlightprotocol",
-                                "height": 22,
-                                "id": "acc3f580-d16f-11ea-b39d-69849bf59ed7",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Tags and TLP",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-relatedIncidents",
-                        "moved": false,
-                        "name": "Related Incidents",
-                        "static": false,
-                        "type": "relatedIncidents",
-                        "w": 1,
-                        "x": 0,
-                        "y": 6
-                    },
-                    {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-comments",
-                        "moved": false,
-                        "name": "Comments",
-                        "static": false,
-                        "type": "comments",
-                        "w": 1,
-                        "x": 0,
-                        "y": 8
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "firstseen",
-                                "height": 22,
-                                "id": "3c8d7680-cccc-11ea-a049-6b4b59f3b34f",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "modified",
-                                "height": 22,
-                                "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "stixid",
-                                "height": 22,
-                                "id": "20001a20-d183-11ea-b1ee-39abdac77dba",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "published",
-                                "height": 22,
-                                "id": "b320a540-d188-11ea-a049-6b4b59f3b34f",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Report Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "indicator-quick-view-info-c9d165e0-d16f-11ea-b39d-69849bf59ed7",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "stixdescription",
-                                "height": 22,
-                                "id": "514ccc90-d183-11ea-b1ee-39abdac77dba",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Report Description",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4
-                    }
-                ],
-                "type": "custom"
-            }
-        ]
-    },
-    "fromVersion": "6.0.0",
-    "version": -1
+  "group": "indicator",
+  "name": "STIX Report",
+  "id": "STIX Report",
+  "indicatorsDetails": {
+    "tabs": [
+      {
+        "id": "main",
+        "name": "Summary",
+        "sections": [
+          {
+            "columns": [
+              {
+                "displayed": true,
+                "isDefault": false,
+                "key": "id",
+                "width": 110
+              },
+              {
+                "displayed": true,
+                "isDefault": true,
+                "key": "name",
+                "width": 300
+              },
+              {
+                "displayed": true,
+                "isDefault": false,
+                "key": "severity",
+                "width": 80
+              },
+              {
+                "displayed": true,
+                "isDefault": true,
+                "key": "type",
+                "width": 200
+              },
+              {
+                "displayed": true,
+                "isDefault": true,
+                "key": "status",
+                "width": 80
+              }
+            ],
+            "displayType": "ROW",
+            "h": 3,
+            "hideName": false,
+            "i": "main-c1f3f0d0-a09d-11e9-8956-390f602b039a",
+            "isVisible": true,
+            "items": null,
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Related Incidents",
+            "readOnly": true,
+            "static": false,
+            "type": "relatedIncidents",
+            "w": 2,
+            "x": 0,
+            "y": 11
+          },
+          {
+            "displayType": "ROW",
+            "h": 2,
+            "hideName": false,
+            "i": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+            "isVisible": true,
+            "items": [
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "comment",
+                "height": 22,
+                "id": "0b9dd200-a09e-11e9-8956-390f602b039a",
+                "index": 0,
+                "listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "published",
+                "height": 22,
+                "id": "9f819ad0-d188-11ea-a049-6b4b59f3b34f",
+                "index": 0,
+                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "firstseenbysource",
+                "height": 22,
+                "id": "93d58ef0-16aa-11eb-a177-2d529d9aff28",
+                "index": 1,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "modified",
+                "height": 22,
+                "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
+                "index": 2,
+                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "stixid",
+                "height": 22,
+                "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
+                "index": 3,
+                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "STIX Report Details",
+            "static": false,
+            "w": 1,
+            "x": 1,
+            "y": 0
+          },
+          {
+            "h": 5,
+            "i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
+            "items": null,
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Timeline",
+            "static": false,
+            "type": "indicatorTimeline",
+            "w": 1,
+            "x": 2,
+            "y": 3
+          },
+          {
+            "h": 5,
+            "i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
+            "items": null,
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Comments",
+            "static": false,
+            "type": "comments",
+            "w": 1,
+            "x": 2,
+            "y": 8
+          },
+          {
+            "displayType": "CARD",
+            "h": 2,
+            "hideItemTitleOnlyOne": false,
+            "hideName": false,
+            "i": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+            "items": [
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "tags",
+                "height": 53,
+                "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
+                "index": 0,
+                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  "field": {
+                    "simple": "tags"
+                  }
+                },
+                "endCol": 1,
+                "fieldId": "",
+                "height": 53,
+                "id": "f1f63340-aa49-11ea-9e46-5ff91c1cf9b7",
+                "index": 1,
+                "name": "Add tags",
+                "scriptId": "Builtin|||appendIndicatorField",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "trafficlightprotocol",
+                "height": 53,
+                "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
+                "index": 2,
+                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  "field": {
+                    "simple": "tags"
+                  }
+                },
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 53,
+                "id": "fb499720-aa49-11ea-9e46-5ff91c1cf9b7",
+                "index": 1,
+                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+                "name": "Remove tags",
+                "scriptId": "Builtin|||removeIndicatorField",
+                "sectionItemType": "button",
+                "startCol": 1
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Tags and TLP",
+            "static": false,
+            "w": 1,
+            "x": 2,
+            "y": 0
+          },
+          {
+            "description": "",
+            "displayType": "CARD",
+            "h": 1,
+            "hideName": false,
+            "i": "main-b915e930-b6dd-11ea-842d-c3903a6d3bd1",
+            "items": [
+              {
+                "endCol": 1,
+                "fieldId": "assigneduser",
+                "height": 53,
+                "id": "c78c26a0-b6dd-11ea-842d-c3903a6d3bd1",
+                "index": 0,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "assignedrole",
+                "height": 53,
+                "id": "c5ba4cd0-b6dd-11ea-842d-c3903a6d3bd1",
+                "index": 1,
+                "listId": "main-b915e930-b6dd-11ea-842d-c3903a6d3bd1",
+                "sectionItemType": "field",
+                "startCol": 1
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Assignee",
+            "static": false,
+            "w": 1,
+            "x": 2,
+            "y": 2
+          },
+          {
+            "displayType": "ROW",
+            "h": 7,
+            "hideItemTitleOnlyOne": true,
+            "hideName": false,
+            "i": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
+            "items": [
+              {
+                "dropEffect": "move",
+                "endCol": 4,
+                "fieldId": "stixdescription",
+                "height": 44,
+                "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
+                "index": 0,
+                "listId": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Report Description",
+            "static": false,
+            "w": 2,
+            "x": 0,
+            "y": 2
+          },
+          {
+            "h": 2,
+            "i": "main-af6868b0-dbcf-11ea-894b-59859b6b5482",
+            "items": [
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Feed Related Indicators",
+            "query": "FeedRelatedIndicatorsWidget",
+            "queryType": "script",
+            "static": false,
+            "type": "dynamicIndicator",
+            "w": 2,
+            "x": 0,
+            "y": 9
+          },
+          {
+            "displayType": "ROW",
+            "h": 2,
+            "hideName": false,
+            "i": "main-e79444b0-16a9-11eb-a177-2d529d9aff28",
+            "items": [
+              {
+                "endCol": 2,
+                "fieldId": "indicatortype",
+                "height": 22,
+                "id": "0eed5ba0-16aa-11eb-a177-2d529d9aff28",
+                "index": 0,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "firstseen",
+                "height": 22,
+                "id": "4ccc29d0-ccca-11ea-a049-6b4b59f3b34f",
+                "index": 1,
+                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "lastseen",
+                "height": 22,
+                "id": "5c2ac3d0-16aa-11eb-a177-2d529d9aff28",
+                "index": 2,
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "XSOAR Details",
+            "static": false,
+            "w": 1,
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "type": "custom"
+      },
+      {
+        "hidden": false,
+        "id": "lkddep3o3f",
+        "name": "Additional Details",
+        "sections": [
+          {
+            "displayType": "ROW",
+            "h": 9,
+            "i": "lkddep3o3f-27940e50-ba17-11ea-96e1-0b84fdedf11e",
+            "items": null,
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Extended Details",
+            "static": false,
+            "type": "extendedDetails",
+            "w": 2,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "displayType": "ROW",
+            "h": 9,
+            "i": "lkddep3o3f-28a72c00-ba17-11ea-96e1-0b84fdedf11e",
+            "items": null,
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Custom Details",
+            "static": false,
+            "type": "customDetails",
+            "w": 1,
+            "x": 2,
+            "y": 0
+          }
+        ],
+        "type": "custom"
+      }
+    ]
+  },
+  "indicatorsQuickView": {
+    "tabs": [
+      {
+        "id": "indicator-quick-view-info",
+        "name": "Info",
+        "sections": [
+          {
+            "displayType": "CARD",
+            "h": 2,
+            "hideItemTitleOnlyOne": false,
+            "i": "indicator-quick-view-info-tags-section",
+            "items": [
+              {
+                "endCol": 2,
+                "fieldId": "tags",
+                "height": 53,
+                "id": "indicator-quick-view-info-tags-field",
+                "index": 0,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "trafficlightprotocol",
+                "height": 22,
+                "id": "acc3f580-d16f-11ea-b39d-69849bf59ed7",
+                "index": 1,
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Tags and TLP",
+            "static": false,
+            "w": 1,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "h": 2,
+            "i": "indicator-quick-view-info-relatedIncidents",
+            "moved": false,
+            "name": "Related Incidents",
+            "static": false,
+            "type": "relatedIncidents",
+            "w": 1,
+            "x": 0,
+            "y": 6
+          },
+          {
+            "h": 2,
+            "i": "indicator-quick-view-info-comments",
+            "moved": false,
+            "name": "Comments",
+            "static": false,
+            "type": "comments",
+            "w": 1,
+            "x": 0,
+            "y": 8
+          },
+          {
+            "displayType": "ROW",
+            "h": 2,
+            "hideName": false,
+            "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+            "items": [
+              {
+                "endCol": 2,
+                "fieldId": "firstseen",
+                "height": 22,
+                "id": "3c8d7680-cccc-11ea-a049-6b4b59f3b34f",
+                "index": 0,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "modified",
+                "height": 22,
+                "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
+                "index": 1,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "stixid",
+                "height": 22,
+                "id": "20001a20-d183-11ea-b1ee-39abdac77dba",
+                "index": 2,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "published",
+                "height": 22,
+                "id": "b320a540-d188-11ea-a049-6b4b59f3b34f",
+                "index": 3,
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Report Details",
+            "static": false,
+            "w": 1,
+            "x": 0,
+            "y": 2
+          },
+          {
+            "displayType": "ROW",
+            "h": 2,
+            "hideItemTitleOnlyOne": true,
+            "hideName": false,
+            "i": "indicator-quick-view-info-c9d165e0-d16f-11ea-b39d-69849bf59ed7",
+            "items": [
+              {
+                "endCol": 2,
+                "fieldId": "stixdescription",
+                "height": 22,
+                "id": "514ccc90-d183-11ea-b1ee-39abdac77dba",
+                "index": 0,
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Report Description",
+            "static": false,
+            "w": 1,
+            "x": 0,
+            "y": 4
+          }
+        ],
+        "type": "custom"
+      }
+    ]
+  },
+  "system": false,
+  "version": -1,
+  "fromVersion": "6.0.0",
+  "description": ""
 }
