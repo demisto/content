@@ -286,7 +286,9 @@ def get_modified_files_for_testing(files_string):
                 continue
 
             elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
-                modified_metadata_list.add(tools.get_pack_name(file_path))
+                pack = tools.get_pack_name(file_path)
+                if pack:
+                    modified_metadata_list.add(pack)
 
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)

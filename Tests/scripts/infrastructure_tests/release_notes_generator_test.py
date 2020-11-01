@@ -293,6 +293,34 @@ class TestGenerateReleaseNotesSummary:
 
 
 class TestMergeVersionBlocks:
+    def test_spaced_content_entity_and_old_format(self):
+        """
+        Given
+        - Two release notes files with content entity instance wrapped with ** and entity type contains spaces.
+        When
+        - Merging the two release notes files into one file.
+        Then
+        - Ensure that the content entity instance is wrapped with **.
+        - Ensure that the content entity type contains whitespace.
+        - Ensure that the content of both RN files appears in the result file.
+        """
+        release_notes_paths = [
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
+        ]
+
+        pack_versions_dict = {}
+        for path in release_notes_paths:
+            with open(path) as file_:
+                pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
+
+        rn_block = merge_version_blocks('FakePack', pack_versions_dict, {})
+
+        assert 'Incident Fields' in rn_block
+        assert '**XDR Alerts**' in rn_block
+        assert 'First' in rn_block
+        assert 'Second' in rn_block
+
     def test_sanity(self):
         """
         Given
