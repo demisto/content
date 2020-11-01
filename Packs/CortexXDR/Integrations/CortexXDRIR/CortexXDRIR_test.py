@@ -1235,7 +1235,7 @@ def test_run_script_command(requests_mock):
         """
     from CortexXDRIR import run_script_command, Client
 
-    run_script_expected_result = {'PaloAltoNetworksXDR.RunScript(val.action_id == obj.action_id)': {'actionId': 1787}}
+    run_script_expected_result = {'PaloAltoNetworksXDR.RunScript(val.action_id == obj.action_id)': {'action_id': 1787}}
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json={"reply": {"action_id": 1787, "status": 1,
                                                                                        "endpoints_count": 1}})
 

@@ -2466,7 +2466,7 @@ def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]
     return (
         tableToMarkdown(name='Retrieve file Details', t=result, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.F(val.endpoint_id == obj.endpoint_id)': result
+            f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
         },
         raw_result
     )
