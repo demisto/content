@@ -506,10 +506,14 @@ def load_json(file_path):
         dict: loaded json file.
 
     """
-    with open(file_path, 'r') as json_file:
-        result = json.load(json_file)
+    try:
+        with open(file_path, 'r') as json_file:
+            result = json.load(json_file)
 
-    return result
+        return result
+    except json.decoder.JSONDecodeError as e:
+        # if file is empty
+        pass
 
 
 def get_content_git_client(content_repo_path):
