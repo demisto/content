@@ -181,7 +181,7 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
     # make the pack installation request
     global PACK_INSTALL
     PACK_INSTALL = False
-    while PACK_INSTALL:
+    while False:
         try:
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
