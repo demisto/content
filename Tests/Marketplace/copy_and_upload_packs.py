@@ -56,7 +56,6 @@ def upload_index_to_storage(index_folder_path, build_index_blob, prod_index_blob
         production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is uploaded to.
         build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is downloaded from.
 
-
     """
     try:
         build_index_blob.reload()
