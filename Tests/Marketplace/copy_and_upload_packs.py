@@ -366,7 +366,7 @@ def main():
 
     # finished iteration over content packs
     upload_index_to_storage(build_index_folder_path, extract_destination_path, build_index_blob, prod_index_blob,
-                            build_index_generation, prod_index_generation)
+                            build_index_generation, prod_index_generation, build_bucket, production_bucket)
 
     # upload id_set.json to bucket
     upload_id_set(production_bucket, id_set_path)
