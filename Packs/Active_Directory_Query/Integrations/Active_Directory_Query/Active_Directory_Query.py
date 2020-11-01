@@ -137,6 +137,8 @@ def endpoint_entry(computer_object, custome_attributes):
     }
 
     for attr in custome_attributes:
+        if attr == '*':
+            continue
         try:
             endpoint[attr] = computer_object[attr]
         except KeyError as e:

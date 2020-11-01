@@ -137,3 +137,9 @@ def test_ssl_custom_cert(mocker, request):
     assert len(err_msg) < 100
     assert 'Failed to access' in err_msg
     assert 'SSL error' not in err_msg
+
+
+def test_endpoint_entry():
+    from Active_Directory_Query import endpoint_entry
+    custom_attributes_with_asterisk = endpoint_entry({'dn': 'dn', 'name': 'name', 'memberOf': 'memberOf'}, ['*'])
+    assert custom_attributes_with_asterisk == {'Groups': 'memberOf', 'Hostname': 'name', 'ID': 'dn', 'Type': 'AD'}
