@@ -961,6 +961,7 @@ def stringEscape(st):
     """
     return st.replace('\r', '\\r').replace('\n', '\\n').replace('\t', '\\t')
 
+
 def stringUnEscape(st):
     """
        Unescape newline chars in the given string.
