@@ -1,0 +1,224 @@
+category: Messaging
+commonfields:
+  id: EwsPowershell
+  version: -1
+configuration:
+- defaultvalue: https://outlook.office365.com
+  display: Exchange Web Services (EWS) URL (e.g. https://outlook.office365.com)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: https://ps.compliance.protection.outlook.com
+  display: Search and Compliance URI (e.g. https://ps.compliance.protection.outlook.com)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: EWS Powershell integration use Oauth2.0 and enable executing commands in Microsoft Echange Online and Microsoft Search and Compliance.
+display: EWS Powershell
+name: EwsPowershell
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Domains to block.
+      isArray: true
+      name: blocked_domains
+      required: false
+      secret: false
+    - default: false
+      description: Senders to block.
+      isArray: true
+      name: blocked_senders
+      required: false
+      secret: false
+    deprecated: false
+    description: Block Domains/senders addresses organization-wide.
+    execution: false
+    name: ews-global-sender-blacklist
+  - arguments:
+    - default: false
+      description: Mail box ID.
+      isArray: false
+      name: maibox_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get junk rules in account.
+    execution: false
+    name: ews-junk-rules-get
+  - arguments:
+    - default: false
+      description: Mail box ID.
+      isArray: false
+      name: maibox_id
+      required: true
+      secret: false
+    - default: false
+      description: Domains to block. (Comma seprated)
+      isArray: true
+      name: blocked_domains
+      required: false
+      secret: false
+    - default: false
+      description: Senders to block. (Comma seprated)
+      isArray: true
+      name: blocked_senders
+      required: false
+      secret: false
+    - default: false
+      description: Domains to Trust. (Comma seprated)
+      isArray: true
+      name: trusted_domains
+      required: false
+      secret: false
+    - default: false
+      description: Senders to Trust. (Comma seprated)
+      isArray: true
+      name: trusted_senders
+      required: false
+      secret: false
+    deprecated: false
+    description: Set junk rules in account.
+    execution: false
+    name: ews-junk-rules-set
+  - arguments:
+    - default: false
+      description: Message ID.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get message trace by Message ID.
+    execution: false
+    name: ews-message-trace
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    - default: false
+      defaultvalue: false
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+      isArray: false
+      name: allow_not_found_exchange_location 
+      required: true
+      secret: false
+    - default: false
+      description: Keyword Query Language (KQL).
+      isArray: false
+      name: kql_query 
+      required: false
+      secret: false
+    - default: false
+      description: Description.
+      isArray: false
+      name: description 
+      required: true
+      secret: false
+    - default: false
+      description: Mailboxes to include. (Comma seprated)
+      isArray: true
+      name: exchange_location
+      required: true
+      secret: false
+    - default: false
+      description: Mailboxes to exlude. (Comma seprated)
+      isArray: true
+      name: exchange_location_exclustion
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new compliance search configuration.
+    execution: false
+    name: ews-compliance-new-search
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove compliance search configuration.
+    execution: false
+    name: ews-compliance-remove-search
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Start compliance search configuration.
+    execution: false
+    name: ews-compliance-start-search
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Stop compliance search configuration.
+    execution: false
+    name: ews-compliance-stop-search
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get compliance search configuration.
+    execution: false
+    name: ews-compliance-get-search
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    - default: false
+      description: Purge type (Hard-Unrecoverable/Soft-Recoverable).
+      isArray: false
+      name: purge_type
+      required: true
+      secret: false
+      predefined:
+        - Soft
+        - Hard
+    deprecated: false
+    description: Purge (remove) messages by search performed in compliance.
+    execution: false
+    name: ews-compliance-purge-search
+  - deprecated: false
+    description: Start login using Oauth2.0.
+    execution: false
+    name: ews-start-login
+  - deprecated: false
+    description: Complete login using Oauth2.0.
+    execution: false
+    name: ews-complete-login
+  dockerimage: devdemisto/pwsh-ews:1.0.0.13006
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: powershell
+fromversion: 5.5.0
