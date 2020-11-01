@@ -967,7 +967,7 @@ jobs:
                   GCS_PATH=$(mktemp)
                   CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
                   echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist-dev' -bb 'marketplace-ci-build' -i $ID_SET -s $GCS_PATH -n $CIRCLE_PREVIOUS_BUILD_NUM -c $CIRCLE_BRANCH -pbp 'wow/content/packs'
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist-dev' -bb 'marketplace-ci-build' -i $ID_SET -s $GCS_PATH -n $CIRCLE_PREVIOUS_BUILD_NUM -c $CIRCLE_BRANCH -pbp 'wow/content/packs' -o false
                   rm $GCS_PATH 
       - run:
           name: Slack Notifier
