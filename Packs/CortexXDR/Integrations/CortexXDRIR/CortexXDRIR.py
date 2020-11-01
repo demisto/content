@@ -123,17 +123,15 @@ def arg_to_dictionary(arg: Any) -> dict:
     """
     list_of_arg: list = argToList(arg)
     args_dictionary: dict = {}
-    for item in list_of_arg:
-        param_array = argToList(item, '=')
-        if len(param_array) != 2:
-            raise ValueError('Please enter comma separated parameters at the following way : “ '
-                             'param1_name=param1_value, param2_name=param2_value “  ')
-        else:
-            value = param_array[1]
-            if value.isdigit():
-                value = int(value)
-            args_dictionary[param_array[0]] = value
-    return args_dictionary
+    try:
+        for item in list_of_arg:
+            key, value = item.split('=')
+            value = int(value) if value.isdigit()else value
+            args_dictionary[key] = value
+
+     except ValueError:
+        raise ValueError('Please enter comma separated parameters at the following way: '
+             'param1_name=param1_value,param2_name=param2_value')
 
 
 def string_to_int_array(string_list: list) -> list:
@@ -1113,45 +1111,13 @@ class Client(BaseClient):
 
     def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
                     linux_supported, macos_supported, is_high_risk):
-        filters: list = [
-            {
-                "field": "is_high_risk",
-                "operator": "in",
-                "value": [is_high_risk]
-            },
-            {
-                "field": "macos_supported",
-                "operator": "in",
-                "value": [macos_supported]
-            },
-            {
-                "field": "linux_supported",
-                "operator": "in",
-                "value": [linux_supported]
-            },
-            {
-                "field": "windows_supported",
-                "operator": "in",
-                "value": [windows_supported]
-            },
-            {
-                "field": "name",
-                "operator": "in",
-                "value": name
-            },
-            {
-                "field": "description",
-                "operator": "in",
-                "value": description
-            },
-            {
-                "field": "created_by",
-                "operator": "in",
-                "value": created_by
-            }
-        ]
-
-        filters = list(filter(lambda x: x['value'] and x['value'][0], filters))
+        # We iterate over the function arguments using `locals()`and crate a list of dicts of the form: {"field": "arg_name", "operator": "in", "value": arg_val}
+        
+        filters: list = [{
+            "field": "arg_key",
+             "operator": "in",
+             "value": arg_val"
+        } for arg_key, arg_val in locals().items() if arg_val and arg_val[0]]
 
         request_data: Dict[str, Any] = {
             "filters": filters
@@ -2578,10 +2544,10 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
         name=script_name,
         description=description,
         created_by=created_by,
-        windows_supported=windows_supported,
-        linux_supported=linux_supported,
-        macos_supported=macos_supported,
-        is_high_risk=is_high_risk
+        windows_supported=[windows_supported],
+        linux_supported=[linux_supported],
+        macos_supported=[macos_supported],
+        is_high_risk=[is_high_risk]
     )
 
     headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
