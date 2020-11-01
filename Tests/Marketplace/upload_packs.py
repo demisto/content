@@ -956,7 +956,8 @@ def main():
     upload_id_set(storage_bucket, id_set_path)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list, packs_artifacts_path, True)
+    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list, os.path.dirname(packs_artifacts_path),
+                                                                      write_to_artifacts=True)
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs)
