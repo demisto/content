@@ -1476,3 +1476,5 @@ if __name__ in ('__builtin__', 'builtins', '__main__'):
     value = marshal(value)
 
     demisto.results(value)
+
+
