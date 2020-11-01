@@ -1911,7 +1911,7 @@ script:
       name: endpoint_ids
       required: true
     - description: 'Please enter comma separated parameters at the following way :
-        “ param1_name=param1_value, param2_name=param2_value “. You can find which
+        "param1_name=param1_value,param2_name=param2_value". You can find which
         parameters required for the script, by running "xdr-get-script-metadata" command.'
       name: parameters
     - description: Integer, represents the timeout in seconds for this execution.
