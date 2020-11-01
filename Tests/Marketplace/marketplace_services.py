@@ -26,6 +26,7 @@ PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
+FAILED_PACKS_PATH_SUFFIX = "failed_packs_prepare_content.json"
 
 
 class GCPConfig(object):
@@ -1804,6 +1805,22 @@ class Pack(object):
 
     def is_changelog_exists(self):
         return os.path.isfile(os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
+
+    def is_failed_to_upload(self, failed_packs_file):
+        """
+        Checks if the pack was failed to upload in Prepare Content step in Create Instances job
+        Args:
+            failed_packs_file (dict): The failed packs file
+
+        Returns:
+            bool: Whether the operation succeeded.
+            str: The pack's failing status
+
+        """
+        if self._pack_name in failed_packs_file:
+            return True, failed_packs_file[self._pack_name]
+        else:
+            return False, str()
 
 
 # HELPER FUNCTIONS
