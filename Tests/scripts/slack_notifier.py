@@ -140,15 +140,18 @@ def get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE, job_na
 
         if job_name == 'Upload Packs':
             if os.path.exists(failed_packs_file_path):
-                with open(failed_packs_file_path, 'r') as json_file:
-                    failed_packs_file = json.load(json_file)
-                if failed_packs_file:
-                    steps_fields += [{
-                        "title": "Failed Packs:",
-                        "value": "\n".join([f"{pack_name}: {pack_status}" for pack_name, pack_status in
-                                            failed_packs_file.items()]),
-                        "short": False
-                    }]
+                try:
+                    with open(failed_packs_file_path, 'r') as json_file:
+                        failed_packs_file = json.load(json_file)
+                    if failed_packs_file:
+                        steps_fields += [{
+                            "title": "Failed Packs:",
+                            "value": "\n".join([f"{pack_name}: {pack_status}" for pack_name, pack_status in
+                                                failed_packs_file.items()]),
+                            "short": False
+                        }]
+                except json.decoder.JSONDecodeError:
+                    pass
 
         if job_name != 'Upload Packs' and color == 'good':
             print_color('On bucket upload flow we are not notifying on jobs that are not Upload Packs. exiting...',

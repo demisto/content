@@ -5,11 +5,10 @@ import argparse
 import shutil
 import logging
 from zipfile import ZipFile
-from datetime import datetime
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, Metadata, PACKS_FOLDER, FAILED_PACKS_PATH_SUFFIX
+    IGNORED_FILES, PACKS_FOLDER, FAILED_PACKS_PATH_SUFFIX
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, upload_id_set, load_json, \
     get_packs_summary
 

@@ -509,11 +509,9 @@ def load_json(file_path):
     try:
         with open(file_path, 'r') as json_file:
             result = json.load(json_file)
-
         return result
-    except json.decoder.JSONDecodeError as e:
-        # if file is empty
-        pass
+    except json.decoder.JSONDecodeError:
+        return {}
 
 
 def get_content_git_client(content_repo_path):
