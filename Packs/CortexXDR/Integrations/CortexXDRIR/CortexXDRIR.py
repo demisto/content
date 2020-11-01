@@ -2490,14 +2490,13 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
         linux=linux,
         macos=macos
     )
-    action_id = reply.get("action_id")
-
+    result = {'action_id' = reply.get('action_id')}
     return (
-        tableToMarkdown(name='Retrieve files', t={'Action Id': action_id}, headers=['Action Id'], removeNull=True),
+        tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.retrievedFiles.actionId(val.actionId == obj.actionId)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFiles(val.action_id == obj.action_id)': result
         },
-        action_id
+        reply
     )
 
 
@@ -2664,17 +2663,17 @@ def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
     for action_id in action_id_list:
         data = client.action_status_get(action_id)
 
-        for item in data:
+        for endpoint_id, status in data.items():
             result.append({
                 "action_id": action_id,
-                "endpoint_id": item,
-                "status": data.get(item)
+                "endpoint_id": id,
+                "status": status
             })
 
     return (
         tableToMarkdown(name='Get Action Status', t=result, removeNull=True, headers=["endpoint_id", "status"]),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.getActionStatus(val.actionId == obj.actionId)': result
+            f'{INTEGRATION_CONTEXT_BRAND}.GetActionStatus(val.action_id == obj.action_id)': result
         },
         result
     )
