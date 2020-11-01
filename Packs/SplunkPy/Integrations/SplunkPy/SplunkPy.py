@@ -13,6 +13,7 @@ import requests
 import urllib3
 import io
 import re
+from dateparser import parse
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
@@ -463,9 +464,30 @@ def splunk_results_command(service):
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
+def get_latest_incident_time(incidents):
+    def to_seconds(date):
+        # convert date to numeric timestamp
+        return time.mktime(date.timetuple())
+
+    if len(incidents) == 0:
+        return '', ''
+
+    latest_incident_name = incidents[0].get('name')
+    latest_incident_time = parse(incidents[0].get('occurred', '01-01-01T00:00:00'))
+
+    for incident in incidents:
+        if to_seconds(parse(incident.get('occurred', '01-01-01T00:00:00'))) > \
+                to_seconds(latest_incident_time):
+            latest_incident_name = incident.get('name')
+            latest_incident_time = parse(incident.get('occurred', '01-01-01T00:00:00'))
+
+    return latest_incident_time, latest_incident_name
+
+
 def fetch_incidents(service):
     last_run = demisto.getLastRun() and demisto.getLastRun()['time']
     search_offset = demisto.getLastRun().get('offset', 0)
+    last_fetched_incident = demisto.getLastRun().get('last_fetched_incident', '')
 
     incidents = []
     current_time_for_fetch = datetime.utcnow()
@@ -508,13 +530,24 @@ def fetch_incidents(service):
     reader = results.ResultsReader(oneshotsearch_results)
     for item in reader:
         inc = notable_to_incident(item)
-        incidents.append(inc)
+        if inc.get('name') != last_fetched_incident:
+            incidents.append(inc)
 
     demisto.incidents(incidents)
-    if len(incidents) < FETCH_LIMIT:
-        demisto.setLastRun({'time': now, 'offset': 0})
+    latest_incident_time, latest_incident_name = get_latest_incident_time(incidents)
+
+    # brought nothing - repeat current fetch.
+    if len(incidents) == 0:
+        demisto.setLastRun({'time': last_run, 'offset': 0, 'last_fetched_incident': last_fetched_incident})
+
+    # brought to the fetch limit - repeat current fetch with new offset.
+    elif len(incidents) == FETCH_LIMIT:
+        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT,
+                            'last_fetched_incident': latest_incident_name})
+
+    # brought less than fetch limit (but not nothing) - move latest time to latest incident time
     else:
-        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
+        demisto.setLastRun({'time': latest_incident_time, 'offset': 0, 'last_fetched_incident': latest_incident_name})
 
 
 def parse_time_to_minutes():
