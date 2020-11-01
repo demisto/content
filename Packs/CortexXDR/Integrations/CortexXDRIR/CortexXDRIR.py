@@ -135,20 +135,6 @@ def arg_to_dictionary(arg: Any) -> dict:
     return args_dictionary
 
 
-def arg_to_json(arg):
-    """
-        Args:
-            arg: string representing json object or None
-
-        Returns: json object or None
-
-        """
-    if arg:
-        return json.loads(arg)
-    else:
-        return None
-
-
 class Client(BaseClient):
 
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
@@ -1205,8 +1191,10 @@ class Client(BaseClient):
         }
 
         vendors_list: list = []
-        request_data = assign_params(expiration_date=expiration_date, comment=comment, reputation=reputation, reliability=reliability, vendors=vendors , class =class_string)
-
+        request_data = assign_params(expiration_date=expiration_date, comment=comment, reputation=reputation,
+                                     reliability=reliability, vendors=vendors)
+        if class_string:
+            request_data['class'] = class_string
         # user should insert all of the following: vendor_name, vendor_reputation and vendor_reliability, or none of
         # them.
         if vendor_name and vendor_reputation and vendor_reliability:
@@ -2460,7 +2448,7 @@ def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
     result = []
-    raw_res = []
+    raw_result = []
 
     for action_id in action_id_list:
         data = client.retrieve_file_details(action_id)
@@ -2476,7 +2464,7 @@ def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]
             result.append(obj)
 
     return (
-        tableToMarkdown(name='Retrieve file Details', t=result, headerTransform=string_to_table_header)
+        tableToMarkdown(name='Retrieve file Details', t=result, headerTransform=string_to_table_header),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
         },

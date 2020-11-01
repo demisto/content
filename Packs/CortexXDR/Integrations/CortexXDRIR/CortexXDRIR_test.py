@@ -1148,7 +1148,7 @@ def test_retrieve_file_details_command(requests_mock):
             "file_link": output.get(item)
         })
     retrieve_expected_result = {
-        'PaloAltoNetworksXDR.retrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
+        'PaloAltoNetworksXDR.RetrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
     }
     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
 
@@ -1426,24 +1426,6 @@ def test_arg_to_dictionary():
 
     assert arg_to_dictionary(string) == ret_value
     assert arg_to_dictionary(None) == {}
-
-
-def test_arg_to_json():
-    """
-            Given:
-                -string representing json array
-            When:
-                -when user enter params argument as json array
-            Then:
-                - returns json array
-        """
-    from CortexXDRIR import arg_to_json
-
-    string = '{"test 1": 1, "test 2": "str", "test 3": [1, "str", true]}'
-    json_obj = load_test_data("./test_data/arg_to_json.json")
-
-    assert arg_to_json(string) == json_obj
-    assert arg_to_json(None) is None
 
 
 def test_sort_by_key__only_main_key():
