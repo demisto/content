@@ -354,6 +354,8 @@ def main():
                                                                               override_all_packs, pack.latest_version)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+            pack.cleanup()
+            continue
 
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
