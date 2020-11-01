@@ -134,6 +134,102 @@ script:
     - contextPath: ThreatVault.IP.ipAddress
       description: IP address.
       type: String
+  - arguments:
+    - default: false
+      description: Signature name to search.
+      isArray: false
+      name: signature_name
+      required: true
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate antivirus signature search.
+    execution: false
+    name: threatvault-antivirus-signature-search
+    outputs:
+    - contextPath: ThreatVault.Search.search_request_id
+      description: Search request ID.
+      type: String
+    - contextPath: ThreatVault.Search.status
+      description: Saearch status.
+      type: String
+  - arguments:
+    - default: false
+      description: Signature name to search.
+      isArray: false
+      name: signature_name
+      required: false
+      secret: false
+    - default: false
+      description: Domain name to search.
+      isArray: false
+      name: domain_name
+      required: false
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate DNS signature search.
+    execution: false
+    name: threatvault-dns-signature-search
+    outputs:
+    - contextPath: ThreatVault.Search.search_request_id
+      description: Search request ID.
+      type: String
+    - contextPath: ThreatVault.Search.status
+      description: Saearch status.
+      type: String
+  - arguments:
+    - default: false
+      description: Signature name to search.
+      isArray: false
+      name: signature_name
+      required: true
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate anti spyware signature search.
+    execution: false
+    name: threatvault-antispyware-signature-search
+    outputs:
+    - contextPath: ThreatVault.Search.search_request_id
+      description: Search request ID.
+      type: String
+    - contextPath: ThreatVault.Search.status
+      description: Saearch status.
+      type: String
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   longRunning: false
