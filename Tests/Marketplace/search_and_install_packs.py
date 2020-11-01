@@ -169,7 +169,19 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
 
 
 def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999):
+    """
+    Install content packs on nightly build.
+    Args:
+        client(demisto_client): The configured client to use.
+        host (str): The server URL.
+        prints_manager (ParallelPrintsManager): Print manager object.
+        thread_index (int): the thread index.
+        packs_to_install (list): A list of the packs to install.
+        request_timeout (int): Timeout settings for the installation request.
 
+    Returns:
+
+    """
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
     message = 'Installing the following packs in server {}:\n{}'.format(host, packs_to_install_str)
     prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
@@ -210,11 +222,13 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
             PACK_INSTALL = False
             pack_id = ''
             message = str(e).split('\n')
+            # Get the pack ID of the failed pack.
             for line in message:
                 if line.startswith('HTTP response body: '):
                     error_message = json.loads(line.split(': ', 1)[1])
                     error = error_message.get('error')
                     pack_id = error.split()[-2]
+            # Removed the bad pack from the list
             packs = [pack for pack in packs_to_install if not (pack['id'] == pack_id)]
             request_data = {
                 'packs': packs,
