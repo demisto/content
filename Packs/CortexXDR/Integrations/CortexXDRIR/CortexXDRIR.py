@@ -2578,10 +2578,10 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
         name=script_name,
         description=description,
         created_by=created_by,
-        windows_supported=windows_supported,
-        linux_supported=linux_supported,
-        macos_supported=macos_supported,
-        is_high_risk=is_high_risk
+        windows_supported=[windows_supported],
+        linux_supported=[linux_supported],
+        macos_supported=[macos_supported],
+        is_high_risk=[is_high_risk]
     )
 
     headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
