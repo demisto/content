@@ -248,11 +248,11 @@ def test_email(requests_mock):
     }
 
     # Assert SUSPICIOUS dbot score
-    assert response.indicator.email_address == TEST_EMAIL_ADDRESS
-    assert response.indicator.dbot_score.indicator == TEST_EMAIL_ADDRESS
-    assert response.indicator.dbot_score.indicator_type == DBotScoreType.ACCOUNT
-    assert response.indicator.dbot_score.integration_name == INTEGRATION_NAME
-    assert response.indicator.dbot_score.score == Common.DBotScore.SUSPICIOUS
+    assert response.indicators[0].email_address == TEST_EMAIL_ADDRESS
+    assert response.indicators[0].dbot_score.indicators[0] == TEST_EMAIL_ADDRESS
+    assert response.indicators[0].dbot_score.indicator_type == DBotScoreType.ACCOUNT
+    assert response.indicators[0].dbot_score.integration_name == INTEGRATION_NAME
+    assert response.indicators[0].dbot_score.score == Common.DBotScore.SUSPICIOUS
 
 
 def test_email_score_good(requests_mock):
@@ -275,7 +275,7 @@ def test_email_score_good(requests_mock):
     mock_response["suspicious"] = False
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     response = email_command(client, args)
-    assert response.indicator.dbot_score.score == Common.DBotScore.GOOD
+    assert response.indicators[0].dbot_score.score == Common.DBotScore.GOOD
 
 
 def test_email_score_suspicious(requests_mock):
@@ -303,7 +303,7 @@ def test_email_score_suspicious(requests_mock):
 
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     response = email_command(client, args)
-    assert response.indicator.dbot_score.score == Common.DBotScore.SUSPICIOUS
+    assert response.indicators[0].dbot_score.score == Common.DBotScore.SUSPICIOUS
 
 
 def test_email_score_bad_malicious_activity_recent(requests_mock):
@@ -331,8 +331,8 @@ def test_email_score_bad_malicious_activity_recent(requests_mock):
 
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     response = email_command(client, args)
-    assert response.indicator.dbot_score.score == Common.DBotScore.BAD
-    assert response.indicator.dbot_score.malicious_description == 'EmailRepIO returned malicious_activity_recent'
+    assert response.indicators[0].dbot_score.score == Common.DBotScore.BAD
+    assert response.indicators[0].dbot_score.malicious_description == 'EmailRepIO returned malicious_activity_recent'
 
 
 def test_email_score_bad_credentials_leaked_recent(requests_mock):
@@ -360,8 +360,8 @@ def test_email_score_bad_credentials_leaked_recent(requests_mock):
 
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     response = email_command(client, args)
-    assert response.indicator.dbot_score.score == Common.DBotScore.BAD
-    assert response.indicator.dbot_score.malicious_description == 'EmailRepIO returned credentials_leaked_recent'
+    assert response.indicators[0].dbot_score.score == Common.DBotScore.BAD
+    assert response.indicators[0].dbot_score.malicious_description == 'EmailRepIO returned credentials_leaked_recent'
 
 
 def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(requests_mock):
@@ -389,8 +389,8 @@ def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(reques
 
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS}', json=mock_response)
     response = email_command(client, args)
-    assert response.indicator.dbot_score.score == Common.DBotScore.BAD
-    assert response.indicator.dbot_score.malicious_description == \
+    assert response.indicators[0].dbot_score.score == Common.DBotScore.BAD
+    assert response.indicators[0].dbot_score.malicious_description == \
         'EmailRepIO returned malicious_activity_recent credentials_leaked_recent'
 
 
