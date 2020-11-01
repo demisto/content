@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 from datetime import timezone
 import secrets
 import string
@@ -126,12 +125,12 @@ def arg_to_dictionary(arg: Any) -> dict:
     try:
         for item in list_of_arg:
             key, value = item.split('=')
-            value = int(value) if value.isdigit()else value
+            value = int(value) if value.isdigit() else value
             args_dictionary[key] = value
 
-     except ValueError:
+    except ValueError:
         raise ValueError('Please enter comma separated parameters at the following way: '
-             'param1_name=param1_value,param2_name=param2_value')
+                         'param1_name=param1_value,param2_name=param2_value')
 
 
 def string_to_int_array(string_list: list) -> list:
@@ -1112,12 +1111,21 @@ class Client(BaseClient):
     def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
                     linux_supported, macos_supported, is_high_risk):
         # We iterate over the function arguments using `locals()`and crate a list of dicts of the form: {"field": "arg_name", "operator": "in", "value": arg_val}
-        
+
+        arg_list = {'name': name,
+                    'description': description,
+                    'created_by': created_by,
+                    'windows_supported': windows_supported,
+                    'linux_supported': linux_supported,
+                    'macos_supported': macos_supported,
+                    'is_high_risk': is_high_risk
+                    }
+
         filters: list = [{
-            "field": "arg_key",
-             "operator": "in",
-             "value": arg_val"
-        } for arg_key, arg_val in locals().items() if arg_val and arg_val[0]]
+            "field": arg_key,
+            "operator": "in",
+            "value": arg_val
+        } for arg_key, arg_val in arg_list.items() if arg_val and arg_val[0]]
 
         request_data: Dict[str, Any] = {
             "filters": filters
@@ -2472,7 +2480,8 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
         username=username
     )
 
-    headers = ['timestamp', 'host_name', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product', 'serial']
+    headers = ['timestamp', 'host_name', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
+               'serial']
     return (
         tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers, removeNull=True),
         {
