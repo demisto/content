@@ -4,6 +4,7 @@ import sys
 import argparse
 import shutil
 import logging
+import re
 from zipfile import ZipFile
 
 from Tests.scripts.utils.log_util import install_logging
@@ -12,6 +13,9 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, Pa
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, upload_id_set, load_json, \
     get_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
+
+LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_]+/\d+\.\d+\.\d+/'
+                              r'[A-Za-z0-9-_]+\.zip$)')
 
 
 def get_pack_names(target_packs):
@@ -116,7 +120,7 @@ def upload_core_packs_config(production_bucket, build_number, extract_destinatio
     corepacks_list = corepacks_file.get('corePacks', [])
     # TODO: Change to regex
     corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, GCPConfig.STORAGE_BASE_PATH,
-                                   corepack_path.split('content/packs/')[1]) for corepack_path in corepacks_list]
+                                   LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in corepacks_list]
 
     # construct core pack data with public gcs urls
     core_packs_data = {
