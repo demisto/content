@@ -506,10 +506,12 @@ def load_json(file_path):
         dict: loaded json file.
 
     """
-    with open(file_path, 'r') as json_file:
-        result = json.load(json_file)
-
-    return result
+    try:
+        with open(file_path, 'r') as json_file:
+            result = json.load(json_file)
+        return result
+    except json.decoder.JSONDecodeError:
+        return {}
 
 
 def get_content_git_client(content_repo_path):
@@ -669,7 +671,7 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        default=False, required=False)
+                        type=str2bool, default=False, required=True)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)

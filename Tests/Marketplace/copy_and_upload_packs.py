@@ -4,14 +4,18 @@ import sys
 import argparse
 import shutil
 import logging
+import re
 from zipfile import ZipFile
-from datetime import datetime
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, Metadata, PACKS_FOLDER, FAILED_PACKS_PATH_SUFFIX
+    IGNORED_FILES, PACKS_FOLDER, FAILED_PACKS_PATH_SUFFIX
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, upload_id_set, load_json, \
     get_packs_summary
+from demisto_sdk.commands.common.tools import str2bool
+
+LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_]+/\d+\.\d+\.\d+/'
+                              r'[A-Za-z0-9-_]+\.zip$)')
 
 
 def get_pack_names(target_packs):
@@ -43,28 +47,20 @@ def get_pack_names(target_packs):
         sys.exit(1)
 
 
-def upload_index_to_storage(index_folder_path, extract_destination_path, build_index_blob, prod_index_blob,
-                            build_index_generation, prod_index_generation):
+def upload_index_to_storage(index_folder_path, build_index_blob, prod_index_blob,
+                            build_index_generation, prod_index_generation, production_bucket, build_bucket):
     """Upload updated index zip to cloud storage.
 
     Args:
         index_folder_path (str): index folder full path.
-        extract_destination_path (str): extract folder full path.
         build_index_blob (Blob): google cloud storage object that represents build index.zip blob.
         prod_index_blob (Blob): google cloud storage object that represents prod index.zip blob.
         build_index_generation (str): downloaded build index generation.
         prod_index_generation (str): downloaded prod index generation.
+        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is uploaded to.
+        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is downloaded from.
 
     """
-    temp_index_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
-    index = load_json(temp_index_path)
-    index['modified'] = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-    with open(temp_index_path, "w+") as index_file:
-        json.dump(index, index_file, indent=4)
-
-    index_zip_name = os.path.basename(index_folder_path)
-    index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
-                                         root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
         build_index_blob.reload()
         build_current_index_generation = build_index_blob.generation
@@ -75,8 +71,15 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, build_i
 
         if build_current_index_generation == build_index_generation and \
                 prod_current_index_generation == prod_index_generation:
-            prod_index_blob.upload_from_filename(index_zip_path)
-            logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+            copied_index = build_bucket.copy_blob(
+                blob=build_index_blob, destination_bucket=production_bucket,
+                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+            )
+            if copied_index.exists():
+                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+            else:
+                logging.error(f"Failed copying index from, build index blob does not exists.")
+                sys.exit(1)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.error(f"Downloaded build index generation: {build_index_generation}")
@@ -117,7 +120,7 @@ def upload_core_packs_config(production_bucket, build_number, extract_destinatio
     corepacks_list = corepacks_file.get('corePacks', [])
     # TODO: Change to regex
     corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, GCPConfig.STORAGE_BASE_PATH,
-                                   corepack_path.split('content/packs/')[1]) for corepack_path in corepacks_list]
+                                   LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in corepacks_list]
 
     # construct core pack data with public gcs urls
     core_packs_data = {
@@ -152,8 +155,12 @@ def is_valid_pack(extract_destination_path, pack_name, production_bucket, build_
     build_pack_names = [f.name for f in build_bucket.list_blobs(prefix=GCPConfig.BUILD_BASE_PATH)]
     # if pack is in prod bucket and not in build bucket it should be deleted because upload packs
     # on prepare content step in create instances job has deleted it
-    is_in_prod_but_not_in_build = pack_name in prod_pack_names and pack_name not in build_pack_names and \
-                                  pack_name not in failed_packs_file
+    is_in_prod_but_not_in_build = pack_name in prod_pack_names and pack_name not in build_pack_names
+    if is_in_prod_but_not_in_build:
+        # If pack is in prod but not in build because it failed during upload so we consider it as a valid pack
+        is_failed_pack = pack_name in failed_packs_file
+        if is_failed_pack:
+            return is_in_artifacts
     return is_in_artifacts and not is_in_prod_but_not_in_build
 
 
@@ -264,7 +271,7 @@ def options_handler():
     parser.add_argument('-c', '--circle_branch',
                         help="CircleCi branch of current build", required=True)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        default=False, action='store_true', required=False)
+                        type=str2bool, default=False, required=True)
     parser.add_argument('-pbp', '--production_base_path', help="Production base path of the directory to upload to.",
                         required=False)
     # disable-secrets-detection-end
@@ -318,7 +325,6 @@ def main():
     # starting iteration over packs
     for pack in packs_list:
         task_status, pack_status = pack.is_failed_to_upload(failed_packs_file)
-
         if task_status:
             pack.status = pack_status
             pack.cleanup()
@@ -352,6 +358,8 @@ def main():
                                                                               override_all_packs, pack.latest_version)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+            pack.cleanup()
+            continue
 
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
@@ -364,8 +372,8 @@ def main():
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket)
 
     # finished iteration over content packs
-    upload_index_to_storage(build_index_folder_path, extract_destination_path, build_index_blob, prod_index_blob,
-                            build_index_generation, prod_index_generation)
+    upload_index_to_storage(build_index_folder_path, build_index_blob, prod_index_blob,
+                            build_index_generation, prod_index_generation, production_bucket, build_bucket)
 
     # upload id_set.json to bucket
     upload_id_set(production_bucket, id_set_path)

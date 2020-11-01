@@ -470,7 +470,7 @@ references:
         ID_SET=$CIRCLE_ARTIFACTS/id_set.json
         GCS_PATH=$(mktemp)
         echo $GCS_MARKET_KEY > $GCS_PATH
-        python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o
+        python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o false
         rm $GCS_PATH
       when: on_success
 
@@ -988,10 +988,9 @@ jobs:
                   PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
                   ID_SET=$CIRCLE_ARTIFACTS/id_set.json
                   GCS_PATH=$(mktemp)
-                  CIRCLE_BUILD_NUM=${CIRCLE_BUILD_NUM:-00000}
                   CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
                   echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist' -bb 'marketplace-ci-build' -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -c $CIRCLE_BRANCH
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist' -bb 'marketplace-ci-build' -i $ID_SET -s $GCS_PATH -n $CIRCLE_PREVIOUS_BUILD_NUM -c $CIRCLE_BRANCH -o false
                   rm $GCS_PATH 
       - run:
           name: Slack Notifier
