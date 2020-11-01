@@ -1994,7 +1994,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         user_email = user.get('email')
         ticket['caller_id'] = user_email
 
-    if ticket.get('resolved_by'):
+    if ticket.get('resolved_by') or ticket.get('closed_at'):
         if params.get('close_incident'):
             demisto.debug(f'ticket is closed: {ticket}')
             entries.append({
@@ -2034,6 +2034,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     ticket_id = parsed_args.remote_incident_id
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
+        # Closing sc_type ticket. This ticket type can be closed only when changing the ticket state.
+        if ticket_type == 'sc_task' and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
+            parsed_args.data['state'] = '3'
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if not params.get('close_ticket'):
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
