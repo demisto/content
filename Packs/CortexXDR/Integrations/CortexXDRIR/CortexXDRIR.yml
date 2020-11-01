@@ -1735,7 +1735,7 @@ script:
       - disk drive
       - floppy disk
       - portable device
-    - description: Timestamp of the violation - GTE
+    - description: Timestamp of the violation - Greater than or equal
       name: timestamp_gte
     - description: Timestamp of the violation - LTE
       name: timestamp_lte
