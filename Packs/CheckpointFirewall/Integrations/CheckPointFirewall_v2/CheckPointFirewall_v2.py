@@ -260,6 +260,10 @@ class Client(BaseClient):
                                       headers=self.headers,
                                       json_data={'limit': limit, 'offset': offset})
         return response.get('packages')
+      
+   def list_package(self, identifier: str):
+    return self._http_request(method='POST', url_suffix='show-package',
+                              headers=self.headers, json_data={'name': identifier})
 
     def list_gateways(self, limit: int, offset: int):
         response = self._http_request(method='POST', url_suffix='show-gateways-and-servers',
