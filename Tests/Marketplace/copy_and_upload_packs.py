@@ -44,7 +44,7 @@ def get_pack_names(target_packs):
 
 
 def upload_index_to_storage(index_folder_path, extract_destination_path, build_index_blob, prod_index_blob,
-                            build_index_generation, prod_index_generation):
+                            build_index_generation, prod_index_generation, production_bucket, build_bucket):
     """Upload updated index zip to cloud storage.
 
     Args:
@@ -56,15 +56,6 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, build_i
         prod_index_generation (str): downloaded prod index generation.
 
     """
-    temp_index_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
-    index = load_json(temp_index_path)
-    index['modified'] = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-    with open(temp_index_path, "w+") as index_file:
-        json.dump(index, index_file, indent=4)
-
-    index_zip_name = os.path.basename(index_folder_path)
-    index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
-                                         root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
         build_index_blob.reload()
         build_current_index_generation = build_index_blob.generation
@@ -75,8 +66,15 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, build_i
 
         if build_current_index_generation == build_index_generation and \
                 prod_current_index_generation == prod_index_generation:
-            prod_index_blob.upload_from_filename(index_zip_path)
-            logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+            copied_index = build_bucket.copy_blob(
+                blob=build_index_blob, destination_bucket=production_bucket,
+                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+            )
+            if copied_index.exists():
+                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+            else:
+                logging.error(f"Failed copying index from, build index blob does not exists.")
+                sys.exit(1)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.error(f"Downloaded build index generation: {build_index_generation}")
