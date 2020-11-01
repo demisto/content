@@ -1205,7 +1205,7 @@ def test_get_script_metadata_command(requests_mock):
 
     get_script_metadata_response = load_test_data('./test_data/get_script_metadata.json')
     get_scripts_expected_result = {
-        'PaloAltoNetworksXDR.scriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get('reply')
+        'PaloAltoNetworksXDR.ScriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get('reply')
     }
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_metadata/', json=get_script_metadata_response)
 
@@ -1234,7 +1234,7 @@ def test_run_script_command(requests_mock):
         """
     from CortexXDRIR import run_script_command, Client
 
-    run_script_expected_result = {'PaloAltoNetworksXDR.runScript.actionId(val.actionId == obj.actionId)': 1787}
+    run_script_expected_result = {'PaloAltoNetworksXDR.RunScript(val.actionId == obj.actionId)': {'actionId': 1787}}
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json={"reply": {"action_id": 1787, "status": 1,
                                                                                        "endpoints_count": 1}})
 
@@ -1266,7 +1266,7 @@ def test_get_script_execution_status_command(requests_mock):
     expected_context = get_script_execution_status_reply.get('reply')
     expected_context["action_id"] = '1799'
     get_script_execution_status_expected_result = {
-        'PaloAltoNetworksXDR.scriptExecutionStatus(val.actionId == obj.actionId)':
+        'PaloAltoNetworksXDR.ScriptExecutionStatus(val.actionId == obj.actionId)':
             expected_context}
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_status/',
                        json=get_script_execution_status_reply)
@@ -1299,7 +1299,7 @@ def test_get_script_code_command(requests_mock):
         "code": get_script_code_command_reply.get('reply')
     }
     get_script_code_command_expected_result = {
-        'PaloAltoNetworksXDR.scriptCode(val.script_uid == obj.script_uid)':
+        'PaloAltoNetworksXDR.ScriptCode(val.script_uid == obj.script_uid)':
             context}
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_code/',
                        json=get_script_code_command_reply)

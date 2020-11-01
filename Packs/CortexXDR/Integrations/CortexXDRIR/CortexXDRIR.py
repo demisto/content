@@ -131,6 +131,7 @@ def arg_to_dictionary(arg: Any) -> dict:
     except ValueError:
         raise ValueError('Please enter comma separated parameters at the following way: '
                          'param1_name=param1_value,param2_name=param2_value')
+    return args_dictionary
 
 
 def string_to_int_array(string_list: list) -> list:
@@ -1138,7 +1139,7 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-        return reply.get('reply').get('scripts')
+        return reply.get('reply')
 
     def get_script_metadata(self, script_uid):
         request_data: Dict[str, Any] = {
@@ -1187,7 +1188,7 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-        return reply.get('reply').get('action_id')
+        return reply.get('reply')
 
     def run_snippet_code_script(self, endpoint_ids: list, snippet_code, timeout: int):
         filters: list = [{
@@ -2435,7 +2436,7 @@ def get_policy_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
                "policy_name": reply.get('policy_name')}
 
     return (
-        f'The policy name of endpoint: {endpoint_id} is: {reply.get('policy_name')}.',
+        f'The policy name of endpoint: {endpoint_id} is: {reply.get("policy_name")}.',
         {
             f'{INTEGRATION_CONTEXT_BRAND}.Policy(val.endpoint_id == obj.endpoint_id)': context
         },
@@ -2558,7 +2559,7 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk]
     )
-       scripts = result.get('scripts')
+    scripts = result.get('scripts')
     headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
                      'windows_supported', 'linux_supported', 'macos_supported', 'is_high_risk']
 
@@ -2610,13 +2611,12 @@ def run_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     parameters: dict = arg_to_dictionary(args.get('parameters'))
 
     result = client.run_script(script_uid, endpoint_ids, timeout, parameters)
-    obj = {"action_id": result.get('action_id')}
-    
+    obj = {'actionId': result.get('action_id')}
 
     return (
-        tableToMarkdown(name='Run Script Command', t=obj}, removeNull=True, headerTransform=string_to_table_header),
+        tableToMarkdown(name='Run Script Command', t=obj, removeNull=True, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.RunScript(val.action_id == obj.action_id)': obj
+            f'{INTEGRATION_CONTEXT_BRAND}.RunScript(val.actionId == obj.actionId)': obj
         },
         result
     )
