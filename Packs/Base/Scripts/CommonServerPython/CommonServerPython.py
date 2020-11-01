@@ -2656,6 +2656,14 @@ class Common(object):
 
 
 def camelize_string(src_str, delim='_'):
+    """
+    Transform snake_case to CamelCase
+    Args:
+        src_str: The string to camelize
+        delim: The delimiter used in snake case to split words. Using _ as default.
+
+    Returns: (str) src_str in CamelCase
+    """
     components = src_str.split(delim)
     return ''.join(map(lambda x: x.title(), components))
 
