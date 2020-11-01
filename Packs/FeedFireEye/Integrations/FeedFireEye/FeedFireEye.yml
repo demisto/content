@@ -79,7 +79,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: |-
-    The minimum score from the feed to consider the indicator as malicious. Default is "70".
+    The minimum score returned from the feed to determine whether the indicator is malicious. Default is 70.
   defaultvalue: '70'
   display: Malicious Threshold
   name: threshold
@@ -87,7 +87,7 @@ configuration:
   type: 0
 - additionalinfo: |-
     If this number of days has passed since the indicator was created, then its reputation can be at most "Suspicious".
-    Default is "30".
+    Default is 30.
   defaultvalue: '30'
   display: Reputation Interval
   name: reputation_interval
@@ -120,8 +120,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of indicators to return. The default value is
-        10.
+      description: The maximum number of indicators to return. Default is 10.
       isArray: false
       name: limit
       required: false
