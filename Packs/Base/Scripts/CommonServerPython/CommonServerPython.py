@@ -2633,10 +2633,10 @@ class Common(object):
                 if self.__getattribute__(detail):
                     if detail == 'email_address':
                         account_context['Email'] = {
-                            'Address' : self.email_address
+                            'Address': self.email_address
                         }
                     else:
-                        Detail = camelize_string(detail,'_')
+                        Detail = camelize_string(detail, '_')
                         account_context[Detail] = self.__getattribute__(detail)
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
