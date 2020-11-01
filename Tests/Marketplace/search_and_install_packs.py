@@ -179,9 +179,9 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
     prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
     prints_manager.execute_thread_prints(thread_index)
     # make the pack installation request
-    global SUCCESS_INSTALL
-    SUCCESS_INSTALL = False
-    while SUCCESS_INSTALL:
+    global PACK_INSTALL
+    PACK_INSTALL = False
+    while PACK_INSTALL:
         try:
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
@@ -194,12 +194,12 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
                 message = 'Packs were successfully installed!\n'
                 prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
                                              include_timestamp=True)
-            SUCCESS_INSTALL = True
+            PACK_INSTALL = True
             break
         except Exception as e:
             err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
             prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-            SUCCESS_INSTALL = False
+            PACK_INSTALL = False
             pack_id = ''
             message = str(e).split('\n')
             for line in message:
@@ -212,9 +212,6 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
                 'packs': packs,
                 'ignoreWarnings': True
             }
-            #
-            # if not SUCCESS_FLAG:
-            #     break
 
         finally:
             prints_manager.execute_thread_prints(thread_index)
