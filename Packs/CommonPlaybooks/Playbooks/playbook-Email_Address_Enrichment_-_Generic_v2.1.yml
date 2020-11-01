@@ -257,7 +257,7 @@ tasks:
                   simple: Address
               stringify:
                 value:
-                  simple: "false"
+                  simple: "true"
           - operator: uniq
       limit: {}
       name: {}
