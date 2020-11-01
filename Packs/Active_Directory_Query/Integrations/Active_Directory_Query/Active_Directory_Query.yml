@@ -3,8 +3,8 @@ commonfields:
   version: -1
 name: Active Directory Query v2
 display: Active Directory Query v2
-category: Data Enrichment & Threat Intelligence
-description: Active Directory Query integration enables you to  access and manage Active
+category: Identity and Access Management
+description: Active Directory Query integration enables you to access and manage Active
   Directory objects (users, contacts, and computers).
 configuration:
 - display: Server IP address (e.g., 192.168.0.1)
