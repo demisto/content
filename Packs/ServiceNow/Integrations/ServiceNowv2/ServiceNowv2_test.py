@@ -523,7 +523,7 @@ def test_get_remote_data_closing_incident(mocker):
 
     res = get_remote_data_command(client, args, params)
     assert 'closed_at' in res[0]
-    assert  CLOSING_RESPONSE == res[2]['Contents']
+    assert CLOSING_RESPONSE == res[2]['Contents']
 
 
 def test_get_remote_data_no_attachment(mocker):
@@ -618,22 +618,22 @@ def test_upload_entries_update_remote_system_command(mocker):
     update_remote_system_command(client, args, params)
 
 
-
 TICKET_FIELDS = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-        'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-        'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
-        'work_start': '0001-01-01T00:00:00Z'}
+                 'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+                 'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
+                 'work_start': '0001-01-01T00:00:00Z'}
+
 
 def ticket_fields(*args, **kwargs):
     assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-        'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-        'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '3',
-        'work_start': '0001-01-01T00:00:00Z'} == args[0]
+            'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '3',
+            'work_start': '0001-01-01T00:00:00Z'} == args[0]
 
     return {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-        'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-        'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
-        'work_start': '0001-01-01T00:00:00Z'}
+            'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
+            'work_start': '0001-01-01T00:00:00Z'}
 
 
 def update_ticket(*args):
