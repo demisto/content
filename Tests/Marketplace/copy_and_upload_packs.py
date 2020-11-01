@@ -320,7 +320,6 @@ def main():
     # starting iteration over packs
     for pack in packs_list:
         task_status, pack_status = pack.is_failed_to_upload(failed_packs_file)
-
         if task_status:
             pack.status = pack_status
             pack.cleanup()
