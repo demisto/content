@@ -194,12 +194,12 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
                 message = 'Packs were successfully installed!\n'
                 prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
                                              include_timestamp=True)
-                SUCCESS_INSTALL = False
-                break
+            SUCCESS_INSTALL = True
+            break
         except Exception as e:
             err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
             prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-            SUCCESS_INSTALL = True
+            SUCCESS_INSTALL = False
             pack_id = ''
             message = str(e).split('\n')
             for line in message:
