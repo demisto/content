@@ -3467,8 +3467,8 @@ def decode_content(mime):
                 return payload.decode()
         else:
             return ''
-    except:
-        return paylaod
+    except Exception:
+        return payload
 
 
 def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
