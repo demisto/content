@@ -1,3 +1,5 @@
+from typing import Dict
+
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -58,7 +60,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/ip/{ip_}/geolocation', params=self._params)
 
     def search_request(self, path: str, signature_name: str = '', from_: int = 0, size: int = 10,
-                       domain_name: str = '', vendor : str = '', cve: str = '') -> dict:
+                       domain_name: str = '', vendor: str = '', cve: str = '') -> dict:
         """Initiate a search by sending a POST request.
 
         Args:
@@ -76,7 +78,7 @@ class Client(BaseClient):
             if signature_name and domain_name:
                 raise Exception('Please provide either a signature_name or a domain_name')
 
-        data = {
+        data: Dict[str, Any] = {
             'from': from_,
             'size': size
         }
@@ -117,20 +119,15 @@ def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
     sha256 = str(args.get('sha256', ''))
 
     response = client.antivirus_signature_get_request(sha256)
-    demisto.log(str(response))
-    # headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
-    # readable_output = tableToMarkdown(name=f"Number of users found: {total_elements}. {table_name}",
-    #                                   t=users_data, headers=headers, removeNull=True)
-    #
-    # command_results = CommandResults(
-    #     outputs_prefix=f'{client.name}.Users',
-    #     outputs_key_field='objectId',
-    #     outputs=users_data,
-    #     readable_output=readable_output,
-    #     raw_response=users
-    # )
-    #
-    # return command_results
+    readable_output = tableToMarkdown(name="Antivirus:", t=response, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix=f'{client.name}.Antivirus',
+        outputs_key_field='SHA256',
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response
+    )
 
 
 def dns_get_by_id(client: Client, args: dict) -> CommandResults:
@@ -148,7 +145,7 @@ def dns_get_by_id(client: Client, args: dict) -> CommandResults:
     response = client.dns_signature_get_request(dns_signature_id)
 
     headers = ['signatureId', 'signatureName', 'domainName', 'createTime', 'category']
-    readable_output = tableToMarkdown(name=f"DNS Signature:", t=response, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(name="DNS Signature:", t=response, headers=headers, removeNull=True)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.DNS',
@@ -174,7 +171,7 @@ def antispyware_get_by_id(client: Client, args: dict) -> CommandResults:
     response = client.antispyware_get_by_id_request(signature_id)
 
     headers = ['signatureId', 'signatureName', 'signatureType', 'status', 'firstReleaseTime', 'latestReleaseTime']
-    readable_output = tableToMarkdown(name=f"Anti Spyware Signature:", t=response, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(name="Anti Spyware Signature:", t=response, headers=headers, removeNull=True)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.AntiSpyware',
@@ -199,7 +196,7 @@ def ip_geo_get(client: Client, args: dict) -> CommandResults:
 
     response = client.ip_geo_get_request(ip_)
 
-    readable_output = tableToMarkdown(name=f"Anti Spyware Signature:", t=response, removeNull=True)
+    readable_output = tableToMarkdown(name="Anti Spyware Signature:", t=response, removeNull=True)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.IP',
@@ -225,7 +222,7 @@ def antivirus_signature_search(client: Client, args: dict) -> CommandResults:
     size = int(args.get('size', 10))
 
     response = client.search_request('panav', signature_name, from_, size)
-    readable_output = tableToMarkdown(name=f"Antivirus Signature Search:", t=response, removeNull=True)
+    readable_output = tableToMarkdown(name="Antivirus Signature Search:", t=response, removeNull=True)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.Search',
@@ -252,7 +249,7 @@ def dns_signature_search(client: Client, args: dict) -> CommandResults:
     domain_name = str(args.get('domain_name', ''))
 
     response = client.search_request('dns', signature_name, from_, size, domain_name=domain_name)
-    readable_output = tableToMarkdown(name=f"DNS Signature Search:", t=response, removeNull=True)
+    readable_output = tableToMarkdown(name="DNS Signature Search:", t=response, removeNull=True)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.Search',
@@ -280,7 +277,7 @@ def antispyware_signature_search(client: Client, args: dict) -> CommandResults:
     cve = str(args.get('cve', ''))
 
     response = client.search_request('ips', signature_name, from_, size, vendor=vendor, cve=cve)
-    readable_output = tableToMarkdown(name=f"Anti Spyware Signature Search:", t=response, removeNull=True)
+    readable_output = tableToMarkdown(name="Anti Spyware Signature Search:", t=response, removeNull=True)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.Search',
