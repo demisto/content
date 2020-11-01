@@ -16,7 +16,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE, RESPONSE_FETCH, RESPONSE_FETCH_ATTACHMENTS_FILE, \
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, \
     RESPONSE_MIRROR_FILE_ENTRY, RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, \
-    MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, MIRROR_ENTRIES
+    MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
@@ -493,6 +493,39 @@ def test_get_remote_data(mocker):
     assert res[2]['Contents'] == 'This is a comment'
 
 
+CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeReason': 'From ServiceNow: Test'}
+
+
+def test_get_remote_data_closing_incident(mocker):
+    """
+    Given:
+        -  ServiceNow client
+        -  arguments: id and LastUpdate(set to lower then the modification time).
+        -  ServiceNow ticket
+    When
+        - running get_remote_data_command.
+    Then
+        - The closed_at field exists in the ticket data.
+        - dbotIncidentClose exists.
+        - Closed notes exists.
+    """
+
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='sc_task', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 0}
+    params = {'close_incident': True}
+    mocker.patch.object(client, 'get', return_value=RESPONSE_CLOSING_TICKET_MIRROR)
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+
+    res = get_remote_data_command(client, args, params)
+    assert 'closed_at' in res[0]
+    assert CLOSING_RESPONSE == res[2]['Contents']
+
+
 def test_get_remote_data_no_attachment(mocker):
     """
     Given:
@@ -582,4 +615,51 @@ def test_upload_entries_update_remote_system_command(mocker):
     mocker.patch.object(client, 'upload_file', side_effect=upload_file_request)
     mocker.patch.object(client, 'add_comment', side_effect=add_comment_request)
 
+    update_remote_system_command(client, args, params)
+
+
+TICKET_FIELDS = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+                 'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+                 'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
+                 'work_start': '0001-01-01T00:00:00Z'}
+
+
+def ticket_fields(*args, **kwargs):
+    assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+            'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '3',
+            'work_start': '0001-01-01T00:00:00Z'} == args[0]
+
+    return {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+            'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
+            'work_start': '0001-01-01T00:00:00Z'}
+
+
+def update_ticket(*args):
+    return {'short_description': 'Post parcel', 'close_notes': 'This is closed',
+            'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
+            'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
+            'sla_due': '0001-01-01T00:00:00Z', 'state': '3', 'urgency': '3', 'work_start': '0001-01-01T00:00:00Z'}
+
+
+def test_update_remote_data_sc_task(mocker):
+    """
+    Given:
+    -  ServiceNow client
+    -  ServiceNow ticket of type sc_task
+    When
+        - running update_remote_system_command.
+    Then
+        - The state is changed to 3 (closed) after update.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='sc_task', get_attachments=False, incident_name='description')
+    params = {'ticket_type': 'sc_task', 'close_ticket': True}
+    args = {'remoteId': '1234', 'data': TICKET_FIELDS, 'entries': [], 'incidentChanged': True, 'delta': {},
+            'status': 2}
+    mocker.patch('ServiceNowv2.get_ticket_fields', side_effect=ticket_fields)
+    mocker.patch.object(client, 'update', side_effect=update_ticket)
     update_remote_system_command(client, args, params)
