@@ -1823,8 +1823,7 @@ script:
       isArray: true
       name: mac_file_paths
     description: Retrieve files from selected endpoints. You can retrieve up to 20
-      files, from no more than 10 endpoints. Please enter endpoint_ids and at least
-      one file path.
+      files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command.
     name: xdr-retrieve-files
     outputs:
     - contextPath: PaloAltoNetworksXDR.retrievedFiles.actionId
