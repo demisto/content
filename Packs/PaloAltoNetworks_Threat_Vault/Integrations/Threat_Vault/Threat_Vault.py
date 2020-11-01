@@ -3,86 +3,102 @@ from CommonServerPython import *
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-ERROR_DICT = {
-    '404': 'Invalid URL.',
-    '408': 'Invalid URL.',
-    '409': 'Invalid message or missing parameters.',
-    '500': 'Internal error.',
-    '503': 'Rate limit exceeded.'
-}
 
 class Client(BaseClient):
     """
-    Client to use in the Threat Vault integration. Overrides BaseClient
+    Client to use in the Threat Vault integration. Overrides BaseClient.
     """
 
-    def __init__(self, base_url: str, api_key: str, verify: bool):
-        super().__init__(base_url=base_url, verify=verify)
-        self._headers = {'api_key': api_key, 'Accept': 'application/json'}
-        self._proxies = handle_proxy()
+    def __init__(self, api_key: str, verify: bool, proxy: bool):
+        super().__init__(base_url='https://autofocus.paloaltonetworks.com/api/intel/v1/threatvault', verify=verify,
+                         proxy=proxy, headers={'Content-Type': 'application/json'})
+        self._params = {'api_key': api_key}
+        self.name = 'ThreatVault'
+        self._a = api_key
 
-    def users_search_request(self, query: str, size: str, page: str) -> dict:
-        """Search users by sending a GET request.
+    def antivirus_signature_get_request(self, sha256: str) -> dict:
+        """Get antivirus signature by sending a GET request.
 
         Args:
-            query: users search query.
-            size: response size.
-            page: response page.
+            sha256: antivirus sha256.
         Returns:
             Response from API.
         """
-        params = {
-            'rsql': query,
-            'size': size,
-            'page': page,
-        }
-        return self._http_request(method='GET', url_suffix='/users/public/search', headers=self._headers, params=params)
+        return self._http_request(method='GET', url_suffix=f'/ips/signature/{sha256}', params=self._params)
 
+    def dns_signature_get_request(self, dns_signature_id: str) -> dict:
+        """Get DNS signature by sending a GET request.
 
-def users_search(client: Client, args: Dict) -> CommandResults:
-    """Search users
+        Args:
+            dns_signature_id: antivirus sha256.
+        Returns:
+            Response from API.
+        """
+        return self._http_request(method='GET', url_suffix=f'/dns/signature/{dns_signature_id}', params=self._params)
+
+def test_module(client: Client, *_) -> str:
+    """Performs basic get request to get a DNS signature
+
+    Args:
+        client: Client object with request.
+
+    Returns:
+        string.
+    """
+    client.dns_signature_get_request(dns_signature_id='325235352')
+    return 'ok'
+
+def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
+    """Get antivirus signature
 
     Args:
         client: Client object with request.
         args: Usually demisto.args()
 
     Returns:
-        Outputs.
+        CommandResults.
     """
-    email = str(args.get('email', ''))
-    query = str(args.get('query', ''))
-    size = str(args.get('size', '10'))
-    page = str(args.get('page', '0'))
+    sha256 = str(args.get('sha256', ''))
+    response = client.antivirus_signature_get_request(sha256)
+    demisto.log(str(response))
+    # headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
+    # readable_output = tableToMarkdown(name=f"Number of users found: {total_elements}. {table_name}",
+    #                                   t=users_data, headers=headers, removeNull=True)
+    #
+    # command_results = CommandResults(
+    #     outputs_prefix=f'{client.name}.Users',
+    #     outputs_key_field='objectId',
+    #     outputs=users_data,
+    #     readable_output=readable_output,
+    #     raw_response=users
+    # )
+    #
+    # return command_results
 
-    if email and query:
-        raise Exception('Provide either the email or the query arguments.')
-    elif email:
-        search_query = f'email=={email}'
-    elif query:
-        search_query = query
-    else:
-        search_query = 'objectId==*'
 
-    users = client.users_search_request(search_query, size, page)
+def dns_get_by_id(client: Client, args: dict) -> CommandResults:
+    """Get DNS signature
 
-    users_data = users.get('content')
-    total_elements = users.get('totalElements', '0')
-    table_name = ''
-    if not users.get('last'):
-        table_name = ' More users are available in the next page.'
-    headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
-    readable_output = tableToMarkdown(name=f"Number of users found: {total_elements}. {table_name}",
-                                      t=users_data, headers=headers, removeNull=True)
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
 
-    command_results = CommandResults(
-        outputs_prefix='Zimperium.Users',
-        outputs_key_field='objectId',
-        outputs=users_data,
+    Returns:
+        CommandResults.
+    """
+    dns_signature_id = str(args.get('dns_signature_id', ''))
+    response = client.dns_signature_get_request(dns_signature_id)
+
+    headers = ['signatureId', 'signatureName', 'domainName', 'createTime', 'category']
+    readable_output = tableToMarkdown(name=f"DNS Signature:", t=response, headers=headers, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix=f'{client.name}.DNS',
+        outputs_key_field='signatureId',
+        outputs=response,
         readable_output=readable_output,
-        raw_response=users
+        raw_response=response
     )
-
-    return command_results
 
 
 def main():
@@ -92,13 +108,15 @@ def main():
     params = demisto.params()
     api_key = params.get('api_key')
     verify = not params.get('insecure', False)
+    proxy = demisto.params().get('proxy') is True
 
     try:
         command = demisto.command()
         LOG(f'Command being called is {demisto.command()}')
-        client = Client(api_key=api_key, verify=verify)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], CommandResults]] = {
-            'zimperium-users-search': users_search(),
+        client = Client(api_key=api_key, verify=verify, proxy=proxy)
+        commands = {
+            'threatvault-antivirus-signtature-get': antivirus_signature_get,
+            'threatvault-dns-signature-get-by-id': dns_get_by_id,
         }
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

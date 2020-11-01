@@ -22,130 +22,52 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The query for which to retrieve samples. For additional information on how to build your query using the AF GUI, see the detailed description section.
+      description: SHA256 of the antivirus signature.
       isArray: false
-      name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: The number of results to return.
-      isArray: false
-      name: max_results
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The field by which to sort the results.
-      isArray: false
-      name: sort
-      predefined:
-      - App Name
-      - App Packagename
-      - File type
-      - Size
-      - Finish Date
-      - First Seen (Create Date)
-      - Last Updated (Update Date)
-      - MD5
-      - SHA1
-      - SHA256
-      - Ssdeep Fuzzy Hash
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The order of the results. Can be "Ascending" or "Descending".
-      isArray: false
-      name: order
-      predefined:
-      - Ascending
-      - Descending
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: ' The scope of the search. Can be "Private", "Public", or "Global".'
-      isArray: false
-      name: scope
-      predefined:
-      - Private
-      - Public
-      - Global
-      required: true
-      secret: false
-    - default: false
-      description: The MD5, SHA1 or SHA256 hash of the file.
-      isArray: false
-      name: file_hash
-      required: false
-      secret: false
-    - default: false
-      description: The domain to search.
-      isArray: false
-      name: domain
-      required: false
-      secret: false
-    - default: false
-      description: The IP address to search.
-      isArray: false
-      name: ip
-      required: false
-      secret: false
-    - default: false
-      description: The URL to search.
-      isArray: false
-      name: url
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The Wildfire verdict. Can be "Malware", "Grayware", "Benign", or "Phishing".
-      isArray: false
-      name: wildfire_verdict
-      predefined:
-      - Malware
-      - Grayware
-      - Benign
-      - Phishing
-      required: false
-      secret: false
-    - default: false
-      description: 'The date range of the creation date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59'
-      isArray: false
-      name: first_seen
-      required: false
-      secret: false
-    - default: false
-      description: 'The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59'
-      isArray: false
-      name: last_updated
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: 'Whether to return artifacts of samples.'
-      isArray: false
-      name: artifact
-      predefined:
-      - 'true'
-      - 'false'
+      name: sha256
       required: false
       secret: false
     deprecated: false
-    description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+    description: Get antivirus signature.
     execution: false
-    name: autofocus-search-samples
+    name: threatvault-antivirus-signtature-get
     outputs:
-    - contextPath: AutoFocus.SamplesSearch.AFCookie
-      description: The AutoFocus search ID. Use this ID to retrieve search results. The AF Cookie expires 120 seconds after the search completes.
+    - contextPath: ThreatVault.AntiVirusSignature
+      description: TODO
       type: String
-    - contextPath: AutoFocus.SamplesSearch.Status
-      description: The search status. Can be "in progress" or "complete".
-      type: String
-    - contextPath: AutoFocus.SamplesSearch.SessionStart
-      description: The time when the session began.
-      type: Date
+  - arguments:
+    - default: false
+      description: ID of the DNS signature.
+      isArray: false
+      name: dns_signature_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get DNS signature.
+    execution: false
+    name: threatvault-dns-signature-get-by-id
+    outputs:
+      - contextPath: ThreatVault.DNS.active
+        description: Whether the signature is active or not.
+        type: Bool
+      - contextPath: ThreatVault.DNS.category
+        description: DNS signature category.
+        type: String
+      - contextPath: ThreatVault.DNS.createTime
+        description: DNS signature create time.
+        type: String
+      - contextPath: ThreatVault.DNS.domainName
+        description: DNS signature domain name.
+        type: String
+      - contextPath: ThreatVault.DNS.release
+        description: DNS signature release details.
+        type: Unknown
+      - contextPath: ThreatVault.DNS.signatureId
+        description: DNS signature ID.
+        type: Number
+      - contextPath: ThreatVault.DNS.signatureName
+        description: DNS signature name.
+        type: String
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   longRunning: false
