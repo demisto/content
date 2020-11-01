@@ -229,19 +229,29 @@ Fetch incidents
 There is no context output for this command.
 
 #### Command Example
-```!cognni-fetch-incidents min_severity=2```
+```!cognni-fetch-incidents min_severity=1```
 
 #### Context Example
 ```json
 {
     "Cognni": {
-        "incidents": null
+        "incidents": [
+            {
+                "details": "N/A",
+                "name": null,
+                "occurred": "2020-10-07T14:55:59.000Z",
+                "rawJSON": "{\"eventId\": \"7c43bf89-d116-42e1-b474-f7da5346adac\", \"fileName\": null, \"fileId\": \"2aa0b002-a714-ba37-c7f1-360abe72fe96\", \"name\": null, \"eventType\": \"Attachment\", \"description\": \"N/A\", \"date\": \"2020-10-07T14:55:59.000Z\", \"severity\": 1, \"sourceApplication\": \"exchange\"}",
+                "severity": 1
+            }
+        ]
     }
 }
 ```
 
 #### Human Readable Output
 
->### Cognni 0 incidents
->**No entries.**
+>### Cognni 1 incidents
+>|details|name|occurred|rawJSON|severity|
+>|---|---|---|---|---|
+>| N/A |  | 2020-10-07T14:55:59.000Z | {"eventId": "7c43bf89-d116-42e1-b474-f7da5346adac", "fileName": null, "fileId": "2aa0b002-a714-ba37-c7f1-360abe72fe96", "name": null, "eventType": "Attachment", "description": "N/A", "date": "2020-10-07T14:55:59.000Z", "severity": 1, "sourceApplication": "exchange"} | 1 |
 
