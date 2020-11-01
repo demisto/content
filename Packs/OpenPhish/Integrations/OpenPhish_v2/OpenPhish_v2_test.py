@@ -7,6 +7,7 @@ from freezegun import freeze_time
 from test_data.api_raw import RAW_DATA
 MOCK_URL = "http://openphish.com"
 MOCK_DELIVERED_MESSAGE = {}
+DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)'
 
 RELOADED_DATA = [
     (Client(MOCK_URL, True, False, 2), {}, True),  # case no data in memory
@@ -143,9 +144,9 @@ CONTEXT_MOCK_WITH_URL = [
                'hxxp://whatsapp-chat02.zzux.com',
                'hxxp://dd0ddddddcuser.ey.r.appspot.com'],
       "timestamp": "1601532000000"},
-     {'URL': [{'Data': 'hxxp://lloyds.settlemypayee.uk',
+     [{'URL': [{'Data': 'hxxp://lloyds.settlemypayee.uk',
                'Malicious': {'Vendor': 'OpenPhish', 'Description': 'Match found in OpenPhish database'}}],
-      'DBOTSCORE': [{'Indicator': 'hxxp://lloyds.settlemypayee.uk', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 3}]}
+      'DBOTSCORE': [{'Indicator': 'hxxp://lloyds.settlemypayee.uk', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 3}]}]
      ),
     ({'url': 'hxxp://goo.co'},
      {"list": ['hxxp://www.niccakorea.com/board/index.html',
@@ -153,8 +154,24 @@ CONTEXT_MOCK_WITH_URL = [
                'hxxp://whatsapp-chat02.zzux.com',
                'hxxp://dd0ddddddcuser.ey.r.appspot.com'],
       "timestamp": "1601532000000"},
-     {'URL': [{'Data': 'hxxp://goo.co'}],
-      'DBOTSCORE': [{'Indicator': 'hxxp://goo.co', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 0}]}
+     [{'URL': [{'Data': 'hxxp://goo.co'}],
+      'DBOTSCORE': [{'Indicator': 'hxxp://goo.co', 'Type': 'url', 'Vendor': 'OpenPhish', 'Score': 0}]}]
+     ),
+    ({'url': 'hxxp://whatsapp-chat02.zzux.com,hxxp://lloyds.settlemypayee.uk'},
+     {"list": ['hxxp://www.niccakorea.com/board/index.html',
+               'hxxp://lloyds.settlemypayee.uk',
+               'hxxp://whatsapp-chat02.zzux.com',
+               'hxxp://dd0ddddddcuser.ey.r.appspot.com'],
+      "timestamp": "1601532000000"},
+     [{'URL': [{'Data': 'hxxp://whatsapp-chat02.zzux.com', 'Malicious':
+      {'Vendor': 'OpenPhish', 'Description': 'Match found in OpenPhish database'}}],
+       'DBOTSCORE': [{'Indicator': 'hxxp://whatsapp-chat02.zzux.com', 'Score': 3, 'Type': 'url', 'Vendor': 'OpenPhish'}]
+      },
+      {'URL': [{'Data': 'hxxp://lloyds.settlemypayee.uk', 'Malicious':
+       {'Vendor': 'OpenPhish', 'Description': 'Match found in OpenPhish database'}}],
+       'DBOTSCORE': [{'Indicator': 'hxxp://lloyds.settlemypayee.uk', 'Score': 3, 'Type': 'url', 'Vendor': 'OpenPhish'}]
+       },
+      ]
      )
 ]
 
@@ -176,7 +193,8 @@ def test_url_command(mocker, url, context, expected_results):
     mocker.patch.object(OpenPhish_v2, "_is_reload_needed", return_value=False)
     client = Client(MOCK_URL, True, False, 1)
     results = url_command(client, **url)
-    output = results.to_context().get('EntryContext', {})
-    DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)'
-    assert output.get('URL(val.Data && val.Data == obj.Data)', []) == expected_results.get('URL')
-    assert output.get(DBOT_KEY, []) == expected_results.get('DBOTSCORE')
+    assert len(results) >= 1
+    for i in range(len(results)):
+        output = results[i].to_context().get('EntryContext', {})
+        assert output.get('URL(val.Data && val.Data == obj.Data)', []) == expected_results[i].get('URL')
+        assert output.get(DBOT_KEY, []) == expected_results[i].get('DBOTSCORE')
