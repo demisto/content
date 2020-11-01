@@ -1205,11 +1205,7 @@ class Client(BaseClient):
         }
 
         vendors_list: list = []
-        data_param_names: list = ['expiration_date', 'comment', 'reputation', 'reliability', 'vendors', 'class']
-        data_params: list = [expiration_date, comment, reputation, reliability, vendors, class_string]
-        for data_param in data_params:
-            if data_param:
-                request_data[data_param_names[data_params.index(data_param)]] = data_param
+        request_data = assign_params(expiration_date=expiration_date, comment=comment, reputation=reputation, reliability=reliability, vendors=vendors , class =class_string)
 
         # user should insert all of the following: vendor_name, vendor_reputation and vendor_reliability, or none of
         # them.
@@ -2464,9 +2460,11 @@ def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
     result = []
+    raw_res = []
 
     for action_id in action_id_list:
         data = client.retrieve_file_details(action_id)
+        raw_result.append(data)
 
         for key, val in data.items():
             obj = {
@@ -2478,11 +2476,11 @@ def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]
             result.append(obj)
 
     return (
-        tableToMarkdown(name='Retrieve file Details', t=result, removeNull=True),
+        tableToMarkdown(name='Retrieve file Details', t=result, headerTransform=string_to_table_header)
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.retrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
+            f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
         },
-        result
+        raw_result
     )
 
 
@@ -2593,7 +2591,7 @@ def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, An
     vendor_name = args.get('vendor_name')
     vendor_reputation = args.get('vendor_reputation')
     vendor_reliability = args.get('vendor_reliability')
-    vendors = arg_to_json(args.get('vendors'))
+    vendors = json.loads(args.get('vendors')) if args.get('vendors') else None
     class_string = args.get('class')
 
     client.insert_simple_indicators(
