@@ -1737,7 +1737,7 @@ script:
       - portable device
     - description: Timestamp of the violation - Greater than or equal
       name: timestamp_gte
-    - description: Timestamp of the violation - LTE
+    - description: Timestamp of the violation - Less than or equal
       name: timestamp_lte
     - description: Comma separated list of IP addresses
       isArray: true
