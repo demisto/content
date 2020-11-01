@@ -43,17 +43,19 @@ def get_pack_names(target_packs):
         sys.exit(1)
 
 
-def upload_index_to_storage(index_folder_path, extract_destination_path, build_index_blob, prod_index_blob,
+def upload_index_to_storage(index_folder_path, build_index_blob, prod_index_blob,
                             build_index_generation, prod_index_generation, production_bucket, build_bucket):
     """Upload updated index zip to cloud storage.
 
     Args:
         index_folder_path (str): index folder full path.
-        extract_destination_path (str): extract folder full path.
         build_index_blob (Blob): google cloud storage object that represents build index.zip blob.
         prod_index_blob (Blob): google cloud storage object that represents prod index.zip blob.
         build_index_generation (str): downloaded build index generation.
         prod_index_generation (str): downloaded prod index generation.
+        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is uploaded to.
+        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is downloaded from.
+
 
     """
     try:
@@ -365,8 +367,8 @@ def main():
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket)
 
     # finished iteration over content packs
-    upload_index_to_storage(build_index_folder_path, extract_destination_path, build_index_blob, prod_index_blob,
-                            build_index_generation, prod_index_generation, build_bucket, production_bucket)
+    upload_index_to_storage(build_index_folder_path, build_index_blob, prod_index_blob,
+                            build_index_generation, prod_index_generation, production_bucket, build_bucket)
 
     # upload id_set.json to bucket
     upload_id_set(production_bucket, id_set_path)
