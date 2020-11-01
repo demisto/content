@@ -1085,7 +1085,8 @@ def test_get_endpoint_violations_command(requests_mock):
 
     get_endpoint_violations_reply = load_test_data('./test_data/get_endpoint_violations.json')
     get_endpoint_violations_expected_result = {
-        'PaloAltoNetworksXDR.EndpointViolations(val.violation_id==obj.violation_id)': get_endpoint_violations_reply.get('reply')
+        'PaloAltoNetworksXDR.EndpointViolations(val.violation_id==obj.violation_id)':
+            get_endpoint_violations_reply.get('reply').get('violations')
     }
     requests_mock.post(f'{XDR_URL}/public_api/v1/device_control/get_violations/', json=get_endpoint_violations_reply)
 
@@ -1425,24 +1426,6 @@ def test_arg_to_dictionary():
 
     assert arg_to_dictionary(string) == ret_value
     assert arg_to_dictionary(None) == {}
-
-
-def test_string_to_int_array():
-    """
-            Given:
-                -list of strings
-            When:
-                -if we need array of integers
-            Then:
-                - returns array of integers
-        """
-    from CortexXDRIR import string_to_int_array
-
-    string_list = ["1", "2", "3", "4"]
-    num_list = [1, 2, 3, 4]
-
-    assert string_to_int_array(string_list) == num_list
-    assert string_to_int_array("") == []
 
 
 def test_arg_to_json():

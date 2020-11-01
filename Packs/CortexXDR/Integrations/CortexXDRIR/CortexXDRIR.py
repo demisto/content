@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *
 
 from datetime import timezone
 import secrets
@@ -132,22 +133,6 @@ def arg_to_dictionary(arg: Any) -> dict:
         raise ValueError('Please enter comma separated parameters at the following way: '
                          'param1_name=param1_value,param2_name=param2_value')
     return args_dictionary
-
-
-def string_to_int_array(string_list: list) -> list:
-    """
-
-    Args:
-        string_list: list of strings
-
-    Returns: list of integers
-
-    """
-    res: list = []
-    if string_list:
-        for item in string_list:
-            res.append(arg_to_int(arg=item, arg_name=str(item)))
-    return res
 
 
 def arg_to_json(arg):
@@ -1176,10 +1161,7 @@ class Client(BaseClient):
             'value': endpoint_ids
         }]
         request_data: Dict[str, Any] = {"script_uid": script_uid, "timeout": timeout, "filters": filters,
-                                        'parameters_values': {}}
-
-        if parameters:
-            request_data['parameters_values'] = parameters
+                                        'parameters_values': parameters}
 
         reply = self._http_request(
             method='POST',
@@ -2462,8 +2444,10 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
     product_id: list = argToList(args.get('product_id'))
     serial: list = argToList(args.get('serial'))
     hostname: list = argToList(args.get('hostname'))
-    violation_ids: list = string_to_int_array(argToList(args.get('violation_id_list')))
+    violation_id_list: list = argToList(args.get('violation_id_list', ''))
     username: list = argToList(args.get('username'))
+
+    violation_ids = [arg_to_int(arg=item, arg_name=str(item)) for item in violation_id_list]
 
     reply = client.get_endpoint_violations(
         endpoint_ids=endpoint_ids,
@@ -2484,9 +2468,11 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
     headers = ['timestamp', 'host_name', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
                'serial']
     return (
-        tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers, headerTransform=string_to_table_header),
+        tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers,
+                        headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)': reply.get('violations')
+            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)':
+                reply.get('violations')
         },
         reply
     )
@@ -2516,7 +2502,8 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
 
 
 def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]:
-    action_id_list = string_to_int_array(argToList(args.get('action_id')))
+    action_id_list = argToList(args.get('action_id'), '')
+    action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
     result = []
 
@@ -2670,7 +2657,8 @@ def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, An
 
 
 def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
-    action_id_list = string_to_int_array(argToList(args.get('action_id')))
+    action_id_list = argToList(args.get('action_id'))
+    action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
     result = []
     for action_id in action_id_list:
