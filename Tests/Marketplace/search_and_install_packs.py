@@ -169,7 +169,7 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
 
 
 def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999):
-    global SUCCESS_FLAG
+    global SUCCESS_INSTALL
     request_data = {
         'packs': packs_to_install,
         'ignoreWarnings': True
@@ -180,7 +180,7 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
     prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
     prints_manager.execute_thread_prints(thread_index)
     # make the pack installation request
-    while SUCCESS_FLAG:
+    while SUCCESS_INSTALL:
         try:
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
@@ -193,16 +193,12 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
                 message = 'Packs were successfully installed!\n'
                 prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
                                              include_timestamp=True)
-            else:
-                result_object = ast.literal_eval(response_data)
-                message = result_object.get('message', '')
-                err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
-                prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-                raise Exception(err_msg)
+                SUCCESS_INSTALL = False
+                break
         except Exception as e:
             err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
             prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
-            SUCCESS_FLAG = True
+            SUCCESS_INSTALL = True
             pack_id = ''
             message = str(e).split('\n')
             for line in message:
@@ -215,9 +211,9 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
                 'packs': packs,
                 'ignoreWarnings': True
             }
-
-            if not SUCCESS_FLAG:
-                break
+            #
+            # if not SUCCESS_FLAG:
+            #     break
 
         finally:
             prints_manager.execute_thread_prints(thread_index)
