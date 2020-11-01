@@ -40,9 +40,9 @@ def test_main(mocker):
     }
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(GoogleCalendar, 'test_function', return_value='ok')
+    mocker.patch.object(GoogleCalendar, 'test_module', return_value='ok')
     GoogleCalendar.main()
-    assert GoogleCalendar.test_function.called
+    assert GoogleCalendar.test_module.called
 
 
 @patch('GoogleCalendar.return_error')
@@ -66,14 +66,14 @@ def test_main_failure(mock_return_error, capfd, mocker):
     }
     mocker.patch.object(GoogleCalendar.demisto, 'params', return_value=params)
     mocker.patch.object(GoogleCalendar.demisto, 'command', return_value='test-module')
-    mocker.patch.object(GoogleCalendar, 'test_function', side_effect=Exception)
+    mocker.patch.object(GoogleCalendar, 'test_module', side_effect=Exception)
     with capfd.disabled():
         GoogleCalendar.main()
 
     mock_return_error.assert_called_once_with('Error: ')
 
 
-def test_test_function(mocker, gsuite_client):
+def test_test_module(mocker, gsuite_client):
     """
     Scenario: Call to test-module should return 'ok' if API call succeeds.
 
@@ -81,19 +81,19 @@ def test_test_function(mocker, gsuite_client):
     - client object
 
     When:
-    - Calling test function.
+    - Calling test module.
 
     Then:
     - Ensure 'ok' should be return.
     """
-    from GoogleCalendar import test_function, service_account
+    from GoogleCalendar import test_module, service_account
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
     mocker.patch.object(service_account.Credentials, 'refresh')
     gsuite_client.credentials.token = True
-    assert test_function(gsuite_client) == 'ok'
+    assert test_module(gsuite_client) == 'ok'
 
 
-def test_test_function_error(mocker, gsuite_client):
+def test_test_module_error(mocker, gsuite_client):
     """
     Scenario: Call to test-module should return error.
 
@@ -101,18 +101,18 @@ def test_test_function_error(mocker, gsuite_client):
     - client object.
 
     When:
-    - Calling test function.
+    - Calling test module.
 
     Then:
     - Ensure error message should be as expected.
     """
-    from GoogleCalendar import test_function, service_account
+    from GoogleCalendar import test_module, service_account
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
     mocker.patch.object(service_account.Credentials, 'refresh')
     gsuite_client.credentials.token = None
 
     with pytest.raises(DemistoException, match=MESSAGES['TEST_FAILED_ERROR']):
-        test_function(gsuite_client)
+        test_module(gsuite_client)
 
 
 @patch(MOCKER_HTTP_METHOD)

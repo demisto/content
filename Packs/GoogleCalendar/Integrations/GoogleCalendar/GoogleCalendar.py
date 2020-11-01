@@ -139,14 +139,11 @@ def prepare_params_for_acl_list(args: Dict[str, str]) -> Dict[str, Union[str, in
     """
     max_result = args.get('max_results', 100)
     GSuiteClient.validate_set_boolean_arg(args, 'show_deleted', )
-    show_deleted = args.get('show_deleted', 'false').lower()
-    if show_deleted not in ['true', 'false']:
-        raise ValueError(MESSAGES['BOOLEAN_ERROR'].format('show_deleted'))
 
     return GSuiteClient.remove_empty_entities({
         'maxResults': max_result,
         'pageToken': args.get('page_token', ''),
-        'showDeleted': show_deleted,
+        'showDeleted': args.get('show_deleted', 'false'),
         'syncToken': args.get('sync_token', '')
     })
 
@@ -155,11 +152,11 @@ def prepare_params_for_acl_list(args: Dict[str, str]) -> Dict[str, Union[str, in
 
 
 @logger
-def test_function(gsuite_client) -> str:
+def test_module(gsuite_client) -> str:
     """
     Performs test connectivity by valid http response
 
-    :param client: client object which is used to get response from api.
+    :param gsuite_client: client object which is used to get response from api.
 
     :return: raise ValueError if any error occurred during connection
     :raises DemistoException: If there is any other issues while making the http call.
@@ -282,7 +279,7 @@ def main() -> None:
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
 
-            result = test_function(gsuite_client)
+            result = test_module(gsuite_client)
             demisto.results(result)
 
         elif command in commands:
