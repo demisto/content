@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto
+from CommonServerPython import *
 from CommonServerUserPython import *
 
 from datetime import timezone
@@ -965,64 +965,24 @@ class Client(BaseClient):
                                 ip_list: list, vendor: list, vendor_id: list, product: list, product_id: list,
                                 serial: list,
                                 hostname: list, violation_ids: list, username: list):
-        filters: list = [
-            {
-                'field': 'type',
-                'operator': 'in',
-                'value': [type_of_violation]
-            },
-            {
-                'field': 'endpoint_id_list',
-                'operator': 'in',
-                'value': endpoint_ids
-            },
-            {
-                'field': 'ip_list',
-                'operator': 'in',
-                'value': ip_list
-            },
-            {
-                'field': 'vendor',
-                'operator': 'in',
-                'value': vendor
-            },
-            {
-                'field': 'vendor_id',
-                'operator': 'in',
-                'value': vendor_id
-            },
-            {
-                'field': 'product',
-                'operator': 'in',
-                'value': product
-            },
-            {
-                'field': 'product_id',
-                'operator': 'in',
-                'value': product_id
-            },
-            {
-                'field': 'serial',
-                'operator': 'in',
-                'value': serial
-            },
-            {
-                'field': 'hostname',
-                'operator': 'in',
-                'value': hostname
-            },
-            {
-                'field': 'violation_id_list',
-                'operator': 'in',
-                'value': violation_ids
-            },
-            {
-                'field': 'username',
-                'operator': 'in',
-                'value': username
-            }
-        ]
-        filters = list(filter(lambda x: x['value'] and x['value'][0], filters))
+        arg_list = {'type': type_of_violation,
+                    'endpoint_id_list': endpoint_ids,
+                    'ip_list': ip_list,
+                    'vendor': vendor,
+                    'vendor_id': vendor_id,
+                    'product': product,
+                    'product_id': product_id,
+                    'serial': serial,
+                    'hostname': hostname,
+                    'violation_id_list': violation_ids,
+                    'username': username
+                    }
+
+        filters: list = [{
+            "field": arg_key,
+            "operator": "in",
+            "value": arg_val
+        } for arg_key, arg_val in arg_list.items() if arg_val and arg_val[0]]
 
         if timestamp_lte:
             filters.append({
@@ -1096,7 +1056,6 @@ class Client(BaseClient):
 
     def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
                     linux_supported, macos_supported, is_high_risk):
-        # We iterate over the function arguments using `locals()`and crate a list of dicts of the form: {"field": "arg_name", "operator": "in", "value": arg_val}
 
         arg_list = {'name': name,
                     'description': description,
@@ -2451,7 +2410,7 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
 
     reply = client.get_endpoint_violations(
         endpoint_ids=endpoint_ids,
-        type_of_violation=type_of_violation,
+        type_of_violation=[type_of_violation],
         timestamp_gte=timestamp_gte,
         timestamp_lte=timestamp_lte,
         ip_list=ip_list,
