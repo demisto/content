@@ -324,7 +324,7 @@ def test_module():
     global IS_TEST_MODULE
     IS_TEST_MODULE = True
     BaseProtocol.TIMEOUT = 20
-    get_account(ACCOUNT_EMAIL).root    #type: Account
+    get_account(ACCOUNT_EMAIL).root
     demisto.results('ok')
 
 
