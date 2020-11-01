@@ -972,7 +972,7 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-        return reply.get('reply').get('policy_name')
+        return reply.get('reply')
 
     def get_endpoint_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
                                 timestamp_lte: int,
@@ -2424,22 +2424,22 @@ def delete_endpoints_command(client: Client, args: Dict[str, str]) -> Tuple[str,
 
     client.delete_endpoints(endpoint_id_list)
 
-    return f'Endpoints {args.get("endpoint_ids")} successfully deleted', None, None
+    return f'Successfully deleted the following endpoints: {args.get("endpoint_ids")}', None, None
 
 
 def get_policy_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     endpoint_id = args.get('endpoint_id')
 
-    policy_name = client.get_policy(endpoint_id)
+    reply = client.get_policy(endpoint_id)
     context = {"endpoint_id": endpoint_id,
-               "policy_name": policy_name}
+               "policy_name": reply.get('policy_name')}
 
     return (
-        f'The policy name of endpoint {endpoint_id} is {policy_name}.',
+        f'The policy name of endpoint: {endpoint_id} is: {reply.get('policy_name')}.',
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.policyName(val.endpoint_id == obj.endpoint_id)': context
+            f'{INTEGRATION_CONTEXT_BRAND}.Policy(val.endpoint_id == obj.endpoint_id)': context
         },
-        policy_name
+        reply
     )
 
 
@@ -2483,9 +2483,9 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
     headers = ['timestamp', 'host_name', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
                'serial']
     return (
-        tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers, removeNull=True),
+        tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)': reply
+            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)': reply.get('violations')
         },
         reply
     )
@@ -2549,7 +2549,7 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
     macos_supported = args.get('macos_supported')
     is_high_risk = args.get('is_high_risk')
 
-    scripts = client.get_scripts(
+    result = client.get_scripts(
         name=script_name,
         description=description,
         created_by=created_by,
@@ -2558,16 +2558,16 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk]
     )
-
+       scripts = result.get('scripts')
     headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
                      'windows_supported', 'linux_supported', 'macos_supported', 'is_high_risk']
 
     return (
-        tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True),
+        tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True, headerTransform=string_to_table_header),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.Scripts(val.script_uid == obj.script_uid)': scripts
         },
-        scripts
+        result
     )
 
 
@@ -2577,9 +2577,9 @@ def get_script_metadata_command(client: Client, args: Dict[str, str]) -> Tuple[s
     reply = client.get_script_metadata(script_uid)
 
     return (
-        tableToMarkdown(name='Script Metadata', t=reply, headers=[*reply], removeNull=True),
+        tableToMarkdown(name='Script Metadata', t=reply, removeNull=True, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptMetadata(val.script_uid == obj.script_uid)': reply
+            f'{INTEGRATION_CONTEXT_BRAND}.ScriptMetadata(val.script_uid == obj.script_uid)': reply
         },
         reply
     )
@@ -2597,7 +2597,7 @@ def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, 
     return (
         f'Script code is :\n {str(reply)}',
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptCode(val.script_uid == obj.script_uid)': context
+            f'{INTEGRATION_CONTEXT_BRAND}.ScriptCode(val.script_uid == obj.script_uid)': context
         },
         reply
     )
@@ -2609,15 +2609,16 @@ def run_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     timeout: int = arg_to_int(arg=args.get('timeout'), arg_name='timeout')
     parameters: dict = arg_to_dictionary(args.get('parameters'))
 
-    action_id = client.run_script(script_uid, endpoint_ids, timeout, parameters)
+    result = client.run_script(script_uid, endpoint_ids, timeout, parameters)
+    obj = {"action_id": result.get('action_id')}
+    
 
     return (
-        tableToMarkdown(name='Run Script Command', t={'Action Id': action_id},
-                        headers=['Action Id'], removeNull=True),
+        tableToMarkdown(name='Run Script Command', t=obj}, removeNull=True, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.runScript.actionId(val.actionId == obj.actionId)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.RunScript(val.action_id == obj.action_id)': obj
         },
-        action_id
+        result
     )
 
 
@@ -2630,7 +2631,7 @@ def get_script_execution_status_command(client: Client, args: Dict[str, str]) ->
     return (
         tableToMarkdown(name='Execution Status', t=reply, removeNull=True),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionStatus(val.actionId == obj.actionId)': reply
+            f'{INTEGRATION_CONTEXT_BRAND}.ScriptExecutionStatus(val.actionId == obj.actionId)': reply
         },
         reply
     )
