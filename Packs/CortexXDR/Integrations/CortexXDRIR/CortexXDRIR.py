@@ -123,17 +123,15 @@ def arg_to_dictionary(arg: Any) -> dict:
     """
     list_of_arg: list = argToList(arg)
     args_dictionary: dict = {}
-    for item in list_of_arg:
-        param_array = argToList(item, '=')
-        if len(param_array) != 2:
-            raise ValueError('Please enter comma separated parameters at the following way : “ '
-                             'param1_name=param1_value, param2_name=param2_value “  ')
-        else:
-            value = param_array[1]
-            if value.isdigit():
-                value = int(value)
-            args_dictionary[param_array[0]] = value
-    return args_dictionary
+    try:
+        for item in list_of_arg:
+            key, value = item.split('=')
+            value = int(value) if value.isdigit()else value
+            args_dictionary[key] = value
+
+     except ValueError:
+        raise ValueError('Please enter comma separated parameters at the following way: '
+             'param1_name=param1_value,param2_name=param2_value')
 
 
 def string_to_int_array(string_list: list) -> list:
