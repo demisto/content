@@ -45,9 +45,6 @@ In order to send mails, authorize this API:
 
 In order to add the send as email id, authorize this API:
 [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) 
- 
-In order to update the vacation/away setting for user, authorize this API: 
-[https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic)
 
 In order to add the forwarding address for the user, authorize this API: 
 [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) 

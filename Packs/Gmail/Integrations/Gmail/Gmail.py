@@ -33,18 +33,9 @@ GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 PROXY = demisto.params().get('proxy')
 DISABLE_SSL = demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('first_fetch', '1 days')
-MAX_FETCH = demisto.params().get('max_fetch', '50')
+FETCH_TIME = demisto.params().get('fetch_time', '1 days')
+
 SEND_AS_SMTP_FIELDS = ['host', 'port', 'username', 'password', 'securitymode']
-FIELD_MAPPING_VACATION_SETTINGS = {
-    'vacation': 'enableAutoReply',
-    'subject': 'responseSubject',
-    'message': 'responseBodyPlainText',
-    'start_time': 'startTime',
-    'end_time': 'endTime',
-    'contacts_only': 'restrictToContacts',
-    'domain_only': 'restrictToDomain'
-}
 DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
 
 ''' HELPER FUNCTIONS '''
@@ -471,10 +462,13 @@ def autoreply_to_entry(title, response, user_id):
             'ResponseSubject': autoreply_data.get('responseSubject'),
             'RestrictToContact': autoreply_data.get('restrictToContacts'),
             'RestrictToDomain': autoreply_data.get('restrictToDomain'),
-
+            'StartTime': autoreply_data.get('startTime'),
+            'EndTime': autoreply_data.get('endTime'),
+            'ResponseBodyHtml': autoreply_data.get('responseBodyHtml')
         })
-    headers = ['EnableAutoReply', 'ResponseBody',
-               'ResponseSubject', 'RestrictToContact', 'RestrictToDomain']
+    headers = ['EnableAutoReply', 'ResponseBody', 'ResponseBodyHtml',
+               'ResponseSubject', 'RestrictToContact', 'RestrictToDomain',
+               'EnableAutoReply', 'StartTime', 'EndTime']
 
     account_context = {
         "Address": user_id,
@@ -636,21 +630,6 @@ def dict_keys_snake_to_camelcase(dictionary):
             dictionary.items()}
 
 
-def get_bool_from_on_off(on_off):
-    """
-    Convert on/off string to boolean value or return the string as is, if it is not on/off.
-
-    :param on_off: on/off string.
-    :return: boolean or string if input is not on/off.
-    """
-    if on_off.lower() == 'on':
-        return True
-    elif on_off.lower() == 'off':
-        return False
-    else:
-        return on_off
-
-
 def get_millis_from_date(date, arg_name):
     """
     Convert a date string into epoch milliseconds or return epoch milliseconds as int.
@@ -666,30 +645,6 @@ def get_millis_from_date(date, arg_name):
             return int(date)
         except ValueError:
             raise ValueError('{} argument is not in expected format.'.format(arg_name))
-
-
-def prepare_vacation_settings(args):
-    """
-    Prepare vacation_settings dict from arguments.
-
-    :param args: vacation update command arguments.
-    :return: vacation_settings dict as expected by the vacation update api.
-    """
-    vacation_settings = {FIELD_MAPPING_VACATION_SETTINGS[key]: value for (key, value) in args.items() if
-                         key in FIELD_MAPPING_VACATION_SETTINGS.keys()}
-
-    if 'startTime' in vacation_settings:
-        vacation_settings['startTime'] = get_millis_from_date(vacation_settings['startTime'], 'start_time')
-
-    if 'endTime' in vacation_settings:
-        vacation_settings['endTime'] = get_millis_from_date(vacation_settings['endTime'], 'end_time')
-
-    vacation_settings['enableAutoReply'] = get_bool_from_on_off(vacation_settings.get('enableAutoReply', ''))
-
-    if args.get('message_type', '') == 'HTML':
-        vacation_settings['responseBodyHtml'] = vacation_settings.pop('responseBodyPlainText', '')
-
-    return vacation_settings
 
 
 ''' FUNCTIONS '''
@@ -837,21 +792,40 @@ def set_autoreply_command():
     user_id = args.get('user-id')
     enable_autoreply = args.get('enable-autoReply')
     response_subject = args.get('response-subject')
-    response_body_plain_text = args.get('response-body')
+    response_body_entry_id = args.get('response-body-entry-id')
+    file_content = ''
+    if response_body_entry_id and not args.get('response-body'):
+        file_entry = demisto.getFilePath(response_body_entry_id)
+        with open(file_entry['path'], 'r') as f:
+            file_content = str(f.read())
+    response_body_plain_text = file_content if file_content else args.get('response-body')
+    response_body_type = args.get('response-body-type')
+    domain_only = args.get('domain-only')
+    contacts_only = args.get('contacts-only')
+    start_time = get_millis_from_date(args.get('start-time'), 'start-time') if args.get('start-time') else None
+    end_time = get_millis_from_date(args.get('end-time'), 'end-time') if args.get('end-time') else None
 
-    autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text)
+    autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text,
+                                      domain_only, contacts_only, start_time, end_time, response_body_type)
 
     return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message], user_id)
 
 
-def set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text):
-    command_args = {
+def set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text, domain_only, contacts_only,
+                  start_time, end_time, response_body_type='text'):
+    command_args = remove_empty_elements({
         'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
         'body': {
             'enableAutoReply': enable_autoreply,
             'responseSubject': response_subject,
             'responseBodyPlainText': response_body_plain_text,
-        }}
+            'restrictToContacts': contacts_only,
+            'restrictToDomain': domain_only,
+            'startTime': start_time,
+            'endTime': end_time
+        }})
+    if response_body_type.lower() == 'html':
+        command_args['body']['responseBodyHtml'] = response_body_plain_text
 
     service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.basic'],
                           delegated_user=user_id)
@@ -1854,7 +1828,7 @@ def forwarding_address_add_command():
         'v1',
         ['https://www.googleapis.com/auth/gmail.settings.sharing'],
         delegated_user=user_id)
-    result = service.users().settings().forwardingAddresses().create(userId='me', body=request_body).execute()
+    result = service.users().settings().forwardingAddresses().create(userId=user_id, body=request_body).execute()
     readable_output = "Added forwarding address {0} for {1} with status {2}.".format(forwarding_email, user_id,
                                                                                      result.get('verificationStatus',
                                                                                                 ''))
@@ -1931,61 +1905,6 @@ def send_as_add_command():
     }
 
 
-def vacation_update_command():
-    """
-    Enables or disables vacation/away messages for the users. It helps to set away/vacation message subject and text.
-
-    :param client: client object used to get response from api
-    :param args: command arguments
-    :return: CommandResults which returns detailed results to war room and sets the context data.
-    :raises DemistoException: if message argument is not provided and vacation setting is set to on.
-    """
-    args = demisto.args()
-    user_id = args.get('user_id', 'me')
-    if 'message' not in args and 'message_entry_id' in args:
-        # attempt to read response body from file (war room entity)
-        file_entry = demisto.getFilePath(args.get('message_entry_id'))
-        with open(file_entry['path'], 'r') as f:
-            args['message'] = str(f.read())
-
-    if args.get('vacation',
-                '') == 'On' and 'message' not in args and 'message_entry_id' not in args and 'subject' not in args:
-        raise DemistoException('Auto reply message missing. Please provide message/message_entry_id/'
-                               'subject while the vacation argument is set to "On".')
-
-    vacation_settings = prepare_vacation_settings(args)
-    service = get_service(
-        'gmail',
-        'v1',
-        ['https://www.googleapis.com/auth/gmail.settings.basic'],
-        delegated_user=user_id)
-    result = service.users().settings(). \
-        updateVacation(userId='me', body=vacation_settings).execute()
-    context = result.copy()
-    context['userId'] = user_id  # type: ignore
-
-    hr_output_fields = ["Subject", "BodyPlainText", "BodyHtml", "restrictToContacts", "restrictToDomain",
-                        "enableAutoReply", "startTime", "endTime"]
-
-    hr_output = {(key.replace('response', '') if key.startswith('response') else key): value for (key, value) in
-                 context.items()}
-
-    readable_output = tableToMarkdown('Vacation settings updated for user id - {}.'.format(user_id),
-                                      hr_output, headerTransform=pascalToSpace,
-                                      removeNull=True, headers=hr_output_fields)
-
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': readable_output,
-        'EntryContext': {
-            'Gmail.Vacation(val.userId && val.userId == obj.userId)': context,
-        }
-    }
-
-
 '''FETCH INCIDENTS'''
 
 
@@ -2014,7 +1933,7 @@ def fetch_incidents():
         (user_key, query, last_fetch,))
 
     result = service.users().messages().list(
-        userId=user_key, maxResults=MAX_FETCH, q=query).execute()
+        userId=user_key, maxResults=100, q=query).execute()
 
     incidents = []
     # so far, so good
@@ -2076,7 +1995,6 @@ def main():
         'gmail-get-role': get_role_command,
         'gmail-forwarding-address-add': forwarding_address_add_command,
         'gmail-send-as-add': send_as_add_command,
-        'gmail-vacation-update': vacation_update_command
     }
     command = demisto.command()
     LOG('GMAIL: command is %s' % (command,))

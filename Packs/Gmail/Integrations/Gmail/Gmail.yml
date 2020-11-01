@@ -37,12 +37,7 @@ configuration:
   type: 13
 - defaultvalue: 1 days
   display: First fetch timestamp, in days.
-  name: first_fetch
-  required: false
-  type: 0
-- defaultvalue: '50'
-  display: Fetch Limit
-  name: max_fetch
+  name: fetch_time
   required: false
   type: 0
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
@@ -1417,7 +1412,7 @@ script:
     - contextPath: Account.Gmail.AutoReply.RestrictToContact
       description: Flag that determines whether responses are sent to recipients who are not in the user's list of contacts.
       type: String
-    - contextPath: Account.Gmail.AutoReply.RestrcitToDomain
+    - contextPath: Account.Gmail.AutoReply.RestrictToDomain
       description: Flag that determines whether responses are sent to recipients who are outside of the user's domain. This feature is only available for G Suite users.
       type: String
     - contextPath: Account.Gmail.Address
@@ -1453,6 +1448,62 @@ script:
       name: response-body
       required: false
       secret: false
+    - default: false
+      description: Sets the away/vacation message by passing a War room entryID of
+        the file for the given user.
+      isArray: false
+      name: response-body-entry-id
+      required: false
+      secret: false
+    - default: false
+      description: Sets a start date for the vacation message to be enabled for the
+        given user. Valid format- YYYY-MM-DD or Epoch time in milliseconds.
+      isArray: false
+      name: start-time
+      required: false
+      secret: false
+    - default: false
+      description: Sets an end date for the vacation message to be enabled for the
+        given user. Valid format- YYYY-MM-DD or Epoch time in milliseconds.
+      isArray: false
+      name: end-time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Allows to send away/vacation messages to users in contact list
+        when set to true.
+      isArray: false
+      name: contacts-only
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Prevent sending away/vacation messages to recipients who are outside
+        of the user's domain when set to true.
+      isArray: false
+      name: domain-only
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Text
+      description: Sets message response body type to text or HTML.
+      isArray: false
+      name: response-body-type
+      predefined:
+        - HTML
+        - Text
+      required: false
+      secret: false
     deprecated: false
     description: 'Set auto-reply for the user. Note: if the body is not set, the current body will be deleted'
     execution: false
@@ -1470,12 +1521,21 @@ script:
     - contextPath: Account.Gmail.AutoReply.RestrictToContact
       description: Determines whether responses are sent to recipients who are not in the user's list of contacts.
       type: String
-    - contextPath: Account.Gmail.AutoReply.RestrcitToDomain
+    - contextPath: Account.Gmail.AutoReply.RestrictToDomain
       description: Determines whether responses are sent to recipients who are outside of the user's domain. This feature is only available for G Suite users.
       type: String
     - contextPath: Account.Gmail.Address
       description: Email assigned with the current account.
       type: String
+    - contextPath: Account.Gmail.AutoReply.ResponseBodyHtml
+      description: Response body in HTML format.
+      type: String
+    - contextPath: Account.Gmail.AutoReply.StartTime
+      description: Start time for sending auto-replies.
+      type: Number
+    - contextPath: Account.Gmail.AutoReply.EndTime
+      description: End time for sending auto-replies.
+      type: Number
   - arguments:
     - default: false
       description: The user's email address. The "me" special value can be used to indicate the authenticated user.
@@ -1901,131 +1961,7 @@ script:
       description: A name that appears in the "From:" header for mail sent using this
         alias.
       type: String
-  - arguments:
-      - default: false
-        description: 'User''s email address. '
-        isArray: false
-        name: user_id
-        required: true
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'Off'
-        description: Enable or disable vacation responder for the given user.
-        isArray: false
-        name: vacation
-        predefined:
-          - 'On'
-          - 'Off'
-        required: true
-        secret: false
-      - default: false
-        description: Sets the away/vacation subject for the given user. Mandatory, if
-          vacation mode is On and message is not provided.
-        isArray: false
-        name: subject
-        required: false
-        secret: false
-      - default: false
-        description: Sets the away/vacation message for the given user. Mandatory, if
-          vacation mode is On and message is not provided. Message has higher precedence
-          than message_entry_id when both arguments are provided.
-        isArray: false
-        name: message
-        required: false
-        secret: false
-      - default: false
-        description: Sets the away/vacation message by passing a War room entryID of
-          the file for the given user.
-        isArray: false
-        name: message_entry_id
-        required: false
-        secret: false
-      - default: false
-        description: Sets a start date for the vacation message to be enabled for the
-          given user. Valid format- YYYY-MM-DD or Epoch time in milliseconds.
-        isArray: false
-        name: start_time
-        required: false
-        secret: false
-      - default: false
-        description: Sets an end date for the vacation message to be enabled for the
-          given user. Valid format- YYYY-MM-DD or Epoch time in milliseconds.
-        isArray: false
-        name: end_time
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'False'
-        description: Allows to send away/vacation messages to users in contact list
-          when set to True.
-        isArray: false
-        name: contacts_only
-        predefined:
-          - 'True'
-          - 'False'
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'False'
-        description: Prevent sending away/vacation messages to recipients who are outside
-          of the user's domain when set to True.
-        isArray: false
-        name: domain_only
-        predefined:
-          - 'True'
-          - 'False'
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: Text
-        description: Sets message response body type to text or HTML.
-        isArray: false
-        name: message_type
-        predefined:
-          - HTML
-          - Text
-        required: false
-        secret: false
-    deprecated: false
-    description: Enables or disables vacation/away messages for users. It helps to
-      set away/vacation message subject and text.
-    execution: false
-    name: gmail-vacation-update
-    outputs:
-      - contextPath: Gmail.Vacation.userId
-        description: User's email address.
-        type: String
-      - contextPath: Gmail.Vacation.enableAutoReply
-        description: Flag that controls whether Gmail automatically replies to messages.
-        type: Boolean
-      - contextPath: Gmail.Vacation.responseSubject
-        description: Text to prepend to the subject line in vacation responses.
-        type: String
-      - contextPath: Gmail.Vacation.responseBodyPlainText
-        description: Response body in plain text format.
-        type: String
-      - contextPath: Gmail.Vacation.responseBodyHtml
-        description: Response body in HTML format.
-        type: String
-      - contextPath: Gmail.Vacation.restrictToContacts
-        description: Flag that determines whether responses are sent to recipients who
-          are not in the user's list of contacts.
-        type: Boolean
-      - contextPath: Gmail.Vacation.restrictToDomain
-        description: Flag that determines whether responses are sent to recipients who
-          are outside of the user's domain.
-        type: Boolean
-      - contextPath: Gmail.Vacation.startTime
-        description: Start time for sending auto-replies.
-        type: Number
-      - contextPath: Gmail.Vacation.endTime
-        description: End time for sending auto-replies.
-        type: Number
-  dockerimage: demisto/google-api:1.0.0.11841
+  dockerimage: demisto/google-api:1.0.0.12690
   isfetch: true
   longRunning: false
   longRunningPort: false

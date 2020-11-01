@@ -166,27 +166,13 @@ def test_parse_privileges():
 
 
 def test_dict_keys_snake_to_camelcase():
+    """
+    Tests dict_keys_snake_to_camelcase method works as expected.
+    e.g. family_name -> familyName
+    """
     from Gmail import dict_keys_snake_to_camelcase
     dictionary = {
         'user_name': 'user1',
         'user_id': '2'
     }
     assert dict_keys_snake_to_camelcase(dictionary) == {'userName': 'user1', 'userId': '2'}
-
-
-def test_prepare_vacation_settings():
-    from Gmail import prepare_vacation_settings
-    args = {
-        'vacation': 'enableAutoReply',
-        'subject': 'responseSubject',
-        'message': 'responseBodyPlainText',
-        'start_time': '1602268200000',
-        'end_time': '1602268200000',
-        'contacts_only': 'restrictToContacts',
-        'domain_only': 'restrictToDomain'
-    }
-    assert prepare_vacation_settings(args) == {'responseSubject': 'responseSubject',
-                                               'responseBodyPlainText': 'responseBodyPlainText',
-                                               'restrictToContacts': 'restrictToContacts',
-                                               'enableAutoReply': 'enableAutoReply', 'startTime': 1602268200000,
-                                               'endTime': 1602268200000, 'restrictToDomain': 'restrictToDomain'}
