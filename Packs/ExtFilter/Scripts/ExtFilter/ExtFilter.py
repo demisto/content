@@ -201,8 +201,7 @@ def match_pattern(
                 return next(
                     filter(
                         lambda v:
-                            isinstance(v, str) and
-                            fnmatch.fnmatchcase(v.lower(), pattern),
+                            isinstance(v, str) and fnmatch.fnmatchcase(v.lower(), pattern),
                         value),
                     None) is not None
             elif isinstance(value, str):
@@ -212,8 +211,7 @@ def match_pattern(
                 return next(
                     filter(
                         lambda v:
-                        isinstance(v, str) and
-                        fnmatch.fnmatchcase(v, pattern),
+                        isinstance(v, str) and fnmatch.fnmatchcase(v, pattern),
                         value),
                     None) is not None
             elif isinstance(value, str):
@@ -227,8 +225,7 @@ def match_pattern(
             return next(
                 filter(
                     lambda v:
-                        isinstance(v, str) and
-                        re.fullmatch(pattern, v, flags),
+                        isinstance(v, str) and re.fullmatch(pattern, v, flags),
                     value),
                 None) is not None
         elif isinstance(value, str):
@@ -615,8 +612,7 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and
-                        match_pattern(r, lhs, True, PATALG_BINARY),
+                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_BINARY),
                     rhs),
                 None) is not None
 
@@ -636,8 +632,7 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and
-                        match_pattern(r, lhs, False, PATALG_WILDCARD),
+                        isinstance(r, str) and match_pattern(r, lhs, False, PATALG_WILDCARD),
                     rhs),
                 None) is not None
 
@@ -650,8 +645,7 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and
-                        match_pattern(r, lhs, True, PATALG_WILDCARD),
+                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_WILDCARD),
                     rhs),
                 None) is not None
 
@@ -672,8 +666,7 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and
-                        match_pattern(r, lhs, False, PATALG_REGEX),
+                        isinstance(r, str) and match_pattern(r, lhs, False, PATALG_REGEX),
                     rhs),
                 None) is not None
 
@@ -686,8 +679,7 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and
-                        match_pattern(r, lhs, True, PATALG_REGEX),
+                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_REGEX),
                     rhs),
                 None) is not None
 
@@ -1279,8 +1271,7 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and
-                        match_pattern(r, lhs, True, PATALG_BINARY),
+                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_BINARY),
                     rval),
                     None):
                 return Value(lhs)
@@ -1301,8 +1292,7 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and
-                        match_pattern(r, lhs, False, PATALG_WILDCARD),
+                        isinstance(r, str) and match_pattern(r, lhs, False, PATALG_WILDCARD),
                     rval),
                     None):
                 return Value(lhs)
@@ -1315,8 +1305,7 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and
-                        match_pattern(r, lhs, True, PATALG_WILDCARD),
+                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_WILDCARD),
                     rval),
                     None):
                 return Value(lhs)
@@ -1337,8 +1326,7 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and
-                        match_pattern(r, lhs, False, PATALG_REGEX),
+                        isinstance(r, str) and match_pattern(r, lhs, False, PATALG_REGEX),
                     rval),
                     None):
                 return Value(lhs)
@@ -1351,8 +1339,7 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and
-                        match_pattern(r, lhs, True, PATALG_REGEX),
+                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_REGEX),
                     rval),
                     None):
                 return Value(lhs)
