@@ -733,6 +733,9 @@ class MsGraphClient:
                 attachment_id = attachment.get('id', '')
                 attachment_content = self._get_attachment_mime(message_id, attachment_id)
                 attachment_name = f'{attachment_name}.eml'
+            else:
+                # skip attachments that are not of the previous types (type referenceAttachment)
+                continue
             # upload the item/file attachment to War Room
             upload_file(attachment_name, attachment_content, attachment_results)
 
@@ -1114,9 +1117,9 @@ def list_mails_command(client: MsGraphClient, args):
 
         # human_readable builder
         human_readable = tableToMarkdown(
-            f'### Total of {len(mail_context)} mails received',
+            f'Total of {len(mail_context)} mails received',
             mail_context,
-            headers=['Subject', 'From', 'SendTime']
+            headers=['Subject', 'From', 'SendTime', 'ID']
         )
     else:
         human_readable = '### No mails were found'

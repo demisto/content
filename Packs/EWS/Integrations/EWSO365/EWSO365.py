@@ -1835,9 +1835,6 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         html_body, html_attachments = handle_html(html_body)
         attachments += html_attachments
 
-        if body:
-            html_body = f'{body}<br/><br/>{html_body}'
-
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers)
 
         for attachment in attachments:
@@ -2247,8 +2244,9 @@ def test_module(client: EWSClient, max_fetch):
 def sub_main():
     is_test_module = False
     params = demisto.params()
-    client = EWSClient(**params)
     args = prepare_args(demisto.args())
+    params['default_target_mailbox'] = args.get('target_mailbox', params['default_target_mailbox'])
+    client = EWSClient(**params)
     start_logging()
     try:
         command = demisto.command()
