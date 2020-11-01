@@ -669,7 +669,7 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        default=False, action='store_true', required=False)
+                        default=False, required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
