@@ -1,3 +1,5 @@
+#### Note: Threat Vault API key is the same as the Auto Focus API key.
+
 ## Get Your API Key
 To get your API key, you need to add an authorization code, and then activate the API.
 
