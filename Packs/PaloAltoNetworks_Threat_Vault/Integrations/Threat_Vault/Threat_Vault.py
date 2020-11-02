@@ -29,11 +29,10 @@ class Client(BaseClient):
         if (sha256 and signature_id) or (not sha256 and not signature_id):
             raise Exception('Please submit a sha256 or a signature_id.')
         if signature_id:
-            # 93534285
             suffix = f'/threatvault/panav/signature/{signature_id}'
         else:
-            # 050aef130c079f10a2549b3f948c5d6548bfd33e0dee4fa264300de57ba619da
             suffix = f'/file/{sha256}/signature'
+
         return self._http_request(method='GET', url_suffix=suffix, params=self._params)
 
     def dns_signature_get_request(self, dns_signature_id: str) -> dict:
