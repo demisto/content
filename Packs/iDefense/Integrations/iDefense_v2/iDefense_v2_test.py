@@ -94,7 +94,7 @@ def test_wrong_ip():
     try:
         ip_command(client, ip_to_check)
     except DemistoException as err:
-        assert "Invalid parameter was given" in str(err)
+        assert "Received wrong IP value" in str(err)
 
 
 def test_wrong_connection():
@@ -161,7 +161,7 @@ def test_url_command(url, status_code, json_data, expected_output):
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False)
         results = url_command(client, url_to_check)
-        output = results.to_context().get('EntryContext', {})
+        output = results[0].to_context().get('EntryContext', {})
         DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && ' \
                    'val.Vendor == obj.Vendor && val.Type == obj.Type)'
         assert output.get('URL(val.Data && val.Data == obj.Data)', []) == expected_output.get('URL')
