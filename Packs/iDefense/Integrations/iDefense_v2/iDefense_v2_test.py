@@ -4,7 +4,6 @@ from iDefense_v2 import Client, url_command, ip_command, _calculate_dbot_score
 from CommonServerPython import DemistoException
 from test_data.response_constants import URL_RES_JSON, IP_RES_JSON
 
-
 API_URL = "https://test.com"
 
 MOCK_IP = [
