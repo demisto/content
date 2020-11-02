@@ -13,6 +13,7 @@ import requests
 import urllib3
 import io
 import re
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
@@ -459,53 +460,70 @@ def splunk_results_command(service):
 
 
 def fetch_incidents(service):
-    last_run = demisto.getLastRun() and demisto.getLastRun()['time']
-    search_offset = demisto.getLastRun().get('offset', 0)
+    try:
+        demisto.debug('DEBUGGING: Starting Incident Fetching')
+        last_run = demisto.getLastRun() and demisto.getLastRun()['time']
+        search_offset = demisto.getLastRun().get('offset', 0)
+        demisto.debug('DEBUGGING: last_run = ' + str(last_run) + '; search_offset = ' + str(search_offset))
 
-    incidents = []
-    current_time_for_fetch = datetime.utcnow()
-    dem_params = demisto.params()
-    if demisto.get(dem_params, 'timezone'):
-        timezone = dem_params['timezone']
-        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+        incidents = []
+        current_time_for_fetch = datetime.utcnow()
+        demisto.debug('DEBUGGING: current_time_for_fetch = ' + str(current_time_for_fetch))
 
-    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if demisto.get(dem_params, 'useSplunkTime'):
-        now = get_current_splunk_time(service)
-        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
-        current_time_for_fetch = current_time_in_splunk
+        dem_params = demisto.params()
+        if demisto.get(dem_params, 'timezone'):
+            timezone = dem_params['timezone']
+            current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+            demisto.debug('DEBUGGING: current_time_for_fetch, timezone = ' + str(current_time_for_fetch))
 
-    if len(last_run) == 0:
-        fetch_time_in_minutes = parse_time_to_minutes()
-        start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
-        last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+        now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+        demisto.debug('DEBUGGING: now = ' + str(now))
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+        if demisto.get(dem_params, 'useSplunkTime'):
+            now = get_current_splunk_time(service)
+            demisto.debug('DEBUGGING: now, useSplunkTime = ' + str(now))
 
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+            current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+            current_time_for_fetch = current_time_in_splunk
+            demisto.debug('DEBUGGING: current_time_for_fetch, useSplunkTime = ' + str(current_time_for_fetch))
 
-    searchquery_oneshot = dem_params['fetchQuery']
+        if len(last_run) == 0:
+            fetch_time_in_minutes = parse_time_to_minutes()
+            start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+            last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    if demisto.get(dem_params, 'extractFields'):
-        extractFields = dem_params['extractFields']
-        extra_raw_arr = extractFields.split(',')
-        for field in extra_raw_arr:
-            field_trimmed = field.strip()
-            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+        earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+        latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+        demisto.debug('DEBUGGING: earliest_fetch_time_fieldname = ' + str(current_time_for_fetch) +
+                      '; latest_fetch_time_fieldname = ' + str(latest_fetch_time_fieldname))
 
-    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
-    reader = results.ResultsReader(oneshotsearch_results)
-    for item in reader:
-        inc = notable_to_incident(item)
-        incidents.append(inc)
+        kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
+                          latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+        demisto.debug('DEBUGGING: kwargs_oneshot = ' + str(kwargs_oneshot))
 
-    demisto.incidents(incidents)
-    if len(incidents) < FETCH_LIMIT:
-        demisto.setLastRun({'time': now, 'offset': 0})
-    else:
-        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
+        searchquery_oneshot = dem_params['fetchQuery']
+        demisto.debug('DEBUGGING: searchquery_oneshot = ' + str(searchquery_oneshot))
+
+        if demisto.get(dem_params, 'extractFields'):
+            extractFields = dem_params['extractFields']
+            extra_raw_arr = extractFields.split(',')
+            for field in extra_raw_arr:
+                field_trimmed = field.strip()
+                searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+
+        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+        reader = results.ResultsReader(oneshotsearch_results)
+        for item in reader:
+            inc = notable_to_incident(item)
+            incidents.append(inc)
+
+        demisto.incidents(incidents)
+        if len(incidents) < FETCH_LIMIT:
+            demisto.setLastRun({'time': now, 'offset': 0})
+        else:
+            demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
+    except Exception as e:
+        demisto.executeCommand('send-mail', )
 
 
 def parse_time_to_minutes():
@@ -555,7 +573,6 @@ def splunk_submit_event_command(service):
 
 
 def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_):
-
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
@@ -587,7 +604,6 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 
 
 def splunk_submit_event_hec_command():
-
     hec_token = demisto.params().get('hec_token')
     baseurl = demisto.params().get('hec_url')
     if baseurl is None:
