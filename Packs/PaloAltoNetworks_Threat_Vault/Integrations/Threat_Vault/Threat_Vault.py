@@ -92,7 +92,7 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix=f'/threatvault/{path}/search', params=self._params,
                                   json_data=data)
 
-    def search_results_request(self, search_type: str, signature_id: str) -> dict:
+    def signature_search_results_request(self, search_type: str, signature_id: str) -> dict:
         """Get signature search results by sending a GET request.
 
         Args:
@@ -323,7 +323,7 @@ def signature_search_results(client: Client, args: dict) -> CommandResults:
     signature_id = str(args.get('signature_id', ''))
     search_type = str(args.get('search_type', ''))
 
-    response = client.search_results_request(search_type, signature_id)
+    response = client.signature_search_results_request(search_type, signature_id)
 
     outputs = response
     outputs.update({'search_request_id': signature_id})

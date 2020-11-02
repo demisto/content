@@ -1,4 +1,4 @@
-from Threat_Vault import Client, dns_get_by_id, antispyware_get_by_id, ip_geo_get
+from Threat_Vault import Client, dns_get_by_id, antispyware_get_by_id, ip_geo_get, signature_search_results
 
 
 def test_dns_get_by_id(mocker):
@@ -157,8 +157,8 @@ def test_signature_search_results_dns(mocker):
         ],
         "total_count": 5306
     }
-    mocker.patch.object(client, 'search_results_request', return_value=return_data)
-    command_results = ip_geo_get(client, args={'signature_id': 'mock', 'size': '1'})
+    mocker.patch.object(client, 'signature_search_results_request', return_value=return_data)
+    command_results = signature_search_results(client, args={'signature_id': 'mock', 'size': '1'})
     output = command_results.to_context()
     expected_result = {
         'ThreatVault.Search(val.search_request_id == obj.search_request_id)':
