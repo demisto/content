@@ -11,15 +11,8 @@
         "Network Security"
     ],
     "tags": [
-        "iot",
-        "netsec",
-        "netops",
-        "networksecurity",
-        "paloaltonetworks",
-        "zingbox"
+        "IoT"
     ],
-    "useCases": [
-        "Incident response for Palo Alto Networks IoT Security"
-    ],
+    "useCases": [],
     "keywords": []
 }

@@ -9,12 +9,7 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "dns",
-        "pdns",
-        "passive dns",
-        "dnsdb"
-    ],
+    "tags": [],
     "githubUser": [
         "farsightsec",
         "dnsdb"

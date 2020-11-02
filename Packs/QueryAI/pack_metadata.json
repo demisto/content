@@ -10,14 +10,7 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [
-        "Virtual SIEM",
-        "Security Analytics",
-        "Ask question get answer",
-        "Threat Hunting",
-        "Incident Response",
-        "Analyst Assistive-AI"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [
         "query",
