@@ -945,7 +945,6 @@ class Pack(object):
             logging.success(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}")
         except AssertionError:
             logging.exception(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.")
-            exit(2)
         except Exception:
             logging.exception(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.")
         finally:
@@ -967,8 +966,8 @@ class Pack(object):
         changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))
         assert latest_release_notes >= changelog_latest_release_notes, \
             f'{self._pack_name}: Version mismatch detected between production bucket and current branch\n' \
-            f'Production bucket version: {changelog_latest_release_notes}, ' \
-            f'current branch version: {latest_release_notes}' \
+            f'Production bucket version: {changelog_latest_release_notes}\n' \
+            f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
     def collect_content_items(self):

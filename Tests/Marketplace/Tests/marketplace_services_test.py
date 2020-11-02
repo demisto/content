@@ -490,25 +490,25 @@ class TestChangelogCreation:
                - assertion should fail since this branch is not updated from master
        """
         changelog = {
-            "1.0.0": {
-                "releaseNotes": "First release notes",
-                "displayName": "1.0.0",
-                "released": "2020-05-05T13:39:33Z"
+            '1.0.0': {
+                'releaseNotes': 'First release notes',
+                'displayName': '1.0.0',
+                'released': '2020-05-05T13:39:33Z'
             },
-            "2.0.0": {
-                "releaseNotes": "Second release notes",
-                "displayName": "2.0.0",
-                "released": "2020-06-05T13:39:33Z"
+            '2.0.0': {
+                'releaseNotes': 'Second release notes',
+                'displayName': '2.0.0',
+                'released': '2020-06-05T13:39:33Z'
             }
         }
         branch_latest_version = '1.9.9'
-        try:
+        with pytest.raises(AssertionError) as excinfo:
             Pack.assert_production_bucket_version_matches_release_notes_version(dummy_pack,
                                                                                 changelog,
                                                                                 branch_latest_version)
-            assert False, 'should fail because current branch pack version is lower than production bucket branch'
-        except AssertionError:
-            pass
+            assert 'Version mismatch detected between production bucket and current branch' in str(excinfo.value)
+            assert 'Production bucket version: 2.0.0' in str(excinfo.value)
+            assert f'current branch version: {branch_latest_version}' in str(excinfo.value)
 
     def test_clean_release_notes_lines(self):
         original_rn = '''
