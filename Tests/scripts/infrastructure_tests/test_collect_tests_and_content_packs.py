@@ -400,12 +400,6 @@ class TestChangedScript:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Packs/CommonScripts/Scripts/ExtractIndicatorsFromTextFile/ExtractIndicatorsFromTextFile.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
-
-        assert filterd_tests == {self.TEST_ID}
-        assert content_packs == {"Base", "DeveloperTools", "CommonScripts"}
-
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_2'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/past_test_playbook_2.yml'
