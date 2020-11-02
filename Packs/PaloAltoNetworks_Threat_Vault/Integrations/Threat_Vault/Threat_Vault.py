@@ -150,8 +150,15 @@ def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
     sha256 = str(args.get('sha256', ''))
     signature_id = str(args.get('signature_id', ''))
 
-    response = client.antivirus_signature_get_request(sha256, signature_id)
-    readable_output = tableToMarkdown(name="Antivirus:", t=response, removeNull=True)
+    try:
+        response = client.antivirus_signature_get_request(sha256, signature_id)
+        readable_output = tableToMarkdown(name="Antivirus:", t=response, removeNull=True)
+    except Exception as err:
+        if 'Error in API call [404] - Not Found' in str(err):
+            response = {}
+            readable_output = 'Antivirus signature was not found. Please try with a different sha256 or signature_id.'
+        else:
+            raise Exception(err)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.Antivirus',
@@ -174,10 +181,16 @@ def dns_get_by_id(client: Client, args: dict) -> CommandResults:
     """
     dns_signature_id = str(args.get('dns_signature_id', ''))
 
-    response = client.dns_signature_get_request(dns_signature_id)
-
-    headers = ['signatureId', 'signatureName', 'domainName', 'createTime', 'category']
-    readable_output = tableToMarkdown(name="DNS Signature:", t=response, headers=headers, removeNull=True)
+    try:
+        response = client.dns_signature_get_request(dns_signature_id)
+        headers = ['signatureId', 'signatureName', 'domainName', 'createTime', 'category']
+        readable_output = tableToMarkdown(name="DNS Signature:", t=response, headers=headers, removeNull=True)
+    except Exception as err:
+        if 'Error in API call [404] - Not Found' in str(err):
+            response = {}
+            readable_output = 'DNS signature was not found. Please try with a different dns_signature_id.'
+        else:
+            raise Exception(err)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.DNS',
@@ -200,10 +213,16 @@ def antispyware_get_by_id(client: Client, args: dict) -> CommandResults:
     """
     signature_id = str(args.get('signature_id', ''))
 
-    response = client.antispyware_get_by_id_request(signature_id)
-
-    headers = ['signatureId', 'signatureName', 'signatureType', 'status', 'firstReleaseTime', 'latestReleaseTime']
-    readable_output = tableToMarkdown(name="Anti Spyware Signature:", t=response, headers=headers, removeNull=True)
+    try:
+        response = client.antispyware_get_by_id_request(signature_id)
+        headers = ['signatureId', 'signatureName', 'signatureType', 'status', 'firstReleaseTime', 'latestReleaseTime']
+        readable_output = tableToMarkdown(name="Anti Spyware Signature:", t=response, headers=headers, removeNull=True)
+    except Exception as err:
+        if 'Error in API call [404] - Not Found' in str(err):
+            response = {}
+            readable_output = 'Anti spyware signature was not found. Please try with a different signature_id.'
+        else:
+            raise Exception(err)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.AntiSpyware',
@@ -226,9 +245,15 @@ def ip_geo_get(client: Client, args: dict) -> CommandResults:
     """
     ip_ = str(args.get('ip', ''))
 
-    response = client.ip_geo_get_request(ip_)
-
-    readable_output = tableToMarkdown(name="Anti Spyware Signature:", t=response, removeNull=True)
+    try:
+        response = client.ip_geo_get_request(ip_)
+        readable_output = tableToMarkdown(name="IP location:", t=response, removeNull=True)
+    except Exception as err:
+        if 'Error in API call [404] - Not Found' in str(err):
+            response = {}
+            readable_output = 'IP location was not found. Please try with a different IP.'
+        else:
+            raise Exception(err)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.IP',
