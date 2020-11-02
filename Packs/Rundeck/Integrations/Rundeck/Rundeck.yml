@@ -175,7 +175,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Options for running the job.
+      description: |-
+        Options for running the job.
+        For example, if you have a 'foo' and 'bar' options set for a job, you can pass values to them using the next syntax: 'foo=someValue,bar=someValue'
       isArray: true
       name: options
       required: false
@@ -280,7 +282,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Options for the job's execution.
+      description: 'Options for the job''s execution. For example: ''foo=someValue,bar=someValue'''
       isArray: false
       name: options
       required: false
@@ -992,7 +994,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Data you want to post to the webhook endpoint. example: op1=val1,op2=val2.
+        Data you want to post to the webhook endpoint. example: 'op1=val1,op2=val2'.
         can pass either 'options' or 'json'.
       isArray: false
       name: options
