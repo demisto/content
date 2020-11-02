@@ -1,4 +1,5 @@
 FireEye Network Security is an effective cyber threat protection solution that helps organizations minimize the risk of costly breaches by  accurately detecting and immediately stopping advanced, targeted and other evasive attacks hiding in Internet traffic.
+This integration was integrated and tested with version 2.0.0 of FireEyeNX APIs.
 
 ## Configure FireEyeNX on Cortex XSOAR
 
