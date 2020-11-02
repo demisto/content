@@ -2408,11 +2408,11 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
         username=username
     )
 
-    headers = ['timestamp', 'host_name', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
+    headers = ['timestamp', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
                'serial']
     return (
         tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers,
-                        headerTransform=string_to_table_header),
+                        headerTransform=string_to_table_header ,removeNull=True),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)':
                 reply.get('violations')
@@ -2527,7 +2527,7 @@ def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, 
     }
 
     return (
-        f'Script code is :\n {str(reply)}',
+        f'### Script code:\n {str(reply)}',
         {
             f'{INTEGRATION_CONTEXT_BRAND}.ScriptCode(val.script_uid == obj.script_uid)': context
         },
@@ -2582,7 +2582,7 @@ def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, An
     vendors = json.loads(args.get('vendors')) if args.get('vendors') else None
     class_string = args.get('class')
 
-    client.insert_simple_indicators(
+    reply = client.insert_simple_indicators(
         indicator=indicator,
         type_=type_,
         severity=severity,
@@ -2597,7 +2597,7 @@ def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, An
         class_string=class_string
     )
 
-    return 'IOCs successfully uploaded', None, None
+    return 'IOCs successfully uploaded', None, reply
 
 
 def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:

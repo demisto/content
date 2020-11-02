@@ -75,39 +75,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: 8e20354e-75fd-4716-802b-d3862f18a1d4
-    type: regular
-    task:
-      id: 8e20354e-75fd-4716-802b-d3862f18a1d4
-      version: -1
-      name: xdr-retrieve-file-details
-      description: View the file retrieved by the Retrieve File request according
-        to the action ID.
-      script: Cortex XDR - IR|||xdr-retrieve-file-details
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      action_id:
-        simple: ${PaloAltoNetworksXDR.RetrievedFiles.action_id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
     taskid: 4b33d290-4788-4f1e-8e9b-ea7d13cdd0b0
@@ -180,8 +147,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 60,
+          "y": 895
         }
       }
     note: false
@@ -205,7 +172,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "2"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -291,12 +258,14 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "5_6_#default#": 0.68
+    },
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 810,
-        "x": 50,
+        "height": 940,
+        "width": 800,
+        "x": 60,
         "y": 50
       }
     }

@@ -32,39 +32,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 95ed413f-3619-4864-8ab6-aedf851e8754
-    type: regular
-    task:
-      id: 95ed413f-3619-4864-8ab6-aedf851e8754
-      version: -1
-      name: xdr-action-status-get
-      description: Retrieve the status of the requested actions according to the action
-        ID.
-      script: Cortex XDR - IR|||xdr-action-status-get
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      action_id:
-        simple: ${inputs.action_id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
     taskid: 4b1b699b-2112-4d74-897e-d558dc990050

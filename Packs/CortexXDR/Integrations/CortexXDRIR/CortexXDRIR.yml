@@ -1741,9 +1741,11 @@ script:
       - disk drive
       - floppy disk
       - portable device
-    - description: Timestamp of the violation - Greater than or equal
+    - description: Timestamp of the violation - Greater than or equal, This
+        is a Unix epoch timestamp value, in milliseconds.
       name: timestamp_gte
-    - description: Timestamp of the violation - Less than or equal
+    - description: Timestamp of the violation - Less than or equal, This
+        is a Unix epoch timestamp value, in milliseconds.
       name: timestamp_lte
     - description: Comma separated list of IP addresses
       isArray: true
@@ -1838,7 +1840,8 @@ script:
       name: mac_file_paths
     description: Retrieve files from selected endpoints. You can retrieve up to 20
       files, from no more than 10 endpoints. At least one endpoint ID and one file
-      path are necessary in order to run the command.
+      path are necessary in order to run the command. After running this command, you can use -
+      xdr-action-status-get command with returned action_id, to check action status.
     name: xdr-retrieve-files
     outputs:
     - contextPath: PaloAltoNetworksXDR.RetrievedFiles.action_id
@@ -1850,7 +1853,8 @@ script:
       name: action_id
       required: true
     description: View the file retrieved by the Retrieve File request according to
-      the action ID.
+      the action ID. Before running this command, you can use -
+      xdr-action-status-get command, in order to check if this action completed successfully.
     name: xdr-retrieve-file-details
     outputs:
     - contextPath: PaloAltoNetworksXDR.RetrievedFileDetails
@@ -2091,7 +2095,8 @@ script:
       - E
       - F
     description: Upload IOCs as JSON objects that you retrieved from external threat
-      intelligence sources.
+      intelligence sources. To spesify multiple vendors details, use the "vendor" argument (JSON),
+      for only one vendor use - vendor_name, vendor_reputation, vendor_reliability arguments.
     name: xdr-insert-simple-indicators
   - arguments:
     - description: The Action ID of the selected request. After performing an action,
