@@ -243,7 +243,42 @@ PROCESS_INDICATOR_VALUE_PACKAGE = [
             {
                 'MD5': '1234',
                 'SHA-1': '12345',
-                'SHA-256': '12345'
+                'SHA-256': '123456'
+            }
+        )
+    ),
+    (
+        "[file:hashes.'SHA-1'='12345' OR "
+        "file:hashes.'SHA-256'='123456']",
+        (
+            ['file'],
+            ['12345'],
+            {
+                'SHA-1': '12345',
+                'SHA-256': '123456'
+            }
+        )
+    ),
+    (
+        "[file:hashes.'ssdeep'='12345' OR "
+        "file:hashes.'SHA-256'='123456']",
+        (
+            ['file'],
+            ['123456'],
+            {
+                'ssdeep': '12345',
+                'SHA-256': '123456'
+            }
+        )
+    ),
+    (
+        "[file:'fake'='12345' OR "
+        "file:hashes.'SHA-1'='123456']",
+        (
+            ['file'],
+            ['123456'],
+            {
+                'SHA-1': '123456'
             }
         )
     ),
@@ -274,7 +309,7 @@ def test_process_indicator_value(pattern_value, expected_result):
     """
     process_result = STIX21Processor.process_indicator_value(pattern_value)
 
-    for i in range(2):
+    for i in range(3):
         assert process_result[i] == expected_result[i]
 
 

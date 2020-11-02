@@ -1,6 +1,7 @@
 from typing import Tuple, List, Dict
 
 import math
+from urllib.parse import urlparse, parse_qsl
 import urllib3
 from dateparser import parse
 from requests.auth import HTTPBasicAuth
@@ -314,13 +315,50 @@ def parse_timestamp(next_url_to_extract_timestamp_from: str) -> Optional[int]:
         int. Last fetch timestamp.
     """
     try:
-        encoded_string = re.findall(r'last_id_modified_timestamp=(.*%3D%3D)', next_url_to_extract_timestamp_from)[0]
-        decoded_string = base64.b64decode(encoded_string.replace('%3D%3D', '==')).decode('utf-8')
+        url_query = urlparse(next_url_to_extract_timestamp_from).query
+        query_args = parse_qsl(url_query)
+        encoded_string = [value for arg_name, value in query_args if arg_name == 'last_id_modified_timestamp'][0]
+        decoded_string = base64.b64decode(encoded_string).decode('utf-8')
         timestamp_in_micro_seconds = int(decoded_string.split(',')[0])
         timestamp_in_seconds = math.floor(timestamp_in_micro_seconds / 1000000)
         return timestamp_in_seconds
     except Exception:
         return None
+
+
+def handle_first_fetch_timestamp():
+    """Parses the first_fetch_timestamp parameter.
+
+    Returns:
+        timestamp as str if valid, None otherwise.
+
+    """
+    user_input = demisto.params().get('first_fetch_timestamp')
+
+    try:
+        first_fetch_timestamp = parse(user_input).timestamp()
+        first_fetch_timestamp = str(first_fetch_timestamp).split('.')[0]
+        return first_fetch_timestamp
+    except Exception:
+        # Timestamp could not be parsed
+        demisto.debug(f'Could not parse requested first fetch timestamp with value {user_input}')
+        return None
+
+
+def get_last_fetch_times():
+    """Returns the last fetch time from the API for indicators and reports.
+
+    Returns:
+        str. Last indicators fetch timestamp.
+        str. Last reports fetch timestamp.
+    """
+    first_fetch_timestamp = handle_first_fetch_timestamp()
+
+    integration_context = demisto.getIntegrationContext()
+    last_indicators_fetch_time = integration_context.get('last_indicators_fetch_time', first_fetch_timestamp)
+    last_reports_fetch_time = integration_context.get('last_reports_fetch_time', first_fetch_timestamp)
+
+    return last_indicators_fetch_time, last_reports_fetch_time
 
 
 class Client(BaseClient):
@@ -333,7 +371,7 @@ class Client(BaseClient):
         tlp_color (str): Traffic Light Protocol color.
     """
 
-    def __init__(self, public_key: str, private_key: str, first_fetch_timestamp: str,
+    def __init__(self, public_key: str, private_key: str,
                  malicious_threshold: int, reputation_interval: int,
                  polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
                  tags: list = [], tlp_color: Optional[str] = None):
@@ -345,10 +383,6 @@ class Client(BaseClient):
         self._polling_timeout = polling_timeout
         self.tags = tags
         self.tlp_color = tlp_color
-
-        integration_context = demisto.getIntegrationContext()
-        self.last_indicators_fetch_time = integration_context.get('last_indicators_fetch_time', first_fetch_timestamp)
-        self.last_reports_fetch_time = integration_context.get('last_reports_fetch_time', first_fetch_timestamp)
 
     @staticmethod
     def parse_access_token_expiration_time(expires_in: str) -> int:
@@ -413,17 +447,18 @@ class Client(BaseClient):
 
         return auth_token
 
-    def fetch_all_indicators_from_api(self, limit: int) -> Tuple[List, Dict, Dict]:
+    def fetch_all_indicators_from_api(self, limit: int) -> Tuple[List, Dict, Dict, str]:
         """Collects raw data of indicators and their relationships from the feed.
 
         Args:
             limit (int): Amount of indicators to fetch. -1 means no limit.
 
         Returns:
-            Tuple[List, Dict, Dict].
+            Tuple[List, Dict, Dict, str].
                 raw_indicators - List of STIX 2.1 indicators objects.
                 relationships - Dict of `id: STIX 2.1 relationship object`.
                 stix_entities - Dict of `id: STIX 2.1 entity object`.
+                last_indicators_fetch_time - string of last fetch timestamp.
         """
         raw_indicators = list()  # type: List
         relationships = dict()  # type: Dict
@@ -439,8 +474,9 @@ class Client(BaseClient):
         else:
             query_url = f'/collections/indicators/objects?length={min(limit, 1000)}'
 
-        if self.last_indicators_fetch_time:
-            query_url += f'&added_after={self.last_indicators_fetch_time}'
+        last_indicators_fetch_time, _ = get_last_fetch_times()
+        if last_indicators_fetch_time:
+            query_url += f'&added_after={last_indicators_fetch_time}'
 
         demisto.debug('Starting raw indicators fetching')
         round_count = 0
@@ -460,7 +496,7 @@ class Client(BaseClient):
             if response.status_code == 204:
                 demisto.info(f'{INTEGRATION_NAME} info - '
                              f'API Status Code: {response.status_code} No Content Available for this timeframe.')
-                return [], {}, {}
+                return [], {}, {}, last_indicators_fetch_time
 
             if response.status_code != 200:
                 return_error(f'{INTEGRATION_NAME} indicators fetching - '
@@ -483,22 +519,25 @@ class Client(BaseClient):
                 query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
 
                 if 'last_id_modified_timestamp=' in query_url:
-                    self.last_indicators_fetch_time = parse_timestamp(query_url)
+                    last_indicators_fetch_time = parse_timestamp(query_url)
 
             except KeyError:
                 break
 
         demisto.debug('Fetching raw indicators from feed fully completed')
-        return raw_indicators, relationships, stix_entities
+        return raw_indicators, relationships, stix_entities, last_indicators_fetch_time
 
-    def fetch_all_reports_from_api(self, limit: int) -> List:
+    def fetch_all_reports_from_api(self, limit: int) -> Tuple[List, str]:
         """Collects reports raw data from the feed.
 
         Args:
             limit (int): Amount of reports to fetch. -1 means no limit.
 
         Returns:
-            List. List of STIX 2.1 reports objects.
+            Tuple[List, str].
+                raw_reports - List of STIX 2.1 reports objects.
+                last_indicators_fetch_time - string of last fetch timestamp.
+
         """
         raw_reports = list()  # type: List
 
@@ -512,13 +551,15 @@ class Client(BaseClient):
         else:
             query_url = f'/collections/reports/objects?length={min(limit, 100)}'
 
-        if self.last_reports_fetch_time:
-            query_url += f'&added_after={self.last_reports_fetch_time}'
+        _, last_reports_fetch_time = get_last_fetch_times()
+
+        if last_reports_fetch_time:
+            query_url += f'&added_after={last_reports_fetch_time}'
 
         demisto.debug('Starting raw reports fetching')
         round_count = 0
         while round_count != 50:
-            # For fetching 50K objects each time
+            # For fetching 5K objects each time
             headers['Authorization'] = f'Bearer {self.get_access_token()}'
 
             response = self._http_request(
@@ -545,19 +586,18 @@ class Client(BaseClient):
                 query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
 
                 if 'last_id_modified_timestamp=' in query_url:
-                    self.last_reports_fetch_time = parse_timestamp(query_url)
+                    last_reports_fetch_time = parse_timestamp(query_url)
 
             except KeyError:
                 break
 
         demisto.debug('Fetching raw reports from feed fully completed')
-        return raw_reports
+        return raw_reports, last_reports_fetch_time
 
     def build_iterator(self, limit: int) -> List:
-        self.get_access_token()
-
-        raw_indicators, relationships, stix_entities = self.fetch_all_indicators_from_api(limit)
-        raw_reports = self.fetch_all_reports_from_api(limit)
+        raw_indicators, relationships, stix_entities, last_indicators_fetch_time = \
+            self.fetch_all_indicators_from_api(limit)
+        raw_reports, last_reports_fetch_time = self.fetch_all_reports_from_api(limit)
 
         stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports,
                                          self.malicious_threshold, self.reputation_interval)
@@ -568,8 +608,8 @@ class Client(BaseClient):
 
         integration_context = demisto.getIntegrationContext()
         integration_context.update({
-            'last_indicators_fetch_time': self.last_indicators_fetch_time,
-            'last_reports_fetch_time': self.last_reports_fetch_time
+            'last_indicators_fetch_time': last_indicators_fetch_time,
+            'last_reports_fetch_time': last_reports_fetch_time
         })
         demisto.setIntegrationContext(integration_context)
 
@@ -668,25 +708,6 @@ def reset_fetch_command():
            'from the configured "First Fetch Time"', {}, {}
 
 
-def handle_first_fetch_timestamp():
-    """Parses the first_fetch_timestamp parameter.
-
-    Returns:
-        timestamp as str if valid, None otherwise.
-
-    """
-    user_input = demisto.params().get('first_fetch_timestamp')
-
-    try:
-        first_fetch_timestamp = parse(user_input).timestamp()
-        first_fetch_timestamp = str(first_fetch_timestamp).split('.')[0]
-        return first_fetch_timestamp
-    except Exception:
-        # Timestamp could not be parsed
-        demisto.debug(f'Could not parse requested first fetch timestamp with value {user_input}')
-        return None
-
-
 def verify_threshold_reputation_interval_types(threshold: str, reputation_interval: str):
     if not str.isdigit(threshold):
         return_error(f'{INTEGRATION_NAME} wrong parameter value - '
@@ -704,7 +725,6 @@ def main():
 
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
-    first_fetch_timestamp = handle_first_fetch_timestamp()
     threshold = demisto.params().get('threshold', '70')
     reputation_interval = demisto.params().get('reputation_interval', '30')
     verify_threshold_reputation_interval_types(threshold, reputation_interval)
@@ -721,7 +741,7 @@ def main():
     demisto.info(f'Command being called is {command}')
     command = demisto.command()
     try:
-        client = Client(public_key, private_key, first_fetch_timestamp, int(threshold), int(reputation_interval),
+        client = Client(public_key, private_key, int(threshold), int(reputation_interval),
                         polling_timeout, insecure, proxy, feedTags, tlp_color)
         if command == 'test-module':
             return_outputs(*test_module(client))
