@@ -220,16 +220,10 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
                                                                                 body=request_data,
                                                                                 accept='application/json',
                                                                                 _request_timeout=request_timeout)
-            packs_data = []
+
             if 200 <= status_code < 300:
-                message = 'Packs were successfully installed!\n'
-                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-                                             include_timestamp=True)
-                for pack in ast.literal_eval(response_data):
-                    packs_data.append({
-                        'ID': pack.get('id'),
-                        'CurrentVersion': pack.get('currentVersion')
-                    })
+                packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
+                              response_data]
                 packs_message = f'The following packs were successfully installed:\n{packs_data}'
                 prints_manager.add_print_job(packs_message, print_color, thread_index, LOG_COLORS.GREEN,
                                              include_timestamp=True)
@@ -248,6 +242,8 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
             prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
             all_packs_install_successfully = False
             malformed_pack_id = find_malformed_pack_id(str(e))
+            if not malformed_pack_id:
+                break
             # Remove the malformed pack from the pack to install list.
             packs = [pack for pack in packs_to_install if pack['id'] not in malformed_pack_id]
             request_data = {
