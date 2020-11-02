@@ -54,6 +54,6 @@ subtype: python2
 runas: DBotWeakRole
 runonce: false
 tests:
-- Extract Indicators From File - test
+- No tests - test is in NonCircleTests directory
 fromversion: 5.0.0
 tags: []
