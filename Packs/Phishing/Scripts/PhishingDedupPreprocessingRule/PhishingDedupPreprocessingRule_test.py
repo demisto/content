@@ -3,8 +3,6 @@ from PhishingDedupPreprocessingRule import *
 import json
 from datetime import datetime
 
-ID_CONtER = 0
-
 EXISTING_INCIDENTS = []
 
 RESULTS = None
@@ -25,8 +23,8 @@ def create_incident(subject=None, body=None, html=None, emailfrom=None, created=
         "CustomFields": {},
         "id": id_ if id_ is not None else str(IDS_COUNTER),
         "name": ' '.join(str(x) for x in [subject, body, html, emailfrom]),
-        'created': created.strftime(dt_format) if created is not None else datetime.now().strftime(dt_format)
-
+        'created': created.strftime(dt_format) if created is not None else datetime.now().strftime(dt_format),
+        'type': 'Phishing'
     }
     IDS_COUNTER += 1
     if subject is not None:
@@ -193,7 +191,7 @@ def test_slightly_different_texts(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
-    assert not duplicated_incidents_found(existing_incident)
+    assert duplicated_incidents_found(existing_incident)
 
 
 def test_html_text(mocker):
@@ -351,3 +349,31 @@ def test_tie_break_with_non_numeric_id(mocker):
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
     assert EXISTING_INCIDENT_ID == 'b'
+
+
+def test_similar_incidents_1_word_difference(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    existing_incident = create_incident(body='Hi Bob ' + text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'TextOnly', })
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(body='Hi Jhon ' + text, emailfrom='mt.kb.user@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert duplicated_incidents_found(existing_incident)
+
+
+def test_similar_incidents_2_word_difference(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    existing_incident = create_incident(body='Hi Bob Burger' + text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'TextOnly', })
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(body='Hi Jhon Pizza' + text, emailfrom='mt.kb.user@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert not duplicated_incidents_found(existing_incident)
