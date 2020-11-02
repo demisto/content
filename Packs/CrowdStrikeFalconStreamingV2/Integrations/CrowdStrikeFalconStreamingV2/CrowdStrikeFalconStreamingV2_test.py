@@ -1,6 +1,10 @@
 import json
+
+from pytest import mark
+
 import demistomock as demisto
-from CrowdStrikeFalconStreamingV2 import get_sample_events
+from CrowdStrikeFalconStreamingV2 import (get_sample_events,
+                                          merge_integration_context)
 
 
 def test_get_sample_events_with_results(mocker):
@@ -134,3 +138,34 @@ def test_get_sample_events_integration_param(mocker):
     results = demisto.results.call_args[0][0]
     assert results == 'No sample events found. The "Store sample events for mapping" integration parameter need to ' \
                       'be enabled for this command to return results.'
+
+
+@mark.parametrize('current_integration_context, updated_integration_context', [
+    ({'offset': 1}, {'offset': '1'}),
+    ({'sample_events': [{'event': {}}]}, {'sample_events': '[{"event": {}}]'}),
+    ({'offset': '1', 'sample_events': '[{"event": {}}]'}, {})
+])
+def test_merge_integration_context(mocker, current_integration_context, updated_integration_context):
+    """
+    Given:
+     - Case A: Integration context with the property offset of type int
+     - Case B: Integration context with the property sample_events of type list
+     - Case C: Integration context with the properties offset and sample_events of type str
+
+    When:
+     - Merging integration context
+
+    Then:
+     - Case A: Ensure integration context is updated with offset of type str
+     - Case B: Ensure integration context is updated with sample_events of type str
+     - Case C: Ensure integration context is not updated as it is in the proper state
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=current_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    merge_integration_context()
+    if updated_integration_context:
+        # Cases A and B
+        assert demisto.setIntegrationContext.call_args[0][0] == updated_integration_context
+    else:
+        # Case C
+        assert not demisto.setIntegrationContext.called
