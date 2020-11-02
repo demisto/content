@@ -68,7 +68,7 @@ There is no context output for this command.
 ```
 
 #### Human Readable Output
-
+[!image]()
 
 
 ### rasterize-email
@@ -113,6 +113,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
+[!image]()
 
 
 ### rasterize-image
