@@ -1,32 +1,17 @@
 {
-	"brands": null,
-	"defaultIncidentType": "Email Communication",
-	"description": "Classifies Gmail email messages.",
-	"feed": false,
-	"fromServerVersion": "6.0.0",
-	"id": "83d66f08-42b4-4ca6-8145-99bcf7c6b8e5",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "1.0.6",
-	"keyTypeMap": {
-		"Gmail": "Email Communication"
-	},
-	"locked": false,
-	"logicalVersion": 1,
-	"mapping": null,
-	"name": "Gmail - Classifier - Email Communication",
-	"nameRaw": "Gmail - Classifier - Email Communication",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "Gmail",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": "Type"
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+ "defaultIncidentType": "Email Communication",
+ "description": "Classifies Gmail email messages.",
+ "feed": false,
+ "id": "83d66f08-42b4-4ca6-8145-99bcf7c6b8e5",
+ "keyTypeMap": {
+  "Gmail": "Email Communication"
+ },
+ "name": "Gmail - Classifier - Email Communication",
+ "transformer": {
+  "complex": null,
+  "simple": "Type"
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
 }

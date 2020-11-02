@@ -1,315 +1,379 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "Maps incoming Gmail email message fields.",
-	"feed": false,
-	"fromServerVersion": "6.0.0",
-	"id": "fd0fde44-a619-4273-8c70-569f6620d759",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "1.0.6",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 1,
-	"mapping": {
-		"Email Communication": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Attachment Count": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Attachments",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "count"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Attachment Extension": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Attachment Names",
-						"transformers": [
-							{
-								"args": {
-									"delimiter": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": ","
-										}
-									}
-								},
-								"operator": "splitAndTrim"
-							},
-							{
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": ".*\\."
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": null
-									}
-								},
-								"operator": "replaceMatch"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Attachment Name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Attachment Names",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email BCC": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Bcc",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email Body": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Body",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email Body Format": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Format",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email CC": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Cc",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email From": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "From",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email HTML": {
-					"complex": null,
-					"simple": "Html"
-				},
-				"Email Message ID": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "ID",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email Subject": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Subject",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email To": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "To",
-						"transformers": []
-					},
-					"simple": ""
-				}
-			}
-		},
-		"Phishing": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Attachment Count": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Attachments",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "count"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Attachment Extension": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Attachment Names",
-						"transformers": [
-							{
-								"args": {
-									"delimiter": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": ","
-										}
-									}
-								},
-								"operator": "splitAndTrim"
-							},
-							{
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": ".*\\."
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": null
-									}
-								},
-								"operator": "replaceMatch"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Attachment Name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Attachment Names",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email BCC": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Bcc",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email Body": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Body",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email Body Format": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Format",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email CC": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Cc",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email From": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "From",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email HTML": {
-					"complex": null,
-					"simple": "Html"
-				},
-				"Email Message ID": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "ID",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email Subject": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Subject",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Email To": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "To",
-						"transformers": []
-					},
-					"simple": ""
-				}
-			}
-		}
-	},
-	"name": "Gmail - Incoming Mapper - Email Communication",
-	"nameRaw": "Gmail - Incoming Mapper - Email Communication",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "Gmail-mapper",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+ "description": "Maps incoming Gmail email message fields.",
+ "feed": false,
+ "id": "fd0fde44-a619-4273-8c70-569f6620d759",
+ "mapping": {
+  "Email Communication": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Attachment Count": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Attachments",
+      "transformers": [
+       {
+        "args": {
+
+        },
+        "operator": "count"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Attachment Extension": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Attachment Names",
+      "transformers": [
+       {
+        "args": {
+         "delimiter": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": ","
+          }
+         }
+        },
+        "operator": "splitAndTrim"
+       },
+       {
+        "args": {
+         "regex": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": ".*\\."
+          }
+         },
+         "replaceWith": {
+          "isContext": false,
+          "value": null
+         }
+        },
+        "operator": "replaceMatch"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Attachment Name": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Attachment Names",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email BCC": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Bcc",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email Body": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Body",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email Body Format": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Format",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email CC": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Cc",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email From": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "From",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email HTML": {
+     "complex": null,
+     "simple": "Html"
+    },
+    "Email Message ID": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "ID",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email Subject": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Subject",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email To": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "To",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    }
+   }
+  },
+  "Phishing": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Attachment Count": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Attachments",
+      "transformers": [
+       {
+        "args": {
+
+        },
+        "operator": "count"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Attachment Extension": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Attachment Names",
+      "transformers": [
+       {
+        "args": {
+         "delimiter": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": ","
+          }
+         }
+        },
+        "operator": "splitAndTrim"
+       },
+       {
+        "args": {
+         "regex": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": ".*\\."
+          }
+         },
+         "replaceWith": {
+          "isContext": false,
+          "value": null
+         }
+        },
+        "operator": "replaceMatch"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Attachment Name": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Attachment Names",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email BCC": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Bcc",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email Body": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Body",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email Body Format": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Format",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email CC": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Cc",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email From": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "From",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email HTML": {
+     "complex": null,
+     "simple": "Html"
+    },
+    "Email Message ID": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "ID",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email Subject": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Subject",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email To": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "To",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    }
+   }
+  }
+ },
+ "name": "Gmail - Incoming Mapper - Email Communication",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
 }
