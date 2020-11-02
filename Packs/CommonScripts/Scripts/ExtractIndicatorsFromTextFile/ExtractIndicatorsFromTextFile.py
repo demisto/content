@@ -19,7 +19,7 @@ except Exception:
 with open(filePath, mode='r') as f:
     data = f.read(maxFileSize)
     try:
-        data = data.decode('iso-8859-1', 'unicode_escape').encode('utf-8')
+        data = data.decode('unicode_escape').encode('utf-8')
     # unicode_escape might throw UnicodeDecodeError for strings that contain \ char followed by ascii characters
     except UnicodeDecodeError:
         data = data.decode('iso-8859-1').encode('utf-8')
