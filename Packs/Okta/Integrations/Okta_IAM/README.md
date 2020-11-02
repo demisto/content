@@ -22,6 +22,11 @@ For more information, please refer to the [Identity Lifecycle Management article
 | mapper-in | Incoming Mapper | True |
 | mapper-out | Outgoing Mapper | True |
 
+* Note that the "Incoming Mapper" and "Outgoing Mapper" have to be configured in the textbox inputs.
+If you haven't added any new fields for provisioning, you may use the existing ones: `User Profile - Okta (Incoming)` and `User Profile - Okta (Incoming)` respectively.
+Do not configure the `Mapper (outgoing)` input from the dropdown list.
+
+
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
