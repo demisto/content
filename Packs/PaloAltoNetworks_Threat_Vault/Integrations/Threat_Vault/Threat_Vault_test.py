@@ -321,7 +321,7 @@ def test_signature_search_results_anti_spyware_cve(mocker):
         'ThreatVault.Search(val.search_request_id == obj.search_request_id)':
             {
                 "page_count": 1,
-                "search_request_id": "b64a15ac-1d11-11eb-96cc-036c5064267c",
+                "search_request_id": "mock_cve",
                 "signatures": [
                     {
                         "cve": "CVE-2015-8650",
@@ -353,8 +353,6 @@ def test_signature_search_results_anti_spyware_cve(mocker):
                 ],
                 "status": "completed",
                 "total_count": 1,
-                'search_request_id': 'mock_cve',
-                'status': 'completed'
             }
     }
     expected_hr = '### Signature search are showing 1 of 1 results:\n|signatureId|signatureName|cve|' \
