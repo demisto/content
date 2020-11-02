@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "EmailRepIO",
+            "playbookID": "TestEmailRepPlaybook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Microsoft Endpoint Configuration Manager",
             "playbookID": "Microsoft ECM - Test",
             "fromversion": "5.5.0"
@@ -2205,9 +2210,6 @@
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
-        },
-        {
-            "playbookID": "ExtractDomainFromEmailTest"
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
