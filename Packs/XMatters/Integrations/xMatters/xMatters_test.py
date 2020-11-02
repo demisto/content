@@ -124,7 +124,7 @@ def test_xm_get_events_command(requests_mock):
     )
 
     results = xm_get_events_command(client, priority='HIGH')
-    assert results.readable_output == "Retrieved Events from xMatters."
+    assert results.readable_output.startswith("Retrieved Events from xMatters:")
 
 
 def test_xm_get_event_command(requests_mock):
@@ -193,4 +193,4 @@ def test_xm_get_event_command(requests_mock):
     )
 
     results = xm_get_event_command(client, event_id='34111')
-    assert results.readable_output == "Retrieved Event from xMatters."
+    assert results.readable_output.startswith("Retrieved Event \"34111\" from xMatters")

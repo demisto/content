@@ -91,7 +91,7 @@ class Client(BaseClient):
 
         return res
 
-    def search_alerts(self, max_fetch: str, alert_status: Optional[str] = None, priority: Optional[str] = None,
+    def search_alerts(self, max_fetch: str = 100, alert_status: Optional[str] = None, priority: Optional[str] = None,
                       start_time: Optional[int] = None, property_name: Optional[str] = None,
                       property_value: Optional[str] = None, request_id: Optional[str] = None,
                       from_time: Optional[str] = None, to_time: Optional[str] = None,
@@ -527,8 +527,12 @@ def xm_get_events_command(client: Client, request_id: Optional[str] = None, stat
     """
     This function runs when the xm-get-events command is run.
 
-    :type client: ``Client``
+
+        :type client: ``Client``
     :param Client: xMatters client to use
+
+    :type request_id: ``Optional[str]```
+    :param request_id: The the request ID associated with the events.
 
     :type status: ``Optional[str]``
     :param status:
