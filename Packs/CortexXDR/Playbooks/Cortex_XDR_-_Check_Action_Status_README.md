@@ -25,7 +25,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.GetActionStatus | Get Action Status command results. | unknown |
+| PaloAltoNetworksXDR.GetActionStatus.endpoint_id | endpoint id. | string |
+| PaloAltoNetworksXDR.GetActionStatus.status | status of specific endpoint id. | string |
+| PaloAltoNetworksXDR.GetActionStatus.action_id | Action ID that was at the input. | number |
 
 ## Playbook Image
 ---

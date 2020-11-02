@@ -94,7 +94,7 @@ tasks:
       - "4"
     scriptarguments:
       action_id:
-        simple: ${PaloAltoNetworksXDR.retrievedFiles.actionId}
+        simple: ${PaloAltoNetworksXDR.RetrievedFiles.action_id}
     separatecontext: false
     view: |-
       {
@@ -135,7 +135,7 @@ tasks:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
-        simple: ${PaloAltoNetworksXDR.retrievedFiles.actionId}
+        simple: ${PaloAltoNetworksXDR.RetrievedFiles.action_id}
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -145,7 +145,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: PaloAltoNetworksXDR.retrievedFileDetails(!val.file_link).action_id
+        simple: PaloAltoNetworksXDR.RetrievedFileDetails(!val.file_link).action_id
     separatecontext: true
     loop:
       iscommand: false
@@ -213,7 +213,7 @@ tasks:
       - - operator: isNotExists
           left:
             value:
-              simple: PaloAltoNetworksXDR.retrievedFileDetails(!val.file_link)
+              simple: PaloAltoNetworksXDR.RetrievedFileDetails(!val.file_link)
             iscontext: true
     view: |-
       {
@@ -275,7 +275,7 @@ tasks:
       - "5"
     scriptarguments:
       action_id:
-        simple: ${PaloAltoNetworksXDR.retrievedFiles.actionId}
+        simple: ${PaloAltoNetworksXDR.RetrievedFiles.action_id}
     separatecontext: false
     view: |-
       {
@@ -328,7 +328,18 @@ inputs:
     Comma separated list, of paths.
     Please enter at least one path ( windows, linux or mac)
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: PaloAltoNetworksXDR.RetrievedFileDetails
+  description: Retrieve file details command results.
+- contextPath: PaloAltoNetworksXDR.RetrievedFileDetails.endpoint_id
+  description: Endpoint ID.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RetrievedFileDetails.file_link
+  description: Link to the file retrieved by Retrieve File request.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RetrievedFileDetails.action_id
+  description: Action ID of the Retrieve File request
+  type: string
 tests:
 - Test XDR Playbook
 - Cortex XDR - IOC - Test

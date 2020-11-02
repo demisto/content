@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 66e5f8f6-bf2c-4ee9-85e4-f442eb366c4e
+    taskid: 025a81bc-ff46-4679-89e4-a0d3cfda1589
     type: start
     task:
-      id: 66e5f8f6-bf2c-4ee9-85e4-f442eb366c4e
+      id: 025a81bc-ff46-4679-89e4-a0d3cfda1589
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 4fdb2092-79ce-427f-8694-bc2402f1866d
+    taskid: 95ed413f-3619-4864-8ab6-aedf851e8754
     type: regular
     task:
-      id: 4fdb2092-79ce-427f-8694-bc2402f1866d
+      id: 95ed413f-3619-4864-8ab6-aedf851e8754
       version: -1
       name: xdr-action-status-get
       description: Retrieve the status of the requested actions according to the action
@@ -67,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 76b7b748-14d0-4be4-86f1-8b892ddbdecd
+    taskid: 4b1b699b-2112-4d74-897e-d558dc990050
     type: playbook
     task:
-      id: 76b7b748-14d0-4be4-86f1-8b892ddbdecd
+      id: 4b1b699b-2112-4d74-897e-d558dc990050
       version: -1
       name: GenericPolling
       description: |-
@@ -102,7 +102,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: PaloAltoNetworksXDR.getActionStatus(val.status != "CANCELLED" || val.status
+        simple: PaloAltoNetworksXDR.GetActionStatus(val.status != "CANCELLED" || val.status
           != "ABORTED" || val.status != "EXPIRED" || val.status != "COMPLETED_PARTIAL"
           || val.status != "COMPLETED_SUCCESSFULLY" || val.status != "FAILED" || val.status
           != "TIMEOUT")
@@ -126,10 +126,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: c4b7c36b-9e3f-4dc7-8ea1-2ab3893a80b1
+    taskid: 1d6f1210-f000-41a7-8ae4-27500e74e123
     type: title
     task:
-      id: c4b7c36b-9e3f-4dc7-8ea1-2ab3893a80b1
+      id: 1d6f1210-f000-41a7-8ae4-27500e74e123
       version: -1
       name: Done
       type: title
@@ -151,10 +151,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: a7ba2d63-ee1f-48df-8aa4-879d48483965
+    taskid: 5d245f47-e54e-4ede-88a2-2ec7a0f60342
     type: condition
     task:
-      id: a7ba2d63-ee1f-48df-8aa4-879d48483965
+      id: 5d245f47-e54e-4ede-88a2-2ec7a0f60342
       version: -1
       name: Action status is final
       description: We should check if the action is at its final status or not.
@@ -173,7 +173,7 @@ tasks:
       - - operator: inList
           left:
             value:
-              simple: PaloAltoNetworksXDR.getActionStatus(val.status).status
+              simple: PaloAltoNetworksXDR.GetActionStatus(val.status).status
             iscontext: true
           right:
             value:
@@ -192,10 +192,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 2f8ad41a-f5cb-41c5-8f81-dc0d4bd2bd86
+    taskid: 380f500c-b4c6-4569-84c7-4d3e5fb66253
     type: regular
     task:
-      id: 2f8ad41a-f5cb-41c5-8f81-dc0d4bd2bd86
+      id: 380f500c-b4c6-4569-84c7-4d3e5fb66253
       version: -1
       name: Print Error message
       description: Prints an error entry with a given message
@@ -221,10 +221,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: dd7d3789-b6c2-4019-8365-b672923064fd
+    taskid: cb32c787-21a2-4488-8948-b1bc28943d7a
     type: regular
     task:
-      id: dd7d3789-b6c2-4019-8365-b672923064fd
+      id: cb32c787-21a2-4488-8948-b1bc28943d7a
       version: -1
       name: xdr-action-status-get
       description: Retrieve the status of the requested actions according to the action
@@ -270,7 +270,18 @@ inputs:
   required: false
   description: Action ID of the specific request.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: PaloAltoNetworksXDR.GetActionStatus
+  description: Get Action Status command results.
+- contextPath: PaloAltoNetworksXDR.GetActionStatus.endpoint_id
+  description: endpoint id.
+  type: string
+- contextPath: PaloAltoNetworksXDR.GetActionStatus.status
+  description: status of specific endpoint id.
+  type: string
+- contextPath: PaloAltoNetworksXDR.GetActionStatus.action_id
+  description: Action ID that was at the input.
+  type: number
 fromversion: 5.0.0
 tests:
 - Test XDR Playbook
