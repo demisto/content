@@ -204,7 +204,7 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
     Returns:
 
     """
-    packs_to_install_str = '\n '.join([pack['id'] for pack in packs_to_install])
+    packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
     message = 'Installing the following packs in server {}:\n{}'.format(host, packs_to_install_str)
     prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
     prints_manager.execute_thread_prints(thread_index)
@@ -243,9 +243,10 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
             err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
             prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
             all_packs_install_successfully = False
-            pack_id = find_pack_id(str(e))
-            if pack_id:
-                packs = [pack for pack in packs_to_install if not (pack['id'] == pack_id)]
+            malformed_pack_id = find_pack_id(str(e))
+            print('The malformed pack id:')
+            print(malformed_pack_id)
+            packs = [pack for pack in packs_to_install if pack['id'] not in malformed_pack_id]
             # message = str(e).split('\n')
             # # Get the pack ID of the failed pack.
             # for line in message:
@@ -255,10 +256,10 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
             #         pack_id = error.split()[-2]
             # # Removed the bad pack from the list
             # packs = [pack for pack in packs_to_install if not (pack['id'] == pack_id)]
-                request_data = {
-                    'packs': packs,
-                    'ignoreWarnings': True
-                }
+            request_data = {
+                'packs': packs,
+                'ignoreWarnings': True
+            }
 
         finally:
             prints_manager.execute_thread_prints(thread_index)
