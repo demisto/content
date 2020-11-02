@@ -201,6 +201,28 @@ def pretty_print_case_metadata(
     return string
 
 
+def pretty_print_comment(comment: dict, title: str = None) -> str:
+    string = title if title else ""
+    string += f"#### *{comment['addedByUser']['userName']} - {comment['addedTime']}*\n"
+    string += (
+        f"_Last updated {comment['lastUpdatedTime']}_\n"
+        if comment["lastUpdatedTime"]
+        else ""
+    )
+    string += f"{comment['comment']}\n\n"
+    string += f"_id: {comment['id']}_\n"
+    string += f"_Flags: {str(comment['flags'])}_\n" if comment["flags"] else ""
+    string += "* * *\n"
+    return string
+
+
+def pretty_print_comments(comments: list, title: str = None) -> str:
+    string = title if title else ""
+    for comment in comments:
+        string += pretty_print_comment(comment)
+    return string
+
+
 def is_valid_service(service: str) -> bool:
     return any(s["shortName"] == service for s in services)
 
@@ -309,13 +331,9 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
         originEmailAddress=args.get("origin_email_address", None),
         associatedAttachmentID=args.get("associated_attachement_id", None),
     )
-    readable_output = f"# #{case_id}: Added comment\n"
-    readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
-    readable_output += f"{result['data']['comment']}\n\n"
-    readable_output += f"_id: {result['data']['id']}_\n"
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=pretty_print_comment(result['data'], f"# #{case_id}: Added comment\n"),
         outputs_prefix="Argus.Comment",
         outputs=result,
         raw_response=result,
@@ -471,13 +489,11 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("comment id not specified")
 
     result = delete_comment(caseID=case_id, commentID=comment_id)
-    readable_output = f"# #{case_id}: Deleted comment\n"
-    readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['lastUpdatedTime']}*\n"
-    readable_output += f"{result['data']['comment']}"
-    readable_output += f"Flags: {str(result['data']['flags'])}"
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=pretty_print_comment(
+            result['data'], f"# #{case_id}: Deleted comment\n"
+        ),
         outputs_prefix="Argus.Comment",
         outputs=result,
         raw_response=result,
@@ -509,13 +525,11 @@ def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("comment not specified")
 
     result = edit_comment(caseID=case_id, commentID=comment_id, comment=comment)
-    readable_output = f"# #{case_id}: Updated comment\n"
-    readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['lastUpdatedTime']}*\n"
-    readable_output += f"{result['data']['comment']}\n\n"
-    readable_output += f"_id: {result['data']['id']}_\n"
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=pretty_print_comment(
+            result['data'], f"# #{case_id}: Updated comment\n"
+        ),
         outputs_prefix="Argus.Comment",
         outputs=result,
         raw_response=result,
@@ -621,17 +635,9 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
         limit=args.get("limit", None),
         sortBy=sort_by,
     )
-    readable_output = f"# #{case_id}: Comments\n"
-    for comment in result["data"]:
-        readable_output += (
-            f"#### *{comment['addedByUser']['userName']} - {comment['addedTime']}*\n"
-        )
-        readable_output += f"{comment['comment']}\n\n"
-        readable_output += f"_id: {comment['id']}_\n"
-        readable_output += "* * *\n"
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=pretty_print_comments(result['data'], f"# #{case_id}: Comments\n"),
         outputs_prefix="Argus.Comments",
         outputs=result,
         raw_response=result,
