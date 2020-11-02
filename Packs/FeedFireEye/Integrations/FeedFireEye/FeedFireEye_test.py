@@ -110,20 +110,21 @@ FETCH_INDICATORS_PACKAGE = [
         (
             [{'type': 'indicator'}, {'type': 'indicator'}],
             {'relationship1': {'type': 'relationship', 'id': 'relationship1'}},
-            {'malware1': {'type': 'malware', 'id': 'malware1'}}
+            {'malware1': {'type': 'malware', 'id': 'malware1'}},
+            None
         )
     ),
     (
         'https://api.intelligence.fireeye.com/collections/indicators/objects?length=1000',
         204,
         {},
-        ([], {}, {})
+        ([], {}, {}, None)
     ),
     (
         'https://api.intelligence.fireeye.com/collections/indicators/objects?length=1000',
         202,
         {},
-        ([], {}, {})
+        ([], {}, {}, None)
     )
 ]
 
@@ -154,7 +155,7 @@ def test_fetch_indicators_from_api(mocker, url, status_code, json_data, expected
         if status_code in [200, 204]:
             fetch_result = client.fetch_all_indicators_from_api(-1)
 
-            for i in range(3):
+            for i in range(4):
                 assert fetch_result[i] == expected_result[i]
 
             if status_code == 204:
@@ -186,13 +187,13 @@ FETCH_REPORTS_PACKAGE = [
                 },
             ]
         },
-        [{'type': 'report', 'id': 'report1'}, {'type': 'report', 'id': 'report2'}]
+        ([{'type': 'report', 'id': 'report1'}, {'type': 'report', 'id': 'report2'}], None)
     ),
     (
         'https://api.intelligence.fireeye.com/collections/reports/objects?length=100',
         204,
         {},
-        []
+        ([], None)
     )
 ]
 
