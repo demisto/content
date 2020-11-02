@@ -6,9 +6,7 @@ import json
 import glob
 import re
 import sys
-import logging
 import demisto_client
-from pprint import pformat
 from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list, print_error

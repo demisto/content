@@ -216,8 +216,16 @@ def test_search_pack_with_failure(mocker):
 ERROR_MESSAGE = """
 (400)
 Reason: Bad Request
-HTTP response headers: HTTPHeaderDict({'Content-Type': 'application/json', 'Set-Cookie': 'S=A4Nj75P0P3UcPLb2eJByVpv311AEzeVsjIjLpKyFjNRJHjBHcJaj3LHskUp9Sdceu5BFhw38bX5+xs//0s/JL8/mig6kkm5/atpS7Rt5gyd3PKaVz0Mh9tvFuZ4JdhA3tIeq5gy9O+8ADlMT0JjLuCl7jqJmlH7ENX9JEJ6chadow3ah78loM3roczVSPiZPLg9hHDtwiq8tB5SNis5K; Path=/; Expires=Mon, 02 Nov 2020 11:23:10 GMT; Max-Age=3600; HttpOnly; Secure; SameSite=Lax, S-Expiration=MDIgTm92IDIwIDExOjIzICswMDAw; Path=/; Expires=Mon, 02 Nov 2020 11:23:10 GMT; Max-Age=3600; Secure; SameSite=Lax', 'Strict-Transport-Security': 'max-age=10886400000000000; includeSubDomains', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'X-Xss-Protection': '1; mode=block', 'Date': 'Mon, 02 Nov 2020 10:23:10 GMT', 'Content-Length': '218'})
-HTTP response body: {"id":"bad_request","status":400,"title":"Bad request","detail":"Request body is not well-formed. It must be JSON.","error":"invalid version 1.2.0 for pack with ID AutoFocus (35000)","encrypted":false,"multires":null}
+HTTP response headers: HTTPHeaderDict({'Content-Type': 'application/json', 
+'Set-Cookie': 'S=A4Nj75P0P3UcPLb2eJByVpv311AEzeVsjIjLpKyFjNRJHjBHcJaj3LHskUp9Sdceu5BFhw38bX5+xs//0s/JL8/mig6kkm5/
+atpS7Rt5gyd3PKaVz0Mh9tvFuZ4JdhA3tIeq5gy9O+8ADlMT0JjLuCl7jqJmlH7ENX9JEJ6chadow3ah78loM3roczVSPiZPLg9hHDtwiq8tB5SNis5K; 
+Path=/; Expires=Mon, 02 Nov 2020 11:23:10 GMT; Max-Age=3600; HttpOnly; Secure; SameSite=Lax, 
+S-Expiration=MDIgTm92IDIwIDExOjIzICswMDAw; Path=/; Expires=Mon, 02 Nov 2020 11:23:10 GMT; Max-Age=3600; 
+Secure; SameSite=Lax', 'Strict-Transport-Security': 'max-age=10886400000000000; includeSubDomains', 
+'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'X-Xss-Protection': '1; mode=block', 
+'Date': 'Mon, 02 Nov 2020 10:23:10 GMT', 'Content-Length': '218'})
+HTTP response body: {"id":"bad_request","status":400,"title":"Bad request","detail":"Request body is not well-formed. 
+It must be JSON.","error":"invalid version 1.2.0 for pack with ID AutoFocus (35000)","encrypted":false,"multires":null}
 
 """
 
