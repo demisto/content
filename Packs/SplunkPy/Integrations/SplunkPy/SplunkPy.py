@@ -460,82 +460,71 @@ def splunk_results_command(service):
 
 
 def fetch_incidents(service):
-    try:
-        demisto.debug('DEBUGGING: Starting Incident Fetching')
-        last_run = demisto.getLastRun() and demisto.getLastRun()['time']
-        search_offset = demisto.getLastRun().get('offset', 0)
-        demisto.debug('DEBUGGING: last_run = ' + str(last_run) + '; search_offset = ' + str(search_offset))
+    demisto.debug('DEBUGGING: Starting Incident Fetching')
+    last_run = demisto.getLastRun() and demisto.getLastRun()['time']
+    search_offset = demisto.getLastRun().get('offset', 0)
+    demisto.debug('DEBUGGING: last_run = ' + str(last_run) + '; search_offset = ' + str(search_offset))
 
-        incidents = []
-        current_time_for_fetch = datetime.utcnow()
-        demisto.debug('DEBUGGING: current_time_for_fetch = ' + str(current_time_for_fetch))
+    incidents = []
+    current_time_for_fetch = datetime.utcnow()
+    demisto.debug('DEBUGGING: current_time_for_fetch = ' + str(current_time_for_fetch))
 
-        dem_params = demisto.params()
-        if demisto.get(dem_params, 'timezone'):
-            timezone = dem_params['timezone']
-            current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
-            demisto.debug('DEBUGGING: current_time_for_fetch, timezone = ' + str(current_time_for_fetch))
+    dem_params = demisto.params()
+    if demisto.get(dem_params, 'timezone'):
+        timezone = dem_params['timezone']
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+        demisto.debug('DEBUGGING: current_time_for_fetch, timezone = ' + str(current_time_for_fetch))
 
-        now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-        demisto.debug('DEBUGGING: now = ' + str(now))
+    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    demisto.debug('DEBUGGING: now = ' + str(now))
 
-        if demisto.get(dem_params, 'useSplunkTime'):
-            now = get_current_splunk_time(service)
-            demisto.debug('DEBUGGING: now, useSplunkTime = ' + str(now))
+    if demisto.get(dem_params, 'useSplunkTime'):
+        now = get_current_splunk_time(service)
+        demisto.debug('DEBUGGING: now, useSplunkTime = ' + str(now))
 
-            current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
-            current_time_for_fetch = current_time_in_splunk
-            demisto.debug('DEBUGGING: current_time_for_fetch, useSplunkTime = ' + str(current_time_for_fetch))
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
+        demisto.debug('DEBUGGING: current_time_for_fetch, useSplunkTime = ' + str(current_time_for_fetch))
 
-        if len(last_run) == 0:
-            fetch_time_in_minutes = parse_time_to_minutes()
-            start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
-            last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    if len(last_run) == 0:
+        fetch_time_in_minutes = parse_time_to_minutes()
+        start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+        last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-        earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-        latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
-        demisto.debug('DEBUGGING: earliest_fetch_time_fieldname = ' + str(current_time_for_fetch) +
-                      '; latest_fetch_time_fieldname = ' + str(latest_fetch_time_fieldname))
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+    demisto.debug('DEBUGGING: earliest_fetch_time_fieldname = ' + str(current_time_for_fetch) +
+                  '; latest_fetch_time_fieldname = ' + str(latest_fetch_time_fieldname))
 
-        kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                          latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
-        demisto.debug('DEBUGGING: kwargs_oneshot = ' + str(kwargs_oneshot))
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
+                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    demisto.debug('DEBUGGING: kwargs_oneshot = ' + str(kwargs_oneshot))
 
-        searchquery_oneshot = dem_params['fetchQuery']
-        demisto.debug('DEBUGGING: searchquery_oneshot = ' + str(searchquery_oneshot))
+    searchquery_oneshot = dem_params['fetchQuery']
+    demisto.debug('DEBUGGING: searchquery_oneshot = ' + str(searchquery_oneshot))
 
-        if demisto.get(dem_params, 'extractFields'):
-            extractFields = dem_params['extractFields']
-            extra_raw_arr = extractFields.split(',')
-            for field in extra_raw_arr:
-                field_trimmed = field.strip()
-                searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+    if demisto.get(dem_params, 'extractFields'):
+        extractFields = dem_params['extractFields']
+        extra_raw_arr = extractFields.split(',')
+        for field in extra_raw_arr:
+            field_trimmed = field.strip()
+            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
 
-        demisto.debug('DEBUGGING: searchquery_oneshot, after extractFields = ' + str(searchquery_oneshot))
+    demisto.debug('DEBUGGING: searchquery_oneshot, after extractFields = ' + str(searchquery_oneshot))
 
-        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
-        reader = results.ResultsReader(oneshotsearch_results)
-        for item in reader:
-            inc = notable_to_incident(item)
-            incidents.append(inc)
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+    reader = results.ResultsReader(oneshotsearch_results)
+    for item in reader:
+        inc = notable_to_incident(item)
+        incidents.append(inc)
 
-        demisto.incidents(incidents)
-        demisto.debug('DEBUGGING: incidents len = ' + str(len(incidents)))
+    demisto.incidents(incidents)
+    demisto.debug('DEBUGGING: incidents len = ' + str(len(incidents)))
 
-        if len(incidents) < FETCH_LIMIT:
-            demisto.setLastRun({'time': now, 'offset': 0})
-        else:
-            demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
-    except Exception as e:
-        demisto.executeCommand('send-mail',
-                               {
-                                   'to': "censored",
-                                   'subject': 'SplunkPy Notable events fetch incidents has failed',
-                                   'body': 'Please download the DEBUG logs bundle and send it to the XSOAR team.',
-                                   'using': 'censored'
-                               }
-                               )
-        raise e
+    if len(incidents) < FETCH_LIMIT:
+        demisto.setLastRun({'time': now, 'offset': 0})
+    else:
+        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
 
 
 def parse_time_to_minutes():
