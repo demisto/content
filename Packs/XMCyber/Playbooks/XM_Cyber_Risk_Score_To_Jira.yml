@@ -41,7 +41,7 @@ tasks:
       version: -1
       name: jira-create-issue
       description: Creates a new issue in Jira.
-      script: jira-v2|||jira-create-issue
+      script: '|||jira-create-issue'
       type: regular
       iscommand: true
       brand: jira-v2

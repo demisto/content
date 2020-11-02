@@ -72,7 +72,7 @@ tasks:
       version: -1
       name: Lookup IPs
       description: Return data on Entity by IP from XM Cyber
-      script: XMCyber|||ip
+      script: '|||ip'
       type: regular
       iscommand: true
       brand: XMCyber
@@ -105,7 +105,7 @@ tasks:
       name: xmcyber-affected-critical-assets-list
       description: List critical assets at risk from an entity and the complexity
         of the attack
-      script: XMCyber|||xmcyber-affected-critical-assets-list
+      script: '|||xmcyber-affected-critical-assets-list'
       type: regular
       iscommand: true
       brand: XMCyber
@@ -139,7 +139,7 @@ tasks:
       name: xmcyber-affected-entities-list
       description: List all entities at risk from an entity and the complexity of
         the attack
-      script: XMCyber|||xmcyber-affected-entities-list
+      script: '|||xmcyber-affected-entities-list'
       type: regular
       iscommand: true
       brand: XMCyber
@@ -275,7 +275,7 @@ tasks:
       version: -1
       name: Verify XM Cyber Instance
       description: Check if current XM version supports Demisto integration
-      script: XMCyber|||xmcyber-version-supported
+      script: '|||xmcyber-version-supported'
       type: regular
       iscommand: true
       brand: XMCyber
@@ -507,7 +507,7 @@ tasks:
       version: -1
       name: Lookup Name
       description: Return data on entity by name from XM Cyber
-      script: XMCyber|||hostname
+      script: '|||hostname'
       type: regular
       iscommand: true
       brand: XMCyber
@@ -680,7 +680,7 @@ tasks:
       version: -1
       name: Get Entity
       description: Return data on Entity by IP or Name from XM Cyber
-      script: XMCyber|||xmcyber-entity-get
+      script: '|||xmcyber-entity-get'
       type: regular
       iscommand: true
       brand: XMCyber

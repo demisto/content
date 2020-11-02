@@ -54,7 +54,7 @@ script:
     arguments:
       - name: timeId
         default: false
-        description: timeId for example timeAgo_days_7
+        description: The relevant period of time. The optiosn are timeAgo_days_7 (past 7 days) timeAgo_days_14 timeAgo_days_30 or monthly_YYYY_MM for a given year and month
         isArray: false
         required: false
         secret: false
@@ -83,7 +83,7 @@ script:
     arguments:
       - name: timeId
         default: false
-        description: timeId for example timeAgo_days_7
+        description: The relevant period of time. The optiosn are timeAgo_days_7 (past 7 days) timeAgo_days_14 timeAgo_days_30 or monthly_YYYY_MM for a given year and month
         isArray: false
         required: false
         secret: false

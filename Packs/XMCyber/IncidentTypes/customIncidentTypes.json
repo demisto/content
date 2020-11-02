@@ -1,7 +1,7 @@
 [
 	{
 		"id": "XM Cyber Incident",
-		"version": 8,
+		"version": -1,
 		"modified": "2020-10-29T16:37:30.917247649Z",
 		"sortValues": null,
 		"packID": "",
@@ -31,11 +31,11 @@
 		"closureScript": "",
 		"disabled": false,
 		"reputationCalc": 0,
-		"layout": "611f4a26-5caa-4663-8a37-372304790f88"
+		"layout": "XM_Cyber_Layout"
 	},
 	{
 		"id": "XM Cyber Security Score",
-		"version": 1,
+		"version": -1,
 		"modified": "2020-10-29T16:14:33.775335512Z",
 		"sortValues": null,
 		"packID": "",
@@ -66,11 +66,11 @@
 		"closureScript": "",
 		"disabled": false,
 		"reputationCalc": 0,
-		"layout": "c7bc5d76-e49e-49aa-897d-bac59e869150"
+		"layout": "XM_Cyber_Security_Score"
 	},
 	{
 		"id": "XM Cyber Technique",
-		"version": 4,
+		"version": -1,
 		"modified": "2020-10-29T06:33:44.756568877Z",
 		"sortValues": null,
 		"packID": "",
@@ -100,6 +100,6 @@
 		"closureScript": "",
 		"disabled": false,
 		"reputationCalc": 0,
-		"layout": "15c260ff-5ce8-415c-8f1d-957c06546314"
+		"layout": "XM_Cyber_Technique"
 	}
 ]
