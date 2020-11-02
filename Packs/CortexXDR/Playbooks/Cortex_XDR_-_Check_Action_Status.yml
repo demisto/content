@@ -1,8 +1,8 @@
 id: Cortex XDR - Check Action Status
 version: -1
 name: Cortex XDR - Check Action Status
-description: "Playbook that takes action id and checks the action status. \nPlease\
-  \ enter action id you want to know it’s status."
+description: "Playbook that takes action id and checks the action status. \nPlease
+  enter action id you want to know it’s status."
 starttaskid: "0"
 tasks:
   "0":
@@ -132,7 +132,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "1"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
