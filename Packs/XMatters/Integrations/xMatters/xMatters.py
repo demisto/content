@@ -578,13 +578,11 @@ def xm_get_events_command(client: Client, request_id: Optional[str] = None, stat
         property_value=property_value
     )
 
-    reduced_out: Dict[str, Any]
-
     if len(out) == 0:
-        reduced_out = {"xMatters.GetEvent.Event": {}}
+        reduced_out: Dict[str, Any] = {"xMatters.GetEvent.Event": {}}
         readable_output = f'Could not find Events with given criteria in xMatters'
     else:
-        reduced_out = {"xMatters.GetEvents.Events": [event_reduce(event) for event in out]}
+        reduced_out: Dict[str, List[Any]] = {"xMatters.GetEvents.Events": [event_reduce(event) for event in out]}
         readable_output = f'Retrieved Events from xMatters: {reduced_out}'
 
     return CommandResults(
@@ -611,6 +609,7 @@ def xm_get_event_command(client: Client, event_id: str) -> CommandResults:
     """
     out = client.search_alert(event_id=event_id)
 
+    reduced_out: Dict[str, Any]
     if out.get('code') == 404:
         reduced_out = {"xMatters.GetEvent.Event": {}}
         readable_output = f'Could not find Event "{event_id}" from xMatters'
