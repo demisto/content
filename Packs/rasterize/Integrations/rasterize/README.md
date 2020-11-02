@@ -68,7 +68,7 @@ There is no context output for this command.
 ```
 
 #### Human Readable Output
-[!image]()
+[!image](https://raw.githubusercontent.com/demisto/content/6bdd1b0ca11b977db6d1c652063b71b8697794c2/Packs/rasterize/Integrations/rasterize/doc_files/rasterize_url_command_output.png)
 
 
 ### rasterize-email
@@ -113,7 +113,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-[!image]()
+[!image](https://raw.githubusercontent.com/demisto/content/6bdd1b0ca11b977db6d1c652063b71b8697794c2/Packs/rasterize/Integrations/rasterize/doc_files/rasterize_email_command_output.png)
 
 
 ### rasterize-image
