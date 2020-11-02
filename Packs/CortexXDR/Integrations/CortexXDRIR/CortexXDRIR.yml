@@ -1879,7 +1879,7 @@ script:
     name: xdr-get-script-metadata
     outputs:
     - contextPath: PaloAltoNetworksXDR.ScriptMetadata
-      description: The full definitions of a specific script in the scripts library.
+      description: Get Script Metadata command results.
     - contextPath: PaloAltoNetworksXDR.ScriptMetadata.script_id
       description: Script ID
       type: number
@@ -1929,7 +1929,7 @@ script:
     name: xdr-get-script-code
     outputs:
     - contextPath: PaloAltoNetworksXDR.ScriptCode
-      description: The code of a specific script in the script library.
+      description: Get Script Code command results.
     - contextPath: PaloAltoNetworksXDR.ScriptCode.code
       description: The code of a specific script in the script library.
       type: string
@@ -1969,8 +1969,7 @@ script:
     name: xdr-get-script-execution-status
     outputs:
     - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus
-      description: Action ID of the action initiated. ID will be used as a reference
-        to track in the action center.
+      description: Get Script execution status command results.
       type: unknown
     - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.general_status
       description: general status of the action, considering the status of all the
@@ -2111,8 +2110,7 @@ script:
     name: xdr-action-status-get
     outputs:
     - contextPath: PaloAltoNetworksXDR.GetActionStatus
-      description: Status of the action ID. You will receive a table of endpoint id
-        and its status.
+      description: Get Action Status command results.
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.endpoint_id
       description: endpoint id.
       type: string
