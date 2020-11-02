@@ -339,7 +339,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
 
                 if 200 <= status_code < 300:
                     packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
-                                  response_data]
+                                  ast.literal_eval(response_data)]
                     packs_message = f'The following packs were successfully installed:\n{packs_data}'
                     prints_manager.add_print_job(packs_message, print_color, thread_index, LOG_COLORS.GREEN,
                                                  include_timestamp=True)
