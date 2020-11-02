@@ -182,7 +182,7 @@ def ip_command(client: Client, args: dict) -> List[CommandResults]:
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
-        indicator = Common.IP(analysis_info.get('Name'), dbot)
+        indicator = Common.IP(analysis_info.get('Name', ''), dbot)
         command_results.append(CommandResults(indicator=indicator,
                                               raw_response=res,
                                               readable_output=readable_output))
@@ -212,7 +212,7 @@ def url_command(client: Client, args: dict) -> List[CommandResults]:
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
-        indicator = Common.URL(analysis_info.get('Name'), dbot)
+        indicator = Common.URL(analysis_info.get('Name', ''), dbot)
 
         command_results.append(CommandResults(indicator=indicator,
                                               raw_response=res,
@@ -243,7 +243,7 @@ def domain_command(client: Client, args: dict) -> List[CommandResults]:
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
-        indicator = Common.Domain(analysis_info.get('Name'), dbot)
+        indicator = Common.Domain(analysis_info.get('Name', ''), dbot)
 
         command_results.append(CommandResults(indicator=indicator,
                                               raw_response=res,

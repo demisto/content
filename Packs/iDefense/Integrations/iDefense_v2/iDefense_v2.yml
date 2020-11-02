@@ -33,6 +33,7 @@ script:
     - name: ip
       default: true
       description: IP to check
+      isArray: true
     outputs:
     - contextPath: IP.Address
       description: Bad IP Address found
@@ -57,6 +58,7 @@ script:
     - name: domain
       default: true
       description: Domain to check
+      isArray: true
     outputs:
     - contextPath: Domain.Name
       description: Bad domain found
@@ -85,6 +87,7 @@ script:
     - name: url
       default: true
       description: The URL to check (must start with "http://").
+      isArray: true
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
