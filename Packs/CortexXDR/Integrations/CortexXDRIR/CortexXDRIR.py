@@ -2563,6 +2563,24 @@ def get_script_execution_status_command(client: Client, args: Dict[str, str]) ->
     )
 
 
+def get_script_execution_results_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    # we have an issue with the output of this command, at the xdr side
+    # todo: we have an issue with the output of this command, at the xdr side,
+    # change this code when the issue resolved
+    action_id = args.get('action_id')
+
+    reply = client.get_script_execution_results(action_id)
+    reply["action_id"] = action_id
+
+    return (
+        tableToMarkdown(name='Script Execution Results', t=reply.get('results'), removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionResults(val.actionId == obj.actionId)': reply
+        },
+        reply
+    )
+
+
 def get_script_execution_result_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     # todo: we have an issue with the output of this command, at the xdr side,
     # change this code when the issue resolved
