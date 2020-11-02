@@ -16,7 +16,7 @@ This integration was integrated and tested with version 6.2.2 of FortiManager
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortimanager-devices-list
 ***
@@ -31,9 +31,10 @@ List all devices in the instance ADOM
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the devices. Leave empty to use the instance ADOM. | Optional | 
-| device | The name of a specific device to get. | Optional | 
-| from | From which index to start the list. | Optional | 
-| to | To which index to get the list. | Optional | 
+| device | The name of a specific device to get. If not specified will get all devices. | Optional | 
+| offset | From which index to start the list. | Optional | 
+| limit | To which index to get the list. | Optional | 
+
 
 #### Context Output
 
@@ -120,7 +121,7 @@ List all devices in the instance ADOM
 
 
 #### Command Example
-```!fortimanager-devices-list```
+```!fortimanager-devices-list offset=1 limit=2```
 
 #### Context Example
 ```json
@@ -273,9 +274,9 @@ List ADOM device groups.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the device groups. Leave empty to use the instance ADOM. | Optional | 
-| group | The name of a device group to fetch. | Optional | 
-| from | From which index to start the list. | Optional | 
-| to | To which index to get the list. | Optional | 
+| group | The name of a device group to fetch. If not specified will get all device groups. | Optional | 
+| offset | From which index to start the list. | Optional | 
+| limit | To which index to get the list. | Optional | 
 
 
 #### Context Output
@@ -290,7 +291,7 @@ List ADOM device groups.
 
 
 #### Command Example
-```!fortimanager-device-groups-list from=0 to=1```
+```!fortimanager-device-groups-list offset=1 limit=2```
 
 #### Context Example
 ```json
@@ -338,9 +339,9 @@ List ADOM firewall IPv4 addresses
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the addresses. Leave empty to use the instance ADOM. | Optional | 
-| from | From which index to start the list. | Optional | 
-| to | To which index to get the list. | Optional | 
-| address | The name of a specific address to fetch. | Optional | 
+| offset | From which index to start the list. | Optional | 
+| limit | To which index to get the list. | Optional | 
+| address | The name of a specific address to fetch.  If not specified will get all addresses. | Optional | 
 
 
 #### Context Output
@@ -381,7 +382,7 @@ List ADOM firewall IPv4 addresses
 
 
 #### Command Example
-```!fortimanager-address-list from=0 to=1```
+```!fortimanager-address-list offset=1 limit=2```
 
 #### Context Example
 ```json
@@ -461,14 +462,15 @@ Add a new IPv4 address to the
 | policy_group | Policy group name. | Optional | 
 | comment | A comment to add to the address | Optional | 
 | associated_interface | Network interface associated with address. | Optional | 
-| fqdn | Fully Qualified Domain Name address. | Optional | 
-| start_ip | First IP address (inclusive) in the range for the address. | Optional | 
-| end_ip | Final IP address (inclusive) in the range for the address. | Optional | 
-| subnet | IP address and subnet mask of address. | Optional | 
+| fqdn | Fully Qualified Domain Name address. Required for fqdn address type. | Optional | 
+| start_ip | First IP address (inclusive) in the range for the address. Required for iprange address type. | Optional | 
+| end_ip | Final IP address (inclusive) in the range for the address. Required for iprange address type. | Optional | 
+| subnet | IP address and subnet mask of address. Required for ipmask address type. | Optional | 
 | subnet_name | The subnet name | Optional | 
-| sdn | The address SDN | Optional | 
-| wildcard | IP address and wildcard netmask. | Optional | 
-| wildcard_fqdn | Fully Qualified Domain Name with wildcard characters. | Optional | 
+| sdn | The address SDN. Required for dynamic address type. | Optional | 
+| wildcard | IP address and wildcard netmask. Required for wildcard address type. | Optional | 
+| wildcard_fqdn | Fully Qualified Domain Name with wildcard characters. Required for wildcard-fqdn address type. | Optional | 
+| country | 2 letter representing a country associated to an IP address (for example: 'us'). Required for geography address type.  | Optional | 
 
 
 #### Context Output
@@ -501,14 +503,15 @@ Add a new IPv4 address to the
 | policy_group | Policy group name. | Optional | 
 | comment | A comment to add to the address | Optional | 
 | associated_interface | Network interface associated with address. | Optional | 
-| fqdn | Fully Qualified Domain Name address. | Optional | 
-| start_ip | First IP address (inclusive) in the range for the address. | Optional | 
-| end_ip | Final IP address (inclusive) in the range for the address. | Optional | 
-| subnet | IP address and subnet mask of address. | Optional | 
+| fqdn | Fully Qualified Domain Name address. Required for fqdn address type. | Optional | 
+| start_ip | First IP address (inclusive) in the range for the address. Required for iprange address type. | Optional | 
+| end_ip | Final IP address (inclusive) in the range for the address. Required for iprange address type. | Optional | 
+| subnet | IP address and subnet mask of address. Required for ipmask address type. | Optional | 
 | subnet_name | The subnet name | Optional | 
-| sdn | The address SDN | Optional | 
-| wildcard | IP address and wildcard netmask. | Optional | 
-| wildcard_fqdn | Fully Qualified Domain Name with wildcard characters. | Optional | 
+| sdn | The address SDN. Required for dynamic address type. | Optional | 
+| wildcard | IP address and wildcard netmask. Required for wildcard address type. | Optional | 
+| wildcard_fqdn | Fully Qualified Domain Name with wildcard characters. Required for wildcard-fqdn address type. | Optional | 
+| country | 2 letter representing a country associated to an IP address (for example: 'us'). Required for geography address type.  | Optional | 
 
 
 #### Context Output
@@ -562,9 +565,9 @@ List ADOM IPv4 address groups
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the address groups. Leave empty to use the instance ADOM. | Optional | 
-| from | From which index to start the list. | Optional | 
-| to | To which index to get the list. | Optional | 
-| address_group | Name for a specific address group to fetch. | Optional | 
+| offset | From which index to start the list. | Optional | 
+| limit | To which index to get the list. | Optional | 
+| address_group | Name for a specific address group to fetch. If not specified will get all address groups. | Optional | 
 
 
 #### Context Output
@@ -599,7 +602,7 @@ List ADOM IPv4 address groups
 
 
 #### Command Example
-```!fortimanager-address-group-list from=1 to=2```
+```!fortimanager-address-group-list offset=1 limit=2```
 
 #### Context Example
 ```json
@@ -751,9 +754,9 @@ List ADOM service categories
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the service categories. Leave empty to use the instance ADOM. | Optional | 
-| from | From which index to start the list. | Optional | 
-| to | To which index to get the list. | Optional | 
-| service_category | Name of a specific category to fetch | Optional | 
+| offset | From which index to start the list. | Optional | 
+| limit | To which index to get the list. | Optional | 
+| service_category | Name of a specific category to fetch. If not specified will get all service groups. | Optional | 
 
 
 #### Context Output
@@ -765,7 +768,7 @@ List ADOM service categories
 
 
 #### Command Example
-```!fortimanager-service-categories-list from=1 to=2```
+```!fortimanager-service-categories-list offset=1 limit=2```
 
 #### Context Example
 ```json
@@ -809,9 +812,9 @@ List ADOM service groups
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the service groups. Leave empty to use the instance ADOM. | Optional | 
-| from | From which index to start the list. | Optional | 
-| to | To which index to get the list. | Optional | 
-| service_group | Name of a specific service group to fetch. | Optional | 
+| offset | From which index to start the list. | Optional | 
+| limit | To which index to get the list. | Optional | 
+| service_group | Name of a specific service group to fetch. If not specified will get all service groups. | Optional | 
 
 
 #### Context Output
@@ -826,7 +829,7 @@ List ADOM service groups
 
 
 #### Command Example
-```!fortimanager-service-group-list from=1 to=2```
+```!fortimanager-service-group-list offset=1 limit=2```
 
 #### Context Example
 ```json
@@ -971,9 +974,9 @@ List the custom services.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the custom servicse. Leave empty to use the instance ADOM. | Optional | 
-| from | From which index to start the list. | Optional | 
-| to | To which index to get the list. | Optional | 
-| custom_service | Name of a specific custom service to fetch. | Optional | 
+| offset | From which index to start the list. | Optional | 
+| limit | To which index to get the list. | Optional | 
+| custom_service | Name of a specific custom service to fetch.  If not specified will get all custom services. | Optional | 
 
 
 #### Context Output
@@ -1008,7 +1011,7 @@ List the custom services.
 
 
 #### Command Example
-```!fortimanager-custom-service-list from=1 to=2```
+```!fortimanager-custom-service-list offset=1 limit=2```
 
 #### Context Example
 ```json
@@ -1222,9 +1225,9 @@ List ADOM policy packages
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the firewall policy packages. Leave empty to use the instance ADOM. | Optional | 
-| from | From which index to start the list. | Optional | 
-| to | To which index to get the list. | Optional | 
-| policy_package | Name of a specific policy package to fetch. | Optional | 
+| offset | From which index to start the list. | Optional | 
+| limit | To which index to get the list. | Optional | 
+| policy_package | Name of a specific policy package to fetch. If not specified will get all policy packages. | Optional | 
 
 
 #### Context Output
@@ -1239,7 +1242,7 @@ List ADOM policy packages
 | FortiManager.PolicyPackage.package setting.fwpolicy-implicit-log | String | Whether to enable firewall policy implicit log. | 
 | FortiManager.PolicyPackage.package setting.fwpolicy6-implicit-log | String | Whether to enable firewall policy 6 implicit log. | 
 | FortiManager.PolicyPackage.package setting.inspection-mode | String | Package inspection mode. | 
-| FortiManager.PolicyPackage.package setting.ngfw-mode | String | package NGFW mode. | 
+| FortiManager.PolicyPackage.package setting.ngfw-mode | String | Package NGFW mode. | 
 | FortiManager.PolicyPackage.package setting.ssl-ssh-profile | String | Package SSL SSH profile. | 
 | FortiManager.PolicyPackage.scope_member.name | String | Policy package scope member name. | 
 | FortiManager.PolicyPackage.scope_member.vdom | String | Policy Package scope member VDOM. | 
@@ -1248,7 +1251,7 @@ List ADOM policy packages
 
 
 #### Command Example
-```!fortimanager-firewall-policy-package-list from=1 to=2```
+```!fortimanager-firewall-policy-package-list offset=1 limit=2```
 
 #### Context Example
 ```json
@@ -1292,16 +1295,8 @@ List ADOM policy packages
 >### Policy Packages
 >|Name|Type|
 >|---|---|
->| default | pkg |
 >| FG5H0E3917901297_root | pkg |
 >| Corp_Shared | pkg |
->| FG5H0E3917901297 | pkg |
->| demisto | pkg |
->| my_package | pkg |
->| FG100F_root | pkg |
->| FG600E-LAB_test1 | pkg |
->| FG100F_root_arseny | pkg |
->| FG100F_root_test | pkg |
 
 
 ### fortimanager-firewall-policy-package-create
@@ -1416,9 +1411,9 @@ List specific firewall policies from a policy package
 | --- | --- | --- |
 | package | The package from which to fetch the policies | Required | 
 | adom | The ADOM from which to fetch the policies. Leave empty to use the instance ADOM. | Optional | 
-| from | From which index to start the list. | Optional | 
-| to | To which index to get the list. | Optional | 
-| policy_id | An id for the specific policy to fetch. | Optional | 
+| offset | From which index to start the list. | Optional | 
+| limit | To which index to get the list. | Optional | 
+| policy_id | An id for the specific policy to fetch. If not specified will get all policies. | Optional | 
 
 
 #### Context Output
@@ -1848,8 +1843,8 @@ List dynamic interfaces
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to list dynamic interfaces. Leave empty to use the default integration ADOM. | Optional | 
-| from | From which index to start the list. | Optional | 
-| to | To which index to get the list. | Optional | 
+| offset | From which index to start the list. | Optional | 
+| limit | To which index to get the list. | Optional | 
 
 
 #### Context Output
@@ -1877,7 +1872,7 @@ List dynamic interfaces
 
 
 #### Command Example
-```!fortimanager-dynamic-interface-list from=1 to=2```
+```!fortimanager-dynamic-interface-list offset=1 limit=2```
 
 #### Context Example
 ```json
@@ -2048,7 +2043,5 @@ Get installation status.
 
 #### Command Example
 ```!fortimanager-policy-package-install-status task_id=175 ```
-
-#### Human Readable Output
 
 

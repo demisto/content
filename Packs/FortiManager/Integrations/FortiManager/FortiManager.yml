@@ -51,7 +51,7 @@ script:
       defaultValue: '0'
       description: From which index to start the list.
       isArray: false
-      name: from
+      name: offset
       required: false
       secret: false
     - default: false
@@ -319,7 +319,7 @@ script:
       defaultValue: '0'
       description: From which index to start the list.
       isArray: false
-      name: from
+      name: offset
       required: false
       secret: false
     - default: false
@@ -587,7 +587,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: '2 letter representing a counrty associated to an IP address (for
+      description: '2 letter representing a country associated to an IP address (for
         example: ''us''). Required for geography address type. '
       isArray: false
       name: country
@@ -684,11 +684,11 @@ script:
       isArray: false
       name: sdn
       predefined:
-        - aci
-        - aws
-        - nsx
-        - nuage
-        - azure
+      - aci
+      - aws
+      - nsx
+      - nuage
+      - azure
       required: false
       secret: false
     - default: false
@@ -706,8 +706,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: '2 letter representing a counrty associated to an IP address (for
-       example: ''us''). Required for geography address type. '
+      description: '2 letter representing a country associated to an IP address (for
+        example: ''us''). Required for geography address type. '
       isArray: false
       name: country
       required: false
