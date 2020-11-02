@@ -116,7 +116,6 @@ while True:
         demisto.results(str(run_time_count) + ".Successfully update " + str(update_num) +
                         " Devices and insert " + str(insert_num) + " to Servicenow")
         run_time_count += 1
-        time.sleep(5)
     else:
         break
 

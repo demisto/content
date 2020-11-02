@@ -12,6 +12,7 @@ script: ''
 scripttarget: 0
 subtype: python3
 tags: []
+timeout: 362.88ms
 type: python
 fromversion: 5.0.0
 tests:
