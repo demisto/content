@@ -976,7 +976,7 @@ def get_incident_extra_data_command(client, args):
         last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
         last_mirrored_in_time_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
         demisto.info(f"Inside get-extra-data command. \n Incident id: {incident_id}.\n"
-                      f"last mirrored in time : {last_mirrored_in_time_timestamp}")
+                     f"last mirrored in time : {last_mirrored_in_time_timestamp}")
 
         last_modified_incidents = get_integration_context().get('modified_incidents', {})
         demisto.info(f"integration context: {last_modified_incidents}\n")  # type:ignore
@@ -985,8 +985,8 @@ def get_incident_extra_data_command(client, args):
             current_incident_modified_time = int(str(last_modified_incidents[incident_id]))
 
             demisto.info(f"XDR incident {incident_id}\n"  # type:ignore
-                          f"modified time: {current_incident_modified_time}\n"
-                          f"last mirrored in time: {last_mirrored_in_time_timestamp}")
+                         f"modified time:         {current_incident_modified_time}\n"
+                         f"last mirrored in time: {last_mirrored_in_time_timestamp}")
 
             if current_incident_modified_time > last_mirrored_in_time_timestamp:   # need to update this incident
                 demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
@@ -997,6 +997,7 @@ def get_incident_extra_data_command(client, args):
         else:  # the incident was not modified
             return "", {}, {}
 
+    demisto.info(f"Performing extra-data request on incident {incident_id}")
     raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
 
     incident = raw_incident.get('incident')
