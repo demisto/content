@@ -39,7 +39,7 @@ script:
       - handleAndLearn
       required: true
     description: Updating the alert
-    name: cyberx_update
+    name: cyberx-update-alert
   dockerimage: demisto/python3-deb:3.8.6.12176
   runonce: false
   script: ''
