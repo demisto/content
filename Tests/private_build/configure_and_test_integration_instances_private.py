@@ -41,7 +41,7 @@ def create_install_private_testing_pack(build: Build, prints_manager: ParallelPr
     prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0,
                                  include_timestamp=True)
     prints_manager.execute_thread_prints(0)
-    sleep(45)
+    # sleep(45)
 
 
 def install_packs_private(build: Build, prints_manager: ParallelPrintsManager, pack_ids: list = None) -> bool:
