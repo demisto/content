@@ -1184,14 +1184,9 @@ class Client(BaseClient):
     def insert_simple_indicators(self, indicator, type_, severity, expiration_date: int,
                                  comment, reputation, reliability, vendor_name,
                                  vendor_reputation, vendor_reliability, vendors: Any, class_string) -> Dict[str, Any]:
-        request_data: Dict[str, Any] = {
-            'indicator': indicator,
-            'type': type_,
-            'severity': severity
-        }
 
         vendors_list: list = []
-        request_data = assign_params(expiration_date=expiration_date, comment=comment, reputation=reputation,
+        request_data = assign_params(indicator=indicator, type=type_, severity=severity, expiration_date=expiration_date, comment=comment, reputation=reputation,
                                      reliability=reliability, vendors=vendors)
         if class_string:
             request_data['class'] = class_string
@@ -2527,7 +2522,7 @@ def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, 
     }
 
     return (
-        f'### Script code:\n {str(reply)}',
+        f'### Script code: \n ``` {str(reply)}',
         {
             f'{INTEGRATION_CONTEXT_BRAND}.ScriptCode(val.script_uid == obj.script_uid)': context
         },
