@@ -123,47 +123,16 @@ def arg_to_dictionary(arg: Any) -> dict:
     """
     list_of_arg: list = argToList(arg)
     args_dictionary: dict = {}
-    for item in list_of_arg:
-        param_array = argToList(item, '=')
-        if len(param_array) != 2:
-            raise ValueError('Please enter comma separated parameters at the following way : “ '
-                             'param1_name=param1_value, param2_name=param2_value “  ')
-        else:
-            value = param_array[1]
-            if value.isdigit():
-                value = int(value)
-            args_dictionary[param_array[0]] = value
+    try:
+        for item in list_of_arg:
+            key, value = item.split('=')
+            value = int(value) if value.isdigit() else value
+            args_dictionary[key] = value
+
+    except ValueError:
+        raise ValueError('Please enter comma separated parameters at the following way: '
+                         'param1_name=param1_value,param2_name=param2_value')
     return args_dictionary
-
-
-def string_to_int_array(string_list: list) -> list:
-    """
-
-    Args:
-        string_list: list of strings
-
-    Returns: list of integers
-
-    """
-    res: list = []
-    if string_list:
-        for item in string_list:
-            res.append(arg_to_int(arg=item, arg_name=str(item)))
-    return res
-
-
-def arg_to_json(arg):
-    """
-        Args:
-            arg: string representing json object or None
-
-        Returns: json object or None
-
-        """
-    if arg:
-        return json.loads(arg)
-    else:
-        return None
 
 
 class Client(BaseClient):
@@ -949,9 +918,9 @@ class Client(BaseClient):
         request_data: Dict[str, Any] = {
             'filters': [
                 {
-                    "field": "endpoint_id_list",
-                    "operator": "in",
-                    "value": endpoint_ids
+                    'field': 'endpoint_id_list',
+                    'operator': 'in',
+                    'value': endpoint_ids
                 }
             ]
         }
@@ -963,9 +932,9 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-    def get_policy(self, endpoint_id):
+    def get_policy(self, endpoint_id) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
-            "endpoint_id": endpoint_id
+            'endpoint_id': endpoint_id
         }
 
         reply = self._http_request(
@@ -975,71 +944,31 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-        return reply.get('reply').get('policy_name')
+        return reply.get('reply')
 
     def get_endpoint_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
                                 timestamp_lte: int,
                                 ip_list: list, vendor: list, vendor_id: list, product: list, product_id: list,
                                 serial: list,
-                                hostname: list, violation_ids: list, username: list):
-        filters: list = [
-            {
-                'field': 'type',
-                'operator': 'in',
-                'value': [type_of_violation]
-            },
-            {
-                'field': 'endpoint_id_list',
-                'operator': 'in',
-                'value': endpoint_ids
-            },
-            {
-                'field': 'ip_list',
-                'operator': 'in',
-                'value': ip_list
-            },
-            {
-                'field': 'vendor',
-                'operator': 'in',
-                'value': vendor
-            },
-            {
-                'field': 'vendor_id',
-                'operator': 'in',
-                'value': vendor_id
-            },
-            {
-                'field': 'product',
-                'operator': 'in',
-                'value': product
-            },
-            {
-                'field': 'product_id',
-                'operator': 'in',
-                'value': product_id
-            },
-            {
-                'field': 'serial',
-                'operator': 'in',
-                'value': serial
-            },
-            {
-                'field': 'hostname',
-                'operator': 'in',
-                'value': hostname
-            },
-            {
-                'field': 'violation_id_list',
-                'operator': 'in',
-                'value': violation_ids
-            },
-            {
-                'field': 'username',
-                'operator': 'in',
-                'value': username
-            }
-        ]
-        filters = list(filter(lambda x: x['value'] and x['value'][0], filters))
+                                hostname: list, violation_ids: list, username: list) -> Dict[str, Any]:
+        arg_list = {'type': type_of_violation,
+                    'endpoint_id_list': endpoint_ids,
+                    'ip_list': ip_list,
+                    'vendor': vendor,
+                    'vendor_id': vendor_id,
+                    'product': product,
+                    'product_id': product_id,
+                    'serial': serial,
+                    'hostname': hostname,
+                    'violation_id_list': violation_ids,
+                    'username': username
+                    }
+
+        filters: list = [{
+            'field': arg_key,
+            'operator': 'in',
+            'value': arg_val
+        } for arg_key, arg_val in arg_list.items() if arg_val and arg_val[0]]
 
         if timestamp_lte:
             filters.append({
@@ -1054,7 +983,7 @@ class Client(BaseClient):
                 'value': timestamp_gte})
 
         request_data: Dict[str, Any] = {
-            "filters": filters
+            'filters': filters
         }
 
         reply = self._http_request(
@@ -1066,7 +995,7 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list):
+    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list) -> Dict[str, Any]:
         files = {}
         if windows:
             files['windows'] = windows
@@ -1081,9 +1010,9 @@ class Client(BaseClient):
         request_data: Dict[str, Any] = {
             'filters': [
                 {
-                    "field": "endpoint_id_list",
-                    "operator": "in",
-                    "value": endpoint_id_list
+                    'field': 'endpoint_id_list',
+                    'operator': 'in',
+                    'value': endpoint_id_list
                 }
             ],
             'files': files
@@ -1097,9 +1026,9 @@ class Client(BaseClient):
         )
         return reply.get('reply')
 
-    def retrieve_file_details(self, action_id: int):
+    def retrieve_file_details(self, action_id: int) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
-            "group_action_id": action_id
+            'group_action_id': action_id
         }
 
         reply = self._http_request(
@@ -1112,49 +1041,25 @@ class Client(BaseClient):
         return reply.get('reply').get('data')
 
     def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
-                    linux_supported, macos_supported, is_high_risk):
-        filters: list = [
-            {
-                "field": "is_high_risk",
-                "operator": "in",
-                "value": [is_high_risk]
-            },
-            {
-                "field": "macos_supported",
-                "operator": "in",
-                "value": [macos_supported]
-            },
-            {
-                "field": "linux_supported",
-                "operator": "in",
-                "value": [linux_supported]
-            },
-            {
-                "field": "windows_supported",
-                "operator": "in",
-                "value": [windows_supported]
-            },
-            {
-                "field": "name",
-                "operator": "in",
-                "value": name
-            },
-            {
-                "field": "description",
-                "operator": "in",
-                "value": description
-            },
-            {
-                "field": "created_by",
-                "operator": "in",
-                "value": created_by
-            }
-        ]
+                    linux_supported, macos_supported, is_high_risk) -> Dict[str, Any]:
 
-        filters = list(filter(lambda x: x['value'] and x['value'][0], filters))
+        arg_list = {'name': name,
+                    'description': description,
+                    'created_by': created_by,
+                    'windows_supported': windows_supported,
+                    'linux_supported': linux_supported,
+                    'macos_supported': macos_supported,
+                    'is_high_risk': is_high_risk
+                    }
+
+        filters: list = [{
+            'field': arg_key,
+            'operator': 'in',
+            'value': arg_val
+        } for arg_key, arg_val in arg_list.items() if arg_val and arg_val[0]]
 
         request_data: Dict[str, Any] = {
-            "filters": filters
+            'filters': filters
         }
 
         reply = self._http_request(
@@ -1164,11 +1069,11 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-        return reply.get('reply').get('scripts')
+        return reply.get('reply')
 
-    def get_script_metadata(self, script_uid):
+    def get_script_metadata(self, script_uid) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
-            "script_uid": script_uid
+            'script_uid': script_uid
         }
 
         reply = self._http_request(
@@ -1180,9 +1085,9 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def get_script_code(self, script_uid):
+    def get_script_code(self, script_uid) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
-            "script_uid": script_uid
+            'script_uid': script_uid
         }
 
         reply = self._http_request(
@@ -1194,17 +1099,14 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def run_script(self, script_uid, endpoint_ids: list, timeout: int, parameters: Dict[str, Any]):
+    def run_script(self, script_uid, endpoint_ids: list, timeout: int, parameters: Dict[str, Any]) -> Dict[str, Any]:
         filters: list = [{
             'field': 'endpoint_id_list',
             'operator': 'in',
             'value': endpoint_ids
         }]
-        request_data: Dict[str, Any] = {"script_uid": script_uid, "timeout": timeout, "filters": filters,
-                                        'parameters_values': {}}
-
-        if parameters:
-            request_data['parameters_values'] = parameters
+        request_data: Dict[str, Any] = {'script_uid': script_uid, 'timeout': timeout, 'filters': filters,
+                                        'parameters_values': parameters}
 
         reply = self._http_request(
             method='POST',
@@ -1213,18 +1115,18 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-        return reply.get('reply').get('action_id')
+        return reply.get('reply')
 
-    def run_snippet_code_script(self, endpoint_ids: list, snippet_code, timeout: int):
+    def run_snippet_code_script(self, endpoint_ids: list, snippet_code, timeout: int) -> Dict[str, Any]:
         filters: list = [{
             'field': 'endpoint_id_list',
             'operator': 'in',
             'value': endpoint_ids
         }]
         request_data: Dict[str, Any] = {
-            "filters": filters,
-            "snippet_code": snippet_code,
-            "timeout": timeout
+            'filters': filters,
+            'snippet_code': snippet_code,
+            'timeout': timeout
         }
 
         reply = self._http_request(
@@ -1234,11 +1136,11 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-        return reply.get('reply').get('action_id')
+        return reply.get('reply')
 
-    def get_script_execution_status(self, action_id):
+    def get_script_execution_status(self, action_id) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
-            "action_id": action_id
+            'action_id': action_id
         }
 
         reply = self._http_request(
@@ -1250,7 +1152,7 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def get_script_execution_results(self, action_id):
+    def get_script_execution_results(self, action_id) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
             'action_id': action_id
         }
@@ -1264,7 +1166,7 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def get_script_execution_result_files(self, action_id, endpoint_id):
+    def get_script_execution_result_files(self, action_id, endpoint_id) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
             'action_id': action_id,
             'endpoint_id': endpoint_id
@@ -1281,20 +1183,13 @@ class Client(BaseClient):
 
     def insert_simple_indicators(self, indicator, type_, severity, expiration_date: int,
                                  comment, reputation, reliability, vendor_name,
-                                 vendor_reputation, vendor_reliability, vendors: Any, class_string):
-        request_data: Dict[str, Any] = {
-            'indicator': indicator,
-            'type': type_,
-            'severity': severity
-        }
+                                 vendor_reputation, vendor_reliability, vendors: Any, class_string) -> Dict[str, Any]:
 
         vendors_list: list = []
-        data_param_names: list = ['expiration_date', 'comment', 'reputation', 'reliability', 'vendors', 'class']
-        data_params: list = [expiration_date, comment, reputation, reliability, vendors, class_string]
-        for data_param in data_params:
-            if data_param:
-                request_data[data_param_names[data_params.index(data_param)]] = data_param
-
+        request_data = assign_params(indicator=indicator, type=type_, severity=severity, expiration_date=expiration_date, comment=comment, reputation=reputation,
+                                     reliability=reliability, vendors=vendors)
+        if class_string:
+            request_data['class'] = class_string
         # user should insert all of the following: vendor_name, vendor_reputation and vendor_reliability, or none of
         # them.
         if vendor_name and vendor_reputation and vendor_reliability:
@@ -1321,7 +1216,7 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def action_status_get(self, action_id):
+    def action_status_get(self, action_id) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
             'group_action_id': action_id,
         }
@@ -2450,22 +2345,22 @@ def delete_endpoints_command(client: Client, args: Dict[str, str]) -> Tuple[str,
 
     client.delete_endpoints(endpoint_id_list)
 
-    return f'Endpoints {args.get("endpoint_ids")} successfully deleted', None, None
+    return f'Successfully deleted the following endpoints: {args.get("endpoint_ids")}', None, None
 
 
 def get_policy_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     endpoint_id = args.get('endpoint_id')
 
-    policy_name = client.get_policy(endpoint_id)
-    context = {"endpoint_id": endpoint_id,
-               "policy_name": policy_name}
+    reply = client.get_policy(endpoint_id)
+    context = {'endpoint_id': endpoint_id,
+               'policy_name': reply.get('policy_name')}
 
     return (
-        f'The policy name of endpoint {endpoint_id} is {policy_name}.',
+        f'The policy name of endpoint: {endpoint_id} is: {reply.get("policy_name")}.',
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.policyName(val.endpoint_id == obj.endpoint_id)': context
+            f'{INTEGRATION_CONTEXT_BRAND}.Policy(val.endpoint_id == obj.endpoint_id)': context
         },
-        policy_name
+        reply
     )
 
 
@@ -2487,12 +2382,14 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
     product_id: list = argToList(args.get('product_id'))
     serial: list = argToList(args.get('serial'))
     hostname: list = argToList(args.get('hostname'))
-    violation_ids: list = string_to_int_array(argToList(args.get('violation_id_list')))
+    violation_id_list: list = argToList(args.get('violation_id_list', ''))
     username: list = argToList(args.get('username'))
+
+    violation_ids = [arg_to_int(arg=item, arg_name=str(item)) for item in violation_id_list]
 
     reply = client.get_endpoint_violations(
         endpoint_ids=endpoint_ids,
-        type_of_violation=type_of_violation,
+        type_of_violation=[type_of_violation],
         timestamp_gte=timestamp_gte,
         timestamp_lte=timestamp_lte,
         ip_list=ip_list,
@@ -2506,11 +2403,14 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
         username=username
     )
 
-    headers = ['timestamp', 'host_name', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product', 'serial']
+    headers = ['timestamp', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
+               'serial']
     return (
-        tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers, removeNull=True),
+        tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers,
+                        headerTransform=string_to_table_header, removeNull=True),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)': reply
+            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)':
+                reply.get('violations')
         },
         reply
     )
@@ -2528,40 +2428,42 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
         linux=linux,
         macos=macos
     )
-    action_id = reply.get("action_id")
-
+    result = {'action_id': reply.get('action_id')}
     return (
-        tableToMarkdown(name='Retrieve files', t={'Action Id': action_id}, headers=['Action Id'], removeNull=True),
+        tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.retrievedFiles.actionId(val.actionId == obj.actionId)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFiles(val.action_id == obj.action_id)': result
         },
-        action_id
+        reply
     )
 
 
 def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]:
-    action_id_list = string_to_int_array(argToList(args.get('action_id')))
+    action_id_list = argToList(args.get('action_id', ''))
+    action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
     result = []
+    raw_result = []
 
     for action_id in action_id_list:
         data = client.retrieve_file_details(action_id)
+        raw_result.append(data)
 
         for key, val in data.items():
             obj = {
-                "action_id": action_id,
-                "endpoint_id": key
+                'action_id': action_id,
+                'endpoint_id': key
             }
             if val:
                 obj['file_link'] = val
             result.append(obj)
 
     return (
-        tableToMarkdown(name='Retrieve file Details', t=result, removeNull=True),
+        tableToMarkdown(name='Retrieve file Details', t=result, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.retrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
+            f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
         },
-        result
+        raw_result
     )
 
 
@@ -2574,25 +2476,25 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
     macos_supported = args.get('macos_supported')
     is_high_risk = args.get('is_high_risk')
 
-    scripts = client.get_scripts(
+    result = client.get_scripts(
         name=script_name,
         description=description,
         created_by=created_by,
-        windows_supported=windows_supported,
-        linux_supported=linux_supported,
-        macos_supported=macos_supported,
-        is_high_risk=is_high_risk
+        windows_supported=[windows_supported],
+        linux_supported=[linux_supported],
+        macos_supported=[macos_supported],
+        is_high_risk=[is_high_risk]
     )
-
+    scripts = result.get('scripts')
     headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
                      'windows_supported', 'linux_supported', 'macos_supported', 'is_high_risk']
 
     return (
-        tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True),
+        tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True, headerTransform=string_to_table_header),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.Scripts(val.script_uid == obj.script_uid)': scripts
         },
-        scripts
+        result
     )
 
 
@@ -2602,9 +2504,9 @@ def get_script_metadata_command(client: Client, args: Dict[str, str]) -> Tuple[s
     reply = client.get_script_metadata(script_uid)
 
     return (
-        tableToMarkdown(name='Script Metadata', t=reply, headers=[*reply], removeNull=True),
+        tableToMarkdown(name='Script Metadata', t=reply, removeNull=True, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptMetadata(val.script_uid == obj.script_uid)': reply
+            f'{INTEGRATION_CONTEXT_BRAND}.ScriptMetadata(val.script_uid == obj.script_uid)': reply
         },
         reply
     )
@@ -2615,14 +2517,14 @@ def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, 
 
     reply = client.get_script_code(script_uid)
     context = {
-        "script_uid": script_uid,
-        "code": reply
+        'script_uid': script_uid,
+        'code': reply
     }
 
     return (
-        f'Script code is :\n {str(reply)}',
+        f'### Script code: \n ``` {str(reply)}',
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptCode(val.script_uid == obj.script_uid)': context
+            f'{INTEGRATION_CONTEXT_BRAND}.ScriptCode(val.script_uid == obj.script_uid)': context
         },
         reply
     )
@@ -2634,34 +2536,15 @@ def run_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     timeout: int = arg_to_int(arg=args.get('timeout'), arg_name='timeout')
     parameters: dict = arg_to_dictionary(args.get('parameters'))
 
-    action_id = client.run_script(script_uid, endpoint_ids, timeout, parameters)
+    result = client.run_script(script_uid, endpoint_ids, timeout, parameters)
+    obj = {'action_id': result.get('action_id')}
 
     return (
-        tableToMarkdown(name='Run Script Command', t={'Action Id': action_id},
-                        headers=['Action Id'], removeNull=True),
+        tableToMarkdown(name='Run Script Command', t=obj, removeNull=True, headerTransform=string_to_table_header),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.runScript.actionId(val.actionId == obj.actionId)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.RunScript(val.action_id == obj.action_id)': obj
         },
-        action_id
-    )
-
-
-def run_snippet_code_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    # todo:  change this code when the issue resolved,
-    #  was told not to implement this command, since xdr will change something at their side.
-    endpoint_ids: list = argToList(args.get('endpoint_ids'))
-    snippet_code = args.get('snippet_code')
-    timeout: int = arg_to_int(arg=args.get('timeout'), arg_name='timeout')
-
-    action_id = client.run_snippet_code_script(endpoint_ids, snippet_code, timeout)
-
-    return (
-        tableToMarkdown(name='Run Snipped Code Script', t={'Action Id': action_id},
-                        headers=['Action Id'], removeNull=True),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.runSnippetCodeScript.actionId(val.actionId == obj.actionId)': action_id
-        },
-        action_id
+        result
     )
 
 
@@ -2669,29 +2552,12 @@ def get_script_execution_status_command(client: Client, args: Dict[str, str]) ->
     action_id = args.get('action_id')
 
     reply = client.get_script_execution_status(action_id)
-    reply["action_id"] = action_id
+    reply['action_id'] = action_id
 
     return (
         tableToMarkdown(name='Execution Status', t=reply, removeNull=True),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionStatus(val.actionId == obj.actionId)': reply
-        },
-        reply
-    )
-
-
-def get_script_execution_results_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    # todo: we have an issue with the output of this command, at the xdr side,
-    # change this code when the issue resolved
-    action_id = args.get('action_id')
-
-    reply = client.get_script_execution_results(action_id)
-    reply["action_id"] = action_id
-
-    return (
-        tableToMarkdown(name='Script Execution Results', t=reply.get('results'), removeNull=True),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.scriptExecutionResults(val.actionId == obj.actionId)': reply
+            f'{INTEGRATION_CONTEXT_BRAND}.ScriptExecutionStatus(val.actionId == obj.actionId)': reply
         },
         reply
     )
@@ -2725,10 +2591,10 @@ def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, An
     vendor_name = args.get('vendor_name')
     vendor_reputation = args.get('vendor_reputation')
     vendor_reliability = args.get('vendor_reliability')
-    vendors = arg_to_json(args.get('vendors'))
+    vendors = json.loads(args.get('vendors')) if args.get('vendors') else None
     class_string = args.get('class')
 
-    client.insert_simple_indicators(
+    reply = client.insert_simple_indicators(
         indicator=indicator,
         type_=type_,
         severity=severity,
@@ -2743,27 +2609,28 @@ def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, An
         class_string=class_string
     )
 
-    return 'IOCs successfully uploaded', None, None
+    return 'IOCs successfully uploaded', None, reply
 
 
 def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
-    action_id_list = string_to_int_array(argToList(args.get('action_id')))
+    action_id_list = argToList(args.get('action_id', ''))
+    action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
     result = []
     for action_id in action_id_list:
         data = client.action_status_get(action_id)
 
-        for item in data:
+        for endpoint_id, status in data.items():
             result.append({
-                "action_id": action_id,
-                "endpoint_id": item,
-                "status": data.get(item)
+                'action_id': action_id,
+                'endpoint_id': endpoint_id,
+                'status': status
             })
 
     return (
-        tableToMarkdown(name='Get Action Status', t=result, removeNull=True, headers=["endpoint_id", "status"]),
+        tableToMarkdown(name='Get Action Status', t=result, removeNull=True, headers=['endpoint_id', 'status']),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.getActionStatus(val.actionId == obj.actionId)': result
+            f'{INTEGRATION_CONTEXT_BRAND}.GetActionStatus(val.action_id == obj.action_id)': result
         },
         result
     )
@@ -2921,9 +2788,6 @@ def main():
 
         elif demisto.command() == 'xdr-run-script':
             return_outputs(*run_script_command(client, args))
-
-        elif demisto.command() == 'xdr-run-snippet-code-script':
-            return_outputs(*run_snippet_code_script_command(client, args))
 
         elif demisto.command() == 'xdr-get-script-execution-status':
             return_outputs(*get_script_execution_status_command(client, args))
