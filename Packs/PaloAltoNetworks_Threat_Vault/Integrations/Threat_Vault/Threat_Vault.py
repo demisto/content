@@ -17,15 +17,25 @@ class Client(BaseClient):
         self._params = {'api_key': api_key}
         self.name = 'ThreatVault'
 
-    def antivirus_signature_get_request(self, sha256: str) -> dict:
+    def antivirus_signature_get_request(self, sha256: str = '', signature_id: str = '') -> dict:
         """Get antivirus signature by sending a GET request.
 
         Args:
             sha256: antivirus sha256.
+            signature_id: signature ID.
         Returns:
             Response from API.
         """
-        return self._http_request(method='GET', url_suffix=f'/threatvault/ips/signature/{sha256}', params=self._params)
+        if (sha256 and signature_id) or (not sha256 and not signature_id):
+            raise Exception('Please submit a sha256 or a signature_id.')
+        if signature_id:
+            # 93534285
+            suffix = f'/threatvault/panav/signature/{signature_id}'
+        else:
+            # 050aef130c079f10a2549b3f948c5d6548bfd33e0dee4fa264300de57ba619da
+            suffix = f'/file/{sha256}/signature'
+        demisto.log(str(suffix))
+        return self._http_request(method='GET', url_suffix=suffix, params=self._params)
 
     def dns_signature_get_request(self, dns_signature_id: str) -> dict:
         """Get DNS signature by sending a GET request.
@@ -67,10 +77,10 @@ class Client(BaseClient):
             path: API endpoint path to search.
             signature_name: signature name.
             from_: todo
-            size: todo
-            domain_name: domain name
-            vendor: vendor ID
-            cve: cve ID
+            size: maximum number of signatures to return.
+            domain_name: domain name.
+            vendor: vendor ID.
+            cve: cve ID.
         Returns:
             Response from API.
         """
@@ -130,8 +140,9 @@ def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
         CommandResults.
     """
     sha256 = str(args.get('sha256', ''))
+    signature_id = str(args.get('signature_id', ''))
 
-    response = client.antivirus_signature_get_request(sha256)
+    response = client.antivirus_signature_get_request(sha256, signature_id)
     readable_output = tableToMarkdown(name="Antivirus:", t=response, removeNull=True)
 
     return CommandResults(

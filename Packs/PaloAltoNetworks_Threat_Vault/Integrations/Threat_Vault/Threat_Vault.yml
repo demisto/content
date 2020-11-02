@@ -27,10 +27,16 @@ script:
       name: sha256
       required: false
       secret: false
+    - default: false
+      description: Signature ID of the antivirus.
+      isArray: false
+      name: signature_id
+      required: false
+      secret: false
     deprecated: false
     description: Get antivirus signature.
     execution: false
-    name: threatvault-antivirus-signtature-get
+    name: threatvault-antivirus-signature-get
     outputs:
     - contextPath: ThreatVault.AntiVirusSignature
       description: TODO
