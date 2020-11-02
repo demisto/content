@@ -2412,7 +2412,7 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
                'serial']
     return (
         tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers,
-                        headerTransform=string_to_table_header ,removeNull=True),
+                        headerTransform=string_to_table_header, removeNull=True),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)':
                 reply.get('violations')
