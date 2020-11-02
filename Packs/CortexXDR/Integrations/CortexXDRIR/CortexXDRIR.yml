@@ -1771,7 +1771,7 @@ script:
       name: username
     description: Gets a list of device control violations filtered by selected fields.
       You can retrieve up to 100 violations.
-    name: xdr-get-endpoint-violations
+    name: xdr-get-endpoint-device-control-violations
     outputs:
     - contextPath: PaloAltoNetworksXDR.EndpointViolations
       description: Get endpoint violations command results.

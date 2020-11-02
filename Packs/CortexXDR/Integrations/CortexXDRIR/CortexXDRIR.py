@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 from datetime import timezone
 import secrets
 import string
@@ -946,11 +945,12 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def get_endpoint_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
-                                timestamp_lte: int,
-                                ip_list: list, vendor: list, vendor_id: list, product: list, product_id: list,
-                                serial: list,
-                                hostname: list, violation_ids: list, username: list) -> Dict[str, Any]:
+    def get_endpoint_device_control_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
+                                               timestamp_lte: int,
+                                               ip_list: list, vendor: list, vendor_id: list, product: list,
+                                               product_id: list,
+                                               serial: list,
+                                               hostname: list, violation_ids: list, username: list) -> Dict[str, Any]:
         arg_list = {'type': type_of_violation,
                     'endpoint_id_list': endpoint_ids,
                     'ip_list': ip_list,
@@ -2279,7 +2279,7 @@ def get_policy_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     )
 
 
-def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def get_endpoint_device_control_violations_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     endpoint_ids: list = argToList(args.get('endpoint_ids'))
     type_of_violation = args.get('type')
     timestamp_gte: int = arg_to_timestamp(
@@ -2302,7 +2302,7 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
 
     violation_ids = [arg_to_int(arg=item, arg_name=str(item)) for item in violation_id_list]
 
-    reply = client.get_endpoint_violations(
+    reply = client.get_endpoint_device_control_violations(
         endpoint_ids=endpoint_ids,
         type_of_violation=[type_of_violation],
         timestamp_gte=timestamp_gte,
@@ -2321,7 +2321,7 @@ def get_endpoint_violations_command(client: Client, args: Dict[str, str]) -> Tup
     headers = ['timestamp', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
                'serial']
     return (
-        tableToMarkdown(name='Endpoint Violation', t=reply.get('violations'), headers=headers,
+        tableToMarkdown(name='Endpoint Device Control Violation', t=reply.get('violations'), headers=headers,
                         headerTransform=string_to_table_header, removeNull=True),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)':
@@ -2405,7 +2405,8 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
                      'windows_supported', 'linux_supported', 'macos_supported', 'is_high_risk']
 
     return (
-        tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True, headerTransform=string_to_table_header),
+        tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True,
+                        headerTransform=string_to_table_header),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.Scripts(val.script_uid == obj.script_uid)': scripts
         },
@@ -2634,8 +2635,8 @@ def main():
         elif demisto.command() == 'xdr-get-policy':
             return_outputs(*get_policy_command(client, args))
 
-        elif demisto.command() == 'xdr-get-endpoint-violations':
-            return_outputs(*get_endpoint_violations_command(client, args))
+        elif demisto.command() == 'xdr-get-endpoint-device-control-violations':
+            return_outputs(*get_endpoint_device_control_violations_command(client, args))
 
         elif demisto.command() == 'xdr-retrieve-files':
             return_outputs(*retrieve_files_command(client, args))

@@ -1081,7 +1081,7 @@ def test_get_endpoint_violations_command(requests_mock):
         Then:
             - returns markdown, context data and raw response.
         """
-    from CortexXDRIR import get_endpoint_violations_command, Client
+    from CortexXDRIR import get_endpoint_device_control_violations_command, Client
 
     get_endpoint_violations_reply = load_test_data('./test_data/get_endpoint_violations.json')
     get_endpoint_violations_expected_result = {
@@ -1097,7 +1097,7 @@ def test_get_endpoint_violations_command(requests_mock):
         'violation_id_list': '100'
     }
 
-    _, context, _ = get_endpoint_violations_command(client, args)
+    _, context, _ = get_endpoint_device_control_violations_command(client, args)
 
     assert get_endpoint_violations_expected_result == context
 
