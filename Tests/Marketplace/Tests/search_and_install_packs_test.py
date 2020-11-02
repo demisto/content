@@ -230,5 +230,13 @@ It must be JSON.","error":"invalid version 1.2.0 for pack with ID AutoFocus (350
 
 
 def test_find_malformed_pack_id():
+    """
+   Given
+   - Error message.
+   When
+   - Run find_malformed_pack_id command.
+   Then
+   - Ensure the pack ID is caught.
+   """
     malformed_pack_id = script.find_malformed_pack_id(ERROR_MESSAGE)
     assert 'AutoFocus' in malformed_pack_id

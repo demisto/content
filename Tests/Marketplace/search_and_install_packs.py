@@ -6,6 +6,8 @@ import json
 import glob
 import re
 import sys
+from typing import List
+
 import demisto_client
 from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
@@ -169,7 +171,7 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
         lock.release()
 
 
-def find_malformed_pack_id(error_message: str):
+def find_malformed_pack_id(error_message: str) -> List:
     """
     Find the pack ID from the installation error message.
     Args:
@@ -186,7 +188,8 @@ def find_malformed_pack_id(error_message: str):
         raise Exception(f'The request to install packs has failed. Reason: {str(error_message)}')
 
 
-def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999):
+def install_nightly_packs(client: demisto_client, host: str, prints_manager: ParallelPrintsManager, thread_index: int,
+                          packs_to_install: List, request_timeout: int = 999999):
     """
     Install content packs on nightly build.
     We will catch the exception if pack fails to install and send the request to install packs again without the
@@ -200,7 +203,7 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
         request_timeout (int): Timeout settings for the installation request.
 
     Returns:
-
+        None: No data returned.
     """
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
     message = 'Installing the following packs in server {}:\n{}'.format(host, packs_to_install_str)
@@ -223,7 +226,7 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
 
             if 200 <= status_code < 300:
                 packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
-                              response_data]
+                              ast.literal_eval(response_data)]
                 packs_message = f'The following packs were successfully installed:\n{packs_data}'
                 prints_manager.add_print_job(packs_message, print_color, thread_index, LOG_COLORS.GREEN,
                                              include_timestamp=True)
@@ -233,8 +236,6 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
                 err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
                 prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
                 raise Exception(err_msg)
-
-            all_packs_install_successfully = True
             break
 
         except Exception as e:
@@ -266,6 +267,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
         thread_index (int): the thread index.
         packs_to_install (list): A list of the packs to install.
         request_timeout (int): Timeout settings for the installation request.
+        is_nightly (bool): Is the build nigthly or not.
     """
 
     if private_install:
@@ -336,8 +338,10 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                                                                                     _request_timeout=request_timeout)
 
                 if 200 <= status_code < 300:
-                    message = 'Packs were successfully installed!\n'
-                    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                    packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
+                                  response_data]
+                    packs_message = f'The following packs were successfully installed:\n{packs_data}'
+                    prints_manager.add_print_job(packs_message, print_color, thread_index, LOG_COLORS.GREEN,
                                                  include_timestamp=True)
                 else:
                     result_object = ast.literal_eval(response_data)
