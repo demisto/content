@@ -1,4 +1,6 @@
 import demisto_client
+import pytest
+
 import Tests.Marketplace.search_and_install_packs as script
 from Tests.test_content import ParallelPrintsManager
 
@@ -231,12 +233,26 @@ It must be JSON.","error":"invalid version 1.2.0 for pack with ID AutoFocus (350
 
 def test_find_malformed_pack_id():
     """
-   Given
-   - Error message.
-   When
-   - Run find_malformed_pack_id command.
-   Then
-   - Ensure the pack ID is caught.
+    Given
+    - Error message.
+    When
+    - Run find_malformed_pack_id command.
+    Then
+    - Ensure the pack ID is caught.
    """
     malformed_pack_id = script.find_malformed_pack_id(ERROR_MESSAGE)
     assert 'AutoFocus' in malformed_pack_id
+
+
+def test_not_find_malformed_pack_id():
+    """
+    Given
+    - Error message without any pack ID.
+    When
+    - Run find_malformed_pack_id command.
+    Then
+    - Ensure Exception is returned with the error message.
+    """
+    with pytest.raises(Exception, match='The request to install packs has failed. '
+                                        'Reason: This is an error message without pack ID'):
+        script.find_malformed_pack_id('This is an error message without pack ID')
