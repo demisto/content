@@ -140,6 +140,15 @@ def test_ssl_custom_cert(mocker, request):
 
 
 def test_endpoint_entry():
+    """
+    Given:
+         Custom attributes to filter the computer object entry.
+    When:
+        The function filters the computer object according to the custom attributes.
+    Then:
+        The function will return all the computer object entry because custom attributes contain '*'.
+
+    """
     from Active_Directory_Query import endpoint_entry
     custom_attributes_with_asterisk = endpoint_entry({'dn': 'dn', 'name': 'name', 'memberOf': 'memberOf'}, ['*'])
     assert custom_attributes_with_asterisk == {'Groups': 'memberOf', 'Hostname': 'name', 'ID': 'dn', 'Type': 'AD'}
