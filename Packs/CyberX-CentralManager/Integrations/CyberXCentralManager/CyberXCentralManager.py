@@ -25,7 +25,7 @@ if demisto.command() == 'test-module':
     sys.exit(0)
 
 # This command takes a UUID as argument to update the according incident
-if demisto.command() == 'cyberx_update':
+if demisto.command() == 'cyberx-update-alert':
     url = 'https://' + server + '/external/v1/alerts/' + demisto.args()["cyberx_uuid"]
     payload = {"action": demisto.args()["action"]}
     response = requests.put(url, data=json.dumps(payload), headers=headers, verify=ssl_check)
