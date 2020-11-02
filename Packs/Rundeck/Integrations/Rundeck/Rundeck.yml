@@ -145,7 +145,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter for executing the job.
+      description: |-
+        node filter string, or .* for all nodes.
+
+        Examples:
+        To select a specific node by its name:
+        nodeName1 nodeName2
+
+        To filter nodes by attribute value:
+        Include: attribute: value
+        Exclude: !attribute: value
+
+        To use regular expressions:
+        Hostname: dev(\d+).com
+
+        To use Regex syntex checking:
+        attribute: /regex/
+
+        for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
       isArray: false
       name: node_filter
       required: false
@@ -706,7 +723,22 @@ script:
       secret: false
     - default: false
       description: |-
-        Node filter to add to the execution.
+        node filter string, or .* for all nodes.
+
+        Examples:
+        To select a specific node by its name:
+        nodeName1 nodeName2
+
+        To filter nodes by attribute value:
+        Include: attribute: value
+        Exclude: !attribute: value
+
+        To use regular expressions:
+        Hostname: dev(\d+).com
+
+        To use Regex syntex checking:
+        attribute: /regex/
+
         for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
       isArray: false
       name: node_filter
@@ -762,7 +794,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: Node filter string
+      description: |-
+        node filter string, or .* for all nodes.
+
+        Examples:
+        To select a specific node by its name:
+        nodeName1 nodeName2
+
+        To filter nodes by attribute value:
+        Include: attribute: value
+        Exclude: !attribute: value
+
+        To use regular expressions:
+        Hostname: dev(\d+).com
+
+        To use Regex syntex checking:
+        attribute: /regex/
+
+        for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
       isArray: false
       name: node_filter
       required: false
@@ -838,7 +887,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: Node filter string
+      description: |-
+        node filter string, or .* for all nodes.
+
+        Examples:
+        To select a specific node by its name:
+        nodeName1 nodeName2
+
+        To filter nodes by attribute value:
+        Include: attribute: value
+        Exclude: !attribute: value
+
+        To use regular expressions:
+        Hostname: dev(\d+).com
+
+        To use Regex syntex checking:
+        attribute: /regex/
+
+        for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
       isArray: false
       name: node_filter
       required: false
