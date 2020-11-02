@@ -372,7 +372,9 @@ the return example:
 
 def get_servicenow_upsert_devices(args):
 
-    sn_id_deviceids = args.get("sn_id_deviceids")
+    sn_id_deviceids = {}
+    if "sn_id_deviceids" in args:
+        sn_id_deviceids = args.get("sn_id_deviceids")
     device_list = args.get("devices")
     ids_map = {}
     if sn_id_deviceids:
@@ -392,7 +394,7 @@ def get_servicenow_upsert_devices(args):
         device = device_list[i]
         deviceid = device["deviceid"]
         instance = convert_device_to_servicenow_format(device)
-        if (not ids_map) | (deviceid not in ids_map):
+        if (not ids_map) or (deviceid not in ids_map):
             insert_list.append(instance)
         else:
             sn_id = ids_map[deviceid]

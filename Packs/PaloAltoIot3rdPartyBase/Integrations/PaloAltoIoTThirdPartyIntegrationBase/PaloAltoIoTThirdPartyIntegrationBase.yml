@@ -100,7 +100,6 @@ script:
     - description: list of service now Id and corresponding deviceid
       isArray: true
       name: sn_id_deviceids
-      required: true
     description: Gets service now upsert devices
     name: get-servicenow-upsert-devices
     outputs:
