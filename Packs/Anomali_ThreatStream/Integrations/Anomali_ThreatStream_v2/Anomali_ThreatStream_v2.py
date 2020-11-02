@@ -901,6 +901,12 @@ def get_indicators(**kwargs):
 
     iocs_list = http_request("GET", "v2/intelligence/", params=params).get('objects', None)
 
+    if not iocs_list:
+        demisto.results('No indicators found from ThreatStream')
+        sys.exit()
+
+    iocs_context = parse_indicators_list(iocs_list)
+
     if limit > 1000:
         while limit > 1000:
             offset += 1000
@@ -909,13 +915,10 @@ def get_indicators(**kwargs):
             kwargs['limit'] = limit
             kwargs['offset'] = offset
             params = build_params(**kwargs)
-            iocs_list.append(http_request("GET", "v2/intelligence/", params=params).get('objects', None))
+            iocs_list = http_request("GET", "v2/intelligence/", params=params).get('objects', None)
+            if iocs_list:
+                iocs_context.append(parse_indicators_list(iocs_list))
 
-    if not iocs_list:
-        demisto.results('No indicators found from ThreatStream')
-        sys.exit()
-
-    iocs_context = parse_indicators_list(iocs_list)
     ec = {'ThreatStream.Indicators': iocs_context}
     return_outputs(tableToMarkdown("The indicators results", iocs_context), ec, iocs_list)
 
