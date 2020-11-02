@@ -9,8 +9,8 @@ import json
 import glob
 import random
 import argparse
-import coloredlogs
 import logging
+from Tests.scripts.utils.log_util import install_logging
 from distutils.version import LooseVersion
 from copy import deepcopy
 from typing import Dict, Tuple
@@ -18,7 +18,7 @@ from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
-coloredlogs.install(level=logging.DEBUG, fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s')
+from Tests.scripts.utils.content_packs_util import should_test_content_pack
 
 
 class TestConf(object):
@@ -270,7 +270,7 @@ def get_modified_files_for_testing(files_string):
                     re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
-            elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
+            elif checked_type(file_path, JSON_ALL_INDICATOR_FIELDS_REGEXES):
                 is_indicator_json = True
 
             # conf.json
@@ -286,7 +286,9 @@ def get_modified_files_for_testing(files_string):
                 continue
 
             elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
-                modified_metadata_list.add(tools.get_pack_name(file_path))
+                pack = tools.get_pack_name(file_path)
+                if pack:
+                    modified_metadata_list.add(pack)
 
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
@@ -1114,6 +1116,29 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
+def remove_ignored_tests(tests: set, content_packs: set) -> set:
+    """Removes test playbooks, which are in .pack-ignore, from the given tests set
+
+    Args:
+        tests (set): Tests set to remove the tests to ignore from
+        content_packs (set): Content packs from which to check if test should be ignored
+
+    Return:
+         set: The filtered tests set
+    """
+    ignored_tests_set = set()
+
+    for pack in content_packs:
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+
+    if ignored_tests_set:
+        readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
+        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        tests.difference_update(ignored_tests_set)
+
+    return tests
+
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
@@ -1191,11 +1216,15 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
+    tests = remove_ignored_tests(tests, packs_to_install)
+
     return tests, packs_to_install
 
 
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
-    """Computes the lowest from version of the modified files and the highest to version of the modified files
+    """Computes the lowest from version of the modified files, the highest from version and the highest to version of
+    the modified files.
+    In case that max_from_version is higher than max to version - to version will be the the highest default.
     Args:
         all_modified_files_paths: All modified files
         id_set: the content of the id.set_json
@@ -1206,6 +1235,7 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
     """
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
+    max_from_version = LooseVersion('0.0.0')
     for artifacts in id_set.values():
         for artifact_dict in artifacts:
             for artifact_details in artifact_dict.values():
@@ -1214,14 +1244,16 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
                     to_version = artifact_details.get('toversion')
                     if from_version:
                         min_from_version = min(min_from_version, LooseVersion(from_version))
+                        max_from_version = max(max_from_version, LooseVersion(from_version))
                     if to_version:
                         max_to_version = max(max_to_version, LooseVersion(to_version))
-    if max_to_version.vstring == '0.0.0':
+    if max_to_version.vstring == '0.0.0' or max_to_version < max_from_version:
         max_to_version = LooseVersion('99.99.99')
     if min_from_version.vstring == '99.99.99':
         min_from_version = LooseVersion('0.0.0')
     logging.debug(f'modified files are {all_modified_files_paths}')
     logging.debug(f'lowest from version found is {min_from_version}')
+    logging.debug(f'highest from version found is {max_from_version}')
     logging.debug(f'highest to version found is {max_to_version}')
     return min_from_version.vstring, max_to_version.vstring
 
@@ -1229,7 +1261,6 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
 def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=None, one_before_ga=None, ga=None):
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
-    two_before_ga = two_before_ga or AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
     one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
     """
@@ -1240,7 +1271,6 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto one before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
         'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
         'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
@@ -1269,9 +1299,13 @@ def changed_files_to_string(changed_files):
 
 def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
-    tests_string = ''
-    packs_to_install_string = ''
-    if not is_nightly:
+    if is_nightly:
+        all_tests = set(CONF.get_test_playbook_ids())
+        # adding "Run all tests" which is required in test_content.extract_filtered_tests() for the nightly
+        all_tests.add(RUN_ALL_TESTS_FORMAT)
+        packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
+        tests = remove_ignored_tests(all_tests, packs_to_install)
+    else:
         branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
@@ -1291,34 +1325,38 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
-
+        logging.debug(f'Files string: {files_string}')
         minimum_server_version = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              minimum_server_version)
-        tests_string = '\n'.join(tests)
-        packs_to_install_string = '\n'.join(packs_to_install)
+    tests_string = '\n'.join(tests)
+    packs_to_install_string = '\n'.join(packs_to_install)
 
-        if not skip_save:
-            logging.info("Creating filter_file.txt")
-            with open("./Tests/filter_file.txt", "w") as filter_file:
-                filter_file.write(tests_string)
-            logging.info("Creating content_packs_to_install.txt")
-            with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
-                content_packs_to_install.write(packs_to_install_string)
+    if not skip_save:
+        logging.info("Creating filter_file.txt")
+        with open("./Tests/filter_file.txt", "w") as filter_file:
+            filter_file.write(tests_string)
+        # content_packs_to_install.txt is not used in nightly build
+        logging.info("Creating content_packs_to_install.txt")
+        with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
+            content_packs_to_install.write(packs_to_install_string)
 
+    if not is_nightly:
+        # No need to print all content packs and all tests in nightly
         if tests_string:
-            logging.info('Collected the following tests:\n{0}\n'.format(tests_string))
+            logging.success('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
             logging.info('No filter configured, running all tests')
 
         if packs_to_install_string:
-            logging.info('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))
+            logging.success('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))
         else:
             logging.info('Did not find content packs to install')
 
 
 if __name__ == "__main__":
+    install_logging('Collect Tests And Content Packs.log')
     logging.info("Starting creation of test filter file")
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')

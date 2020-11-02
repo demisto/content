@@ -1,0 +1,10 @@
+{
+    "Type": 1,
+    "ContentsFormat": "text",
+    "Contents": "JSESSIONID=MOCK_ID; Path=/; Secure; HttpOnly",
+    "HumanReadable": "### Created Zscaler Session\nSession ID: JSESSIONID=MOCK_ID",
+    "EntryContext": {
+        "Zscaler.SessionID": "JSESSIONID=MOCK_ID"
+    },
+    "IndicatorTimeline": []
+}

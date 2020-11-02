@@ -1,0 +1,31 @@
+{
+  "objects": [
+    {
+      "uid": "1234",
+      "name": "address_range_test_1",
+      "type": "address-range",
+      "domain": {
+        "uid": "9876",
+        "name": "SMC User",
+        "domain-type": "domain"
+      },
+      "ipv4-address-first": "99.66.44.11",
+      "ipv4-address-last": "99.66.44.100"
+    },
+    {
+      "uid": "5678",
+      "name": "address_range_test_2",
+      "type": "address-range",
+      "domain": {
+        "uid": "9876",
+        "name": "SMC User",
+        "domain-type": "domain"
+      },
+      "ipv4-address-first": "8.8.8.8",
+      "ipv4-address-last": "9.9.9.9"
+    }
+  ],
+  "from": 1,
+  "to": 2,
+  "total": 4
+}
