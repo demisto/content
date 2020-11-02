@@ -281,7 +281,6 @@ def test_signature_search_results_anti_spyware_cve(mocker):
     client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
     return_data = {
         "page_count": 1,
-        "search_request_id": "b64a15ac-1d11-11eb-96cc-036c5064267c",
         "signatures": [
             {
                 "cve": "CVE-2015-8650",
