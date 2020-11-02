@@ -3,10 +3,14 @@ from Tests.test_integration import __print_investigation_error
 from Tests.test_content import ParallelPrintsManager
 import demisto_client
 
+
 @pytest.mark.parametrize('command, output', [
-    ('!create account name="User" mail="Test" password="123123!"', '  Command: !create account name="User" mail="Test" password=******'),
-    ('!create account name="User" mail="Test" Password="123123!"', '  Command: !create account name="User" mail="Test" password=******'),
-    ('!create account name="User" mail="Test" pass word="123123!"', '  Command: !create account name="User" mail="Test" pass word="123123!"'),
+    ('!create account name="User" mail="Test" password="123123!"',
+     '  Command: !create account name="User" mail="Test" password=******'),
+    ('!create account name="User" mail="Test" Password="123123!"',
+     '  Command: !create account name="User" mail="Test" password=******'),
+    ('!create account name="User" mail="Test" pass word="123123!"',
+     '  Command: !create account name="User" mail="Test" pass word="123123!"'),
 ])
 def test_print_investigation_error(command, output, mocker):
     """
