@@ -17,7 +17,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: 100 days ago
+  defaultValue: 30 days ago
   description: The start date by which to search for duplicated existing incidents.
     Date format is the same as in the incidents query page. For example, "3 days ago",
     ""2019-01-01T00:00:00 +0200").
