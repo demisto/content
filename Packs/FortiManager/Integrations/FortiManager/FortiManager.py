@@ -11,8 +11,6 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
 GLOBAL_VAR = 'global'
 ADDRESS_TYPE_MAPPING = {
     0: 'ipmask',
