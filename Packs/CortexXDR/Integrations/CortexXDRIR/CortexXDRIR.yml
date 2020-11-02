@@ -1778,12 +1778,6 @@ script:
     outputs:
     - contextPath: PaloAltoNetworksXDR.EndpointViolations
       description: Get endpoint violations command results.
-    - contextPath: PaloAltoNetworksXDR.EndpointViolations.total_count
-      description: Number of total results of this filter without paging.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.EndpointViolations.result_count
-      description: Number of alerts actually returned as result (integer).
-      type: number
     - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations
       description: A list of violations (list).
     - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.os_type
@@ -1859,15 +1853,15 @@ script:
       the action ID.
     name: xdr-retrieve-file-details
     outputs:
-    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails
+    - contextPath: PaloAltoNetworksXDR.RetrievedFileDetails
       description: Retrieve file details command results.
-    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.endpoint_id
+    - contextPath: PaloAltoNetworksXDR.RetrievedFileDetails.endpoint_id
       description: Endpoint ID.
       type: string
-    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.file_link
+    - contextPath: PaloAltoNetworksXDR.RetrievedFileDetails.file_link
       description: Link to the file retrieved by Retrieve File request.
       type: string
-    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.action_id
+    - contextPath: PaloAltoNetworksXDR.RetrievedFileDetails.action_id
       description: Action ID of the Retrieve File request
       type: string
   - arguments:
