@@ -5,7 +5,7 @@ FAIL_STATUS_MSG = "Command send-mail in module EWS Mail Sender requires argument
 
 
 def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-               entry_id_list, email_latest_message):
+               entry_id_list, email_latest_message,  additional_header):
     """Send email reply.
     Args:
         incident_id: The incident ID.
@@ -17,9 +17,11 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
         reply_html_body: The email html body.
         entry_id_list: The files entry ids list.
         email_latest_message: The latest message ID in the email thread to reply to.
+        additional_header: The additional header.
+
     """
     email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
-                                    reply_html_body, entry_id_list, email_latest_message)
+                                    reply_html_body, entry_id_list, email_latest_message,  additional_header)
 
     status = email_reply[0].get('Contents', '')
     if status != FAIL_STATUS_MSG and status:
@@ -33,7 +35,7 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
 
 
 def send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-                      entry_id_list, email_latest_message):
+                      entry_id_list, email_latest_message,  additional_header):
     mail_content = {
         "to": email_to,
         "item_id": email_latest_message,
@@ -43,6 +45,7 @@ def send_mail_request(incident_id, email_subject, email_to, reply_body, service_
         "body": reply_body,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
+        "additionalHeader": additional_header
     }
     email_reply = demisto.executeCommand("reply-mail", mail_content)
     return email_reply
@@ -183,6 +186,7 @@ def main():
     email_subject = custom_fields.get('emailsubject')
     email_cc = custom_fields.get('emailcc', '')
     add_cc = custom_fields.get('addcctoemail', '')
+    message_id = custom_fields.get('emailmessageid')
     service_mail = args.get('service_mail', '')
     email_from = custom_fields.get('emailfrom')
     email_to = custom_fields.get('emailto')
@@ -191,6 +195,7 @@ def main():
     files = args.get('files', {})
     attachments = args.get('attachment', {})
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
+    additional_header = [f'In-Reply-To={message_id}']
 
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
