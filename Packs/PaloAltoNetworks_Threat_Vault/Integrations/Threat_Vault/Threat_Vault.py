@@ -92,6 +92,19 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix=f'/threatvault/{path}/search', params=self._params,
                                   json_data=data)
 
+    def search_results_request(self, search_type: str, signature_id: str) -> dict:
+        """Get signature search results by sending a GET request.
+
+        Args:
+            search_type: search type
+            signature_id: signature id.
+        Returns:
+            Response from API.
+        """
+        return self._http_request(method='GET',
+                                  url_suffix=f'/threatvault/{search_type}/search/result/{signature_id}',
+                                  params=self._params)
+
 
 def test_module(client: Client, *_) -> str:
     """Performs basic get request to get a DNS signature
@@ -222,12 +235,15 @@ def antivirus_signature_search(client: Client, args: dict) -> CommandResults:
     size = int(args.get('size', 10))
 
     response = client.search_request('panav', signature_name, from_, size)
-    readable_output = tableToMarkdown(name="Antivirus Signature Search:", t=response, removeNull=True)
+
+    outputs = response
+    outputs.update({'search_type': 'panav'})
+    readable_output = tableToMarkdown(name="Antivirus Signature Search:", t=outputs, removeNull=True)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.Search',
         outputs_key_field='search_request_id',
-        outputs=response,
+        outputs=outputs,
         readable_output=readable_output,
         raw_response=response
     )
@@ -249,12 +265,15 @@ def dns_signature_search(client: Client, args: dict) -> CommandResults:
     domain_name = str(args.get('domain_name', ''))
 
     response = client.search_request('dns', signature_name, from_, size, domain_name=domain_name)
-    readable_output = tableToMarkdown(name="DNS Signature Search:", t=response, removeNull=True)
+
+    outputs = response
+    outputs.update({'search_type': 'dns'})
+    readable_output = tableToMarkdown(name="DNS Signature Search:", t=outputs, removeNull=True)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.Search',
         outputs_key_field='search_request_id',
-        outputs=response,
+        outputs=outputs,
         readable_output=readable_output,
         raw_response=response
     )
@@ -277,12 +296,52 @@ def antispyware_signature_search(client: Client, args: dict) -> CommandResults:
     cve = str(args.get('cve', ''))
 
     response = client.search_request('ips', signature_name, from_, size, vendor=vendor, cve=cve)
-    readable_output = tableToMarkdown(name="Anti Spyware Signature Search:", t=response, removeNull=True)
+
+    outputs = response
+    outputs.update({'search_type': 'ips'})
+    readable_output = tableToMarkdown(name="Anti Spyware Signature Search:", t=outputs, removeNull=True)
 
     return CommandResults(
         outputs_prefix=f'{client.name}.Search',
         outputs_key_field='search_request_id',
-        outputs=response,
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def signature_search_results(client: Client, args: dict) -> CommandResults:
+    """Retrieve signature search results
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        CommandResults.
+    """
+    signature_id = str(args.get('signature_id', ''))
+    search_type = str(args.get('search_type', ''))
+
+    response = client.search_results_request(search_type, signature_id)
+
+    outputs = response
+    outputs.update({'search_request_id': signature_id})
+    if response.get('status') == 'submitted':  # search was not completed
+        demisto.log(str(response))
+        readable_output = f'Search {signature_id} is still in progress.'
+    else:
+        headers = ['signatureId', 'signatureName', 'domainName', 'cve', 'signatureType', 'status', 'category',
+                   'firstReleaseTime', 'latestReleaseTime']
+        outputs.update({'status': 'completed'})
+        title = f'Signature search are showing {outputs.get("page_count")} of {outputs.get("total_count")} results:'
+        readable_output = tableToMarkdown(name=title, t=outputs.get('signatures'),
+                                          headers=headers, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix=f'{client.name}.Search',
+        outputs_key_field='search_request_id',
+        outputs=outputs,
         readable_output=readable_output,
         raw_response=response
     )
@@ -309,7 +368,7 @@ def main():
             'threatvault-antivirus-signature-search': antivirus_signature_search,
             'threatvault-dns-signature-search': dns_signature_search,
             'threatvault-antispyware-signature-search': antispyware_signature_search,
-            # 'threatvault-signature-search-results', signature_search_results,
+            'threatvault-signature-search-results': signature_search_results,
         }
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

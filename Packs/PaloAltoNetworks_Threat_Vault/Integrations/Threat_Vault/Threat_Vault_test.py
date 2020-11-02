@@ -120,3 +120,75 @@ def test_ip_geo_get(mocker):
     }
 
     assert output.get('EntryContext') == expected_result
+
+
+def test_signature_search_results_dns(mocker):
+    """
+    Given:
+        - a signature_id
+    When:
+        - mocking the server response for a search id, running signature_search_results
+    Then:
+        - validating the returned context data
+    """
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    return_data = {
+        "page_count": 1,
+        "signatures": [
+            {
+                "active": True,
+                "category": "malware",
+                "createTime": "2015-03-03 14:45:03 (UTC)",
+                "domainName": "mail-google.com.co",
+                "release": {
+                    "antivirus": {
+                        "firstReleaseTime": "2015-03-03 15:11:53 UTC",
+                        "firstReleaseVersion": 1890,
+                        "latestReleaseVersion": 0
+                    },
+                    "wildfire": {
+                        "firstReleaseVersion": 0,
+                        "latestReleaseVersion": 0
+                    }
+                },
+                "signatureId": 44101494,
+                "signatureName": "generic:mail-google.com.co"
+            }
+        ],
+        "total_count": 5306
+    }
+    mocker.patch.object(client, 'search_results_request', return_value=return_data)
+    command_results = ip_geo_get(client, args={'signature_id': 'mock', 'size': '1'})
+    output = command_results.to_context()
+    expected_result = {
+        'ThreatVault.Search(val.search_request_id == obj.search_request_id)':
+            {
+                "page_count": 1,
+                "signatures": [
+                    {
+                        "active": True,
+                        "category": "malware",
+                        "createTime": "2015-03-03 14:45:03 (UTC)",
+                        "domainName": "mail-google.com.co",
+                        "release": {
+                            "antivirus": {
+                                "firstReleaseTime": "2015-03-03 15:11:53 UTC",
+                                "firstReleaseVersion": 1890,
+                                "latestReleaseVersion": 0
+                            },
+                            "wildfire": {
+                                "firstReleaseVersion": 0,
+                                "latestReleaseVersion": 0
+                            }
+                        },
+                        "signatureId": 44101494,
+                        "signatureName": "generic:mail-google.com.co"
+                    }
+                ],
+                "total_count": 5306,
+                'search_request_id': 'mock',
+                'status': 'completed'
+            }
+    }
+    print(output)
+    assert output.get('EntryContext') == expected_result
