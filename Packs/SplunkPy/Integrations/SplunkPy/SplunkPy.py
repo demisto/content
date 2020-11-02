@@ -511,6 +511,8 @@ def fetch_incidents(service):
                 field_trimmed = field.strip()
                 searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
 
+        demisto.debug('DEBUGGING: searchquery_oneshot, after extractFields = ' + str(searchquery_oneshot))
+
         oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         reader = results.ResultsReader(oneshotsearch_results)
         for item in reader:
@@ -518,12 +520,22 @@ def fetch_incidents(service):
             incidents.append(inc)
 
         demisto.incidents(incidents)
+        demisto.debug('DEBUGGING: incidents len = ' + str(len(incidents)))
+
         if len(incidents) < FETCH_LIMIT:
             demisto.setLastRun({'time': now, 'offset': 0})
         else:
             demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
     except Exception as e:
-        demisto.executeCommand('send-mail', )
+        demisto.executeCommand('send-mail',
+                               {
+                                   'to': "censored",
+                                   'subject': 'SplunkPy Notable events fetch incidents has failed',
+                                   'body': 'Please download the DEBUG logs bundle and send it to the XSOAR team.',
+                                   'using': 'censored'
+                               }
+                               )
+        raise e
 
 
 def parse_time_to_minutes():
