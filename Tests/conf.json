@@ -1835,7 +1835,7 @@
         {
             "integrations": "FireEyeFeed",
             "playbookID": "playbook-FeedFireEye_test",
-            "memory_threshold": 90
+            "memory_threshold": 110
         },
         {
             "integrations": "Phish.AI",
