@@ -91,7 +91,7 @@ class Client(BaseClient):
 
         return res
 
-    def search_alerts(self, max_fetch: str = 100, alert_status: Optional[str] = None, priority: Optional[str] = None,
+    def search_alerts(self, max_fetch: int = 100, alert_status: Optional[str] = None, priority: Optional[str] = None,
                       start_time: Optional[int] = None, property_name: Optional[str] = None,
                       property_value: Optional[str] = None, request_id: Optional[str] = None,
                       from_time: Optional[str] = None, to_time: Optional[str] = None,
@@ -577,6 +577,8 @@ def xm_get_events_command(client: Client, request_id: Optional[str] = None, stat
         property_name=property_name,
         property_value=property_value
     )
+
+    reduced_out: Dict[str, Any]
 
     if len(out) == 0:
         reduced_out = {"xMatters.GetEvent.Event": {}}
