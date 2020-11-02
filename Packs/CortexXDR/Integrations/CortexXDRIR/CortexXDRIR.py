@@ -2318,14 +2318,18 @@ def get_endpoint_device_control_violations_command(client: Client, args: Dict[st
         username=username
     )
 
-    headers = ['timestamp', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
+    headers = ['date', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
                'serial']
+    violations = reply.get('violations')
+    for violation in violations:
+        timestamp = violation.get('timestamp')
+        violation['date'] = timestamp_to_datestring(timestamp, TIME_FORMAT)
+
     return (
-        tableToMarkdown(name='Endpoint Device Control Violation', t=reply.get('violations'), headers=headers,
+        tableToMarkdown(name='Endpoint Device Control Violation', t=violations, headers=headers,
                         headerTransform=string_to_table_header, removeNull=True),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)':
-                reply.get('violations')
+            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)': violations
         },
         reply
     )
@@ -2390,6 +2394,8 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
     linux_supported = args.get('linux_supported')
     macos_supported = args.get('macos_supported')
     is_high_risk = args.get('is_high_risk')
+    offset = arg_to_int(arg=args.get('offset', 0), arg_name='offset')
+    limit = arg_to_int(arg=args.get('limit', 50), arg_name='limit')
 
     result = client.get_scripts(
         name=script_name,
@@ -2400,7 +2406,11 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk]
     )
-    scripts = result.get('scripts')
+    scripts = result.get('scripts')[offset:limit]
+    for script in scripts:
+        timestamp = script.get('modification_date')
+        script['modification_date_timestamp'] = timestamp
+        script['modification_date'] = timestamp_to_datestring(timestamp, TIME_FORMAT)
     headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
                      'windows_supported', 'linux_supported', 'macos_supported', 'is_high_risk']
 

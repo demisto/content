@@ -1658,6 +1658,10 @@ script:
         list of strings
       isArray: true
       name: created_by
+    - description: Number of scripts returned to the war room. Default limit is 50.
+      name: limit
+    - description: (Int) Offset in data set. Default offset is 0.
+      name: offset
     - auto: PREDEFINED
       description: Whether the script can be executed on Windows operating system.
       name: windows_supported
