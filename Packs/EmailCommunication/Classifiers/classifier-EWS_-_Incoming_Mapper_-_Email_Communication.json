@@ -188,7 +188,11 @@
 				},
 				"Email HTML": {
 					"complex": null,
-					"simple": "Html"
+					"simple": "body"
+				},
+				"Email Latest Message": {
+					"complex": null,
+					"simple": "id"
 				},
 				"Email Message ID": {
 					"complex": null,
