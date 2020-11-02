@@ -1,0 +1,45 @@
+category: Vulnerability Management
+commonfields:
+  id: skybox
+  version: -1
+configuration:
+- display: Server URL (e.g. https://soar.monstersofhack.com)
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- hidden: false
+  name: username
+  required: true
+  type: 0
+- hidden: false
+  name: password
+  required: true
+  type: 4
+description: This is the Hello World integration for getting started.
+display: skybox
+name: skybox
+script:
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
+fromversion: 5.0.0
