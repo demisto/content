@@ -202,7 +202,7 @@ def main():
         reply_body, reply_html_body = get_reply_body(notes, incident_id)
         entry_id_list = get_entry_id_list(incident_id, attachments, files)
         result = send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc,
-                            reply_html_body, entry_id_list, email_latest_message)
+                            reply_html_body, entry_id_list, email_latest_message, additional_header)
         demisto.results(result)
     except Exception as error:
         return_error(str(error), error)
