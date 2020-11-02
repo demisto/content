@@ -38,9 +38,27 @@ script:
     execution: false
     name: threatvault-antivirus-signature-get
     outputs:
-    - contextPath: ThreatVault.AntiVirusSignature
-      description: TODO
-      type: String
+      - contextPath: ThreatVault.Antivirus.active
+        description: Whether the antivirus is active or not.
+        type: Bool
+      - contextPath: ThreatVault.Antivirus.category
+        description: Antivirus signature category.
+        type: String
+      - contextPath: ThreatVault.Antivirus.createTime
+        description: Antivirus signature create time.
+        type: String
+      - contextPath: ThreatVault.Antivirus.release
+        description: Antivirus signature release details.
+        type: Unknown
+      - contextPath: ThreatVault.Antivirus.sha256
+        description: Antivirus signature sha256.
+        type: String
+      - contextPath: ThreatVault.Antivirus.signatureId
+        description: Antivirus signature ID.
+        type: Number
+      - contextPath: ThreatVault.Antivirus.signatureName
+        description: Antivirus signature name.
+        type: String
   - arguments:
     - default: false
       description: ID of the DNS signature.
@@ -102,7 +120,7 @@ script:
       description: Latest release time.
       type: String
     - contextPath: ThreatVault.AntiSpyware.metadata
-      description: TODO
+      description: AntiSpyware metadata.
       type: Unknown
     - contextPath: ThreatVault.AntiSpyware.signatureType
       description: The signature type.
@@ -148,13 +166,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: TODO
+      description: From which signature to return results(used for paging). Default is 0.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: Maximum number of signatures to return.
+      description: Maximum number of signatures to return. Default is 10.
       isArray: false
       name: size
       required: false
@@ -184,13 +202,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: TODO
+      description: From which signature to return results(used for paging). Default is 0.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: Maximum number of signatures to return.
+      description: Maximum number of signatures to return. Default is 10.
       isArray: false
       name: size
       required: false
@@ -226,13 +244,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: TODO
+      description: From which signature to return results(used for pagaing). Default is 0.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: Maximum number of signatures to return.
+      description: Maximum number of signatures to return. Default is 10.
       isArray: false
       name: size
       required: false
@@ -277,6 +295,18 @@ script:
     - contextPath: ThreatVault.Search.status
       description: Search status.
       type: String
+    - contextPath: ThreatVault.Search.page_count
+      description: How many results returned in this specific search.
+      type: Number
+    - contextPath: ThreatVault.Search.total_count
+      description: How many results are available for this specific search.
+      type: Number
+    - contextPath: ThreatVault.Search.search_type
+      description: Search type. can be wither ips, dns or panav.
+      type: String
+    - contextPath: ThreatVault.Search.signatures
+      description: A list of all the found signatures for this specific search.
+      type: Unknown
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   longRunning: false
