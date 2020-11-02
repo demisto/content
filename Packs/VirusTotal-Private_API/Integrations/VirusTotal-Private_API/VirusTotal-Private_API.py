@@ -677,6 +677,7 @@ def update_entry_context_url(ec_url, url, field_name, field_value):
             'Data': url
         })
 
+
 def create_url_report_output(url, response, threshold, max_len, short_format):
     """
     Returns 3 results:
@@ -730,7 +731,6 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
 
         response_headers = additional_info.get('Response headers', None)
         if response_headers:
-            md += "Response headers: {}\n".format(response_headers)
             update_entry_context_url(ec_url, url, field_name='ResponseHeaders', field_value=response_headers)
 
     scans = response.get('scans', None)
@@ -755,7 +755,6 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
             ec_url['VirusTotal'] = {
                 'DroppedFiles': dropped_files
             }
-
     return md, ec_url, ec_dbot
 
 
