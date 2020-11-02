@@ -294,7 +294,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], alert_status: Optional[str],
-                    max_fetch: str, priority: Optional[str],
+                    max_fetch: int, priority: Optional[str],
                     property_name: Optional[str], property_value: Optional[str]
                     ) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
@@ -578,11 +578,12 @@ def xm_get_events_command(client: Client, request_id: Optional[str] = None, stat
         property_value=property_value
     )
 
+    reduced_out: Dict[str, List[Any]]
     if len(out) == 0:
-        reduced_out: Dict[str, Any] = {"xMatters.GetEvent.Event": {}}
+        reduced_out = {"xMatters.GetEvent.Event": []}
         readable_output = f'Could not find Events with given criteria in xMatters'
     else:
-        reduced_out: Dict[str, List[Any]] = {"xMatters.GetEvents.Events": [event_reduce(event) for event in out]}
+        reduced_out = {"xMatters.GetEvents.Events": [event_reduce(event) for event in out]}
         readable_output = f'Retrieved Events from xMatters: {reduced_out}'
 
     return CommandResults(
