@@ -171,7 +171,7 @@ def search_pack(client: demisto_client, prints_manager: ParallelPrintsManager, p
         lock.release()
 
 
-def find_pack_id(error_message: str):
+def find_malformed_pack_id(error_message: str):
     """
     Find the pack ID from the installation error message.
     Args:
@@ -222,13 +222,19 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
                                                                                 body=request_data,
                                                                                 accept='application/json',
                                                                                 _request_timeout=request_timeout)
-
-            logging.debug(ast.literal_eval(response_data))
+            packs_data = []
             if 200 <= status_code < 300:
                 message = 'Packs were successfully installed!\n'
                 prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
                                              include_timestamp=True)
-                print(f'The installed packs are:\n {pformat(ast.literal_eval(response_data))}')
+                for pack in ast.literal_eval(response_data):
+                    packs_data.append({
+                        'ID': pack.get('id'),
+                        'CurrentVersion': pack.get('currentVersion')
+                    })
+                packs_message = f'The following packs were successfully installed:\n{packs_data}'
+                prints_manager.add_print_job(packs_message, print_color, thread_index, LOG_COLORS.GREEN,
+                                             include_timestamp=True)
             else:
                 result_object = ast.literal_eval(response_data)
                 message = result_object.get('message', '')
@@ -243,19 +249,9 @@ def install_nightly_packs(client, host, prints_manager, thread_index, packs_to_i
             err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
             prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
             all_packs_install_successfully = False
-            malformed_pack_id = find_pack_id(str(e))
-            print('The malformed pack id:')
-            print(malformed_pack_id)
+            malformed_pack_id = find_malformed_pack_id(str(e))
+            # Remove the malformed pack from the pack to install list.
             packs = [pack for pack in packs_to_install if pack['id'] not in malformed_pack_id]
-            # message = str(e).split('\n')
-            # # Get the pack ID of the failed pack.
-            # for line in message:
-            #     if line.startswith('HTTP response body: '):
-            #         error_message = json.loads(line.split(': ', 1)[1])
-            #         error = error_message.get('error')
-            #         pack_id = error.split()[-2]
-            # # Removed the bad pack from the list
-            # packs = [pack for pack in packs_to_install if not (pack['id'] == pack_id)]
             request_data = {
                 'packs': packs,
                 'ignoreWarnings': True
