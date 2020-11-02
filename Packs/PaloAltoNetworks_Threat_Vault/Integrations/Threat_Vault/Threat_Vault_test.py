@@ -1,8 +1,73 @@
-from Threat_Vault import Client, dns_get_by_id, antispyware_get_by_id, ip_geo_get, signature_search_results
+from Threat_Vault import Client, antivirus_signature_get, dns_get_by_id, antispyware_get_by_id, ip_geo_get, \
+    signature_search_results
+
+
+def test_antivirus_get_by_id(mocker):
+    """
+    https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-direct-searches/get-antivirus-signature.html
+    Given:
+        - an antivirus signature ID
+    When:
+        - mocking the server response for an ID, running dns_get_by_id
+    Then:
+        - validating the returned context data
+    """
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    return_data = {
+        "active": True,
+        "createTime": "2010-10-01 10:28:57 (UTC)",
+        "release": {
+            "antivirus": {
+                "firstReleaseTime": "2010-10-03 15:04:58 UTC",
+                "firstReleaseVersion": 334,
+                "latestReleaseVersion": 0
+            },
+            "wildfire": {
+                "firstReleaseVersion": 0,
+                "latestReleaseVersion": 0
+            }
+        },
+        "sha256": [
+            "7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8",
+            "9e12c5cdb069f74487c11758e732d72047b72bedf4373aa9e3a58e8e158380f8"
+        ],
+        "signatureId": 93534285,
+        "signatureName": "Worm/Win32.autorun.crck"
+    }
+    mocker.patch.object(client, 'antivirus_signature_get_request', return_value=return_data)
+    command_results = antivirus_signature_get(client, args={'signature_id': '93534285'})
+    output = command_results.to_context()
+    expected_result = {
+        'ThreatVault.Antivirus(val.signatureId == obj.signatureId)':
+            {
+                "active": True,
+                "createTime": "2010-10-01 10:28:57 (UTC)",
+                "release": {
+                    "antivirus": {
+                        "firstReleaseTime": "2010-10-03 15:04:58 UTC",
+                        "firstReleaseVersion": 334,
+                        "latestReleaseVersion": 0
+                    },
+                    "wildfire": {
+                        "firstReleaseVersion": 0,
+                        "latestReleaseVersion": 0
+                    }
+                },
+                "sha256": [
+                    "7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8",
+                    "9e12c5cdb069f74487c11758e732d72047b72bedf4373aa9e3a58e8e158380f8"
+                ],
+                "signatureId": 93534285,
+                "signatureName": "Worm/Win32.autorun.crck"
+            }
+    }
+
+    assert output.get('EntryContext') == expected_result
 
 
 def test_dns_get_by_id(mocker):
     """
+    https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-direct-searches/get-anti-spyware-signature.html
     Given:
         - a dns signature ID
     When:
@@ -41,6 +106,7 @@ def test_dns_get_by_id(mocker):
 
 def test_antispyware_get_by_id(mocker):
     """
+    https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-direct-searches/get-vulnerability-signature.html
     Given:
         - a anti spyware signature ID
     When:
@@ -100,6 +166,7 @@ def test_antispyware_get_by_id(mocker):
 
 def test_ip_geo_get(mocker):
     """
+    https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-direct-searches/get-geolocation.html
     Given:
         - an ip
     When:
@@ -130,6 +197,7 @@ def test_signature_search_results_dns(mocker):
         - mocking the server response for a search id, running signature_search_results
     Then:
         - validating the returned context data
+        - validating the returned human readable
     """
     client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
     return_data = {
@@ -160,7 +228,7 @@ def test_signature_search_results_dns(mocker):
     mocker.patch.object(client, 'signature_search_results_request', return_value=return_data)
     command_results = signature_search_results(client, args={'signature_id': 'mock', 'size': '1'})
     output = command_results.to_context()
-    expected_result = {
+    expected_context = {
         'ThreatVault.Search(val.search_request_id == obj.search_request_id)':
             {
                 "page_count": 1,
@@ -190,5 +258,9 @@ def test_signature_search_results_dns(mocker):
                 'status': 'completed'
             }
     }
-    print(output)
-    assert output.get('EntryContext') == expected_result
+    expected_hr = '### Signature search are showing 1 of 5306 results:\n|signatureId|signatureName|domainName|' \
+                  'category|\n|---|---|---|---|\n| 44101494 | generic:mail-google.com.co | mail-google.com.co |' \
+                  ' malware |\n'
+
+    assert output.get('EntryContext') == expected_context
+    assert output.get('HumanReadable') == expected_hr

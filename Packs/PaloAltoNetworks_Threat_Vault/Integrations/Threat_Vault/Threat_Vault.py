@@ -34,7 +34,6 @@ class Client(BaseClient):
         else:
             # 050aef130c079f10a2549b3f948c5d6548bfd33e0dee4fa264300de57ba619da
             suffix = f'/file/{sha256}/signature'
-        demisto.log(str(suffix))
         return self._http_request(method='GET', url_suffix=suffix, params=self._params)
 
     def dns_signature_get_request(self, dns_signature_id: str) -> dict:
@@ -147,7 +146,7 @@ def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix=f'{client.name}.Antivirus',
-        outputs_key_field='SHA256',
+        outputs_key_field='signatureId',
         outputs=response,
         readable_output=readable_output,
         raw_response=response
