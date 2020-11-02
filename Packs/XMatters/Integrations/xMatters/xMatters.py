@@ -581,7 +581,7 @@ def xm_get_events_command(client: Client, request_id: Optional[str] = None, stat
     reduced_out: Dict[str, List[Any]]
     if len(out) == 0:
         reduced_out = {"xMatters.GetEvent.Event": []}
-        readable_output = f'Could not find Events with given criteria in xMatters'
+        readable_output = "Could not find Events with given criteria in xMatters"
     else:
         reduced_out = {"xMatters.GetEvents.Events": [event_reduce(event) for event in out]}
         readable_output = f'Retrieved Events from xMatters: {reduced_out}'
