@@ -1117,27 +1117,6 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def run_snippet_code_script(self, endpoint_ids: list, snippet_code, timeout: int) -> Dict[str, Any]:
-        filters: list = [{
-            'field': 'endpoint_id_list',
-            'operator': 'in',
-            'value': endpoint_ids
-        }]
-        request_data: Dict[str, Any] = {
-            'filters': filters,
-            'snippet_code': snippet_code,
-            'timeout': timeout
-        }
-
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/scripts/run_snippet_code_script/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-
-        return reply.get('reply')
-
     def get_script_execution_status(self, action_id) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
             'action_id': action_id
@@ -1146,70 +1125,6 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/scripts/get_script_execution_status/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-
-        return reply.get('reply')
-
-    def get_script_execution_results(self, action_id) -> Dict[str, Any]:
-        request_data: Dict[str, Any] = {
-            'action_id': action_id
-        }
-
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/scripts/get_script_execution_results/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-
-        return reply.get('reply')
-
-    def get_script_execution_result_files(self, action_id, endpoint_id) -> Dict[str, Any]:
-        request_data: Dict[str, Any] = {
-            'action_id': action_id,
-            'endpoint_id': endpoint_id
-        }
-
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/scripts/get_script_execution_results_files/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-
-        return reply
-
-    def insert_simple_indicators(self, indicator, type_, severity, expiration_date: int,
-                                 comment, reputation, reliability, vendor_name,
-                                 vendor_reputation, vendor_reliability, vendors: Any, class_string) -> Dict[str, Any]:
-
-        vendors_list: list = []
-        request_data = assign_params(indicator=indicator, type=type_, severity=severity, expiration_date=expiration_date, comment=comment, reputation=reputation,
-                                     reliability=reliability, vendors=vendors)
-        if class_string:
-            request_data['class'] = class_string
-        # user should insert all of the following: vendor_name, vendor_reputation and vendor_reliability, or none of
-        # them.
-        if vendor_name and vendor_reputation and vendor_reliability:
-            vendors_list.append({
-                'vendor_name': vendor_name,
-                'reputation': vendor_reputation,
-                'reliability': vendor_reliability
-            })
-            if request_data.get('vendors'):
-                request_data['vendors'].append(vendors_list)
-            else:
-                request_data['vendors'] = vendors_list
-        elif not vendor_name and not vendor_reputation and not vendor_reliability:
-            pass
-        else:
-            raise ValueError('You should enter: vendor_name, vendor_reputation and vendor_reliability.')
-
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/indicators/insert_jsons',
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
@@ -2522,7 +2437,7 @@ def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, 
     }
 
     return (
-        f'### Script code: \n ``` {str(reply)}',
+        f'### Script code: \n ``` {str(reply)} ```',
         {
             f'{INTEGRATION_CONTEXT_BRAND}.ScriptCode(val.script_uid == obj.script_uid)': context
         },
@@ -2561,38 +2476,6 @@ def get_script_execution_status_command(client: Client, args: Dict[str, str]) ->
         },
         reply
     )
-
-
-def insert_simple_indicators_command(client: Client, args) -> Tuple[str, Any, Any]:
-    indicator = args.get('indicator')
-    type_ = args.get('type')
-    severity = args.get('severity')
-    expiration_date: int = arg_to_int(arg=args.get('expiration_date'), arg_name='expiration_date')
-    comment = args.get('comment')
-    reputation = args.get('reputation')
-    reliability = args.get('reliability')
-    vendor_name = args.get('vendor_name')
-    vendor_reputation = args.get('vendor_reputation')
-    vendor_reliability = args.get('vendor_reliability')
-    vendors = json.loads(args.get('vendors')) if args.get('vendors') else None
-    class_string = args.get('class')
-
-    reply = client.insert_simple_indicators(
-        indicator=indicator,
-        type_=type_,
-        severity=severity,
-        expiration_date=expiration_date,
-        comment=comment,
-        reputation=reputation,
-        reliability=reliability,
-        vendor_name=vendor_name,
-        vendor_reputation=vendor_reputation,
-        vendor_reliability=vendor_reliability,
-        vendors=vendors,
-        class_string=class_string
-    )
-
-    return 'IOCs successfully uploaded', None, reply
 
 
 def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
@@ -2774,9 +2657,6 @@ def main():
 
         elif demisto.command() == 'xdr-get-script-execution-status':
             return_outputs(*get_script_execution_status_command(client, args))
-
-        elif demisto.command() == 'xdr-insert-simple-indicators':
-            return_outputs(*insert_simple_indicators_command(client, args))
 
         elif demisto.command() == 'xdr-action-status-get':
             return_outputs(*action_status_get_command(client, args))

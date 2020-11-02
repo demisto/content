@@ -1316,51 +1316,6 @@ def test_get_script_code_command(requests_mock):
     assert get_script_code_command_expected_result == context
 
 
-def test_insert_simple_indicators_command(requests_mock):
-    """
-        Given:
-            -
-        When:
-            Upload IOCs as JSON objects that you retrieved from external threat intelligence sources.
-        Then:
-            - returns only human readable string
-        """
-    from CortexXDRIR import insert_simple_indicators_command, Client
-
-    insert_simple_indicators_command_command_expected_result = 'IOCs successfully uploaded'
-    requests_mock.post(f'{XDR_URL}/public_api/v1/indicators/insert_jsons',
-                       json={"reply": "true"})
-
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
-    args = {
-        "indicator": "test1",
-        "severity": "INFO",
-        "type": "DOMAIN_NAME",
-        "expiration_date": "1587054895000",
-        "comment": "This is an example IOC",
-        "vendor_name": "hello",
-        "vendor_reliability": "A",
-        "vendor_reputation": "BAD",
-        "vendors": '[\
-                {\
-                "vendor_name": "PANW",\
-                "reputation": "GOOD",\
-                "reliablity": "B"\
-                },\
-                {\
-                "vendor_name": "PANW",\
-                "reputation": "SUSPICIOUS",\
-                "reliablity": "D"\
-                }\
-            ]'
-    }
-
-    human_readable, _, _ = insert_simple_indicators_command(client, args)
-    assert insert_simple_indicators_command_command_expected_result == human_readable
-
-
 def test_action_status_get_command(requests_mock):
     """
         Given:
