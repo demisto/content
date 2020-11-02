@@ -84,7 +84,11 @@ class Client(BaseClient):
         """
         if path == 'dns':  # DNS search
             if signature_name and domain_name:
-                raise Exception('Please provide either a signature_name or a domain_name')
+                raise Exception('Please provide either a signature_name or a domain_name.')
+        elif path == 'ips':  # Anti spyware search
+            if (cve and (vendor or signature_name)) or (vendor and (cve and signature_name)) \
+                    or (signature_name and (cve or vendor)):
+                raise Exception('Please provide either a signature_name or a cve or a vendor.')
 
         data: Dict[str, Any] = {
             'from': from_,
@@ -93,9 +97,15 @@ class Client(BaseClient):
         if signature_name:
             data['field'] = 'signatureName'
             data['value'] = signature_name
-        if domain_name:
+        elif domain_name:
             data['field'] = 'domainName'
             data['value'] = domain_name
+        elif cve:
+            data['field'] = 'cve'
+            data['value'] = cve
+        else:  # vendor name
+            data['field'] = 'vendor'
+            data['value'] = vendor
 
         return self._http_request(method='POST', url_suffix=f'/threatvault/{path}/search', params=self._params,
                                   json_data=data)
@@ -104,7 +114,7 @@ class Client(BaseClient):
         """Get signature search results by sending a GET request.
 
         Args:
-            search_type: search type
+            search_type: search type.
             signature_id: signature id.
         Returns:
             Response from API.
@@ -115,7 +125,7 @@ class Client(BaseClient):
 
 
 def test_module(client: Client, *_) -> str:
-    """Performs basic get request to get a DNS signature
+    """Performs basic get request to get a DNS signature.
 
     Args:
         client: Client object with request.
@@ -128,7 +138,7 @@ def test_module(client: Client, *_) -> str:
 
 
 def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
-    """Get antivirus signature
+    """Get antivirus signature.
 
     Args:
         client: Client object with request.
@@ -153,7 +163,7 @@ def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
 
 
 def dns_get_by_id(client: Client, args: dict) -> CommandResults:
-    """Get DNS signature
+    """Get DNS signature.
 
     Args:
         client: Client object with request.
@@ -179,7 +189,7 @@ def dns_get_by_id(client: Client, args: dict) -> CommandResults:
 
 
 def antispyware_get_by_id(client: Client, args: dict) -> CommandResults:
-    """Get anti spyware signature
+    """Get anti spyware signature.
 
     Args:
         client: Client object with request.
@@ -205,7 +215,7 @@ def antispyware_get_by_id(client: Client, args: dict) -> CommandResults:
 
 
 def ip_geo_get(client: Client, args: dict) -> CommandResults:
-    """Get IP geo location
+    """Get IP geo location.
 
     Args:
         client: Client object with request.
@@ -230,7 +240,7 @@ def ip_geo_get(client: Client, args: dict) -> CommandResults:
 
 
 def antivirus_signature_search(client: Client, args: dict) -> CommandResults:
-    """Initiate antivirus signature search
+    """Initiate antivirus signature search.
 
     Args:
         client: Client object with request.
@@ -259,7 +269,7 @@ def antivirus_signature_search(client: Client, args: dict) -> CommandResults:
 
 
 def dns_signature_search(client: Client, args: dict) -> CommandResults:
-    """Initiate DNS signature search
+    """Initiate DNS signature search.
 
     Args:
         client: Client object with request.
@@ -289,7 +299,7 @@ def dns_signature_search(client: Client, args: dict) -> CommandResults:
 
 
 def antispyware_signature_search(client: Client, args: dict) -> CommandResults:
-    """Initiate anti spyware signature search
+    """Initiate anti spyware signature search.
 
     Args:
         client: Client object with request.
@@ -320,7 +330,7 @@ def antispyware_signature_search(client: Client, args: dict) -> CommandResults:
 
 
 def signature_search_results(client: Client, args: dict) -> CommandResults:
-    """Retrieve signature search results
+    """Retrieve signature search results.
 
     Args:
         client: Client object with request.

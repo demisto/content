@@ -191,10 +191,11 @@ def test_ip_geo_get(mocker):
 
 def test_signature_search_results_dns(mocker):
     """
+    https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-autofocus-searches/search-signatures.html
     Given:
-        - a signature_id
+        - a search_request_id
     When:
-        - mocking the server response for a search id, running signature_search_results
+        - mocking the server response for a search_request_id of a domainName, running signature_search_results
     Then:
         - validating the returned context data
         - validating the returned human readable
@@ -226,7 +227,7 @@ def test_signature_search_results_dns(mocker):
         "total_count": 5306
     }
     mocker.patch.object(client, 'signature_search_results_request', return_value=return_data)
-    command_results = signature_search_results(client, args={'signature_id': 'mock', 'size': '1'})
+    command_results = signature_search_results(client, args={'search_request_id': 'mock_domain', 'size': '1'})
     output = command_results.to_context()
     expected_context = {
         'ThreatVault.Search(val.search_request_id == obj.search_request_id)':
@@ -254,13 +255,112 @@ def test_signature_search_results_dns(mocker):
                     }
                 ],
                 "total_count": 5306,
-                'search_request_id': 'mock',
+                'search_request_id': 'mock_domain',
                 'status': 'completed'
             }
     }
     expected_hr = '### Signature search are showing 1 of 5306 results:\n|signatureId|signatureName|domainName|' \
                   'category|\n|---|---|---|---|\n| 44101494 | generic:mail-google.com.co | mail-google.com.co |' \
                   ' malware |\n'
+
+    assert output.get('EntryContext') == expected_context
+    assert output.get('HumanReadable') == expected_hr
+
+
+def test_signature_search_results_anti_spyware_cve(mocker):
+    """
+    https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-autofocus-searches/search-signatures.html
+    Given:
+        - a search_request_id
+    When:
+        - mocking the server response for a search_request_id of a cve, running signature_search_results
+    Then:
+        - validating the returned context data
+        - validating the returned human readable
+    """
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    return_data = {
+        "page_count": 1,
+        "search_request_id": "b64a15ac-1d11-11eb-96cc-036c5064267c",
+        "signatures": [
+            {
+                "cve": "CVE-2015-8650",
+                "firstReleaseTime": "2015-12-28 UTC",
+                "firstReleaseVersion": 548,
+                "latestReleaseTime": "2020-10-30 UTC",
+                "latestReleaseVersion": 8338,
+                "metadata": {
+                    "action": "reset-both",
+                    "category": "code-execution",
+                    "changeData": "",
+                    "description": "Adobe Flash Player is prone to an use after free vulnerability while parsing"
+                                   " certain crafted SWF files. The vulnerability is due to the lack of proper checks"
+                                   " on SWF file, leading to an use after free vulnerability. An attacker could"
+                                   " exploit the vulnerability by sending a crafted SWF file. A successful attack"
+                                   " could lead to remote code execution with the privileges of the current"
+                                   " logged-in user.",
+                    "panOsMaximumVersion": "",
+                    "panOsMinimumVersion": "7.1.0",
+                    "reference": "https://helpx.adobe.com/security/products/flash-player/apsb16-01.html",
+                    "severity": "high"
+                },
+                "signatureId": 38692,
+                "signatureName": "Adobe Flash Player Use After Free Vulnerability",
+                "signatureType": "vulnerability",
+                "status": "released",
+                "vendor": "APSB16-01"
+            }
+        ],
+        "status": "completed",
+        "total_count": 1
+    }
+    mocker.patch.object(client, 'signature_search_results_request', return_value=return_data)
+    command_results = signature_search_results(client, args={'search_request_id': 'mock_cve', 'size': '1'})
+    output = command_results.to_context()
+    expected_context = {
+        'ThreatVault.Search(val.search_request_id == obj.search_request_id)':
+            {
+                "page_count": 1,
+                "search_request_id": "b64a15ac-1d11-11eb-96cc-036c5064267c",
+                "signatures": [
+                    {
+                        "cve": "CVE-2015-8650",
+                        "firstReleaseTime": "2015-12-28 UTC",
+                        "firstReleaseVersion": 548,
+                        "latestReleaseTime": "2020-10-30 UTC",
+                        "latestReleaseVersion": 8338,
+                        "metadata": {
+                            "action": "reset-both",
+                            "category": "code-execution",
+                            "changeData": "",
+                            "description": "Adobe Flash Player is prone to an use after free vulnerability while"
+                                           " parsing certain crafted SWF files. The vulnerability is due to the lack"
+                                           " of proper checks on SWF file, leading to an use after free vulnerability."
+                                           " An attacker could exploit the vulnerability by sending a crafted SWF file."
+                                           " A successful attack could lead to remote code execution with the"
+                                           " privileges of the current logged-in user.",
+                            "panOsMaximumVersion": "",
+                            "panOsMinimumVersion": "7.1.0",
+                            "reference": "https://helpx.adobe.com/security/products/flash-player/apsb16-01.html",
+                            "severity": "high"
+                        },
+                        "signatureId": 38692,
+                        "signatureName": "Adobe Flash Player Use After Free Vulnerability",
+                        "signatureType": "vulnerability",
+                        "status": "released",
+                        "vendor": "APSB16-01"
+                    }
+                ],
+                "status": "completed",
+                "total_count": 1,
+                'search_request_id': 'mock_cve',
+                'status': 'completed'
+            }
+    }
+    expected_hr = '### Signature search are showing 1 of 1 results:\n|signatureId|signatureName|cve|' \
+                  'signatureType|status|firstReleaseTime|latestReleaseTime|\n|---|---|---|---|\n|' \
+                  ' 38692 | Adobe Flash Player Use After Free Vulnerability | CVE-2015-865 |' \
+                  ' vulnerability | released | 2015-12-28 UTC | 2020-10-30 UTC |\n'
 
     assert output.get('EntryContext') == expected_context
     assert output.get('HumanReadable') == expected_hr

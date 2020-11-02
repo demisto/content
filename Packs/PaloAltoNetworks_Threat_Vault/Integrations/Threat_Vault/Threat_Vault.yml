@@ -250,9 +250,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Signature ID.
+      description: Search request ID.
       isArray: false
-      name: signature_id
+      name: search_request_id
       required: true
       secret: false
     - auto: PREDEFINED
