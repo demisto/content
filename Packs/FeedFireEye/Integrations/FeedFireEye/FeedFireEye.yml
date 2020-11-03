@@ -74,7 +74,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Select which collections to fetch from feed.
+- additionalinfo: Select which collections to fetch from the feed.
   defaultvalue: Indicators,Reports
   display: Collection(s) to fetch from feed
   name: collections_to_fetch
