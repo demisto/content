@@ -15,13 +15,13 @@ import demisto_client
 def test_print_investigation_error(command, output, mocker):
     """
     Given
-    - Failed command line
+    -  A failed playbook task command line.
     When
-    - When a playbook test fails
+    - Extracting the task error reason from the server
     Then
-    - Ensure that it replaces the password="123123!" with password=******
-    - Ensure that it replaces the Password="123123!" with password=******
-    - Ensure that it  not replaces the "pass word="123123!""
+    - Ensure message sent to print manager contains `password=******` instead of `password="123123!"`
+    - Ensure message sent to print manager contains `password=******` instead of `Password="123123!"`
+    - Ensure message sent to print manager contains "pass word="123123!""
 
     """
     prints_manager = ParallelPrintsManager(1)
