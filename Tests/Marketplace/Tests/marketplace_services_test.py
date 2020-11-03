@@ -587,6 +587,12 @@ class TestImagesUpload:
         assert len(expected_result) == len(integration_images)
         assert integration_images == expected_result
 
+    def test_copy_and_upload_integration_images(self, mocker, dummy_pack):
+        mocker.patch("Tests.Marketplace.is_integration_image", return_value=True)
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_build_bucket.list_blobs.return_value = ["content/packs/TestPack/IntegrationName_image.png"]
+        dummy_build_bucket.copy_blob.return_value = 
+
 
 class TestLoadUserMetadata:
     @pytest.fixture(scope="class")

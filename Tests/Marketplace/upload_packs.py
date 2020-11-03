@@ -86,6 +86,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         str: downloaded index generation.
 
     """
+    logging.info(f"downloading and extracting {storage_bucket.name} index")
     index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
@@ -98,11 +99,13 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
 
     if not index_blob.exists():
         os.mkdir(index_folder_path)
+        logging.error(f"{storage_bucket.name} index blob does not exists")
         return index_folder_path, index_blob, index_generation
 
     index_blob.reload()
     index_generation = index_blob.generation
     index_blob.download_to_filename(download_index_path, if_generation_match=index_generation)
+    logging.info(f"{storage_bucket.name} index file exists locally: {os.path.exists(download_index_path)}")
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
@@ -819,6 +822,7 @@ def main():
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
 
     if private_bucket_name:  # Add private packs to the index
+        logging.info("updating index with private packs")
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
                                                        index_folder_path)
