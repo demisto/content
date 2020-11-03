@@ -99,7 +99,7 @@ def write_test_pack_zip(tests_file_paths: set):
     """
     with zipfile.ZipFile(PRIVATE_CONTENT_TEST_ZIP, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-        print(PRIVATE_CONTENT_PATH)
+        # print(PRIVATE_CONTENT_PATH)
         for test_path, test in test_files(PRIVATE_CONTENT_PATH):
             print(test_path)
             if test_path not in tests_file_paths:
