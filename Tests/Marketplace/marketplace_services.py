@@ -869,15 +869,15 @@ class Pack(object):
 
         existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
         if not existing_bucket_version_files:
-            print_error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
-                        f"path {build_version_pack_path}.")
+            logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
+                          f"path {build_version_pack_path}.")
             return False, False
 
         prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
         existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
         if existing_prod_version_files and not override_pack:
-            print_warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
-            print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
+            logging.warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
+            logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
 
         prod_full_file_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
@@ -891,9 +891,9 @@ class Pack(object):
         task_status = task_status and copied_blob.exists()
 
         if not task_status:
-            print_error(f"Failed in uploading {self._pack_name} pack to gcs.")
+            logging.error(f"Failed in uploading {self._pack_name} pack to gcs.")
         else:
-            print_color(f"Uploaded {self._pack_name} pack to {prod_full_file_path} path.", LOG_COLORS.GREEN)
+            logging.success(f"Uploaded {self._pack_name} pack to {prod_full_file_path} path.")
 
         return task_status, False
 
@@ -906,7 +906,7 @@ class Pack(object):
         Returns: the changelog file contents and the last version of rn in the changelog file
 
         """
-        print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
+        logging.info(f"Found Changelog for: {self._pack_name}")
         with open(changelog_index_path, "r") as changelog_file:
             changelog = json.load(changelog_file)
 
@@ -945,13 +945,13 @@ class Pack(object):
 
         latest_release_notes_version = max(found_versions)
         latest_release_notes = latest_release_notes_version.vstring
-        print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
+        logging.info(f"Latest ReleaseNotes version is: {latest_release_notes}")
 
         if pack_versions_dict:
             # wrap all release notes together for one changelog entry
-            print_color(f"Aggregating ReleaseNotes versions:"
-                        f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
-                        f" {latest_release_notes}", LOG_COLORS.GREEN)
+            logging.info(f"Aggregating ReleaseNotes versions:"
+                         f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
+                         f" {latest_release_notes}")
             release_notes_lines = merge_version_blocks(pack_name=self._pack_name,
                                                        pack_versions_dict=pack_versions_dict,
                                                        pack_metadata={}, pack_header_wrap=False,
@@ -1097,20 +1097,20 @@ class Pack(object):
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
-                        print_error(f"Version mismatch detected between current version: {self._current_version} "
-                                    f"and latest release notes version: {latest_release_notes}")
+                        logging.error(f"Version mismatch detected between current version: {self._current_version} "
+                                      f"and latest release notes version: {latest_release_notes}")
                         task_status = False
                         return task_status, not_updated_build
                     else:
                         if latest_release_notes in changelog:
-                            print(f"Found existing release notes for version: {latest_release_notes}")
+                            logging.info(f"Found existing release notes for version: {latest_release_notes}")
                             version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
                                                                              new_version=False)
 
                         else:
-                            print(f"Created new release notes for version: {latest_release_notes}")
+                            logging.info(f"Created new release notes for version: {latest_release_notes}")
                             version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
@@ -1119,7 +1119,7 @@ class Pack(object):
                         changelog[latest_release_notes] = version_changelog
                 else:  # will enter only on initial version and release notes folder still was not created
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
-                        print_warning(
+                        logging.warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
                         task_status, not_updated_build = True, True
                         return task_status, not_updated_build
@@ -1130,8 +1130,8 @@ class Pack(object):
                         build_number=build_number,
                         new_version=False)
 
-                    print(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
-                          f"in the {self._pack_name} pack.")
+                    logging.info(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
+                                 f"in the {self._pack_name} pack.")
 
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
                 version_changelog = Pack._create_changelog_entry(
@@ -1144,7 +1144,7 @@ class Pack(object):
                     Pack.PACK_INITIAL_VERSION: version_changelog
                 }
             else:
-                print_error(f"No release notes found for: {self._pack_name}")
+                logging.error(f"No release notes found for: {self._pack_name}")
                 task_status = False
                 return task_status, not_updated_build
 
@@ -1153,10 +1153,10 @@ class Pack(object):
                 json.dump(changelog, pack_changelog, indent=4)
 
             task_status = True
-            print_color(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}", LOG_COLORS.GREEN)
+            logging.success(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}")
         except Exception as e:
-            print_error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
-                        f"Additional info: {e}")
+            logging.error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
+                          f"Additional info: {e}")
         finally:
             return task_status, not_updated_build
 
@@ -1178,16 +1178,16 @@ class Pack(object):
         if os.path.exists(build_changelog_index_path):
             try:
                 shutil.copyfile(src=build_changelog_index_path, dst=pack_changelog_path)
-                print_color(f"Successfully copied pack index changelog.json file from {build_changelog_index_path}"
-                            f" to {pack_changelog_path}.", LOG_COLORS.GREEN)
+                logging.success(f"Successfully copied pack index changelog.json file from {build_changelog_index_path}"
+                                f" to {pack_changelog_path}.")
             except shutil.Error as e:
                 task_status = False
-                print_error(f"Failed copying changelog.json file from {build_changelog_index_path} to "
-                            f"{pack_changelog_path}. Additional info: {str(e)}")
+                logging.error(f"Failed copying changelog.json file from {build_changelog_index_path} to "
+                              f"{pack_changelog_path}. Additional info: {str(e)}")
                 return task_status
         else:
             task_status = False
-            print_error(f"{self._pack_name} index changelog file is missing at path: {build_changelog_index_path}")
+            logging.error(f"{self._pack_name} index changelog file is missing at path: {build_changelog_index_path}")
 
         return task_status and self.is_changelog_exists()
 
@@ -1256,7 +1256,8 @@ class Pack(object):
                     if current_directory not in PackFolders.pack_displayed_items():
                         continue  # skip content items that are not displayed in contentItems
 
-                    logging.debug(f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
+                    logging.debug(
+                        f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
                     # updated min server version from current content item
                     self._sever_min_version = get_higher_server_version(self._sever_min_version, content_item,
                                                                         self._pack_name)
@@ -1681,21 +1682,20 @@ class Pack(object):
                                           if is_integration_image(os.path.basename(f.name))]
         for integration_image_blob in build_integration_images_blobs:
             image_name = os.path.basename(integration_image_blob.name)
-            print_color(f"Uploading {self._pack_name} pack integration image: {image_name}", LOG_COLORS.NATIVE)
+            logging.info(f"Uploading {self._pack_name} pack integration image: {image_name}")
             copied_blob = build_bucket.copy_blob(
                 blob=integration_image_blob, destination_bucket=production_bucket,
                 new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
             )
             task_status = task_status and copied_blob.exists()
             if not task_status:
-                print_error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
-                            f"{copied_blob.name} blob failed.")
+                logging.error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
+                              f"{copied_blob.name} blob failed.")
 
         if not task_status:
-            print_error(f"Failed to upload {self._pack_name} pack integration images.")
+            logging.error(f"Failed to upload {self._pack_name} pack integration images.")
         else:
-            print_color(f"Uploaded {len(build_integration_images_blobs)} images for {self._pack_name} pack.",
-                        LOG_COLORS.GREEN)
+            logging.success(f"Uploaded {len(build_integration_images_blobs)} images for {self._pack_name} pack.")
 
         return task_status
 
@@ -1744,10 +1744,10 @@ class Pack(object):
                                                              author_image_storage_path)
                     # disable-secrets-detection-end
                 logging.info((f"Skipping uploading of {self._pack_name} pack author image "
-                             f"and use default {GCPConfig.BASE_PACK} pack image"))
+                              f"and use default {GCPConfig.BASE_PACK} pack image"))
             else:
-                print(f"Skipping uploading of {self._pack_name} pack author image. "
-                      f"The pack is defined as {self.support_type} support type")
+                logging.info(f"Skipping uploading of {self._pack_name} pack author image. "
+                             f"The pack is defined as {self.support_type} support type")
 
         except Exception:
             logging.exception(f"Failed uploading {self._pack_name} pack author image.")
@@ -1781,18 +1781,18 @@ class Pack(object):
             )
             task_status = task_status and copied_blob.exists()
         elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
-            print_color((f"Skipping uploading of {self._pack_name} pack author image "
-                         f"and use default {GCPConfig.BASE_PACK} pack image"), LOG_COLORS.GREEN)
+            logging.info((f"Skipping uploading of {self._pack_name} pack author image "
+                          f"and use default {GCPConfig.BASE_PACK} pack image"))
             return task_status
         else:
-            print_color(f"Skipping uploading of {self._pack_name} pack author image. The pack is defined as "
-                        f"{self.support_type} support type", LOG_COLORS.NATIVE)
+            logging.info(f"Skipping uploading of {self._pack_name} pack author image. The pack is defined as "
+                         f"{self.support_type} support type")
             return task_status
 
         if not task_status:
-            print_error(f"Failed uploading {self._pack_name} pack author image.")
+            logging.error(f"Failed uploading {self._pack_name} pack author image.")
         else:
-            print_color(f"Uploaded successfully {self._pack_name} pack author image", LOG_COLORS.GREEN)
+            logging.success(f"Uploaded successfully {self._pack_name} pack author image")
 
         return task_status
 

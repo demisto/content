@@ -826,7 +826,7 @@ def main():
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
 
     if private_bucket_name:  # Add private packs to the index
-        logging.info("updating index with private packs")
+        logging.info("Updating index with private packs")
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
                                                        index_folder_path)
