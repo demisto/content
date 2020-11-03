@@ -7,24 +7,24 @@ Converts URLs, PDF files, and emails to an image file or PDF file.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| with_error | Return Errors  | False |
-| wait_time | Time to wait before taking a screen shot \(in seconds\) | False |
-| max_page_load_time | Maximum time to wait for a page to load \(in seconds\) | False |
-| chrome_options | Chrome options \(Advanced. See \[?\]\) | False |
-| proxy | Use system proxy settings | False |
+| with_error | Return Errors.  | False |
+| wait_time | Time to wait before taking a screenshot \(in seconds\). | False |
+| max_page_load_time | Maximum amount of time to wait for a page to load \(in seconds\). | False |
+| chrome_options | Chrome options \(Advanced. Click \[?\]\ for details.) | False |
+| proxy | Use system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 **Configuration Notes:**
-* Return Errors: If this checkbox is not selected, a warning will be returned instead of an error entry.
-* Use system proxy settings: Select this checkbox to use the system's proxy settings. **Important**: this integration does not support proxies which require authentication.
-* Chrome options: Add or remove Chrome options used to rasterize. Supports a comma-separated list. If a value contains a comma (for example, when setting the user agent value), escape it with the backslash (**\\**) character. To remove a default option being used, put the option in square brackets. For example, to add the option *--disable-auto-reload* and remove the option *--disable-dev-shm-usage*, set the following value:
+* Return Errors: If this checkbox is not selected, a warning will be returned instead of an error.
+* Use system proxy settings: Select this checkbox to use the system's proxy settings. **Important**: This integration does not support proxies which require authentication.
+* Chrome options: A comma-separated list of Chrome options to add or remove for rasterization.  If a value contains a comma (for example, when setting the user agent value), escape it with the backslash (**\\**) character. To remove a default option that is used, put the option in square brackets. For example, to add the option *--disable-auto-reload* and remove the option *--disable-dev-shm-usage*, set the following value:
 ```
 --disable-auto-reload,[--disable-dev-shm-usage]
 ```
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### rasterize
 ***
@@ -38,8 +38,8 @@ Converts the contents of a URL to an image file or a PDF file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| wait_time | Time in seconds to wait before taking a screenshot | Optional | 
-| max_page_load_time | Maximum time to wait for a page to load (in seconds) | Optional | 
+| wait_time | Time to wait before taking a screenshot (in seconds ). | Optional | 
+| max_page_load_time | Maximum time to wait for a page to load (in seconds). | Optional | 
 | url | The URL to rasterize. Must be the full URL, including the http prefix. | Required | 
 | width | The page width, for example, 1024px. Specify with or without the px suffix. | Optional | 
 | height | The page height, for example, 800px. Specify with or without the px suffix. | Optional | 
@@ -84,8 +84,8 @@ Converts the body of an email to an image file or a PDF file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | htmlBody | The HTML body of the email. | Required | 
-| width | The html page width, for example, 600px. Specify with or without the px suffix. | Optional | 
-| height | The html page height, for example, 800px. Specify with or without the px suffix. | Optional | 
+| width | The HTML page width, for example, 600px. Specify with or without the px suffix. | Optional | 
+| height | The HTML page height, for example, 800px. Specify with or without the px suffix. | Optional | 
 | type | The file type to which to convert the email body. Can be "pdf" or "png". Default is "png". | Optional | 
 | offline | If "true", will block all outgoing communication. | Optional | 
 
@@ -130,7 +130,7 @@ Converts an image file to a PDF file.
 | --- | --- | --- |
 | EntryID | The entry ID of the image file. | Required | 
 | width | The image width, for example, 600px. Specify with or without the px suffix. | Optional | 
-| height | The image height, for example, 800px. If empty, the height is the entire image. | Optional | 
+| height | The image height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
 
 
 #### Context Output
