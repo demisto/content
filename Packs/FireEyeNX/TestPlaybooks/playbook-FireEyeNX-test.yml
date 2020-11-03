@@ -17,7 +17,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -255,7 +254,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -402,7 +400,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "9"
     scriptarguments:
       duration:
         simple: 48_hours
@@ -415,126 +413,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: ddc130a4-0d99-4c93-8050-3ab57da83d40
-    type: condition
-    task:
-      id: ddc130a4-0d99-4c93-8050-3ab57da83d40
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.EventId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.Occurred
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.SrcIp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.DstIp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.DstPort
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.Severity
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.SignatureRev
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.SignatureIden
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.SignatureMatchCnt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.Vlan
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.SrcMac
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.DstMac
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.RuleName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.SensorId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.ActionTaken
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.AttackMode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.InterfaceId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeNX.Event.Protocol
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
         }
       }
     note: false
@@ -698,12 +576,130 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "16":
+    id: "16"
+    taskid: dafe7db0-4ee7-47b0-8626-bd6b54a1e075
+    type: condition
+    task:
+      id: dafe7db0-4ee7-47b0-8626-bd6b54a1e075
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.EventId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.Occurred
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SrcIp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.DstIp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.DstPort
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SignatureRev
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SignatureIden
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SignatureMatchCnt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.Vlan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SrcMac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.DstMac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.RuleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SensorId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.ActionTaken
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.AttackMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.InterfaceId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.Protocol
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 2170,
         "width": 390,
         "x": 50,
         "y": 50
@@ -713,3 +709,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+
