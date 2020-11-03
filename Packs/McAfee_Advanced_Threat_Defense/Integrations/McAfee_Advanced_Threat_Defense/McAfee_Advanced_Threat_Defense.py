@@ -453,7 +453,7 @@ def file_upload(submit_type, sample, vm_profile_list,
     filename_to_upload = file_name if (submit_type in submit_type_with_file and file_name) else ''
     if submit_type in submit_type_with_file:
         result_obj = file_upload_raw(body, file_entry_id, filename_to_upload)
-    elif submit_type == 1:
+    elif submit_type == 1 or submit_type == 3:
         result_obj = url_upload_raw(body)
     return {
         'taskId': result_obj['results'][0]['taskId'],
