@@ -3,8 +3,8 @@ import glob
 import zipfile
 import demisto_client
 
-from Tests.private_build.configure_and_test_integration_instances_private import find_needed_test_playbook_paths, \
-    create_install_private_testing_pack, create_private_test_pack_zip
+from Tests.private_build.configure_and_test_integration_instances_private import \
+    find_needed_test_playbook_paths, create_install_private_testing_pack, create_private_test_pack_zip
 import Tests.Marketplace.search_and_install_packs as script
 from Tests.configure_and_test_integration_instances import get_json_file
 from Tests.tests.constants_testing import SAMPLE_TESTPLAYBOOK_CONF
@@ -121,7 +121,7 @@ def test_create_private_test_pack_zip(mocker):
         mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.find_'
                      'needed_test_playbook_paths', return_value=TEST_PLAYBOOK_FILE_PATHS)
         mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
-                     'CONTENT_TEST_ZIP', dirpath+'test.zip')
+                     'CONTENT_TEST_ZIP', dirpath + 'test.zip')
         mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
                      'CONTENT_PATH', './')
         mocker.patch('shutil.copy')
@@ -130,7 +130,7 @@ def test_create_private_test_pack_zip(mocker):
         with tempfile.TemporaryDirectory() as extract_dir:
             with zipfile.ZipFile(dirpath+'test.zip', "r") as zip_ref:
                 zip_ref.extractall(extract_dir)
-                dir_containing_metadata = glob.glob(extract_dir+'/test_pack/*')
+                dir_containing_metadata = glob.glob(extract_dir + '/test_pack/*')
                 #  Check that metadata is present
                 expected_metadata_file_path = extract_dir+'/test_pack/metadata.json'
                 assert expected_metadata_file_path in dir_containing_metadata
