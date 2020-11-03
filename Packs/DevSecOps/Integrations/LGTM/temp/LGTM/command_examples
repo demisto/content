@@ -1,0 +1,5 @@
+!lgtm-get-projects limit=10
+!lgtm-create-query-job language=python project-id=1511896439667 query-list=${lists.CodeQL-Queries-SQL_Injection}
+!lgtm-get-query-job queryjob-id=2651230846634222938
+!lgtm-get-query-job-results-for-project project-id=1511896439667 queryjob-id=2651230846634222938
+!lgtm-get-query-job-results-overview queryjob-id=206061421522356021

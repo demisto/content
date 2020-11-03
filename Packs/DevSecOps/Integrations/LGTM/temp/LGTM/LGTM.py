@@ -159,15 +159,14 @@ class Client(BaseClient):
 
         return response
 
-    def create_query_job_request(self, language, project_id):
+    def create_query_job_request(self, language, project_id, query):
 
         headers = self._headers
         parameters = {
-            'project-id': str(project_id),
+            'project-id': project_id,
             'language': language
         }
-        response = self._http_request('post', 'queryjobs', params=parameters, headers=headers)
-
+        response = self._http_request('post', 'queryjobs', params=parameters, headers=headers, data=query)
 
         return response
 
@@ -196,12 +195,11 @@ class Client(BaseClient):
 
         return response
 
-    def get_query_job_results_overview_request(self, queryjob_id, start, limit, filter_):
-        params = assign_params(start=start, limit=limit, filter=filter)
+    def get_query_job_results_overview_request(self, queryjob_id):
 
         headers = self._headers
 
-        response = self._http_request('get', f'queryjobs/{queryjob_id}/results', params=params, headers=headers)
+        response = self._http_request('get', f'queryjobs/{queryjob_id}/results', headers=headers)
 
         return response
 
@@ -514,11 +512,12 @@ def upload_part_command(client, args):
 def create_query_job_command(client, args):
     language = str(args.get('language', ''))
     project_id = argToList(args.get('project-id', []))
+    query = str(args.get('query-list', ''))
 
-    response = client.create_query_job_request(language, project_id)
+    response = client.create_query_job_request(language, project_id, query)
     command_results = CommandResults(
-        outputs_prefix='LGTM',
-        outputs_key_field='',
+        outputs_prefix='LGTM.queryjob',
+        outputs_key_field='LGTM.queryjob.task-result.id',
         outputs=response,
         raw_response=response
     )
@@ -547,7 +546,7 @@ def get_query_job_command(client, args):
     response = client.get_query_job_request(queryjob_id)
     command_results = CommandResults(
         outputs_prefix='LGTM.queryjob',
-        outputs_key_field='id',
+        outputs_key_field='LGTM.queryjob.id',
         outputs=response,
         raw_response=response
     )
@@ -575,11 +574,8 @@ def get_query_job_results_for_project_command(client, args):
 
 def get_query_job_results_overview_command(client, args):
     queryjob_id = str(args.get('queryjob-id', ''))
-    start = str(args.get('start', ''))
-    limit = args.get('limit', None)
-    filter_ = str(args.get('filter', ''))
 
-    response = client.get_query_job_results_overview_request(queryjob_id, start, limit, filter_)
+    response = client.get_query_job_results_overview_request(queryjob_id)
     command_results = CommandResults(
         outputs_prefix='LGTM.queryjob_results_overview',
         outputs_key_field='',
