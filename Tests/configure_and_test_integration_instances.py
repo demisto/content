@@ -1188,15 +1188,15 @@ def create_nightly_test_pack():
 
 def test_files(content_path):
     packs_root = f'{content_path}/Packs'
-    print(packs_root)
     packs = filter(lambda x: x.is_dir(), os.scandir(packs_root))
     for pack_dir in packs:
-        print(pack_dir.path)
         if pack_dir in SKIPPED_PACKS:
             continue
         playbooks_root = f'{pack_dir.path}/TestPlaybooks'
         if os.path.isdir(playbooks_root):
             for playbook_path, playbook in get_test_playbooks_in_dir(playbooks_root):
+                print(f"Playbook path is: {playbook_path}")
+                print(f"Playbook is: {playbook}")
                 yield playbook_path, playbook
             if os.path.isdir(f'{playbooks_root}/NonCircleTests'):
                 for playbook_path, playbook in get_test_playbooks_in_dir(f'{playbooks_root}/NonCircleTests'):
