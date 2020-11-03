@@ -74,7 +74,7 @@ class ServiceNowClient(BaseClient):
 
     def login(self, username: str, password: str):
         """
-        Generate a refresh token using the given client's credentials and save it in the integration context.
+        Generate a refresh token using the given client credentials and save it in the integration context.
         """
         data = {
             'client_id': self.client_id,
@@ -124,7 +124,8 @@ class ServiceNowClient(BaseClient):
                 data['refresh_token'] = previous_token.get('refresh_token')
                 data['grant_type'] = 'refresh_token'
             else:
-                return_error('User not logged in. Please run the !servicenow-login command.')
+                raise Exception('Could not create an access token. Maybe the user is not logged in. Try running the'
+                                ' !servicenow-login command.')
 
             try:
                 headers = {
@@ -137,7 +138,7 @@ class ServiceNowClient(BaseClient):
                         f'and that the refresh token is not expired.\n{res}')
                 if res.get('access_token'):
                     expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
-                    expiry_time += res.get('expires_in') * 1000 - 10
+                    expiry_time += res.get('expires_in', 0) * 1000 - 10
                     new_token = {
                         'access_token': res.get('access_token'),
                         'refresh_token': res.get('refresh_token'),

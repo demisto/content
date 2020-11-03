@@ -1949,7 +1949,7 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
     password = args.get('password', '')
     try:
         client.snow_client.login(username, password)
-        hr = '### Logged in successfully'
+        hr = '### Logged in successfully and an access token was generated.'
     except Exception as e:
         return_error(f'Failed to login. Please verify that the provided username and password are correct, and that you '
                      f'entered the correct client id and client secret in the instance configuration (see ? for'
