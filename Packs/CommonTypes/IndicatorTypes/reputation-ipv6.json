@@ -19,7 +19,7 @@
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "formatScript": "UnEscapeIndicatorIPv6",
+    "formatScript": "VerifyIPv6Indicator",
     "contextPath": "IPv6(val.Address \u0026\u0026 val.Address === obj.Address)",
     "contextValue": "Address",
     "excludedBrands": [],
