@@ -1,10 +1,10 @@
 comment: gets all available devices from the IoT cloud and sends it to the SIEM server
 commonfields:
-  id: send_bulk_panw_iotices_to_siem
+  id: send_bulk_panw_iot_devices_to_siem
   version: -1
 dockerimage: demisto/python3:3.8.6.12176
 enabled: true
-name: send_bulk_panw_iotices_to_siem
+name: send_bulk_panw_iot_devices_to_siem
 runas: DBotWeakRole
 runonce: false
 script: ''
