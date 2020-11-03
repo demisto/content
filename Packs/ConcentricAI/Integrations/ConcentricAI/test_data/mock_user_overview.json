@@ -1,0 +1,51 @@
+{
+    "response": 
+        {"data": {
+            "allContents": {
+                "allContents": {
+                    "pagination": {
+                        "currentPage": 1,
+                        "pageSize": 1,
+                        "totalRecords": 1,
+                        "totalPages": 1
+                    },
+                    "_scroll_id":"scroll id here"
+                },
+                "aggregations": {
+                    "total_by_permitted_ext_users": {
+                        "buckets": [
+                            {
+                                "key": "joe@hotmail.com",
+                                "doc_count": 6,
+                                "name": "joe@hotmail.com",
+                                "domain": "hotmail.com",
+                                "type": "external",
+                                "ext_int_user_link": [
+                                    "joe@company.com"
+                                ]
+                            }
+                        ]
+                    },
+                    "total_by_permitted_orphans": {
+                        "buckets": []
+                    },
+                    "total_by_permitted_grp_users": {
+                        "buckets": []
+                    },
+                    "total_by_permitted_int_users": {
+                        "buckets": [
+                            {
+                                "key": "joe@company.com",
+                                "doc_count": 15,
+                                "name": "joe armstrong",
+                                "domain": "joe@company.com",
+                                "type": "internal",
+                                "ext_int_user_link": null
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
