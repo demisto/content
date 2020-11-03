@@ -62,6 +62,16 @@ def patched_requests_mocker(requests_mock):
         </entry>
         <entry>
             <virtual-router>CORE</virtual-router>
+            <destination>10.10.0.0/16</destination>
+            <nexthop>192.168.1.1</nexthop>
+            <metric>130</metric>
+            <flags>A O1  </flags>
+            <age>4072068</age>
+            <interface>ae1.2</interface>
+            <route-table>unicast</route-table>
+        </entry>
+        <entry>
+            <virtual-router>CORE</virtual-router>
             <destination>10.0.0.0/8</destination>
             <nexthop>192.168.1.1</nexthop>
             <metric>130</metric>
@@ -83,8 +93,12 @@ def patched_requests_mocker(requests_mock):
 def test_panorama_get_routes(patched_requests_mocker):
     from Panorama import panorama_get_routes
     r = panorama_get_routes()
-    assert len(r['response']['result']['entry']) == 2
+    assert len(r['response']['result']['entry']) == 3
 
+def test_panorama_route_lookup(patched_requests_mocker):
+    from Panorama import panorama_route_lookup
+    r = panorama_route_lookup("10.10.10.10")
+    assert r['destination'] == '10.10.0.0/16'
 
 def test_panoram_get_os_version(patched_requests_mocker):
     from Panorama import get_pan_os_version

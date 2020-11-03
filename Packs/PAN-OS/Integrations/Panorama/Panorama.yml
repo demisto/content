@@ -1742,8 +1742,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The element to change (“url”, “recurring”, “certificate_profile”,
-        “description”).
+      description: The element to change (?url?, ?recurring?, ?certificate_profile?,
+        ?description?).
       isArray: false
       name: element_to_change
       predefined:
@@ -2478,13 +2478,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation.
+      description: The Device Name on which the PCAP is stored. For further information,
+        see the Panorama XML API Documentation.
       isArray: false
       name: deviceName
       required: false
       secret: false
     - default: false
-      description: The Session ID of the PCAP. For further information, see the Panorama XML API Documentation.
+      description: The Session ID of the PCAP. For further information, see the Panorama
+        XML API Documentation.
       isArray: false
       name: sessionID
       required: false
@@ -3038,7 +3040,7 @@ script:
       type: String
     - contextPath: Panorama.Monitor.Logs.Category
       description: The URL category of the URL subtype. For WildFire subtype, it is
-        the verdict on the file, and can be either "malicious", "phishing", "grayware"’,
+        the verdict on the file, and can be either "malicious", "phishing", "grayware"?,
         or "benign". For other subtypes, the value is "any".
       type: String
     - contextPath: Panorama.Monitor.Logs.DeviceName
@@ -4370,6 +4372,23 @@ script:
     description: Creates a WildFire analysis best practice profile.
     execution: false
     name: panorama-create-wildfire-best-practice-profile
+  - arguments:
+    - default: false
+      description: Desintation IP to lookup
+      isArray: false
+      name: dest_ip
+      required: true
+      secret: false
+    - default: false
+      description: virtual router to check against
+      isArray: false
+      name: virtual_router
+      required: false
+      secret: false
+    deprecated: false
+    description: Lookup a given IP address in the Firewall routing table
+    execution: false
+    name: panorama-lookup-route
   dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: false

@@ -6,6 +6,7 @@ from typing import Dict, List, Any, Optional, Tuple
 import uuid
 import json
 import requests
+import ipaddress
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -4869,6 +4870,20 @@ def panorama_get_routes(virtual_router=None):
         'GET',
         params=params)
 
+def panorama_get_interfaces():
+    """
+    Retrieve the routing table from the given device
+    """
+    params = {
+        'type': 'op',
+        'key': API_KEY,
+        'cmd': "<show><interface>all</interface></show>"
+    }
+
+    return http_request(
+        URL,
+        'GET',
+        params=params)
 
 def panorama_route_lookup(dest_ip: str, virtual_router=None):
     """
@@ -4883,7 +4898,34 @@ def panorama_route_lookup(dest_ip: str, virtual_router=None):
     else:
         routes = response['response']['result']['entry']
 
+    ip_addr = ipaddress.ip_address(dest_ip)
+    current_match = None
+    matched_route = None
+    for route in routes:
+        subnet_raw = route['destination']
 
+        subnet = ipaddress.ip_network(subnet_raw)
+        # If the given IP address is in the subnet
+        if ip_addr in subnet:
+            # IF we haven't matched yet
+            if not current_match:
+                current_match = subnet
+                matched_route = route
+            # If this is a greater subnet
+            elif subnet.prefixlen > current_match.prefixlen:
+                current_match = subnet
+                matched_route = route
+
+
+    if matched_route:
+        return matched_route
+    else:
+        raise Exception("Route not found.")
+
+def panorama_route_lookup_command():
+    dest_ip = demisto.args().get("dest_ip")
+    vr = demisto.args().get("virtual_router", None)
+    demisto.results(panorama_route_lookup(dest_ip, vr))
 
 @logger
 def panorama_get_predefined_threats_list(target: str):
@@ -7010,6 +7052,9 @@ def main():
 
         elif demisto.command() == 'panorama-create-file-blocking-best-practice-profile':
             create_file_blocking_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-lookup-route':
+            panorama_route_lookup_command()
 
         elif demisto.command() == 'panorama-create-wildfire-best-practice-profile':
             create_wildfire_best_practice_profile_command()
