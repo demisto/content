@@ -12,6 +12,7 @@ configuration:
   required: false
   type: 9
 - additionalinfo: Check this box if you would like to use OAuth 2.0 authentication.
+    See (?) for more information.
   display: Use OAuth
   hidden: false
   name: use_oauth
