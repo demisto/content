@@ -143,4 +143,3 @@ def test_create_private_test_pack_zip(mocker):
                 expected_hello_world_test_file_path = extract_dir + '/test_pack/TestPlaybooks/' \
                                                                     'playbook-HelloWorld_Scan-Test.yml'
                 assert expected_hello_world_test_file_path in dir_containing_test_script
-
