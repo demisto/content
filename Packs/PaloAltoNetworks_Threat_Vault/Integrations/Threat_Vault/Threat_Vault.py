@@ -110,17 +110,17 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix=f'/threatvault/{path}/search', params=self._params,
                                   json_data=data)
 
-    def signature_search_results_request(self, search_type: str, signature_id: str) -> dict:
+    def signature_search_results_request(self, search_type: str, search_request_id: str) -> dict:
         """Get signature search results by sending a GET request.
 
         Args:
             search_type: search type.
-            signature_id: signature id.
+            search_request_id: signature id.
         Returns:
             Response from API.
         """
         return self._http_request(method='GET',
-                                  url_suffix=f'/threatvault/{search_type}/search/result/{signature_id}',
+                                  url_suffix=f'/threatvault/{search_type}/search/result/{search_request_id}',
                                   params=self._params)
 
 
@@ -364,13 +364,13 @@ def signature_search_results(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    signature_id = str(args.get('signature_id', ''))
+    search_request_id = str(args.get('search_request_id', ''))
     search_type = str(args.get('search_type', ''))
 
-    response = client.signature_search_results_request(search_type, signature_id)
+    response = client.signature_search_results_request(search_type, search_request_id)
 
     outputs = response
-    outputs.update({'search_request_id': signature_id})
+    outputs.update({'search_request_id': search_request_id})
     if response.get('status') == 'submitted':  # search was not completed
         demisto.log(str(response))
         readable_output = f'Search {signature_id} is still in progress.'
