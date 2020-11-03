@@ -1,5 +1,5 @@
 import demistomock as demisto
-from CommonServerPython import *  # lgtm [py/polluting-import]
+from CommonServerPython import *
 import ipaddress
 
 
