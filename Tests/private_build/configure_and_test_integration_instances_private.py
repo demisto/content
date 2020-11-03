@@ -95,15 +95,18 @@ def find_needed_test_playbook_paths(test_playbooks: List[dict],
 
 
 def write_test_pack_zip(tests_file_paths: set, path_to_content: str =
+                        '/home/runner/work/content-private/content-private/content',
+                        zip_destination_dir: str =
                         '/home/runner/work/content-private/content-private/content') -> str:
     """
     Builds and writes the test pack when given a set of file paths.
 
     :param path_to_content: Path to the content root.
     :param tests_file_paths: Set of file paths to add to the test pack zip.
+    :param zip_destination_dir: Directory to create the test pack in.
     :return: Path to where the private content test pack is located.
     """
-    private_content_test_zip = path_to_content + '/test_pack.zip'
+    private_content_test_zip = zip_destination_dir + '/test_pack.zip'
     with zipfile.ZipFile(private_content_test_zip, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         # print(PRIVATE_CONTENT_PATH)
