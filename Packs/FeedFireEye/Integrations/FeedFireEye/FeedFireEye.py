@@ -594,7 +594,7 @@ class Client(BaseClient):
         demisto.debug('Fetching raw reports from feed fully completed')
         return raw_reports, last_reports_fetch_time
 
-    def build_iterator(self, collections_to_fetch: str, limit: int) -> List:
+    def build_iterator(self, collections_to_fetch: List, limit: int) -> List:
         if 'Indicators' in collections_to_fetch:
             raw_indicators, relationships, stix_entities, last_indicators_fetch_time = \
                 self.fetch_all_indicators_from_api(limit)
@@ -624,17 +624,17 @@ class Client(BaseClient):
         return indicators + stix_indicators + reports
 
 
-def test_module(client: Client, collections_to_fetch: str):
+def test_module(client: Client, collections_to_fetch: List):
     client.build_iterator(collections_to_fetch, limit=10)
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, collections_to_fetch: str):
+def get_indicators_command(client: Client, collections_to_fetch: List):
     """Retrieves indicators from the feed to the war-room.
 
     Args:
         client (Client): Client object configured according to instance arguments.
-        collections_to_fetch (str): Which collection to fetch from feed.
+        collections_to_fetch (List): Which collection(s) to fetch from feed.
 
     Returns:
         Tuple of:
@@ -657,7 +657,6 @@ def add_fields_if_exists(client: Client, fields_dict: Dict) -> Dict:
         fields_dict: The fields entry of the indicator
         client (Client): Client object configured according to instance arguments.
 
-
     Returns:
         Dict. Updated field mapping
     """
@@ -674,11 +673,11 @@ def add_fields_if_exists(client: Client, fields_dict: Dict) -> Dict:
     return fields_dict
 
 
-def fetch_indicators_command(client: Client, collections_to_fetch: str, limit: int = -1) -> Tuple[List, List]:
+def fetch_indicators_command(client: Client, collections_to_fetch: List, limit: int = -1) -> Tuple[List, List]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
-        collections_to_fetch (str): Which collection to fetch from feed.
+        collections_to_fetch (List): Which collection(s) to fetch from feed.
         limit (int): Maximum number of indicators to return.
     Returns:
         Tuple of:
@@ -735,7 +734,7 @@ def main():
 
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
-    collections_to_fetch = demisto.params().get('collections_to_fetch')
+    collections_to_fetch = argToList(demisto.params().get('collections_to_fetch'))
     threshold = demisto.params().get('threshold', '70')
     reputation_interval = demisto.params().get('reputation_interval', '30')
     verify_threshold_reputation_interval_types(threshold, reputation_interval)
