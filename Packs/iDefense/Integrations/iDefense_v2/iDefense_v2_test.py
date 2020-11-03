@@ -57,16 +57,17 @@ def test_ip_command(url, status_code, json_data, expected_output):
 @pytest.mark.parametrize('url, status_code, json_data, expected_output', MOCK_WRONG_IP)
 def test_ip_not_found(url, status_code, json_data, expected_output):
     """
-       Given:
-           - an IP
+    Given:
+        - an IP
 
-       When:
-           - running ip command and validate whether the ip is malicious
+    When:
+        - running ip command and validate whether the ip is malicious
 
-       Then:
-           - return command results with context indicate that no results were found
+    Then:
+        - return command results with context indicate that no results were found
 
-       """
+    """
+
     ip_to_check = {'ip': '1.1.1.1'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
@@ -78,16 +79,17 @@ def test_ip_not_found(url, status_code, json_data, expected_output):
 
 def test_wrong_ip():
     """
-       Given:
-           - an IP
+    Given:
+        - an IP
 
-       When:
-           - running ip command validate first if the given ip is a valid ip
+    When:
+        - running ip command validate at first to check if the given ip is a valid ip
 
-       Then:
-           - raise error before calling http request that indicates that the given argument is not valid
+    Then:
+        - raise error before calling http request that indicates that the given argument is not valid
 
     """
+
     ip_to_check = {'ip': '1'}
     client = Client(API_URL, 'api_token', True, False)
     try:
@@ -98,16 +100,17 @@ def test_wrong_ip():
 
 def test_wrong_connection():
     """
-          Given:
-              - an api token
+    Given:
+        - an api token
 
-          When:
-              - checking api access
+    When:
+        - checking api access
 
-          Then:
-              - raise error if there is no access because of wrong api token
+    Then:
+        - raise error if there is no access because of wrong api token
 
-       """
+    """
+
     from iDefense_v2 import test_module
     with requests_mock.Mocker() as m:
         mock_address = 'https://test.com/rest/threatindicator/v0/'
@@ -121,16 +124,17 @@ def test_wrong_connection():
 
 def test_connection():
     """
-          Given:
-              - an api token
+    Given:
+        - an api token
 
-          When:
-              - checking api access
+    When:
+        - checking api access
 
-          Then:
-              - ok if there is access
+    Then:
+        - ok if there is access
 
-       """
+    """
+
     from iDefense_v2 import test_module
     with requests_mock.Mocker() as m:
         mock_address = 'https://test.com/rest/threatindicator/v0/'
@@ -155,6 +159,18 @@ MOCK_URL = [
 
 @pytest.mark.parametrize('url, status_code, json_data, expected_output', MOCK_URL)
 def test_url_command(url, status_code, json_data, expected_output):
+    """
+    Given:
+        - url
+
+    When:
+        - running url command and validate whether the url is malicious
+
+    Then:
+        - return command results containing indicator and dbotscore
+
+    """
+
     url_to_check = {'url': 'http://www.malware.com'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
@@ -169,15 +185,16 @@ def test_url_command(url, status_code, json_data, expected_output):
 
 def test_calculate_dbot_score():
     """
-       Given:
-           - number represents severity
+    Given:
+        - number represents severity
 
-       When:
-           - api call with indicator returns response that includes them severity score
+    When:
+        - api call with indicator returns response that includes them severity score
 
-       Then:
-           - returns dbotscore according to internal conversion
+    Then:
+        - returns dbotscore according to internal conversion
 
-       """
+    """
+
     assert _calculate_dbot_score(2) == 1
     assert _calculate_dbot_score(0) == 0
