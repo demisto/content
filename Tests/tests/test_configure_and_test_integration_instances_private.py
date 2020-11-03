@@ -1,6 +1,7 @@
-import pytest
-from unittest.mock import patch
 import tempfile
+import glob
+import zipfile
+import demisto_client
 
 from Tests.private_build.configure_and_test_integration_instances_private import find_needed_test_playbook_paths, \
     create_install_private_testing_pack, create_private_test_pack_zip
@@ -8,11 +9,9 @@ import Tests.Marketplace.search_and_install_packs as script
 from Tests.configure_and_test_integration_instances import get_json_file
 from Tests.tests.constants_testing import SAMPLE_TESTPLAYBOOK_CONF
 from Tests.test_content import ParallelPrintsManager
-import demisto_client
 
 
-TEST_PLAYBOOK_FILE_PATHS = {'/home/runner/work/content-private/content-private/content/Packs/HelloWorld/'
-                          'TestPlaybooks/playbook-HelloWorld_Scan-Test.yml'}
+TEST_PLAYBOOK_FILE_PATHS = {'/Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml'}
 
 
 class ServerMock:
@@ -109,23 +108,39 @@ def test_create_install_private_testing_pack(mocker):
 
 
 def test_create_private_test_pack_zip(mocker):
+    """
+    Scenario: Testing the HelloWorld pack should result in the test pack containing the HelloWorld
+              Scan test.
+    Given: a set containing the HelloWorld-Scan_test playbook.
+    When: Creating a testing pack for premium builds
+    Then: Create a valid test pack containing metadata, items from developer tools, and the given
+          test playbook.
+    """
     with tempfile.TemporaryDirectory() as dirpath:
         id_set = get_json_file('Utils/tests/id_set.json')
-        mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.find_needed_test_playbook_paths', return_value=TEST_PLAYBOOK_FILE_PATHS)
-        mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_CONTENT_TEST_ZIP', dirpath+'test.zip')
-        mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_CONTENT_PATH', './')
+        mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.find_'
+                     'needed_test_playbook_paths', return_value=TEST_PLAYBOOK_FILE_PATHS)
+        mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
+                     'CONTENT_TEST_ZIP', dirpath+'test.zip')
+        mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
+                     'CONTENT_PATH', './')
         mocker.patch('shutil.copy')
         create_private_test_pack_zip(id_set)
         #  Opening created pack
-        import zipfile
         with tempfile.TemporaryDirectory() as extract_dir:
             with zipfile.ZipFile(dirpath+'test.zip', "r") as zip_ref:
                 zip_ref.extractall(extract_dir)
-                import glob
                 dir_containing_metadata = glob.glob(extract_dir+'/test_pack/*')
+                #  Check that metadata is present
                 expected_metadata_file_path = extract_dir+'/test_pack/metadata.json'
                 assert expected_metadata_file_path in dir_containing_metadata
                 dir_containing_test_script = glob.glob(extract_dir + '/test_pack/*/*')
-                expected_test_script_file_path = extract_dir + '/test_pack/TestPlaybooks/script-TestCreateIncidentsFile.yml'
+                #  Check that file from DeveloperTools is present
+                expected_test_script_file_path = extract_dir + '/test_pack/TestPlaybooks/script-' \
+                                                               'TestCreateIncidentsFile.yml'
                 assert expected_test_script_file_path in dir_containing_test_script
+                #  Check that item collected in needed_test_playbook_paths is present.
+                expected_hello_world_test_file_path = extract_dir + '/test_pack/TestPlaybooks/' \
+                                                                    'playbook-HelloWorld_Scan-Test.yml'
+                assert expected_hello_world_test_file_path in dir_containing_test_script
 
