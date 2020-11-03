@@ -68,7 +68,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/textwithindicators.txt
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/portuguesetextwithindicators.txt
       username: {}
     reputationcalc: 1
     separatecontext: false
