@@ -10,21 +10,21 @@ Manage Box users
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-## How to initialise:
+## How to initialize the Box integration:
 
-  Note: the following stages should be done in less than 30 seconds due to Box security.
-  1. Create a new Box instance
-  2. In your browser, copy the following line containing Demisto application client id:
+  Note: The following steps should be done in less than 30 seconds due to Box security.
+  1. Create a new Box instance. Do not click **Test**.
+  2. In your browser, copy the following line containing the Cortex XSOAR application client id:
   https://account.box.com/api/oauth2/authorize?response_type=code&client_id=hznnisyhdf09nu9saf2eyfzupawrn9b2&state=lulubalulu
   (client_id is demisto-application client id)
-  3. Allow access to it using your box credentials
+  3. Click **Grant access to Box**. Allow access to it using your box credentials.
   4. You will be redirected to a non active page, with a url in this form:
   https://localhost/?state=lulubalulu&code=MCTNCsN1gJIjA2cEJ72nczpXzcLVVQxJ
-  5. Copy the code from the url and use it the the next step
-  6. Run box_initiate command with access_code argument in the CLI in this form:
-  !box_initiate access_code=ACCESS_CODE
-  For additional info you may watch https://www.youtube.com/watch?v=ha26tN8amI0
-  Or read about box oauth2 process at https://docs.box.com/docs/oauth-20
+  5. Copy the code from the url and use it the the next step.  (For example, copy MCTNCsN1gJIjA2cEJ72nczpXzcLVVQxJ)
+  6. Run the ***box_initiate*** command with the *access_code* argument in the CLI in this form:
+  ***!box_initiate access_code=ACCESS_CODE***
+  For additional information, watch https://www.youtube.com/watch?v=ha26tN8amI0
+  Or read about the box oauth2 process at https://docs.box.com/docs/oauth-20
 
 
 ## Commands
