@@ -26,6 +26,7 @@ Manage Box users
   For additional information, watch https://www.youtube.com/watch?v=ha26tN8amI0
   Or read about the box oauth2 process at https://docs.box.com/docs/oauth-20
 
+
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
