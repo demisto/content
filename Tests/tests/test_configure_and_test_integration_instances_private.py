@@ -128,7 +128,7 @@ def test_create_private_test_pack_zip(mocker):
                                      'Utils/tests/test_data_old_content/sample_test_filter.txt', dirpath)
         #  Opening created pack
         with tempfile.TemporaryDirectory() as extract_dir:
-            with zipfile.ZipFile(dirpath + 'test.zip', "r") as zip_ref:
+            with zipfile.ZipFile(dirpath + '/test.zip', "r") as zip_ref:
                 zip_ref.extractall(extract_dir)
                 dir_containing_metadata = glob.glob(extract_dir + '/test_pack/*')
                 #  Check that metadata is present
