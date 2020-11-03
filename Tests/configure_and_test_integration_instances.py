@@ -1191,7 +1191,7 @@ def test_files(content_path):
     print(packs_root)
     packs = filter(lambda x: x.is_dir(), os.scandir(packs_root))
     for pack_dir in packs:
-        print(pack_dir)
+        print(pack_dir.path)
         if pack_dir in SKIPPED_PACKS:
             continue
         playbooks_root = f'{pack_dir.path}/TestPlaybooks'
