@@ -124,12 +124,8 @@ def test_create_private_test_pack_zip(mocker):
         id_set = get_json_file('Utils/tests/id_set.json')
         mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.find_'
                      'needed_test_playbook_paths', return_value=TEST_PLAYBOOK_FILE_PATHS)
-        mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
-                     'CONTENT_TEST_ZIP', dirpath + 'test.zip')
-        mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
-                     'CONTENT_PATH', '~')
         mocker.patch('shutil.copy')
-        create_private_test_pack_zip(id_set)
+        create_private_test_pack_zip(id_set.get('TestPlaybooks'), path_to_content='')
         #  Opening created pack
         with tempfile.TemporaryDirectory() as extract_dir:
             with zipfile.ZipFile(dirpath + 'test.zip', "r") as zip_ref:
