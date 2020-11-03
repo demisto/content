@@ -228,7 +228,8 @@ script:
     name: cisco-ise-get-policy
     outputs:
     - contextPath: CiscoISE.Policy.Action
-      description: The action of the policy. Can be "QUARANTINE", "PORTBOUNCE", or "SHUTDOWN".
+      description: The action of the policy. Can be "QUARANTINE", "PORTBOUNCE", or
+        "SHUTDOWN".
       type: String
     - contextPath: CiscoISE.Policy.ID
       description: The ID of the ANC policy.
@@ -242,7 +243,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The actions of the policy. Can be "QUARANTINE", "PORTBOUNCE", or "SHUTDOWN".
+      description: The actions of the policy. Can be "QUARANTINE", "PORTBOUNCE", or
+        "SHUTDOWN".
       isArray: false
       name: policy_actions
       predefined:
@@ -320,7 +322,7 @@ script:
     outputs:
     - contextPath: CiscoISE.Endpoint.MACAddress
       description: mac address
-  dockerimage: demisto/python3:3.7.4.977
+  dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   runonce: false
   script: '-'

@@ -14,6 +14,7 @@ name: send_panw_iot_devices_to_ise
 outputs:
 - contextPath: PaloAltoIoTIntegrationBase.Status
   description: total count of devices updated or created on ISE
+pswd: ""
 runas: DBotRole
 runonce: false
 script: ''

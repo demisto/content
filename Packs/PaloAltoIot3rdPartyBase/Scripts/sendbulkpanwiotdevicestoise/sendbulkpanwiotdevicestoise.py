@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 cisco_ise_field_map = {
     "ip": "ZingboxIpAddress",
     "ip address": "ZingboxIP",

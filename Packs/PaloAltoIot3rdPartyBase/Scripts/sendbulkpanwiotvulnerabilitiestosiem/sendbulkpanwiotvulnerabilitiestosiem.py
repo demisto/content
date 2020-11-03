@@ -76,6 +76,8 @@ while True:
             "using": "Palo Alto IoT Third-Party-Integration Base Instance"
         })
         return_error("Error, could not get Vulnerabilities from Iot Cloud")
+        return_error(resp[0])
+        break
     size = 0
     risk_level_map = {'Critical': '10', 'High': '6', 'Medium': '3', 'Low': '1'}
     try:

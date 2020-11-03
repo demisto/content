@@ -1,10 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 attr_lists = demisto.args().get("device_maps")
 return_results("Processing %d devices" % len(attr_lists))
 count = 0
 for attr_list in attr_lists:
     mac = attr_list['mac']
+    if mac == None or mac == "":
+        continue
     attr_map = attr_list['zb_attributes']
     # check if the endpoint already exists:
     # TODO: this command uses an older filter API, implement a new one using /ers/config/name/mac

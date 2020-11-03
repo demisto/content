@@ -25,6 +25,8 @@ while True:
             "using": "Palo Alto IoT Third-Party-Integration Base Instance"
         })
         return_error("Error, could not get Alerts from Iot Cloud")
+        return_error(resp[0])
+        break
     size = 0
     try:
         alert_list = resp[0]['Contents']

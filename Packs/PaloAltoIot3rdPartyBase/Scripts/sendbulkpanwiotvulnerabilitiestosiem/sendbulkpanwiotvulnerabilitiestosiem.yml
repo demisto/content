@@ -6,6 +6,7 @@ commonfields:
 dockerimage: demisto/python3:3.8.6.12176
 enabled: true
 name: send_bulk_panw_iot_vulnerabilities_to_siem
+pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
