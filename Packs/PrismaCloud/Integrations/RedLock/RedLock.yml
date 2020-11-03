@@ -75,70 +75,69 @@ script:
         \ the entire query valid.  The limit parameter adjusts this to be a value\
         \ other than 1."
     outputs:
-    - contextPath: Redlock.RQL.AccountId
-      description: 'The account ID.'
-      type: Date
-    - contextPath: Redlock.RQL.AccountName
-      description: 'The account name.'
+    - contextPath: Redlock.RQL.Query
+      description: 'The RQL query that was run.'
       type: String
-    - contextPath: Redlock.RQL.AllowDrillDown
-      description: Whether drill downs are allowed.'
+    - contextPath: Redlock.RQL.Response.AccountId
+      description: 'The cloud account ID.'
+      type: Date
+    - contextPath: Redlock.RQL.Response.AccountName
+      description: 'The cloud account name.'
+      type: String
+    - contextPath: Redlock.RQL.Response.AllowDrillDown
+      description: 'Flag to allow drill down.'
       type: Boolean
-    - contextPath: Redlock.RQL.CloudType
+    - contextPath: Redlock.RQL.Response.CloudType
       description: 'The cloud type.'
       type: String
-    - contextPath: Redlock.RQL.Data
-      description: 'The data returned from the RQL that was run.'
-      type: Number
-    - contextPath: Redlock.RQL.Deleted
-      description: 'Deleted flag.'
+    - contextPath: Redlock.RQL.Response.Data
+      description: 'The data object returned by the RQL response.'
+      type: Object
+    - contextPath: Redlock.RQL.Response.Deleted
+      description: 'Flag if deleted.'
       type: Boolean
-    - contextPath: Redlock.RQL.HasAlert
-      description: 'Flag for the RQL has associated alerts.'
+    - contextPath: Redlock.RQL.Response.HasAlert
+      description: 'Flag to check if RQL response has alerts.'
       type: Boolean
-    - contextPath: Redlock.RQL.HasExtFindingRiskFactors
-      description: 'Flag for the RQL has external risk factors.'
+    - contextPath: Redlock.RQL.Response.HasExtFindingRiskFactors
+      description: 'Flag if query returns external risk factors.'
       type: Boolean
-    - contextPath: Redlock.RQL.HasExternalFinding
-      description: 'Flag for the RQL has external findings.'
+    - contextPath: Redlock.RQL.Response.HasExternalFinding
+      description: 'Flag for external findings.'
       type: Boolean
-    - contextPath: Redlock.RQL.HasExternalIntegration
+    - contextPath: Redlock.RQL.Response.HasExternalIntegration
       description: 'Flag for external integration.'
       type: Boolean
-    - contextPath: Redlock.RQL.HasNetwork
-      description: 'Flag for network status.'
+    - contextPath: Redlock.RQL.Response.HasNetwork
+      description: 'Flag for determining if network exists.'
       type: Boolean
-    - contextPath: Redlock.RQL.Id
-      description: 'The ID of the RQL query that was run.'
+    - contextPath: Redlock.RQL.Response.Id
+      description: 'The RQL response ID.'
       type: String
-    - contextPath: Redlock.RQL.InsertTs
-      description: 'The insert time.'
+    - contextPath: Redlock.RQL.Response.InsertTs
+      description: 'The response time.'
       type: Date
-    - contextPath: Redlock.RQL.Name
-      description: 'The name of the RQL.'
+    - contextPath: Redlock.RQL.Response.Name
+      description: 'The RQL response name.'
       type: String
-    - contextPath: Redlock.RQL.Query
-      description: 'The raw RQL query.'
+    - contextPath: Redlock.RQL.Response.RegionId
+      description: 'The cloud region ID.'
       type: String
-    - contextPath: Redlock.RQL.RegionId
-      description: 'The region ID of the returned data.'
+    - contextPath: Redlock.RQL.Response.RegionName
+      description: 'The cloud region name.'
       type: String
-    - contextPath: Redlock.RQL.RegionName
-      description: 'The region name for the returned query.'
+    - contextPath: Redlock.RQL.Response.ResourceType
+      description: 'The resource type.'
       type: String
-    - contextPath: Redlock.RQL.ResourceType
-      description: 'The RQL resource type.'
+    - contextPath: Redlock.RQL.Response.Rrn
+      description: 'The account RRN.'
       type: String
-    - contextPath: Redlock.RQL.Rrn
-      description: 'The RRN of the RQL.'
+    - contextPath: Redlock.RQL.Response.Service
+      description: 'The RQL response service.'
       type: String
-    - contextPath: Redlock.RQL.Service
-      description: 'The RQL service.'
+    - contextPath: Redlock.RQL.Response.StateId
+      description: 'The response state ID.'
       type: String
-    - contextPath: Redlock.RQL.StateId
-      description: 'The State ID.'
-      type: String
-
   - name: redlock-remediate-alerts
     description: Remediate alerts in Prisma Cloud.
     arguments:

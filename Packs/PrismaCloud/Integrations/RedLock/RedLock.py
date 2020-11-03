@@ -421,17 +421,21 @@ def get_rql_response():
             "Region": item["regionName"],
             "Deleted": item["deleted"]
         }
-        item["Query"] = rql
         human_readable.append(tmp_human_readable)
 
     contents = [{pascalToSpace(key).replace(" ", ""): val for key, val in item.items() if val is not None} for item in items]
+
+    rql_data = {
+        "Query": rql,
+        "Response": contents
+    }
 
     md = tableToMarkdown(name="RQL Output:", t=human_readable, headerTransform=pascalToSpace, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'EntryContext': {'Redlock.RQL(val.Query === obj.Query)': contents},
+        'Contents': rql_data,
+        'EntryContext': {'Redlock.RQL(val.Query === obj.Query)': rql_data},
         'HumanReadable': md
     })
 

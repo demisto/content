@@ -434,32 +434,31 @@ Run RQL query on Prisma Cloud
 | rql | the RQL query to run. Example RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1. | Required | 
 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.RQL.AccountId | Date | The account ID. | 
-| Redlock.RQL.AccountName | String | The account name. | 
-| Redlock.RQL.AllowDrillDown | Boolean | Whether drill downs are allowed.' | 
-| Redlock.RQL.CloudType | String | The cloud type. | 
-| Redlock.RQL.Data | Number | The data returned from the RQL that was run. | 
-| Redlock.RQL.Deleted | Boolean | Deleted flag. | 
-| Redlock.RQL.HasAlert | Boolean | Flag for the RQL has associated alerts. | 
-| Redlock.RQL.HasExtFindingRiskFactors | Boolean | Flag for the RQL has external risk factors. | 
-| Redlock.RQL.HasExternalFinding | Boolean | Flag for the RQL has external findings. | 
-| Redlock.RQL.HasExternalIntegration | Boolean | Flag for external integration. | 
-| Redlock.RQL.HasNetwork | Boolean | Flag for network status. | 
-| Redlock.RQL.Id | String | The ID of the RQL query that was run. | 
-| Redlock.RQL.InsertTs | Date | The insert time. | 
-| Redlock.RQL.Name | String | The name of the RQL. | 
-| Redlock.RQL.Query | String | The raw RQL query. | 
-| Redlock.RQL.RegionId | String | The region ID of the returned data. | 
-| Redlock.RQL.RegionName | String | The region name for the returned query. | 
-| Redlock.RQL.ResourceType | String | The RQL resource type. | 
-| Redlock.RQL.Rrn | String | The RRN of the RQL. | 
-| Redlock.RQL.Service | String | The RQL service. | 
-| Redlock.RQL.StateId | String | The State ID. | 
+| Redlock.RQL.Query | String | The | 
+| Redlock.RQL.Response.AccountId | Date | The cloud account ID. | 
+| Redlock.RQL.Response.AccountName | String | The cloud account name. | 
+| Redlock.RQL.Response.AllowDrillDown | Boolean | Flag to allow drill down. | 
+| Redlock.RQL.Response.CloudType | String | The cloud type. | 
+| Redlock.RQL.Response.Data | Object | The data object returned by the RQL response. | 
+| Redlock.RQL.Response.Deleted | Boolean | Flag if deleted. | 
+| Redlock.RQL.Response.HasAlert | Boolean | Flag to check if RQL response has alerts. | 
+| Redlock.RQL.Response.HasExtFindingRiskFactors | Boolean | Flag if query returns external risk factors. | 
+| Redlock.RQL.Response.HasExternalFinding | Boolean | Flag for external findings. | 
+| Redlock.RQL.Response.HasExternalIntegration | Boolean | Flag for external integration. | 
+| Redlock.RQL.Response.HasNetwork | Boolean | Flag for determining if network exists. | 
+| Redlock.RQL.Response.Id | String | The RQL response ID. | 
+| Redlock.RQL.Response.InsertTs | Date | The response time. | 
+| Redlock.RQL.Response.Name | String | The RQL response name. | 
+| Redlock.RQL.Response.RegionId | String | The cloud region ID. | 
+| Redlock.RQL.Response.RegionName | String | The cloud region name. | 
+| Redlock.RQL.Response.ResourceType | String | The resource type. | 
+| Redlock.RQL.Response.Rrn | String | The account RRN. | 
+| Redlock.RQL.Response.Service | String | The RQL response service. | 
+| Redlock.RQL.Response.StateId | String | The response state ID. | 
 
 
 #### Command Example
@@ -470,157 +469,160 @@ Run RQL query on Prisma Cloud
 {
     "Redlock": {
         "RQL": {
-            "AccountId": "1234566789",
-            "AccountName": "AWS - ne-lab",
-            "AllowDrillDown": true,
-            "CloudType": "aws",
-            "Data": {
-                "amiLaunchIndex": 0,
-                "architecture": "x86_64",
-                "blockDeviceMappings": [
-                    {
-                        "deviceName": "/dev/sda1",
-                        "ebs": {
-                            "attachTime": "2020-10-21T09:38:41.000Z",
-                            "deleteOnTermination": true,
-                            "status": "attached",
-                            "volumeId": "vol-12345678"
-                        }
-                    }
-                ],
-                "capacityReservationSpecification": {
-                    "capacityReservationPreference": "open"
-                },
-                "clientToken": "",
-                "cpuOptions": {
-                    "coreCount": 2,
-                    "threadsPerCore": 1
-                },
-                "ebsOptimized": false,
-                "elasticGpuAssociations": [],
-                "elasticInferenceAcceleratorAssociations": [],
-                "enaSupport": true,
-                "hibernationOptions": {
-                    "configured": false
-                },
-                "hypervisor": "xen",
-                "imageId": "ami-0817d428a6fb68234j",
-                "instanceId": "i-060256784a6sfsdfsdfdsf",
-                "instanceType": "t2.medium",
-                "keyName": "AWS-key",
-                "launchTime": "2020-10-21T09:38:40.000Z",
-                "licenses": [],
-                "metadataOptions": {
-                    "httpEndpoint": "enabled",
-                    "httpPutResponseHopLimit": 1,
-                    "httpTokens": "optional",
-                    "state": "applied"
-                },
-                "monitoring": {
-                    "state": "disabled"
-                },
-                "networkInterfaces": [
-                    {
-                        "association": {
-                            "ipOwnerId": "amazon",
-                            "publicDnsName": "dns.compute-1.amazonaws.com",
-                            "publicIp": "x.x.x.x"
-                        },
-                        "attachment": {
-                            "attachTime": "2020-10-21T09:38:40.000Z",
-                            "attachmentId": "eni-attach-0sdf19bb3cabbf969",
-                            "deleteOnTermination": true,
-                            "deviceIndex": 0,
-                            "status": "attached"
-                        },
-                        "description": "Primary network interface",
-                        "groups": [
+            "Query": "config where api.name = 'aws-ec2-describe-instances' as X; config where api.name = 'aws-ec2-describe-security-groups' as Y; config where api.name = 'aws-ec2-describe-vpcs' as Z; filter 'not _Set.intersection($.X.vpcId,$.Y.vpcId) intersects (vpc-5b9a3c33,vpc-b8ba2dd0,vpc-b8ba2dd01)'; show X; limit search records to 1",
+            "Response": [
+                {
+                    "AccountId": "12345676889",
+                    "AccountName": "AWS - pan-lab",
+                    "AllowDrillDown": true,
+                    "CloudType": "aws",
+                    "Data": {
+                        "amiLaunchIndex": 0,
+                        "architecture": "x86_64",
+                        "blockDeviceMappings": [
                             {
-                                "groupId": "sg-0d6e1bb7956789c59a",
-                                "groupName": "mgmt-ssh-https-8083-8084"
+                                "deviceName": "/dev/sda1",
+                                "ebs": {
+                                    "attachTime": "2020-10-21T09:38:41.000Z",
+                                    "deleteOnTermination": true,
+                                    "status": "attached",
+                                    "volumeId": "vol-12345678"
+                                }
                             }
                         ],
-                        "interfaceType": "interface",
-                        "ipv6Addresses": [],
-                        "macAddress": "12:49:30:d2:36:8b",
-                        "networkInterfaceId": "eni-0aad6d8e424f8b",
-                        "ownerId": "1466sdf345345",
-                        "privateDnsName": "ip.internal",
-                        "privateIpAddress": "y.y.y.y",
-                        "privateIpAddresses": [
+                        "capacityReservationSpecification": {
+                            "capacityReservationPreference": "open"
+                        },
+                        "clientToken": "",
+                        "cpuOptions": {
+                            "coreCount": 2,
+                            "threadsPerCore": 1
+                        },
+                        "ebsOptimized": false,
+                        "elasticGpuAssociations": [],
+                        "elasticInferenceAcceleratorAssociations": [],
+                        "enaSupport": true,
+                        "hibernationOptions": {
+                            "configured": false
+                        },
+                        "hypervisor": "xen",
+                        "imageId": "ami-0817d428a6fb68645",
+                        "instanceId": "i-xsssasdfsdfa627afe0",
+                        "instanceType": "t2.medium",
+                        "keyName": "AWS-NVirginia-Key",
+                        "launchTime": "2020-10-21T09:38:40.000Z",
+                        "licenses": [],
+                        "metadataOptions": {
+                            "httpEndpoint": "enabled",
+                            "httpPutResponseHopLimit": 1,
+                            "httpTokens": "optional",
+                            "state": "applied"
+                        },
+                        "monitoring": {
+                            "state": "disabled"
+                        },
+                        "networkInterfaces": [
                             {
                                 "association": {
                                     "ipOwnerId": "amazon",
-                                    "publicDnsName": "dns.compute-1.amazonaws.com",
+                                    "publicDnsName": "ec2-x.x.x.x.compute-1.amazonaws.com",
                                     "publicIp": "x.x.x.x"
                                 },
-                                "primary": true,
-                                "privateDnsName": "ip.ec2.internal",
-                                "privateIpAddress": "y.y.y.y"
+                                "attachment": {
+                                    "attachTime": "2020-10-21T09:38:40.000Z",
+                                    "attachmentId": "eni-attach-0cb419bb3cabbf969",
+                                    "deleteOnTermination": true,
+                                    "deviceIndex": 0,
+                                    "status": "attached"
+                                },
+                                "description": "Primary network interface",
+                                "groups": [
+                                    {
+                                        "groupId": "sg-abc",
+                                        "groupName": "group"
+                                    }
+                                ],
+                                "interfaceType": "interface",
+                                "ipv6Addresses": [],
+                                "macAddress": "12:49:30:d2:36:8b",
+                                "networkInterfaceId": "eni-0aad6d8e4251f4f8b",
+                                "ownerId": "146688260519",
+                                "privateDnsName": "ip-y.y.y.y.ec2.internal",
+                                "privateIpAddress": "y.y.y.y",
+                                "privateIpAddresses": [
+                                    {
+                                        "association": {
+                                            "ipOwnerId": "amazon",
+                                            "publicDnsName": "ec2-x.x.x.x.compute-1.amazonaws.com",
+                                            "publicIp": "x.x.x.x"
+                                        },
+                                        "primary": true,
+                                        "privateDnsName": "ip-y.y.y.y.ec2.internal",
+                                        "privateIpAddress": "y.y.y.y"
+                                    }
+                                ],
+                                "sourceDestCheck": true,
+                                "status": "in-use",
+                                "subnetId": "subnet-abc",
+                                "vpcId": "vpc-abc"
+                            }
+                        ],
+                        "placement": {
+                            "availabilityZone": "us-east-1d",
+                            "groupName": "",
+                            "tenancy": "default"
+                        },
+                        "privateDnsName": "ip-y.y.y.y.ec2.internal",
+                        "privateIpAddress": "y.y.y.y",
+                        "productCodes": [],
+                        "publicDnsName": "ec2-x.x.x.x.compute-1.amazonaws.com",
+                        "publicIpAddress": "x.x.x.x",
+                        "rootDeviceName": "/dev/sda1",
+                        "rootDeviceType": "ebs",
+                        "securityGroups": [
+                            {
+                                "groupId": "sg-abc",
+                                "groupName": "group"
                             }
                         ],
                         "sourceDestCheck": true,
-                        "status": "in-use",
-                        "subnetId": "subnet-0345345",
-                        "vpcId": "vpc-12345678"
-                    }
-                ],
-                "placement": {
-                    "availabilityZone": "us-east-1d",
-                    "groupName": "",
-                    "tenancy": "default"
-                },
-                "privateDnsName": "ip.ec2.internal",
-                "privateIpAddress": "y.y.y.y",
-                "productCodes": [],
-                "publicDnsName": "ec2.compute-1.amazonaws.com",
-                "publicIpAddress": "x.x.x.x",
-                "rootDeviceName": "/dev/sda1",
-                "rootDeviceType": "ebs",
-                "securityGroups": [
-                    {
-                        "groupId": "sg-bb79e282c59a",
-                        "groupName": "mgmt-ssh-https-8083-8084"
-                    }
-                ],
-                "sourceDestCheck": true,
-                "state": {
-                    "code": 16,
-                    "name": "running"
-                },
-                "stateTransitionReason": "",
-                "statusEvents": [],
-                "subnetId": "subnet-sdfsdfe388d18223ee2",
-                "tags": [
-                    {
-                        "key": "Name",
-                        "value": "tl-console"
-                    }
-                ],
-                "virtualizationType": "hvm",
-                "vpcId": "vpc-019e79f99992cbafc"
-            },
-            "Deleted": false,
-            "HasAlert": false,
-            "HasExtFindingRiskFactors": false,
-            "HasExternalFinding": false,
-            "HasExternalIntegration": false,
-            "HasNetwork": false,
-            "Id": "i-060256784999999",
-            "InsertTs": 1609999999j,
-            "Name": "tl-console",
-            "Query": "config where api.name = 'aws-ec2-describe-instances' as X; config where api.name = 'aws-ec2-describe-security-groups' as Y; config where api.name = 'aws-ec2-describe-vpcs' as Z; filter 'not _Set.intersection($.X.vpcId,$.Y.vpcId) intersects (vpc-5b9a3c33,vpc-b8ba2dd0,vpc-b8ba2dd01)'; show X; limit search records to 1",
-            "RegionId": "us-east-1",
-            "RegionName": "AWS Virginia",
-            "ResourceType": "Instance",
-            "Rrn": "rrn::instance",
-            "Service": "Amazon EC2",
-            "StateId": "sasdfghjksdfghjksdfgh"
+                        "state": {
+                            "code": 16,
+                            "name": "running"
+                        },
+                        "stateTransitionReason": "",
+                        "statusEvents": [],
+                        "subnetId": "subnet-abc",
+                        "tags": [
+                            {
+                                "key": "Name",
+                                "value": "tl-console"
+                            }
+                        ],
+                        "virtualizationType": "hvm",
+                        "vpcId": "vpc-abc"
+                    },
+                    "Deleted": false,
+                    "HasAlert": false,
+                    "HasExtFindingRiskFactors": false,
+                    "HasExternalFinding": false,
+                    "HasExternalIntegration": false,
+                    "HasNetwork": false,
+                    "Id": "i-060256784a627afe0",
+                    "InsertTs": 1604380187389,
+                    "Name": "tl-console",
+                    "RegionId": "us-east-1",
+                    "RegionName": "AWS Virginia",
+                    "ResourceType": "Instance",
+                    "Rrn": "rrn:randomstring",
+                    "Service": "Amazon EC2",
+                    "StateId": "6853ae0b28aaaa7a61f86f9b879765c"
+                }
+            ]
         }
     }
 }
 ```
-
 #### Human Readable Output
 
 >### RQL Output:
