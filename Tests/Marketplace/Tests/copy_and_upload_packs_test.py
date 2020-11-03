@@ -1,5 +1,11 @@
 import pytest
+import os
+import json
+import shutil
+from tempfile import mkdtemp
+
 from Tests.Marketplace.marketplace_services import GCPConfig
+from Tests.Marketplace.copy_and_upload_packs import FAILED_PACKS_PATH_SUFFIX
 
 
 # disable-secrets-detection-start
@@ -13,9 +19,32 @@ class TestGetPackNames:
         modified_packs = get_pack_names(packs_names_input)
 
         assert modified_packs == expected_result
-
-
 # disable-secrets-detection-end
+
+
+class TestHelperFunctions:
+    def test_load_failed_packs_file(self):
+        from Tests.Marketplace.copy_and_upload_packs import load_failed_packs_file
+        tempdir = mkdtemp()
+        failed_packs_file = os.path.join(tempdir, FAILED_PACKS_PATH_SUFFIX)
+
+        # assert path not exist
+        assert load_failed_packs_file(failed_packs_file) == {}
+
+        # assert empty file
+        with open(failed_packs_file, "w") as f:
+            f.write('')
+        assert load_failed_packs_file(failed_packs_file) == {}
+
+        # assert valid file
+        with open(failed_packs_file, "w") as f:
+            f.write(json.dumps({"a": 1}))
+        assert load_failed_packs_file(failed_packs_file) == {"a": 1}
+
+        try:
+            shutil.rmtree(tempdir)
+        except shutil.Error:
+            pass
 
 
 class TestRegex:
