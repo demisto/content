@@ -7,22 +7,16 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
+- display: Username/Client ID
   name: credentials
   required: false
   type: 9
-- additionalinfo: If using OAuth, the client id of the application that was created.
-  display: Client ID
+- additionalinfo: Check this box if you would like to use OAuth 2.0 authentication.
+  display: Use OAuth
   hidden: false
-  name: client_id
+  name: use_oauth
   required: false
-  type: 4
-- additionalinfo: If using OAuth, the client secret of the application that was created.
-  display: Client Secret
-  hidden: false
-  name: client_secret
-  required: false
-  type: 4
+  type: 8
 - additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request,
     sc_task or sc_req_item.'
   defaultvalue: incident
@@ -2348,6 +2342,28 @@ script:
       the current incident, and should be used for debugging purposes.
     execution: false
     name: get-remote-data
+  - arguments:
+    - default: false
+      description: The username that should be used for login.
+      isArray: false
+      name: username
+      required: true
+      secret: true
+    - default: false
+      description: The password that should be used for login.
+      isArray: false
+      name: password
+      required: true
+      secret: true
+    deprecated: false
+    description: This function should be used once before running any command when
+      using OAuth authentication.
+    execution: false
+    name: servicenow-login
+  - deprecated: false
+    description: Test the instance configuration when using OAuth authorization.
+    execution: false
+    name: servicenow-test
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true

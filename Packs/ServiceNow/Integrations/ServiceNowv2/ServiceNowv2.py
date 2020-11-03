@@ -460,8 +460,8 @@ class Client(BaseClient):
         self.sys_param_limit = sysparm_limit
         self.sys_param_offset = 0
 
-        if self.use_oauth:  # if user passed client_id and client_secret, OAuth2 authentication flow should be used
-            self._snow_client: ServiceNowClient = ServiceNowClient(params=oauth_params)
+        if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
+            self.snow_client: ServiceNowClient = ServiceNowClient(params=oauth_params)
         else:
             self._auth = (self._username, self._password)
 
@@ -503,7 +503,7 @@ class Client(BaseClient):
                     shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                     with open(file_name, 'rb') as f:
                         if self.use_oauth:
-                            access_token = self._snow_client.get_access_token()
+                            access_token = self.snow_client.get_access_token()
                             headers.update({
                                 'Authorization': f'Bearer {access_token}'
                             })
@@ -518,7 +518,7 @@ class Client(BaseClient):
                     raise Exception('Failed to upload file - ' + str(err))
             else:
                 if self.use_oauth:
-                    access_token = self._snow_client.get_access_token()
+                    access_token = self.snow_client.get_access_token()
                     headers.update({
                         'Authorization': f'Bearer {access_token}'
                     })
@@ -1889,7 +1889,11 @@ def fetch_incidents(client: Client) -> list:
     return incidents
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+def test_instance(client: Client):
+    """
+    The function that executes the logic for the instance testing. If the instance wasn't configured correctly, this
+    function will raise an exception and cause the test_module/oauth_test_module function to fail.
+    """
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
@@ -1905,7 +1909,52 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
         if client.incident_name not in ticket:
             raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
 
+
+def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+    """
+    Test the instance configurations when using basic authorization.
+    """
+    # Notify hte user that test button can't be used when using OAuth 2.0:
+    if client.use_oauth:
+        return_error('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-login command '
+                     'followed by the !servicenow-oauth-test command to test the instance.')
+
+    test_instance(client)
     return 'ok', {}, {}, True
+
+
+def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+    """
+    Test the instance configurations when using OAuth authentication.
+    """
+    test_instance(client)
+    return '### Instance Configured Successfully', {}, {}, True
+
+
+def login_command(client: Client, args: Dict[str, any]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+    """
+    Login the user using OAuth authorization
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    # Verify that the user checked the `Use OAuth` checkbox:
+    if not client.use_oauth:
+        return_error('Please check the `Use OAuth` checkbox before running the login command.')
+
+    username = args.get('username', '')
+    password = args.get('password', '')
+    try:
+        client.snow_client.login(username, password)
+        hr = '### Logged in successfully'
+        return hr, {}, {}, True
+    except Exception as e:
+        return_error(f'Failed to login. Please verify that the provided username and password are correct, and that you '
+                     f'entered the correct client id and client secret in the instance configuration (see ? for'
+                     f'correct usage when using OAuth).\n\n{e}')
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
@@ -2125,16 +2174,15 @@ def main():
     LOG(f'Executing command {command}')
 
     params = demisto.params()
-    username = params.get('credentials', {}).get('identifier')
-    password = params.get('credentials', {}).get('password')
     verify = not params.get('insecure', False)
-
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
-    use_oauth = True if client_id and client_secret else False
-
+    use_oauth = params.get('use_oauth', False)
     oauth_params = {}
-    if use_oauth:
+
+    if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
+        username = ''
+        password = ''
+        client_id = params.get('credentials', {}).get('identifier')
+        client_secret = params.get('credentials', {}).get('password')
         oauth_params = {
             'credentials': {
                 'identifier': username,
@@ -2148,8 +2196,12 @@ def main():
                 'Accept': 'application/json'
             },
             'insecure': params.get('insecure'),
-            'proxy': params.get('proxy')
+            'proxy': params.get('proxy'),
+            'use_oauth': use_oauth
         }
+    else:  # use basic authentication
+        username = params.get('credentials', {}).get('identifier')
+        password = params.get('credentials', {}).get('password')
 
     version = params.get('api_version')
     if version:
@@ -2178,6 +2230,8 @@ def main():
                         incident_name=incident_name, oauth_params=oauth_params)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
+            'servicenow-test': oauth_test_module,
+            'servicenow-login': login_command,
             'servicenow-update-ticket': update_ticket_command,
             'servicenow-create-ticket': create_ticket_command,
             'servicenow-delete-ticket': delete_ticket_command,

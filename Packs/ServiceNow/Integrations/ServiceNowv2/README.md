@@ -35,10 +35,27 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 
         ![image](https://raw.githubusercontent.com/demisto/content/8038ce7e02dfd47b75adc9bedf1f7e9747dd77d5/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
         
+## Instance Creation Flow
+The integration supports two types of authorization:
+1. Basic authorization using username and password.
+2. OAuth 2.0 authorization.
+
+#### OAuth 2.0 Authorization
+To use OAuth 2.0 authorization follow the next steps:
+1. Login to your service-now instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) for more information). 
+2. Copy the client id and client secret that were automatically generated when creating the endpoint into the `Username` and `Password` fields respectively.
+3. Check the `Use OAuth` checkbox.
+4. Run the command `!servicenow-login` from the XSOAR CLI and fill in the username and password.
+5. (Optional) Test the created instance by running the `!servicenow-oauth-test` command.
+
+
+
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | ServiceNow URL, in the format `https://company.service-now.com/` | True |
 | credentials | Username | False |
+| use_oauth | Use OAuth | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | ticket_type | Default ticket type on which to run ticket commands and fetch incidents | False |
@@ -139,6 +156,65 @@ Meaning, if you change the severity in Cortex XSOAR and then change it back in S
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### servicenow-login
+***
+This function should be used once before running any command when using OAuth authentication.
+
+#### Base Command
+
+`servicenow-login`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username that should be used for login. | Required | 
+| password | The password that should be used for login. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!servicenow-login username=username password=password```
+
+#### Context Example
+```json
+{}
+```
+
+#### Human Readable Output
+
+>### Logged in successfully
+
+### servicenow-test
+***
+Test the instance configuration when using OAuth authorization.
+
+
+#### Base Command
+
+`servicenow-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!servicenow-test```
+
+#### Context Example
+```json
+{}
+```
+
+#### Human Readable Output
+
+>### Instance Configured Successfully
+
+
 ### servicenow-get-ticket
 ***
 Retrieves ticket information by ticket ID.

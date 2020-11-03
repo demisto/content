@@ -401,7 +401,7 @@ def test_oauth_authentication(mocker, requests_mock):
     """
     from unittest.mock import MagicMock
     url = 'https://test.service-now.com'
-    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'command', return_value='servicenow-test')
     mocker.patch.object(ServiceNowClient, 'get_access_token')
     requests_mock.get(
         f'{url}/api/now/table/incident?sysparm_limit=1',
@@ -412,25 +412,24 @@ def test_oauth_authentication(mocker, requests_mock):
         }
     )
 
-    # Assert that get_access_token is called when client_id and client_secret are given:
+    # Assert that get_access_token is called when `Use OAuth` checkbox is selected:
     mocker.patch.object(
         demisto,
         'params',
         return_value={
             'url': url,
             'credentials': {
-                'identifier': 'identifier',
-                'password': 'password',
+                'identifier': 'client_id',
+                'password': 'client_secret'
             },
-            'client_id': 'client-id',
-            'client_secret': 'client-secret'
+            'use_oauth': True
         }
     )
     ServiceNowClient.get_access_token = MagicMock()
     main()
     assert ServiceNowClient.get_access_token.called
 
-    # Assert that get_access_token is NOT called when client_id and client_secret are NOT given:
+    # Assert that get_access_token is NOT called when `Use OAuth` checkbox is NOT selected:
     mocker.patch.object(
         demisto,
         'params',
