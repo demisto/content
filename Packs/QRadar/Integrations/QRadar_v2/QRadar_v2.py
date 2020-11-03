@@ -1783,10 +1783,11 @@ def update_reference_set_value_command(
         values = [
             date_to_timestamp(v, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for v in values
         ]
-    if len(values) > 1:
+    if len(values) > 1 and not source:
         raw_ref = client.upload_indicators_list_request(ref_name, values)
-    elif len(values) == 1:
-        raw_ref = client.update_reference_set_value(ref_name, values[0], source)
+    elif len(values) >= 1:
+        for value in values:
+            raw_ref = client.update_reference_set_value(ref_name, value, source)
     else:
         raise DemistoException(
             "Expected at least a single value, cant create or update an empty value"
