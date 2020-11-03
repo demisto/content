@@ -125,16 +125,19 @@ def write_test_pack_zip(tests_file_paths: set, path_to_content: str =
     return private_content_test_zip
 
 
-def create_private_test_pack_zip(path_to_content: str = '/home/runner/work/content-private/content-private/content', test_playbooks: List[dict] = None):
+def create_private_test_pack_zip(path_to_content: str = '/home/runner/work/content-private/content-private/content',
+                                 test_playbooks: List[dict] = None, filter_file_path: str = "./Tests/filter_file.txt"
+                                 ):
     """
     Creates the test pack with all of the scripts and dependant playbooks for the private tests.
 
     :param path_to_content: Path to the content root.
     :param test_playbooks: Test playbook list from ID Set.
+    :param filter_file_path: Path to the test filter txt file.
     :return: None
     """
     #  Finding test playbook paths needed for testing
-    tests_file_paths = find_needed_test_playbook_paths(test_playbooks)
+    tests_file_paths = find_needed_test_playbook_paths(test_playbooks, filter_file_path, path_to_content)
     #  Adding contents of DeveloperPack for testing.
     #  TODO: Remove this when we have migrated test content out of this pack.
     developer_pack_items = glob.glob(path_to_content + "/Packs/DeveloperTools/*/*.yml")
@@ -142,7 +145,7 @@ def create_private_test_pack_zip(path_to_content: str = '/home/runner/work/conte
         tests_file_paths.add(dev_pack_item)
     #  Write the test pack using collected file paths
     print(tests_file_paths)
-    private_content_test_zip = write_test_pack_zip(tests_file_paths)
+    private_content_test_zip = write_test_pack_zip(tests_file_paths, path_to_content)
     #  Copy the test pack to the private artifacts directory.
     shutil.copy(private_content_test_zip,
                 '/home/runner/work/content-private/content'

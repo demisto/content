@@ -124,7 +124,8 @@ def test_create_private_test_pack_zip(mocker):
         mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.find_'
                      'needed_test_playbook_paths', return_value=TEST_PLAYBOOK_FILE_PATHS)
         mocker.patch('shutil.copy')
-        create_private_test_pack_zip('', id_set.get('TestPlaybooks'))
+        create_private_test_pack_zip('', id_set.get('TestPlaybooks'),
+                                     'Utils/tests/test_data_old_content/sample_test_filter.txt')
         #  Opening created pack
         with tempfile.TemporaryDirectory() as extract_dir:
             with zipfile.ZipFile(dirpath + 'test.zip', "r") as zip_ref:
