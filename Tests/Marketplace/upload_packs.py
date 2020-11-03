@@ -460,8 +460,8 @@ def _build_summary_table(packs_input_list, include_bucket_url=True, include_pack
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated, pack_status_message] if include_pack_status \
-            else [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated, pack_status_message] if \
+            include_pack_status else [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated]
         row = row + [pack.bucket_url] if include_bucket_url else row
         table.add_row(row)
 

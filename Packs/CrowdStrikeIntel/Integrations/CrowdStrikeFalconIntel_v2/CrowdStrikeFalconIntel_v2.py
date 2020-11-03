@@ -222,20 +222,10 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
     if resources:
         for r in resources:
             output = get_indicator_outputs(r)
-            score = get_score_from_resource(r)
-            dbot_score = Common.DBotScore(
-                indicator=indicator_value,
-                indicator_type=get_dbot_score_type(indicator_type),
-                integration_name='CrowdStrike Falcon Intel v2',
-                malicious_description='High confidence',
-                score=score
-            )
-            indicator = get_indicator_object(indicator_value, indicator_type, dbot_score)
             results.append(CommandResults(
                 outputs=output,
                 outputs_prefix='FalconIntel.Indicator',
                 outputs_key_field='ID',
-                indicator=indicator,
                 readable_output=tableToMarkdown(name=title, t=output, headerTransform=pascalToSpace),
                 raw_response=res
             ))
@@ -428,31 +418,13 @@ def cs_indicators_command(client: Client, args: Dict[str, str]) -> List[CommandR
     if resources:
         for r in resources:
             output = get_indicator_outputs(r)
-            indicator_value = output.get('Value')
-            indicator_type = output.get('Type')
-            indicator: Optional[Common.Indicator] = None
 
-            if indicator_type in ('hash_md5', 'hash_sha256', 'hash_sha1', 'ip_address', 'url', 'domain'):
-                if indicator_type in ('hash_md5', 'hash_sha1', 'hash_sha256'):
-                    indicator_type = 'hash'
-                elif indicator_type == 'ip_address':
-                    indicator_type = 'ip'
-                score = get_score_from_resource(r)
-                dbot_score = Common.DBotScore(
-                    indicator=indicator_value,
-                    indicator_type=get_dbot_score_type(indicator_type),
-                    integration_name='CrowdStrike Falcon Intel v2',
-                    malicious_description='High confidence',
-                    score=score
-                )
-                indicator = get_indicator_object(indicator_value, indicator_type, dbot_score)
             results.append(CommandResults(
                 outputs=output,
                 outputs_prefix='FalconIntel.Indicator',
                 outputs_key_field='ID',
                 readable_output=tableToMarkdown(name=title, t=output, headerTransform=pascalToSpace),
-                raw_response=res,
-                indicator=indicator
+                raw_response=res
             ))
     else:
         results.append(CommandResults(

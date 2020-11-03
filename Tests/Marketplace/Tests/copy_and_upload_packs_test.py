@@ -10,6 +10,14 @@ from Tests.Marketplace.copy_and_upload_packs import FAILED_PACKS_PATH_SUFFIX
 
 # disable-secrets-detection-start
 class TestGetPackNames:
+    """
+       Given:
+           - A csv list of pack names (ids)
+       When:
+           - Getting the pack paths
+       Then:
+           - Verify that we got the same packs
+   """
     @pytest.mark.parametrize("packs_names_input, expected_result", [
         ("pack1,pack2,pack1", {"pack1", "pack2"}),
         ("pack1, pack2,  pack3", {"pack1", "pack2", "pack3"})
@@ -19,11 +27,22 @@ class TestGetPackNames:
         modified_packs = get_pack_names(packs_names_input)
 
         assert modified_packs == expected_result
-# disable-secrets-detection-end
 
 
 class TestHelperFunctions:
     def test_load_failed_packs_file(self):
+        """
+           Given:
+               - File that doesn't exist
+               - Empty JSON file
+               - Valid JSON file
+           When:
+               - Loading the file of all failed packs from Prepare Content step in Create Instances job
+           Then:
+               - Verify that we get an empty dictionary
+               - Verify that we get an empty dictionary
+               - Verify that we get the expected dictionary
+       """
         from Tests.Marketplace.copy_and_upload_packs import load_failed_packs_file
         tempdir = mkdtemp()
         failed_packs_file = os.path.join(tempdir, FAILED_PACKS_PATH_SUFFIX)
@@ -108,5 +127,14 @@ class TestRegex:
          "TIM-wow_a/99.98.99/TIM-wow_a.zip")
     ])
     def test_latest_zip_regex(self, gcs_path, latest_zip_suffix):
+        """
+           Given:
+               - A path of latest version pack in a gcs bucket
+           When:
+               - Searching for the pack latest zip suffix
+           Then:
+               - Getting the expected suffix
+       """
         from Tests.Marketplace.copy_and_upload_packs import LATEST_ZIP_REGEX
         assert LATEST_ZIP_REGEX.findall(gcs_path)[0] == latest_zip_suffix
+# disable-secrets-detection-end

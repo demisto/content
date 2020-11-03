@@ -18,7 +18,6 @@ from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
-from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
 from Utils.release_notes_generator import merge_version_blocks
 from typing import Tuple
 
