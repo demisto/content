@@ -130,12 +130,12 @@ def test_create_private_test_pack_zip(mocker):
         create_private_test_pack_zip(id_set)
         #  Opening created pack
         with tempfile.TemporaryDirectory() as extract_dir:
-            with zipfile.ZipFile(dirpath+'test.zip', "r") as zip_ref:
+            with zipfile.ZipFile(dirpath + 'test.zip', "r") as zip_ref:
                 zip_ref.extractall(extract_dir)
                 dir_containing_metadata = glob.glob(extract_dir + '/test_pack/*')
                 #  Check that metadata is present
                 print(dir_containing_metadata)
-                expected_metadata_file_path = extract_dir+'/test_pack/metadata.json'
+                expected_metadata_file_path = extract_dir + '/test_pack/metadata.json'
                 assert expected_metadata_file_path in dir_containing_metadata
                 dir_containing_test_script = glob.glob(extract_dir + '/test_pack/*/*')
                 print(dir_containing_test_script)
