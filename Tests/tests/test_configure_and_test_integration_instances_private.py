@@ -73,7 +73,7 @@ def mocked_generic_request_func(self, path: str, method, body=None, accept=None,
     return None, None, None
 
 
-def test_find_needed_test_playbook_paths():
+def test_find_needed_test_playbook_paths(mocker):
     """
     Scenario: Matching a test which is needed with available playbooks found in the ID set.
     Given: Test filter with HelloWorld_Scan-Test in it and a sample test playbook conf
@@ -81,6 +81,8 @@ def test_find_needed_test_playbook_paths():
     Then: Return a set with one item in it where the item is the file_path for the test.
     :return:
     """
+    mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
+                 'CONTENT_PATH', '')
     sample_test_filter_path = './Utils/tests/test_data_old_content/sample_test_filter.txt'
     file_paths = find_needed_test_playbook_paths(test_playbooks=SAMPLE_TESTPLAYBOOK_CONF,
                                                  filter_file_path=sample_test_filter_path)
@@ -132,9 +134,11 @@ def test_create_private_test_pack_zip(mocker):
                 zip_ref.extractall(extract_dir)
                 dir_containing_metadata = glob.glob(extract_dir + '/test_pack/*')
                 #  Check that metadata is present
+                print(dir_containing_metadata)
                 expected_metadata_file_path = extract_dir+'/test_pack/metadata.json'
                 assert expected_metadata_file_path in dir_containing_metadata
                 dir_containing_test_script = glob.glob(extract_dir + '/test_pack/*/*')
+                print(dir_containing_test_script)
                 #  Check that file from DeveloperTools is present
                 expected_test_script_file_path = extract_dir + '/test_pack/TestPlaybooks/script-' \
                                                                'TestCreateIncidentsFile.yml'
