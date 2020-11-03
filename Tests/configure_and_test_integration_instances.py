@@ -1204,7 +1204,7 @@ def test_files(content_path):
 def get_test_playbooks_in_dir(path):
     playbooks = filter(lambda x: x.is_file(), os.scandir(path))
     for playbook in playbooks:
-        yield os.path.join(path, playbook), playbook.path
+        yield playbook.path, playbook
 
 
 def test_pack_metadata():
