@@ -372,8 +372,7 @@ def signature_search_results(client: Client, args: dict) -> CommandResults:
     outputs = response
     outputs.update({'search_request_id': search_request_id})
     if response.get('status') == 'submitted':  # search was not completed
-        demisto.log(str(response))
-        readable_output = f'Search {signature_id} is still in progress.'
+        readable_output = f'Search {search_request_id} is still in progress.'
     else:
         headers = ['signatureId', 'signatureName', 'domainName', 'cve', 'signatureType', 'status', 'category',
                    'firstReleaseTime', 'latestReleaseTime']
