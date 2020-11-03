@@ -75,42 +75,70 @@ script:
         \ the entire query valid.  The limit parameter adjusts this to be a value\
         \ other than 1."
     outputs:
-    - contextPath: Redlock.RQL.cloudType
-      description: The cloud type.
-      type: String
-    - contextPath: Redlock.RQL.data.nextPageToken
-      description: The next page token.
-      type: String
-    - contextPath: Redlock.RQL.data.totalRows
-      description: The total number of rows returned by the query.
-      type: Number
-    - contextPath: Redlock.RQL.description
-      description: The RQL description.
-      type: String
-    - contextPath: Redlock.RQL.id
-      description: The policy ID.
-      type: String
-    - contextPath: Redlock.RQL.name
-      description: The name.
-      type: String
-    - contextPath: Redlock.RQL.query
-      description: The RQL query that was run.
-      type: String
-    - contextPath: Redlock.RQL.saved
-      description: Boolean for if saved.
-      type: Number
-    - contextPath: Redlock.RQL.searchType
-      description: The RQL search type.
-      type: String
-    - contextPath: Redlock.RQL.timeRange.type
-      description: The time range type.
-      type: String
-    - contextPath: Redlock.RQL.timeRange.value.endTime
-      description: The end time of the time range.
+    - contextPath: Redlock.RQL.AccountId
+      description: 'The account ID.'
       type: Date
-    - contextPath: Redlock.RQL.timeRange.value.startTime
-      description: The start time of the time range.
+    - contextPath: Redlock.RQL.AccountName
+      description: 'The account name.'
+      type: String
+    - contextPath: Redlock.RQL.AllowDrillDown
+      description: Whether drill downs are allowed.'
+      type: Boolean
+    - contextPath: Redlock.RQL.CloudType
+      description: 'The cloud type.'
+      type: String
+    - contextPath: Redlock.RQL.Data
+      description: 'The data returned from the RQL that was run.'
+      type: Number
+    - contextPath: Redlock.RQL.Deleted
+      description: 'Deleted flag.'
+      type: Boolean
+    - contextPath: Redlock.RQL.HasAlert
+      description: 'Flag for the RQL has associated alerts.'
+      type: Boolean
+    - contextPath: Redlock.RQL.HasExtFindingRiskFactors
+      description: 'Flag for the RQL has external risk factors.'
+      type: Boolean
+    - contextPath: Redlock.RQL.HasExternalFinding
+      description: 'Flag for the RQL has external findings.'
+      type: Boolean
+    - contextPath: Redlock.RQL.HasExternalIntegration
+      description: 'Flag for external integration.'
+      type: Boolean
+    - contextPath: Redlock.RQL.HasNetwork
+      description: 'Flag for network status.'
+      type: Boolean
+    - contextPath: Redlock.RQL.Id
+      description: 'The ID of the RQL query that was run.'
+      type: String
+    - contextPath: Redlock.RQL.InsertTs
+      description: 'The insert time.'
       type: Date
+    - contextPath: Redlock.RQL.Name
+      description: 'The name of the RQL.'
+      type: String
+    - contextPath: Redlock.RQL.Query
+      description: 'The raw RQL query.'
+      type: String
+    - contextPath: Redlock.RQL.RegionId
+      description: 'The region ID of the returned data.'
+      type: String
+    - contextPath: Redlock.RQL.RegionName
+      description: 'The region name for the returned query.'
+      type: String
+    - contextPath: Redlock.RQL.ResourceType
+      description: 'The RQL resource type.'
+      type: String
+    - contextPath: Redlock.RQL.Rrn
+      description: 'The RRN of the RQL.'
+      type: String
+    - contextPath: Redlock.RQL.Service
+      description: 'The RQL service.'
+      type: String
+    - contextPath: Redlock.RQL.StateId
+      description: 'The State ID.'
+      type: String
+
   - name: redlock-remediate-alerts
     description: Remediate alerts in Prisma Cloud.
     arguments:
