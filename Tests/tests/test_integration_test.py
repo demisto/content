@@ -26,10 +26,9 @@ def test_print_investigation_error(command, output, mocker):
     """
     prints_manager = ParallelPrintsManager(1)
     body = {'entries': [{'type': 4, 'parentContent': command, 'taskId': '12', 'contents': '2'}]}
-    handle_error_mock = mocker.patch.object(demisto_client, "generic_request_func", return_value=[str(body), '200'])
+    mocker.patch.object(demisto_client, "generic_request_func", return_value=[str(body), '200'])
 
     client = demisto_client
     __print_investigation_error(client, '', '', prints_manager)
     prints_to_execute = prints_manager.threads_print_jobs[0]
     assert prints_to_execute[2].message_to_print == output
-
