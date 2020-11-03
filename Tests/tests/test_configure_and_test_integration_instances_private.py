@@ -1,10 +1,13 @@
 import tempfile
 import glob
 import zipfile
+from io import StringIO
 import demisto_client
+import mock
 
 from Tests.private_build.configure_and_test_integration_instances_private import \
-    find_needed_test_playbook_paths, create_install_private_testing_pack, create_private_test_pack_zip
+    find_needed_test_playbook_paths, create_install_private_testing_pack, create_private_test_pack_zip,\
+    install_packs_private
 import Tests.Marketplace.search_and_install_packs as script
 from Tests.configure_and_test_integration_instances import get_json_file
 from Tests.tests.constants_testing import SAMPLE_TESTPLAYBOOK_CONF
@@ -125,7 +128,7 @@ def test_create_private_test_pack_zip(mocker):
         mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
                      'CONTENT_TEST_ZIP', dirpath + 'test.zip')
         mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
-                     'CONTENT_PATH', './')
+                     'CONTENT_PATH', '')
         mocker.patch('shutil.copy')
         create_private_test_pack_zip(id_set)
         #  Opening created pack
@@ -147,3 +150,26 @@ def test_create_private_test_pack_zip(mocker):
                 expected_hello_world_test_file_path = extract_dir + '/test_pack/TestPlaybooks/' \
                                                                     'playbook-HelloWorld_Scan-Test.yml'
                 assert expected_hello_world_test_file_path in dir_containing_test_script
+
+
+def test_install_packs_private(mocker):
+    """
+    Scenario: Given a pack ID to install, the test will simulate opening the content_packs_to_install
+              file and will first install the Demisto test license, then install the pack from the
+              artifacts directory. Important to note here, that the server does not return any status
+              code to indicate that the upload was successful. As long as the request returns a 200,
+              we assume the installation was successful. This should be changed at some point however.
+    Given: The test pack ID "TEST"
+    When: Installing the pack from the artifacts directory
+    Then: Collect the pack ID from the packs to install file, update the license, and upload the pack.
+    """
+
+    prints_manager = ParallelPrintsManager(len(BuildMock().servers))
+    mocker.patch('Tests.Marketplace.search_and_install_packs.open', return_value=StringIO('HelloWorld\nTEST'))
+    mocker.patch('Tests.Marketplace.search_and_install_packs.search_pack_and_its_dependencies')
+    mocker.patch.object(demisto_client, 'generic_request_func',
+                        side_effect=mocked_generic_request_func)
+    mocker.patch.object(glob, 'glob', return_value=['content/artifacts/packs/TEST.zip'])
+    test_results = install_packs_private(build=BuildMock(), prints_manager=prints_manager,
+                                         pack_ids=['TEST'])
+    assert test_results is True
