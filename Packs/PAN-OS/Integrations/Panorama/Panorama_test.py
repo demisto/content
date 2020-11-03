@@ -45,7 +45,45 @@ def patched_requests_mocker(requests_mock):
     </response>
     """
     requests_mock.post(base_url, text=mock_response_xml, status_code=200)
+    # Mock a show routing route request
+    mock_route_xml = """
+    <response status="success">
+    <result>
+        <flags>flags: A:active, ?:loose, C:connect, H:host, S:static, ~:internal, R:rip, O:ospf, B:bgp, Oi:ospf intra-area, Oo:ospf inter-area, O1:ospf ext-type-1, O2:ospf ext-type-2, E:ecmp, M:multicast</flags>
+        <entry>
+            <virtual-router>CORE</virtual-router>
+            <destination>0.0.0.0/0</destination>
+            <nexthop>192.168.255.1</nexthop>
+            <metric>100</metric>
+            <flags>A O2  </flags>
+            <age>4072068</age>
+            <interface>ae1.1</interface>
+            <route-table>unicast</route-table>
+        </entry>
+        <entry>
+            <virtual-router>CORE</virtual-router>
+            <destination>10.0.0.0/8</destination>
+            <nexthop>192.168.1.1</nexthop>
+            <metric>130</metric>
+            <flags>A O1  </flags>
+            <age>4072068</age>
+            <interface>ae1.2</interface>
+            <route-table>unicast</route-table>
+        </entry>
+    </result>
+    </response>
+    """
+    route_path = "{}{}{}{}".format(base_url, "?type=op&key=", integration_params['key'],
+                                   "&cmd=<show><routing><route></route></routing></show>")
+    requests_mock.get(route_path, text=mock_route_xml, status_code=200)
+
     return requests_mock
+
+
+def test_panorama_get_routes(patched_requests_mocker):
+    from Panorama import panorama_get_routes
+    r = panorama_get_routes()
+    assert len(r['response']['result']['entry']) == 2
 
 
 def test_panoram_get_os_version(patched_requests_mocker):
@@ -56,7 +94,8 @@ def test_panoram_get_os_version(patched_requests_mocker):
 
 def test_panoram_override_vulnerability(patched_requests_mocker):
     from Panorama import panorama_override_vulnerability
-    r = panorama_override_vulnerability(mock_demisto_args['threat_id'], mock_demisto_args['vulnerability_profile'], 'reset-both')
+    r = panorama_override_vulnerability(mock_demisto_args['threat_id'], mock_demisto_args['vulnerability_profile'],
+                                        'reset-both')
     assert r['response']['@status'] == 'success'
 
 
