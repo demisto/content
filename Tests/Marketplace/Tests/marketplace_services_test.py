@@ -1043,17 +1043,17 @@ class TestReleaseNotes:
                     }
                 }'''
         original_changelog_dict = {
-                    "1.0.0": {
-                        "releaseNotes": "First release notes",
-                        "displayName": "1.0.0",
-                        "released": "2020-05-05T13:39:33Z"
-                    },
-                    "2.0.0": {
-                        "releaseNotes": "Second release notes",
-                        "displayName": "2.0.0",
-                        "released": "2020-06-05T13:39:33Z"
-                    }
-                }
+            "1.0.0": {
+                "releaseNotes": "First release notes",
+                "displayName": "1.0.0",
+                "released": "2020-05-05T13:39:33Z"
+            },
+            "2.0.0": {
+                "releaseNotes": "Second release notes",
+                "displayName": "2.0.0",
+                "released": "2020-06-05T13:39:33Z"
+            }
+        }
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         changelog, changelog_latest_rn_version = dummy_pack.get_changelog_latest_rn('fake_path')
         assert changelog == original_changelog_dict
