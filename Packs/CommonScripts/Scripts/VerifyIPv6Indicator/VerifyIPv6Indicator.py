@@ -7,7 +7,7 @@ def is_valid_ipv6_address(address):
     try:
         ipaddress.IPv6Address(address)
         return address
-    except:
+    except ValueError:
         return
 
 

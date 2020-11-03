@@ -1,4 +1,4 @@
-from VerifyIPv6Indicator import is_valid_ipv6_address, main
+from VerifyIPv6Indicator import is_valid_ipv6_address
 import pytest
 
 
