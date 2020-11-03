@@ -37,6 +37,7 @@ class GCPConfig(object):
     STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
     BUILD_BASE_PATH = "content/builds"
+    PRIVATE_BASE_PATH = "content/packs"
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection

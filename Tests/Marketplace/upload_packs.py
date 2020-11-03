@@ -74,12 +74,13 @@ def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket, extract_destination_path):
+def download_and_extract_index(storage_bucket, extract_destination_path, storage_bath_path=GCPConfig.STORAGE_BASE_PATH):
     """Downloads and extracts index zip from cloud storage.
 
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
+        storage_bath_path (str): the storage base path within the storage bucket
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
@@ -87,7 +88,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
 
     """
     logging.info(f"downloading and extracting {storage_bucket.name} index")
-    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    index_storage_path = os.path.join(storage_bath_path, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -427,7 +428,8 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
 
     try:
         private_index_path, _, _ = download_and_extract_index(private_storage_bucket,
-                                                              os.path.join(extract_destination_path, 'private'))
+                                                              os.path.join(extract_destination_path, 'private'),
+                                                              GCPConfig.PRIVATE_BASE_PATH)
         private_packs = get_private_packs(private_index_path)
         add_private_packs_to_index(index_folder_path, private_index_path)
         logging.info("Finished updating index with priced packs")

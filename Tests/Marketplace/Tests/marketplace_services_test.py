@@ -6,6 +6,7 @@ import random
 from unittest.mock import mock_open
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig
+from google.cloud.storage.blob import Blob
 
 
 @pytest.fixture(scope="module")
@@ -588,10 +589,14 @@ class TestImagesUpload:
         assert integration_images == expected_result
 
     def test_copy_and_upload_integration_images(self, mocker, dummy_pack):
-        mocker.patch("Tests.Marketplace.is_integration_image", return_value=True)
+        mocker.patch("Tests.Marketplace.marketplace_services.is_integration_image", return_value=True)
         dummy_build_bucket = mocker.MagicMock()
-        dummy_build_bucket.list_blobs.return_value = ["content/packs/TestPack/IntegrationName_image.png"]
-        dummy_build_bucket.copy_blob.return_value = 
+        dummy_prod_bucket = mocker.MagicMock()
+        blob_name = "content/packs/TestPack/IntegrationName_image.png"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        dummy_pack.copy_and_upload_integration_images(dummy_prod_bucket, dummy_build_bucket)
+        # dummy_prod_bucket.blob.return_value = mocker.MagicMock()
+        # dummy_build_bucket.copy_blob.return_value = 
 
 
 class TestLoadUserMetadata:
