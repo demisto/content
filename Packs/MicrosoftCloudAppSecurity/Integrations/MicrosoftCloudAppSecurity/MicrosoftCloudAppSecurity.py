@@ -494,7 +494,8 @@ def calculate_fetch_start_time(last_fetch, first_fetch):
         if not first_fetch:
             first_fetch = '3 days'
         first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)
-        first_fetch_time = int(first_fetch_dt.timestamp())
+        # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
+        first_fetch_time = int(first_fetch_dt.timestamp()) * 1000
         return first_fetch_time
     else:
         return int(last_fetch)
@@ -512,8 +513,17 @@ def arrange_alerts_by_incident_type(alerts):
     return alerts
 
 
-def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time):
+def is_the_first_alert_is_already_fetched_in_previous_fetch(alerts, last_run):
+    last_incident_in_previous_fetch = last_run.get('last_fetch_id')
+    alert = alerts[0]
+    return alert.get('_id') == last_incident_in_previous_fetch
+
+
+def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time, last_run):
     incidents = []
+    current_last_incident_fetched = ''
+    if is_the_first_alert_is_already_fetched_in_previous_fetch(alerts, last_run):
+        alerts = alerts[1:]
     for alert in alerts:
         incident_created_time = (alert['timestamp'])
         incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
@@ -526,7 +536,12 @@ def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time):
         incidents.append(incident)
         if incident_created_time > fetch_start_time:
             fetch_start_time = incident_created_time
-    return incidents, fetch_start_time
+            current_last_incident_fetched = alert.get('_id')
+
+    if not current_last_incident_fetched:
+        current_last_incident_fetched = last_run.get('last_fetch_id')
+
+    return incidents, fetch_start_time, current_last_incident_fetched
 
 
 def fetch_incidents(client, max_results, last_run, first_fetch, filters):
@@ -537,8 +552,9 @@ def fetch_incidents(client, max_results, last_run, first_fetch, filters):
     alerts_response_data = client.list_incidents(filters, limit=max_results)
     alerts = alerts_response_data.get('data')
     alerts = arrange_alerts_by_incident_type(alerts)
-    incidents, fetch_start_time = alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time)
-    next_run = {'last_fetch': fetch_start_time}
+    incidents, fetch_start_time, last_fetch_id = alerts_to_incidents_and_fetch_start_from(
+        alerts, fetch_start_time, last_run)
+    next_run = {'last_fetch': fetch_start_time, 'last_fetch_id': last_fetch_id}
     return next_run, incidents
 
 

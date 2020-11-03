@@ -11,6 +11,7 @@ from cStringIO import StringIO
 import logging
 import warnings
 import subprocess
+import requests
 import email
 from requests.exceptions import ConnectionError
 from collections import deque
@@ -90,7 +91,6 @@ ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceive
                          'toRecipients', 'textBody', ]
 
 # Load integratoin params from demisto
-USE_PROXY = demisto.params().get('proxy', False)
 NON_SECURE = demisto.params().get('insecure', True)
 AUTH_METHOD_STR = demisto.params().get('authType', '')
 AUTH_METHOD_STR = AUTH_METHOD_STR.lower() if AUTH_METHOD_STR else ''
@@ -342,7 +342,8 @@ def exchangelib_cleanup():
                 protocol.thread_pool.terminate()
                 del protocol.__dict__["thread_pool"]
             else:
-                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+                demisto.info(
+                    'Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
         except Exception as ex:
             demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
@@ -399,8 +400,6 @@ def prepare_context(credentials):
                 access_type=ACCESS_TYPE, credentials=credentials,
             )
             EWS_SERVER = account.protocol.service_endpoint
-            if not USE_PROXY:
-                os.environ['NO_PROXY'] = EWS_SERVER
             SERVER_BUILD = account.protocol.version.build
             demisto.setIntegrationContext(create_context_dict(account))
         except AutoDiscoverFailed:
@@ -415,17 +414,8 @@ def prepare_context(credentials):
 def prepare():
     if NON_SECURE:
         BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
-
-    if not USE_PROXY:
-        def remove_from_dict(d, key):
-            if key in d:
-                del d[key]
-
-        remove_from_dict(os.environ, 'HTTP_PROXY')
-        remove_from_dict(os.environ, 'http_proxy')
-        remove_from_dict(os.environ, 'HTTPS_PROXY')
-        remove_from_dict(os.environ, 'https_proxy')
-        os.environ['NO_PROXY'] = EWS_SERVER or ""
+    else:
+        BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
 
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     AUTO_DISCOVERY = not EWS_SERVER
@@ -1147,7 +1137,8 @@ def parse_incident_from_item(item, is_fetch):
                                         and header.name != 'Content-Type':
                                     attached_email.add_header(header.name, header.value)
 
-                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attached_email.as_string())
+                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
+                                                 attached_email.as_string())
 
                     if file_result:
                         # check for error
@@ -2125,7 +2116,15 @@ def sub_main():
 
             error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
                 if AUTH_METHOD_STR.lower() == 'ntlm' else ''
-        if "Status code: 503" in debug_log:
+
+        if "SSL: CERTIFICATE_VERIFY_FAILED" in debug_log:
+            # same status code (503) but different error.
+            error_message_simple = "Certificate verification failed - This error may happen if the server " \
+                                   "certificate cannot be validated or as a result of a proxy that is doing SSL/TLS " \
+                                   "termination. It is possible to bypass certificate validation by checking " \
+                                   "'Trust any certificate' in the instance settings."
+
+        elif "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. " \
                                    "Probably the server is not reachable with the current settings. " \
                                    "Check proxy parameter. If you are using server URL - change to server IP address. "
@@ -2169,6 +2168,7 @@ def process_main():
 
 
 def main():
+    handle_proxy()
     # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
     # collector. `separate_process` flag will run the integration on a separate process that will prevent
     # memory leakage.
