@@ -19,6 +19,10 @@ configuration:
   name: auth_code
   required: false
   type: 4
+- display: Application redirect URI (for self-deployed mode)
+  name: redirect_uri
+  required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -374,7 +378,7 @@ script:
     description: Tests connectivity of the email.
     execution: false
     name: msgraph-mail-test
-  dockerimage: demisto/crypto:1.0.0.11650
+  dockerimage: demisto/crypto:1.0.0.12979
   isfetch: true
   longRunning: false
   longRunningPort: false
