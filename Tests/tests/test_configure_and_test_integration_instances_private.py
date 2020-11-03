@@ -75,7 +75,7 @@ def mocked_generic_request_func(self, path: str, method, body=None, accept=None,
     return None, None, None
 
 
-def test_find_needed_test_playbook_paths(mocker):
+def test_find_needed_test_playbook_paths():
     """
     Scenario: Matching a test which is needed with available playbooks found in the ID set.
     Given: Test filter with HelloWorld_Scan-Test in it and a sample test playbook conf
@@ -83,11 +83,10 @@ def test_find_needed_test_playbook_paths(mocker):
     Then: Return a set with one item in it where the item is the file_path for the test.
     :return:
     """
-    mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
-                 'CONTENT_PATH', '')
     sample_test_filter_path = './Utils/tests/test_data_old_content/sample_test_filter.txt'
     file_paths = find_needed_test_playbook_paths(test_playbooks=SAMPLE_TESTPLAYBOOK_CONF,
-                                                 filter_file_path=sample_test_filter_path)
+                                                 filter_file_path=sample_test_filter_path,
+                                                 path_to_content='')
     assert len(file_paths) == 1
     assert file_paths == TEST_PLAYBOOK_FILE_PATHS
 
