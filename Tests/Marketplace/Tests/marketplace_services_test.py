@@ -4,9 +4,11 @@ import json
 import os
 import random
 from unittest.mock import mock_open
+from google.cloud.storage.blob import Blob
+from distutils.version import LooseVersion
+
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig
-from google.cloud.storage.blob import Blob
 
 
 @pytest.fixture(scope="module")
@@ -307,6 +309,25 @@ class TestHelperFunctions:
         assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
 
+    @pytest.mark.parametrize('file_name, result', [
+        ('Author_image.png', False),
+        ('Integration_image.png', True),
+        ('Integration_image.jpeg', False)
+    ])
+    def test_is_integration_image(self, file_name, result):
+        """
+           Given:
+               - Integration image name.
+           When:
+               - When the integration name is an integration image.
+               - When the integration name is an author image.
+           Then:
+               - Validate that the answer is True
+               - Validate that the answer is False
+       """
+        from Tests.Marketplace.marketplace_services import is_integration_image
+        assert is_integration_image(file_name) == result
+
 
 class TestVersionSorting:
     """ Class for sorting of changelog.json versions
@@ -589,23 +610,107 @@ class TestImagesUpload:
         assert integration_images == expected_result
 
     def test_copy_and_upload_integration_images(self, mocker, dummy_pack):
+        """
+           Given:
+               - Integration image.
+           When:
+               - When integration image exists in index.
+           Then:
+               - Validate that the image has been copied from build bucket to prod bucket
+       """
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
         blob_name = "content/packs/TestPack/IntegrationName_image.png"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         mocker.patch("Tests.Marketplace.marketplace_services.is_integration_image", return_value=True)
-        dummy_prod_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
+        dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
         task_status = dummy_pack.copy_and_upload_integration_images(dummy_prod_bucket, dummy_build_bucket)
         assert task_status
 
     def test_copy_and_upload_author_image(self, mocker, dummy_pack):
+        """
+           Given:
+               - Author image.
+           When:
+               - When author image exists in index.
+           Then:
+               - Validate that the image has been copied from build bucket to prod bucket
+       """
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
         blob_name = "content/packs/TestPack/Author_image.png"
-        dummy_prod_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
+        dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
         task_status = dummy_pack.copy_and_upload_author_image(dummy_prod_bucket, dummy_build_bucket)
         assert task_status
 
+
+class TestCopyAndUploadToStorage:
+    """ Test class for copying and uploading a pack to storage.
+
+    """
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        return Pack(pack_name="TestPack", pack_path="dummy_path")
+
+    def test_copy_and_upload_to_storage_not_found(self, mocker, dummy_pack):
+        """
+           Given:
+               - Build and production bucket
+           When:
+               - When the latest version zip of the pack is missing in the build bucket
+           Then:
+               - Validate that the task fails and that the pack isn't skipped
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+
+        # case: latest version is not in build bucket
+        dummy_build_bucket.list_blobs.return_value = []
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
+                                                                          '2.0.0')
+        assert not task_status
+        assert not skipped_pack
+
+    def test_copy_and_upload_to_storage_skip(self, mocker, dummy_pack):
+        """
+           Given:
+               - Build and production bucket
+           When:
+               - When the latest version zip of the pack exists in both buckets
+           Then:
+               - Validate that the task succeeds and that the pack is skipped
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        dummy_prod_bucket.list_blobs.return_value = [Blob(blob_name, dummy_prod_bucket)]
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
+                                                                          '2.0.0')
+        assert task_status
+        assert skipped_pack
+
+    def test_copy_and_upload_to_storage_upload(self, mocker, dummy_pack):
+        """
+           Given:
+               - Build and production bucket
+           When:
+               - When the latest version zip of the pack exists only in build bucket
+           Then:
+               - Validate that the task succeeds and that the pack isn't skipped
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
+                                                                          '2.0.0')
+        assert task_status
+        assert not skipped_pack
 
 
 class TestLoadUserMetadata:
@@ -901,3 +1006,69 @@ class TestSetDependencies:
         p.set_pack_dependencies(metadata, generated_dependencies)
 
         assert metadata['dependencies'] == dependencies
+
+
+class TestReleaseNotes:
+    """ Test class for all the handling of release notes of a given pack.
+
+    """
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        return Pack(pack_name="TestPack", pack_path="dummy_path")
+
+    def test_get_changelog_latest_rn(self, mocker, dummy_pack):
+        """
+           Given:
+               - Changelog file path of the given pack withing the index dir
+           When:
+               - Getting the latest version in the changelog file
+           Then:
+               - Verify that the changelog file contents is what we expect
+               - Verify that the latest release notes version is what we expect
+       """
+        original_changelog = '''{
+                    "1.0.0": {
+                        "releaseNotes": "First release notes",
+                        "displayName": "1.0.0",
+                        "released": "2020-05-05T13:39:33Z"
+                    },
+                    "2.0.0": {
+                        "releaseNotes": "Second release notes",
+                        "displayName": "2.0.0",
+                        "released": "2020-06-05T13:39:33Z"
+                    }
+                }'''
+        original_changelog_dict = {
+                    "1.0.0": {
+                        "releaseNotes": "First release notes",
+                        "displayName": "1.0.0",
+                        "released": "2020-05-05T13:39:33Z"
+                    },
+                    "2.0.0": {
+                        "releaseNotes": "Second release notes",
+                        "displayName": "2.0.0",
+                        "released": "2020-06-05T13:39:33Z"
+                    }
+                }
+        mocker.patch('builtins.open', mock_open(read_data=original_changelog))
+        changelog, changelog_latest_rn_version = dummy_pack.get_changelog_latest_rn('fake_path')
+        assert changelog == original_changelog_dict
+        assert changelog_latest_rn_version == LooseVersion('2.0.0')
+
+    def test_create_local_changelog(self, mocker, dummy_pack):
+        """
+           Given:
+               - Changelog file path of the given pack withing the index dir
+           When:
+               - Creating the local changelog under the pack path
+           Then:
+               - Verify that the local changelog file has been created successfully
+       """
+        mocker.patch('os.path.exists', return_value=True)
+        mocker.patch('shutil.copyfile')
+        mocker.patch('os.path.isfile', return_value=True)
+        task_status = dummy_pack.create_local_changelog('fake_path')
+        assert task_status
