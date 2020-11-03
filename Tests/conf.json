@@ -4,7 +4,7 @@
     "tests": [
         {
             "integrations": "FireEyeNX",
-            "playbookID": "FireEyeNX-Test",
+            "playbookID": "FireEyeNX-Test"
         },
         {
             "integrations": "EmailRepIO",
