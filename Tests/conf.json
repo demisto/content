@@ -30,6 +30,11 @@
             "timeout": 500
         },
         {
+            "integrations": "Anomali Enterprise",
+            "playbookID": "Anomali Enterprise Forensic Search - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "RiskIQDigitalFootprint",
             "playbookID": "RiskIQDigitalFootprint-Test",
             "fromversion": "5.5.0",
