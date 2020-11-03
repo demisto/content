@@ -1196,7 +1196,7 @@ def test_files(content_path):
         if os.path.isdir(playbooks_root):
             for playbook_path, playbook in get_test_playbooks_in_dir(playbooks_root):
                 print(f"Playbook path is: {playbook_path}")
-                print(f"Playbook is: {playbook}")
+                print(f"Playbook is: {playbook.path}")
                 yield playbook_path, playbook
             if os.path.isdir(f'{playbooks_root}/NonCircleTests'):
                 for playbook_path, playbook in get_test_playbooks_in_dir(f'{playbooks_root}/NonCircleTests'):
