@@ -74,7 +74,7 @@ def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket, extract_destination_path, storage_bath_path=GCPConfig.STORAGE_BASE_PATH):
+def download_and_extract_index(storage_bucket, extract_destination_path, storage_bath_path):
     """Downloads and extracts index zip from cloud storage.
 
     Args:
@@ -805,7 +805,8 @@ def main():
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-                                                                                 extract_destination_path)
+                                                                                 extract_destination_path,
+                                                                                 GCPConfig.STORAGE_BASE_PATH)
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
