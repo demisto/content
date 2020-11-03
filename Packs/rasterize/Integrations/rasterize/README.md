@@ -13,6 +13,7 @@ Converts URLs, PDF files, and emails to an image file or PDF file.
 | chrome_options | Chrome options \(Advanced. Click \[?\]\ for details.) | False |
 | proxy | Use system proxy settings. | False |
 
+
 4. Click **Test** to validate the URLs, token, and connection.
 
 **Configuration Notes:**
