@@ -18,12 +18,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7a11e867-f09e-46fd-899f-19044b9fe1cf
+      id: a42eb1b0-e0f2-4a77-8828-ae1f8f4ec099
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 7a11e867-f09e-46fd-899f-19044b9fe1cf
+    taskid: a42eb1b0-e0f2-4a77-8828-ae1f8f4ec099
     timertriggers: []
     type: start
     view: |-
@@ -47,13 +47,13 @@ tasks:
       brand: ""
       description: This script gets all available devices from the IoT cloud and updates/creates
         new endpoint with custom attributes on ServiceNow
-      id: aadc009a-4fab-4dca-8f3f-5ae3b26bc286
+      id: 6d44f8d0-5aca-47fb-84d3-bf67c95083f3
       iscommand: false
       name: send_bulk_panw_iot_devices_to_servicenow
-      script: 189eabd5-8705-467a-8c5a-9499af595521
+      script: send_bulk_panw_iot_devices_to_servicenow
       type: regular
       version: -1
-    taskid: aadc009a-4fab-4dca-8f3f-5ae3b26bc286
+    taskid: 6d44f8d0-5aca-47fb-84d3-bf67c95083f3
     timertriggers: []
     type: regular
     view: |-
@@ -81,13 +81,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 4a131eb7-9279-42fe-8b96-9b2e84bbf726
+      id: f1d49ef6-5ce3-4ad1-8090-d8debb6cbd1e
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 4a131eb7-9279-42fe-8b96-9b2e84bbf726
+    taskid: f1d49ef6-5ce3-4ad1-8090-d8debb6cbd1e
     timertriggers: []
     type: regular
     view: |-
@@ -116,13 +116,13 @@ tasks:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
-      id: 4c618995-9c5a-4ac3-83f0-2adb485177d5
+      id: bff7bbb9-15cc-443a-8f5b-1ccf8b00f964
       iscommand: false
       name: Is servicenow available
       script: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: 4c618995-9c5a-4ac3-83f0-2adb485177d5
+    taskid: bff7bbb9-15cc-443a-8f5b-1ccf8b00f964
     timertriggers: []
     type: condition
     view: |-
@@ -144,7 +144,7 @@ tasks:
       integration-name:
         simple: servicenow
       message:
-        simple: Servicenow integration is not enabled yet
+        simple: ServiceNow instance is not enabled
       playbook-name:
         simple: panw_iot_servicenow_device_bulk_sync_playbook
       status:
@@ -158,13 +158,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: f9d74780-fbd8-438b-8f22-1ba65c40db03
+      id: 99081c0f-9ca7-426f-8f4e-df6bf3ae7cbf
       iscommand: true
       name: send-status-to-panw-iot-cloud
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: f9d74780-fbd8-438b-8f22-1ba65c40db03
+    taskid: 99081c0f-9ca7-426f-8f4e-df6bf3ae7cbf
     timertriggers: []
     type: regular
     view: |-
@@ -192,13 +192,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 21f52d7e-cbe6-4715-888a-c2e3eabf5377
+      id: be48c9c3-e6cd-4e19-81e7-37192cebc565
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 21f52d7e-cbe6-4715-888a-c2e3eabf5377
+    taskid: be48c9c3-e6cd-4e19-81e7-37192cebc565
     timertriggers: []
     type: regular
     view: |-
