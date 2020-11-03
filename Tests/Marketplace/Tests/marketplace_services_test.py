@@ -4,6 +4,10 @@ import json
 import os
 import random
 from unittest.mock import mock_open
+from mock_open import MockOpen
+from google.cloud.storage.blob import Blob
+from distutils.version import LooseVersion
+
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig
 
@@ -86,7 +90,7 @@ class TestMetadataParsing:
         """ Price field is not mandatory field and needs to be set to integer value.
 
         """
-        mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
                                                     pack_id="test_pack_id", integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
@@ -232,7 +236,7 @@ class TestHelperFunctions:
     def test_convert_price(self, price_value_input, expected_price, mocker):
         """ Tests that convert price is not failing to convert given input
         """
-        mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         price_result = convert_price(pack_id="dummy_id", price_value_input=price_value_input)
 
         assert price_result == expected_price
@@ -306,6 +310,25 @@ class TestHelperFunctions:
         assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
 
+    @pytest.mark.parametrize('file_name, result', [
+        ('Author_image.png', False),
+        ('Integration_image.png', True),
+        ('Integration_image.jpeg', False)
+    ])
+    def test_is_integration_image(self, file_name, result):
+        """
+           Given:
+               - Integration image name.
+           When:
+               - When the integration name is an integration image.
+               - When the integration name is an author image.
+           Then:
+               - Validate that the answer is True
+               - Validate that the answer is False
+       """
+        from Tests.Marketplace.marketplace_services import is_integration_image
+        assert is_integration_image(file_name) == result
+
 
 class TestVersionSorting:
     """ Class for sorting of changelog.json versions
@@ -362,7 +385,7 @@ class TestChangelogCreation:
                - return True
        """
         dummy_pack.current_version = '2.0.2'
-        mocker.patch("Tests.Marketplace.marketplace_services.print_color")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         mocker.patch("os.path.exists", return_value=True)
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
@@ -396,8 +419,7 @@ class TestChangelogCreation:
                - return False
        """
         dummy_pack.current_version = '2.0.0'
-        mocker.patch("Tests.Marketplace.marketplace_services.print_error")
-        mocker.patch("Tests.Marketplace.marketplace_services.print_color")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         mocker.patch("os.path.exists", return_value=True)
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
@@ -432,8 +454,7 @@ class TestChangelogCreation:
        """
         dummy_pack.current_version = '2.0.0'
         mocker.patch("os.path.exists", return_value=True)
-        mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
-        mocker.patch("Tests.Marketplace.marketplace_services.print_color")
+        mocker.patch("Tests.Marketplace.marketplace_services")
         dir_list = ['1_0_1.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
@@ -548,7 +569,7 @@ class TestImagesUpload:
                                            'image_path': f'/path/{temp_image_name}'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
         mocker.patch('builtins.open', mock_open(read_data="image_data"))
-        mocker.patch("Tests.Marketplace.marketplace_services.print")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
@@ -579,7 +600,7 @@ class TestImagesUpload:
                                            'image_path': f'/path/{temp_image_name}'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
         mocker.patch("builtins.open", mock_open(read_data="image_data"))
-        mocker.patch("Tests.Marketplace.marketplace_services.print")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
@@ -588,6 +609,114 @@ class TestImagesUpload:
         assert task_status
         assert len(expected_result) == len(integration_images)
         assert integration_images == expected_result
+
+    def test_copy_and_upload_integration_images(self, mocker, dummy_pack):
+        """
+           Given:
+               - Integration image.
+           When:
+               - When integration image exists in index.
+           Then:
+               - Validate that the image has been copied from build bucket to prod bucket
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        blob_name = "content/packs/TestPack/IntegrationName_image.png"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        mocker.patch("Tests.Marketplace.marketplace_services.is_integration_image", return_value=True)
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
+        task_status = dummy_pack.copy_and_upload_integration_images(dummy_prod_bucket, dummy_build_bucket)
+        assert task_status
+
+    def test_copy_and_upload_author_image(self, mocker, dummy_pack):
+        """
+           Given:
+               - Author image.
+           When:
+               - When author image exists in index.
+           Then:
+               - Validate that the image has been copied from build bucket to prod bucket
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        blob_name = "content/packs/TestPack/Author_image.png"
+        dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
+        task_status = dummy_pack.copy_and_upload_author_image(dummy_prod_bucket, dummy_build_bucket)
+        assert task_status
+
+
+class TestCopyAndUploadToStorage:
+    """ Test class for copying and uploading a pack to storage.
+
+    """
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        return Pack(pack_name="TestPack", pack_path="dummy_path")
+
+    def test_copy_and_upload_to_storage_not_found(self, mocker, dummy_pack):
+        """
+           Given:
+               - Build and production bucket
+           When:
+               - When the latest version zip of the pack is missing in the build bucket
+           Then:
+               - Validate that the task fails and that the pack isn't skipped
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+
+        # case: latest version is not in build bucket
+        dummy_build_bucket.list_blobs.return_value = []
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
+                                                                          '2.0.0')
+        assert not task_status
+        assert not skipped_pack
+
+    def test_copy_and_upload_to_storage_skip(self, mocker, dummy_pack):
+        """
+           Given:
+               - Build and production bucket
+           When:
+               - When the latest version zip of the pack exists in both buckets
+           Then:
+               - Validate that the task succeeds and that the pack is skipped
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        dummy_prod_bucket.list_blobs.return_value = [Blob(blob_name, dummy_prod_bucket)]
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
+                                                                          '2.0.0')
+        assert task_status
+        assert skipped_pack
+
+    def test_copy_and_upload_to_storage_upload(self, mocker, dummy_pack):
+        """
+           Given:
+               - Build and production bucket
+           When:
+               - When the latest version zip of the pack exists only in build bucket
+           Then:
+               - Validate that the task succeeds and that the pack isn't skipped
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
+                                                                          '2.0.0')
+        assert task_status
+        assert not skipped_pack
 
 
 class TestLoadUserMetadata:
@@ -607,10 +736,10 @@ class TestLoadUserMetadata:
                - Task should not fail with referenced before assignment error.
        """
         mocker.patch("os.path.exists", return_value=False)
-        print_error_mock = mocker.patch("Tests.Marketplace.marketplace_services.print_error")
+        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.error")
         task_status, user_metadata = dummy_pack.load_user_metadata()
 
-        assert print_error_mock.call_count == 1
+        assert logging_mock.call_count == 1
         assert not task_status
         assert user_metadata == {}
 
@@ -883,3 +1012,119 @@ class TestSetDependencies:
         p.set_pack_dependencies(metadata, generated_dependencies)
 
         assert metadata['dependencies'] == dependencies
+
+
+class TestReleaseNotes:
+    """ Test class for all the handling of release notes of a given pack.
+
+    """
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        return Pack(pack_name="TestPack", pack_path="dummy_path")
+
+    def test_get_changelog_latest_rn(self, mocker, dummy_pack):
+        """
+           Given:
+               - Changelog file path of the given pack withing the index dir
+           When:
+               - Getting the latest version in the changelog file
+           Then:
+               - Verify that the changelog file contents is what we expect
+               - Verify that the latest release notes version is what we expect
+       """
+        original_changelog = '''{
+                    "1.0.0": {
+                        "releaseNotes": "First release notes",
+                        "displayName": "1.0.0",
+                        "released": "2020-05-05T13:39:33Z"
+                    },
+                    "2.0.0": {
+                        "releaseNotes": "Second release notes",
+                        "displayName": "2.0.0",
+                        "released": "2020-06-05T13:39:33Z"
+                    }
+                }'''
+        original_changelog_dict = {
+            "1.0.0": {
+                "releaseNotes": "First release notes",
+                "displayName": "1.0.0",
+                "released": "2020-05-05T13:39:33Z"
+            },
+            "2.0.0": {
+                "releaseNotes": "Second release notes",
+                "displayName": "2.0.0",
+                "released": "2020-06-05T13:39:33Z"
+            }
+        }
+        mocker.patch('builtins.open', mock_open(read_data=original_changelog))
+        changelog, changelog_latest_rn_version = dummy_pack.get_changelog_latest_rn('fake_path')
+        assert changelog == original_changelog_dict
+        assert changelog_latest_rn_version == LooseVersion('2.0.0')
+
+    def test_create_local_changelog(self, mocker, dummy_pack):
+        """
+           Given:
+               - Changelog file path of the given pack withing the index dir
+           When:
+               - Creating the local changelog under the pack path
+           Then:
+               - Verify that the local changelog file has been created successfully
+       """
+        mocker.patch('os.path.exists', return_value=True)
+        mocker.patch('shutil.copyfile')
+        mocker.patch('os.path.isfile', return_value=True)
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        task_status = dummy_pack.create_local_changelog('fake_path')
+        assert task_status
+
+    def test_get_release_notes_lines_aggregate(self, mocker, dummy_pack):
+        """
+           Given:
+               - 3 release notes files, 1.0.0 is the latest rn, 1.0.1 and 1.0.2 are new rn files
+           When:
+               - Creating the release notes for the new version (1.0.2)
+           Then:
+               - Verify that the rn of 1.0.1 and 1.0.2 are aggregated
+       """
+        rn_one = '''
+#### Integrations
+##### CrowdStrike Falcon Intel v2
+- wow1
+        '''
+        rn_two = '''
+#### Integrations
+##### CrowdStrike Falcon Intel v2
+- wow2
+        '''
+        aggregated_rn = "\n#### Integrations\n##### CrowdStrike Falcon Intel v2\n- wow1\n- wow2\n"
+        open_mocker = MockOpen()
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md', '1_0_2.md'])
+        open_mocker['rn_dir_fake_path/1_0_1.md'].read_data = rn_one
+        open_mocker['rn_dir_fake_path/1_0_2.md'].read_data = rn_two
+        mocker.patch('builtins.open', open_mocker)
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'))
+        assert latest_rn == '1.0.2'
+        assert rn_lines == aggregated_rn
+
+    def test_get_release_notes_lines_updated_rn(self, mocker, dummy_pack):
+        """
+           Given:
+               - 2 release notes files, 1.0.1 is the latest rn and exists in the changelog
+           When:
+               - Creating the release notes for version 1.0.1
+           Then:
+               - Verify that the rn are the same
+       """
+        rn = '''
+#### Integrations
+##### CrowdStrike Falcon Intel v2
+- wow1
+        '''
+        mocker.patch('builtins.open', mock_open(read_data=rn))
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'))
+        assert latest_rn == '1.0.1'
+        assert rn_lines == rn

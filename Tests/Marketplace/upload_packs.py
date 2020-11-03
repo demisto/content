@@ -74,19 +74,22 @@ def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket, extract_destination_path):
+def download_and_extract_index(storage_bucket, extract_destination_path, storage_bath_path):
     """Downloads and extracts index zip from cloud storage.
 
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
+        storage_bath_path (str): the storage base path within the storage bucket
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
         str: downloaded index generation.
 
     """
-    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    logging.info(f"downloading and extracting {storage_bucket.name} index")
+    index_storage_path = os.path.join(storage_bath_path, f"{GCPConfig.INDEX_NAME}.zip")
+    logging.info(f"index path in bucket: {index_storage_path}")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -98,11 +101,13 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
 
     if not index_blob.exists():
         os.mkdir(index_folder_path)
+        logging.error(f"{storage_bucket.name} index blob does not exists")
         return index_folder_path, index_blob, index_generation
 
     index_blob.reload()
     index_generation = index_blob.generation
     index_blob.download_to_filename(download_index_path, if_generation_match=index_generation)
+    logging.info(f"{storage_bucket.name} index file exists locally: {os.path.exists(download_index_path)}")
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
@@ -424,7 +429,8 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
 
     try:
         private_index_path, _, _ = download_and_extract_index(private_storage_bucket,
-                                                              os.path.join(extract_destination_path, 'private'))
+                                                              os.path.join(extract_destination_path, 'private'),
+                                                              GCPConfig.PRIVATE_BASE_PATH)
         private_packs = get_private_packs(private_index_path)
         add_private_packs_to_index(index_folder_path, private_index_path)
         logging.info("Finished updating index with priced packs")
@@ -446,16 +452,16 @@ def _build_summary_table(packs_input_list, include_bucket_url=True, include_pack
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
-        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated RN", "Status"] if \
+        include_pack_status else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated RN"]
     table_fields = table_fields + ["Pack Bucket URL"] if include_bucket_url else table_fields
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
-            else [index, pack.name, pack.display_name, pack.latest_version]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated, pack_status_message] if \
+            include_pack_status else [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated]
         row = row + [pack.bucket_url] if include_bucket_url else row
         table.add_row(row)
 
@@ -799,7 +805,8 @@ def main():
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-                                                                                 extract_destination_path)
+                                                                                 extract_destination_path,
+                                                                                 GCPConfig.STORAGE_BASE_PATH)
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
@@ -819,6 +826,7 @@ def main():
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
 
     if private_bucket_name:  # Add private packs to the index
+        logging.info("Updating index with private packs")
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
                                                        index_folder_path)

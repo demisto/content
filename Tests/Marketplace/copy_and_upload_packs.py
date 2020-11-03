@@ -78,7 +78,7 @@ def upload_index_to_storage(index_folder_path, build_index_blob, prod_index_blob
             if copied_index.exists():
                 logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
             else:
-                logging.error(f"Failed copying index from, build index blob does not exists.")
+                logging.error("Failed copying index from, build index blob does not exists.")
                 sys.exit(1)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")

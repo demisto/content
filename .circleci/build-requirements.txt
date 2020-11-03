@@ -11,3 +11,4 @@ requests_mock==1.7.0
 google-cloud-storage==1.29.0
 google-cloud-bigquery==1.26.1
 prettytable==0.7.2
+mock-open==1.4.0
