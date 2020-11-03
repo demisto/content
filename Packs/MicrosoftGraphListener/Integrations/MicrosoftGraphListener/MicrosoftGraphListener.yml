@@ -15,6 +15,10 @@ configuration:
   name: enc_key
   required: true
   type: 4
+- display: Authorization code (received from the authorization step - see Detailed Instructions (?) section)
+  name: auth_code
+  required: false
+  type: 4
 - display: Fetch incidents
   name: isFetch
   required: false
