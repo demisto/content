@@ -4,13 +4,13 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://outlook.office365.com
-  display: Exchange Web Services (EWS) URL (e.g. https://outlook.office365.com)
-  name: url
+  display: Exchange Web Services (EWS) URI
+  name: ews_uri
   required: true
   type: 0
 - defaultvalue: https://ps.compliance.protection.outlook.com
-  display: Search and Compliance URI (e.g. https://ps.compliance.protection.outlook.com)
-  name: url
+  display: Search and Compliance URI
+  name: compliance_and_search_uri
   required: true
   type: 0
 - display: Trust any certificate (not secure)
@@ -209,11 +209,20 @@ script:
   - deprecated: false
     description: Start login using Oauth2.0.
     execution: false
-    name: ews-start-login
+    name: ews-start-auth
   - deprecated: false
     description: Complete login using Oauth2.0.
     execution: false
-    name: ews-complete-login
+    name: ews-complete-auth
+  - deprecated: false
+    description: Test login using Oauth2.0.
+    execution: false
+    name: ews-test-auth
+  - deprecated: false
+    description: Print integration context.
+    hidden: true
+    execution: false
+    name: ews-integration-context
   dockerimage: devdemisto/pwsh-ews:1.0.0.13006
   isfetch: false
   longRunning: false

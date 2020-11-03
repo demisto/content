@@ -268,14 +268,20 @@ class DemistoObject {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        return $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } })
+        return $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } }).context
     }
 
     SetIntegrationContext ($Value) {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        $this.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{ value = $Value } })
+        $this.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{ 
+            value = $Value
+            version =  @{
+                "version" = -1
+                "sequenceNumber" = -1
+                "primaryTerm" = -1
+            } } })
     }
 }
 
