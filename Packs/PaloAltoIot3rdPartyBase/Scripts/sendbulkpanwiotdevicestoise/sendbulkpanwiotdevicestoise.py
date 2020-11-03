@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 cisco_ise_field_map = {
     "ip": "ZingboxIpAddress",
     "ip address": "ZingboxIP",
@@ -52,6 +54,8 @@ while True:
             "using": "Palo Alto IoT Third-Party-Integration Base Instance"
         })
         return_error("Error, could not get devices from Iot Cloud")
+        return_error(resp[0])
+        break
     size = 0
     try:
         device_list = resp[0]['Contents']
@@ -59,6 +63,8 @@ while True:
         for device_map in device_list:
             if 'mac_address' in device_map:
                 mac = device_map['mac_address']
+                if mac == None or mac == "":
+                    continue
                 attr_map = {}
                 for field in device_map:
                     if device_map[field] == None or device_map[field] == "":

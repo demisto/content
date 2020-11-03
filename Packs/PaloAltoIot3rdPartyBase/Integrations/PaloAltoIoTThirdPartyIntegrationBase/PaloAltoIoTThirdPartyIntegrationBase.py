@@ -841,6 +841,8 @@ def convert_device_map_to_ise_attributes(args):
     device_list = demisto.args().get('device_maps')
     for device_map in device_list:
         if 'mac_address' in device_map:
+            if device_map['mac_address'] == None or device_map['mac_address'] == "":
+                continue
             attribute_list = {}
             attribute_list['mac'] = device_map['mac_address']
             zb_attributes = {}

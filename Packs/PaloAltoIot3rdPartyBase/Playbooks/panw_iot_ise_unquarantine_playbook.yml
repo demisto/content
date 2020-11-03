@@ -49,7 +49,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       brandname:
-        simple: Cisco ISE Copy
+        simple: Cisco ISE
     separatecontext: false
     skipunavailable: false
     task:
