@@ -1190,7 +1190,7 @@ def test_files(content_path):
     packs_root = f'{content_path}/Packs'
     print(packs_root)
     packs = filter(lambda x: x.is_dir(), os.scandir(packs_root))
-    print(packs)
+    print(packs.__str__())
     for pack_dir in packs:
         if pack_dir in SKIPPED_PACKS:
             continue
