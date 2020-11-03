@@ -411,34 +411,47 @@ def url_upload_raw(body):
 
 def file_upload(submit_type, sample, vm_profile_list,
                 skip_task_id=None, analyze_again=None, x_mode=None, message_id=None,
-                file_priority_q=None, src_ip=None, dest_ip=None, file_name=None):
+                file_priority_q=None, src_ip=None, dest_ip=None, file_name=None, given_url=None):
     body = {}  # type: dict
     body['data'] = {}
     data = {}  # type: dict
     data['data'] = {}
+    submit_type_with_file = [0, 2]
     # Add missing prefix to url
-    if submit_type != 0:
+    if submit_type not in submit_type_with_file:
         if not sample.startswith('http://') and not sample.startswith('https://'):
             if sample.startswith('www.'):
                 sample = "http://" + sample
             else:
                 sample = "http://www." + sample  # disable-secrets-detection
+    if submit_type == 2:
+        if not given_url.startswith('http://') and not given_url.startswith('https://'):
+            if given_url.startswith('www.'):
+                given_url = "http://" + given_url
+            else:
+                given_url = "http://www." + given_url  # disable-secrets-detection
 
     data['data']['vmProfileList'] = vm_profile_list
     data['data']['submitType'] = submit_type
     data['data']['messageId'] = message_id
     data['data']['srcIp'] = src_ip
     data['data']['destIp'] = dest_ip
-    data['data']['url'] = '' if submit_type == 0 else sample
+    if submit_type == 0:
+        data['data']['url'] = ''
+    elif submit_type == 2:
+        data['data']['url'] = given_url
+    else:
+        data['data']['url'] = sample
+    #data['data']['url'] = '' if submit_type == 0 else sample
     data['data']['skipTaskId'] = int(skip_task_id) if skip_task_id else None
     data['data']['analyzeAgain'] = analyze_again
     data['data']['xMode'] = x_mode
     data['data']['filePriorityQ'] = file_priority_q if file_priority_q else 'run_now'
 
     body['data'] = json.dumps(data)
-    file_entry_id = sample if submit_type == 0 else ''
-    filename_to_upload = file_name if (submit_type == 0 and file_name) else ''
-    if submit_type == 0:
+    file_entry_id = sample if submit_type in submit_type_with_file else ''
+    filename_to_upload = file_name if (submit_type in submit_type_with_file and file_name) else ''
+    if submit_type in submit_type_with_file:
         result_obj = file_upload_raw(body, file_entry_id, filename_to_upload)
     elif submit_type == 1:
         result_obj = url_upload_raw(body)
@@ -450,18 +463,24 @@ def file_upload(submit_type, sample, vm_profile_list,
 
 def file_upload_command():
     args = demisto.args()
-
-    if ('entryID' in args and 'url' in args) or ('entryID' not in args and 'url' not in args):
+    submit_type_with_url_arg = ['1', '2', '3']
+    if ('entryID' in args and 'url' in args and not args['submitType'] == '2') \
+            or ('entryID' not in args and 'url' not in args):
         return_error('You must submit one and only one of the following: url, entryID')
-    if ('entryID' in args and args['submitType'] != '0') or\
-            ('url' in args and args['submitType'] != '1'):
-        return_error(
-            'In order to detonate a file submitType must be 0'
-            ' and an entryID of a file must be given.\n'
-            'In order to detonate a url submitType must be 1'
-            ' and a url must be given.')
+    # if ('entryID' in args and args['submitType'] != '0') or \
+    #         ('url' in args and args['submitType'] not in submit_type_with_url_arg):
+    #     return_error(
+    #         'In order to detonate a file submitType must be 0'
+    #         ' and an entryID of a file must be given.\n'
+    #         'In order to detonate a url submitType must be 1'
+    #         ' and a url must be given.')
 
-    sample = args['entryID'] if 'entryID' in args else args['url']
+    if args['submitType'] == '2':
+        # should have both entryID and url
+        given_url = args['url']
+        sample = args['entryID']
+    else:
+        sample = args['entryID'] if 'entryID' in args else args['url']
     vm_profile_list = int(args['vmProfileList']) if 'vmProfileList' in args else None
     analyze_again = int(args['analyze_again']) if 'analyze_again' in args else None
     skip_task_id = int(args['skip_task_id']) if 'skip_task_id' in args else None
@@ -474,7 +493,7 @@ def file_upload_command():
 
     result = file_upload(int(args['submitType']), sample, vm_profile_list,
                          skip_task_id, analyze_again, x_mode, message_id, file_priority_q,
-                         src_ip, dest_ip, file_name)
+                         src_ip, dest_ip, file_name, given_url)
     human_readable = tableToMarkdown(
         'ATD sandbox sample submission', prettify_file_upload_res(result['resultObj']),
         ['taskId', 'jobId', 'messageId', 'url', 'dest_ip', 'src_ip', 'MD5', 'SHA1', 'SHA256'],
@@ -680,7 +699,7 @@ def detonate(submit_type, sample, timeout, report_type, threshold, file_name):
 
     return_error("Timeout due to no answer after " + demisto.args()['timeout']
                  + "seconds. Check the status using '!atd-check-status' in a while"
-                 " and if 'completed' execute '!atd-get-report'.")
+                   " and if 'completed' execute '!atd-get-report'.")
 
 
 def return_report(uri_suffix, task_id, report_type, upload_data, status, threshold):
