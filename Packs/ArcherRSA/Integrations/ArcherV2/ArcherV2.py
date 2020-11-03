@@ -504,8 +504,8 @@ def generate_field_value(client, field_name, field_data, field_val):
     if field_type == 4:
         field_data = client.get_field_value_list(field_data['FieldId'])
         list_ids = []
-        # if not isinstance(field_val, list):
-        #     field_val = [field_val]
+        if not isinstance(field_val, list):
+            field_val = [field_val]
         for item in field_val:
             tmp_id = next(f for f in field_data['ValuesList'] if f['Name'] == item)
             if tmp_id:

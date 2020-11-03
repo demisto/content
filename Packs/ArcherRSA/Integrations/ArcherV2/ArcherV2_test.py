@@ -322,6 +322,14 @@ def test_generate_field_ip_address_input():
 
 
 def test_generate_field_value(requests_mock):
+    """
+    Given
+    - generate_field_value on Values List type
+    When
+    - the source is not a list
+    Then
+    - ensure generate_field_value will handle it
+    """
     cache = demisto.getIntegrationContext()
     cache['fieldValueList'] = {}
     demisto.setIntegrationContext(cache)
