@@ -491,7 +491,7 @@ tasks:
       integration-name:
         simple: servicenow
       message:
-        simple: PANW IoT Integration is not enabled
+        simple: ServiceNow instance is not enabled
       playbook-name:
         simple: panw_iot_servicenow_device_incremental_playbook
       status:
@@ -505,13 +505,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 15621416-3b15-427e-8d27-f99f9bc4247f
+      id: f982b92b-2621-4c2d-8756-c7473e0d12eb
       iscommand: true
       name: send disabled status back to PANW iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 15621416-3b15-427e-8d27-f99f9bc4247f
+    taskid: f982b92b-2621-4c2d-8756-c7473e0d12eb
     timertriggers: []
     type: regular
     view: |-
@@ -624,13 +624,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 2a592c06-c64d-43ed-82f8-89307f97ecee
+      id: b888dd73-9909-4d36-831b-76f93f334dcd
       iscommand: true
       name: send error status back to PANW IoT
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 2a592c06-c64d-43ed-82f8-89307f97ecee
+    taskid: b888dd73-9909-4d36-831b-76f93f334dcd
     timertriggers: []
     type: regular
     view: |-
@@ -842,7 +842,7 @@ tasks:
       integration-name:
         simple: servicenow
       message:
-        simple: PANW IoT Integration is not enabled
+        simple: Failed to get device endpoints to export to ServiceNow
       playbook-name:
         simple: panw_iot_servicenow_device_incremental_playbook
       status:
@@ -856,13 +856,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 3e0042de-261a-411a-807e-00045c4fa228
+      id: 66c6d212-078f-40aa-84dc-d74541512dc4
       iscommand: true
       name: send error status back to PANW iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 3e0042de-261a-411a-807e-00045c4fa228
+    taskid: 66c6d212-078f-40aa-84dc-d74541512dc4
     timertriggers: []
     type: regular
     view: |-

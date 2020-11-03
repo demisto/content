@@ -198,7 +198,7 @@ tasks:
       integration-name:
         simple: servicenow
       message:
-        simple: Servicenow integration is disabled
+        simple: ServiceNow instance is not enabled
       playbook-name:
         simple: panw_iot_servicenow_alert_playbook
       status:
@@ -212,13 +212,13 @@ tasks:
     task:
       brand: Palo Alto IoT Third-Party-Integration Base
       description: sends a status message back to PANW IOT cloud
-      id: 5c89878e-a4d4-43e3-8070-1f48f2cb1cd8
+      id: 16c6e88d-a386-424a-80fc-c3b67a5ab88f
       iscommand: true
       name: send disabled status back to panw iot
       script: Palo Alto IoT Third-Party-Integration Base|||send-status-to-panw-iot-cloud
       type: regular
       version: -1
-    taskid: 5c89878e-a4d4-43e3-8070-1f48f2cb1cd8
+    taskid: 16c6e88d-a386-424a-80fc-c3b67a5ab88f
     timertriggers: []
     type: regular
     view: |-
