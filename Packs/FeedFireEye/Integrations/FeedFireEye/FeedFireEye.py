@@ -594,10 +594,18 @@ class Client(BaseClient):
         demisto.debug('Fetching raw reports from feed fully completed')
         return raw_reports, last_reports_fetch_time
 
-    def build_iterator(self, limit: int) -> List:
-        raw_indicators, relationships, stix_entities, last_indicators_fetch_time = \
-            self.fetch_all_indicators_from_api(limit)
-        raw_reports, last_reports_fetch_time = self.fetch_all_reports_from_api(limit)
+    def build_iterator(self, collections_to_fetch: str, limit: int) -> List:
+        if 'Indicators' in collections_to_fetch:
+            raw_indicators, relationships, stix_entities, last_indicators_fetch_time = \
+                self.fetch_all_indicators_from_api(limit)
+        else:
+            raw_indicators, relationships, stix_entities, last_indicators_fetch_time = \
+                [], {}, {}, get_last_fetch_times()[0]
+
+        if 'Reports' in collections_to_fetch:
+            raw_reports, last_reports_fetch_time = self.fetch_all_reports_from_api(limit)
+        else:
+            raw_reports, last_reports_fetch_time = [], get_last_fetch_times()[1]
 
         stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports,
                                          self.malicious_threshold, self.reputation_interval)
@@ -616,16 +624,17 @@ class Client(BaseClient):
         return indicators + stix_indicators + reports
 
 
-def test_module(client: Client):
-    client.build_iterator(limit=10)
+def test_module(client: Client, collections_to_fetch: str):
+    client.build_iterator(collections_to_fetch, limit=10)
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client):
+def get_indicators_command(client: Client, collections_to_fetch: str):
     """Retrieves indicators from the feed to the war-room.
 
     Args:
         client (Client): Client object configured according to instance arguments.
+        collections_to_fetch (str): Which collection to fetch from feed.
 
     Returns:
         Tuple of:
@@ -633,7 +642,7 @@ def get_indicators_command(client: Client):
             Dict. The raw data of the indicators.
     """
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators, raw_response = fetch_indicators_command(client, limit)
+    indicators, raw_response = fetch_indicators_command(client, collections_to_fetch, limit)
 
     human_readable = tableToMarkdown('Indicators from FireEye Feed:', indicators,
                                      headers=['value', 'type', 'rawJSON'], removeNull=True)
@@ -665,10 +674,11 @@ def add_fields_if_exists(client: Client, fields_dict: Dict) -> Dict:
     return fields_dict
 
 
-def fetch_indicators_command(client: Client, limit: int = -1) -> Tuple[List, List]:
+def fetch_indicators_command(client: Client, collections_to_fetch: str, limit: int = -1) -> Tuple[List, List]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
+        collections_to_fetch (str): Which collection to fetch from feed.
         limit (int): Maximum number of indicators to return.
     Returns:
         Tuple of:
@@ -676,7 +686,7 @@ def fetch_indicators_command(client: Client, limit: int = -1) -> Tuple[List, Lis
             Dict. Data to be entered to context.
             Dict. The raw data of the indicators.
     """
-    iterator = client.build_iterator(limit)
+    iterator = client.build_iterator(collections_to_fetch, limit)
     indicators = []
     raw_response = []
 
@@ -725,6 +735,7 @@ def main():
 
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
+    collections_to_fetch = demisto.params().get('collections_to_fetch')
     threshold = demisto.params().get('threshold', '70')
     reputation_interval = demisto.params().get('reputation_interval', '30')
     verify_threshold_reputation_interval_types(threshold, reputation_interval)
@@ -744,13 +755,13 @@ def main():
         client = Client(public_key, private_key, int(threshold), int(reputation_interval),
                         polling_timeout, insecure, proxy, feedTags, tlp_color)
         if command == 'test-module':
-            return_outputs(*test_module(client))
+            return_outputs(*test_module(client, collections_to_fetch))
         elif command == 'fireeye-reset-fetch-indicators':
             return_outputs(*reset_fetch_command())
         elif command == 'fireeye-get-indicators':
-            return_outputs(*get_indicators_command(client))
+            return_outputs(*get_indicators_command(client, collections_to_fetch))
         elif command == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client)
+            indicators, _ = fetch_indicators_command(client, collections_to_fetch)
 
             total_fetched = 0
             demisto.debug('Starting CreateIndicators part')
