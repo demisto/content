@@ -244,7 +244,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: From which signature to return results(used for pagaing). Default is 0.
+      description: From which signature to return results(used for paging). Default is 0.
       isArray: false
       name: from
       required: false
