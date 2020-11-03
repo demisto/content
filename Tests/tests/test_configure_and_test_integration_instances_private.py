@@ -127,7 +127,7 @@ def test_create_private_test_pack_zip(mocker):
         mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
                      'CONTENT_TEST_ZIP', dirpath + 'test.zip')
         mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.PRIVATE_'
-                     'CONTENT_PATH', '.')
+                     'CONTENT_PATH', '~')
         mocker.patch('shutil.copy')
         create_private_test_pack_zip(id_set)
         #  Opening created pack
