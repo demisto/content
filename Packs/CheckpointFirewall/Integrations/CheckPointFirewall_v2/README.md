@@ -2732,3 +2732,68 @@ Retrieve data about objects.
 >|name|uid|type|
 >|---|---|---|
 >| All_Internet | f90e0a2b-f166-427a-b47f-a107b6fe43b9 | address-range |
+
+
+### checkpoint-package-list
+***
+Get checkpoint-packages details.
+
+
+#### Base Command
+
+`checkpoint-package-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | Object unique identifier or name. | Required | 
+| session_id | Execute command with a specific session ID. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.Packages.name | String | The name of the package. |
+| CheckPoint.Packages.target-name | String | The name of the targe. |
+| CheckPoint.Packages.target-uid | String | The UID of the target. |
+| CheckPoint.Packages.revision.domain.domain-type | String | The type of the domain. |
+| CheckPoint.Packages.revision.domain.name | String | The name of the domain. |
+| CheckPoint.Packages.revision.domain.uid | String | The UID of the domain. |
+| CheckPoint.Packages.revision.type | String | The type of the revision. |
+| CheckPoint.Packages.revision.uid | String | The UID of the revision. |
+
+
+#### Command Example
+```!checkpoint-package-list identifier=Standard session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "Packages": {
+            "name": "Standard",
+            "target-name": "Host1",
+            "target-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+            "revision": {
+                "domain": {
+                    "name": "test",
+                    "domain-type": "domain",
+                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                },
+                "type": "session",
+                "uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint data for objects:
+>|target-name|name|target-uid|revision
+>|---|---|---|---|
+>| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde | "domain": {<br/>"name": "test",<br/>"domain-type": "domain",<br/>"uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/>},<br/>"type": "session",<br/>"uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/> |
+
