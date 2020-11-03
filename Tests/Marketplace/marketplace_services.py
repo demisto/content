@@ -174,6 +174,7 @@ class Pack(object):
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
+        self._aggregated = False  # weather the pack's rn was aggregated or not.
 
     @property
     def name(self):
@@ -320,6 +321,12 @@ class Pack(object):
         """ str: pack bucket_url.
         """
         return self._bucket_url
+
+    @property
+    def aggregated(self):
+        """ str: pack aggregated release not or not.
+        """
+        return self._aggregated
 
     @bucket_url.setter
     def bucket_url(self, bucket_url):
@@ -956,6 +963,7 @@ class Pack(object):
                                                        pack_versions_dict=pack_versions_dict,
                                                        pack_metadata={}, pack_header_wrap=False,
                                                        add_whitespaces=False, rn_wrapper='\n')
+            self._aggregated = True
         else:
             # In case where the pack is up to date, i.e. latest changelog is latest rn file
             with open(os.path.join(release_notes_dir, f"{latest_release_notes.replace('.', '_')}.md"), 'r') \
