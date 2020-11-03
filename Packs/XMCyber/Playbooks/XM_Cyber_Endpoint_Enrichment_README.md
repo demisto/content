@@ -43,4 +43,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![XM Cyber Endpoint Enrichment](Insert the link to your image here)
+![XM Cyber Endpoint Enrichment](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/XM_Cyber_Endpoint_Enrichment.png)

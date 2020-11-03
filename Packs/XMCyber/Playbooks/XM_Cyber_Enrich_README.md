@@ -41,4 +41,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![XM Cyber Enrich](Insert the link to your image here)
+![XM Cyber Enrich](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/XM_Cyber_Enrich.png)
