@@ -938,7 +938,7 @@ class Pack(object):
         found_versions: list = list()
         pack_versions_dict: dict = dict()
 
-        for filename in os.listdir(release_notes_dir):
+        for filename in sorted(os.listdir(release_notes_dir)):
             _version = filename.replace('.md', '')
             version = _version.replace('_', '.')
 
