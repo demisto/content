@@ -35,8 +35,9 @@ configuration:
   required: false
   type: 8
   hidden: true
-- additionalinfo: Will run the EDL service on this port from within Demisto.
-    Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
+- additionalinfo: Will run the EDL service on this port from within Demisto. Requires
+    a unique port for each long-running integration instance. Do not use the same
+    port for multiple instances.
   display: Listen Port
   name: longRunningPort
   required: true
@@ -62,8 +63,8 @@ configuration:
   name: url_port_stripping
   required: false
   type: 8
-- additionalinfo: If selected, any URL entry that
-    is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.
+- additionalinfo: If selected, any URL entry that is not compliant with PAN-OS EDL
+    URL format is dropped instead of being rewritten.
   display: PAN-OS URL Format Drop Invalid Entries
   hidden: false
   name: drop_invalids
@@ -112,13 +113,14 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: False
-      description: If True, any URL entry that is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.
+      defaultValue: false
+      description: If True, any URL entry that is not compliant with PAN-OS EDL URL
+        format is dropped instead of being rewritten.
       isArray: false
       name: drop_invalids
       predefined:
-        - 'False'
-        - 'True'
+      - 'False'
+      - 'True'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -144,7 +146,7 @@ script:
     description: Updates values stored in the EDL (only available On-Demand).
     execution: false
     name: edl-update
-  dockerimage: demisto/teams:1.0.0.7832
+  dockerimage: demisto/teams:1.0.0.13080
   feed: false
   isfetch: false
   longRunning: true
