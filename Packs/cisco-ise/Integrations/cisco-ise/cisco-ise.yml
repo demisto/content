@@ -309,6 +309,17 @@ script:
     - contextPath: CiscoISE.Endpoint.Link
       description: 'The link for the endpoint '
       type: String
+  - arguments:
+    - description: mac address of new endpoint
+      name: mac_address
+      required: true
+    - description: a list of custom attributes
+      name: attributes_map
+    description: Given a map and attribute list, a new endpoint is created on ISE
+    name: cisco-ise-create-endpoint
+    outputs:
+    - contextPath: CiscoISE.Endpoint.MACAddress
+      description: mac address
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false

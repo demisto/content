@@ -624,6 +624,32 @@ def get_blacklist_group_id():
 
     return response
 
+def create_new_endpoint():
+
+    attr_map = demisto.args().get('attributes_map')
+    mac_address = demisto.args().get('mac_address')
+    if not is_mac_address(mac_address):
+        return_error('Please enter a valid mac address')
+    attr_map = json.loads(attr_map)
+    data = {
+        "ERSEndPoint": {
+            "mac": mac_address,
+            "customAttributes": {
+                "customAttributes": attr_map
+            }
+        }
+    }
+
+    api_endpoint = '/ers/config/endpoint'
+    res = http_request('POST', api_endpoint, data=json.dumps(data))
+    endpoint_context = {
+        'MACAddress': mac_address,
+    }
+
+    context = {
+        'CiscoISE.Endpoint(val.Name && val.Name === obj.Name)': endpoint_context
+    }
+    return_outputs(f'Endpoint "{mac_address}" has been created successfully', context)
 
 def get_blacklist_endpoints_request():
 
@@ -698,6 +724,8 @@ def main():
             assign_policy_to_endpoint()
         elif demisto.command() == 'cisco-ise-get-blacklist-endpoints':
             get_blacklist_endpoints()
+        elif demisto.command() == 'cisco-ise-create-endpoint':
+            create_new_endpoint()
 
     except Exception as e:
         return_error(str(e))
