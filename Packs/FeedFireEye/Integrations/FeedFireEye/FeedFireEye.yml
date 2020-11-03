@@ -79,9 +79,9 @@ configuration:
   display: Collection(s) to fetch from feed
   name: collections_to_fetch
   options:
+  - Indicators and Reports
   - Indicators
   - Reports
-  - Indicators and Reports
   required: true
   type: 15
 - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year). Leave empty to fetch from the first indicator available.
