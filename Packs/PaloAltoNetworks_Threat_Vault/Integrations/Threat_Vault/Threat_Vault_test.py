@@ -355,7 +355,7 @@ def test_signature_search_results_anti_spyware_cve(mocker):
             }
     }
     expected_hr = '### Signature search are showing 1 of 1 results:\n|signatureId|signatureName|cve|' \
-                  'signatureType|status|firstReleaseTime|latestReleaseTime|\n|---|---|---|---|\n|' \
+                  'signatureType|status|firstReleaseTime|latestReleaseTime|\n|---|---|---|---|---|---|---|\n|' \
                   ' 38692 | Adobe Flash Player Use After Free Vulnerability | CVE-2015-8650 |' \
                   ' vulnerability | released | 2015-12-28 UTC | 2020-10-30 UTC |\n'
 
