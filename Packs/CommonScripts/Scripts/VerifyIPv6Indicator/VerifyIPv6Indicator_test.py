@@ -1,4 +1,3 @@
-import demistomock as demisto
 from VerifyIPv6Indicator import is_valid_ipv6_address, main
 import pytest
 
