@@ -89,6 +89,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path, storage
     """
     logging.info(f"downloading and extracting {storage_bucket.name} index")
     index_storage_path = os.path.join(storage_bath_path, f"{GCPConfig.INDEX_NAME}.zip")
+    logging.info(f"index path in bucket: {index_storage_path}")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
