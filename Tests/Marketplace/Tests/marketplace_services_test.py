@@ -4,6 +4,7 @@ import json
 import os
 import random
 from unittest.mock import mock_open
+from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 
@@ -1072,3 +1073,52 @@ class TestReleaseNotes:
         mocker.patch('os.path.isfile', return_value=True)
         task_status = dummy_pack.create_local_changelog('fake_path')
         assert task_status
+
+    def test_get_release_notes_lines_aggregate(self, mocker, dummy_pack):
+        """
+           Given:
+               - 3 release notes files, 1.0.0 is the latest rn, 1.0.1 and 1.0.2 are new rn files
+           When:
+               - Creating the release notes for the new version (1.0.2)
+           Then:
+               - Verify that the rn of 1.0.1 and 1.0.2 are aggregated
+       """
+        rn_one = '''
+#### Integrations
+##### CrowdStrike Falcon Intel v2
+- wow1
+        '''
+        rn_two = '''
+#### Integrations
+##### CrowdStrike Falcon Intel v2
+- wow2
+        '''
+        aggregated_rn = "\n#### Integrations\n##### CrowdStrike Falcon Intel v2\n- wow1\n- wow2\n"
+        open_mocker = MockOpen()
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md', '1_0_2.md'])
+        open_mocker['rn_dir_fake_path/1_0_1.md'].read_data = rn_one
+        open_mocker['rn_dir_fake_path/1_0_2.md'].read_data = rn_two
+        mocker.patch('builtins.open', open_mocker)
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'))
+        assert latest_rn == '1.0.2'
+        assert rn_lines == aggregated_rn
+
+    def test_get_release_notes_lines_updated_rn(self, mocker, dummy_pack):
+        """
+           Given:
+               - 2 release notes files, 1.0.1 is the latest rn and exists in the changelog
+           When:
+               - Creating the release notes for version 1.0.1
+           Then:
+               - Verify that the rn are the same
+       """
+        rn = '''
+#### Integrations
+##### CrowdStrike Falcon Intel v2
+- wow1
+        '''
+        mocker.patch('builtins.open', mock_open(read_data=rn))
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'))
+        assert latest_rn == '1.0.1'
+        assert rn_lines == rn
