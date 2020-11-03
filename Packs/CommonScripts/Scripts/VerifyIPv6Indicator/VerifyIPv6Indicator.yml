@@ -1,6 +1,6 @@
 args:
 - default: true
-  description: The URLs or emails to process.
+  description: The ipv6 to vriefy.
   isArray: true
   name: input
   required: false
