@@ -5,7 +5,7 @@ FAIL_STATUS_MSG = "Command send-mail in module EWS Mail Sender requires argument
 
 
 def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-               entry_id_list, email_latest_message,  additional_header):
+               entry_id_list, email_latest_message):
     """Send email reply.
     Args:
         incident_id: The incident ID.
@@ -17,11 +17,9 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
         reply_html_body: The email html body.
         entry_id_list: The files entry ids list.
         email_latest_message: The latest message ID in the email thread to reply to.
-        additional_header: The additional header.
-
     """
     email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
-                                    reply_html_body, entry_id_list, email_latest_message,  additional_header)
+                                    reply_html_body, entry_id_list, email_latest_message)
 
     status = email_reply[0].get('Contents', '')
     if status != FAIL_STATUS_MSG and status:
