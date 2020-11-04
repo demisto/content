@@ -13,9 +13,6 @@ from Tests.tests.constants_testing import SAMPLE_TESTPLAYBOOK_CONF
 from Tests.test_content import ParallelPrintsManager
 
 
-TEST_PLAYBOOK_FILE_PATHS = {'./Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml'}
-
-
 class ServerMock:
 
     def __init__(self):
@@ -86,9 +83,9 @@ def test_find_needed_test_playbook_paths():
     sample_test_filter_path = './Utils/tests/test_data_old_content/sample_test_filter.txt'
     file_paths = find_needed_test_playbook_paths(test_playbooks=SAMPLE_TESTPLAYBOOK_CONF,
                                                  filter_file_path=sample_test_filter_path,
-                                                 path_to_content='')
+                                                 path_to_content='.')
     assert len(file_paths) == 1
-    assert file_paths == TEST_PLAYBOOK_FILE_PATHS
+    assert file_paths == {'./Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml'}
 
 
 def test_create_install_private_testing_pack(mocker):
@@ -122,7 +119,8 @@ def test_create_private_test_pack_zip(mocker):
     with tempfile.TemporaryDirectory() as dirpath:
         id_set = get_json_file('./Utils/tests/id_set.json')
         mocker.patch('Tests.private_build.configure_and_test_integration_instances_private.find_'
-                     'needed_test_playbook_paths', return_value=TEST_PLAYBOOK_FILE_PATHS)
+                     'needed_test_playbook_paths', return_value={'./Packs/HelloWorld/TestPlaybooks/'
+                                                                 'playbook-HelloWorld_Scan-Test.yml'})
         mocker.patch('shutil.copy')
         create_private_test_pack_zip('.', id_set.get('TestPlaybooks'),
                                      './Utils/tests/test_data_old_content/sample_test_filter.txt', dirpath)
