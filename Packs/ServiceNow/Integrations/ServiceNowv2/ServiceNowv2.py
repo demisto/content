@@ -1917,7 +1917,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     # Notify hte user that test button can't be used when using OAuth 2.0:
     if client.use_oauth:
         return_error('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-login command '
-                     'followed by the !servicenow-oauth-test command to test the instance.')
+                     'followed by the !servicenow-test command to test the instance.')
 
     test_instance(client)
     return 'ok', {}, {}, True
