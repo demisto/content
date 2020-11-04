@@ -19,24 +19,19 @@ from Tests.configure_and_test_integration_instances import Build, configure_serv
     test_pack_metadata, options_handler
 
 
-def create_install_private_testing_pack(build: Build, prints_manager: ParallelPrintsManager,
-                                        path_to_content: str = '/home/runner/work/content-private/'
-                                                               'content-private/content'):
+def create_install_private_testing_pack(build: Build, prints_manager: ParallelPrintsManager, test_pack_zip_path: str):
     """
     Creates and installs the test pack used in the private build. This pack contains the test
     playbooks and test scripts that will be used for the tests.
 
     :param build: Build object containing the build settings.
     :param prints_manager: PrintsManager object used for reporting status. Will be deprecated.
-    :param path_to_content: Path to the content root.
+    :param test_pack_zip_path: Path to test_pack zip.
     :return: No object is returned. nightly_install_packs will wait for the process to finish.
     """
     threads_print_manager = ParallelPrintsManager(len(build.servers))
-    test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', [])
-    create_private_test_pack_zip(test_playbooks_from_id_set)
-    private_content_test_zip = path_to_content + '/test_pack.zip'
     nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs,
-                          pack_path=private_content_test_zip)
+                          pack_path=test_pack_zip_path)
 
     prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0,
                                  include_timestamp=True)
@@ -90,7 +85,11 @@ def find_needed_test_playbook_paths(test_playbooks: List[dict],
                 for test_pb in test_playbooks:
                     if test_clean in test_pb:
                         tests_file_paths.add(path_to_content + '/' + test_pb[test_clean].get("file_path"))
-    print(f"Test files to install are: {tests_file_paths}")
+    #  Adding contents of DeveloperPack for testing.
+    #  TODO: Remove this when we have migrated test content out of this pack.
+    developer_pack_items = glob.glob(path_to_content + "/Packs/DeveloperTools/*/*.yml")
+    for dev_pack_item in developer_pack_items:
+        tests_file_paths.add(dev_pack_item)
     return tests_file_paths
 
 
@@ -128,36 +127,6 @@ def write_test_pack_zip(tests_file_paths: set, path_to_content: str =
     return private_content_test_zip
 
 
-def create_private_test_pack_zip(path_to_content: str = '/home/runner/work/content-private/content-private/content',
-                                 test_playbooks: List[dict] = None, filter_file_path: str = "./Tests/filter_file.txt",
-                                 zip_destination_dir: str = '/home/runner/work/content-private/content-private/content'
-                                 ):
-    """
-    Creates the test pack with all of the scripts and dependant playbooks for the private tests.
-
-    :param path_to_content: Path to the content root.
-    :param test_playbooks: Test playbook list from ID Set.
-    :param filter_file_path: Path to the test filter txt file.
-    :param zip_destination_dir: Directory to create the test pack in.
-    :return: None
-    """
-    #  Finding test playbook paths needed for testing
-    tests_file_paths = find_needed_test_playbook_paths(test_playbooks, filter_file_path, path_to_content)
-    #  Adding contents of DeveloperPack for testing.
-    #  TODO: Remove this when we have migrated test content out of this pack.
-    developer_pack_items = glob.glob(path_to_content + "/Packs/DeveloperTools/*/*.yml")
-    for dev_pack_item in developer_pack_items:
-        tests_file_paths.add(dev_pack_item)
-    #  Write the test pack using collected file paths
-    print(tests_file_paths)
-    private_content_test_zip = write_test_pack_zip(tests_file_paths, path_to_content, zip_destination_dir)
-    #  Copy the test pack to the private artifacts directory.
-    shutil.copy(private_content_test_zip,
-                '/home/runner/work/content-private/content'
-                '-private/content/artifacts/packs/test_pack.zip')
-    print("Finished creating test pack.")
-
-
 def main():
     build = Build(options_handler())
     prints_manager = ParallelPrintsManager(1)
@@ -185,8 +154,14 @@ def main():
                                                                 pre_update=False)
     #  Done running tests so we are disabling the instances.
     disable_instances(build, all_module_instances, prints_manager)
+    #  Gather tests to add to test pack
+    test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', [])
+    tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks_from_id_set)
+    #  Write the test pack
+    private_content_test_zip = write_test_pack_zip(zip_destination_dir=build.test_pack_path,
+                                                   tests_file_paths=tests_to_add_to_test_pack)
     # Create and install private test pack
-    create_install_private_testing_pack(build, prints_manager)
+    create_install_private_testing_pack(build, prints_manager, private_content_test_zip)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                   new_integrations, prints_manager)

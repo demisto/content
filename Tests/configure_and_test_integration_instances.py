@@ -151,6 +151,7 @@ class Build:
         self.tests = conf['tests']
         self.skipped_integrations_conf = conf['skipped_integrations']
         self.id_set = get_id_set()
+        self.test_pack_path = options.test_pack_path if options.test_pack_path else None
 
     @staticmethod
     def get_servers(ami_env):
@@ -177,6 +178,7 @@ def options_handler():
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
+    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.')
 
     options = parser.parse_args()
 
