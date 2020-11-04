@@ -457,12 +457,11 @@ def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
         args: Usually demisto.args()
 
     Returns:
-        Outputs.
+        list of CommandResults.
     """
     hash_list = argToList(args.get('file'))
 
     command_results_list: List[CommandResults] = []
-    application_data_list = []
     headers = ['objectId', 'hash', 'name', 'version', 'classification', 'score', 'privacyEnum', 'securityEnum']
 
     for app_hash in hash_list:
@@ -504,7 +503,6 @@ def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
             readable_output = tableToMarkdown(name=f"Hash {app_hash} reputation is unknown to Zimperium.",
                                               t=application_data, headers=headers, removeNull=True)
         else:
-            application_data_list.append(application_data)
             readable_output = tableToMarkdown(name=f"Hash {app_hash} reputation:", t=application_data, headers=headers,
                                               removeNull=True)
 
@@ -513,7 +511,7 @@ def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
             outputs_key_field='objectId',
             outputs=application_data,
             readable_output=readable_output,
-            raw_response=application,
+            raw_response=application_data,
             indicator=file
         )
         command_results_list.append(command_results)
