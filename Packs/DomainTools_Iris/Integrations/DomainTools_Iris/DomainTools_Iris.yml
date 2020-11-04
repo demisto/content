@@ -45,7 +45,7 @@ script:
   - arguments:
     - default: true
       description: The domain name.
-      isArray: true
+      isArray: false
       name: domain
       required: true
       secret: false
