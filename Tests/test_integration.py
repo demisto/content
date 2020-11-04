@@ -13,6 +13,7 @@ from subprocess import PIPE, Popen
 import demisto_client
 import requests.exceptions
 import urllib3
+from demisto_client.demisto_api import DefaultApi
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.commands.common.constants import PB_Status
 from demisto_sdk.commands.common.tools import (LOG_COLORS, print_color,
@@ -637,7 +638,7 @@ def __enable_integrations_instances(client, module_instances):
 
 
 # create incident with given name & playbook, and then fetch & return the incident
-def __create_incident_with_playbook(client, name, playbook_id, integrations, prints_manager, thread_index=0):
+def __create_incident_with_playbook(client: DefaultApi, name, playbook_id, integrations, prints_manager, thread_index=0):
     # create incident
     create_incident_request = demisto_client.demisto_api.CreateIncidentRequest()
     create_incident_request.create_investigation = True
@@ -674,7 +675,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
     incident_search_responses = []
 
     try:
-        incidents = client.search_incidents(filter=search_filter)
+        incidents = client.search_incidents(filter=search_filter).data()
         incident_search_responses.append(incidents)
     except ApiException as err:
         prints_manager.add_print_job(err.body, print, thread_index)
@@ -684,7 +685,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
     timeout = time.time() + 300
     while incidents['total'] < 1:
         try:
-            incidents = client.search_incidents(filter=search_filter)
+            incidents = client.search_incidents(filter=search_filter).data()
             incident_search_responses.append(incidents)
         except ApiException as err:
             prints_manager.add_print_job(err.body, print, thread_index)
