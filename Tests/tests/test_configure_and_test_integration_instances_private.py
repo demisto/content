@@ -75,7 +75,7 @@ def test_find_needed_test_playbook_paths(tmpdir):
     """
 
     sample_test_filter = tmpdir.mkdir("testdir").join("sample_test_filter.txt")
-    sample_test_filter.write("HelloWorld_Scan-Test\nAnotherTest\n")
+    sample_test_filter.write("HelloWorldPremium_Scan-Test\nAnotherTest\n")
     test_playbook_conf = [
         {
             "HelloWorldPremium_Scan-Test": {
