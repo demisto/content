@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import subprocess
 from docx import Document
+from typing import List, Dict
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.opc.exceptions import PackageNotFoundError
 
@@ -40,7 +41,7 @@ class WordParser:
         output = subprocess.check_output(
             ['soffice', '--headless', '-env:UserInstallation=file:///tmp/.config/extractindicators', '--convert-to',
              'docx', self.file_path], stderr=subprocess.STDOUT)
-        demisto.debug("soffice output: [{}]".format(output))
+        demisto.debug("soffice output: [{}]".format(str(output)))
         # Requires office-utils docker image
         output_file_name = self.file_name[0:self.file_name.rfind('.')] + '.docx'
         self.file_path = self.file_path + ".docx"
