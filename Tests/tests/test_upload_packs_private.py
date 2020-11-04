@@ -30,7 +30,7 @@ class TestPrivatePacks:
         mocker.patch('os.path.isdir', side_effect=FakeDirEntry.isdir)
         mocker.patch.object(upload_packs_private, 'update_index_folder')
 
-        upload_packs.add_private_packs_to_index('test', 'private_test')
+        upload_packs_private.add_private_packs_to_index('test', 'private_test')
 
         index_call_args = upload_packs_private.update_index_folder.call_args[0]
         index_call_count = upload_packs_private.update_index_folder.call_count
