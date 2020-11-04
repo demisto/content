@@ -1,4 +1,6 @@
 import demisto_client
+import pytest
+
 import Tests.Marketplace.search_and_install_packs as script
 from Tests.test_content import ParallelPrintsManager
 
@@ -211,3 +213,46 @@ def test_search_pack_with_failure(mocker):
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('{"id": "HelloWorld"}', 200, None))
     script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, lock)
     assert not script.SUCCESS_FLAG
+
+
+ERROR_MESSAGE = """
+(400)
+Reason: Bad Request
+HTTP response headers: HTTPHeaderDict({'Content-Type': 'application/json',
+'Set-Cookie': 'S=A4Nj75P0P3UcPLb2eJByVpv311AEzeVsjIjLpKyFjNRJHjBHcJaj3LHskUp9Sdceu5BFhw38bX5+xs//0s/JL8/mig6kkm5/
+atpS7Rt5gyd3PKaVz0Mh9tvFuZ4JdhA3tIeq5gy9O+8ADlMT0JjLuCl7jqJmlH7ENX9JEJ6chadow3ah78loM3roczVSPiZPLg9hHDtwiq8tB5SNis5K;
+Path=/; Expires=Mon, 02 Nov 2020 11:23:10 GMT; Max-Age=3600; HttpOnly; Secure; SameSite=Lax,
+S-Expiration=MDIgTm92IDIwIDExOjIzICswMDAw; Path=/; Expires=Mon, 02 Nov 2020 11:23:10 GMT; Max-Age=3600;
+Secure; SameSite=Lax', 'Strict-Transport-Security': 'max-age=10886400000000000; includeSubDomains',
+'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'X-Xss-Protection': '1; mode=block',
+'Date': 'Mon, 02 Nov 2020 10:23:10 GMT', 'Content-Length': '218'})
+HTTP response body: {"id":"bad_request","status":400,"title":"Bad request","detail":"Request body is not well-formed.
+It must be JSON.","error":"invalid version 1.2.0 for pack with ID AutoFocus (35000)","encrypted":false,"multires":null}
+"""
+
+
+def test_find_malformed_pack_id():
+    """
+    Given
+    - Error message.
+    When
+    - Run find_malformed_pack_id command.
+    Then
+    - Ensure the pack ID is caught.
+   """
+    malformed_pack_id = script.find_malformed_pack_id(ERROR_MESSAGE)
+    assert 'AutoFocus' in malformed_pack_id
+
+
+def test_not_find_malformed_pack_id():
+    """
+    Given
+    - Error message without any pack ID.
+    When
+    - Run find_malformed_pack_id command.
+    Then
+    - Ensure Exception is returned with the error message.
+    """
+    with pytest.raises(Exception, match='The request to install packs has failed. '
+                                        'Reason: This is an error message without pack ID'):
+        script.find_malformed_pack_id('This is an error message without pack ID')
