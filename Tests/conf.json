@@ -1809,7 +1809,7 @@
             "timeout": 500
         },
          {
-            "integrations": "iDefense_2",
+            "integrations": "iDefense_v2",
             "playbookID": "iDefenseTest"
         },
         {

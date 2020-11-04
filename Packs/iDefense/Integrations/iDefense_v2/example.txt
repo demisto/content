@@ -1,0 +1,4 @@
+!ip ip=188.241.68.121
+!url url=http://rrkimal.xyz:80/IRemotePanel
+!idefense-get-ioc-by-uuid uuid=d73c8ebf-8156-4ddf-bf0b-3b666adafb5a
+!domain domain="demisto.com"
