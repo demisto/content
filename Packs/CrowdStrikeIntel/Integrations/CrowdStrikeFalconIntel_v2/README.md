@@ -29,7 +29,7 @@ Check file reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The file hashes (MD5/SHA1/SHA256) to check. Supports comma-separated values.| Required | 
+| file | The files hashes (MD5/SHA1/SHA256) to check. Supports comma-separated values.| Required | 
 
 
 #### Context Output
