@@ -1170,7 +1170,6 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
     if not tests:
-        packs_to_install = set()
         logging.info("No tests found running sanity check only")
 
         sanity_tests = {"Sanity Test - Pure", "Sanity Test - Configuration Check", "Sanity Test - MITMProxy"}
