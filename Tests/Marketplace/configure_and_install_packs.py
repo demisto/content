@@ -1,9 +1,7 @@
 import argparse
-from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION
-from Tests.build import Build
-from Tests.server import Server
-from Tests.test_content import get_json_file
-from Tests.test_content import ParallelPrintsManager
+from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
+    Build, Server
+from Tests.test_content import get_json_file, ParallelPrintsManager
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS
 
@@ -50,3 +48,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# TODO: add logging

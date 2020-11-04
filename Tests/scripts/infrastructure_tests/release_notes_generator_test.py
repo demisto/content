@@ -7,7 +7,9 @@ from Utils.release_notes_generator import (get_release_notes_dict,
                                            merge_version_blocks,
                                            EMPTY_LINES_REGEX,
                                            get_new_entity_record,
-                                           construct_entities_block)
+                                           construct_entities_block,
+                                           aggregate_release_notes,
+                                           aggregate_release_notes_for_marketplace)
 
 TEST_DATA_PATH = 'Tests/scripts/infrastructure_tests/tests_data/RN_tests_data'
 
@@ -293,6 +295,36 @@ class TestGenerateReleaseNotesSummary:
 
 
 class TestMergeVersionBlocks:
+    def test_aggregate_release_notes_for_marketplace(self):
+        """
+        Given
+        - Two release notes files with content entity instance wrapped with ** and entity type contains spaces.
+        When
+        - Merging the two release notes files into one file.
+        Then
+        - Ensure that the content entity instance is wrapped with **.
+        - Ensure that the content entity type contains whitespace.
+        - Ensure that the content of both RN files appears in the result file.
+        """
+        release_notes_paths = [
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
+        ]
+
+        pack_versions_dict = {}
+        for path in release_notes_paths:
+            with open(path) as file_:
+                pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
+
+        rn_block = aggregate_release_notes_for_marketplace(pack_versions_dict)
+
+        assert 'Incident Fields' in rn_block
+        assert '**XDR Alerts**' in rn_block
+        assert 'First' in rn_block
+        assert 'Second' in rn_block
+        assert rn_block.endswith('\n')
+        assert rn_block.startswith('\n')
+
     def test_spaced_content_entity_and_old_format(self):
         """
         Given
@@ -314,12 +346,13 @@ class TestMergeVersionBlocks:
             with open(path) as file_:
                 pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
 
-        rn_block = merge_version_blocks('FakePack', pack_versions_dict, {})
+        rn_block, latest_version = merge_version_blocks(pack_versions_dict)
 
         assert 'Incident Fields' in rn_block
         assert '**XDR Alerts**' in rn_block
         assert 'First' in rn_block
         assert 'Second' in rn_block
+        assert latest_version == '1_0_2'
 
     def test_sanity(self):
         """
@@ -342,7 +375,7 @@ class TestMergeVersionBlocks:
             with open(path) as file_:
                 pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
 
-        rn_block = merge_version_blocks('FakePack', pack_versions_dict, {})
+        rn_block = aggregate_release_notes('FakePack', pack_versions_dict, {})
 
         assert 'FakePack1_Playbook1' in rn_block
         assert 'FakePack1_Playbook2' in rn_block
@@ -373,7 +406,7 @@ class TestMergeVersionBlocks:
             with open(path) as file_:
                 pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
 
-        rn_block = merge_version_blocks('FakePack', pack_versions_dict, {})
+        rn_block = aggregate_release_notes('FakePack', pack_versions_dict, {})
 
         assert rn_block.count('Integrations') == 1
         assert rn_block.count('FakePack1_Integration1') == 1

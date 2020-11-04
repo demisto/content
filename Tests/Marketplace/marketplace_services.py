@@ -18,7 +18,7 @@ from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
-from Utils.release_notes_generator import merge_version_blocks
+from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from typing import Tuple
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
@@ -962,10 +962,7 @@ class Pack(object):
             logging.info(f"Aggregating ReleaseNotes versions:"
                          f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
                          f" {latest_release_notes}")
-            release_notes_lines = merge_version_blocks(pack_name=self._pack_name,
-                                                       pack_versions_dict=pack_versions_dict,
-                                                       pack_metadata={}, pack_header_wrap=False,
-                                                       add_whitespaces=False, rn_wrapper='\n')
+            release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
         else:
             # In case where the pack is up to date, i.e. latest changelog is latest rn file
