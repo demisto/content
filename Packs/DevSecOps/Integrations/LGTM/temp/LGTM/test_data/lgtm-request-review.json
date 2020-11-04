@@ -1,0 +1,22 @@
+{
+    "id": 1512949216171,
+    "status": "done",
+    "task-type": "codereview",
+    "task-result": {
+        "id": "8771a0c602ced8fcb5ffa0ad0c0dcafe358189da",
+        "results-url": "https://lgtm.com/projects/g/my-devsecops/moon/rev/pr-8771a0c602ced8fcb5ffa0ad0c0dcafe358189da",
+        "status": "failure",
+        "status-message": "This pull request can't be analyzed because the patch could not be applied",
+        "languages": [
+            {
+                "language": "python",
+                "status": "failure",
+                "status-message": "This pull request can't be analyzed because the patch could not be applied",
+                "new": 0,
+                "fixed": 0,
+                "alerts": []
+            }
+        ]
+    },
+    "task-result-url": "https://lgtm.com/api/v1.0/codereviews/8771a0c602ced8fcb5ffa0ad0c0dcafe358189da"
+}

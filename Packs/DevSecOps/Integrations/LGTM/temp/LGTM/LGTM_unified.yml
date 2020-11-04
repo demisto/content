@@ -133,6 +133,13 @@ script:
     description: Get detailed alert information
     execution: false
     name: lgtm-get-alerts
+    outputs:
+    - contextPath: LGTM.alerts.runs.results.ruleId
+      description: LGTM Alerts by Rule ID
+      type: Unknown
+    - contextPath: LGTM.alerts.runs.results.partialFingerprints.primaryLocationLineHash
+      description: LGTM Alert location by line hash
+      type: Unknown
   - arguments:
     - default: false
       description: The analysis identifier.
@@ -145,41 +152,41 @@ script:
     execution: false
     name: lgtm-get-analysis
     outputs:
-    - contextPath: LGTM.analysis.id
+    - contextPath: LGTM.analysis_summary.id
       description: The analysis identifier.
       type: String
-    - contextPath: LGTM.analysis.commit-id
+    - contextPath: LGTM.analysis_summary.commit-id
       description: 'The commit identifier. The commit identifier is included only
         if the same commit was successfully analyzed for all languages. A detailed  eakdown
         of which commit was analyzed for each language is provided in the `languages`
         property. '
       type: String
-    - contextPath: LGTM.analysis.languages.language
+    - contextPath: LGTM.analysis_summary.languages.language
       description: The short name for the language.
       type: String
-    - contextPath: LGTM.analysis.languages.status
+    - contextPath: LGTM.analysis_summary.languages.status
       description: The status of the analysis of this language.
       type: String
-    - contextPath: LGTM.analysis.languages.alerts
+    - contextPath: LGTM.analysis_summary.languages.alerts
       description: The number of alerts for this language.
       type: Number
-    - contextPath: LGTM.analysis.languages.lines
+    - contextPath: LGTM.analysis_summary.languages.lines
       description: The number of lines of code for this language.
       type: Number
-    - contextPath: LGTM.analysis.languages.commit-id
+    - contextPath: LGTM.analysis_summary.languages.commit-id
       description: The latest successfully analyzed commit for the language. All statistics
         refer to this commit.
       type: String
-    - contextPath: LGTM.analysis.languages.commit-date
+    - contextPath: LGTM.analysis_summary.languages.commit-date
       description: The time of the commit.
       type: String
-    - contextPath: LGTM.analysis.languages.analysis-date
+    - contextPath: LGTM.analysis_summary.languages.analysis-date
       description: The time the commit was analyzed.
       type: String
-    - contextPath: LGTM.analysis.log-url
+    - contextPath: LGTM.analysis_summary.log-url
       description: A page on LGTM to view the logs for this analysis.
       type: String
-    - contextPath: LGTM.analysis.results-url
+    - contextPath: LGTM.analysis_summary.results-url
       description: A page on LGTM to view the results of this analysis.
       type: String
   - arguments:
@@ -201,41 +208,41 @@ script:
     execution: false
     name: lgtm-get-analysis-for-commit
     outputs:
-    - contextPath: LGTM.analysis.id
+    - contextPath: LGTM.analysis_summary.id
       description: The analysis identifier.
       type: String
-    - contextPath: LGTM.analysis.commit-id
+    - contextPath: LGTM.analysis_summary.commit-id
       description: 'The commit identifier. The commit identifier is included only
         if the same commit was successfully analyzed for all languages. A detailed  eakdown
         of which commit was analyzed for each language is provided in the `languages`
         property. '
       type: String
-    - contextPath: LGTM.analysis.languages.language
+    - contextPath: LGTM.analysis_summary.languages.language
       description: The short name for the language.
       type: String
-    - contextPath: LGTM.analysis.languages.status
+    - contextPath: LGTM.analysis_summary.languages.status
       description: The status of the analysis of this language.
       type: String
-    - contextPath: LGTM.analysis.languages.alerts
+    - contextPath: LGTM.analysis_summary.languages.alerts
       description: The number of alerts for this language.
       type: Number
-    - contextPath: LGTM.analysis.languages.lines
+    - contextPath: LGTM.analysis_summary.languages.lines
       description: The number of lines of code for this language.
       type: Number
-    - contextPath: LGTM.analysis.languages.commit-id
+    - contextPath: LGTM.analysis_summary.languages.commit-id
       description: The latest successfully analyzed commit for the language. All statistics
         refer to this commit.
       type: String
-    - contextPath: LGTM.analysis.languages.commit-date
+    - contextPath: LGTM.analysis_summary.languages.commit-date
       description: The time of the commit.
       type: String
-    - contextPath: LGTM.analysis.languages.analysis-date
+    - contextPath: LGTM.analysis_summary.languages.analysis-date
       description: The time the commit was analyzed.
       type: String
-    - contextPath: LGTM.analysis.log-url
+    - contextPath: LGTM.analysis_summary.log-url
       description: A page on LGTM to view the logs for this analysis.
       type: String
-    - contextPath: LGTM.analysis.results-url
+    - contextPath: LGTM.analysis_summary.results-url
       description: A page on LGTM to view the results of this analysis.
       type: String
   - arguments:
@@ -296,9 +303,15 @@ script:
     execution: false
     name: lgtm-get-project
     outputs:
-    - contextPath: LGTM.project-details.languages.grade
+    - contextPath: LGTM.project_details.languages.grade
       description: The grade of the code for this language.
       type: String
+    - contextPath: LGTM.project_details.id
+      description: LGTM Project id
+      type: Unknown
+    - contextPath: LGTM.project_details.name
+      description: LGTM Project name
+      type: Unknown
   - arguments:
     - default: false
       description: The first part of the URL identifier of a project, which represents
@@ -325,9 +338,15 @@ script:
     execution: false
     name: lgtm-get-project-by-url-identifier
     outputs:
-    - contextPath: LGTM.project-details.languages.grade
+    - contextPath: LGTM.project_details.languages.grade
       description: The grade of the code for this language.
       type: String
+    - contextPath: LGTM.project_details.id
+      description: LGTM Project id
+      type: Unknown
+    - contextPath: LGTM.project_details.name
+      description: LGTM Project name
+      type: Unknown
   - arguments:
     - default: false
       description: The numeric project identifier
@@ -478,6 +497,19 @@ script:
     description: Run analysis of a specific commit
     execution: false
     name: lgtm-request-analysis
+    outputs:
+    - contextPath: LGTM.analysis.id
+      description: LGTM request id
+      type: Unknown
+    - contextPath: LGTM.analysis.status
+      description: LGTM analysis status
+      type: Unknown
+    - contextPath: LGTM.analysis_request.task-result.id
+      description: LGTM analysis task id
+      type: Unknown
+    - contextPath: LGTM.analysis_request.task-result.commit-id
+      description: LGTM analysis commit id
+      type: Unknown
   - arguments:
     - default: false
       description: The numeric project identifier.
@@ -533,6 +565,16 @@ script:
     description: Run code review for a patch
     execution: false
     name: lgtm-request-review
+    outputs:
+    - contextPath: LGTM.code_review_request.id
+      description: LGTM Code Review request id
+      type: Unknown
+    - contextPath: LGTM.code_review_request.status
+      description: LGTM Code Review request status
+      type: Unknown
+    - contextPath: LGTM.code_review_request.task-result.id
+      description: LGTM Code Review request task id
+      type: Unknown
   - arguments:
     - default: false
       description: The id of the upload session.
@@ -914,11 +956,18 @@ script:
             return response
 
         def request_review_request(self, project_id, base, external_id, review_url, callback_url, callback_secret):
-            params = assign_params(base=base, external_id=external_id, review_url=review_url, callback_url=callback_url, callback_secret=callback_secret)
 
+            params = {
+                "base": base,
+                "external-id": external_id,
+                "review-url": review_url,
+                "callback-url": callback_url,
+                "callback-secret": callback_secret
+            }
             headers = self._headers
+            headers['Content-Type'] = 'application/octet-stream'
 
-            response = self._http_request('post', f'codereviews/{project_id}', params=params, headers=headers)
+            response = self._http_request('post', f'codereviews/{project_id}', params=params, headers=headers, data="<binary>")
 
             return response
 
@@ -1061,7 +1110,7 @@ script:
 
         response = client.get_alerts_request(analysis_id, sarif_version, excluded_files)
         command_results = CommandResults(
-            outputs_prefix='LGTM',
+            outputs_prefix='LGTM.alerts',
             outputs_key_field='',
             outputs=response,
             raw_response=response
@@ -1075,7 +1124,7 @@ script:
 
         response = client.get_analysis_request(analysis_id)
         command_results = CommandResults(
-            outputs_prefix='LGTM.analysis',
+            outputs_prefix='LGTM.analysis_summary',
             outputs_key_field='id',
             outputs=response,
             raw_response=response
@@ -1090,7 +1139,7 @@ script:
 
         response = client.get_analysis_for_commit_request(project_id, commit_id)
         command_results = CommandResults(
-            outputs_prefix='LGTM.analysis',
+            outputs_prefix='LGTM.analysis_summary',
             outputs_key_field='id',
             outputs=response,
             raw_response=response
@@ -1119,7 +1168,7 @@ script:
         response = client.get_project_request(project_id)
         command_results = CommandResults(
             outputs_prefix='LGTM.project_details',
-            outputs_key_field='',
+            outputs_key_field='id',
             outputs=response,
             raw_response=response
         )
@@ -1135,7 +1184,7 @@ script:
         response = client.get_project_by_url_identifier_request(provider, org, name)
         command_results = CommandResults(
             outputs_prefix='LGTM.project_details',
-            outputs_key_field='',
+            outputs_key_field='id',
             outputs=response,
             raw_response=response
         )
@@ -1238,8 +1287,8 @@ script:
 
         response = client.request_analysis_request(project_id, commit, language)
         command_results = CommandResults(
-            outputs_prefix='LGTM',
-            outputs_key_field='',
+            outputs_prefix='LGTM.analysis_request',
+            outputs_key_field='id',
             outputs=response,
             raw_response=response
         )
@@ -1257,8 +1306,8 @@ script:
 
         response = client.request_review_request(project_id, base, external_id, review_url, callback_url, callback_secret)
         command_results = CommandResults(
-            outputs_prefix='LGTM',
-            outputs_key_field='',
+            outputs_prefix='LGTM.code_review_request',
+            outputs_key_field='LGTM.code_review_request.task-result.id',
             outputs=response,
             raw_response=response
         )

@@ -143,11 +143,18 @@ class Client(BaseClient):
         return response
 
     def request_review_request(self, project_id, base, external_id, review_url, callback_url, callback_secret):
-        params = assign_params(base=base, external_id=external_id, review_url=review_url, callback_url=callback_url, callback_secret=callback_secret)
 
+        params = {
+            "base": base,
+            "external-id": external_id,
+            "review-url": review_url,
+            "callback-url": callback_url,
+            "callback-secret": callback_secret
+        }
         headers = self._headers
+        headers['Content-Type'] = 'application/octet-stream'
 
-        response = self._http_request('post', f'codereviews/{project_id}', params=params, headers=headers)
+        response = self._http_request('post', f'codereviews/{project_id}', params=params, headers=headers, data="<binary>")
 
         return response
 
@@ -290,7 +297,7 @@ def get_alerts_command(client, args):
 
     response = client.get_alerts_request(analysis_id, sarif_version, excluded_files)
     command_results = CommandResults(
-        outputs_prefix='LGTM',
+        outputs_prefix='LGTM.alerts',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -304,7 +311,7 @@ def get_analysis_command(client, args):
 
     response = client.get_analysis_request(analysis_id)
     command_results = CommandResults(
-        outputs_prefix='LGTM.analysis',
+        outputs_prefix='LGTM.analysis_summary',
         outputs_key_field='id',
         outputs=response,
         raw_response=response
@@ -319,7 +326,7 @@ def get_analysis_for_commit_command(client, args):
 
     response = client.get_analysis_for_commit_request(project_id, commit_id)
     command_results = CommandResults(
-        outputs_prefix='LGTM.analysis',
+        outputs_prefix='LGTM.analysis_summary',
         outputs_key_field='id',
         outputs=response,
         raw_response=response
@@ -348,7 +355,7 @@ def get_project_command(client, args):
     response = client.get_project_request(project_id)
     command_results = CommandResults(
         outputs_prefix='LGTM.project_details',
-        outputs_key_field='',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -364,7 +371,7 @@ def get_project_by_url_identifier_command(client, args):
     response = client.get_project_by_url_identifier_request(provider, org, name)
     command_results = CommandResults(
         outputs_prefix='LGTM.project_details',
-        outputs_key_field='',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -467,8 +474,8 @@ def request_analysis_command(client, args):
 
     response = client.request_analysis_request(project_id, commit, language)
     command_results = CommandResults(
-        outputs_prefix='LGTM',
-        outputs_key_field='',
+        outputs_prefix='LGTM.analysis_request',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -486,8 +493,8 @@ def request_review_command(client, args):
 
     response = client.request_review_request(project_id, base, external_id, review_url, callback_url, callback_secret)
     command_results = CommandResults(
-        outputs_prefix='LGTM',
-        outputs_key_field='',
+        outputs_prefix='LGTM.code_review_request',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
