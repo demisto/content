@@ -528,9 +528,15 @@ M       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/connect
 A       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/key.pem
 """
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
-        files_list, tests_list, all_tests, is_conf_json, sample_tests, modified_metadata_list, is_reputations_json, \
-        is_indicator_json = get_modified_files_for_testing(self.GIT_DIFF_RET)
+    def test_changed_runnable_test_non_mocked_get_modified_files(self):
+        (files_list,
+         tests_list,
+         all_tests,
+         is_conf_json,
+         sample_tests,
+         modified_metadata_list,
+         is_reputations_json,
+         is_indicator_json) = get_modified_files_for_testing(self.GIT_DIFF_RET)
         assert len(sample_tests) == 0
         assert 'Packs/Active_Directory_Query/Integrations/' \
                'Active_Directory_Query/Active_Directory_Query.yml' in files_list
