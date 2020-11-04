@@ -1184,7 +1184,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     tests = set([])
     packs_to_install = set([])
 
-    # Get packs and tests for scripts integration playbooks
+    # Get packs and tests for changed scripts integration and playbooks
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
