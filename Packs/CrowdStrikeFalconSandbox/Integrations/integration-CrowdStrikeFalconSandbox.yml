@@ -521,7 +521,7 @@ script:
                 return 'Job ID or SHA256 and environment ID are required.'
             }
         }
-        var cmdUrl = (version === 'v1') ? '/api/result/' + hash + '?type=json&environmentId=' + args.environmentId : '/api/v2/report/' + csID + '/file/' + fileType;
+        var cmdUrl = (version === 'v1') ? '/api/result/' + hash + '?type=json&environmentId=' + args.environmentId : '/api/v2/report/' + csID + '/report/' + fileType;
         return sendRequest('GET', cmdUrl);
     }
 
