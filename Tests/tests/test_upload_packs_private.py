@@ -49,7 +49,7 @@ class TestPrivatePacks:
                                                              'Tests', 'Marketplace', 'Tests',
                                                              'test_data', 'metadata.json')])
 
-        private_packs = upload_packs_private.get_private_packs('path')
+        private_packs = upload_packs_private.get_private_packs('path', )
 
         assert private_packs == [{'id': 'ImpossibleTraveler', 'price': 100}]
 

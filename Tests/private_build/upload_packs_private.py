@@ -66,14 +66,13 @@ def update_private_index(private_index_path: str, unified_index_path: str):
         shutil.copy(path_to_pack_on_unified_index, path_to_pack_on_private_index)
 
 
-def get_private_packs(private_index_path: str, pack_names: set, is_private_build: bool,
-                      extract_destination_path: str) -> list:
+def get_private_packs(private_index_path: str, pack_names: set = set(),
+                      extract_destination_path: str = '') -> list:
     """
     Gets a list of private packs.
 
     :param private_index_path: Path to where the private index is located.
     :param pack_names: Collection of pack names.
-    :param is_private_build: Indicates if the build is private.
     :param extract_destination_path: Path to where the files should be extracted to.
     :return: List of dicts containing pack metadata information.
     """
@@ -92,7 +91,7 @@ def get_private_packs(private_index_path: str, pack_names: set, is_private_build
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
-            is_changed_private_pack = is_private_build and pack_id in pack_names
+            is_changed_private_pack = pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
