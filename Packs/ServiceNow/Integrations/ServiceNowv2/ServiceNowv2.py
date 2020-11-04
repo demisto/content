@@ -359,6 +359,9 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
                 ticket_fields[arg] = inv_states.get(input_arg, input_arg)
             elif arg == 'approval':
                 ticket_fields[arg] = inv_approval.get(input_arg, input_arg)
+            elif arg == 'change_type':
+                # this change is required in order to use type 'Standard' as well.
+                ticket_fields['type'] = input_arg
             else:
                 ticket_fields[arg] = input_arg
         elif template_name and arg in template_name:
