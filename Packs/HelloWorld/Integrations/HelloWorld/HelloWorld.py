@@ -882,7 +882,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     threshold = int(args.get('threshold', default_threshold))
 
     # Initialize an empty list of CommandResults to return
-    # Each CommandResult will contain context standard for IP
+    # each CommandResult will contain context standard for IP
     command_results: List[CommandResults] = []
 
     for ip in ips:
@@ -1005,7 +1005,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
     threshold = int(args.get('threshold', default_threshold))
 
     # Initialize an empty list of CommandResults to return,
-    # each CommandResult will contain context standard for IP
+    # each CommandResult will contain context standard for Domain
     command_results: List[CommandResults] = []
 
     for domain in domains:
