@@ -40,7 +40,10 @@ def test_get_access_token(mocker):
     }
 
     mocker.patch('ServiceNowApiModule.date_to_timestamp', return_value=0)
-    client = ServiceNowClient(PARAMS)
+    client = ServiceNowClient(credentials=PARAMS.get('credentials', {}), use_oauth=PARAMS.get('use_oauth', False),
+                              client_id=PARAMS.get('client_id', ''), client_secret=PARAMS.get('client_secret', ''),
+                              url=PARAMS.get('url', ''), verify=PARAMS.get('insecure', False),
+                              proxy=PARAMS.get('proxy', False), headers=PARAMS.get('headers', ''))
 
     # Validate the previous access token is returned, as it is still valid
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=valid_access_token)

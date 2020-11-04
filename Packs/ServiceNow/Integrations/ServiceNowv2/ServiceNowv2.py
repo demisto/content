@@ -461,7 +461,14 @@ class Client(BaseClient):
         self.sys_param_offset = 0
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
-            self.snow_client: ServiceNowClient = ServiceNowClient(params=oauth_params)
+            self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
+                                                                  use_oauth=self.use_oauth,
+                                                                  client_id=oauth_params.get('client_id', ''),
+                                                                  client_secret=oauth_params.get('client_secret', ''),
+                                                                  url=oauth_params.get('url', ''),
+                                                                  verify=oauth_params.get('insecure', False),
+                                                                  proxy=oauth_params.get('proxy', False),
+                                                                  headers=oauth_params.get('headers', ''))
         else:
             self._auth = (self._username, self._password)
 
@@ -1928,7 +1935,9 @@ def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any
     Test the instance configurations when using OAuth authentication.
     """
     test_instance(client)
-    return '### Instance Configured Successfully', {}, {}, True
+    hr = '### Instance Configured Successfully.\n' \
+         'A refresh token was generated successfully and will be used to produce new access tokens as they expire.'
+    return hr, {}, {}, True
 
 
 def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:

@@ -7,33 +7,32 @@ OAUTH_URL = '/oauth_token.do'
 
 class ServiceNowClient(BaseClient):
 
-    def __init__(self, params):
+    def __init__(self, credentials: dict = None, use_oauth: bool = False, client_id: str = '', client_secret: str = '',
+                 url: str = '', verify: bool = False, proxy: bool = False, headers: dict = None):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
-            params: The parameters that should be used to initialize the Service Now Client:
-                    - Credentials - the username and password given by the user.
-                    - Client Id - the client id of the application of the user.
-                    - Client Secret - the client secret of the application of the user.
-                    - Url - the instance url of the user, i.e: https://<instance>.service-now.com. NOTE: the url should
-                            be given without an API specific suffix as it is used in the OAuth process.
-                    - Insecure
-                    - Proxy
-                    - Headers
-                    - Use OAuth - a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
+            - credentials: the username and password given by the user.
+            - client_id: the client id of the application of the user.
+            - client_secret - the client secret of the application of the user.
+            - url: the instance url of the user, i.e: https://<instance>.service-now.com.
+                   NOTE - url should be given without an API specific suffix as it is also used for the OAuth process.
+            - insecure: Whether the request should verify the SSL certificate.
+            - proxy: Whether to run the integration using the system proxy.
+            - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
+            - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
         """
-        self.use_oauth = params.get('use_oauth')
+        self.use_oauth = use_oauth
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
-            self.client_id = params.get('client_id')
-            self.client_secret = params.get('client_secret')
+            self.client_id = client_id
+            self.client_secret = client_secret
         else:
-            self.username = params.get('credentials', {}).get('identifier')
-            self.password = params.get('credentials', {}).get('password')
+            self.username = credentials.get('identifier')
+            self.password = credentials.get('password')
             self._auth = (self.username, self.password)
 
-        self.base_url = params.get('url')
-        super().__init__(base_url=self.base_url, verify=not params.get('insecure', False),
-                         ok_codes=tuple(), proxy=params.get('proxy', False), headers=params.get('headers'))  # type: ignore[misc]
+        self.base_url = url
+        super().__init__(base_url=self.base_url, verify=not verify, proxy=proxy, headers=headers)  # type: ignore[misc]
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
                      files=None, return_empty_response=False, auth=None):
@@ -100,7 +99,7 @@ class ServiceNowClient(BaseClient):
                     'refresh_token': res.get('refresh_token'),
                     'expiry_time': expiry_time
                 }
-                demisto.setIntegrationContext(new_token)
+                set_integration_context(new_token)
         except Exception as e:
             return_error(f'Login failed. Please check the instance configuration and the given username and password.'
                          f'\n\n{e.args[0]}')
@@ -110,7 +109,7 @@ class ServiceNowClient(BaseClient):
         Get an access token that was previously created if it is still valid, else, generate a new access token from
         the client id, client secret and refresh token.
         """
-        previous_token = demisto.getIntegrationContext()
+        previous_token = get_integration_context()
 
         # Check if there is an existing valid access token
         if previous_token.get('access_token') and previous_token.get('expiry_time') > date_to_timestamp(datetime.now()):
@@ -135,7 +134,8 @@ class ServiceNowClient(BaseClient):
                 if 'error' in res:
                     return_error(
                         f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
-                        f'and that the refresh token is not expired.\n{res}')
+                        f'and try to run again the !servicenow-login command to generate a new refresh token as it '
+                        f'might have expired.\n{res}')
                 if res.get('access_token'):
                     expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
                     expiry_time += res.get('expires_in', 0) * 1000 - 10
@@ -144,7 +144,7 @@ class ServiceNowClient(BaseClient):
                         'refresh_token': res.get('refresh_token'),
                         'expiry_time': expiry_time
                     }
-                    demisto.setIntegrationContext(new_token)
+                    set_integration_context(new_token)
                     access_token = res.get('access_token')
             except Exception as e:
                 return_error(f'Error occurred while creating an access token. Please check the instance configuration.'
