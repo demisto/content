@@ -1171,10 +1171,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     if not tests:
         packs_to_install = set()  # No random tests
-        if sample_tests:  # Choosing 3 random tests for infrastructure testing
-            logging.debug('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
-        else:
-            logging.debug("Running Sanity check only")
+        logging.debug("Running Sanity check only")
 
         tests.add('TestCommonPython')  # test with no integration configured
         tests.add('HelloWorld-Test')  # test with integration configured
