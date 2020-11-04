@@ -74,7 +74,7 @@ class Client(BaseClient):
         Args:
             path: API endpoint path to search.
             signature_name: signature name.
-            from_: todo
+            from_: from which signature to return results(used for paging)
             size: maximum number of signatures to return.
             domain_name: domain name.
             vendor: vendor ID.

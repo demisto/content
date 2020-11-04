@@ -1,3 +1,4 @@
+import pytest
 from Threat_Vault import Client, antivirus_signature_get, dns_get_by_id, antispyware_get_by_id, ip_geo_get, \
     signature_search_results
 
@@ -8,7 +9,7 @@ def test_antivirus_get_by_id(mocker):
     Given:
         - an antivirus signature ID
     When:
-        - mocking the server response for an ID, running dns_get_by_id
+        - mocking the server response for an ID, running antivirus_signature_get
     Then:
         - validating the returned context data
     """
@@ -63,6 +64,22 @@ def test_antivirus_get_by_id(mocker):
     }
 
     assert output.get('EntryContext') == expected_result
+
+
+def test_antivirus_get_by_id_no_ids(mocker):
+    """
+    https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-direct-searches/get-antivirus-signature.html
+    Given:
+        - no args
+    When:
+        - running antivirus_signature_get
+    Then:
+        - validating the raised error
+    """
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+
+    with pytest.raises(Exception, match="Please submit a sha256 or a signature_id."):
+        antivirus_signature_get(client, args={})
 
 
 def test_dns_get_by_id(mocker):
