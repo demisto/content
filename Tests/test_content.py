@@ -770,7 +770,7 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 
 def extract_server_numeric_version(instances_ami_name, default_version):
     # regex doesn't catch Server Master execution
-    extracted_version = re.findall(r'Demisto-(?:Circle-CI|Marketplace)-Content-[A-Za-z]*[-_](\d[._]\d)-[\d]{5}',
+    extracted_version = re.findall(r'Demisto-(?:Circle-CI|Marketplace)-Content-AMI-[A-Za-z]*[-_](\d[._]\d)-[\d]{5}',
                                    instances_ami_name)
     extracted_version = [match.replace('_', '.') for match in extracted_version]
 
