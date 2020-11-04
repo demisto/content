@@ -674,18 +674,14 @@ def __create_incident_with_playbook(client: DefaultApi, name, playbook_id, integ
 
     incident_search_responses = []
 
-    try:
-        incidents = client.search_incidents(filter=search_filter).data()
-        incident_search_responses.append(incidents)
-    except ApiException as err:
-        prints_manager.add_print_job(err.body, print, thread_index)
-        incidents = {'total': 0}
-
+    found_incidents = 0
+    
     # poll the incidents queue for a max time of 300 seconds
     timeout = time.time() + 300
-    while incidents['total'] < 1:
+    while found_incidents < 1:
         try:
-            incidents = client.search_incidents(filter=search_filter).data()
+            incidents = client.search_incidents(filter=search_filter)
+            found_incidents = incidents.total
             incident_search_responses.append(incidents)
         except ApiException as err:
             prints_manager.add_print_job(err.body, print, thread_index)
@@ -700,7 +696,7 @@ def __create_incident_with_playbook(client: DefaultApi, name, playbook_id, integ
 
         time.sleep(10)
 
-    return incidents['data'][0], inc_id
+    return incidents.data[0], inc_id
 
 
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
