@@ -15,6 +15,7 @@ WORKDAY_DATE_FORMAT = "%m/%d/%Y"
 READ_TIME_OUT_IN_SECONDS = 300
 INCIDENT_TYPE = 'IAM - Sync User'
 DEFAULT_MAPPER_IN = 'IAM Sync User - Workday'
+BATCH_SIZE = 2000
 
 
 # Disable insecure warnings
@@ -130,15 +131,24 @@ def fetch_incidents(client, mapper_in, report_url):
 
 
 def get_all_user_profiles():
+    query = 'type:\"User Profile\"'
     employee_id_to_user_profile = {}
     email_to_user_profile = {}
-    query_result = demisto.searchIndicators(query='type:\"User Profile\"').get('iocs', [])
-    for user_profile in query_result:
-        user_profile = user_profile.get('CustomFields', {})
-        employee_id = user_profile.get('employeeid')
-        email = user_profile.get('email')
-        employee_id_to_user_profile[employee_id] = user_profile
-        email_to_user_profile[email] = user_profile
+
+    def handle_batch(user_profiles):
+        for user_profile in user_profiles:
+            user_profile = user_profile.get('CustomFields', {})
+            employee_id = user_profile.get('employeeid')
+            email = user_profile.get('email')
+            employee_id_to_user_profile[employee_id] = user_profile
+            email_to_user_profile[email] = user_profile
+
+    query_result = demisto.searchIndicators(query=query, size=BATCH_SIZE)
+    handle_batch(query_result.get('iocs', []))
+
+    while query_result.get('searchAfter') is not None:
+        query_result = demisto.searchIndicators(query=query, size=BATCH_SIZE)
+        handle_batch(query_result.get('iocs', []))
 
     return employee_id_to_user_profile, email_to_user_profile
 
@@ -239,7 +249,7 @@ def user_profile_to_indicator(user_profile):
 def workday_first_run_command(client, mapper_in, report_url):
     report_data = client.get_full_report(report_url)
     indicators = report_to_indicators(report_data.get('Report_Entry'), mapper_in)
-    for b in batch(indicators, batch_size=2000):
+    for b in batch(indicators, batch_size=BATCH_SIZE):
         demisto.createIndicators(b)
     # return_results("Indicators were created successfully.")
 
@@ -280,9 +290,8 @@ def main():
                 If yes, it gets it from there. Else, it makes a call to Workday to get a new report
                 Returns the first x events (x being the fetch limit) and stores the remaining in integration context
             '''
-            workday_context = demisto.getIntegrationContext()
             last_run = demisto.getLastRun()
-            events = workday_context.get('events', [])
+            events = last_run.get('events', [])
             report_url = params.get('report_url')
 
             if params.get('fetch_samples'):
@@ -296,7 +305,6 @@ def main():
             else:
                 if not last_run.get('synced_users') and params.get('first_run'):
                     workday_first_run_command(client, mapper_in, report_url)
-
                 elif not events:
                     # Get the events from Workday by making an API call. Last run is updated only when API call is made
                     events = fetch_incidents(
@@ -307,12 +315,8 @@ def main():
 
                 fetch_limit = int(params.get('max_fetch'))
 
-                demisto.setLastRun({'synced_users': True})
                 demisto.incidents(events[:fetch_limit])
-
-                # Set the remaining events back to integration context
-                workday_context = {'events': events[fetch_limit:]}
-                demisto.setIntegrationContext(workday_context)
+                demisto.setLastRun({'synced_users': True, 'events': events[fetch_limit:]})
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command, Error: {e}. Traceback: {traceback.format_exc()}')
