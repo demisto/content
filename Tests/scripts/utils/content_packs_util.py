@@ -22,8 +22,8 @@ def get_pack_metadata(file_path: str) -> dict:
 
 
 def is_pack_xsoar_supported(pack_path: str) -> bool:
-    """Checks whether the pack is certified or not (Supported by xsoar/certified partner).
-    Tests are not being collected for non-certified packs.
+    """Checks whether the pack is XSOAR supported.
+    Tests are not being collected for non XSOAR  packs.
 
     Args:
         pack_path (str): The pack path
@@ -35,8 +35,7 @@ def is_pack_xsoar_supported(pack_path: str) -> bool:
     if not os.path.isfile(pack_metadata_path):
         return False
     pack_metadata = get_pack_metadata(pack_metadata_path)
-    return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar" or \
-           pack_metadata.get(PACK_METADATA_CERTIFICATION, '').lower() == "certified"
+    return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar"
 
 
 def should_test_content_pack(pack_name: str) -> bool:
@@ -73,3 +72,4 @@ def get_test_pack_name(test_id: str, id_set: json) -> str:
             id_set_test_playbook_data = list(id_set_test_playbook_entry.values())[0]
             id_set_test_playbook_pack_name = id_set_test_playbook_data.get('pack')
             return id_set_test_playbook_pack_name
+    return None

@@ -407,6 +407,12 @@
           "Extract Indicators From File - Generic"
         ]
       }
+    },
+    {
+      "Test XDR Playbook": {
+        "name": "Test XDR Playbook",
+        "pack": "CortexXDR"
+      }
     }
   ]
 }
