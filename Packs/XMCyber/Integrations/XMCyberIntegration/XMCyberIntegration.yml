@@ -12,8 +12,8 @@ configuration:
 - display: API Key
   name: apikey
   defaultvalue: ""
-  type: 8
-  required: false
+  type: 4
+  required: true
 - display: URL
   name: url
   defaultvalue: ""
