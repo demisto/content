@@ -428,7 +428,7 @@ references:
         context: bucket_upload_env
         requires:
           - Create Instances
-    - Upload Packs:
+    - Upload Packs To Marketplace:
         context: bucket_upload_env
         requires:
           - Install Packs in Demisto 6_0
@@ -526,8 +526,11 @@ jobs:
                 name: Slack Notifier
                 shell: /bin/bash
                 command: |
-                  ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
-                  ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Run Unit Testing And Lint'
+                  if [ -n "${BUCKET_UPLOAD}" ]; then
+                      ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Run Unit Testing And Lint'
+                  else
+                    ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+                  fi
                 when: always
             - *store_artifacts
 
@@ -965,7 +968,7 @@ jobs:
       - *destroy_instances
       - *store_artifacts
 
-  Upload Packs:
+  Upload Packs To Marketplace:
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -988,14 +991,15 @@ jobs:
                   ID_SET=$CIRCLE_ARTIFACTS/id_set.json
                   GCS_PATH=$(mktemp)
                   CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+                  CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
                   echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist-dev' -bb 'marketplace-ci-build' -i $ID_SET -s $GCS_PATH -n $CIRCLE_PREVIOUS_BUILD_NUM -c $CIRCLE_BRANCH -pbp 'wow/content/packs' -o false
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist-dev' -bb 'marketplace-ci-build' -i $ID_SET -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp 'wow/content/packs' -o false
                   rm $GCS_PATH 
       - run:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' "$CIRCLE_ARTIFACTS/failed_packs_prepare_content.json" 'Upload Packs'
+            ./Tests/scripts/slack_notifier.sh 'bucket_upload' "$CIRCLE_ARTIFACTS/failed_packs_prepare_content.json" 'Upload Packs To Marketplace'
           when: always
       - *destroy_instances
       - *store_artifacts
