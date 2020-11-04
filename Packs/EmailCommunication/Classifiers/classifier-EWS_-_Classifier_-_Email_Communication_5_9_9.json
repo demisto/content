@@ -3,7 +3,7 @@
  "custom": true,
  "defaultIncidentType": "Email Communication",
  "feed": false,
- "id": "2fa5b84a-5efc-44ba-81a4-c116b1214a28",
+ "id": "18a9fa04-f6e5-43cc-8427-a2ac0d94a8a2",
  "isDefault": false,
  "keyTypeMap": {
   "High": "Email Communication",
@@ -202,7 +202,11 @@
     },
     "Email HTML": {
      "complex": null,
-     "simple": "Html"
+     "simple": "body"
+    },
+    "Email Latest Message": {
+     "complex": null,
+     "simple": "id"
     },
     "Email Message ID": {
      "complex": null,
@@ -287,13 +291,52 @@
      },
      "simple": ""
     },
+    "Email Sender IP": {
+     "complex": {
+      "accessor": "value",
+      "filters": [
+       [
+        {
+         "ignoreCase": false,
+         "left": {
+          "isContext": true,
+          "value": {
+           "complex": null,
+           "simple": "headers.name"
+          }
+         },
+         "operator": "isEqualString",
+         "right": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "X-Originating-IP"
+          }
+         }
+        }
+       ]
+      ],
+      "root": "headers",
+      "transformers": [
+       {
+        "args": {
+         "chars": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "[]"
+          }
+         }
+        },
+        "operator": "StripChars"
+       }
+      ]
+     },
+     "simple": ""
+    },
     "Email Size": {
      "complex": null,
      "simple": "size"
-    },
-    "Email Latest Message": {
-        "complex": null,
-        "simple": "id"
     },
     "Email Subject": {
      "complex": null,

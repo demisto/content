@@ -64,6 +64,10 @@
      },
      "simple": ""
     },
+    "Attachment ID": {
+     "complex": null,
+     "simple": "Attachments.ID"
+    },
     "Attachment Name": {
      "complex": {
       "accessor": "",
@@ -116,6 +120,10 @@
      },
      "simple": ""
     },
+    "Email Body HTML": {
+     "complex": null,
+     "simple": "Html"
+    },
     "Email CC": {
      "complex": {
       "accessor": "",
@@ -145,6 +153,38 @@
     "Email HTML": {
      "complex": null,
      "simple": "Html"
+    },
+    "Email Latest Message": {
+     "complex": {
+      "accessor": "Value",
+      "filters": [
+       [
+        {
+         "ignoreCase": false,
+         "left": {
+          "isContext": true,
+          "value": {
+           "complex": null,
+           "simple": "Headers.Name"
+          }
+         },
+         "operator": "isEqualString",
+         "right": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "Message-Id"
+          }
+         }
+        }
+       ]
+      ],
+      "root": "Headers",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
     },
     "Email Message ID": {
      "complex": {
