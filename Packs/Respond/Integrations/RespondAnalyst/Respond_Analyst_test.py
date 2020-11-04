@@ -13,7 +13,7 @@ params = {
     'username': 'qa-user@respond-software.com',
     'password': 'password',
     'insecure': True,
-    'mirror_direction': 'Incoming'
+    'mirror_direction': 'Both'
 }
 
 
@@ -453,7 +453,8 @@ def test_get_remote_data_command(requests_mock):
 
     res = get_remote_data_command(rest_client, args)
     expected_result = [
-        {"id": "Tenant 1:1","incidentId": "6", "timeGenerated": "2020-06-05T16:20:21Z", "eventCount": 24,
+        {"id": "Tenant 1:1", "incidentId": "6", "timeGenerated": "2020-06-05T16:20:21Z",
+         "eventCount": 24,
          "firstEventTime": "2019-12-21T13:05:31Z",
          "lastEventTime": "2020-06-05T08:20:17Z",
          "URL": "https://localhost:6078/secure/incidents/6?tenantId=dev1",
@@ -469,7 +470,7 @@ def test_get_remote_data_command(requests_mock):
                       "userId": "qa-user@respond-software.com",
                       "outcome": "Non-Actionable", "comments": "blah blah blah"},
          "tenantIdRespond": "dev1", "tenantId": "Tenant 1",
-         "respondRemoteId": "Tenant 1:6", "dbotMirrorDirection": "In",
+         "respondRemoteId": "Tenant 1:6", "dbotMirrorDirection": "Both",
          "dbotMirrorInstance": "respond_test", "owner": "user1"}, {
             "Contents": {
                 "closeNotes": "blah blah blah",
@@ -481,3 +482,11 @@ def test_get_remote_data_command(requests_mock):
         }]
     # print(json.dumps(expected_result, sort_keys=True, indent=2, separators=(',', ': ')))
     assert res == expected_result
+
+
+def test_get_mapping_fields_command():
+    from RespondAnalyst import get_mapping_fields_command
+    res = get_mapping_fields_command()
+    expected = [{'Respond Software Incident': {
+        'feedback': 'the user assigned outcome of a closed incident', 'title': 'incident title'}}]
+    assert res.extract_mapping() == expected

@@ -162,6 +162,7 @@ script:
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
+  ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   longRunning: false

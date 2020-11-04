@@ -29,6 +29,20 @@ RESPOND_FEEDBACK_STATUS = {
     'Inconclusive': 'Inconclusive'
 }
 
+RESPOND_INCIDENT_FIELDS = {
+    "feedback": {
+        "description": "the user assigned outcome of a closed incident",
+         "xsoar_field_name": "feedback"
+    },
+    "title": {
+        "description": "incident title",
+        "xsoar_field_name": "Title"
+    }
+}
+
+RESPOND_INCIDENT_TYPE_NAME = 'Respond Software Incident'
+
+
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
         return None
@@ -252,171 +266,172 @@ class RestClient(BaseClient):
 
     def construct_and_send_new_escalations_query(self, tenant_id, incident_id):
         data = {"query": "query {"
-                         "newEscalations(consumer: \"XSOAR" + str(tenant_id) + str(incident_id) + "\") { "
-                                                                                 "    timeGenerated "
-                                                                                 "    sourceType "
-                                                                                 "    incident { "
-                                                                                 "      id "
-                                                                                 "      priority "
-                                                                                 "      probabilityBucket "
-                                                                                 "    } "
-                                                                                 "    ... on NIDSEvent { "
-                                                                                 "      idx "
-                                                                                 "      nidsAction: action { "
-                                                                                 "        action "
-                                                                                 "      } "
-                                                                                 "      actionExt "
-                                                                                 "      trafficFlow "
+                         "newEscalations(consumer: \"XSOAR" + str(tenant_id) + str(
+            incident_id) + "\") { "
+                           "    timeGenerated "
+                           "    sourceType "
+                           "    incident { "
+                           "      id "
+                           "      priority "
+                           "      probabilityBucket "
+                           "    } "
+                           "    ... on NIDSEvent { "
+                           "      idx "
+                           "      nidsAction: action { "
+                           "        action "
+                           "      } "
+                           "      actionExt "
+                           "      trafficFlow "
 
-                                                                                 "      signature { "
-                                                                                 "        vendor "
-                                                                                 "        category "
-                                                                                 "        idx "
-                                                                                 "      } "
-                                                                                 "      signatureImportance "
-                                                                                 "      signatureName "
-                                                                                 "      categoryExt "
-                                                                                 "      deviceId "
+                           "      signature { "
+                           "        vendor "
+                           "        category "
+                           "        idx "
+                           "      } "
+                           "      signatureImportance "
+                           "      signatureName "
+                           "      categoryExt "
+                           "      deviceId "
 
-                                                                                 "      protocol "
+                           "      protocol "
 
-                                                                                 "      sourceHostname "
-                                                                                 "      sourceIpAddress "
-                                                                                 "      sourceZone "
-                                                                                 "      sourceSystem { "
-                                                                                 "        isInternal "
-                                                                                 "        isCritical "
-                                                                                 "      } "
-                                                                                 "      sourceAssetClassification "
-                                                                                 "      sourceSubClassifications "
-                                                                                 "      sourceCriticality "
-                                                                                 "      sourcePort { "
-                                                                                 "        number "
-                                                                                 "      } "
-                                                                                 "      sourceSuspicion "
+                           "      sourceHostname "
+                           "      sourceIpAddress "
+                           "      sourceZone "
+                           "      sourceSystem { "
+                           "        isInternal "
+                           "        isCritical "
+                           "      } "
+                           "      sourceAssetClassification "
+                           "      sourceSubClassifications "
+                           "      sourceCriticality "
+                           "      sourcePort { "
+                           "        number "
+                           "      } "
+                           "      sourceSuspicion "
 
-                                                                                 "      destinationHostname "
-                                                                                 "      destinationIpAddress "
-                                                                                 "      destinationZone "
-                                                                                 "      destinationSystem { "
-                                                                                 "        isInternal "
-                                                                                 "        isCritical "
-                                                                                 "      } "
-                                                                                 "      destinationAssetClassification "
-                                                                                 "      destinationSubClassifications "
-                                                                                 "      destinationCriticality "
-                                                                                 "      destinationPort { "
-                                                                                 "        number "
-                                                                                 "      } "
-                                                                                 "      destinationSuspicion "
-                                                                                 "    } "
-                                                                                 "    ... on AVEvent {"
-                                                                                 "      system {"
-                                                                                 "        hostname"
-                                                                                 "        ipAddress"
-                                                                                 "        zone "
-                                                                                 "      }"
-                                                                                 "      account {"
-                                                                                 "        domain"
-                                                                                 "        name"
-                                                                                 "      }"
-                                                                                 "      hash {"
-                                                                                 "        hash"
-                                                                                 "      }"
-                                                                                 "      malwareName {"
-                                                                                 "        name"
-                                                                                 "        type"
-                                                                                 "        vendor"
-                                                                                 "      }"
-                                                                                 "      accountType "
-                                                                                 "      isKnownBadHash "
-                                                                                 "      deviceId"
-                                                                                 "      scanTypeExt"
-                                                                                 "      actionExt"
-                                                                                 "      malwareSeverity"
-                                                                                 "      malwareSeverityExt"
-                                                                                 "      malwareTypeExt"
-                                                                                 "      assetClassification"
-                                                                                 "      assetSubClassifications"
-                                                                                 "      assetCriticality"
-                                                                                 "      systemRepeatOffender"
-                                                                                 "      accountRepeatOffender"
-                                                                                 "      malwareSpreading"
-                                                                                 "      avFilepath: filepath"
-                                                                                 "    }"
+                           "      destinationHostname "
+                           "      destinationIpAddress "
+                           "      destinationZone "
+                           "      destinationSystem { "
+                           "        isInternal "
+                           "        isCritical "
+                           "      } "
+                           "      destinationAssetClassification "
+                           "      destinationSubClassifications "
+                           "      destinationCriticality "
+                           "      destinationPort { "
+                           "        number "
+                           "      } "
+                           "      destinationSuspicion "
+                           "    } "
+                           "    ... on AVEvent {"
+                           "      system {"
+                           "        hostname"
+                           "        ipAddress"
+                           "        zone "
+                           "      }"
+                           "      account {"
+                           "        domain"
+                           "        name"
+                           "      }"
+                           "      hash {"
+                           "        hash"
+                           "      }"
+                           "      malwareName {"
+                           "        name"
+                           "        type"
+                           "        vendor"
+                           "      }"
+                           "      accountType "
+                           "      isKnownBadHash "
+                           "      deviceId"
+                           "      scanTypeExt"
+                           "      actionExt"
+                           "      malwareSeverity"
+                           "      malwareSeverityExt"
+                           "      malwareTypeExt"
+                           "      assetClassification"
+                           "      assetSubClassifications"
+                           "      assetCriticality"
+                           "      systemRepeatOffender"
+                           "      accountRepeatOffender"
+                           "      malwareSpreading"
+                           "      avFilepath: filepath"
+                           "    }"
 
-                                                                                 "    ... on WPEvent {"
-                                                                                 "      wpAction: action { "
-                                                                                 "        action "
-                                                                                 "      } "
-                                                                                 "      sourceSystem {"
-                                                                                 "        hostname"
-                                                                                 "        ipAddress"
-                                                                                 "        zone "
-                                                                                 "        isInternal "
-                                                                                 "      }"
-                                                                                 "      sourceAssetClassification "
-                                                                                 "      sourceSubClassifications "
-                                                                                 "      sourceCriticality "
-                                                                                 "      destinationAddress {"
-                                                                                 "        hostname"
-                                                                                 "        ipAddress"
-                                                                                 "        zone "
-                                                                                 "        isInternal "
-                                                                                 "      }"
-                                                                                 "      destinationAssetClassification "
-                                                                                 "      destinationSubClassifications "
-                                                                                 "      destinationCriticality "
-                                                                                 "      account {"
-                                                                                 "        domain"
-                                                                                 "        name"
-                                                                                 "      }"
-                                                                                 "      accountType "
-                                                                                 "      categorizationsExternal "
-                                                                                 "      protocol "
-                                                                                 "      method  "
-                                                                                 "      status  "
-                                                                                 "      userAgent "
-                                                                                 "      contentType "
-                                                                                 "      fileType    "
-                                                                                 "      deviceId "
-                                                                                 "      deviceVendor "
-                                                                                 "      fullUrl "
-                                                                                 "      campaign "
-                                                                                 "  } "
-                                                                                 "    ... on EDREvent {"
-                                                                                 "      system {"
-                                                                                 "        hostname"
-                                                                                 "        ipAddress"
-                                                                                 "        zone "
-                                                                                 "        isInternal "
-                                                                                 "      }"
-                                                                                 "      assetClassification"
-                                                                                 "      assetSubClassifications"
-                                                                                 "      assetCriticality"
-                                                                                 "      account {"
-                                                                                 "        domain"
-                                                                                 "        name"
-                                                                                 "      }"
-                                                                                 "      accountType "
-                                                                                 "      deviceId "
-                                                                                 "      deviceVendor "
-                                                                                 "      edrFilepath: filepath "
-                                                                                 "      fileHash "
-                                                                                 "      watchlistName "
-                                                                                 "      processName "
-                                                                                 "      isBinarySigned "
-                                                                                 "      parentProcessName "
-                                                                                 "      parentFileHash "
-                                                                                 "      parentFilepath "
-                                                                                 "      isParentBinarySigned "
-                                                                                 "      binarySuspicion "
-                                                                                 "      accountActivitySuspicion "
-                                                                                 "      diskOperationSuspicion "
-                                                                                 "      networkConnectionSuspicion "
-                                                                                 "    } "
-                                                                                 "}"
-                                                                                 "}"}
+                           "    ... on WPEvent {"
+                           "      wpAction: action { "
+                           "        action "
+                           "      } "
+                           "      sourceSystem {"
+                           "        hostname"
+                           "        ipAddress"
+                           "        zone "
+                           "        isInternal "
+                           "      }"
+                           "      sourceAssetClassification "
+                           "      sourceSubClassifications "
+                           "      sourceCriticality "
+                           "      destinationAddress {"
+                           "        hostname"
+                           "        ipAddress"
+                           "        zone "
+                           "        isInternal "
+                           "      }"
+                           "      destinationAssetClassification "
+                           "      destinationSubClassifications "
+                           "      destinationCriticality "
+                           "      account {"
+                           "        domain"
+                           "        name"
+                           "      }"
+                           "      accountType "
+                           "      categorizationsExternal "
+                           "      protocol "
+                           "      method  "
+                           "      status  "
+                           "      userAgent "
+                           "      contentType "
+                           "      fileType    "
+                           "      deviceId "
+                           "      deviceVendor "
+                           "      fullUrl "
+                           "      campaign "
+                           "  } "
+                           "    ... on EDREvent {"
+                           "      system {"
+                           "        hostname"
+                           "        ipAddress"
+                           "        zone "
+                           "        isInternal "
+                           "      }"
+                           "      assetClassification"
+                           "      assetSubClassifications"
+                           "      assetCriticality"
+                           "      account {"
+                           "        domain"
+                           "        name"
+                           "      }"
+                           "      accountType "
+                           "      deviceId "
+                           "      deviceVendor "
+                           "      edrFilepath: filepath "
+                           "      fileHash "
+                           "      watchlistName "
+                           "      processName "
+                           "      isBinarySigned "
+                           "      parentProcessName "
+                           "      parentFileHash "
+                           "      parentFilepath "
+                           "      isParentBinarySigned "
+                           "      binarySuspicion "
+                           "      accountActivitySuspicion "
+                           "      diskOperationSuspicion "
+                           "      networkConnectionSuspicion "
+                           "    } "
+                           "}"
+                           "}"}
         res = self._http_request(
             method='POST',
             url_suffix='/graphql?tenantId=' + tenant_id,
@@ -535,11 +550,13 @@ def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
         'tenantIdRespond': respond_tenant_id,
         'tenantId': external_tenant_id,
         'respondRemoteId': f'{external_tenant_id}:{raw_incident.get("id")}',
-        'dbotMirrorDirection': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None),
+        'dbotMirrorDirection': MIRROR_DIRECTION.get(
+            demisto.params().get('mirror_direction', 'None'), None),
         'dbotMirrorInstance': demisto.integrationInstance()
     }
     if len(raw_incident.get('userIds')) > 0:
-        formatted_incident['owner'] = demisto.findUser(email=raw_incident.get('userIds')[0]).get('username')
+        formatted_incident['owner'] = demisto.findUser(email=raw_incident.get('userIds')[0]).get(
+            'username')
 
     if raw_incident.get('feedback') is not None:
         formatted_incident['feedback'] = {
@@ -600,6 +617,7 @@ def get_user_id_from_email(email, users):
             return user.get('userId')
 
     raise Exception('no user found with email ' + email)
+
 
 def get_formatted_incident(rest_client, args):
     external_tenant_id = args.get('tenant_id')
@@ -733,6 +751,7 @@ def close_incident_command(rest_client, args):
         demisto.error('error closing incident and/or updating feedback: ' + str(err))
         raise Exception('error closing incident and/or updating feedback: ' + str(err))
 
+
 def get_incident_command(rest_client, args):
     external_tenant_id = args.get('tenant_id')
     formatted_incident = get_formatted_incident(rest_client, args)
@@ -743,10 +762,12 @@ def get_incident_command(rest_client, args):
     }
     return new_incident
 
+
 def get_escalations_command(rest_client, args):
     start = datetime.now().timestamp()
     fourMinutes = 240
-    demisto.debug(f'getting escalations for incident {args["incident_id"]} on {args["tenant_id"]} starting at {start}')
+    demisto.debug(
+        f'getting escalations for incident {args["incident_id"]} on {args["tenant_id"]} starting at {start}')
     try:
         entries = []
         user_tenant_mappings = rest_client.get_tenant_mappings()
@@ -755,7 +776,8 @@ def get_escalations_command(rest_client, args):
         more_data = True
         while more_data:
             if datetime.now().timestamp() - start > fourMinutes:
-                demisto.debug(f'exiting safely for incident {args["incident_id"]} on {args["tenant_id"]} starting at {start}')
+                demisto.debug(
+                    f'exiting safely for incident {args["incident_id"]} on {args["tenant_id"]} starting at {start}')
                 entries.append({
                     'Type': EntryType.NOTE,
                     'Contents': 'Safely exited before timeout, but more data needs to be collected. Please re-run command.',
@@ -772,7 +794,8 @@ def get_escalations_command(rest_client, args):
                         'ContentsFormat': EntryFormat.JSON
                     }
                     entries.append(valid_entry)
-                    demisto.debug(f'found escalation for incident {args["incident_id"]} on {args["tenant_id"]}')
+                    demisto.debug(
+                        f'found escalation for incident {args["incident_id"]} on {args["tenant_id"]}')
             if len(all_escalations) == 0:
                 more_data = False
     except Exception as e:
@@ -787,7 +810,8 @@ def get_escalations_command(rest_client, args):
             'ContentsFormat': EntryFormat.TEXT
         })
 
-    demisto.debug(f'returning escalations for incident {args["incident_id"]} on {args["tenant_id"]}: {entries}')
+    demisto.debug(
+        f'returning escalations for incident {args["incident_id"]} on {args["tenant_id"]}: {entries}')
     return entries
 
 
@@ -843,9 +867,11 @@ def update_remote_system_command(rest_client, args):
             demisto.debug(f'delta values: {remote_args.delta.value}')
             demisto.debug(remote_args.data)
             if changed_fields['title']:
-                demisto.debug(f' title for {remote_args.remote_incident_id}: {changed_fields["title"]}, {remote_args["data"]["title"]}')
+                demisto.debug(
+                    f' title for {remote_args.remote_incident_id}: {changed_fields["title"]}, {remote_args["data"]["title"]}')
                 res = rest_client.construct_and_send_update_title_mutation(tenant_id, incident_id,
-                                                                     remote_args['data']['title'])
+                                                                           remote_args['data'][
+                                                                               'title'])
                 demisto.debg(f'update title result {res}')
             # if changed_fields['description']:
             #     demisto.debug(f'changed_fields['description'])
@@ -853,7 +879,8 @@ def update_remote_system_command(rest_client, args):
             #                                                                remote_args['data'][
             #                                                                    'description'])
             if changed_fields['feedback']:
-                demisto.debug(f' feedback for {remote_args.remote_incident_id}: {changed_fields["feedback"]}, {remote_args["data"]["feedback"]}')
+                demisto.debug(
+                    f' feedback for {remote_args.remote_incident_id}: {changed_fields["feedback"]}, {remote_args["data"]["feedback"]}')
                 # best thing to do here is probably fit the args into the feedback mold already in close_incident_commmand
                 feedback = remote_args['data']['feedback']
                 feedback_args = {
@@ -862,7 +889,8 @@ def update_remote_system_command(rest_client, args):
                     'incident_feedback': feedback['outcome'],
                     'incident_comments': feedback['comments']
                 }
-                demisto.debug(f'feedback args for {remote_args.remote_incident_id}: {feedback_args}')
+                demisto.debug(
+                    f'feedback args for {remote_args.remote_incident_id}: {feedback_args}')
                 res = close_incident_command(rest_client, args)
                 demisto.debug(f'close incident command result: {res}')
 
@@ -872,6 +900,18 @@ def update_remote_system_command(rest_client, args):
             f"Error message: {str(e)}")
 
     return remote_args.remote_incident_id
+
+
+def get_mapping_fields_command():
+    respond_incident_type_scheme = SchemeTypeMapping(type_name=RESPOND_INCIDENT_TYPE_NAME)
+    for field in RESPOND_INCIDENT_FIELDS:
+        respond_incident_type_scheme.add_field(name=field,
+                                               description=RESPOND_INCIDENT_FIELDS[field].get(
+                                                   'description'))
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(respond_incident_type_scheme)
+    return mapping_response
 
 
 def fetch_incidents(rest_client, last_run=dict()):
@@ -915,7 +955,8 @@ def fetch_incidents(rest_client, last_run=dict()):
         raw_incidents.sort(key=lambda x: x.get('dateCreated'))
         for raw_incident in raw_incidents:
             try:
-                formatted_incident = format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
+                formatted_incident = format_raw_incident(raw_incident, external_tenant_id,
+                                                         respond_tenant_id)
                 new_incident = {
                     'name': external_tenant_id + ': ' + raw_incident['id'],
                     'occurred': formatted_incident.get('timeGenerated'),
@@ -979,7 +1020,12 @@ def main():
             return_outputs(get_incident_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'update-remote-system':
+            demisto.debug('in update-remote-system')
             return_results(update_remote_system_command(rest_client, demisto.args()))
+
+        elif demisto.command() == 'get-mapping-fields':
+            demisto.debug('get-mapping-fields called')
+            return_results(get_mapping_fields_command())
 
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(rest_client, demisto.args()))
