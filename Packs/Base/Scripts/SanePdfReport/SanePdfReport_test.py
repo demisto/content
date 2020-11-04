@@ -2,7 +2,6 @@ import demistomock as demisto
 from SanePdfReport import *
 import subprocess
 import os
-import logging
 
 
 def test_find_zombie_processes(mocker):
