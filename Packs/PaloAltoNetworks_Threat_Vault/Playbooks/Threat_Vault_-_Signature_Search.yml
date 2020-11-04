@@ -113,9 +113,9 @@ tasks:
       signature_name:
         complex:
           root: inputs.signature_name
-      size:
+      to:
         complex:
-          root: inputs.size
+          root: inputs.to
     separatecontext: false
     view: |-
       {
@@ -347,9 +347,9 @@ tasks:
       signature_name:
         complex:
           root: inputs.signature_name
-      size:
+      to:
         complex:
-          root: inputs.size
+          root: inputs.to
       vendor:
         complex:
           root: inputs.vendor
@@ -392,9 +392,9 @@ tasks:
       signature_name:
         complex:
           root: inputs.signature_name
-      size:
+      to:
         complex:
-          root: inputs.size
+          root: inputs.to
     separatecontext: false
     view: |-
       {
@@ -448,11 +448,11 @@ inputs:
   description: From which signature to return results(used for paging). Default is
     0.
   playbookInputQuery:
-- key: size
+- key: to
   value:
     simple: "10"
   required: false
-  description: Maximum number of signatures to return. Default is 10.
+  description: To which signature to return results. Default is from plus 10.
   playbookInputQuery:
 - key: search_type
   value: {}
