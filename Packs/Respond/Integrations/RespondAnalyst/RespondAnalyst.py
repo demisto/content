@@ -807,7 +807,7 @@ def get_remote_data_command(rest_client, args):
         raise e
 
     # updated_incident['feedback'] = get_incident_feedback(updated_incident)
-    demisto.debug(f'incident feedback: {updated_incident["feedback"]}')
+    demisto.debug(f'incident feedback: {updated_incident.get("feedback")}')
 
     if updated_incident['feedback'] is not None:
         demisto.debug(f"Closing Respond issue {updated_incident.get('id')}")
