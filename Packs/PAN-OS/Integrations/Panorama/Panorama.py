@@ -324,22 +324,22 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'action': api_action,
         'key': API_KEY,
         'element': add_argument_open(action, 'action', False)
-                   + add_argument_target(target, 'target')
-                   + add_argument_open(description, 'description', False)
-                   + add_argument_list(source, 'source', True, True)
-                   + add_argument_list(destination, 'destination', True, True)
-                   + add_argument_list(application, 'application', True)
-                   + add_argument_list(category, 'category', True)
-                   + add_argument_open(source_user, 'source-user', True)
-                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
-                   + add_argument_list(to, 'to', True, True)  # default to will always be any
-                   + add_argument_list(service, 'service', True, True)
-                   + add_argument_yes_no(negate_source, 'negate-source')
-                   + add_argument_yes_no(negate_destination, 'negate-destination')
-                   + add_argument_yes_no(disable, 'disabled')
-                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-                   + add_argument(log_forwarding, 'log-setting', False)
-                   + add_argument_list(tags, 'tag', True)
+                + add_argument_target(target, 'target')
+                + add_argument_open(description, 'description', False)
+                + add_argument_list(source, 'source', True, True)
+                + add_argument_list(destination, 'destination', True, True)
+                + add_argument_list(application, 'application', True)
+                + add_argument_list(category, 'category', True)
+                + add_argument_open(source_user, 'source-user', True)
+                + add_argument_list(from_, 'from', True, True)  # default from will always be any
+                + add_argument_list(to, 'to', True, True)  # default to will always be any
+                + add_argument_list(service, 'service', True, True)
+                + add_argument_yes_no(negate_source, 'negate-source')
+                + add_argument_yes_no(negate_destination, 'negate-destination')
+                + add_argument_yes_no(disable, 'disabled')
+                + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+                + add_argument(log_forwarding, 'log-setting', False)
+                + add_argument_list(tags, 'tag', True)
     }
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
