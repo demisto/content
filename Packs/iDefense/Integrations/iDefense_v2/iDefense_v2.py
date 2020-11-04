@@ -93,12 +93,15 @@ def _extract_analysis_info(res: dict, dbot_score_type: str) -> List[dict]:
                 dbot_score: int = _calculate_dbot_score(result_content.get('severity', 0))
                 desc = 'Match found in iDefense database'
                 dbot = Common.DBotScore(indicator_value, dbot_score_type, 'iDefense', dbot_score, desc)
+                last_published = result_content.get('last_published', '')
+                last_published_format = parse_date_string(last_published, '%Y-%m-%d %H:%M:%S')
                 analysis_info = {
                     'Name': result_content.get('display_text', ''),
                     'DbotReputation': dbot_score,
                     'Confidence': result_content.get('confidence', 0),
                     'ThreatTypes': result_content.get('threat_types', ''),
-                    'TypeOfUse': result_content.get('last_seen_as', '')
+                    'TypeOfUse': result_content.get('last_seen_as', ''),
+                    'LastPublished': str(last_published_format)
                 }
                 analysis_results.append({'analysis_info': analysis_info, 'dbot': dbot})
 
@@ -296,13 +299,15 @@ def uuid_command(client: Client, args: dict) -> CommandResults:
         elif indicator_type.lower() == 'url':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.URL, 'iDefense', dbot_score, desc)
             indicator = Common.URL(indicator_value, dbot)
-
+        last_published = res.get('last_published', '')
+        last_published_format = parse_date_string(last_published, '%Y-%m-%d %H:%M:%S')
         analysis_info = {
             'Name': res.get('display_text', ''),
             'DbotReputation': dbot_score,
             'Confidence': res.get('confidence', 0),
             'ThreatTypes': res.get('threat_types', ''),
-            'TypeOfUse': res.get('last_seen_as', '')
+            'TypeOfUse': res.get('last_seen_as', ''),
+            'LastPublished': str(last_published_format)
         }
     return CommandResults(indicator=indicator,
                           raw_response=res,

@@ -1810,8 +1810,11 @@
         },
         {
             "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
+            "playbookID": "iDefenseTest"
+        },
+         {
+            "integrations": "iDefense_2",
+            "playbookID": "iDefense_v2-Test"
         },
         {
             "integrations": "AbuseIPDB",

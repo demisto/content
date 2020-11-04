@@ -55,10 +55,10 @@ tasks:
       id: c7333553-9e6a-46ce-8af7-48fc71444e2e
       version: -1
       name: 'check non existing IP: 8.8.8.8'
-      script: iDefense_v2|||ip
+      script: iDefense|||ip
       type: regular
       iscommand: true
-      brand: iDefense_v2
+      brand: iDefense
       description: ''
     nexttasks:
       '#none#':
@@ -79,10 +79,10 @@ tasks:
       id: e6c006b0-fd8d-449e-8932-7606a97aa316
       version: -1
       name: 'check suspicious IP: 106.184.5.30'
-      script: iDefense_v2|||ip
+      script: iDefense|||ip
       type: regular
       iscommand: true
-      brand: iDefense_v2
+      brand: iDefense
       description: ''
     nexttasks:
       '#none#':
@@ -103,10 +103,10 @@ tasks:
       id: 83acdf2f-e883-44fe-8e98-47dcd52f5375
       version: -1
       name: 'check good domain: pgeeucpt.uk'
-      script: iDefense_v2|||domain
+      script: iDefense|||domain
       type: regular
       iscommand: true
-      brand: iDefense_v2
+      brand: iDefense
       description: ''
     nexttasks:
       '#none#':
@@ -127,10 +127,10 @@ tasks:
       id: 41a7e367-090e-48ab-89f8-e4f57dc7990c
       version: -1
       name: 'check suspisious domain: txffn.org'
-      script: iDefense_v2|||domain
+      script: iDefense|||domain
       type: regular
       iscommand: true
-      brand: iDefense_v2
+      brand: iDefense
       description: ''
     nexttasks:
       '#none#':
@@ -201,10 +201,10 @@ tasks:
       id: 43333527-1360-4b59-8ca2-b83b6f6bded0
       version: -1
       name: 'check suspicious URL: http://upper-int.ru'
-      script: iDefense_v2|||url
+      script: iDefense|||url
       type: regular
       iscommand: true
-      brand: iDefense_v2
+      brand: iDefense
       description: ''
     nexttasks:
       '#none#':
@@ -231,10 +231,10 @@ tasks:
       id: 5ac8acc2-a4bb-4517-80ec-21d54b34ce2c
       version: -1
       name: 'Check non existing URL: http://www.walla.com'
-      script: iDefense_v2|||url
+      script: iDefense|||url
       type: regular
       iscommand: true
-      brand: iDefense_v2
+      brand: iDefense
       description: ''
     nexttasks:
       '#none#':
@@ -314,10 +314,10 @@ tasks:
       id: 2ccd0d74-25ca-4fae-8012-abf064de40e4
       version: -1
       name: Search threat by UUID
-      script: iDefense_v2|||uuid
+      script: iDefense|||uuid
       type: regular
       iscommand: true
-      brand: iDefense_v2
+      brand: iDefense
       description: ''
     nexttasks:
       '#none#':
