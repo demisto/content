@@ -991,6 +991,16 @@ script:
       name: search-name
       required: true
       secret: false
+    - description: Whether to return only mailboxes which contain the email. Default is "False".
+      isArray: false
+      name: show-only-recipients
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'False'
+      predefined:
+      - 'True'
+      - 'False'
     deprecated: false
     description: Returns the status and results of a compliance search.
     execution: false

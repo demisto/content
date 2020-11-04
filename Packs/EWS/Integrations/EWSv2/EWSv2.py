@@ -1823,7 +1823,7 @@ def start_compliance_search(query):
     }
 
 
-def get_compliance_search(search_name):
+def get_compliance_search(search_name, show_only_recipients):
     check_cs_prereqs()
     try:
         with open("getcompliancesearch2.ps1", "w+") as f:
@@ -1848,16 +1848,23 @@ def get_compliance_search(search_name):
     if stdout[0] == 'Completed':
         res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
         res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
-        results.append(
-            {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['text'],
-                'Contents': stdout,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Office 365 Compliance search results', res,
-                                                 ['Location', 'Item count', 'Total size'])
+        entry = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': stdout,
+            'ReadableContentsFormat': formats['markdown'],
+        }
+        if show_only_recipients == 'True':
+            res = filter(lambda x: int(x['Item count']) > 0, res)
+            entry['EntryContext'] = {
+                'EWSo365ComplianceSearch(1==1)': {
+                    'Recipients': res
+                }
             }
-        )
+
+        entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
+                                                 ['Location', 'Item count', 'Total size'])
+        results.append(entry)
 
     return results
 
