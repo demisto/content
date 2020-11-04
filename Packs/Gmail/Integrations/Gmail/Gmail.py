@@ -1661,7 +1661,7 @@ def attachment_handler(message, attachments):
 
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
               transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
-              templateParams):
+              templateParams, inReplyTo=None, references=None):
     if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body]):
         # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
         message = MIMEText(htmlBody, 'html')  # type: ignore
@@ -1678,6 +1678,12 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     message['subject'] = header(subject)
     message['reply-to'] = header(replyTo)
 
+    # The following headers are being used for the reply-mail command.
+    if inReplyTo:
+        message['In-Reply-To'] = header(' '.join(inReplyTo))
+    if references:
+        message['References'] = header(' '.join(references))
+
     # if there are any attachments to the mail
     if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
         templateParams = template_params(templateParams)
@@ -1687,11 +1693,6 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
 
             if htmlBody is not None:
                 htmlBody = htmlBody.format(**templateParams)
-
-        if additional_headers is not None and len(additional_headers) > 0:
-            for h in additional_headers:
-                header_name, header_value = h.split('=')
-                message[header_name] = header(header_value)
 
         msg = MIMEText(body, 'plain', 'utf-8')
         message.attach(msg)
@@ -1715,6 +1716,11 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
 
         attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
         attachment_handler(message, attachments)
+
+    if additional_headers is not None and len(additional_headers) > 0:
+        for h in additional_headers:
+            header_name, header_value = h.split('=')
+            message[header_name] = header(header_value)
 
     encoded_message = base64.urlsafe_b64encode(message.as_string())
     command_args = {
@@ -1756,6 +1762,37 @@ def send_mail_command():
     result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
                        replyTo, file_names, attchCID, transientFile, transientFileContent,
                        transientFileCID, manualAttachObj, additional_headers, template_param)
+    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
+
+
+def reply_mail_command():
+    args = demisto.args()
+    emailto = argToList(args.get('to'))
+    emailfrom = args.get('from')
+    inReplyTo = argToList(args.get('inReplyTo'))
+    references = argToList(args.get('references'))
+    body = args.get('body')
+    subject = 'Re: ' + args.get('subject')
+    entry_ids = argToList(args.get('attachIDs'))
+    cc = argToList(args.get('cc'))
+    bcc = argToList(args.get('bcc'))
+    htmlBody = args.get('htmlBody')
+    replyTo = args.get('replyTo')
+    file_names = argToList(args.get('attachNames'))
+    attchCID = argToList(args.get('attachCIDs'))
+    transientFile = argToList(args.get('transientFile'))
+    transientFileContent = argToList(args.get('transientFileContent'))
+    transientFileCID = argToList(args.get('transientFileCID'))
+    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
+    additional_headers = argToList(args.get('additionalHeader'))
+    template_param = args.get('templateParams')
+
+    if emailfrom is None:
+        emailfrom = ADMIN_EMAIL
+
+    result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
+                       replyTo, file_names, attchCID, transientFile, transientFileContent,
+                       transientFileCID, manualAttachObj, additional_headers, template_param, inReplyTo, references)
     return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
 
 
@@ -1844,6 +1881,7 @@ def main():
         'gmail-delegate-user-mailbox': delegate_user_mailbox_command,
         'gmail-remove-delegated-mailbox': remove_delegate_user_mailbox_command,
         'send-mail': send_mail_command,
+        'reply-mail': reply_mail_command,
         'gmail-get-role': get_role_command
     }
     command = demisto.command()
