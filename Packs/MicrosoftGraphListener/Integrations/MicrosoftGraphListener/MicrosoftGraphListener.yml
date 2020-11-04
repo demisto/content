@@ -15,11 +15,11 @@ configuration:
   name: enc_key
   required: true
   type: 4
-- display: Authorization code (received from the authorization step - see Detailed Instructions (?) section)
+- display: Authorization code (required for self-deployed Azure app)
   name: auth_code
   required: false
   type: 4
-- display: Application redirect URI (for self-deployed mode)
+- display: Application redirect URI (required for self-deployed Azure app)
   name: redirect_uri
   required: false
   type: 0
