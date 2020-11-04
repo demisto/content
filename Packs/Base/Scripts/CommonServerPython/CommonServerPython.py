@@ -3553,10 +3553,15 @@ class DebugLogger(object):
         """
         Utility function to log start of debug mode logging
         """
-        msg = "debug-mode started.\nhttp client print found: {}.\nEnv {}.".format(self.http_client_print is not None,
-                                                                                  os.environ)
+        msg = "debug-mode started.\n#### http client print found: {}.\n#### Env {}.".format(self.http_client_print is not None,
+                                                                                            os.environ)
         if hasattr(demisto, 'params'):
-            msg += "\nParams: {}.".format(demisto.params())
+            msg += "\n#### Params: {}.".format(json.dumps(demisto.params(), indent=2))
+        callingContext = demisto.callingContext.get('context', {})
+        msg += "\n#### Docker image: [{}]".format(callingContext.get('DockerImage'))
+        brand = callingContext.get('IntegrationBrand')
+        if brand:
+            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, callingContext.get('IntegrationInstance'))
         self.int_logger.write(msg)
 
 
