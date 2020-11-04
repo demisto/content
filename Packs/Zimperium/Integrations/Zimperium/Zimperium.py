@@ -1,5 +1,5 @@
 import shutil
-from typing import Dict, Tuple, Callable, List
+from typing import Dict, Tuple
 from dateparser import parse
 import urllib3
 from CommonServerPython import *
