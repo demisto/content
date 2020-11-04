@@ -1808,14 +1808,9 @@
             "playbookID": "search_endpoints_by_hash_-_tie_-_test",
             "timeout": 500
         },
-        {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
-        },
          {
             "integrations": "iDefense_2",
-            "playbookID": "iDefense_v2-Test"
+            "playbookID": "iDefenseTest"
         },
         {
             "integrations": "AbuseIPDB",
