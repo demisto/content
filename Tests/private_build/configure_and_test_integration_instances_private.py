@@ -79,6 +79,7 @@ def find_needed_test_playbook_paths(test_playbooks: List[dict],
     tests_file_paths = set()
     with open(filter_file_path, "r") as filter_file:
         tests_to_run = filter_file.readlines()
+        print(tests_to_run)
         for test_to_run in tests_to_run:
             test_clean = test_to_run.rstrip()
             if any(test_clean in d for d in test_playbooks):
