@@ -817,7 +817,6 @@ def main():
     tenant_id = refresh_token if self_deployed else ''
 
     # params related to oproxy
-
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
     refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
