@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "EmailRepIO",
+            "playbookID": "TestEmailRepPlaybook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Microsoft Endpoint Configuration Manager",
             "playbookID": "Microsoft ECM - Test",
             "fromversion": "5.5.0"
@@ -23,6 +28,11 @@
             "fromversion": "5.5.0",
             "memory_threshold": 250,
             "timeout": 500
+        },
+        {
+            "integrations": "Anomali Enterprise",
+            "playbookID": "Anomali Enterprise Forensic Search - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "RiskIQDigitalFootprint",
@@ -2207,9 +2217,6 @@
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
-            "playbookID": "ExtractDomainFromEmailTest"
-        },
-        {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
             "integrations": "Image OCR",
             "timeout": 300,
@@ -3196,7 +3203,14 @@
         "Polygon-Test": "Issue 29060",
         "AttackIQ - Test": "Issue 29774",
         "CyberTotal_TestPlaybook": "Issue 29776",
-        "AWS-securityhub Test": "Issue 29796"
+        "AWS-securityhub Test": "Issue 29796",
+        "Carbon Black Enterprise EDR Test": "Issue 29775",
+        "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
+        "IAM - Test Playbook": "Issue 30013",
+        "Trend Micro Apex - Test": "Issue 27280",
+        "Azure Compute - Test": "Issue 28056",
+        "Recorded Future Test": "Issue 26741",
+        "Test - CrowdStrike Falcon": "Issue 30068"
     },
     "skipped_integrations": {
         
