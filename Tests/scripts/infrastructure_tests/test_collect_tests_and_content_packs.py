@@ -397,14 +397,75 @@ class TestChangedIntegrationAndPlaybook:
 
 class TestChangedScript:
     TEST_ID = 'Extract Indicators From File - test'
-    # points at a real file. if that file changes path the test should fail
-    GIT_DIFF_RET = "M Packs/CommonScripts/Scripts/ExtractIndicatorsFromTextFile/ExtractIndicatorsFromTextFile.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        """
+        Given
+        - script_a was modified
 
-        assert filterd_tests == {self.TEST_ID}
-        assert content_packs == {"Base", "DeveloperTools", "CommonScripts"}
+        When
+        - filtering tests to run
+
+        Then
+        - ensure test_playbook_a will run/returned
+        """
+        from Tests.scripts import collect_tests_and_content_packs
+        collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
+
+        # Given
+        # - script_a exists
+        script_name = 'script_a'
+        fake_script = TestUtils.create_script(name=script_name)
+
+        # mark as modified
+        TestUtils.mock_get_modified_files(mocker,
+                                          modified_files_list=[
+                                              fake_script['path']
+                                          ])
+
+        # - test_playbook_a exists that should test script_a
+        fake_test_playbook = TestUtils.create_test_playbook(name='test_playbook_a',
+                                                            with_scripts=[script_name])
+
+        try:
+            # - both in conf.json
+            fake_conf = TestUtils.create_tests_conf(
+                with_test_configuration={
+                    'playbookID': 'test_playbook_a'
+                }
+            )
+
+            fake_id_set = TestUtils.create_id_set(
+                with_scripts=fake_script['id_set'],
+                with_test_playbook=fake_test_playbook['id_set']
+            )
+
+            # When
+            # - filtering tests to run
+            filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
+                files_string='',
+                branch_name='dummy_branch',
+                minimum_server_version=TWO_BEFORE_GA_VERSION,
+                conf=fake_conf,
+                id_set=fake_id_set
+            )
+
+            # Then
+            # - ensure test_playbook_a will run/returned
+            assert 'test_playbook_a' in filtered_tests
+            assert content_packs == {"Base", "DeveloperTools"}
+
+            # - ensure the validation not failing
+            assert not collect_tests_and_content_packs._FAILED
+        finally:
+            # delete the mocked files
+            TestUtils.delete_files([
+                fake_script['path'],
+                fake_test_playbook['path']
+            ])
+
+            # reset _FAILED flag
+            collect_tests_and_content_packs._FAILED = False
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_2'
@@ -758,8 +819,8 @@ class TestExtractMatchingObjectFromIdSet:
     def test_mismatching_script_id(self, mocker):
         """
         Given
-        - integration_a was modified
-        - tests were provided for integration_a with mismatching id
+        - script_a was modified
+        - tests were provided for script_a with mismatching id
 
         When
         - filtering tests to run
@@ -771,11 +832,11 @@ class TestExtractMatchingObjectFromIdSet:
         collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
         # Given
-        # - integration_a exists
+        # - script_a exists
         script_name = 'script_a'
         fake_script = TestUtils.create_script(name=script_name)
 
-        # - tests were provided for integration_a with mismatching id
+        # - tests were provided for script_a with mismatching id
         id_set_obj = fake_script['id_set'][script_name]
         fake_script['id_set'] = {'wrong_id': id_set_obj}
 
