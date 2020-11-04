@@ -60,10 +60,10 @@ def test_file_reputation(mocker):
     """
     client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
     mocker.patch.object(Client, '_http_request', return_value=RESPONSE_APP_CLASSIFICATION_GET)
-    command_results = file_reputation(client,
+    command_results_list = file_reputation(client,
                                       args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
 
-    assert command_results.indicators[0].dbot_score.score == 1
+    assert command_results_list[0].indicator.dbot_score.score == 1
 
 
 def test_file_reputation_404(mocker):

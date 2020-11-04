@@ -449,7 +449,7 @@ def calculate_dbot_score(application_data: dict) -> int:
     return 3  # classification == Malicious
 
 
-def file_reputation(client: Client, args: Dict) -> CommandResults:
+def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
     """Get the reputation of a hash representing an App
 
     Args:
@@ -461,16 +461,13 @@ def file_reputation(client: Client, args: Dict) -> CommandResults:
     """
     hash_list = argToList(args.get('file'))
 
-    raw_response_list: List = []
-    file_indicator_list = []
+    command_results_list: List[CommandResults] = []
     application_data_list = []
     headers = ['objectId', 'hash', 'name', 'version', 'classification', 'score', 'privacyEnum', 'securityEnum']
-    human_readable = ''
 
     for app_hash in hash_list:
         try:
             application = client.app_classification_get_request(app_hash, '')
-            raw_response_list.extend(application)
             application_data = application[0]
         except Exception as err:
             if 'Error in API call [404]' in str(err):
@@ -502,7 +499,6 @@ def file_reputation(client: Client, args: Dict) -> CommandResults:
                 sha256=app_hash,
                 dbot_score=dbot_score
             )
-        file_indicator_list.append(file)
 
         if not score:
             readable_output = tableToMarkdown(name=f"Hash {app_hash} reputation is unknown to Zimperium.",
@@ -511,17 +507,18 @@ def file_reputation(client: Client, args: Dict) -> CommandResults:
             application_data_list.append(application_data)
             readable_output = tableToMarkdown(name=f"Hash {app_hash} reputation:", t=application_data, headers=headers,
                                               removeNull=True)
-        human_readable += readable_output
 
-    command_results = CommandResults(
-        outputs_prefix='Zimperium.Application',
-        outputs_key_field='objectId',
-        outputs=application_data_list,
-        readable_output=human_readable,
-        raw_response=raw_response_list,
-        indicators=file_indicator_list
-    )
-    return command_results
+        command_results = CommandResults(
+            outputs_prefix='Zimperium.Application',
+            outputs_key_field='objectId',
+            outputs=application_data,
+            readable_output=readable_output,
+            raw_response=application,
+            indicator=file
+        )
+        command_results_list.append(command_results)
+
+    return command_results_list
 
 
 def report_get(client: Client, args: Dict) -> CommandResults:
