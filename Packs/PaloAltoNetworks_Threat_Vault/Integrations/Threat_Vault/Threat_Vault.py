@@ -452,7 +452,7 @@ def main():
     params = demisto.params()
     api_key = params.get('api_key')
     verify = not params.get('insecure', False)
-    proxy = params().get('proxy') is True
+    proxy = params.get('proxy')
 
     try:
         command = demisto.command()
