@@ -60,6 +60,42 @@ script:
         description: Antivirus signature name.
         type: String
   - arguments:
+    - default: true
+      description: The SHA256 of the antivirus signature.
+      isArray: false
+      name: file
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the reputation of an antivirus in Threat Vault.
+    execution: false
+    name: file
+    outputs:
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: File.MD5
+        description: MD5 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA256
+        description: SHA256 hash of the file.
+        type: String
+      - contextPath: File.Malicious.Vendor
+        description: For malicious files, the vendor that made the decision.
+        type: String
+  - arguments:
     - default: false
       description: ID of the DNS signature.
       isArray: false

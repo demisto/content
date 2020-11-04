@@ -169,6 +169,51 @@ def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
     )
 
 
+def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
+    """Get the reputation of a sha256 representing an antivirus
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+    Returns:
+        list of CommandResults.
+    """
+    sha256_list = argToList(args.get('file'))
+    command_results_list: List[CommandResults] = []
+
+    for sha256 in sha256_list:
+        try:
+            response = client.antivirus_signature_get_request(sha256)
+            dbot_score = Common.DBotScore(
+                indicator=sha256,
+                indicator_type=DBotScoreType.FILE,
+                integration_name=client.name,
+                score=Common.DBotScore.BAD
+            )
+            file = Common.File(
+                sha256=sha256,
+                dbot_score=dbot_score
+            )
+            readable_output = tableToMarkdown(name=f"SHA256 {sha256} Antivirus reputation:", t=response, removeNull=True)
+        except Exception as err:
+            if 'Error in API call [404] - Not Found' in str(err):
+                response = {}
+                readable_output = f"SHA256 {sha256} Antivirus reputation is unknown to Threat Vault."
+            else:
+                raise Exception(err)
+
+        command_results = CommandResults(
+            outputs_prefix=f'{client.name}.Antivirus',
+            outputs_key_field='signatureId',
+            outputs=response,
+            readable_output=readable_output,
+            raw_response=response,
+            indicator=file
+        )
+        command_results_list.append(command_results)
+
+    return command_results_list
+
+
 def dns_get_by_id(client: Client, args: dict) -> CommandResults:
     """Get DNS signature.
 
@@ -405,6 +450,7 @@ def main():
         client = Client(api_key=api_key, verify=verify, proxy=proxy)
         commands = {
             'threatvault-antivirus-signature-get': antivirus_signature_get,
+            'file': file_reputation,
             'threatvault-dns-signature-get-by-id': dns_get_by_id,
             'threatvault-antispyware-signature-get-by-id': antispyware_get_by_id,
             'threatvault-ip-geo-get': ip_geo_get,

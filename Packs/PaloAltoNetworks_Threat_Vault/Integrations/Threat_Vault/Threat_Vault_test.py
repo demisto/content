@@ -1,6 +1,6 @@
 import pytest
-from Threat_Vault import Client, antivirus_signature_get, dns_get_by_id, antispyware_get_by_id, ip_geo_get, \
-    signature_search_results
+from Threat_Vault import Client, antivirus_signature_get, file_reputation, dns_get_by_id, antispyware_get_by_id, \
+    ip_geo_get, signature_search_results
 
 
 def test_antivirus_get_by_id(mocker):
@@ -66,7 +66,7 @@ def test_antivirus_get_by_id(mocker):
     assert output.get('EntryContext') == expected_result
 
 
-def test_antivirus_get_by_id_no_ids(mocker):
+def test_antivirus_get_by_id_no_ids():
     """
     https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-direct-searches/get-antivirus-signature.html
     Given:
@@ -80,6 +80,44 @@ def test_antivirus_get_by_id_no_ids(mocker):
 
     with pytest.raises(Exception, match="Please submit a sha256 or a signature_id."):
         antivirus_signature_get(client, args={})
+
+
+def test_file_reputation(mocker):
+    """
+    Given:
+        - sha256 representing an antivirus
+    When:
+        - running file_reputation command
+    Then
+        - Validate the reputation of the sha256 is malicious.
+    """
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    return_data = {
+        "active": True,
+        "createTime": "2010-10-01 10:28:57 (UTC)",
+        "release": {
+            "antivirus": {
+                "firstReleaseTime": "2010-10-03 15:04:58 UTC",
+                "firstReleaseVersion": 334,
+                "latestReleaseVersion": 0
+            },
+            "wildfire": {
+                "firstReleaseVersion": 0,
+                "latestReleaseVersion": 0
+            }
+        },
+        "sha256": [
+            "7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8",
+            "9e12c5cdb069f74487c11758e732d72047b72bedf4373aa9e3a58e8e158380f8"
+        ],
+        "signatureId": 93534285,
+        "signatureName": "Worm/Win32.autorun.crck"
+    }
+    mocker.patch.object(client, 'antivirus_signature_get_request', return_value=return_data)
+    command_results_list = file_reputation(
+        client, args={'file': '7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8'})
+
+    assert command_results_list[0].indicator.dbot_score.score == 3
 
 
 def test_dns_get_by_id(mocker):
