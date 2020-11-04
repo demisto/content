@@ -1,25 +1,19 @@
 import json
 import os
-import sys
 import argparse
 import shutil
 import uuid
-import prettytable
 import glob
-import git
-import requests
 import logging
-from datetime import datetime
-from zipfile import ZipFile
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
-    GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
+    GCPConfig, CONTENT_ROOT_PATH, \
     get_packs_statistics_dataframe
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index,\
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config,\
-    upload_id_set, _build_summary_table, build_summary_table_md, load_json, get_content_git_client,\
-    get_recent_commits_data, check_if_index_is_updated, print_packs_summary, add_pr_comment, handle_github_response
-from demisto_sdk.commands.common.tools import run_command, str2bool
+    upload_id_set, load_json, get_content_git_client,\
+    get_recent_commits_data, check_if_index_is_updated, print_packs_summary
+from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging
 

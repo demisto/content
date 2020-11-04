@@ -15,7 +15,6 @@ from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
     get_packs_statistics_dataframe
-from Tests.private_build.upload_packs_private import get_private_packs, add_private_packs_to_index, update_index_with_priced_packs
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -704,14 +703,7 @@ def main():
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
-
-    if private_bucket_name:  # Add private packs to the index
-        private_storage_bucket = storage_client.bucket(private_bucket_name)
-        private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
-                                                       index_folder_path)
-    else:  # skipping private packs
-        logging.debug("Skipping index update of priced packs")
-        private_packs = []
+    private_packs = []
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
