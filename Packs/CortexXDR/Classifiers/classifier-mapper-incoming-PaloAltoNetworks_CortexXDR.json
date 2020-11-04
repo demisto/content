@@ -119,10 +119,6 @@
 					"complex": null,
 					"simple": "out_mirror_error"
 				},
-				"LastMirroredInTime": {
-					"complex": null,
-					"simple": "last_mirrored_in"
-				},
 				"occurred": {
 					"complex": {
 						"accessor": "",

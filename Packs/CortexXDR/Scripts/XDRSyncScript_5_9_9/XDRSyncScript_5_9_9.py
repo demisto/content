@@ -187,8 +187,10 @@ def compare_incident_in_xdr_vs_previous_xdr_in_context(incident_id, xdr_incident
                     else:
                         demisto_update_args[field_name_in_demisto] = current_value
 
-    if demisto_update_args.get('xdrmodificationtime'):
-        demisto_update_args['xdrmodificationtime'] = datetime.fromtimestamp(demisto_update_args.get('xdrmodificationtime')/1000).isoformat() + 'Z'
+    modification_time = int(demisto_update_args.get('xdrmodificationtime'))
+    if modification_time:
+        demisto_update_args['xdrmodificationtime'] = (datetime.fromtimestamp(modification_time / 1000).isoformat()) \
+                                                     + 'Z'
 
     if latest_incident_in_xdr.get('severity'):
         latest_incident_in_xdr['severity'] = severity_mapping[latest_incident_in_xdr.get('severity')]
@@ -295,8 +297,8 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
 
     if incident_in_demisto_was_modified:
         # update xdr and finish the script
-        demisto.info("the incident in demisto was modified, updating the incident in xdr accordingly. ")
-        demisto.info("xdr_update_args: {}".format(json.dumps(xdr_update_args, indent=4)))
+        demisto.debug("the incident in demisto was modified, updating the incident in xdr accordingly. ")
+        demisto.debug("xdr_update_args: {}".format(json.dumps(xdr_update_args, indent=4)))
 
         res = demisto.executeCommand("xdr-update-incident", xdr_update_args)
         if is_error(res):
@@ -342,13 +344,15 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
         compare_incident_in_xdr_vs_previous_xdr_in_context(incident_id, xdr_incident_from_previous_run, fields_mapping)
 
     if incident_in_xdr_was_modified:
-        demisto.info("the incident in xdr was modified, updating the incident in demisto")
-        demisto.info("demisto_update_args: {}".format(json.dumps(demisto_update_args, indent=4)))
+        demisto.debug("the incident in xdr was modified, updating the incident in demisto")
+        demisto.debug("demisto_update_args: {}".format(json.dumps(demisto_update_args, indent=4)))
         xdr_incident = latest_incident_in_xdr_result[0]['Contents']
 
         demisto_update_args[xdr_alerts_field] = replace_in_keys(xdr_incident.get('alerts').get('data', []), '_', '')
-        demisto_update_args[xdr_file_artifacts_field] = replace_in_keys(xdr_incident.get('file_artifacts').get('data', []), '_', '')
-        demisto_update_args[xdr_network_artifacts_field] = replace_in_keys(xdr_incident.get('network_artifacts').get('data', []), '_', '')
+        demisto_update_args[xdr_file_artifacts_field] = replace_in_keys(
+            xdr_incident.get('file_artifacts').get('data', []), '_', '')
+        demisto_update_args[xdr_network_artifacts_field] = replace_in_keys(
+            xdr_incident.get('network_artifacts').get('data', []), '_', '')
 
         demisto_update_args['lastmirroredintime'] = datetime.now().isoformat() + 'Z'
 
@@ -374,13 +378,13 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
     if first_run:
         latest_incident_in_xdr_result = create_incident_from_saved_data(fields_mapping, incident_result=True)
 
-        demisto.results(latest_incident_in_xdr_result)  #TODO solve this
+        demisto.results(latest_incident_in_xdr_result)  # TODO solve this
 
         # set the incident markdown field
         xdr_incident = latest_incident_in_xdr_result
         update_incident = dict()
         update_incident[xdr_alerts_field] = replace_in_keys(xdr_incident.get('xdralerts'), '_', '')
-        update_incident[xdr_file_artifacts_field] = replace_in_keys(xdr_incident.get('xdrfileartifacts'),'_', '')
+        update_incident[xdr_file_artifacts_field] = replace_in_keys(xdr_incident.get('xdrfileartifacts'), '_', '')
         update_incident[xdr_network_artifacts_field] = replace_in_keys(xdr_incident.get('xdrnetworkartifacts'), '_', '')
 
         demisto.results(update_incident)
@@ -454,7 +458,7 @@ def main(args):
             args = args_to_str(args, latest_incident_in_xdr)
 
         res = demisto.executeCommand("ScheduleCommand", {
-            'command': '''!XDRSyncScrip {}'''.format(args),
+            'command': '''!XDRSyncScript {}'''.format(args),
             'cron': '*/{} * * * *'.format(interval),
             'times': 1
         })

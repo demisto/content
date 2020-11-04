@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Cortex XDR - IR copy
+  id: Cortex XDR - IR
   version: -1
 configuration:
 - display: Fetch incidents
@@ -80,8 +80,8 @@ configuration:
   type: 8
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint, and cloud data to stop sophisticated attacks.
-display: Palo Alto Networks Cortex XDR - Investigation and Response copy
-name: Cortex XDR - IR copy
+display: Palo Alto Networks Cortex XDR - Investigation and Response
+name: Cortex XDR - IR
 script:
   commands:
   - arguments:
@@ -256,6 +256,9 @@ script:
       secret: false
     - default: false
       defaultValue: 'False'
+      description: Return data only if the incident was changed since the last time
+        it was mirrored in to XSOAR.  This flag should be used only from inside an
+        XDR incident
       isArray: false
       name: return_only_updated_incident
       required: false
@@ -1695,9 +1698,9 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-- Test XDR Playbook
 defaultmapperin: Cortex XDR - IR-mapper
 defaultclassifier: Cortex XDR - IR
 defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0
+tests:
+- Test XDR Playbook

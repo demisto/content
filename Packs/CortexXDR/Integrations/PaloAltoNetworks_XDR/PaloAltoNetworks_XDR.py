@@ -999,7 +999,7 @@ def get_incident_extra_data_command(client, args):
             pass  # the incident was modified. continue to perform extra-data request
 
         else:  # the incident was not modified
-            return "", {}, {}
+            return "The incident was not modified in XDR since the last mirror in.", {}, {}
 
     demisto.debug(f"Performing extra-data request on incident: {incident_id}")
     raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
