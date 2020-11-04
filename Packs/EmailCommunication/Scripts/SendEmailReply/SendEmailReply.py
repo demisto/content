@@ -38,14 +38,13 @@ def send_mail_request(incident_id, email_subject, email_to, reply_body, service_
                       entry_id_list, email_latest_message,  additional_header):
     mail_content = {
         "to": email_to,
-        "item_id": email_latest_message,
+        "inReplyTo": email_latest_message,
         "subject": f"#{incident_id} {email_subject}",
         "cc": email_cc,
         "htmlBody": reply_html_body,
         "body": reply_body,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
-        "additionalHeader": additional_header
     }
     email_reply = demisto.executeCommand("reply-mail", mail_content)
     return email_reply
@@ -186,7 +185,6 @@ def main():
     email_subject = custom_fields.get('emailsubject')
     email_cc = custom_fields.get('emailcc', '')
     add_cc = custom_fields.get('addcctoemail', '')
-    message_id = custom_fields.get('emailmessageid')
     service_mail = args.get('service_mail', '')
     email_from = custom_fields.get('emailfrom')
     email_to = custom_fields.get('emailto')
@@ -195,14 +193,13 @@ def main():
     files = args.get('files', {})
     attachments = args.get('attachment', {})
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
-    additional_header = [f'In-Reply-To={message_id}']
 
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, reply_html_body = get_reply_body(notes, incident_id)
         entry_id_list = get_entry_id_list(incident_id, attachments, files)
         result = send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc,
-                            reply_html_body, entry_id_list, email_latest_message, additional_header)
+                            reply_html_body, entry_id_list, email_latest_message)
         demisto.results(result)
     except Exception as error:
         return_error(str(error), error)
