@@ -254,38 +254,38 @@ script:
     execution: false
     name: lgtm-get-code-review
     outputs:
-    - contextPath: LGTM.code-review.id
+    - contextPath: LGTM.code_review_result.id
       description: The identifier for the review.
       type: String
-    - contextPath: LGTM.code-review.results-url
+    - contextPath: LGTM.code_review_result.results-url
       description: A page on LGTM to view the status and results of this code review.
       type: String
-    - contextPath: LGTM.code-review.status
+    - contextPath: LGTM.code_review_result.status
       description: The status of the code review.
       type: String
-    - contextPath: LGTM.code-review.status-message
+    - contextPath: LGTM.code_review_result.status-message
       description: A summary of the current status of the code review.
       type: String
-    - contextPath: LGTM.code-review.languages.language
+    - contextPath: LGTM.code_review_result.languages.language
       description: The language analyzed.
       type: String
-    - contextPath: LGTM.code-review.languages.status
+    - contextPath: LGTM.code_review_result.languages.status
       description: The status for analysis of this language.
       type: String
-    - contextPath: LGTM.code-review.languages.status-message
+    - contextPath: LGTM.code_review_result.languages.status-message
       description: The current state of analysis of this langauge. When available,
         a summary of analysis results.
       type: String
-    - contextPath: LGTM.code-review.languages.new
+    - contextPath: LGTM.code_review_result.languages.new
       description: The total number of alerts introduced by the patch for this language.
       type: Number
-    - contextPath: LGTM.code-review.languages.fixed
+    - contextPath: LGTM.code_review_result.languages.fixed
       description: The total number of alerts fixed by the patch for this language.
       type: Number
-    - contextPath: LGTM.code-review.languages.alerts.new
+    - contextPath: LGTM.code_review_result.languages.alerts.new
       description: The number of alerts introduced by the patch for this query.
       type: Number
-    - contextPath: LGTM.code-review.languages.alerts.fixed
+    - contextPath: LGTM.code_review_result.languages.alerts.fixed
       description: The number of alerts fixed by the patch for this query.
       type: Number
   - arguments:
@@ -527,12 +527,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: An informative back-link to an external system.
-      isArray: false
-      name: review-url
-      required: false
-      secret: false
-    - default: false
       description: 'The callback URL for LGTM to post to on completion of the review.
         When the code review is complete, the API sends an HTTP POST request to the
         callback URL with the result of the code review in the request body. The code
@@ -557,6 +551,12 @@ script:
       isArray: false
       name: callback-secret
       required: false
+      secret: false
+    - default: false
+      defaultValue: Entry ID of the Patch File
+      isArray: false
+      name: patch-entry-id
+      required: true
       secret: false
     deprecated: false
     description: Run code review for a patch

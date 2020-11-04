@@ -1,0 +1,165 @@
+{
+    "id": "c2ea64a00158ea88afa84d8008c0eed129445f45",
+    "results-url": "https://lgtm.com/projects/g/my-devsecops/moon/rev/pr-c2ea64a00158ea88afa84d8008c0eed129445f45",
+    "status": "success",
+    "status-message": "Analysis succeeded",
+    "languages": [
+        {
+            "language": "python",
+            "status": "success",
+            "status-message": "11 fixed alerts",
+            "new": 0,
+            "fixed": 11,
+            "alerts": [
+                {
+                    "query": {
+                        "id": 9980089,
+                        "pack": "com.lgtm/python-queries",
+                        "name": "Statement has no effect",
+                        "language": "python",
+                        "properties": {
+                            "id": "py/ineffectual-statement",
+                            "name": "Statement has no effect",
+                            "severity": "recommendation",
+                            "tags": [
+                                "maintainability",
+                                "useless-code",
+                                "external/cwe/cwe-561"
+                            ]
+                        },
+                        "url": "https://lgtm.com/rules/9980089"
+                    },
+                    "new": 0,
+                    "fixed": 0
+                },
+                {
+                    "query": {
+                        "id": 1510006386081,
+                        "pack": "com.lgtm/python-queries",
+                        "name": "Clear-text storage of sensitive information",
+                        "language": "python",
+                        "properties": {
+                            "id": "py/clear-text-storage-sensitive-data",
+                            "name": "Clear-text storage of sensitive information",
+                            "severity": "error",
+                            "tags": [
+                                "security",
+                                "external/cwe/cwe-312",
+                                "external/cwe/cwe-315",
+                                "external/cwe/cwe-359"
+                            ]
+                        },
+                        "url": "https://lgtm.com/rules/1510006386081"
+                    },
+                    "new": 0,
+                    "fixed": 1
+                },
+                {
+                    "query": {
+                        "id": 6780086,
+                        "pack": "com.lgtm/python-queries",
+                        "name": "Unused local variable",
+                        "language": "python",
+                        "properties": {
+                            "id": "py/unused-local-variable",
+                            "name": "Unused local variable",
+                            "severity": "recommendation",
+                            "tags": [
+                                "maintainability",
+                                "useless-code",
+                                "external/cwe/cwe-563"
+                            ]
+                        },
+                        "url": "https://lgtm.com/rules/6780086"
+                    },
+                    "new": 0,
+                    "fixed": 4
+                },
+                {
+                    "query": {
+                        "id": 1800095,
+                        "pack": "com.lgtm/python-queries",
+                        "name": "Variable defined multiple times",
+                        "language": "python",
+                        "properties": {
+                            "id": "py/multiple-definition",
+                            "name": "Variable defined multiple times",
+                            "severity": "warning",
+                            "tags": [
+                                "maintainability",
+                                "useless-code",
+                                "external/cwe/cwe-563"
+                            ]
+                        },
+                        "url": "https://lgtm.com/rules/1800095"
+                    },
+                    "new": 0,
+                    "fixed": 4
+                },
+                {
+                    "query": {
+                        "id": 3960089,
+                        "pack": "com.lgtm/python-queries",
+                        "name": "Explicit returns mixed with implicit (fall through) returns",
+                        "language": "python",
+                        "properties": {
+                            "id": "py/mixed-returns",
+                            "name": "Explicit returns mixed with implicit (fall through) returns",
+                            "severity": "recommendation",
+                            "tags": [
+                                "reliability",
+                                "maintainability"
+                            ]
+                        },
+                        "url": "https://lgtm.com/rules/3960089"
+                    },
+                    "new": 0,
+                    "fixed": 0
+                },
+                {
+                    "query": {
+                        "id": 1780094,
+                        "pack": "com.lgtm/python-queries",
+                        "name": "Wrong number of arguments in a call",
+                        "language": "python",
+                        "properties": {
+                            "id": "py/call/wrong-arguments",
+                            "name": "Wrong number of arguments in a call",
+                            "severity": "error",
+                            "tags": [
+                                "reliability",
+                                "correctness",
+                                "external/cwe/cwe-685"
+                            ]
+                        },
+                        "url": "https://lgtm.com/rules/1780094"
+                    },
+                    "new": 0,
+                    "fixed": 2
+                },
+                {
+                    "query": {
+                        "id": 10030095,
+                        "pack": "com.lgtm/python-queries",
+                        "name": "File is not always closed",
+                        "language": "python",
+                        "properties": {
+                            "id": "py/file-not-closed",
+                            "name": "File is not always closed",
+                            "severity": "warning",
+                            "tags": [
+                                "efficiency",
+                                "correctness",
+                                "resources",
+                                "external/cwe/cwe-772"
+                            ]
+                        },
+                        "url": "https://lgtm.com/rules/10030095"
+                    },
+                    "new": 0,
+                    "fixed": 0
+                }
+            ]
+        }
+    ]
+}

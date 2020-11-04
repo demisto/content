@@ -142,19 +142,20 @@ class Client(BaseClient):
 
         return response
 
-    def request_review_request(self, project_id, base, external_id, review_url, callback_url, callback_secret):
+    def request_review_request(self, project_id, base, external_id,
+                               callback_url, callback_secret, patch_file):
 
         params = {
             "base": base,
             "external-id": external_id,
-            "review-url": review_url,
             "callback-url": callback_url,
             "callback-secret": callback_secret
         }
         headers = self._headers
         headers['Content-Type'] = 'application/octet-stream'
 
-        response = self._http_request('post', f'codereviews/{project_id}', params=params, headers=headers, data="<binary>")
+        response = self._http_request('post', f'codereviews/{project_id}', params=params,
+                                      headers=headers, files=patch_file)
 
         return response
 
@@ -340,7 +341,7 @@ def get_code_review_command(client, args):
 
     response = client.get_code_review_request(review_id)
     command_results = CommandResults(
-        outputs_prefix='LGTM.code_review',
+        outputs_prefix='LGTM.code_review_result',
         outputs_key_field='id',
         outputs=response,
         raw_response=response
@@ -487,11 +488,15 @@ def request_review_command(client, args):
     project_id = args.get('project-id', None)
     base = str(args.get('base', ''))
     external_id = args.get('external-id', None)
-    review_url = str(args.get('review-url', ''))
     callback_url = str(args.get('callback-url', ''))
     callback_secret = str(args.get('callback-secret', ''))
+    patch_file_entry_id = args.get('patch-entry-id', None)
 
-    response = client.request_review_request(project_id, base, external_id, review_url, callback_url, callback_secret)
+    patch_file_info = demisto.getFilePath(patch_file_entry_id)
+    uploaded_patch_file = open(patch_file_info['path'], 'rb')
+    patch_file = {'file': (patch_file_info['name'], uploaded_patch_file)}
+
+    response = client.request_review_request(project_id, base, external_id, callback_url, callback_secret, patch_file)
     command_results = CommandResults(
         outputs_prefix='LGTM.code_review_request',
         outputs_key_field='id',

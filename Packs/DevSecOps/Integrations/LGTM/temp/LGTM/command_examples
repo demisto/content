@@ -9,4 +9,5 @@
 !lgtm-get-analysis-for-commit commit-id=b1b136e071533d78053be506d32f79417651727d project-id=1511925128331
 !lgtm-get-analysis analysis-id=c8996fdd9968066cd410eda9deffdfdcca550e14
 !lgtm-get-alerts analysis-id=1977acc9cbeb31c5fb106de40600a365061506e9
-!lgtm-request-review project-id=1512319787549 base=405fc6ea44910177f48db9b2eb6839efb4211743 external-id=49
+!lgtm-request-review project-id=1512319787549 base=405fc6ea44910177f48db9b2eb6839efb4211743 external-id=49  patch-entry-id=478@ed5c5f6c-726a-4e62-85dc-8b1aad179194
+!lgtm-get-code-review review-id=525d2cd0df76e6ba1e5a47c920b61cacb8e4068e
