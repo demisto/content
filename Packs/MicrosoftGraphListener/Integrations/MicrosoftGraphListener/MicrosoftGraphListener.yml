@@ -3,15 +3,15 @@ commonfields:
   id: Microsoft Graph Mail Single User
   version: -1
 configuration:
-- display: ID (received from the authorization step - see Detailed Instructions (?) section)
+- display: ID or Client ID - see Detailed Instructions (?)
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the authorization step - see Detailed Instructions (?) section)
+- display: Token or Tenant ID - see Detailed Instructions (?)
   name: refresh_token
   required: true
   type: 4
-- display: Key (received from the authorization step - see Detailed Instructions (?) section)
+- display: Key or Client Secret - see Detailed Instructions (?)
   name: enc_key
   required: true
   type: 4
