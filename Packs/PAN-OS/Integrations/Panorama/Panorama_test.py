@@ -50,7 +50,7 @@ def patched_requests_mocker(requests_mock):
     mock_route_xml = """
     <response status="success">
     <result>
-        <flags>flags: A:active, ?:loose, C:connect, H:host, S:static, ~:internal, R:rip, O:ospf, B:bgp, Oi:ospf intra-area, Oo:ospf inter-area, O1:ospf ext-type-1, O2:ospf ext-type-2, E:ecmp, M:multicast</flags>
+        <flags>flags: A:active</flags>
         <entry>
             <virtual-router>CORE</virtual-router>
             <destination>0.0.0.0/0</destination>
