@@ -35,7 +35,8 @@ class GCPConfig(object):
     """
     STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
-    BUILD_BASE_PATH = "content/builds"
+    BUILD_PATH_PREFIX = "content/builds"
+    BUILD_BASE_PATH = ""
     PRIVATE_BASE_PATH = "content/packs"
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
@@ -873,6 +874,7 @@ class Pack(object):
 
         build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, latest_version)
 
+        # Verifying that the latest version of the pack has been uploaded to the build bucket
         existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
         if not existing_bucket_version_files:
             logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
@@ -881,16 +883,18 @@ class Pack(object):
 
         prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
         existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
+        # We check that the pack version was bumped by comparing the pack version in build bucket and production bucket
         if existing_prod_version_files and not override_pack:
             logging.warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
 
-        prod_full_file_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
-        build_full_file_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
-        build_file_blob = build_bucket.blob(build_full_file_path)
+        # We upload the pack zip object taken from the build bucket into the production bucket
+        prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
+        build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
+        build_file_blob = build_bucket.blob(build_pack_zip_path)
         copied_blob = build_bucket.copy_blob(
-            blob=build_file_blob, destination_bucket=production_bucket, new_name=prod_full_file_path
+            blob=build_file_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
         )
         copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
         self.public_storage_path = copied_blob.public_url
@@ -899,7 +903,7 @@ class Pack(object):
         if not task_status:
             logging.error(f"Failed in uploading {self._pack_name} pack to gcs.")
         else:
-            logging.success(f"Uploaded {self._pack_name} pack to {prod_full_file_path} path.")
+            logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
         return task_status, False
 
@@ -1194,7 +1198,7 @@ class Pack(object):
                 return task_status
         else:
             task_status = False
-            logging.error(f"{self._pack_name} index changelog file is missing at path: {build_changelog_index_path}")
+            logging.error(f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
 
         return task_status and self.is_changelog_exists()
 
@@ -1670,8 +1674,6 @@ class Pack(object):
     def copy_and_upload_integration_images(self, production_bucket, build_bucket):
         """ Uploads pack integrations images to gcs.
 
-            The returned result of integration section are defined in issue #19786.
-
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
             build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
@@ -1690,6 +1692,7 @@ class Pack(object):
         for integration_image_blob in build_integration_images_blobs:
             image_name = os.path.basename(integration_image_blob.name)
             logging.info(f"Uploading {self._pack_name} pack integration image: {image_name}")
+            # We upload each image object taken from the build bucket into the production bucket
             copied_blob = build_bucket.copy_blob(
                 blob=integration_image_blob, destination_bucket=production_bucket,
                 new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
@@ -1764,9 +1767,10 @@ class Pack(object):
             return task_status, author_image_storage_path
 
     def copy_and_upload_author_image(self, production_bucket, build_bucket):
-        """ Uploads pack integrations images to gcs.
+        """ Uploads pack author image to gcs.
 
-            The returned result of integration section are defined in issue #19786.
+        Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
+        default Base pack image path is used and it's gcp path is returned.
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
@@ -1812,6 +1816,12 @@ class Pack(object):
             logging.info(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
 
     def is_changelog_exists(self):
+        """ Indicates whether the local changelog of a given pack exists or not
+
+        Returns:
+            bool: The answer
+
+        """
         return os.path.isfile(os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
 
     def is_failed_to_upload(self, failed_packs_file):

@@ -124,8 +124,8 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
     return content_team_attachment
 
 
-def get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE, job_name="", test_type=None,
-                                  failed_packs_file_path=None):
+def get_attachments_for_bucket_upload_flow(build_url, build_title, job_name="", test_type=None,
+                                           failed_packs_file_path=None):
     steps_fields = get_entities_fields(entity_title="Failed Steps")
     color = 'good' if not steps_fields else 'danger'
     title = f'{build_title} - Success' if not steps_fields else f'{build_title} - Failure'
@@ -138,7 +138,7 @@ def get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE, job_na
                 "short": False
             }] + steps_fields
 
-        if job_name == 'Upload Packs':
+        if job_name and job_name == 'Upload Packs To Marketplace':
             if os.path.exists(failed_packs_file_path):
                 try:
                     with open(failed_packs_file_path, 'r') as json_file:
@@ -153,10 +153,26 @@ def get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE, job_na
                 except json.decoder.JSONDecodeError:
                     pass
 
-        if job_name != 'Upload Packs' and color == 'good':
+        if job_name and job_name != 'Upload Packs To Marketplace' and color == 'good':
             print_color('On bucket upload flow we are not notifying on jobs that are not Upload Packs. exiting...',
                         LOG_COLORS.NATIVE)
             sys.exit(0)
+
+    container_build_url = build_url + '#queue-placeholder/containers/0'
+    content_team_attachment = [{
+        'fallback': title,
+        'color': color,
+        'title': title,
+        'title_link': container_build_url,
+        'fields': steps_fields
+    }]
+    return content_team_attachment
+
+
+def get_attachments_for_all_steps(build_url, build_title):
+    steps_fields = get_entities_fields(entity_title="Failed Steps")
+    color = 'good' if not steps_fields else 'danger'
+    title = f'{build_title} - Success' if not steps_fields else f'{build_title} - Failure'
 
     container_build_url = build_url + '#queue-placeholder/containers/0'
     content_team_attachment = [{
@@ -273,9 +289,10 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE)
         elif test_type == BUCKET_UPLOAD_TYPE:
             print_color('Starting Slack notifications about upload to production bucket build', LOG_COLORS.GREEN)
-            content_team_attachments = get_attachments_for_all_steps(build_url, build_title=BUCKET_UPLOAD_BUILD_TITLE,
-                                                                     job_name=job_name, test_type=test_type,
-                                                                     failed_packs_file_path=env_results_file_name)
+            content_team_attachments = get_attachments_for_bucket_upload_flow(
+                build_url, build_title=BUCKET_UPLOAD_BUILD_TITLE, job_name=job_name, test_type=test_type,
+                failed_packs_file_path=env_results_file_name
+            )
         elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_XSOAR_BUILD_TITLE)
         else:

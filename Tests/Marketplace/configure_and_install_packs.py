@@ -1,19 +1,21 @@
 import argparse
-from Tests.configure_and_test_integration_instances import Server, set_marketplace_url, MARKET_PLACE_CONFIGURATION,\
-    Build, get_json_file
+from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION
+from Tests.build import Build
+from Tests.server import Server
+from Tests.test_content import get_json_file
 from Tests.test_content import ParallelPrintsManager
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS
 
 
 def options_handler():
-    parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
+    parser = argparse.ArgumentParser(description='Utility for instantiating integration instances')
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
                                           '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
                                           ' AMI environment.', default="Demisto Marketplace")
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
-    parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
+    parser.add_argument('--build_number', help='CI job number where the instances were created', required=True)
 
     options = parser.parse_args()
 
@@ -34,8 +36,8 @@ def main():
     # Configure the Servers
     for host in hosts:
         server = Server(host=host, user_name=username, password=password)
-        error_msg: str = 'Failed to set marketplace configuration.'
         print_color(f'Adding Marketplace configuration to {host}', LOG_COLORS.NATIVE)
+        error_msg: str = 'Failed to set marketplace configuration.'
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
         set_marketplace_url(servers=[server], branch_name=options.branch, ci_build_number=options.build_number)
 

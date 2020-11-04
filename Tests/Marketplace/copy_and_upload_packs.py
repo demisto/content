@@ -47,16 +47,14 @@ def get_pack_names(target_packs):
         sys.exit(1)
 
 
-def upload_index_to_storage(index_folder_path, build_index_blob, prod_index_blob,
-                            build_index_generation, prod_index_generation, production_bucket, build_bucket):
+def upload_index_to_storage(index_folder_path, build_index_blob, build_index_generation, production_bucket,
+                            build_bucket):
     """Upload updated index zip to cloud storage.
 
     Args:
         index_folder_path (str): index folder full path.
         build_index_blob (Blob): google cloud storage object that represents build index.zip blob.
-        prod_index_blob (Blob): google cloud storage object that represents prod index.zip blob.
         build_index_generation (str): downloaded build index generation.
-        prod_index_generation (str): downloaded prod index generation.
         production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is uploaded to.
         build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is downloaded from.
 
@@ -64,16 +62,15 @@ def upload_index_to_storage(index_folder_path, build_index_blob, prod_index_blob
     try:
         build_index_blob.reload()
         build_current_index_generation = build_index_blob.generation
-        prod_index_blob.reload()
-        prod_current_index_generation = prod_index_blob.generation
 
-        prod_index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
+        # disabling caching for prod index blob
+        prod_index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+        prod_index_blob = production_bucket.blob(prod_index_storage_path)
+        prod_index_blob.cache_control = "no-cache,max-age=0"
 
-        if build_current_index_generation == build_index_generation and \
-                prod_current_index_generation == prod_index_generation:
+        if build_current_index_generation == build_index_generation:
             copied_index = build_bucket.copy_blob(
-                blob=build_index_blob, destination_bucket=production_bucket,
-                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+                blob=build_index_blob, destination_bucket=production_bucket, new_name=prod_index_storage_path
             )
             if copied_index.exists():
                 logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
@@ -84,8 +81,6 @@ def upload_index_to_storage(index_folder_path, build_index_blob, prod_index_blob
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.error(f"Downloaded build index generation: {build_index_generation}")
             logging.error(f"Current build index generation: {build_current_index_generation}")
-            logging.error(f"Downloaded prod index generation: {prod_index_generation}")
-            logging.error(f"Current prod index generation: {prod_current_index_generation}")
             sys.exit(1)
     except Exception:
         logging.exception(f"Failed in uploading {GCPConfig.INDEX_NAME}")
@@ -106,19 +101,18 @@ def upload_core_packs_config(production_bucket, build_number, extract_destinatio
     """
     # download the corepacks.json stored in the build bucket to temp dir
     build_corepacks_file_path = os.path.join(GCPConfig.BUILD_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
-    temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
     build_corepacks_blob = build_bucket.blob(build_corepacks_file_path)
 
     if not build_corepacks_blob.exists():
         logging.critical(f"{GCPConfig.CORE_PACK_FILE_NAME} is missing in {build_bucket.name} bucket, exiting...")
         sys.exit(1)
 
+    temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
     build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
     corepacks_file = load_json(temp_corepacks_file_path)
 
     # change the storage paths to the prod bucket
     corepacks_list = corepacks_file.get('corePacks', [])
-    # TODO: Change to regex
     corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, GCPConfig.STORAGE_BASE_PATH,
                                    LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in corepacks_list]
 
@@ -136,14 +130,14 @@ def upload_core_packs_config(production_bucket, build_number, extract_destinatio
     logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
 
 
-def is_valid_pack(extract_destination_path, pack_name, production_bucket, build_bucket, failed_packs_file):
+def is_valid_pack(extract_destination_path, pack_name, prod_pack_names, build_pack_names, failed_packs_file):
     """ Indicates whether a pack should be in the loop of uploads or not
 
     Args:
         extract_destination_path (str): Full path of folder to extract wanted packs
         pack_name (str): The pack name
-        production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
-        build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+        prod_pack_names (list): List of all packs in production bucket
+        build_pack_names (list): List of all packs in build bucket
         failed_packs_file (dict): The failed packs file from Prepare Content step in Create Instances job
 
     Returns:
@@ -151,8 +145,6 @@ def is_valid_pack(extract_destination_path, pack_name, production_bucket, build_
 
     """
     is_in_artifacts = os.path.exists(os.path.join(extract_destination_path, pack_name))
-    prod_pack_names = [f.name for f in production_bucket.list_blobs(prefix=GCPConfig.STORAGE_BASE_PATH)]
-    build_pack_names = [f.name for f in build_bucket.list_blobs(prefix=GCPConfig.BUILD_BASE_PATH)]
     # if pack is in prod bucket and not in build bucket it should be deleted because upload packs
     # on prepare content step in create instances job has deleted it
     is_in_prod_but_not_in_build = pack_name in prod_pack_names and pack_name not in build_pack_names
@@ -164,11 +156,10 @@ def is_valid_pack(extract_destination_path, pack_name, production_bucket, build_
     return is_in_artifacts and not is_in_prod_but_not_in_build
 
 
-def download_and_extract_index(production_bucket, build_bucket, extract_destination_path):
+def download_and_extract_index(build_bucket, extract_destination_path):
     """Downloads and extracts production and build indexes zip from cloud storage.
 
     Args:
-        production_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where prod index.zip is stored.
         build_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where build index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
     Returns:
@@ -179,15 +170,11 @@ def download_and_extract_index(production_bucket, build_bucket, extract_destinat
         str: downloaded build index generation.
 
     """
-    prod_index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     build_index_storage_path = os.path.join(GCPConfig.BUILD_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     download_build_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     build_index_blob = build_bucket.blob(build_index_storage_path)
-    prod_index_blob = production_bucket.blob(prod_index_storage_path)
     build_index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
-    # TODO: understand if we need this or no
-    build_index_generation = 0  # Setting to 0 makes the operation succeed only if there are no live versions of blob
 
     if not os.path.exists(extract_destination_path):
         os.mkdir(extract_destination_path)
@@ -196,16 +183,9 @@ def download_and_extract_index(production_bucket, build_bucket, extract_destinat
         logging.error(f"No build index was found in path: {build_index_storage_path}")
         sys.exit(1)
 
-    if not prod_index_blob.exists():
-        logging.error(f"No prod index was found in path: {prod_index_storage_path}")
-        sys.exit(1)
-
     build_index_blob.reload()
     build_index_generation = build_index_blob.generation
     build_index_blob.download_to_filename(download_build_index_path, if_generation_match=build_index_generation)
-
-    prod_index_blob.reload()
-    prod_index_generation = prod_index_blob.generation
 
     if os.path.exists(download_build_index_path):
         with ZipFile(download_build_index_path, 'r') as index_zip:
@@ -219,7 +199,7 @@ def download_and_extract_index(production_bucket, build_bucket, extract_destinat
         logging.success(f"Finished downloading and extracting build {GCPConfig.INDEX_NAME} file to "
                         f"{extract_destination_path}")
 
-        return build_index_folder_path, prod_index_blob, build_index_blob, prod_index_generation, build_index_generation
+        return build_index_folder_path, build_index_blob, build_index_generation
     else:
         logging.error(f"Failed to download build {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
@@ -299,7 +279,7 @@ def main():
     build_bucket = storage_client.bucket(build_bucket_name)
 
     # initialize base paths
-    build_bucket_path = os.path.join(GCPConfig.BUILD_BASE_PATH, circle_branch, build_number)
+    build_bucket_path = os.path.join(GCPConfig.BUILD_PATH_PREFIX, circle_branch, build_number)
     GCPConfig.BUILD_BASE_PATH = os.path.join(build_bucket_path, GCPConfig.STORAGE_BASE_PATH)
     if production_base_path:
         GCPConfig.STORAGE_BASE_PATH = production_base_path
@@ -308,18 +288,21 @@ def main():
     # TODO: refactor force upload
 
     # download and extract build and prod index from build and prod buckets
-    build_index_folder_path, prod_index_blob, build_index_blob, prod_index_generation, build_index_generation = \
-        download_and_extract_index(production_bucket, build_bucket, extract_destination_path)
+    build_index_folder_path, build_index_blob, build_index_generation = \
+        download_and_extract_index(build_bucket, extract_destination_path)
 
-    # get the failed packs list from Prepare Content step in Create Instances job
+    # get the failed packs file from Prepare Content step in Create Instances job if there are
     failed_packs_file = load_failed_packs_file(os.path.join(os.path.dirname(packs_artifacts_path),
                                                             FAILED_PACKS_PATH_SUFFIX))
 
     # detect packs to upload
     pack_names = get_pack_names(target_packs)
+    prod_pack_names = [f.name for f in production_bucket.list_blobs(prefix=GCPConfig.STORAGE_BASE_PATH)]
+    build_pack_names = [f.name for f in build_bucket.list_blobs(prefix=GCPConfig.BUILD_BASE_PATH)]
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
+    # Creating a list of Pack objects corresponding to each pack we want to upload.
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
-                  if is_valid_pack(extract_destination_path, pack_name, production_bucket, build_bucket,
+                  if is_valid_pack(extract_destination_path, pack_name, prod_pack_names, build_pack_names,
                                    failed_packs_file)]
 
     # starting iteration over packs
@@ -372,18 +355,17 @@ def main():
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket)
 
     # finished iteration over content packs
-    upload_index_to_storage(build_index_folder_path, build_index_blob, prod_index_blob,
-                            build_index_generation, prod_index_generation, production_bucket, build_bucket)
+    upload_index_to_storage(build_index_folder_path, build_index_blob, build_index_generation, production_bucket,
+                            build_bucket)
 
     # upload id_set.json to bucket
     upload_id_set(production_bucket, id_set_path)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list, os.path.dirname(packs_artifacts_path),
-                                                                      write_to_artifacts=False)
+    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # summary of packs status
-    print_packs_summary(successful_packs, skipped_packs, failed_packs, comment_on_pr=False, include_bucket_url=False,
+    print_packs_summary(successful_packs, skipped_packs, failed_packs, include_bucket_url=False,
                         include_pack_status=True)
 
 

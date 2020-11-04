@@ -452,17 +452,21 @@ def _build_summary_table(packs_input_list, include_bucket_url=True, include_pack
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated RN", "Status"] if \
-        include_pack_status else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated RN"]
-    table_fields = table_fields + ["Pack Bucket URL"] if include_bucket_url else table_fields
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated RN"]
+    if include_pack_status:
+        table_fields.append("Status")
+    if include_bucket_url:
+        table_fields.append("Pack Bucket URL")
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated, pack_status_message] if \
-            include_pack_status else [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated]
-        row = row + [pack.bucket_url] if include_bucket_url else row
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated]
+        if include_pack_status:
+            row.append(pack_status_message)
+        if include_bucket_url:
+            row.append(pack.bucket_url)
         table.add_row(row)
 
     return table
@@ -596,7 +600,7 @@ def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_com
         sys.exit(1)
 
 
-def print_packs_summary(successful_packs, skipped_packs, failed_packs, comment_on_pr=True, include_bucket_url=True,
+def print_packs_summary(successful_packs, skipped_packs, failed_packs, include_bucket_url=True,
                         include_pack_status=False):
     """Prints summary of packs uploaded to gcs.
 
@@ -604,7 +608,6 @@ def print_packs_summary(successful_packs, skipped_packs, failed_packs, comment_o
         successful_packs (list): list of packs that were successfully uploaded.
         skipped_packs (list): list of packs that were skipped during upload.
         failed_packs (list): list of packs that were failed during upload.
-        comment_on_pr (bool): indicates whether to comment on pr for external prs or not
         include_bucket_url (bool): indicates whether to include the bucket url column in the summary or not
         include_pack_status (bool): indicates whether to include the pack status
 
@@ -629,22 +632,21 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
         logging.critical(f"Failed packs:\n{failed_packs_table}")
         sys.exit(1)
 
-    if comment_on_pr:
-        # for external pull requests -  when there is no failed packs, add the build summary to the pull request
-        branch_name = os.environ['CIRCLE_BRANCH']
-        if branch_name.startswith('pull/'):
-            successful_packs_table = build_summary_table_md(successful_packs)
+    # for external pull requests -  when there is no failed packs, add the build summary to the pull request
+    branch_name = os.environ['CIRCLE_BRANCH']
+    if branch_name.startswith('pull/'):
+        successful_packs_table = build_summary_table_md(successful_packs)
 
-            build_num = os.environ['CIRCLE_BUILD_NUM']
+        build_num = os.environ['CIRCLE_BUILD_NUM']
 
-            bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                          f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
+        bucket_path = f'https://console.cloud.google.com/storage/browser/' \
+                      f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
 
-            pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
-                         f'Uploaded packs:\n{successful_packs_table}\n\n' \
-                         f'Browse to the build bucket with this address:\n{bucket_path}'
+        pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
+                     f'Uploaded packs:\n{successful_packs_table}\n\n' \
+                     f'Browse to the build bucket with this address:\n{bucket_path}'
 
-            add_pr_comment(pr_comment)
+        add_pr_comment(pr_comment)
 
 
 def option_handler():
@@ -751,13 +753,11 @@ def get_last_upload_commit_hash(index_folder_path):
     return last_upload_commit_hash
 
 
-def get_packs_summary(packs_list, circle_artifacts_path, write_to_artifacts):
+def get_packs_summary(packs_list):
     """
     Returns the packs list divided into 3 lists by their status
     Args:
         packs_list (list): The full packs list
-        circle_artifacts_path (str): The path to the circle artifacts dir path
-        write_to_artifacts (bool): Indicates whether to write the failed packs to artifacts or not
 
     Returns: 3 lists of packs - successful_packs, skipped_packs & failed_packs
 
@@ -769,14 +769,21 @@ def get_packs_summary(packs_list, circle_artifacts_path, write_to_artifacts):
                      or pack.status == PackStatus.FAILED_DETECTING_MODIFIED_FILES.name]
     failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
 
-    # save failed packs to circle ci env - to be used in Upload Packs job (Bucket Upload flow)
-    if write_to_artifacts:
-        with open(os.path.join(circle_artifacts_path, FAILED_PACKS_PATH_SUFFIX), "w") as f:
-            if failed_packs:
-                failed_packs_dict = {pack.name: pack.status for pack in failed_packs}
-                f.write(json.dumps(failed_packs_dict, indent=4))
-
     return successful_packs, skipped_packs, failed_packs
+
+
+def store_failed_packs_in_ci_artifacts(circle_artifacts_path, failed_packs):
+    """ Saves failed packs to circle ci env - to be used in Upload Packs To Marketplace job (Bucket Upload flow)
+
+    Args:
+        circle_artifacts_path (str): The path to the circle artifacts dir path
+        failed_packs: The list of all failed packs
+
+    """
+    with open(os.path.join(circle_artifacts_path, FAILED_PACKS_PATH_SUFFIX), "w") as f:
+        if failed_packs:
+            failed_packs_dict = {pack.name: pack.status for pack in failed_packs}
+            f.write(json.dumps(failed_packs_dict, indent=4))
 
 
 def main():
@@ -966,11 +973,13 @@ def main():
     upload_id_set(storage_bucket, id_set_path)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list, os.path.dirname(packs_artifacts_path),
-                                                                      write_to_artifacts=True)
+    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+
+    # Store failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job (Bucket Upload flow)
+    store_failed_packs_in_ci_artifacts(os.path.dirname(packs_artifacts_path), failed_packs)
 
     # summary of packs status
-    print_packs_summary(successful_packs, skipped_packs, failed_packs)
+    print_packs_summary(successful_packs, skipped_packs, failed_packs, include_pack_status=True)
 
 
 if __name__ == '__main__':
