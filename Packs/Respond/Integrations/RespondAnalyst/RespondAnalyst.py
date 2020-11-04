@@ -457,22 +457,9 @@ def fetch_incidents_for_tenant(rest_client, respond_tenant_id, external_tenant_i
         return []
     return raw_incidents
 
-def get_incident_feedback(incident):
-    if incident.get('feedback') is not None:
-        return {
-            'timeUpdated': incident.get('feedback').get('timeGiven'),
-            'userId': incident.get('feedback').get('userId'),
-            'outcome': RESPOND_FEEDBACK_STATUS.get(incident.get('feedback').get('newStatus')),
-            'comments': incident.get('feedback').get('optionalText'),
-        }
-    else:
-        return None
-
 
 def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
     # convert graphql response to standardized JSON output for an incident
-    # only format feedback if exists
-    formatted_feedback = get_incident_feedback(raw_incident)
     formatted_incident = {
         'incidentId': raw_incident.get('id'),
         'timeGenerated': timestamp_to_datestring(raw_incident.get('dateCreated'),
@@ -497,7 +484,6 @@ def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
         'internalSystems': raw_incident.get('internalSystems'),
         'escalationReasons': raw_incident.get('tags'),
         'assignedUsers': raw_incident.get('userIds'),
-        'feedback': formatted_feedback,
         'tenantIdRespond': respond_tenant_id,
         'tenantId': external_tenant_id,
         'respondRemoteId': f'{external_tenant_id}:{raw_incident.get("id")}',
@@ -508,10 +494,12 @@ def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
         formatted_incident['owner'] = demisto.findUser(email=raw_incident.get('userIds')[0]).get('username')
 
     if raw_incident.get('feedback') is not None:
-        formatted_incident['timeUpdated']: raw_incident.get('feedback').get('timeGiven')
-        formatted_incident['userId']: raw_incident.get('feedback').get('userId')
-        formatted_incident['outcome']: RESPOND_FEEDBACK_STATUS.get(raw_incident.get('feedback').get('newStatus'))
-        formatted_incident['comments']: raw_incident.get('feedback').get('optionalText')
+        formatted_incident['feedback'] = {
+            'timeUpdated': raw_incident.get('feedback').get('timeGiven'),
+            'userId': raw_incident.get('feedback').get('userId'),
+            'outcome': RESPOND_FEEDBACK_STATUS.get(raw_incident.get('feedback').get('newStatus')),
+            'comments': raw_incident.get('feedback').get('optionalText')
+        }
     return formatted_incident
 
 
