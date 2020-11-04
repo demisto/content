@@ -44,7 +44,7 @@ script:
     - name: file
       required: true
       default: true
-      description: The file hash (MD5/SHA1/SHA256) to check.
+      description: The file hashes (MD5/SHA1/SHA256) to check. Supports comma-separated values.
       isArray: true
     outputs:
     - contextPath: File.MD5
@@ -125,7 +125,7 @@ script:
     - name: url
       required: true
       default: true
-      description: The URL to be checked.
+      description: The URLs to be checked. Supports comma-separated values.
       isArray: true
     outputs:
     - contextPath: URL.Data
@@ -200,7 +200,7 @@ script:
     - name: domain
       required: true
       default: true
-      description: The domain to be checked.
+      description: The domains to be checked. Supports comma-separated values.
       isArray: true
     outputs:
     - contextPath: Domain.Name
@@ -275,7 +275,7 @@ script:
     - name: ip
       required: true
       default: true
-      description: The IP address to check.
+      description: The IP addresses to check. Supports comma-separated values.
       isArray: true
     outputs:
     - contextPath: IP.Address
@@ -387,7 +387,7 @@ script:
       defaultValue: '10'
     - name: sort
       description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of names, "name|asc",
-       for descending list of names, "name|desc".  
+       for descending list of names, "name|desc".
       auto: PREDEFINED
       predefined:
       - name|asc
