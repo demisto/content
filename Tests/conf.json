@@ -30,6 +30,11 @@
             "timeout": 500
         },
         {
+            "integrations": "Anomali Enterprise",
+            "playbookID": "Anomali Enterprise Forensic Search - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "RiskIQDigitalFootprint",
             "playbookID": "RiskIQDigitalFootprint-Test",
             "fromversion": "5.5.0",
@@ -1834,7 +1839,8 @@
         },
         {
             "integrations": "FireEyeFeed",
-            "playbookID": "playbook-FeedFireEye_test"
+            "playbookID": "playbook-FeedFireEye_test",
+            "memory_threshold": 110
         },
         {
             "integrations": "Phish.AI",
@@ -2392,7 +2398,8 @@
         },
         {
             "integrations": "AWS - S3",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
+            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436",
+            "memory_threshold": 80
         },
         {
             "integrations": "Image OCR",
@@ -3204,7 +3211,8 @@
         "IAM - Test Playbook": "Issue 30013",
         "Trend Micro Apex - Test": "Issue 27280",
         "Azure Compute - Test": "Issue 28056",
-        "Recorded Future Test": "Issue 26741"
+        "Recorded Future Test": "Issue 26741",
+        "Test - CrowdStrike Falcon": "Issue 30068"
     },
     "skipped_integrations": {
 

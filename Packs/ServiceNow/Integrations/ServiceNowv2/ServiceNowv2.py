@@ -359,6 +359,9 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
                 ticket_fields[arg] = inv_states.get(input_arg, input_arg)
             elif arg == 'approval':
                 ticket_fields[arg] = inv_approval.get(input_arg, input_arg)
+            elif arg == 'change_type':
+                # this change is required in order to use type 'Standard' as well.
+                ticket_fields['type'] = input_arg
             else:
                 ticket_fields[arg] = input_arg
         elif template_name and arg in template_name:
@@ -425,7 +428,7 @@ class Client(BaseClient):
 
     def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, fetch_time: str,
                  sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict = None):
+                 incident_name: str, oauth_params: dict = {}):
         """
 
         Args:
@@ -461,7 +464,14 @@ class Client(BaseClient):
         self.sys_param_offset = 0
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
-            self.snow_client: ServiceNowClient = ServiceNowClient(params=oauth_params)
+            self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
+                                                                  use_oauth=self.use_oauth,
+                                                                  client_id=oauth_params.get('client_id', ''),
+                                                                  client_secret=oauth_params.get('client_secret', ''),
+                                                                  url=oauth_params.get('url', ''),
+                                                                  verify=oauth_params.get('insecure', False),
+                                                                  proxy=oauth_params.get('proxy', False),
+                                                                  headers=oauth_params.get('headers', ''))
         else:
             self._auth = (self._username, self._password)
 
@@ -1928,7 +1938,9 @@ def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any
     Test the instance configurations when using OAuth authentication.
     """
     test_instance(client)
-    return '### Instance Configured Successfully', {}, {}, True
+    hr = '### Instance Configured Successfully.\n' \
+         'A refresh token was generated successfully and will be used to produce new access tokens as they expire.'
+    return hr, {}, {}, True
 
 
 def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
