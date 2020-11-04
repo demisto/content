@@ -292,10 +292,14 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], alert_status: Optional[str],
-                    max_fetch: int, priority: Optional[str],
-                    property_name: Optional[str], property_value: Optional[str]
+def fetch_incidents(client: Client,
+                    last_run: Dict[str, int],
+                    max_fetch: int,
+                    first_fetch_time: Optional[int] = None,
+                    alert_status: Optional[str] = None,
+                    priority: Optional[str] = None,
+                    property_name: Optional[str] = None,
+                    property_value: Optional[str] = None
                     ) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
@@ -629,15 +633,18 @@ def xm_get_event_command(client: Client, event_id: str) -> CommandResults:
     )
 
 
-def test_module(from_xm: Client, to_xm: Client, user: str) -> str:
+def test_module(from_xm: Client, to_xm: Client, user: str, max_fetch: int) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    :type client: ``Client``
-    :param Client: xMatters client to use
+    :type from_xm: ``Client``
+    :param Client: xMatters client to use to pull events from
+
+    :type to_xm: ``Client``
+    :param Client: xMatters client to use to post an event to.
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
@@ -652,12 +659,21 @@ def test_module(from_xm: Client, to_xm: Client, user: str) -> str:
     # invalid').
     # Cortex XSOAR will print everything you return different than 'ok' as
     # an error
+
+    max_fetch_int = int(max_fetch)
     try:
-        to_xm.xm_trigger_workflow(
+        if max_fetch_int <= 0 or max_fetch_int > 200:
+            raise ValueError
+    except ValueError:
+        raise ValueError("Max Fetch must be between 0 and 201")
+
+    try:
+        flow_res = to_xm.xm_trigger_workflow(
             recipients='nobody',
             subject='Test - please ignore',
             body='Test - please ignore'
         )
+        # return f'RequestId: {res["requestId"]}'
 
     except DemistoException as e:
         if 'Forbidden' in str(e):
@@ -693,6 +709,7 @@ def main() -> None:
     property_name = demisto.params().get('property_name')
     property_value = demisto.params().get('property_value')
     base_url = demisto.params().get('url')
+    max_fetch = demisto.params().get('max_fetch', 20)
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -746,7 +763,6 @@ def main() -> None:
             # Set and define the fetch incidents command to run after activated via integration settings.
             alert_status = demisto.params().get('status', None)
             priority = demisto.params().get('priority', None)
-            max_fetch = demisto.params().get('max_fetch', 20)
 
             next_run, incidents = fetch_incidents(
                 client=from_xm_client,
@@ -786,7 +802,8 @@ def main() -> None:
             return_results(test_module(
                 from_xm=from_xm_client,
                 to_xm=to_xm_client,
-                user=username
+                user=username,
+                max_fetch=max_fetch
             ))
 
     # Log exceptions and return errors

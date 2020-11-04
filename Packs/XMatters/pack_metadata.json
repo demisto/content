@@ -19,8 +19,7 @@
         "Push",
         "SMS",
         "Notifications",
-        "Incident Response",
-        "Recommended by Cortex XSOAR"
+        "Incident Response"
     ],
     "useCases": [
         "Default",

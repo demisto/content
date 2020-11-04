@@ -375,4 +375,4 @@ outputs:
   type: string
 fromversion: 5.5.0
 tests:
-- xMatters-Test
+- no tests

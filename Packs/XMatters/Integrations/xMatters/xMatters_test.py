@@ -194,3 +194,117 @@ def test_xm_get_event_command(requests_mock):
 
     results = xm_get_event_command(client, event_id='34111')
     assert results.readable_output.startswith("Retrieved Event \"34111\" from xMatters")
+
+
+def test_fetch_incidents(requests_mock):
+    from xMatters import Client, fetch_incidents
+
+    hostname = 'https://acme.xmatters.com'
+
+    client = Client(
+        base_url=hostname,
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    mock_response = {
+        "count": 2,
+        "data": [
+            {
+                "bypassPhoneIntro": False,
+                "created": "2020-11-04T16:50:39.929+0000",
+                "escalationOverride": False,
+                "eventId": "9147637302",
+                "eventType": "USER",
+                "floodControl": False,
+                "form": {
+                    "id": "75be94d8-0329-4c97-b4b6-c2da098edb06",
+                    "name": "Monitoring Alert Generator"
+                },
+                "id": "fbf2fe08-68a3-4417-94d5-e09d68d412c7",
+                "incident": "INCIDENT_ID-9147637302",
+                "links": {
+                    "self": "/api/xm/1/events/fbf2fe08-68a3-4417-94d5-e09d68d412c7"
+                },
+                "name": "Hang tight - your alert is on the way!",
+                "overrideDeviceRestrictions": False,
+                "plan": {
+                    "id": "f7836611-e18b-40f2-a435-0288b3823260",
+                    "name": "#Demo2020 Sales Engineering Demo Starter"
+                },
+                "priority": "HIGH",
+                "requirePhonePassword": False,
+                "responseCountsEnabled": False,
+                "status": "TERMINATED",
+                "submitter": {
+                    "firstName": "Oscar Admin",
+                    "id": "2c831e7c-b0de-433b-a5b0-879a79130c90",
+                    "lastName": "Wilde",
+                    "links": {
+                        "self": "/api/xm/1/people/2c831e7c-b0de-433b-a5b0-879a79130c90"
+                    },
+                    "recipientType": "PERSON",
+                    "targetName": "owilde"
+                },
+                "terminated": "2020-11-04T16:51:40.619+0000"
+            },
+            {
+                "bypassPhoneIntro": False,
+                "created": "2020-11-04T16:27:35.056+0000",
+                "escalationOverride": False,
+                "eventId": "9146487384",
+                "eventType": "USER",
+                "floodControl": False,
+                "form": {
+                    "id": "75be94d8-0329-4c97-b4b6-c2da098edb06",
+                    "name": "Monitoring Alert Generator"
+                },
+                "id": "b9887e2a-90e7-49a1-8fb6-a648db5948ac",
+                "incident": "INCIDENT_ID-9146487384",
+                "links": {
+                    "self": "/api/xm/1/events/b9887e2a-90e7-49a1-8fb6-a648db5948ac"
+                },
+                "name": "Hang tight - your alert is on the way!",
+                "overrideDeviceRestrictions": False,
+                "plan": {
+                    "id": "f7836611-e18b-40f2-a435-0288b3823260",
+                    "name": "#Demo2020 Sales Engineering Demo Starter"
+                },
+                "priority": "HIGH",
+                "requirePhonePassword": False,
+                "responseCountsEnabled": False,
+                "status": "TERMINATED",
+                "submitter": {
+                    "firstName": "Oscar",
+                    "id": "dc4163ae-8bbf-4007-9616-0cfb6b1dadfa",
+                    "lastName": "Wilde",
+                    "links": {
+                        "self": "/api/xm/1/people/dc4163ae-8bbf-4007-9616-0cfb6b1dadfa"
+                    },
+                    "recipientType": "PERSON",
+                    "targetName": "owilde"
+                },
+                "terminated": "2020-11-04T16:28:35.909+0000"
+            }
+        ],
+        "links": {
+            "self": "/api/xm/1/events?priority=HIGH&limit=100&offset=0"
+        },
+        "total": 2
+    }
+
+    requests_mock.register_uri('GET', hostname + '/api/xm/1/events?priority=HIGH', json=mock_response)
+
+    # last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
+    next_run, incidents = fetch_incidents(
+        client=client,
+        priority="HIGH",
+        last_run={},
+        max_fetch=4,
+        alert_status="ACTIVE",
+        first_fetch_time=1594250101
+    )
+
+    assert len(incidents) == 2

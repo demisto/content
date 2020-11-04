@@ -85,6 +85,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  additionalinfo: Must be between 0 and 201.
 script:
   commands:
   - name: xm-trigger-workflow
@@ -125,11 +126,11 @@ script:
       - HIGH
       description: Priority of the event.
     - name: from
-      description: A date in UTC format that represents the start of the time range
-        you want to search.
+      description: A date and time in UTC format that represents the start of the time range
+        you want to search. (i.e. `2020-01-01T00:11:22Z`)
     - name: to
-      description: A date in UTC format that represents the end of the time range
-        you want to search.
+      description: A date and time in UTC format that represents the end of the time range
+        you want to search. (i.e. `2020-01-01T00:11:22Z`)
     - name: workflow
       description: The name of the workflow the event is tied to.
     - name: form
@@ -197,6 +198,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
-- xMatters-Test
+- no tests

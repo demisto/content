@@ -35,5 +35,5 @@ This playbook does not use any scripts.
 | xMatters.RequestId | The requestId of the request to xMatters. This can be used for troubleshooting. |
 
 ## Playbook Image
----
+
 ![xMatters - Wait for Response](xMatters_-_Wait_for_Response.png)
