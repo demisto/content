@@ -1,0 +1,372 @@
+category: Utilities
+commonfields:
+  id: CloudConvert
+  version: -1
+configuration:
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the CloudConvert integration to convert your files to desired format
+display: CloudConvert
+name: CloudConvert
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The file's url
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - default: false
+      description: The file's war room entry ID
+      isArray: false
+      name: entry_id
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: CloudConvert-import
+    outputs:
+    - contextPath: CloudConvert.Task.id
+      description: Unique task id of scanned file
+      type: String
+    - contextPath: CloudConvert.Task.status
+      description: Status of current task
+      type: String
+    - contextPath: CloudConvert.Task.message
+      description: Response message from API
+      type: String
+    - contextPath: CloudConvert.Task.operation
+      description: The operation conducted
+      type: String
+    - contextPath: CloudConvert.Task.result.files.filename
+      description: Resulted file name
+      type: String
+    - contextPath: CloudConvert.Task.result.files.size
+      description: Resulted size of file
+      type: Number
+    - contextPath: CloudConvert.Task.result.files.url
+      description: Resulted file url
+      type: String
+    - contextPath: CloudConvert.Task.created_at
+      description: Creation Time
+      type: Date
+    - contextPath: CloudConvert.Task.started_at
+      description: Operation start time
+      type: Date
+    - contextPath: CloudConvert.Task.ended_at
+      description: Operation end time
+      type: Date
+    - contextPath: CloudConvert.Task.host_name
+      description: Name of host used for operation
+      type: String
+    - contextPath: CloudConvert.Task.storage
+      description: Storage server for operation
+      type: String
+    - contextPath: CloudConvert.Task.links
+      description: APIs link for operation
+      type: String
+  - arguments:
+    - default: false
+      description: Task id of the import task of the file of interest
+      isArray: false
+      name: task_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The desired output format for the given file
+      isArray: false
+      name: output_format
+      predefined:
+      - 3g2
+      - 3gp
+      - 3gpp
+      - 7z
+      - aac
+      - ac3
+      - aif
+      - aifc
+      - aiff
+      - amr
+      - au
+      - avi
+      - azw3
+      - bmp
+      - caf
+      - cavs
+      - cgm
+      - csv
+      - doc
+      - docx
+      - dv
+      - dvr
+      - dwg
+      - dxf
+      - emf
+      - eot
+      - eps
+      - epub
+      - flac
+      - flv
+      - gif
+      - html
+      - icns
+      - ico
+      - jpg
+      - lrf
+      - m2ts
+      - m4a
+      - m4b
+      - m4v
+      - md
+      - mkv
+      - mobi
+      - mod
+      - mov
+      - mp3
+      - mp4
+      - mpeg
+      - mpg
+      - mts
+      - mxf
+      - odd
+      - odp
+      - ods
+      - odt
+      - oeb
+      - oga
+      - ogg
+      - otf
+      - pdb
+      - pdf
+      - png
+      - ppt
+      - pptx
+      - ps
+      - psd
+      - rar
+      - rm
+      - rmvb
+      - rst
+      - rtf
+      - sf2
+      - svg
+      - swf
+      - tar
+      - tar.bz2
+      - tar.gz
+      - tar.lzo
+      - tex
+      - tiff
+      - ts
+      - ttf
+      - txt
+      - vob
+      - voc
+      - wav
+      - weba
+      - webm
+      - webp
+      - wma
+      - wmf
+      - wmv
+      - woff
+      - woff2
+      - wtv
+      - xls
+      - xlsx
+      - xps
+      - zip
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: CloudConvert-convert
+    outputs:
+    - contextPath: CloudConvert.Task.id
+      description: Unique task id of scanned file
+      type: String
+    - contextPath: CloudConvert.Task.status
+      description: Status of current task
+      type: String
+    - contextPath: CloudConvert.Task.message
+      description: Response message from API
+      type: String
+    - contextPath: CloudConvert.Task.operation
+      description: The operation conducted
+      type: String
+    - contextPath: CloudConvert.Task.result.files.filename
+      description: Resulted file name
+      type: String
+    - contextPath: CloudConvert.Task.result.files.size
+      description: Resulted size of file
+      type: Number
+    - contextPath: CloudConvert.Task.result.files.url
+      description: Resulted file url
+      type: String
+    - contextPath: CloudConvert.Task.created_at
+      description: Creation Time
+      type: Date
+    - contextPath: CloudConvert.Task.started_at
+      description: Operation start time
+      type: Date
+    - contextPath: CloudConvert.Task.ended_at
+      description: Operation end time
+      type: Date
+    - contextPath: CloudConvert.Task.host_name
+      description: Name of host used for operation
+      type: String
+    - contextPath: CloudConvert.Task.storage
+      description: Storage server for operation
+      type: String
+    - contextPath: CloudConvert.Task.depends_on_task_ids
+      description: The ID of the previous operation conducted on this file
+      type: String
+    - contextPath: CloudConvert.Task.links
+      description: APIs link for operation
+      type: String
+  - arguments:
+    - default: false
+      description: Task id of the convert task of the file of interest
+      isArray: false
+      name: task_id
+      required: true
+      secret: false
+    - default: false
+      description: use this argument if you are checking on an export to war room
+        entry operation, so an entry will be created if the operation is finished
+      isArray: false
+      name: is_entry
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: CloudConvert-checkstatus
+    outputs:
+    - contextPath: CloudConvert.Task.id
+      description: Unique task id of scanned file
+      type: String
+    - contextPath: CloudConvert.Task.status
+      description: Status of current task
+      type: String
+    - contextPath: CloudConvert.Task.message
+      description: Response message from API
+      type: String
+    - contextPath: CloudConvert.Task.operation
+      description: The operation conducted
+      type: String
+    - contextPath: CloudConvert.Task.result.files.filename
+      description: Resulted file name
+      type: String
+    - contextPath: CloudConvert.Task.result.files.size
+      description: Resulted size of file
+      type: Number
+    - contextPath: CloudConvert.Task.result.files.url
+      description: Resulted file url
+      type: String
+    - contextPath: CloudConvert.Task.created_at
+      description: Creation Time
+      type: Date
+    - contextPath: CloudConvert.Task.started_at
+      description: Operation start time
+      type: Date
+    - contextPath: CloudConvert.Task.ended_at
+      description: Operation end time
+      type: Date
+    - contextPath: CloudConvert.Task.host_name
+      description: Name of host used for operation
+      type: String
+    - contextPath: CloudConvert.Task.storage
+      description: Storage server for operation
+      type: String
+    - contextPath: CloudConvert.Task.depends_on_task_ids
+      description: The ID of the previous operation conducted on this file
+      type: String
+    - contextPath: CloudConvert.Task.links
+      description: APIs link for operation
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: where should the file be exported to
+      isArray: false
+      name: export_as
+      predefined:
+      - url
+      - war_room_entry
+      required: true
+      secret: false
+    - default: false
+      description: Task id of the convert task of the file of interest
+      isArray: false
+      name: task_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: CloudConvert-export
+    outputs:
+    - contextPath: CloudConvert.Task.id
+      description: Unique task id of scanned file
+      type: String
+    - contextPath: CloudConvert.Task.status
+      description: Status of current task
+      type: String
+    - contextPath: CloudConvert.Task.message
+      description: Response message from API
+      type: String
+    - contextPath: CloudConvert.Task.operation
+      description: The operation conducted
+      type: String
+    - contextPath: CloudConvert.Task.result.files.filename
+      description: Resulted file name
+      type: String
+    - contextPath: CloudConvert.Task.result.files.size
+      description: Resulted size of file
+      type: Number
+    - contextPath: CloudConvert.Task.result.files.url
+      description: Resulted file url
+      type: String
+    - contextPath: CloudConvert.Task.created_at
+      description: Creation Time
+      type: Date
+    - contextPath: CloudConvert.Task.started_at
+      description: Operation start time
+      type: Date
+    - contextPath: CloudConvert.Task.ended_at
+      description: Operation end time
+      type: Date
+    - contextPath: CloudConvert.Task.host_name
+      description: Name of host used for operation
+      type: String
+    - contextPath: CloudConvert.Task.storage
+      description: Storage server for operation
+      type: String
+    - contextPath: CloudConvert.Task.depends_on_task_ids
+      description: The ID of the previous operation conducted on this file
+      type: String
+    - contextPath: CloudConvert.Task.links
+      description: APIs link for operation
+      type: String
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.0.0

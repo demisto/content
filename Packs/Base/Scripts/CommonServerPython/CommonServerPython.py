@@ -3741,7 +3741,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, **kwargs):
+                          error_handler=None, empty_valid_codes=[204], **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -3832,6 +3832,11 @@ if 'requests' in sys.modules:
             :type error_handler ``callable``
             :param error_handler: Given an error entery, the error handler outputs the
                 new formatted error message.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
             """
             try:
                 # Replace params if supplied
@@ -3874,7 +3879,7 @@ if 'requests' in sys.modules:
                                 # couldn't parse the response json, sending only the error message
                                 raise DemistoException(err_msg)
 
-                is_response_empty_and_successful = (res.status_code == 204)
+                is_response_empty_and_successful = (res.status_code in empty_valid_codes)
                 if is_response_empty_and_successful and return_empty_response:
                     return res
 
