@@ -27,7 +27,7 @@ def set_mocker(mocker):
 def load_test_data(json_path):
     with open(json_path) as f:
         return json.load(f)
-    
+
 
 def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents, RestClient
@@ -451,24 +451,33 @@ def test_get_remote_data_command(requests_mock):
 
     args = {'id': 'Tenant 1:1'}
 
-
     res = get_remote_data_command(rest_client, args)
-    expected_result = full_incidents_response.get('data').get('fullIncidents')
-    expected_result.append({
-        "Contents": {
-            "closeNotes": "blah blah blah",
-            "closeReason": "Non-Actionable",
-            "dbotIncidentClose": True
-        },
-        "ContentsFormat": "json",
-        "Type": 1
-    })
-    expected_result[0]['feedback'] ={
-        "comments": "blah blah blah",
-        "outcome": "Non-Actionable",
-        "timeUpdated": "1593469076049",
-        "userId": "qa-user@respond-software.com"
-    }
+    expected_result = [
+        {"id": "Tenant 1:1","incidentId": "6", "timeGenerated": "2020-06-05T16:20:21Z", "eventCount": 24,
+         "firstEventTime": "2019-12-21T13:05:31Z",
+         "lastEventTime": "2020-06-05T08:20:17Z",
+         "URL": "https://localhost:6078/secure/incidents/6?tenantId=dev1",
+         "closeURL": "https://localhost:6078/secure/incidents/feedback/6?tenantId=dev1",
+         "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
+         "status": "Closed", "severity": "Critical", "probability": "VeryHigh",
+         "attackStage": "LateralMovement", "attackTactic": None,
+         "assetCriticality": "Critical", "internalSystemsCount": 1,
+         "internalSystems": [{"hostname": "enterprise.com"}], "escalationReasons": [
+            {"label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"}],
+         "assignedUsers": ["cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"],
+         "feedback": {"timeUpdated": "1593469076049",
+                      "userId": "qa-user@respond-software.com",
+                      "outcome": "Non-Actionable", "comments": "blah blah blah"},
+         "tenantIdRespond": "dev1", "tenantId": "Tenant 1",
+         "respondRemoteId": "Tenant 1:6", "dbotMirrorDirection": "In",
+         "dbotMirrorInstance": "respond_test", "owner": "user1"}, {
+            "Contents": {
+                "closeNotes": "blah blah blah",
+                "closeReason": "Non-Actionable",
+                "dbotIncidentClose": True
+            },
+            "ContentsFormat": "json",
+            "Type": 1
+        }]
     # print(json.dumps(expected_result, sort_keys=True, indent=2, separators=(',', ': ')))
-    expected_result[0]['id'] = args['id']
     assert res == expected_result
