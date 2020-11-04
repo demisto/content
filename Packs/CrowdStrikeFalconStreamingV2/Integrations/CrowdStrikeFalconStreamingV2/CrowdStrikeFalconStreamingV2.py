@@ -407,7 +407,7 @@ async def long_running_loop(
     except Exception as e:
         demisto.error(f'An error occurred in the long running loop: {e}')
     finally:
-        # store latest fetched event offset in case the loop crashes and we did not reach the 1 minute to store it
+        # store latest fetched event offset in case the loop crashes and we did not store it
         set_to_integration_context_with_retries({'offset': offset_to_store})
 
 
@@ -453,6 +453,27 @@ def get_sample_events(store_samples: bool = False) -> None:
         demisto.results(output)
 
 
+def merge_integration_context() -> None:
+    """Checks whether offset is of type int and sample_events is of type list in the integration context and
+    casts them to string
+
+    Returns:
+        None: No data returned.
+    """
+    integration_context, version = get_integration_context_with_version()
+    should_update_integration_context = False
+    offset = integration_context.get('offset')
+    if isinstance(offset, int):
+        integration_context['offset'] = str(offset)
+        should_update_integration_context = True
+    sample_events = integration_context.get('sample_events')
+    if isinstance(sample_events, list):
+        integration_context['sample_events'] = json.dumps(sample_events)
+        should_update_integration_context = True
+    if should_update_integration_context:
+        set_integration_context(integration_context, version)
+
+
 def main():
     params: Dict = demisto.params()
     base_url: str = params.get('base_url', '')
@@ -475,6 +496,7 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
+        merge_integration_context()
         if demisto.command() == 'test-module':
             run(test_module(base_url, client_id, client_secret, verify_ssl, proxy))
         elif demisto.command() == 'long-running-execution':
