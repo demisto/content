@@ -382,7 +382,7 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def create_search_event_by_process_request(self, process_guid: str, event_type: str,
-                                               query: str, limit: int, start_time: str, end_time: str,
+                                               query: str, limit: int, start_time: str, end_time: str = None,
                                                start: int = 0) -> dict:
         if event_type and event_type not in ['filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc']:
             raise Exception("Only the following event types can be searched: "
