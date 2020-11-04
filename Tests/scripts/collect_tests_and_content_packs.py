@@ -1170,11 +1170,12 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
     if not tests:
-        packs_to_install = set()  # No random tests
-        logging.debug("Running Sanity check only")
+        packs_to_install = set()
+        logging.info("No tests found running sanity check only")
 
-        tests.add('TestCommonPython')  # test with no integration configured
-        tests.add('HelloWorld-Test')  # test with integration configured
+        tests.add("Sanity Test - Pure")
+        tests.add("Sanity Test - Configuration Check")
+        tests.add("Sanity Test - MITMProxy")
         packs_to_install.add("HelloWorld")
 
     if changed_common:
