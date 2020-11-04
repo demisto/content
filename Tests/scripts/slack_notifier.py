@@ -289,11 +289,10 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE)
         elif test_type == BUCKET_UPLOAD_TYPE:
             print_color('Starting Slack notifications about upload to production bucket build', LOG_COLORS.GREEN)
-            content_team_attachments = get_attachments_for_bucket_upload_flow(build_url,
-                                                                              build_title=BUCKET_UPLOAD_BUILD_TITLE,
-                                                                              job_name=job_name, test_type=test_type,
-                                                                              failed_packs_file_path=
-                                                                              env_results_file_name)
+            content_team_attachments = get_attachments_for_bucket_upload_flow(
+                build_url, build_title=BUCKET_UPLOAD_BUILD_TITLE, job_name=job_name, test_type=test_type,
+                failed_packs_file_path=env_results_file_name
+            )
         elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_XSOAR_BUILD_TITLE)
         else:

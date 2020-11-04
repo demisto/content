@@ -1,6 +1,6 @@
 import demisto_client
 from Tests.tools import update_server_configuration
-from Tests.configure_and_test_integration_instances import SimpleSSH, Running
+from Tests.configure_and_test_integration_instances import SimpleSSH
 from Tests.build import Build
 
 
@@ -37,4 +37,3 @@ class Server:
     def __init_ssh(self):
         self.__ssh_client = SimpleSSH(host=self.host.replace('https://', '').replace('http://', ''),
                                       key_file_path=Build.key_file_path, user='ec2-user')
-
