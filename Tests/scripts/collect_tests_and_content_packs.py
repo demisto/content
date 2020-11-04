@@ -1173,9 +1173,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         packs_to_install = set()
         logging.info("No tests found running sanity check only")
 
-        tests.add("Sanity Test - Pure")
-        tests.add("Sanity Test - Configuration Check")
-        tests.add("Sanity Test - MITMProxy")
+        sanity_tests = {"Sanity Test - Pure", "Sanity Test - Configuration Check", "Sanity Test - MITMProxy"}
+        logging.debug(f"Adding sanity tests: {sanity_tests}")
+        tests.update(sanity_tests)
         packs_to_install.add("HelloWorld")
 
     if changed_common:
