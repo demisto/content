@@ -686,8 +686,7 @@ def __create_incident_with_playbook(client: DefaultApi, name, playbook_id, integ
         except ApiException as err:
             prints_manager.add_print_job(err.body, print, thread_index)
         if time.time() > timeout:
-            error_message = 'Got timeout for searching incident with id {}, ' \
-                            'got {} incidents in the search'.format(inc_id, incidents['total'])
+            error_message = 'Got timeout for searching incident with id {}'.format(inc_id)
             prints_manager.add_print_job(error_message, print_error, thread_index)
             prints_manager.add_print_job(
                 'Incident search responses: {}'.format(str(incident_search_responses)), print, thread_index
