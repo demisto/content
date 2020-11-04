@@ -8,12 +8,15 @@ import prettytable
 import glob
 import git
 import requests
+import logging
 from datetime import datetime
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
     get_packs_statistics_dataframe
-from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
+from demisto_sdk.commands.common.tools import run_command, str2bool
+
+from Tests.scripts.utils.log_util import install_logging
 
 
 def get_packs_names(target_packs):
@@ -34,27 +37,26 @@ def get_packs_names(target_packs):
     if target_packs.lower() == "all":
         if os.path.exists(PACKS_FULL_PATH):
             all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
-            print(f"Number of selected packs to upload is: {len(all_packs)}")
+            logging.info(f"Number of selected packs to upload is: {len(all_packs)}")
             # return all available packs names
             return all_packs
         else:
-            print_error((f"Folder {PACKS_FOLDER} was not found "
-                         f"at the following path: {PACKS_FULL_PATH}"))
+            logging.error((f"Folder {PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}"))
             sys.exit(1)
     elif target_packs.lower() == "modified":
         cmd = "git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
         modified_packs_path = run_command(cmd).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
-        print(f"Number of modified packs is: {len(modified_packs)}")
+        logging.info(f"Number of modified packs is: {len(modified_packs)}")
         # return only modified packs between two commits
         return modified_packs
     elif target_packs and isinstance(target_packs, str):
         modified_packs = {p.strip() for p in target_packs.split(',') if p not in IGNORED_FILES}
-        print(f"Number of selected packs to upload is: {len(modified_packs)}")
+        logging.info(f"Number of selected packs to upload is: {len(modified_packs)}")
         # return only packs from csv list
         return modified_packs
     else:
-        print_error("Not correct usage of flag -p. Please check help section of upload packs script.")
+        logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
         sys.exit(1)
 
 
@@ -86,7 +88,7 @@ def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
     """
     with ZipFile(packs_artifacts_path) as packs_artifacts:
         packs_artifacts.extractall(extract_destination_path)
-    print("Finished extracting packs artifacts")
+    logging.info("Finished extracting packs artifacts")
 
 
 def download_and_extract_index(storage_bucket, extract_destination_path):
@@ -112,7 +114,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         os.mkdir(extract_destination_path)
 
     if not index_blob.exists():
-        print_error("The blob does not exist.")
+        logging.error("The blob does not exist.")
         os.mkdir(index_folder_path)
         return index_folder_path, index_blob, index_generation
 
@@ -126,15 +128,15 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
             index_zip.extractall(extract_destination_path)
 
         if not os.path.exists(index_folder_path):
-            print_error(f"Failed creating {GCPConfig.INDEX_NAME} folder with extracted data.")
+            logging.critical(f"Failed creating {GCPConfig.INDEX_NAME} folder with extracted data.")
             sys.exit(1)
 
         os.remove(download_index_path)
-        print(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to {extract_destination_path}")
+        logging.info(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to {extract_destination_path}")
 
         return index_folder_path, index_blob, index_generation
     else:
-        print_error(f"Failed to download {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
+        logging.critical(f"Failed to download {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
 
 
@@ -185,7 +187,7 @@ def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''
         if hidden_pack:
             if os.path.exists(index_pack_path):
                 shutil.rmtree(index_pack_path)  # remove pack folder inside index in case that it exists
-            print_warning(f"Skipping updating {pack_name} pack files to index")
+            logging.warning(f"Skipping updating {pack_name} pack files to index")
             task_status = True
             return
 
@@ -193,15 +195,15 @@ def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''
         for d in os.scandir(pack_path):
             if not os.path.exists(index_pack_path):
                 os.mkdir(index_pack_path)
-                print(f"Created {pack_name} pack folder in {GCPConfig.INDEX_NAME}")
+                logging.info(f"Created {pack_name} pack folder in {GCPConfig.INDEX_NAME}")
 
             shutil.copy(d.path, index_pack_path)
             if pack_version and Pack.METADATA == d.name:
                 shutil.copy(d.path, new_metadata_path)
 
         task_status = True
-    except Exception as e:
-        print_error(f"Failed in updating index folder for {pack_name} pack\n. Additional info: {e}")
+    except Exception:
+        logging.exception(f"Failed in updating index folder for {pack_name} pack.")
     finally:
         return task_status
 
@@ -222,7 +224,7 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
     if ('CI' not in os.environ) or (
             os.environ.get('CIRCLE_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
             os.environ.get('CIRCLE_BRANCH') == 'master' and storage_bucket.name != GCPConfig.PRODUCTION_BUCKET):
-        print("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
+        logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
 
     public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
@@ -234,25 +236,25 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
 
     if invalid_packs_names:
         try:
-            print_warning(f"Detected {len(invalid_packs_names)} non existing pack inside index, starting cleanup.")
+            logging.warning(f"Detected {len(invalid_packs_names)} non existing pack inside index, starting cleanup.")
 
             for invalid_pack in invalid_packs_names:
                 invalid_pack_name = invalid_pack[0]
                 invalid_pack_path = invalid_pack[1]
                 # remove pack from index
                 shutil.rmtree(invalid_pack_path)
-                print_warning(f"Deleted {invalid_pack_name} pack from {GCPConfig.INDEX_NAME} folder")
+                logging.warning(f"Deleted {invalid_pack_name} pack from {GCPConfig.INDEX_NAME} folder")
                 # important to add trailing slash at the end of path in order to avoid packs with same prefix
                 invalid_pack_gcs_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, invalid_pack_name, "")  # by design
 
                 for invalid_blob in [b for b in storage_bucket.list_blobs(prefix=invalid_pack_gcs_path)]:
-                    print_warning(f"Deleted invalid {invalid_pack_name} pack under url {invalid_blob.public_url}")
+                    logging.warning(f"Deleted invalid {invalid_pack_name} pack under url {invalid_blob.public_url}")
                     invalid_blob.delete()  # delete invalid pack in gcs
-        except Exception as e:
-            print_error(f"Failed to cleanup non existing packs. Additional info:\n {e}")
+        except Exception:
+            logging.exception("Failed to cleanup non existing packs.")
 
     else:
-        print(f"No invalid packs detected inside {GCPConfig.INDEX_NAME} folder")
+        logging.info(f"No invalid packs detected inside {GCPConfig.INDEX_NAME} folder")
 
     return False
 
@@ -290,14 +292,14 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
 
         if is_private or current_index_generation == index_generation:
             index_blob.upload_from_filename(index_zip_path)
-            print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
+            logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
-            print_error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
-            print_error(f"Downloaded index generation: {index_generation}")
-            print_error(f"Current index generation: {current_index_generation}")
+            logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
+            logging.critical(f"Downloaded index generation: {index_generation}")
+            logging.critical(f"Current index generation: {current_index_generation}")
             sys.exit(0)
-    except Exception as e:
-        print_error(f"Failed in uploading {GCPConfig.INDEX_NAME}, additional info: {e}\n")
+    except Exception:
+        logging.exception(f"Failed in uploading {GCPConfig.INDEX_NAME}.")
         sys.exit(1)
     finally:
         shutil.rmtree(index_folder_path)
@@ -319,7 +321,7 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
             pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
 
             if not os.path.exists(pack_metadata_path):
-                print_error(f"{pack.name} pack {Pack.METADATA} is missing in {GCPConfig.INDEX_NAME}")
+                logging.critical(f"{pack.name} pack {Pack.METADATA} is missing in {GCPConfig.INDEX_NAME}")
                 sys.exit(1)
 
             with open(pack_metadata_path, 'r') as metadata_file:
@@ -331,7 +333,7 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
             core_pack_public_url = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name, core_pack_relative_path)
 
             if not storage_bucket.blob(core_pack_relative_path).exists():
-                print_error(f"{pack.name} pack does not exist under {core_pack_relative_path} path")
+                logging.critical(f"{pack.name} pack does not exist under {core_pack_relative_path} path")
                 sys.exit(1)
 
             core_packs_public_urls.append(core_pack_public_url)
@@ -339,9 +341,9 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
 
     if len(found_core_packs) != len(GCPConfig.CORE_PACKS_LIST):
         missing_core_packs = set(GCPConfig.CORE_PACKS_LIST) ^ found_core_packs
-        print_error(f"Number of defined core packs are: {len(GCPConfig.CORE_PACKS_LIST)}")
-        print_error(f"Actual number of found core packs are: {len(found_core_packs)}")
-        print_error(f"Missing core packs are: {missing_core_packs}")
+        logging.critical(f"Number of defined core packs are: {len(GCPConfig.CORE_PACKS_LIST)}")
+        logging.critical(f"Actual number of found core packs are: {len(found_core_packs)}")
+        logging.critical(f"Missing core packs are: {missing_core_packs}")
         sys.exit(1)
 
     # construct core pack data with public gcs urls
@@ -354,7 +356,7 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
     blob = storage_bucket.blob(core_packs_config_path)
     blob.upload_from_string(json.dumps(core_packs_data, indent=4))
 
-    print_color(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.", LOG_COLORS.GREEN)
+    logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
 
 
 def upload_id_set(storage_bucket, id_set_local_path=None):
@@ -366,7 +368,7 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
         id_set_local_path: path to the id_set.json file
     """
     if not id_set_local_path:
-        print("Skipping upload of id set to gcs.")
+        logging.info("Skipping upload of id set to gcs.")
         return
 
     id_set_gcs_path = os.path.join(GCPConfig.STORAGE_CONTENT_PATH, 'id_set.json')
@@ -374,7 +376,7 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
 
     with open(id_set_local_path, mode='r') as f:
         blob.upload_from_file(f)
-    print_color("Finished uploading id_set.json to storage.", LOG_COLORS.GREEN)
+    logging.success("Finished uploading id_set.json to storage.")
 
 
 def get_private_packs(private_index_path, pack_names, is_private_build, extract_destination_path):
@@ -388,12 +390,12 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
     """
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
-    except Exception as e:
-        print_warning(f'Could not find metadata files in {private_index_path}: {str(e)}')
+    except Exception:
+        logging.exception(f'Could not find metadata files in {private_index_path}.')
         return []
 
     if not metadata_files:
-        print_warning(f'No metadata files found in [{private_index_path}]')
+        logging.warning(f'No metadata files found in [{private_index_path}]')
 
     private_packs = []
     for metadata_file_path in metadata_files:
@@ -413,8 +415,8 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
                 })
-        except ValueError as e:
-            print_error(f'Invalid JSON in the metadata file [{metadata_file_path}]: {str(e)}')
+        except ValueError:
+            logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
 
     return private_packs
 
@@ -453,14 +455,14 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
             download_and_extract_index(private_storage_bucket,
                                        os.path.join(extract_destination_path,
                                                     'private'))
-        print("get_private_packs")
+        logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names, is_private_build,
                                           extract_destination_path)
-        print("add_private_packs_to_index")
+        logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
-        print("Finished updating index with priced packs")
-    except Exception as e:
-        print_error(f'Could not add private packs to the index: {str(e)}')
+        logging.info("Finished updating index with priced packs")
+    except Exception:
+        logging.exception('Could not add private packs to the index.')
     finally:
         shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
         return private_packs, private_index_path, private_index_blob
@@ -589,12 +591,12 @@ def check_if_index_is_updated(index_folder_path, content_repo, current_commit_ha
 
     try:
         if storage_bucket.name != GCPConfig.PRODUCTION_BUCKET:
-            print("Skipping index update check in non production bucket")
+            logging.info("Skipping index update check in non production bucket")
             return
 
         if not os.path.exists(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")):
             # will happen only in init bucket run
-            print_warning(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
+            logging.warning(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
             return
 
         with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as index_file:
@@ -604,31 +606,30 @@ def check_if_index_is_updated(index_folder_path, content_repo, current_commit_ha
 
         try:
             index_commit = content_repo.commit(index_commit_hash)
-        except Exception as e:
+        except Exception:
             # not updated build will receive this exception because it is missing more updated commit
-            print_warning(f"Index is already updated. Additional info:\n {e}")
-            print_warning(skipping_build_task_message)
+            logging.exception(f"Index is already updated. {skipping_build_task_message}")
             sys.exit()
 
         current_commit = content_repo.commit(current_commit_hash)
 
         if current_commit.committed_datetime <= index_commit.committed_datetime:
-            print_warning(f"Current commit {current_commit.hexsha} committed time: {current_commit.committed_datetime}")
-            print_warning(f"Index commit {index_commit.hexsha} committed time: {index_commit.committed_datetime}")
-            print_warning("Index is already updated.")
-            print_warning(skipping_build_task_message)
+            logging.warning(f"Current commit {current_commit.hexsha} committed time: {current_commit.committed_datetime}")
+            logging.warning(f"Index commit {index_commit.hexsha} committed time: {index_commit.committed_datetime}")
+            logging.warning("Index is already updated.")
+            logging.warning(skipping_build_task_message)
             sys.exit()
 
         for changed_file in current_commit.diff(index_commit):
             if changed_file.a_path.startswith(PACKS_FOLDER):
-                print(f"Found changed packs between index commit {index_commit.hexsha} and {current_commit.hexsha}")
+                logging.info(f"Found changed packs between index commit {index_commit.hexsha} and {current_commit.hexsha}")
                 break
         else:
-            print_warning(f"No changes found between index commit {index_commit.hexsha} and {current_commit.hexsha}")
-            print_warning(skipping_build_task_message)
+            logging.warning(f"No changes found between index commit {index_commit.hexsha} and {current_commit.hexsha}")
+            logging.warning(skipping_build_task_message)
             sys.exit()
-    except Exception as e:
-        print_error(f"Failed in checking status of index. Additional info:\n {e}")
+    except Exception:
+        logging.exception("Failed in checking status of index")
         sys.exit(1)
 
 
@@ -652,28 +653,22 @@ def print_packs_summary(packs_list):
                      or pack.status == PackStatus.FAILED_DETECTING_MODIFIED_FILES.name]
     failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
 
-    print("\n")
-    print("------------------------------------------ Packs Upload Summary ------------------------------------------")
-    print(f"Total number of packs: {len(packs_list)}")
-    print("----------------------------------------------------------------------------------------------------------")
-
+    logging.info(
+        f"""------------------------------------------ Packs Upload Summary ------------------------------------------
+        Total number of packs: {len(packs_list)}
+        ----------------------------------------------------------------------------------------------------------""")
     if successful_packs:
-        print_color(f"Number of successful uploaded packs: {len(successful_packs)}", LOG_COLORS.GREEN)
-        print_color("Uploaded packs:\n", LOG_COLORS.GREEN)
         successful_packs_table = _build_summary_table(successful_packs)
-        print_color(successful_packs_table, LOG_COLORS.GREEN)
+        logging.success(f"Number of successful uploaded packs: {len(successful_packs)}")
+        logging.success(f"Uploaded packs:\n{successful_packs_table}")
         with open('pack_list.txt', 'w') as f:
             f.write(successful_packs_table.get_string())
     if skipped_packs:
-        print_warning(f"Number of skipped packs: {len(skipped_packs)}")
-        print_warning("Skipped packs:\n")
         skipped_packs_table = _build_summary_table(skipped_packs)
-        print_warning(skipped_packs_table)
+        logging.warning(f"Number of skipped packs: {len(skipped_packs)}\nSkipped packs:\n{skipped_packs_table}")
     if failed_packs:
-        print_error(f"Number of failed packs: {len(failed_packs)}")
-        print_error("Failed packs:\n")
         failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
-        print_error(failed_packs_table)
+        logging.critical(f"Number of failed packs: {len(failed_packs)}\nFailed packs:\n{failed_packs_table}")
         sys.exit(1)
 
     # for external pull requests -  when there is no failed packs, add the build summary to the pull request
@@ -716,17 +711,16 @@ def add_pr_comment(comment):
                 res = requests.post(issue_url, json={'body': comment}, headers=headers, verify=False)
                 handle_github_response(res)
         else:
-            print_warning('Add pull request comment failed: There is more then one open pull request for branch {}.'
-                          .format(branch_name))
-    except Exception as e:
-        print_warning('Add pull request comment failed: {}'.format(e))
+            logging.warning(
+                f'Add pull request comment failed: There is more then one open pull request for branch {branch_name}.')
+    except Exception:
+        logging.exception('Add pull request comment failed.')
 
 
 def handle_github_response(response):
     res_dict = response.json()
     if not res_dict.get('ok'):
-        print_warning('Add pull request comment failed: {}'.
-                      format(res_dict.get('message')))
+        logging.warning(f'Add pull request comment failed: {res_dict.get("message")}')
     return res_dict
 
 
@@ -916,14 +910,15 @@ def prepare_test_directories():
     packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
     zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
     if not os.path.exists(packs_dir):
-        print("Packs dir not found. Creating.")
+        logging.info("Packs dir not found. Creating.")
         os.mkdir(packs_dir)
     if not os.path.exists(zip_path):
-        print("Temp dir not found. Creating.")
+        logging.info("Temp dir not found. Creating.")
         os.mkdir(zip_path)
 
 
 def main():
+    install_logging('upload_packs_private.log')
     prepare_test_directories()
     upload_config = option_handler()
     packs_artifacts_path = upload_config.artifacts_path
@@ -975,7 +970,7 @@ def main():
                                                                                                pack_names,
                                                                                                is_private_build)
     else:  # skipping private packs
-        print("Skipping index update of priced packs")
+        logging.info("Skipping index update of priced packs")
         private_packs = []
 
     # google cloud bigquery client initialized
