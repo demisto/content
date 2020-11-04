@@ -3,6 +3,7 @@ import glob
 import zipfile
 from io import StringIO
 import demisto_client
+import os.path
 
 from Tests.private_build.configure_and_test_integration_instances_private import \
     find_needed_test_playbook_paths, create_install_private_testing_pack, write_test_pack_zip,\
@@ -133,20 +134,20 @@ def test_write_test_pack_zip(tmpdir):
     """
 
     set_of_test_paths = {'./Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml'}
-    write_test_pack_zip(path_to_content='.', zip_destination_dir=tmpdir, tests_file_paths=set_of_test_paths)
+    private_content_test_zip = write_test_pack_zip(path_to_content='.', zip_destination_dir=tmpdir, tests_file_paths=set_of_test_paths)
     #  Opening created pack
     with tempfile.TemporaryDirectory() as extract_dir:
-        with zipfile.ZipFile(tmpdir + '/test_pack.zip', "r") as zip_ref:
+        with zipfile.ZipFile(private_content_test_zip, "r") as zip_ref:
             zip_ref.extractall(extract_dir)
             dir_containing_metadata = glob.glob(extract_dir + '/test_pack/*')
             #  Check that metadata is present
             expected_metadata_file_path = extract_dir + '/test_pack/metadata.json'
-            assert expected_metadata_file_path in dir_containing_metadata
+            assert os.path.isfile(expected_metadata_file_path)
             dir_containing_test_script = glob.glob(extract_dir + '/test_pack/*/*')
             #  Check that file from DeveloperTools is present
             expected_test_script_file_path = extract_dir + '/test_pack/TestPlaybooks/script-' \
                                                            'TestCreateIncidentsFile.yml'
-            assert expected_test_script_file_path in dir_containing_test_script
+            assert os.path.isfile(expected_test_script_file_path)
             #  Check that item collected in needed_test_playbook_paths is present.
             expected_hello_world_test_file_path = extract_dir + '/test_pack/TestPlaybooks/' \
                                                                 'playbook-HelloWorld_Scan-Test.yml'
