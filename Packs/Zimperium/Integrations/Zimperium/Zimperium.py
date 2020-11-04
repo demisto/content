@@ -711,7 +711,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(base_url=base_url, api_key=api_key, verify=verify)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], CommandResults]] = {
+        commands = {
             'zimperium-events-search': events_search,
             'zimperium-users-search': users_search,
             'zimperium-user-get-by-id': user_get_by_id,
@@ -745,7 +745,7 @@ def main():
 
     except Exception as err:
         if 'Resource not found' in str(err):
-            demisto.results('Object was not found in Zimperium, please make sure your arguments are correct.')
+            return_results('Object was not found in Zimperium, please make sure your arguments are correct.')
         else:
             return_error(str(err), err)
 
