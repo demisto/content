@@ -2484,7 +2484,7 @@
 <tr>
 <td style="width: 294px;">URL.VirusTotal.ResponseContentSHA256</td>
 <td style="width: 60px;">Unknown</td>
-<td style="width: 386px;">SHA 256 of the response content</td>
+<td style="width: 386px;">SHA256 hash of the response content</td>
 </tr>
 <tr>
 <td style="width: 294px;">URL.VirusTotal.ResponseHeaders</td>

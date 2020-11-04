@@ -423,7 +423,7 @@ script:
       description: Downloaded file hashes from this URL
       type: string
     - contextPath: URL.VirusTotal.ResponseContentSHA256
-      description: SHA 256 of the response content
+      description: SHA256 hash of the response content
       type: Unknown
     - contextPath: URL.VirusTotal.ResponseHeaders
       description: The response headers
