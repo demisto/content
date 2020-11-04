@@ -57,7 +57,8 @@ def should_test_content_pack(pack_name: str) -> bool:
 
 
 def get_test_pack_name(test_id: str, id_set: json) -> str:
-    """Returns a the pack name containing the given test
+    """
+    Returns the pack name containing the given test
 
     Args:
         test_id (str): The test id to be searched
