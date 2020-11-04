@@ -1195,7 +1195,7 @@ def parse_incident_from_item(item, is_fetch):
 
     except Exception as e:
         if 'Message is not decoded yet' in str(e):
-            demisto.debug('Skipped a protected message')
+            demisto.debug('EWS v2 - Skipped a protected message')
             return None
         else:
             raise e
