@@ -322,17 +322,17 @@ class Pack(object):
         """
         return self._bucket_url
 
-    @property
-    def aggregated(self):
-        """ str: pack aggregated release not or not.
-        """
-        return self._aggregated
-
     @bucket_url.setter
     def bucket_url(self, bucket_url):
         """ str: pack bucket_url.
         """
         self._bucket_url = bucket_url
+
+    @property
+    def aggregated(self):
+        """ str: pack aggregated release notes or not.
+        """
+        return self._aggregated
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -830,7 +830,7 @@ class Pack(object):
                 logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                 return task_status, True, None
 
-            pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
+            pack_full_path = os.path.join(version_pack_path, f"{self._pack_name}.zip")
             blob = storage_bucket.blob(pack_full_path)
             blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
 
@@ -1668,7 +1668,7 @@ class Pack(object):
         finally:
             return task_status, uploaded_integration_images
 
-    def copy_and_upload_integration_images(self, production_bucket, build_bucket):
+    def copy_integration_images(self, production_bucket, build_bucket):
         """ Uploads pack integrations images to gcs.
 
         Args:
@@ -1763,7 +1763,7 @@ class Pack(object):
         finally:
             return task_status, author_image_storage_path
 
-    def copy_and_upload_author_image(self, production_bucket, build_bucket):
+    def copy_author_image(self, production_bucket, build_bucket):
         """ Uploads pack author image to gcs.
 
         Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,

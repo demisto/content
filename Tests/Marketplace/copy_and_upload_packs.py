@@ -10,7 +10,7 @@ from zipfile import ZipFile
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
     IGNORED_FILES, PACKS_FOLDER, FAILED_PACKS_PATH_SUFFIX
-from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, upload_id_set, load_json, \
+from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, load_json, \
     get_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -47,8 +47,8 @@ def get_pack_names(target_packs):
         sys.exit(1)
 
 
-def upload_index_to_storage(index_folder_path, build_index_blob, build_index_generation, production_bucket,
-                            build_bucket):
+def copy_index(index_folder_path, build_index_blob, build_index_generation, production_bucket,
+               build_bucket):
     """Upload updated index zip to cloud storage.
 
     Args:
@@ -219,6 +219,32 @@ def load_failed_packs_file(failed_packs_file_path):
     return {}
 
 
+def copy_id_set(production_bucket, build_bucket):
+    """
+    Uploads the id_set.json artifact to the bucket.
+
+    Args:
+        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where id_set is uploaded to.
+        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where id_set is downloaded from.
+    """
+
+    build_id_set_path = os.path.join(os.path.dirname(GCPConfig.BUILD_BASE_PATH), 'id_set.json')
+    build_id_set_blob = build_bucket.blob(build_id_set_path)
+
+    if not build_id_set_blob.exists():
+        logging.error(f"id_set.json file does not exists in build bucket in path: {build_id_set_path}")
+
+    prod_id_set_path = os.path.join(os.path.dirname(GCPConfig.STORAGE_BASE_PATH), 'id_set.json')
+    copied_blob = build_bucket.copy_blob(
+        blob=build_id_set_blob, destination_bucket=production_bucket, new_name=prod_id_set_path
+    )
+
+    if not copied_blob.exists():
+        logging.error(f"Failed to upload id_set.json to {prod_id_set_path}")
+    else:
+        logging.success("Finished uploading id_set.json to storage.")
+
+
 def options_handler():
     """Validates and parses script arguments.
 
@@ -271,14 +297,14 @@ def main():
     override_all_packs = options.override_all_packs
     id_set_path = options.id_set_path
     production_base_path = options.production_base_path
-    target_packs = options.pack_names if options.pack_names else ""
+    target_packs = options.pack_names
 
-    # google cloud storage client initialized
+    # Google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     production_bucket = storage_client.bucket(production_bucket_name)
     build_bucket = storage_client.bucket(build_bucket_name)
 
-    # initialize base paths
+    # Initialize base paths
     build_bucket_path = os.path.join(GCPConfig.BUILD_PATH_PREFIX, circle_branch, build_number)
     GCPConfig.BUILD_BASE_PATH = os.path.join(build_bucket_path, GCPConfig.STORAGE_BASE_PATH)
     if production_base_path:
@@ -287,26 +313,27 @@ def main():
     # TODO: what if no commit was found, for example: there was a squash of several master commits?
     # TODO: refactor force upload
 
-    # download and extract build and prod index from build and prod buckets
+    # Download and extract build and prod index from build and prod buckets
     build_index_folder_path, build_index_blob, build_index_generation = \
         download_and_extract_index(build_bucket, extract_destination_path)
 
-    # get the failed packs file from Prepare Content step in Create Instances job if there are
+    # Get the failed packs file from Prepare Content step in Create Instances job if there are
     failed_packs_file = load_failed_packs_file(os.path.join(os.path.dirname(packs_artifacts_path),
                                                             FAILED_PACKS_PATH_SUFFIX))
 
-    # detect packs to upload
+    # Detect packs to upload
     pack_names = get_pack_names(target_packs)
     prod_pack_names = [f.name for f in production_bucket.list_blobs(prefix=GCPConfig.STORAGE_BASE_PATH)]
     build_pack_names = [f.name for f in build_bucket.list_blobs(prefix=GCPConfig.BUILD_BASE_PATH)]
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    # Creating a list of Pack objects corresponding to each pack we want to upload.
+    # Create a list of Pack objects corresponding to each pack we want to upload.
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if is_valid_pack(extract_destination_path, pack_name, prod_pack_names, build_pack_names,
                                    failed_packs_file)]
 
-    # starting iteration over packs
+    # Starting iteration over packs
     for pack in packs_list:
+        # Indicates whether a pack has failed to upload on Prepare Content step
         task_status, pack_status = pack.is_failed_to_upload(failed_packs_file)
         if task_status:
             pack.status = pack_status
@@ -319,18 +346,19 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.copy_and_upload_integration_images(production_bucket, build_bucket)
+        task_status = pack.copy_integration_images(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status = pack.copy_and_upload_author_image(production_bucket, build_bucket)
+        task_status = pack.copy_author_image(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
             continue
 
+        # Create a local copy of the pack's index changelog
         task_status = pack.create_local_changelog(build_index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
@@ -355,11 +383,11 @@ def main():
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket)
 
     # finished iteration over content packs
-    upload_index_to_storage(build_index_folder_path, build_index_blob, build_index_generation, production_bucket,
-                            build_bucket)
+    copy_index(build_index_folder_path, build_index_blob, build_index_generation, production_bucket,
+               build_bucket)
 
     # upload id_set.json to bucket
-    upload_id_set(production_bucket, id_set_path)
+    copy_id_set(production_bucket, id_set_path)
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)

@@ -626,7 +626,7 @@ class TestImagesUpload:
         mocker.patch("Tests.Marketplace.marketplace_services.is_integration_image", return_value=True)
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
-        task_status = dummy_pack.copy_and_upload_integration_images(dummy_prod_bucket, dummy_build_bucket)
+        task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket)
         assert task_status
 
     def test_copy_and_upload_author_image(self, mocker, dummy_pack):
@@ -643,7 +643,7 @@ class TestImagesUpload:
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         blob_name = "content/packs/TestPack/Author_image.png"
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
-        task_status = dummy_pack.copy_and_upload_author_image(dummy_prod_bucket, dummy_build_bucket)
+        task_status = dummy_pack.copy_author_image(dummy_prod_bucket, dummy_build_bucket)
         assert task_status
 
 

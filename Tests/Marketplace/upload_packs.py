@@ -349,7 +349,7 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
         logging.info("Skipping upload of id set to gcs.")
         return
 
-    id_set_gcs_path = os.path.join(GCPConfig.STORAGE_CONTENT_PATH, 'id_set.json')
+    id_set_gcs_path = os.path.join(os.path.dirname(GCPConfig.STORAGE_BASE_PATH), 'id_set.json')
     blob = storage_bucket.blob(id_set_gcs_path)
 
     with open(id_set_local_path, mode='r') as f:
@@ -442,11 +442,12 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
         return private_packs
 
 
-def _build_summary_table(packs_input_list, include_bucket_url=True, include_pack_status=False):
+def _build_summary_table(packs_input_list, include_pack_status=False):
     """Build summary table from pack list
 
     Args:
         packs_input_list (list): list of Packs
+        include_pack_status (bool): whether pack includes status
 
     Returns:
         PrettyTable: table with upload result of packs.
@@ -455,8 +456,6 @@ def _build_summary_table(packs_input_list, include_bucket_url=True, include_pack
     table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated RN"]
     if include_pack_status:
         table_fields.append("Status")
-    if include_bucket_url:
-        table_fields.append("Pack Bucket URL")
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
@@ -465,8 +464,6 @@ def _build_summary_table(packs_input_list, include_bucket_url=True, include_pack
         row = [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated]
         if include_pack_status:
             row.append(pack_status_message)
-        if include_bucket_url:
-            row.append(pack.bucket_url)
         table.add_row(row)
 
     return table
@@ -600,15 +597,13 @@ def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_com
         sys.exit(1)
 
 
-def print_packs_summary(successful_packs, skipped_packs, failed_packs, include_bucket_url=True,
-                        include_pack_status=False):
+def print_packs_summary(successful_packs, skipped_packs, failed_packs, include_pack_status=False):
     """Prints summary of packs uploaded to gcs.
 
     Args:
         successful_packs (list): list of packs that were successfully uploaded.
         skipped_packs (list): list of packs that were skipped during upload.
         failed_packs (list): list of packs that were failed during upload.
-        include_bucket_url (bool): indicates whether to include the bucket url column in the summary or not
         include_pack_status (bool): indicates whether to include the pack status
 
     """
@@ -619,15 +614,15 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
 ----------------------------------------------------------------------------------------------------------""")
 
     if successful_packs:
-        successful_packs_table = _build_summary_table(successful_packs, include_bucket_url)
+        successful_packs_table = _build_summary_table(successful_packs)
         logging.success(f"Number of successful uploaded packs: {len(successful_packs)}")
         logging.success(f"Uploaded packs:\n{successful_packs_table}")
     if skipped_packs:
-        skipped_packs_table = _build_summary_table(skipped_packs, include_bucket_url, include_pack_status)
+        skipped_packs_table = _build_summary_table(skipped_packs, include_pack_status)
         logging.warning(f"Number of skipped packs: {len(skipped_packs)}")
         logging.warning(f"Skipped packs:\n{skipped_packs_table}")
     if failed_packs:
-        failed_packs_table = _build_summary_table(failed_packs, include_bucket_url, include_pack_status=True)
+        failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
         logging.critical(f"Number of failed packs: {len(failed_packs)}")
         logging.critical(f"Failed packs:\n{failed_packs_table}")
         sys.exit(1)
@@ -921,17 +916,9 @@ def main():
             pack.upload_to_storage(zip_pack_path, pack.latest_version,
                                    storage_bucket, override_all_packs
                                    or pack_was_modified)
-        if full_pack_path is not None:
-            branch_name = os.environ['CIRCLE_BRANCH']
-            build_num = os.environ['CIRCLE_BUILD_NUM']
-            bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                          f'marketplace-ci-build/{branch_name}/{build_num}'
-            bucket_url = bucket_path.join(full_pack_path)
-        else:
-            bucket_url = 'Pack was not uploaded.'
+
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
-            pack.bucket_url = bucket_url
             pack.cleanup()
             continue
 
