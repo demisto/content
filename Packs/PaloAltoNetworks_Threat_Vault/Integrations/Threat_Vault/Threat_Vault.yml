@@ -202,15 +202,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: From which signature to return results(used for paging). Default is 0.
+      description: From which signature to return results. Default is 0.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: Maximum number of signatures to return. Default is 10.
+      description: To which signature to return results. Default is from plus 10.
       isArray: false
-      name: size
+      name: to
       required: false
       secret: false
     deprecated: false
@@ -238,15 +238,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: From which signature to return results(used for paging). Default is 0.
+      description: From which signature to return results Default is 0.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: Maximum number of signatures to return. Default is 10.
+      description: To which signature to return results. Default is from plus 10.
       isArray: false
-      name: size
+      name: to
       required: false
       secret: false
     deprecated: false
@@ -280,15 +280,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: From which signature to return results(used for paging). Default is 0.
+      description: From which signature to return results. Default is 0.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: Maximum number of signatures to return. Default is 10.
+      description: To which signature to return results. Default is from plus 10.
       isArray: false
-      name: size
+      name: to
       required: false
       secret: false
     deprecated: false

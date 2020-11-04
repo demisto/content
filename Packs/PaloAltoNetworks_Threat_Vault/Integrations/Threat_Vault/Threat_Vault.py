@@ -67,15 +67,15 @@ class Client(BaseClient):
         """
         return self._http_request(method='GET', url_suffix=f'/ip/{ip_}/geolocation', params=self._params)
 
-    def search_request(self, path: str, signature_name: str = '', from_: int = 0, size: int = 10,
-                       domain_name: str = '', vendor: str = '', cve: str = '') -> dict:
+    def search_request(self, path: str, from_: int, to_: int, signature_name: str = '', domain_name: str = '',
+                       vendor: str = '', cve: str = '') -> dict:
         """Initiate a search by sending a POST request.
 
         Args:
             path: API endpoint path to search.
+            from_: from which signature to return results
+            to_: to which signature to return results
             signature_name: signature name.
-            from_: from which signature to return results(used for paging)
-            size: maximum number of signatures to return.
             domain_name: domain name.
             vendor: vendor ID.
             cve: cve ID.
@@ -92,7 +92,7 @@ class Client(BaseClient):
 
         data: Dict[str, Any] = {
             'from': from_,
-            'size': size
+            'size': to_ - from_
         }
         if signature_name:
             data['field'] = 'signatureName'
@@ -331,12 +331,12 @@ def antivirus_signature_search(client: Client, args: dict) -> CommandResults:
     """
     signature_name = str(args.get('signature_name', ''))
     from_ = int(args.get('from', 0))
-    size = int(args.get('size', 10))
+    to_ = from_ + int(args.get('to', 10))
 
-    response = client.search_request('panav', signature_name, from_, size)
+    response = client.search_request('panav', from_, to_, signature_name)
 
     outputs = response
-    outputs.update({'search_type': 'panav'})
+    outputs.update({'search_type': 'panav', 'from': from_, 'to': to_})
     readable_output = tableToMarkdown(name="Antivirus Signature Search:", t=outputs, removeNull=True)
 
     return CommandResults(
@@ -360,13 +360,13 @@ def dns_signature_search(client: Client, args: dict) -> CommandResults:
     """
     signature_name = str(args.get('signature_name', ''))
     from_ = int(args.get('from', 0))
-    size = int(args.get('size', 10))
+    to_ = from_ + int(args.get('to', 10))
     domain_name = str(args.get('domain_name', ''))
 
-    response = client.search_request('dns', signature_name, from_, size, domain_name=domain_name)
+    response = client.search_request('dns', from_, to_, signature_name, domain_name=domain_name)
 
     outputs = response
-    outputs.update({'search_type': 'dns'})
+    outputs.update({'search_type': 'dns', 'from': from_, 'to': to_})
     readable_output = tableToMarkdown(name="DNS Signature Search:", t=outputs, removeNull=True)
 
     return CommandResults(
@@ -390,14 +390,14 @@ def antispyware_signature_search(client: Client, args: dict) -> CommandResults:
     """
     signature_name = str(args.get('signature_name', ''))
     from_ = int(args.get('from', 0))
-    size = int(args.get('size', 10))
+    to_ = from_ + int(args.get('to', 10))
     vendor = str(args.get('vendor', ''))
     cve = str(args.get('cve', ''))
 
-    response = client.search_request('ips', signature_name, from_, size, vendor=vendor, cve=cve)
+    response = client.search_request('ips', from_, to_, signature_name, vendor=vendor, cve=cve)
 
     outputs = response
-    outputs.update({'search_type': 'ips'})
+    outputs.update({'search_type': 'ips', 'from': from_, 'to': to_})
     readable_output = tableToMarkdown(name="Anti Spyware Signature Search:", t=outputs, removeNull=True)
 
     return CommandResults(
