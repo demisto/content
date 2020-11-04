@@ -1722,6 +1722,9 @@ RBAC Permissions Required - org.search.events: CREATE
 | event_id | The event ID to search. | Optional | 
 | limit | The maximum number of rows to return. Default is 20. | Optional | 
 | query | A free-style query. For example, "process_name:svchost.exe". | Optional | 
+| start_time | First appearance time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes). Default is 1 day ago. | Optional | 
+| end_time | Last appearance time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes). Default is current time. | Optional | 
+| start | Index of first records to fetch. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -1740,7 +1743,7 @@ RBAC Permissions Required - org.search.events: CREATE
 {
     "CarbonBlackEEDR": {
         "SearchProcess": {
-            "job_id": "20edefba-1ad1-4ec9-bab9-79596449594b",
+            "job_id": "633b7900-2b28-456d-add3-28e665525753",
             "status": "In Progress"
         }
     }
@@ -1749,7 +1752,7 @@ RBAC Permissions Required - org.search.events: CREATE
 
 #### Human Readable Output
 
->job_id is 20edefba-1ad1-4ec9-bab9-79596449594b.
+>job_id is 633b7900-2b28-456d-add3-28e665525753.
 
 ### 34. cb-eedr-events-by-process-get
 ---
@@ -1768,6 +1771,9 @@ RBAC Permissions Required - org.search.events: READ
 | event_type | The event type to search. | Optional | 
 | limit | The maximum number of rows to return. Default is 20. | Optional | 
 | query | A free-style query. For example, "process_name:svchost.exe". | Optional | 
+| start_time | First appearance time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes). Default is 1 day ago. | Optional | 
+| end_time | Last appearance time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes). Default is current time. | Optional | 
+| start | Index of first records to fetch. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -1793,7 +1799,7 @@ RBAC Permissions Required - org.search.events: READ
 
 
 #### Command Example
-```!cb-eedr-events-by-process-get process_guid="7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43" event_type="modload"```
+```!cb-eedr-events-by-process-get process_guid="7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43" event_type="modload" start_time="1 month"```
 
 #### Context Example
 ```json
@@ -1802,9 +1808,9 @@ RBAC Permissions Required - org.search.events: READ
         "SearchEvent": [
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "S0IQMJadTgiWiZptfc3eiQ",
-                "event_hash": "szXq3L0sQI-fhLs6HZ6YvQ",
+                "created_timestamp": "2020-11-04T06:58:51.503Z",
+                "event_guid": "OCaEtLR1SRGcWgVUcoj2mA",
+                "event_hash": "lQJi__dhQpGzdVwCmbdbjg",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -1824,9 +1830,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "LqzPyeA4SEG_8OrmZjnLIA",
-                "event_hash": "eJUP-aLARlqsN_Vzww2Ejg",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "aAVFrvjPQ3Sea-kK6Kdbxw",
+                "event_hash": "L8CCeipjQ7KtMQDiRwx8HA",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -1847,9 +1853,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "8RUCcovOSmG1fqW9G1l4CA",
-                "event_hash": "0FvALYXjRzqDi4vA5CwaNg",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "AlKrjPvcSLav4Vq7zBuD2A",
+                "event_hash": "k7Z5u-3_Siydt1DPvXW4dQ",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -1869,9 +1875,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "inzVnADoQc-zU0hfXMV3qg",
-                "event_hash": "iEbZq887QGSMl8W5d72rgQ",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "0g6iOKO9S8GHIfFSOG5sBA",
+                "event_hash": "TX8Ehlc2Qb2mbSl8ZtVmgg",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -1891,9 +1897,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "ORZN7fpFQ2-wbqZhgpYbOQ",
-                "event_hash": "aSBfnDCmS9ujdWWfmzJMvg",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "W_JoluvFTni9mPPHCvyxmg",
+                "event_hash": "CvjnmQdWQqGhbsmkcPzJYA",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -1913,9 +1919,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "fLelUiAPT3W2qTAgeQKVhw",
-                "event_hash": "e7sQNpF7RaedZ6HtJkTwnA",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "-XTVyKT5SkeJ0PvsnozF6A",
+                "event_hash": "114rbukXQKSzjhiVBEApPQ",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -1935,9 +1941,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "hWPTtU2xRMa35bOczTaJ-w",
-                "event_hash": "w-KRGMwHS5-TlRHTFV3cuA",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "junO0BiIT9imVAUSKCdB_A",
+                "event_hash": "9Sd5fEA8R9aOU7eYlY_97A",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -1957,9 +1963,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "f73kFNg5T9iwhqzN1qmXYA",
-                "event_hash": "heU7Z6H8TGuZ23gG84dVjg",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "PocoJ9OATG6Qr-3cirRciQ",
+                "event_hash": "D8k62OqkQ9KiT0c5C1Ki0g",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -1980,9 +1986,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "ylDEbFvORLmstS-sS4rBlQ",
-                "event_hash": "cO41Si3vRqivaYrti8X9sA",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "ThWF8yD5R5usoFJM4x_VRw",
+                "event_hash": "mk9Lj4O0TAq-enCNCKWBMA",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2003,9 +2009,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "0FsgO2j-Qq2sjX5mSwIxKA",
-                "event_hash": "abTw1jjJQeq3o61bcpNgGQ",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "PZXgTx_XStWA1DGUkPDJzw",
+                "event_hash": "UVssy5LWSvyvFC0Isya8aQ",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2025,9 +2031,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "l3y1d8j9Sly714CQPzWCBg",
-                "event_hash": "s6x0w4KLQsqsIeIdUbMONg",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "bmsH73bASGaRFpeo84Q5Kw",
+                "event_hash": "9Ri-_u68QjyV7UjSMeDAYw",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2047,9 +2053,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "8FVtgIwAT3yEso5T0uk0cA",
-                "event_hash": "AVwb1vjZTGeRB1uaIdQnrw",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "WeL1uj4FSI-n4rVA7UoXFw",
+                "event_hash": "b2SKdGkNSNuw0eoZn9wK_g",
                 "event_timestamp": "2020-10-14T16:17:45.448Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2070,9 +2076,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "IJBFhWQ_Q12x19hwWfjUbA",
-                "event_hash": "wORF-s5hRvudzGjQ3QM1Ww",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "Q6PB6SqURW6xliJdsEogag",
+                "event_hash": "YPhofHOyQkKaMGEr1dX5cQ",
                 "event_timestamp": "2020-10-14T16:17:45.463Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2094,9 +2100,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "mp9oS9dBSKe82cqaqAYDlw",
-                "event_hash": "nd7VJaBvQ0Oyv3lzKY7Pbw",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "jg_1LLAYT1KZx9SZUPQqeQ",
+                "event_hash": "5eb6xzwkTt2p5b-2-ELzog",
                 "event_timestamp": "2020-10-14T16:17:45.463Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2117,9 +2123,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "wj6mNgzbShKLURehszOXtg",
-                "event_hash": "7npmgIMLQG-4OIyo74rfyw",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "LDC8YHy4RFuIZuejh202dQ",
+                "event_hash": "zMI8yTZvRBWnBzcuyUU0bQ",
                 "event_timestamp": "2020-10-14T16:17:45.463Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2140,9 +2146,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "rJGTaMNMRgeY7iDNsqiTOQ",
-                "event_hash": "xUEzwT9NTxegOi11gfFxiQ",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "Oq1ZHJ-lSYGWynDM12vIhQ",
+                "event_hash": "HwnoQEtpSp-El_7fEmh4Lw",
                 "event_timestamp": "2020-10-14T16:17:45.463Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2163,9 +2169,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "mn65QevyQLmKWcKLaB6cdQ",
-                "event_hash": "abZs_MqgQN68aGg9k8x2ZA",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "UpxEQukRRmiX3EjI4kkYYg",
+                "event_hash": "afxpRq5BT6WRdQyBWS4-kQ",
                 "event_timestamp": "2020-10-14T16:17:45.463Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2187,9 +2193,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "GoCFSlj_TOWvQWunkQS-eQ",
-                "event_hash": "6LYa5DXmT7-gGzH8svoodw",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "NcXdQS34QJWySTn-04pakA",
+                "event_hash": "4ZyNSN7yRyeNNBRop-HMDw",
                 "event_timestamp": "2020-10-14T16:17:45.463Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2209,9 +2215,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "AXShZkT5QYOyU7dnsa-Huw",
-                "event_hash": "rOjANBIhS5-n11XB5Tw_4w",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "POYLqKCERASiTMBHcfsFmw",
+                "event_hash": "UAoluLSYSKe2pzn47rxVDw",
                 "event_timestamp": "2020-10-14T16:17:45.463Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2231,9 +2237,9 @@ RBAC Permissions Required - org.search.events: READ
             },
             {
                 "backend_timestamp": "2020-10-14T16:22:13.180Z",
-                "created_timestamp": "2020-10-27T14:04:54.515Z",
-                "event_guid": "V50UIXnjTWmI7NIsJFH8hw",
-                "event_hash": "Su5-L2OYS7Kc-K2CIhTwJw",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "x2Beg9ykSIiRKViJJxcsaA",
+                "event_hash": "6xUCWyDQTAuOm7Lnxq-qew",
                 "event_timestamp": "2020-10-14T16:17:45.463Z",
                 "event_type": "modload",
                 "legacy": false,
@@ -2258,32 +2264,32 @@ RBAC Permissions Required - org.search.events: READ
 
 #### Human Readable Output
 
->### Results
+>### Results Found.
 >|backend_timestamp|created_timestamp|event_guid|event_hash|event_timestamp|event_type|legacy|modload_action|modload_effective_reputation|modload_md5|modload_name|modload_publisher|modload_publisher_state|modload_sha256|process_guid|process_pid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | S0IQMJadTgiWiZptfc3eiQ | szXq3L0sQI-fhLs6HZ6YvQ | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_LOCAL_WHITE | aae1f614bfe5e3e5cde18d1f928f5b12 | c:\windows\system32\ctiuser.dll | Carbon Black, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 81eb5f6fbf8d7566560f43f75ec30e5f0284cdee9b5c9df0d81281bda0db3d07 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | LqzPyeA4SEG_8OrmZjnLIA | eJUP-aLARlqsN_Vzww2Ejg | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 2c7c14627cff3384c52e61d4dbd0ecc3 | c:\windows\system32\version.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 41b4d85d84a86e41b948694b9b5f398a0d79f47629d6d969eb5b461d4f5d0347 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | 8RUCcovOSmG1fqW9G1l4CA | 0FvALYXjRzqDi4vA5CwaNg | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | f7c09099232987cbb965b9280c1dacf8 | c:\program files\vmware\vmware tools\gmodule-2.0.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | d14560487312f487f94bfaed4fe9d0cfd5efbec1ac4ef44c26dd230800bc6b29 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | inzVnADoQc-zU0hfXMV3qg | iEbZq887QGSMl8W5d72rgQ | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 26fc0a369a68d2a429e2ebe67b8dd1d8 | c:\program files\vmware\vmware tools\gobject-2.0.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 9a914642e7e8e4e4ba004004b490c64453f13597cc43cb77a9e55d180c229f83 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | ORZN7fpFQ2-wbqZhgpYbOQ | aSBfnDCmS9ujdWWfmzJMvg | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 9d9b1790cc6eeb76757b5042914b7289 | c:\program files\vmware\vmware tools\intl.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 03eef80ad1d4b066c4842546ba52ccb911e84606a27f0ec7016d9f62c572846b | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | fLelUiAPT3W2qTAgeQKVhw | e7sQNpF7RaedZ6HtJkTwnA | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | a83fcd02a532a08386a5bcbb39a581c5 | c:\program files\vmware\vmware tools\glib-2.0.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | ff9bb3a84c807f8151d4956f895f672fa812765e931e9093f40caab0853bd120 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | hWPTtU2xRMa35bOczTaJ-w | w-KRGMwHS5-TlRHTFV3cuA | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 9f2b3fac3440db16e0c13473b551d12c | c:\windows\system32\vcruntime140.dll | Microsoft Corporation | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 27c51ff3dc2f4cf2b61bdf55fb60148ef0abb06c2feae188c30f1a63f9e29caa | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | f73kFNg5T9iwhqzN1qmXYA | heU7Z6H8TGuZ23gG84dVjg | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 965eb822d0ef8fda78ccb1f41def093d | c:\windows\system32\winmm.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | ad43d686930eae0f57a55ee75d10bd1882747089a291371ffe1e131eb5f76938 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | ylDEbFvORLmstS-sS4rBlQ | cO41Si3vRqivaYrti8X9sA | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | e6450257ba3df5161684e4c73ebb8f92 | c:\windows\system32\winmmbase.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 948f13fe144cd80f93565ded2ac2e96d000869bb2761538996d28942495cb1d7 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | 0FsgO2j-Qq2sjX5mSwIxKA | abTw1jjJQeq3o61bcpNgGQ | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 821236519995fdfb54b56bd9d7a60ba8 | c:\program files\vmware\vmware tools\pcre.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 64388ee3beb0e69fd471b3c7eb5d4de8ae24b9ea0fdba51bc9c81c26be84e585 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | l3y1d8j9Sly714CQPzWCBg | s6x0w4KLQsqsIeIdUbMONg | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 40b92f37c0698cdc4cde8c0a75791c7e | c:\program files\vmware\vmware tools\vmtools.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | bb8098f4627441f6a29c31757c45339c74b2712b92783173df9ab58d47ae3bfa | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | 8FVtgIwAT3yEso5T0uk0cA | AVwb1vjZTGeRB1uaIdQnrw | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | e202dd92848c5103c9abf8ecd22bc539 | c:\windows\system32\fltlib.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 353f8d4e647a11f235f4262d913f7bac4c4f266eac4601ea416e861afd611912 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | IJBFhWQ_Q12x19hwWfjUbA | wORF-s5hRvudzGjQ3QM1Ww | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | b7be84c53e81dd0a64ee0845410bd6c7 | c:\windows\system32\icmp.dll | Microsoft Windows | FILE_SIGNATURE_STATE_CATALOG_SIGNED,<br/>FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 8ddd1ddce37c7e560570774de7ca1a1ecf7b32dfd0ba014f504fc6ae50388de6 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | mp9oS9dBSKe82cqaqAYDlw | nd7VJaBvQ0Oyv3lzKY7Pbw | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 3929147a2a34b0902152c7d0f241b02a | c:\windows\system32\iphlpapi.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | ad1c5309aa873f6a284eabe382812868e20c3d3d64197f3e6ef9d015ea060caa | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | wj6mNgzbShKLURehszOXtg | 7npmgIMLQG-4OIyo74rfyw | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | da9647c845792371dd2f95e1ccc9a63a | c:\windows\system32\sspicli.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | fe741d2f986b0b9557a90bdf0560f49cd17381d1094c42a91634aabe49f46a1e | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | rJGTaMNMRgeY7iDNsqiTOQ | xUEzwT9NTxegOi11gfFxiQ | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 435009d1ddc0365bfa34b8c8d3f85286 | c:\windows\system32\ntmarta.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 2f94628f056fe65ea81351e134e59ece813fec5e8400c12d6dfa49defd126d01 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | mn65QevyQLmKWcKLaB6cdQ | abZs_MqgQN68aGg9k8x2ZA | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 3c9d22cae173ad19806b6a016cd4cc28 | c:\windows\system32\uxtheme.dll | Microsoft Windows | FILE_SIGNATURE_STATE_CATALOG_SIGNED,<br/>FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | d95e7d07ea46d7d2aefa01cd0a64cf266be26d40fa6be42f7cf60f6deb8fbaf3 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | GoCFSlj_TOWvQWunkQS-eQ | 6LYa5DXmT7-gGzH8svoodw | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 1f1fe19bc54c75e568646327f6d99c1a | c:\windows\system32\vsocklib.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | e685439d50aecf656ef5bd2523568b6d9220cc9917e7d57eda962c1a520e94a5 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | AXShZkT5QYOyU7dnsa-Huw | rOjANBIhS5-n11XB5Tw_4w | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | b56c118a906a0322b9319d50df188bc6 | c:\program files\vmware\vmware tools\plugins\common\hgfsserver.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 0d74d8f4cf24bc72042234fb92b42396f6d2f6f77c534f9a07af3d82822a0452 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
->| 2020-10-14T16:22:13.180Z | 2020-10-27T14:04:54.515Z | V50UIXnjTWmI7NIsJFH8hw | Su5-L2OYS7Kc-K2CIhTwJw | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | a381226b5a088a07680391b94c474baa | c:\program files\vmware\vmware tools\hgfs.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 429a69aba0196be3f53ffa1d2dd09b0caea6fc680468706b2a20fa0f7188ad4b | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.503Z | OCaEtLR1SRGcWgVUcoj2mA | lQJi__dhQpGzdVwCmbdbjg | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_LOCAL_WHITE | aae1f614bfe5e3e5cde18d1f928f5b12 | c:\windows\system32\ctiuser.dll | Carbon Black, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 81eb5f6fbf8d7566560f43f75ec30e5f0284cdee9b5c9df0d81281bda0db3d07 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | aAVFrvjPQ3Sea-kK6Kdbxw | L8CCeipjQ7KtMQDiRwx8HA | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 2c7c14627cff3384c52e61d4dbd0ecc3 | c:\windows\system32\version.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 41b4d85d84a86e41b948694b9b5f398a0d79f47629d6d969eb5b461d4f5d0347 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | AlKrjPvcSLav4Vq7zBuD2A | k7Z5u-3_Siydt1DPvXW4dQ | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | f7c09099232987cbb965b9280c1dacf8 | c:\program files\vmware\vmware tools\gmodule-2.0.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | d14560487312f487f94bfaed4fe9d0cfd5efbec1ac4ef44c26dd230800bc6b29 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | 0g6iOKO9S8GHIfFSOG5sBA | TX8Ehlc2Qb2mbSl8ZtVmgg | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 26fc0a369a68d2a429e2ebe67b8dd1d8 | c:\program files\vmware\vmware tools\gobject-2.0.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 9a914642e7e8e4e4ba004004b490c64453f13597cc43cb77a9e55d180c229f83 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | W_JoluvFTni9mPPHCvyxmg | CvjnmQdWQqGhbsmkcPzJYA | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 9d9b1790cc6eeb76757b5042914b7289 | c:\program files\vmware\vmware tools\intl.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 03eef80ad1d4b066c4842546ba52ccb911e84606a27f0ec7016d9f62c572846b | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | -XTVyKT5SkeJ0PvsnozF6A | 114rbukXQKSzjhiVBEApPQ | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | a83fcd02a532a08386a5bcbb39a581c5 | c:\program files\vmware\vmware tools\glib-2.0.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | ff9bb3a84c807f8151d4956f895f672fa812765e931e9093f40caab0853bd120 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | junO0BiIT9imVAUSKCdB_A | 9Sd5fEA8R9aOU7eYlY_97A | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 9f2b3fac3440db16e0c13473b551d12c | c:\windows\system32\vcruntime140.dll | Microsoft Corporation | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 27c51ff3dc2f4cf2b61bdf55fb60148ef0abb06c2feae188c30f1a63f9e29caa | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | PocoJ9OATG6Qr-3cirRciQ | D8k62OqkQ9KiT0c5C1Ki0g | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 965eb822d0ef8fda78ccb1f41def093d | c:\windows\system32\winmm.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | ad43d686930eae0f57a55ee75d10bd1882747089a291371ffe1e131eb5f76938 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | ThWF8yD5R5usoFJM4x_VRw | mk9Lj4O0TAq-enCNCKWBMA | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | e6450257ba3df5161684e4c73ebb8f92 | c:\windows\system32\winmmbase.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 948f13fe144cd80f93565ded2ac2e96d000869bb2761538996d28942495cb1d7 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | PZXgTx_XStWA1DGUkPDJzw | UVssy5LWSvyvFC0Isya8aQ | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 821236519995fdfb54b56bd9d7a60ba8 | c:\program files\vmware\vmware tools\pcre.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 64388ee3beb0e69fd471b3c7eb5d4de8ae24b9ea0fdba51bc9c81c26be84e585 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | bmsH73bASGaRFpeo84Q5Kw | 9Ri-_u68QjyV7UjSMeDAYw | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 40b92f37c0698cdc4cde8c0a75791c7e | c:\program files\vmware\vmware tools\vmtools.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | bb8098f4627441f6a29c31757c45339c74b2712b92783173df9ab58d47ae3bfa | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | WeL1uj4FSI-n4rVA7UoXFw | b2SKdGkNSNuw0eoZn9wK_g | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | e202dd92848c5103c9abf8ecd22bc539 | c:\windows\system32\fltlib.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 353f8d4e647a11f235f4262d913f7bac4c4f266eac4601ea416e861afd611912 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | Q6PB6SqURW6xliJdsEogag | YPhofHOyQkKaMGEr1dX5cQ | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | b7be84c53e81dd0a64ee0845410bd6c7 | c:\windows\system32\icmp.dll | Microsoft Windows | FILE_SIGNATURE_STATE_CATALOG_SIGNED,<br/>FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 8ddd1ddce37c7e560570774de7ca1a1ecf7b32dfd0ba014f504fc6ae50388de6 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | jg_1LLAYT1KZx9SZUPQqeQ | 5eb6xzwkTt2p5b-2-ELzog | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 3929147a2a34b0902152c7d0f241b02a | c:\windows\system32\iphlpapi.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | ad1c5309aa873f6a284eabe382812868e20c3d3d64197f3e6ef9d015ea060caa | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | LDC8YHy4RFuIZuejh202dQ | zMI8yTZvRBWnBzcuyUU0bQ | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | da9647c845792371dd2f95e1ccc9a63a | c:\windows\system32\sspicli.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | fe741d2f986b0b9557a90bdf0560f49cd17381d1094c42a91634aabe49f46a1e | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | Oq1ZHJ-lSYGWynDM12vIhQ | HwnoQEtpSp-El_7fEmh4Lw | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 435009d1ddc0365bfa34b8c8d3f85286 | c:\windows\system32\ntmarta.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 2f94628f056fe65ea81351e134e59ece813fec5e8400c12d6dfa49defd126d01 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | UpxEQukRRmiX3EjI4kkYYg | afxpRq5BT6WRdQyBWS4-kQ | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 3c9d22cae173ad19806b6a016cd4cc28 | c:\windows\system32\uxtheme.dll | Microsoft Windows | FILE_SIGNATURE_STATE_CATALOG_SIGNED,<br/>FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | d95e7d07ea46d7d2aefa01cd0a64cf266be26d40fa6be42f7cf60f6deb8fbaf3 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | NcXdQS34QJWySTn-04pakA | 4ZyNSN7yRyeNNBRop-HMDw | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 1f1fe19bc54c75e568646327f6d99c1a | c:\windows\system32\vsocklib.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | e685439d50aecf656ef5bd2523568b6d9220cc9917e7d57eda962c1a520e94a5 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | POYLqKCERASiTMBHcfsFmw | UAoluLSYSKe2pzn47rxVDw | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | b56c118a906a0322b9319d50df188bc6 | c:\program files\vmware\vmware tools\plugins\common\hgfsserver.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 0d74d8f4cf24bc72042234fb92b42396f6d2f6f77c534f9a07af3d82822a0452 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | x2Beg9ykSIiRKViJJxcsaA | 6xUCWyDQTAuOm7Lnxq-qew | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | a381226b5a088a07680391b94c474baa | c:\program files\vmware\vmware tools\hgfs.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 429a69aba0196be3f53ffa1d2dd09b0caea6fc680468706b2a20fa0f7188ad4b | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>Total of 2120 items found. Showing items 0 - 19.
 
-
-### cb-eedr-process-search-results
+### 35. cb-eedr-process-search-results
 ---
 Retrieves the process search results for a given job ID.
 
@@ -2693,16 +2699,16 @@ RBAC Permissions Required - org.search.events: READ
 #### Human Readable Output
 
 >### Completed Search Results:
->|backend_timestamp|device_group_id|device_id|device_name|device_policy_id|device_timestamp|enriched|enriched_event_type|event_type|ingress_time|legacy|org_id|parent_guid|parent_pid|process_guid|process_hash|process_name|process_pid|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-28T07:20:55.988Z | 0 | 3775337 | cbcloud-win10 | 12229 | 2020-10-28T07:20:07.603Z | true | INJECT_CODE | crossproc | 1603869624380 | true | 7DESJ9GN | 7DESJ9GN-00399b69-0000028c-00000000-1d6a6bb3b2bcc26 | 652 | 7DESJ9GN-00399b69-00000b60-00000000-1d6a6bb41ebd8ef | 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | 2912 |
->| 2020-10-27T14:47:52.717Z | 0 | 3739267 | hw-host-027 | 12229 | 2020-10-27T14:47:13.760Z | true | INJECT_CODE | crossproc | 1603810047142 | true | 7DESJ9GN | 7DESJ9GN-00390e83-000002a0-00000000-1d6a1f9ef3c0d3e | 672 | 7DESJ9GN-00390e83-00000bf4-00000000-1d6a1f9f37d1836 | 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | 3060 |
->| 2020-10-24T00:58:50.495Z | 0 | 3739232 | hw-host-004 | 12229 | 2020-10-24T00:57:37.097Z | true | INJECT_CODE | crossproc | 1603501093672 | true | 7DESJ9GN | 7DESJ9GN-00390e60-000002a4-00000000-1d6a463297ebe9b | 676 | 7DESJ9GN-00390e60-00000c74-00000000-1d6a4632cda86e3 | 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | 3188 |
->| 2020-10-17T14:13:34.936Z | 0 | 3462642 | win10etchangeme | 6525 | 2020-10-17T14:12:28.438Z | true | INJECT_CODE | crossproc | 1602943969760 | true | 7DESJ9GN | 7DESJ9GN-0034d5f2-0000032c-00000000-1d6a276fc5ed489 | 812 | 7DESJ9GN-0034d5f2-00000b8c-00000000-1d6a27706e318a2 | 63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6,<br/>c7084336325dc8eadfb1e8ff876921c4 | c:\program files\vmware\vmware tools\vmtoolsd.exe | 2956 |
->| 2020-10-16T00:36:49.055Z | 0 | 3216323 | exapil\pil-cb7-2 | 6525 | 2020-10-16T00:35:55.328Z | true | INJECT_CODE | crossproc | 1602808577528 | true | 7DESJ9GN | 7DESJ9GN-003113c3-00000204-00000000-1d68d438b085325 | 516 | 7DESJ9GN-003113c3-00000628-00000000-1d68d438ca1bfd4 | 63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6,<br/>c7084336325dc8eadfb1e8ff876921c4 | c:\program files\vmware\vmware tools\vmtoolsd.exe | 1576 |
->| 2020-10-05T02:17:33.365Z | 0 | 3365471 | hw-host-004 | 6525 | 2020-10-05T02:16:18.531Z | true | INJECT_CODE | crossproc | 1601864215004 | true | 7DESJ9GN | 7DESJ9GN-00335a5f-00000288-00000000-1d687d4d1d5aec5 | 648 | 7DESJ9GN-00335a5f-00000abc-00000000-1d687d4d6c9363a | 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | 2748 |
->| 2020-09-03T11:00:49.482Z | 791 | 3670727 | desktop-fvb88fs | 6525 | 2020-09-03T10:59:48.345Z | true | CREATE_PROCESS | childproc | 1599130817870 | true | 7DESJ9GN | 7DESJ9GN-003802c7-000002b8-00000000-1d66fbac06780a2 | 696 | 7DESJ9GN-003802c7-00000b4c-00000000-1d66fbac0f8ad57 | aca121d48147ff717bcd1da7871a5a76,<br/>da7e37ce59685964a3876ef1747964de1caabd13b3691b6a1d5ebed1d19c19ad | c:\program files\vmware\vmware tools\vmtoolsd.exe | 2892 |
->| 2020-09-03T08:01:52.493Z | 791 | 3670528 | desktop-fvb88fs | 6525 | 2020-09-03T08:00:46.548Z | true | CREATE_PROCESS | childproc | 1599120076739 | true | 7DESJ9GN | 7DESJ9GN-00380200-000002b8-00000000-1d66fbac06780a2 | 696 | 7DESJ9GN-00380200-00000b4c-00000000-1d66fbac0f8ad57 | aca121d48147ff717bcd1da7871a5a76,<br/>da7e37ce59685964a3876ef1747964de1caabd13b3691b6a1d5ebed1d19c19ad | c:\program files\vmware\vmware tools\vmtoolsd.exe | 2892 |
->| 2020-08-26T16:08:11.872Z | 0 | 3644148 | desktop-aa2m6ld | 6529 | 2020-08-26T16:06:50.813Z | true | FILE_CREATE | filemod | 1598458053780 | true | 7DESJ9GN | 7DESJ9GN-00379af4-00001520-00000000-1d67a883dbd713b | 5408 | 7DESJ9GN-00379af4-000007e0-00000000-1d67a8847cebcbd | 80abd555c1869baaff2d8a8d535ce07e,<br/>fa353f142361e5c6ca57a66dcb341bba20392f5c29d2c113c7d62a216b0e0504 | c:\program files\vmware\vmware tools\vmtoolsd.exe | 2016 |
->| 2020-08-17T14:38:21.589Z | 0 | 3600261 | desktop-aa2m6ld | 35704 | 2020-08-17T14:37:19.963Z | true | POLICY_ACTION | childproc | 1597675083480 | true | 7DESJ9GN | 7DESJ9GN-0036ef85-000007f0-00000000-1d674a3d9a6a335 | 2032 | 7DESJ9GN-0036ef85-00001f74-00000000-1d674a3e4b3ba9a | 80abd555c1869baaff2d8a8d535ce07e,<br/>fa353f142361e5c6ca57a66dcb341bba20392f5c29d2c113c7d62a216b0e0504 | c:\program files\vmware\vmware tools\vmtoolsd.exe | 8052 |
+>|process_hash|process_name|device_name|device_timestamp|process_pid|process_username|
+>|---|---|---|---|---|---|
+>| 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | cbcloud-win10 | 2020-10-28T07:20:07.603Z | 2912 |  |
+>| 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | hw-host-027 | 2020-10-27T14:47:13.760Z | 3060 | NT AUTHORITY\SYSTEM |
+>| 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | hw-host-004 | 2020-10-24T00:57:37.097Z | 3188 |  |
+>| 63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6,<br/>c7084336325dc8eadfb1e8ff876921c4 | c:\program files\vmware\vmware tools\vmtoolsd.exe | win10etchangeme | 2020-10-17T14:12:28.438Z | 2956 | NT AUTHORITY\SYSTEM |
+>| 63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6,<br/>c7084336325dc8eadfb1e8ff876921c4 | c:\program files\vmware\vmware tools\vmtoolsd.exe | exapil\pil-cb7-2 | 2020-10-16T00:35:55.328Z | 1576 | NT AUTHORITY\SYSTEM |
+>| 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | hw-host-004 | 2020-10-05T02:16:18.531Z | 2748 | NT AUTHORITY\SYSTEM |
+>| aca121d48147ff717bcd1da7871a5a76,<br/>da7e37ce59685964a3876ef1747964de1caabd13b3691b6a1d5ebed1d19c19ad | c:\program files\vmware\vmware tools\vmtoolsd.exe | desktop-fvb88fs | 2020-09-03T10:59:48.345Z | 2892 | NT AUTHORITY\SYSTEM |
+>| aca121d48147ff717bcd1da7871a5a76,<br/>da7e37ce59685964a3876ef1747964de1caabd13b3691b6a1d5ebed1d19c19ad | c:\program files\vmware\vmware tools\vmtoolsd.exe | desktop-fvb88fs | 2020-09-03T08:00:46.548Z | 2892 | NT AUTHORITY\SYSTEM |
+>| 80abd555c1869baaff2d8a8d535ce07e,<br/>fa353f142361e5c6ca57a66dcb341bba20392f5c29d2c113c7d62a216b0e0504 | c:\program files\vmware\vmware tools\vmtoolsd.exe | desktop-aa2m6ld | 2020-08-26T16:06:50.813Z | 2016 | DESKTOP-AA2M6LD\John Doe |
+>| 80abd555c1869baaff2d8a8d535ce07e,<br/>fa353f142361e5c6ca57a66dcb341bba20392f5c29d2c113c7d62a216b0e0504 | c:\program files\vmware\vmware tools\vmtoolsd.exe | desktop-aa2m6ld | 2020-08-17T14:37:19.963Z | 8052 | DESKTOP-AA2M6LD\John Doe |
 

@@ -1258,7 +1258,10 @@ def event_by_process_search_command(client: Client, args: Dict) -> CommandResult
         query=query, limit=limit, start_time=start_time, end_time=end_time, start=start)
 
     readable = tableToMarkdown(name="Results Found.", t=result.get('results'), removeNull=True)
-    readable += f"Total of {result.get('num_found')} items found. Showing items {start} - {start + limit - 1}."
+    found_num_readable = f"Total of {result.get('num_found')} items found. "
+    found_num_readable += f"Showing items {start} - {min(start + limit - 1, result.get('num_found'))}." if result.get(
+        'num_found') else ""
+    readable += found_num_readable
 
     return CommandResults(outputs_prefix='CarbonBlackEEDR.SearchEvent',
                           outputs=result.get('results'), outputs_key_field='event_guid',

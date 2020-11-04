@@ -1580,7 +1580,7 @@ script:
           required: false
           secret: false
         - default: false
-          description: A free-style query. For example, "process_name:svchost.exe". A guide can be found here- https://developer.carbonblack.com/resources/query_overview.pdf
+          description: A free-style query. For example, "process_name:svchost.exe".
           isArray: false
           name: query
           required: false
@@ -1642,7 +1642,7 @@ script:
           required: false
           secret: false
         - default: false
-          description: A free-style query. For example, "process_name:svchost.exe". A guide can be found here- https://developer.carbonblack.com/resources/query_overview.pdf
+          description: A free-style query. For example, "process_name:svchost.exe".
           isArray: false
           name: query
           required: false
