@@ -6,6 +6,7 @@ from demisto_sdk.commands.common.constants import (PACK_METADATA_CERTIFICATION,
                                                    PACKS_DIR,
                                                    PACKS_PACK_META_FILE_NAME)
 
+from Tests.scripts.collect_tests_and_content_packs import get_content_pack_name_of_test
 from Tests.scripts.utils.content_packs_util import (is_pack_xsoar_supported,
                                                     should_test_content_pack, get_test_pack_name)
 
@@ -82,9 +83,9 @@ def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_
     assert should_test_content_pack(pack_name) == expected
 
 @pytest.mark.parametrize("test_id, expected", [
-    ('Test XDR Playbook', 'CortexXDR'),
-    ('PagerDuty Test', None),
-    ('Dummy Test ID', None)
+    ({'Test XDR Playbook'}, {'CortexXDR'}),
+    ({'PagerDuty Test'}, set()),
+    ({'Dummy Test ID'}, set())
 ])
 def test_get_test_pack_name(test_id, expected):
     """
@@ -100,4 +101,4 @@ def test_get_test_pack_name(test_id, expected):
         - Case B: Verify no return pack name.
         - Case C: Verify no return pack name.
     """
-    assert get_test_pack_name(test_id, MOCK_ID_SET) == expected
+    assert get_content_pack_name_of_test(test_id, MOCK_ID_SET) == expected

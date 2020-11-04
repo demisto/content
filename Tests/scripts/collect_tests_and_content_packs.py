@@ -252,6 +252,8 @@ def get_modified_files_for_testing(files_string):
                 dir_path = os.path.dirname(file_path)
                 file_path = glob.glob(dir_path + "/*.yml")[0]
 
+            print(f"file_path: {file_path}")
+
             # Common scripts (globally used so must run all tests)
             if checked_type(file_path, COMMON_YML_LIST):
                 changed_common.append(file_path)
@@ -273,9 +275,11 @@ def get_modified_files_for_testing(files_string):
             elif checked_type(file_path, JSON_ALL_INDICATOR_FIELDS_REGEXES):
                 is_indicator_json = True
 
+
             # conf.json
             elif re.match(CONF_PATH, file_path, re.IGNORECASE):
                 is_conf_json = True
+                print(f"is_conf_json: {is_conf_json}")
 
             # docs and test files do not influence integration tests filtering
             elif checked_type(file_path, FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES):
@@ -1146,10 +1150,10 @@ def remove_ignored_tests(tests: set, content_packs: set) -> set:
 def remove_tests_for_non_supported_packs(tests: set, id_set: json):
     tests_that_should_not_be_tested = set()
     for test in tests:
-        id_set_test_playbook_pack_name = get_test_pack_name(test, id_set)
+        id_set_test_playbook_pack_name = get_content_pack_name_of_test({test}, id_set)
 
         # We don't want to test playbooks from Non-certified partners.
-        if not should_test_content_pack(id_set_test_playbook_pack_name):
+        if not should_test_content_pack({id_set_test_playbook_pack_name}):
             tests_that_should_not_be_tested.add(test)
 
     logging.info('The following test playbooks are not supported and will not be tested: \n{} '.format(
@@ -1212,22 +1216,6 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
-    if not tests:
-        rand = random.Random(branch_name)
-        tests = get_random_tests(
-            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=minimum_server_version)
-        packs_to_install = get_content_pack_name_of_test(tests, id_set)
-        if changed_common:
-            logging.debug('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
-        elif sample_tests:  # Choosing 3 random tests for infrastructure testing
-            logging.debug('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
-        else:
-            logging.debug("Running Sanity check only")
-
-        tests.add('TestCommonPython')  # test with no integration configured
-        tests.add('HelloWorld-Test')  # test with integration configured
-        packs_to_install.add("HelloWorld")
-
     if changed_common:
         tests.add('TestCommonPython')
 
@@ -1248,6 +1236,21 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     print(f"tests before filter: {tests}")
     tests = filter_tests(tests, packs_to_install, id_set)
+    if not tests:
+        rand = random.Random(branch_name)
+        tests = get_random_tests(
+            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=minimum_server_version)
+        packs_to_install = get_content_pack_name_of_test(tests, id_set)
+        if changed_common:
+            logging.debug('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
+        elif sample_tests:  # Choosing 3 random tests for infrastructure testing
+            logging.debug('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
+        else:
+            logging.debug("Running Sanity check only")
+
+        tests.add('TestCommonPython')  # test with no integration configured
+        tests.add('HelloWorld-Test')  # test with integration configured
+        packs_to_install.add("HelloWorld")
 
     return tests, packs_to_install
 
