@@ -1,6 +1,5 @@
-id: 27d078f8-e515-4cfc-83d7-30ab49a8b38e
-version: 44
-vcShouldKeepItemLegacyProdMachine: false
+id: CloudConvert
+version: -1
 name: CloudConvert
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -32,24 +32,39 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: a17b1e57-785d-499e-8ae3-a14478c74448
+    taskid: a5ee5a2e-e411-4d26-8112-0a14b913434d
     type: regular
     task:
-      id: a17b1e57-785d-499e-8ae3-a14478c74448
+      id: a5ee5a2e-e411-4d26-8112-0a14b913434d
       version: -1
       name: CloudConvert-import
-      script: CloudConvert|||CloudConvert-import
+      script: '|||CloudConvert-import'
       type: regular
       iscommand: true
-      brand: CloudConvert
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
       entry_id:
-        simple: ${inputs.entry_id}
+        complex:
+          root: inputs.entry_id
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.entry_id
+                iscontext: true
       file_name: {}
-      url: {}
+      url:
+        complex:
+          root: inputs.url
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.url
+                iscontext: true
     separatecontext: false
     view: |-
       {
@@ -157,24 +172,35 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: f8e03d17-b4ea-4f9a-82bf-8e957e9f7e24
+    taskid: 35be5e52-a197-4fb3-8a9f-dd4ed4776171
     type: regular
     task:
-      id: f8e03d17-b4ea-4f9a-82bf-8e957e9f7e24
+      id: 35be5e52-a197-4fb3-8a9f-dd4ed4776171
       version: -1
       name: CloudConvert-convert
-      script: CloudConvert|||CloudConvert-convert
+      script: '|||CloudConvert-convert'
       type: regular
       iscommand: true
-      brand: CloudConvert
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
       output_format:
-        simple: ${inputs.output format}
+        simple: ${inputs.output_format}
       task_id:
-        simple: ${CloudConvert.Task.id}
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: import
+          accessor: id
     separatecontext: false
     view: |-
       {
@@ -257,22 +283,22 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 1b6afc3a-2401-4226-8624-b93e0ff15372
+    taskid: 6eb6e3f4-a431-48ce-85be-a5faa5d26239
     type: regular
     task:
-      id: 1b6afc3a-2401-4226-8624-b93e0ff15372
+      id: 6eb6e3f4-a431-48ce-85be-a5faa5d26239
       version: -1
       name: CloudConvert-export
-      script: CloudConvert|||CloudConvert-export
+      script: '|||CloudConvert-export'
       type: regular
       iscommand: true
-      brand: CloudConvert
+      brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "13"
     scriptarguments:
       export_as:
-        simple: url
+        simple: ${inputs.export_via}
       task_id:
         complex:
           root: CloudConvert.Task
@@ -299,12 +325,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "10":
-    id: "10"
-    taskid: 5fc8e174-11fb-454a-8bc3-77b87947941c
+  "12":
+    id: "12"
+    taskid: 5500260b-4604-4723-84a7-cec69927ecf6
     type: playbook
     task:
-      id: 5fc8e174-11fb-454a-8bc3-77b87947941c
+      id: 5500260b-4604-4723-84a7-cec69927ecf6
       version: -1
       name: GenericPolling
       description: |-
@@ -319,26 +345,23 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
     scriptarguments:
       AdditionalPollingCommandArgNames:
         simple: is_entry
       AdditionalPollingCommandArgValues:
-        simple: "False"
+        simple: "True"
       Ids:
         complex:
           root: CloudConvert.Task
           filters:
-          - - operator: isEqualString
+          - - operator: containsString
               left:
                 value:
                   simple: CloudConvert.Task.operation
                 iscontext: true
               right:
                 value:
-                  simple: export/url
+                  simple: export
           accessor: id
       Interval:
         simple: "1"
@@ -349,8 +372,8 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: CloudConvert.Task(vel.status != 'finished').id
-    separatecontext: true
+        simple: CloudConvert.Task(val.status!='finished').id
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""
@@ -359,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1075
+          "x": 240,
+          "y": 1290
         }
       }
     note: false
@@ -368,42 +391,104 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: 873d6516-83de-42a3-844d-eaca9a91b798
-    type: regular
+  "13":
+    id: "13"
+    taskid: bf200b39-bbd2-4239-8aa7-b982669cfaa2
+    type: condition
     task:
-      id: 873d6516-83de-42a3-844d-eaca9a91b798
+      id: bf200b39-bbd2-4239-8aa7-b982669cfaa2
       version: -1
-      name: CloudConvert-checkstatus
-      script: CloudConvert|||CloudConvert-checkstatus
-      type: regular
-      iscommand: true
-      brand: CloudConvert
-    scriptarguments:
-      is_entry:
-        complex:
-          root: inputs.export via
-          transformers:
-          - operator: If-Then-Else
-            args:
-              else:
-                value:
-                  simple: "False"
-              equals:
-                value:
-                  simple: entry
-              then:
-                value:
-                  simple: "True"
-      task_id:
-        simple: ${CloudConvert.Task.id}
+      name: Is the export is to war room entry
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "12"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.export_via
+            iscontext: true
+          right:
+            value:
+              simple: war_room_entry
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1240
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 64c60aa9-d708-49af-8edd-1ab95b3d7a6c
+    type: playbook
+    task:
+      id: 64c60aa9-d708-49af-8edd-1ab95b3d7a6c
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: export
+          accessor: id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: CloudConvert-checkstatus
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CloudConvert.Task(val.status!='finished').id
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1290
         }
       }
     note: false
@@ -416,9 +501,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1455,
-        "width": 380,
-        "x": 450,
+        "height": 1505,
+        "width": 800,
+        "x": 240,
         "y": -120
       }
     }
@@ -428,25 +513,26 @@ inputs:
   value: {}
   required: false
   description: This is the url of the imported file
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: entry_id
-  value:
-    simple: 314@2
+  value: {}
   required: false
   description: This is the entry id of the imported file
-  playbookInputQuery: null
-- key: output format
-  value:
-    simple: jpg
+  playbookInputQuery:
+- key: output_format
+  value: {}
   required: true
   description: |
     This is the desired output format
-  playbookInputQuery: null
-- key: export via
-  value:
-    simple: entry
+  playbookInputQuery:
+- key: export_via
+  value: {}
   required: true
   description: |
-    The method for exporting the resulted file, url or entry
-  playbookInputQuery: null
+    The method for exporting the resulted file, url or war_room_entry
+  playbookInputQuery:
 outputs: []
+tests:
+- c951568b-7af5-46e8-8cff-83b799c05a75
+fromversion: 6.0.0
+description: Use this playbook in order to conduct a file conversion using CloudConvert

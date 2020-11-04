@@ -35,6 +35,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Import a file for later conversion
     execution: false
     name: CloudConvert-import
     outputs:
@@ -192,6 +193,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Convert a priorlt uploaded file to desired format
     execution: false
     name: CloudConvert-convert
     outputs:
@@ -252,6 +254,9 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Check the status of an operation. Use the 'is_entry' argument to
+      also create a war room entry of the file when checking on an export to war room
+      entry operation
     execution: false
     name: CloudConvert-checkstatus
     outputs:
@@ -315,6 +320,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Export a converted file to a url or a war room entry
     execution: false
     name: CloudConvert-export
     outputs:
@@ -360,9 +366,9 @@ script:
     - contextPath: CloudConvert.Task.links
       description: APIs link for operation
       type: String
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
