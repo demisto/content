@@ -821,8 +821,8 @@ def get_remote_data_command(rest_client, args):
             'ContentsFormat': EntryFormat.JSON
         }
         entries.append(closing_entry)
+        demisto.debug(f'entries: {closing_entry} for incident {args["incident_id"]}')
 
-    demisto.debug(f'entries: {closing_entry} for incident {args["incident_id"]}')
     demisto.debug(f'update incident: {updated_incident} for incident {args["incident_id"]}')
 
     return [updated_incident] + entries
@@ -862,7 +862,7 @@ def update_remote_system_command(rest_client, args):
                     'incident_feedback': feedback['outcome'],
                     'incident_comments': feedback['comments']
                 }
-                demisto.debug(feedback_args)
+                demisto.debug(f'feedback args for {remote_args.remote_incident_id}: {feedback_args}')
                 res = close_incident_command(rest_client, args)
                 demisto.debug(f'close incident command result: {res}')
 

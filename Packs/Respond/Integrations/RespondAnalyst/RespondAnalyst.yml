@@ -38,8 +38,8 @@ configuration:
   name: username
   required: true
   type: 0
-description: Respond Software Description
-display: Respond Analyst (Developer Contribution)
+description: Respond Software Integration - fetches incidents with mirroring api enabled
+display: Respond Analyst
 name: Respond_Analyst
 script:
   commands:
@@ -162,6 +162,8 @@ script:
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
