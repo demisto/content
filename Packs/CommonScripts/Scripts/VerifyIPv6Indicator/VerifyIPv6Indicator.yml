@@ -1,6 +1,6 @@
 args:
 - default: true
-  description: The ipv6 to vriefy.
+  description: The IPv6 to vriefy.
   isArray: true
   name: input
   required: false

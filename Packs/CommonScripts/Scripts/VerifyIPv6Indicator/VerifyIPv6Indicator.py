@@ -6,9 +6,9 @@ import ipaddress
 def is_valid_ipv6_address(address):
     try:
         ipaddress.IPv6Address(address)
-        return address
+        return True
     except ValueError:
-        return
+        return False
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     if entries_list:
         demisto.results(entries_list)
     else:
-        demisto.results('')
+        demisto.results([])
 
 
 # python2 uses __builtin__ python3 uses builtins
