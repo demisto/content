@@ -352,11 +352,15 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 message = result_object.get('message', '')
                 err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
                 prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                raise Exception(err_msg)
+        except Exception as e:
+            err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
+            prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
 
-                global SUCCESS_FLAG
-                SUCCESS_FLAG = False
-            finally:
-                prints_manager.execute_thread_prints(thread_index)
+            global SUCCESS_FLAG
+            SUCCESS_FLAG = False
+        finally:
+            prints_manager.execute_thread_prints(thread_index)
 
 
 def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
