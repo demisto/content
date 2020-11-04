@@ -428,7 +428,7 @@ class Client(BaseClient):
 
     def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, fetch_time: str,
                  sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict = None):
+                 incident_name: str, oauth_params: dict = {}):
         """
 
         Args:

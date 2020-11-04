@@ -7,7 +7,7 @@ OAUTH_URL = '/oauth_token.do'
 
 class ServiceNowClient(BaseClient):
 
-    def __init__(self, credentials: dict = None, use_oauth: bool = False, client_id: str = '', client_secret: str = '',
+    def __init__(self, credentials: dict, use_oauth: bool = False, client_id: str = '', client_secret: str = '',
                  url: str = '', verify: bool = False, proxy: bool = False, headers: dict = None):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
