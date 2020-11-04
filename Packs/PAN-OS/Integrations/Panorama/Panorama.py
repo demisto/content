@@ -4518,7 +4518,6 @@ def build_policy_match_query(application=None, category=None,
 def panorama_security_policy_match(application=None, category=None, destination=None,
                                    destination_port=None, from_=None, to_=None,
                                    protocol=None, source=None, source_user=None):
-
     params = {'type': 'op', 'key': API_KEY,
               'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
@@ -4874,6 +4873,7 @@ def panorama_get_routes(virtual_router=None):
         'GET',
         params=params)
 
+
 def panorama_get_interfaces():
     """
     Retrieve the routing table from the given device
@@ -4888,6 +4888,7 @@ def panorama_get_interfaces():
         URL,
         'GET',
         params=params)
+
 
 def panorama_route_lookup(dest_ip: str, virtual_router=None):
     """
@@ -4920,11 +4921,11 @@ def panorama_route_lookup(dest_ip: str, virtual_router=None):
                 current_match = subnet
                 matched_route = route
 
-
     if matched_route:
         return matched_route
     else:
         raise Exception("Route not found.")
+
 
 def panorama_route_lookup_command():
     """
@@ -4934,6 +4935,7 @@ def panorama_route_lookup_command():
     dest_ip = demisto.args().get("dest_ip")
     vr = demisto.args().get("virtual_router", None)
     demisto.results(panorama_route_lookup(dest_ip, vr))
+
 
 def panorama_zone_lookup_command():
     """
@@ -4955,7 +4957,7 @@ def panorama_zone_lookup_command():
         for entry in interfaces["response"]["result"]["ifnet"]["entry"]:
             if entry["name"] == interface:
                 if "zone" in entry:
-                    r = { **entry, **route }
+                    r = {**entry, **route}
 
     if r:
         demisto.results({
@@ -4970,7 +4972,6 @@ def panorama_zone_lookup_command():
     else:
         demisto.results(f"Could not map {dest_ip} to zone.")
         return {}
-
 
 
 @logger

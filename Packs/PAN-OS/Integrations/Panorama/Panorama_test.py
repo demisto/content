@@ -81,6 +81,16 @@ def patched_requests_mocker(requests_mock):
             <interface>ae1.3</interface>
             <route-table>unicast</route-table>
         </entry>
+        <entry>
+            <virtual-router>CORE</virtual-router>
+            <destination>2000::/16</destination>
+            <nexthop>fe80::1234</nexthop>
+            <metric>130</metric>
+            <flags>A O1  </flags>
+            <age>4172303</age>
+            <interface>ae1.4</interface>
+            <route-table>unicast</route-table>
+        </entry>
     </result>
     </response>
     """
@@ -161,15 +171,21 @@ def patched_requests_mocker(requests_mock):
 
 
 def test_panorama_get_interfaces(patched_requests_mocker):
+    """
+    Given the interface XML from <show><interface>all, expects 5 interfaces to be returned
+    """
     from Panorama import panorama_get_interfaces
     r = panorama_get_interfaces()
     assert len(r['response']['result']['ifnet']['entry']) == 5
 
 
 def test_panorama_get_routes(patched_requests_mocker):
+    """
+    Given the Route XML from <show><routing><route>, expects 3 routes to be returned
+    """
     from Panorama import panorama_get_routes
     r = panorama_get_routes()
-    assert len(r['response']['result']['entry']) == 3
+    assert len(r['response']['result']['entry']) == 4
 
 
 def test_panorama_route_lookup(patched_requests_mocker):
@@ -178,10 +194,16 @@ def test_panorama_route_lookup(patched_requests_mocker):
     assert r['destination'] == '10.10.0.0/16'
 
 
+def test_panorama_route_lookup_v6(patched_requests_mocker):
+    from Panorama import panorama_route_lookup
+    r = panorama_route_lookup("2000::1")
+    assert r['destination'] == '2000::/16'
+
+
 def test_panorama_zone_lookup(patched_requests_mocker):
-    from Panorama import panorama_zone_lookup
-    r = panorama_zone_lookup()
-    print(r)
+    from Panorama import panorama_zone_lookup_command
+    r = panorama_zone_lookup_command()
+    assert r['zone'] == 'INSIDE'
 
 
 def test_panoram_get_os_version(patched_requests_mocker):
