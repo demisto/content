@@ -891,7 +891,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                                                                           mockable_tests_queue)
                 run_test_scenario(mockable_tests_queue, tests_settings, t, proxy, default_test_timeout,
                                   skipped_tests_conf, nightly_integrations, skipped_integrations_conf,
-                                  skipped_integration, is_nightly, skipped_tests, secret_params, failed_playbooks,
+                                  skipped_integration, is_nightly, filtered_tests, skipped_tests, secret_params, failed_playbooks,
                                   playbook_skipped_integration, unmockable_integrations, succeed_playbooks, slack,
                                   circle_ci, build_number, server, build_name, server_numeric_version, demisto_user,
                                   demisto_pass, demisto_api_key, prints_manager, thread_index=thread_index)
@@ -911,7 +911,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                                                                       unmockable_tests_queue)
             run_test_scenario(unmockable_tests_queue, tests_settings, t, proxy, default_test_timeout,
                               skipped_tests_conf, nightly_integrations, skipped_integrations_conf, skipped_integration,
-                              is_nightly, is_filter_configured, filtered_tests, skipped_tests, secret_params,
+                              is_nightly, filtered_tests, skipped_tests, secret_params,
                               failed_playbooks, playbook_skipped_integration, unmockable_integrations,
                               succeed_playbooks, slack, circle_ci, build_number, server, build_name,
                               server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
