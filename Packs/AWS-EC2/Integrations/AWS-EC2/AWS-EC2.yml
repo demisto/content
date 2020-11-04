@@ -6474,7 +6474,7 @@ script:
       description: Unique, case-sensitive identifier that you provide to ensure the
         idempotency of the request.
       type: String
-  dockerimage: demisto/boto3:2.0.0.13130
+  dockerimage: demisto/boto3:2.0.0.13188
   isfetch: false
   longRunning: false
   longRunningPort: false
