@@ -11,20 +11,27 @@ urllib3.disable_warnings()
 class MsGraphClient:
     def __init__(self,
                  app_id: str,
+                 scope: str,
                  app_secret: str,
                  tenant_id: str,
                  verify: bool,
                  proxy: bool):
-        self.ms_client = MicrosoftClient(
-            base_url='https://graph.microsoft.com',
-            auth_id=app_id,
-            enc_key=app_secret,
-            tenant_id=tenant_id,
-            verify=verify,
-            proxy=proxy,
-            self_deployed=True,
-            ok_codes=(200, 201, 204),
-        )
+        client_args = {
+            'base_url': 'https://graph.microsoft.com',
+            'auth_id': app_id,
+            'scope': scope,
+            'enc_key': app_secret,
+            'tenant_id': tenant_id,
+            'verify': verify,
+            'proxy': proxy,
+            'self_deployed': True,
+            'grant_type': CLIENT_CREDENTIALS,
+            'ok_codes': (200, 201, 204),
+        }
+        if not (app_secret and tenant_id):
+            client_args['grant_type'] = DEVICE_CODE
+            client_args['token_retrieval_url'] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+        self.ms_client = MicrosoftClient(**client_args)
 
     def generic_request(
             self,
@@ -45,9 +52,31 @@ class MsGraphClient:
         )
 
 
-def test_module(client: MsGraphClient) -> str:
+def start_auth(client: MsGraphClient) -> CommandResults:
+    user_code = client.ms_client.device_auth_request()
+    return CommandResults(readable_output=f"""### Authorization instructions
+1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
+ and enter the code **{user_code}** to authenticate.
+2. Run the **!msgraph-auth-complete** command in the War Room.""")
+
+
+def complete_auth(client: MsGraphClient):
     client.ms_client.get_access_token()
-    return 'ok'
+    return 'Authorization completed successfully.'
+
+
+def test_module(client: MsGraphClient, params: Dict) -> str:
+    if params.get('app_secret') and params.get('tenant_id'):
+        client.ms_client.get_access_token()
+        return 'ok'
+    else:
+        raise ValueError('The test module is not functional when using Cortex XSOAR Azure app, '
+                         'run the msgraph-test command instead.')
+
+
+def test_command(client: MsGraphClient) -> CommandResults:
+    client.ms_client.get_access_token()
+    return CommandResults(readable_output='```✅ Success!```')
 
 
 def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResults:
@@ -75,9 +104,14 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
+    scope = 'offline_access '
+    if params.get('scope'):
+        scope += params.get('scope')
+
     try:
         client = MsGraphClient(
             app_id=params.get('app_id'),
+            scope=scope,
             app_secret=params.get('app_secret'),
             tenant_id=params.get('tenant_id'),
             verify=not params.get('insecure', False),
@@ -85,10 +119,16 @@ def main() -> None:
         )
 
         if command == 'test-module':
-            result = test_module(client)
+            result = test_module(client, params)
             return_results(result)
         elif command == 'msgraph-generic':
             return_results(generic_command(client, demisto.args()))
+        elif command == 'msgraph-auth-start':
+            return_results(start_auth(client))
+        elif command == 'msgraph-auth-complete':
+            return_results(complete_auth(client))
+        elif command == 'msgraph-test':
+            return_results(test_command(client))
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')

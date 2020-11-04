@@ -3,17 +3,24 @@ commonfields:
   id: Microsoft Graph Generic
   version: -1
 configuration:
-- display: Application ID
+- defaultvalue: 8922dd2d-7539-4711-b839-374f86083959
+  display: Application ID
   name: app_id
   required: true
   type: 0
-- display: Application Secret
+- additionalinfo: A space-separated list of scopes that you want to consent to.
+  display: Scope (Required for using Cortex XSOAR Azure app)
+  hidden: false
+  name: scope
+  required: false
+  type: 0
+- display: Application Secret (Required for using self deployed Azure app)
   name: app_secret
-  required: true
+  required: false
   type: 4
-- display: Tenant ID
+- display: Tenant ID (Required for using self deployed Azure app)
   name: tenant_id
-  required: true
+  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
@@ -24,8 +31,8 @@ configuration:
   required: false
   type: 8
 description: Use the Microsoft Graph Generic integration to interact with Microsoft
-  Graph API. It should be used for APIs that are not implemented in other specific Microsoft
-  Graph integrations.
+  Graph API. It should be used for APIs that are not implemented in other specific
+  Microsoft Graph integrations.
 display: Microsoft Graph Generic
 name: Microsoft Graph Generic
 script:
@@ -40,7 +47,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: GET
-      description: 'The HTTP method used for the request to Microsoft Graph. Possible values are: "GET", "POST", "DELETE", "PUT", or "PATCH".'
+      description: 'The HTTP method used for the request to Microsoft Graph. Possible
+        values are: "GET", "POST", "DELETE", "PUT", or "PATCH".'
       isArray: false
       name: http_method
       predefined:
@@ -54,7 +62,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: v1.0
-      description: 'The version of the Microsoft Graph API to use. Possible values are: "v1.0" or "beta".'
+      description: 'The version of the Microsoft Graph API to use. Possible values
+        are: "v1.0" or "beta".'
       isArray: false
       name: api_version
       predefined:
@@ -79,6 +88,20 @@ script:
     description: Run a Microsoft Graph API query.
     execution: false
     name: msgraph-generic
+  - deprecated: false
+    description: Run this command to start the autorization process and follow the
+      instructions in the command results.
+    execution: false
+    name: msgraph-auth-start
+  - deprecated: false
+    description: Run this command to complete the authorization process. Shoul be
+      used after running the msgraph-auth-start command.
+    execution: false
+    name: msgraph-auth-complete
+  - deprecated: false
+    description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
+    execution: false
+    name: msgraph-test
   dockerimage: demisto/crypto:1.0.0.12807
   feed: false
   isfetch: false

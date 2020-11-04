@@ -1,10 +1,41 @@
 Use the Microsoft Graph Generic integration to interact with Microsoft Graph API. 
 
 The integration should be used for APIs that are not implemented in other specific Microsoft Graph integrations.
-
-The integration supports only Application permission type, and does not support Delegated permission type.
+---
 
 Note: In this documentation, we will use the [Application resource type](https://docs.microsoft.com/en-us/graph/api/resources/application?view=graph-rest-1.0) as an example.
+
+## Authorization
+In order to use the integration, there are 2 application authentication methods available.
+
+Note: Depending on the authentication method that you use, the integration parameters might change.
+
+#### Cortex XSOAR Azure app
+
+In this method, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+
+To configure the integration:
+
+1. The ***Application ID*** integration parameter should be set to `8922dd2d-7539-4711-b839-374f86083959` (the Cortex XSOAR Azure app ID).
+
+2. The ***Scope*** integration parameter should be set according to the requested OAuth2 permissions types to grant access to in Microsoft identity platform, for more details see the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent).
+For example, if we wish to use the [List applications](https://docs.microsoft.com/en-us/graph/api/application-list?view=graph-rest-1.0&tabs=http#permissions) API, we need at least the `Application.Read.All` scope.
+
+3. The ***Application Secret*** and the ***Tenant ID*** integration parameters should be left blank.
+
+4. Run the *msgraph-auth-start* command - you will be prompted to open the page https://microsoft.com/devicelogin and enter the generated code.
+
+5. Run the *msgraph-auth-complete* command
+
+6. Run the *msgraph-test* command to ensure connectivity to Microsoft. 
+ 
+#### Self Deployed Azure app
+
+For more information, refer to the following [article](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application). 
+
+The ***Application Secret*** and the ***Tenant ID*** integration parameters are required for this method.
+
+The integration supports only Application permission type, and does not support Delegated permission type. 
 
 ## Configure the Azure app
 1. [Register the app](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
@@ -23,8 +54,9 @@ Note: In this documentation, we will use the [Application resource type](https:/
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | app_id | Application ID | True |
-| app_secret | Application Secret | True |
-| tenant_id | Tenant ID | True |
+| scope | Scope (Required for using Cortex XSOAR Azure app) | False |
+| app_secret | Application Secret (Required for using self deployed Azure app) | False |
+| tenant_id | Tenant ID (Required for using self deployed Azure app) | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
