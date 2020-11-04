@@ -244,7 +244,7 @@ def get_indicator_owner(indicator_value, owner=None):
 # pylint: disable=E1101
 def get_indicators(indicator_value=None, indicator_type=None, owners=None, rating_threshold=-1, confidence_threshold=-1,
                    freshness=None, associated_groups=False, associated_indicators=False, include_observations=False,
-                   include_tags=False, loopowners=False):
+                   include_tags=False):
     tc = get_client()
     raw_indicators = []
     if owners and owners.find(",") > -1:
@@ -255,7 +255,7 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                 raw_indicators.append(indicator)
     else:
         raw_indicators = get_xindapi(tc, indicator_value, indicator_type, owners)
-        if raw_indicators and loopowners is True:
+        if raw_indicators:
             owners = get_indicator_owner(indicator_value)
             if 'owner' in owners.get('data', {}):
                 for owner in owners['data']['owner']:
@@ -770,11 +770,11 @@ def tc_get_indicator_command():
 
 # @loger
 def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups, associated_indicators,
-                     include_observations, include_tags, indicator_type, loopowners=False):
+                     include_observations, include_tags, indicator_type):
     raw_indicators = get_indicators(indicator, indicator_type=indicator_type, owners=owners, rating_threshold=rating_threshold,
                                     confidence_threshold=confidence_threshold, associated_groups=associated_groups,
                                     associated_indicators=associated_indicators, include_observations=include_observations,
-                                    include_tags=include_tags, loopowners=loopowners)
+                                    include_tags=include_tags)
     ec = []
     indicators = []
     indicator_groups = []
