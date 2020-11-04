@@ -12,19 +12,22 @@ params = {
     'base_url': BASE_URL,
     'username': 'qa-user@respond-software.com',
     'password': 'password',
-    'insecure': True
+    'insecure': True,
+    'mirror_direction': 'Incoming'
 }
 
 
 @pytest.fixture(autouse=True)
-def set_params(mocker):
+def set_mocker(mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'integrationInstance', return_value='respond_test')
+    mocker.patch.object(demisto, 'findUser', return_value={'username': 'user1'})
 
 
 def load_test_data(json_path):
     with open(json_path) as f:
         return json.load(f)
-
+    
 
 def test_fetch_incidents_int():
     from RespondAnalyst import fetch_incidents, RestClient
@@ -87,7 +90,6 @@ def test_get_incident_command(requests_mock):
 
     full_incidents_response = load_test_data(
         'test_data/full_incidents_response_single_full_incident.json')
-
 
     expected_result = load_test_data('test_data/get_incident_response.json')
 
@@ -453,7 +455,7 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
         "error closing incident and/or updating feedback: 'type' object is not subscriptable")
 
 
-def test_get_remote_data_command(mocker, requests_mock):
+def test_get_remote_data_command(requests_mock):
     from RespondAnalyst import get_remote_data_command, RestClient
     full_incidents_response = load_test_data(
         'test_data/full_incidents_response_single_full_incident.json')
@@ -473,7 +475,25 @@ def test_get_remote_data_command(mocker, requests_mock):
     )
 
     args = {'id': 'Tenant 1:1'}
+
+
     res = get_remote_data_command(rest_client, args)
     expected_result = full_incidents_response.get('data').get('fullIncidents')
+    expected_result.append({
+        "Contents": {
+            "closeNotes": "blah blah blah",
+            "closeReason": "Non-Actionable",
+            "dbotIncidentClose": True
+        },
+        "ContentsFormat": "json",
+        "Type": 1
+    })
+    expected_result[0]['feedback'] ={
+        "comments": "blah blah blah",
+        "outcome": "Non-Actionable",
+        "timeUpdated": "1593469076049",
+        "userId": "qa-user@respond-software.com"
+    }
+    # print(json.dumps(expected_result, sort_keys=True, indent=2, separators=(',', ': ')))
     expected_result[0]['id'] = args['id']
     assert res == expected_result
