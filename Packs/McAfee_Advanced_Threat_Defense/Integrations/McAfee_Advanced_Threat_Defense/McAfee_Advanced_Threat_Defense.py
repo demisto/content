@@ -442,7 +442,7 @@ def file_upload(submit_type, sample, vm_profile_list,
         data['data']['url'] = given_url
     else:
         data['data']['url'] = sample
-    #data['data']['url'] = '' if submit_type == 0 else sample
+    # data['data']['url'] = '' if submit_type == 0 else sample
     data['data']['skipTaskId'] = int(skip_task_id) if skip_task_id else None
     data['data']['analyzeAgain'] = analyze_again
     data['data']['xMode'] = x_mode
@@ -463,7 +463,7 @@ def file_upload(submit_type, sample, vm_profile_list,
 
 def file_upload_command():
     args = demisto.args()
-    #submit_type_with_url_arg = ['1', '2', '3']
+    # submit_type_with_url_arg = ['1', '2', '3']
     if ('entryID' in args and 'url' in args and not args['submitType'] == '2') \
             or ('entryID' not in args and 'url' not in args):
         return_error('You must submit one and only one of the following: url, entryID')
