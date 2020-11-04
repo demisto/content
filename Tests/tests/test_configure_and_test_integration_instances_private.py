@@ -75,26 +75,29 @@ def test_find_needed_test_playbook_paths(tmpdir):
     """
 
     sample_test_filter = tmpdir.mkdir("testdir").join("sample_test_filter.txt")
-    sample_test_filter.write("HelloWorldPremium_Scan-Test\nAnotherTest\n")
-    test_playbook_conf = [{
-        "HelloWorldPremium_Scan-Test": {
-            "name": "HelloWorld_Scan-Test",
-            "file_path": "Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml",
-            "fromversion": "5.0.0",
-            "implementing_scripts": [
-                "DeleteContext"
-            ],
-            "implementing_playbooks": [
-                "HelloWorld Scan"
-            ],
-            "pack": "HelloWorld"
+    sample_test_filter.write("HelloWorld_Scan-Test\nAnotherTest\n")
+    test_playbook_conf = [
+        {
+            "HelloWorldPremium_Scan-Test": {
+                "name": "HelloWorld_Scan-Test",
+                "file_path": "Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml",
+                "fromversion": "5.0.0",
+                "implementing_scripts": [
+                    "DeleteContext"
+                ],
+                "implementing_playbooks": [
+                    "HelloWorld Scan"
+                ],
+                "pack": "HelloWorld"
+            }
         }
-    }],
+    ]
+
     file_paths = find_needed_test_playbook_paths(test_playbooks=test_playbook_conf,
                                                  filter_file_path=sample_test_filter,
                                                  path_to_content='.')
     assert len(file_paths) == 51
-    assert file_paths == {'./Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml'}
+    assert './Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml' in file_paths
 
 
 def test_create_install_private_testing_pack(mocker):
