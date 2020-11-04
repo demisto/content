@@ -137,9 +137,9 @@ def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_t
     return m
 
 
-def send_email_reply_to_mailbox(account, item_id, to, body, subject=None, bcc=None, cc=None, html_body=None,
+def send_email_reply_to_mailbox(account, inReplyTo, to, body, subject=None, bcc=None, cc=None, html_body=None,
                                 attachments=[]):
-    item_to_reply_to = account.inbox.get(id=item_id)
+    item_to_reply_to = account.inbox.get(id=inReplyTo)
     if isinstance(item_to_reply_to, ErrorItemNotFound):
         raise Exception(item_to_reply_to)
 
@@ -255,7 +255,7 @@ def process_attachments(attachCIDs="", attachIDs="", attachNames="", manualAttac
     return attachments, attachments_names
 
 
-def reply_email(to, item_id, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
+def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
                 attachNames="", from_mailbox=None, manualAttachObj=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = bcc.split(",") if bcc else None
@@ -266,7 +266,7 @@ def reply_email(to, item_id, body="", subject="", bcc=None, cc=None, htmlBody=No
 
     attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
 
-    send_email_reply_to_mailbox(account, item_id, to, body, subject, bcc, cc, htmlBody, attachments)
+    send_email_reply_to_mailbox(account, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,

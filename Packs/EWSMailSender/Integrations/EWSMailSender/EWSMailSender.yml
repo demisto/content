@@ -83,8 +83,8 @@ script:
     arguments:
     - name: to
       required: true
-      description: A CSV list of email addresses for the 'to' field.
-    - name: item_id
+      description: Item ID to reply to.
+    - name: inReplyTo
       required: true
       description: A CSV list of email addresses for the 'to' field.
     - name: cc
