@@ -13,7 +13,7 @@ from Tests.tests.constants_testing import SAMPLE_TESTPLAYBOOK_CONF
 from Tests.test_content import ParallelPrintsManager
 
 
-TEST_PLAYBOOK_FILE_PATHS = {'/Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml'}
+TEST_PLAYBOOK_FILE_PATHS = {'./Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml'}
 
 
 class ServerMock:
