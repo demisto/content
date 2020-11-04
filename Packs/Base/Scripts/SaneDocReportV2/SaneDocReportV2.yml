@@ -46,7 +46,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/sane-doc-reports:1.0.0.11176
+dockerimage: demisto/sane-doc-reports:1.0.0.13194
 runas: DBotWeakRole
 runonce: false
 tests:
