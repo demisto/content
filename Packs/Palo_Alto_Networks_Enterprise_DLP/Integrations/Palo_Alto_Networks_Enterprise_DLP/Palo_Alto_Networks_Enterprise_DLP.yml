@@ -1,0 +1,62 @@
+category: Network Security
+commonfields:
+  id: Palo Alto Networks Enterprise DLP
+  version: -1
+configuration:
+- additionalinfo: Access token generated from Enterprise DLP UI
+  display: Access Token
+  name: access_token
+  required: true
+  type: 4
+- additionalinfo: Refresh token generated from Enterprise DLP UI
+  display: Refresh Token
+  name: refresh_token
+  required: true
+  type: 4
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Palo Alto Networks Enterprise DLP discovers and protect company data
+  across every data channel and repository. Integrated Enterprise DLP enables data
+  protection and compliance everywhere without complexity.
+display: Palo Alto Networks Enterprise DLP
+image: data:image/png;base64,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
+name: Palo Alto Networks Enterprise DLP
+script:
+  commands:
+  - name: get-dlp-report
+    arguments:
+    - name: report_id
+      required: true
+      description: DLP Report ID
+    - name: fetch_snippets
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Provide snippets in the reports
+      defaultValue: "false"
+    description: Fetches DLP report associated with a Report ID
+    outputs:
+    - contextPath: DLP.Report.DataProfile
+      description: Data Profile Name
+    - contextPath: DLP.Report.DataPatternMatches
+      description: Data Pattern Matches in DLP Report
+  - arguments: []
+    description: For testing connectivity
+    name: test-module
+  dockerimage: demisto/python3:3.8.6.12176
+  isFetchSamples: true
+  longRunning: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
