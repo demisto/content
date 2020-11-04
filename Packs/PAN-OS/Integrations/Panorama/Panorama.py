@@ -4923,9 +4923,51 @@ def panorama_route_lookup(dest_ip: str, virtual_router=None):
         raise Exception("Route not found.")
 
 def panorama_route_lookup_command():
+    """
+    Gets the outgoing interface from the Palo Alto Firewall route table
+    Must be run against a firewall instance
+    """
     dest_ip = demisto.args().get("dest_ip")
     vr = demisto.args().get("virtual_router", None)
     demisto.results(panorama_route_lookup(dest_ip, vr))
+
+def panorama_zone_lookup_command():
+    """
+    Gets the outgoing interface from the Palo Alto Firewall route table, and the list of interfaces
+    comparing the two
+    """
+    dest_ip = demisto.args().get("dest_ip")
+    vr = demisto.args().get("virtual_router", None)
+    route = panorama_route_lookup(dest_ip, vr)
+    if not route:
+        demisto.results(f"Could find a matching route to {dest_ip}.")
+        return
+
+    interface = route["interface"]
+    interfaces = panorama_get_interfaces()
+
+    r = {}
+    if "ifnet" in interfaces["response"]["result"]:
+        for entry in interfaces["response"]["result"]["ifnet"]["entry"]:
+            if entry["name"] == interface:
+                if "zone" in entry:
+                    r = { **entry, **route }
+
+    if r:
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': r,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': f'The IP {dest_ip} is in zone {r["zone"]}',
+            'EntryContext': {"Panorama.ZoneLookup(val.Name == obj.Name)": r}  # add key -> deleted: true
+        })
+        return r
+    else:
+        demisto.results(f"Could not map {dest_ip} to zone.")
+        return {}
+
+
 
 @logger
 def panorama_get_predefined_threats_list(target: str):
@@ -7055,6 +7097,9 @@ def main():
 
         elif demisto.command() == 'panorama-lookup-route':
             panorama_route_lookup_command()
+
+        elif demisto.command() == 'panorama-lookup-zone':
+            panorama_zone_lookup_command()
 
         elif demisto.command() == 'panorama-create-wildfire-best-practice-profile':
             create_wildfire_best_practice_profile_command()

@@ -10,7 +10,8 @@ integration_params = {
 
 mock_demisto_args = {
     'threat_id': "11111",
-    'vulnerability_profile': "mock_vuln_profile"
+    'vulnerability_profile': "mock_vuln_profile",
+    'dest_ip': "10.10.10.10"
 }
 
 
@@ -73,11 +74,11 @@ def patched_requests_mocker(requests_mock):
         <entry>
             <virtual-router>CORE</virtual-router>
             <destination>10.0.0.0/8</destination>
-            <nexthop>192.168.1.1</nexthop>
+            <nexthop>192.168.2.1</nexthop>
             <metric>130</metric>
             <flags>A O1  </flags>
             <age>4072068</age>
-            <interface>ae1.2</interface>
+            <interface>ae1.3</interface>
             <route-table>unicast</route-table>
         </entry>
     </result>
@@ -87,7 +88,82 @@ def patched_requests_mocker(requests_mock):
                                    "&cmd=<show><routing><route></route></routing></show>")
     requests_mock.get(route_path, text=mock_route_xml, status_code=200)
 
+    mock_interface_xml = """
+    <response status="success">
+    <result>
+        <ifnet>
+            <entry>
+                <name>ethernet1/24</name>
+                <zone>MONITOR</zone>
+                <fwd>tap</fwd>
+                <vsys>2</vsys>
+                <dyn-addr/>
+                <addr6/>
+                <tag>0</tag>
+                <ip>N/A</ip>
+                <id>87</id>
+                <addr/>
+            </entry>
+            <entry>
+                <name>ethernet2/1</name>
+                <zone/>
+                <fwd>logfwd</fwd>
+                <vsys>0</vsys>
+                <dyn-addr/>
+                <addr6/>
+                <tag>0</tag>
+                <ip>N/A</ip>
+                <id>128</id>
+                <addr/>
+            </entry>
+            <entry>
+                <name>ae1.1</name>
+                <zone>OUTSIDE</zone>
+                <fwd>vr:CORE</fwd>
+                <dyn-addr/>
+                <addr6/>
+                <tag>3</tag>
+                <ip>192.168.255.2</ip>
+                <id>999</id>
+                <addr/>
+            </entry>
+            <entry>
+                <name>ae1.2</name>
+                <zone>INSIDE</zone>
+                <fwd>vr:CORE</fwd>
+                <dyn-addr/>
+                <addr6/>
+                <tag>34</tag>
+                <ip>192.168.1.2</ip>
+                <id>998</id>
+                <addr/>
+            </entry>
+            <entry>
+                <name>ae1.3</name>
+                <zone>DMZ</zone>
+                <fwd>vr:CORE</fwd>
+                <dyn-addr/>
+                <addr6/>
+                <tag>34</tag>
+                <ip>192.168.2.2</ip>
+                <id>997</id>
+                <addr/>
+            </entry>
+        </ifnet>
+    </result>
+    </response>
+    """
+    interface_path = "{}{}{}{}".format(base_url, "?type=op&key=", integration_params['key'],
+                                       "&cmd=<show><interface>all</interface></show>")
+    requests_mock.get(interface_path, text=mock_interface_xml, status_code=200)
+
     return requests_mock
+
+
+def test_panorama_get_interfaces(patched_requests_mocker):
+    from Panorama import panorama_get_interfaces
+    r = panorama_get_interfaces()
+    assert len(r['response']['result']['ifnet']['entry']) == 5
 
 
 def test_panorama_get_routes(patched_requests_mocker):
@@ -95,10 +171,18 @@ def test_panorama_get_routes(patched_requests_mocker):
     r = panorama_get_routes()
     assert len(r['response']['result']['entry']) == 3
 
+
 def test_panorama_route_lookup(patched_requests_mocker):
     from Panorama import panorama_route_lookup
     r = panorama_route_lookup("10.10.10.10")
     assert r['destination'] == '10.10.0.0/16'
+
+
+def test_panorama_zone_lookup(patched_requests_mocker):
+    from Panorama import panorama_zone_lookup
+    r = panorama_zone_lookup()
+    print(r)
+
 
 def test_panoram_get_os_version(patched_requests_mocker):
     from Panorama import get_pan_os_version

@@ -4389,6 +4389,22 @@ script:
     description: Lookup a given IP address in the Firewall routing table
     execution: false
     name: panorama-lookup-route
+  - arguments:
+    - default: false
+      description: Destination IP to lookup
+      isArray: false
+      name: dest_ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Given an IP address, returns the matching zone based on the device
+      routing table
+    execution: false
+    name: panorama-lookup-zone
+    outputs:
+    - contextPath: Panorama.ZoneLookup
+      description: Zone, route, and interface information.
+      type: Unknown
   dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: false
