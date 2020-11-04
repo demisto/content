@@ -3084,10 +3084,6 @@
             "playbookID": "Field polling test",
             "timeout": 600,
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "xMatters",
-            "playbookID": "xMatters-Test"
         }
     ],
     "skipped_tests": {

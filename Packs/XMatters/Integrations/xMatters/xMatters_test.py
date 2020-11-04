@@ -297,14 +297,25 @@ def test_fetch_incidents(requests_mock):
 
     requests_mock.register_uri('GET', hostname + '/api/xm/1/events?priority=HIGH', json=mock_response)
 
-    # last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
     next_run, incidents = fetch_incidents(
         client=client,
         priority="HIGH",
-        last_run={},
-        max_fetch=4,
-        alert_status="ACTIVE",
         first_fetch_time=1594250101
     )
 
     assert len(incidents) == 2
+
+    mock_response = {"count": 0,
+                     "total": 0,
+                     "data": [],
+                     "links": {"self": "/api/xm/1/events?limit=100&offset=0&status=ACTIVE"}}
+
+    requests_mock.register_uri('GET', hostname + '/api/xm/1/events?status=ACTIVE', json=mock_response)
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        alert_status="ACTIVE",
+        first_fetch_time=1594250101
+    )
+
+    assert len(incidents) == 0

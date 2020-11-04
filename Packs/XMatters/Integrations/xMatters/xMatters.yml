@@ -42,12 +42,13 @@ configuration:
   required: true
   options:
   - events
-- display: Fetch alerts with status (ACTIVE, SUSPENDED)
+- display: Fetch alerts with status (ACTIVE, TERMINATED, SUSPENDED)
   name: status
   type: 15
   required: false
   options:
   - ACTIVE
+  - TERMINATED
   - SUSPENDED
 - display: Priority of events to fetch
   name: priority

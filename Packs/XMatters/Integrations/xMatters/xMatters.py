@@ -293,8 +293,8 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 
 
 def fetch_incidents(client: Client,
-                    last_run: Dict[str, int],
-                    max_fetch: int,
+                    max_fetch: int = 100,
+                    last_run: Dict[str, int] = {},
                     first_fetch_time: Optional[int] = None,
                     alert_status: Optional[str] = None,
                     priority: Optional[str] = None,
