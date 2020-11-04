@@ -4518,9 +4518,13 @@ def build_policy_match_query(application=None, category=None,
 def panorama_security_policy_match(application=None, category=None, destination=None,
                                    destination_port=None, from_=None, to_=None,
                                    protocol=None, source=None, source_user=None):
+
     params = {'type': 'op', 'key': API_KEY,
               'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
+
+    if VSYS:
+        params["vsys"] = VSYS
 
     result = http_request(
         URL,
