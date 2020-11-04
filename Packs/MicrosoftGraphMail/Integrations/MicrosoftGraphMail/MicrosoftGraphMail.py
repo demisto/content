@@ -645,10 +645,12 @@ class MsGraphClient:
         """
         target_modified_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
         suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
+        # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
+        # API response, (looks like a bug in graph API).
         params = {
             "$filter": f"receivedDateTime gt {target_modified_time}",
             "$orderby": "receivedDateTime asc",
-            "$select": "*",
+            "select": "*",
             "$top": self._emails_fetch_limit
         }
 
