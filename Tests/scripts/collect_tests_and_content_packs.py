@@ -1246,6 +1246,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
+    print(f"tests before filter: {tests}")
     tests = filter_tests(tests, packs_to_install, id_set)
 
     return tests, packs_to_install
@@ -1358,6 +1359,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              minimum_server_version)
     tests_string = '\n'.join(tests)
+    print(f"test_string: {tests_string}")
     packs_to_install_string = '\n'.join(packs_to_install)
 
     if not skip_save:

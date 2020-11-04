@@ -1,7 +1,7 @@
 import copy
 import json
 import os
-
+import Tests
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
 from ruamel.yaml import YAML
 
@@ -196,12 +196,13 @@ class TestUtils(object):
                 os.remove(file_path)
 
 
-class TestChangedPlaybook:
+class TestChangedPlaybook():
     TEST_ID = 'Calculate Severity - Standard - Test'
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack', return_value=True)
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
