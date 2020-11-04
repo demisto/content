@@ -30,6 +30,7 @@ class Client(BaseClient):
 
     def __init__(self, url: str, credentials: Dict, verify: bool, proxy: bool, adom: str):
         super().__init__(base_url=url.rstrip('/'), verify=verify, proxy=proxy, ok_codes=(200, 204))
+        handle_proxy()
         self.username = credentials["identifier"]
         self.password = credentials["password"]
         self.session_token = self.get_session_token()
