@@ -515,7 +515,6 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
 
 
 def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
-    test_ids.append(RUN_ALL_TESTS_FORMAT)
     # Search for tests section
     for file_path in modified_files:
         tests_from_file = get_tests(file_path)
@@ -1331,11 +1330,8 @@ def changed_files_to_string(changed_files):
 def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
-        # all_tests = set(CONF.get_test_playbook_ids())
-        # adding "Run all tests" which is required in test_content.extract_filtered_tests() for the nightly
         packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
         tests = filter_tests(set(CONF.get_test_playbook_ids()), packs_to_install, id_set=deepcopy(ID_SET))
-        tests.add(RUN_ALL_TESTS_FORMAT)
     else:
         branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)

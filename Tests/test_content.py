@@ -23,6 +23,7 @@ import urllib3
 import requests
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
+
 try:
     """
     Those dual-imports are required as Slack updated their sdk and it breaks BC.
@@ -449,7 +450,8 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
              integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message, test_options,
              slack, circle_ci, build_number, server_url, build_name, prints_manager, is_ami=True, thread_index=0):
     start_message = f'------ Test {test_message} start ------'
-    client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
+    client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass,
+                                      verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
@@ -619,9 +621,8 @@ def extract_filtered_tests(prints_manager):
         prints_manager.execute_thread_prints(0)
         filtered_tests = [line.strip('\n') for line in filtered_tests]
         is_filter_configured = bool(filtered_tests)
-        run_all = RUN_ALL_TESTS_FORMAT in filtered_tests
 
-    return filtered_tests, is_filter_configured, run_all
+    return filtered_tests, is_filter_configured
 
 
 def load_conf_files(conf_path, secret_conf_path):
@@ -637,10 +638,9 @@ def load_conf_files(conf_path, secret_conf_path):
 
 
 def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf,
-                      nightly_integrations, skipped_integrations_conf, skipped_integration, is_nightly,
-                      run_all_tests, is_filter_configured, filtered_tests, skipped_tests, secret_params,
-                      failed_playbooks, playbook_skipped_integration, unmockable_integrations,
-                      succeed_playbooks, slack, circle_ci, build_number, server, build_name,
+                      nightly_integrations, skipped_integrations_conf, skipped_integration, is_nightly, filtered_tests,
+                      skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
+                      unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
                       server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
                       prints_manager, thread_index=0, is_ami=True):
     playbook_id = t['playbookID']
@@ -672,9 +672,8 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
         prints_manager.add_print_job('{} is not in the filtered_tests list'.format(playbook_id), print, thread_index)
         prints_manager.add_print_job('====================== \n\n\n\n\n', print, thread_index)
 
-    skip_nightly_test = (nightly_test or is_nightly_integration) and not is_nightly
-
     # Skip nightly test
+    skip_nightly_test = (nightly_test or is_nightly_integration) and not is_nightly
     if skip_nightly_test:
         prints_manager.add_print_job(f'\n------ Test {test_message} start ------', print, thread_index,
                                      include_timestamp=True)
@@ -683,12 +682,11 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
                                      include_timestamp=True)
         return
 
-    if not run_all_tests:
-        # Skip filtered test
-        if is_filter_configured and playbook_id not in filtered_tests:
-            return
+    # Skip tests that are missing from filtered list
+    if filtered_tests and playbook_id not in filtered_tests:
+        return
 
-    # Skip bad test
+    # Skip test that appear in the skip section/
     if playbook_id in skipped_tests_conf:
         skipped_tests.add(f'{playbook_id} - reason: {skipped_tests_conf[playbook_id]}')
         return
@@ -850,9 +848,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests(prints_manager)
-    if is_filter_configured and not run_all_tests:
-        is_nightly = True
+    filtered_tests, is_filter_configured = extract_filtered_tests(prints_manager)
 
     if not tests or len(tests) == 0:
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
@@ -901,13 +897,13 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                                                                           t,
                                                                                           thread_index,
                                                                                           mockable_tests_queue)
-                run_test_scenario(mockable_tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf,
+                run_test_scenario(mockable_tests_queue, tests_settings, t, proxy, default_test_timeout,
+                                  skipped_tests_conf,
                                   nightly_integrations, skipped_integrations_conf, skipped_integration, is_nightly,
-                                  run_all_tests, is_filter_configured, filtered_tests,
-                                  skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
-                                  unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                                  build_name, server_numeric_version, demisto_user, demisto_pass,
-                                  demisto_api_key, prints_manager, thread_index=thread_index)
+                                  filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                                  playbook_skipped_integration, unmockable_integrations, succeed_playbooks, slack,
+                                  circle_ci, build_number, server, build_name, server_numeric_version, demisto_user,
+                                  demisto_pass, demisto_api_key, prints_manager, thread_index=thread_index)
             proxy.configure_proxy_in_demisto(username=demisto_user, password=demisto_pass, server=server)
 
             # reset containers after clearing the proxy server configuration
@@ -1277,7 +1273,8 @@ def safe_lock_integrations(test_timeout: int,
     prints_manager.add_print_job(print_msg, print, thread_index, include_timestamp=True)
     try:
         storage_client = storage.Client()
-        locked = lock_integrations(filtered_integrations_details, test_timeout, storage_client, prints_manager, thread_index)
+        locked = lock_integrations(filtered_integrations_details, test_timeout, storage_client, prints_manager,
+                                   thread_index)
     except Exception as e:
         prints_manager.add_print_job(f'attempt to lock integration failed for unknown reason.\nError: {e}',
                                      print_warning,
