@@ -167,10 +167,13 @@ class MsGraphClient:
     CONTEXT_SENT_EMAIL_PATH = 'MicrosoftGraph.Email'
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit):
+                 ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit,
+                 auth_code, redirect_uri):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token)
+                                         proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
+                                         auth_code=auth_code, redirect_uri=redirect_uri,
+                                         grant_type=AUTHORIZATION_CODE)
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
@@ -820,7 +823,8 @@ def main():
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                            ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                           emails_fetch_limit)
+                           emails_fetch_limit, auth_code=params.get('auth_code', ''),
+                           redirect_uri=params.get('redirect_uri', ''))
     try:
         command = demisto.command()
         args = prepare_args(command, demisto.args())
@@ -852,7 +856,6 @@ def main():
 
 
 from MicrosoftApiModule import *  # noqa: E402
-
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
