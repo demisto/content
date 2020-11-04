@@ -197,6 +197,16 @@ def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
         except Exception as err:
             if 'Error in API call [404] - Not Found' in str(err):
                 response = {}
+                dbot_score = Common.DBotScore(
+                    indicator=sha256,
+                    indicator_type=DBotScoreType.FILE,
+                    integration_name=client.name,
+                    score=Common.DBotScore.NONE
+                )
+                file = Common.File(
+                    sha256=sha256,
+                    dbot_score=dbot_score
+                )
                 readable_output = f"SHA256 {sha256} Antivirus reputation is unknown to Threat Vault."
             else:
                 raise Exception(err)
