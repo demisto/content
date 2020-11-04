@@ -4,11 +4,6 @@ import subprocess
 import os
 import logging
 
-# disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
-logging.getLogger("urllib3").setLevel(logging.ERROR)
-
-RETURN_ERROR_TARGET = 'rasterize.return_error'
-
 
 def test_find_zombie_processes(mocker):
     ps_output = '''   PID  PPID S CMD
