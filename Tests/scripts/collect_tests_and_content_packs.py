@@ -252,8 +252,6 @@ def get_modified_files_for_testing(files_string):
                 dir_path = os.path.dirname(file_path)
                 file_path = glob.glob(dir_path + "/*.yml")[0]
 
-            print(f"file_path: {file_path}")
-
             # Common scripts (globally used so must run all tests)
             if checked_type(file_path, COMMON_YML_LIST):
                 changed_common.append(file_path)
@@ -279,7 +277,6 @@ def get_modified_files_for_testing(files_string):
             # conf.json
             elif re.match(CONF_PATH, file_path, re.IGNORECASE):
                 is_conf_json = True
-                print(f"is_conf_json: {is_conf_json}")
 
             # docs and test files do not influence integration tests filtering
             elif checked_type(file_path, FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES):
@@ -1156,9 +1153,10 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: json):
         if not should_test_content_pack({id_set_test_playbook_pack_name}):
             tests_that_should_not_be_tested.add(test)
 
-    logging.info('The following test playbooks are not supported and will not be tested: \n{} '.format(
-        '\n'.join(tests_that_should_not_be_tested)))
-    tests.difference_update(tests_that_should_not_be_tested)
+    if tests_that_should_not_be_tested:
+        logging.info('The following test playbooks are not supported and will not be tested: \n{} '.format(
+            '\n'.join(tests_that_should_not_be_tested)))
+        tests.difference_update(tests_that_should_not_be_tested)
     return tests
 
 
@@ -1234,7 +1232,6 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
-    print(f"tests before filter: {tests}")
     tests = filter_tests(tests, packs_to_install, id_set)
     if not tests:
         rand = random.Random(branch_name)
@@ -1362,7 +1359,6 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              minimum_server_version)
     tests_string = '\n'.join(tests)
-    print(f"test_string: {tests_string}")
     packs_to_install_string = '\n'.join(packs_to_install)
 
     if not skip_save:
