@@ -1,7 +1,7 @@
 {
     "id": "XM Cyber Technique",
     "version": -1,
-    "fromVersion": "6.0.0",
+    "vcShouldIgnore": false,
     "locked": false,
     "name": "XM Cyber Technique",
     "prevName": "XM Cyber Technique",
@@ -17,9 +17,8 @@
     "readonly": false,
     "default": false,
     "autorun": false,
-    "preProcessingScript": "",
-    "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
-    "layout": "XM_Cyber_Technique"
-}
+    "layout": "XM_Cyber_Technique",
+    "fromVersion": "6.0.0"
+   }

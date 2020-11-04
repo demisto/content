@@ -1,7 +1,7 @@
 {
     "id": "XM Cyber Security Score",
     "version": -1,
-    "fromVersion": "6.0.0",
+    "vcShouldIgnore": false,
     "locked": false,
     "name": "XM Cyber Security Score",
     "prevName": "XM Cyber Security Score",
@@ -18,9 +18,8 @@
     "readonly": false,
     "default": false,
     "autorun": false,
-    "preProcessingScript": "",
-    "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
-    "layout": "XM_Cyber_Security_Score"
-}
+    "layout": "XM_Cyber_Security_Score",
+    "fromVersion": "6.0.0"
+   }
