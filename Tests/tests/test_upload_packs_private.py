@@ -51,7 +51,11 @@ class TestPrivatePacks:
 
         private_packs = upload_packs_private.get_private_packs('path', )
 
-        assert private_packs == [{'id': 'ImpossibleTraveler', 'price': 100}]
+        assert private_packs == [{'id': 'ImpossibleTraveler',
+                                  'price': 100,
+                                  'vendorId': None,
+                                  'vendorName': None
+                                  }]
 
     def test_get_private_packs_empty(self, mocker):
         from Tests.private_build import upload_packs_private
