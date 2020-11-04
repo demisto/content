@@ -505,23 +505,10 @@ def fetch_incidents_for_tenant(rest_client, respond_tenant_id, external_tenant_i
         return []
     return raw_incidents
 
-def get_incident_feedback(raw_incident):
-    if raw_incident.get('feedback') is not None:
-        return {
-            'timeUpdated': raw_incident.get('feedback').get('timeGiven'),
-            'userId': raw_incident.get('feedback').get('userId'),
-            'outcome': RESPOND_FEEDBACK_STATUS.get(raw_incident.get('feedback').get('newStatus')),
-            'comments': raw_incident.get('feedback').get('optionalText'),
-        }
-    else:
-        return None
 
 def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
-    # print(raw_incident)
     # convert graphql response to standardized JSON output for an incident
-    # only format feedback if exists
-    standardized_feedback = get_incident_feedback(raw_incident)
-    standardized_incident = {
+    formatted_incident = {
         'incidentId': raw_incident.get('id'),
         'timeGenerated': timestamp_to_datestring(raw_incident.get('dateCreated'),
                                                  TIME_FORMAT + 'Z'),
@@ -543,9 +530,8 @@ def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
         'assetCriticality': raw_incident.get('assetClass'),
         'internalSystemsCount': raw_incident.get('internalSystemsCount'),
         'internalSystems': raw_incident.get('internalSystems'),
-        'escalationReasons': raw_incident.get('tags'),  # todo only get the labels with a mapping
+        'escalationReasons': raw_incident.get('tags'),
         'assignedUsers': raw_incident.get('userIds'),
-        'feedback': standardized_feedback,
         'tenantIdRespond': respond_tenant_id,
         'tenantId': external_tenant_id,
         'respondRemoteId': f'{external_tenant_id}:{raw_incident.get("id")}',
@@ -553,21 +539,16 @@ def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
         'dbotMirrorInstance': demisto.integrationInstance()
     }
     if len(raw_incident.get('userIds')) > 0:
-        standardized_incident['owner'] = demisto.findUser(email=raw_incident.get('userIds')[0]).get('username')
-    # add tenant ids and incident URLs to incidents (cannot get them with gql query)
-    raw_incident['tenantId'] = external_tenant_id
-    raw_incident['incidentURL'] = BASE_URL + '/secure/incidents/' + raw_incident[
-        'id'] + '?tenantId=' + respond_tenant_id
-    raw_incident['incidentCloseURL'] = BASE_URL + '/secure/incidents/feedback/' + raw_incident[
-        'id'] + '?tenantId=' + respond_tenant_id
+        formatted_incident['owner'] = demisto.findUser(email=raw_incident.get('userIds')[0]).get('username')
 
-    occurred = standardized_incident.get('timeGenerated')
-    new_incident = {
-        'name': external_tenant_id + ': ' + raw_incident['id'],  # or maybe this should be title?
-        'occurred': occurred,
-        'rawJSON': json.dumps(standardized_incident)
-    }
-    return new_incident
+    if raw_incident.get('feedback') is not None:
+        formatted_incident['feedback'] = {
+            'timeUpdated': raw_incident.get('feedback').get('timeGiven'),
+            'userId': raw_incident.get('feedback').get('userId'),
+            'outcome': RESPOND_FEEDBACK_STATUS.get(raw_incident.get('feedback').get('newStatus')),
+            'comments': raw_incident.get('feedback').get('optionalText')
+        }
+    return formatted_incident
 
 
 def get_respond_tenant_from_mapping_with_external(tenant_mappings, external_tenant_id):
@@ -619,6 +600,24 @@ def get_user_id_from_email(email, users):
             return user.get('userId')
 
     raise Exception('no user found with email ' + email)
+
+def get_formatted_incident(rest_client, args):
+    external_tenant_id = args.get('tenant_id')
+    user_tenant_mappings = rest_client.get_tenant_mappings()
+
+    if external_tenant_id is None:
+        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
+            user_tenant_mappings)
+    else:
+        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
+                                                                          external_tenant_id)
+
+    incident_id = int(args['incident_id'])
+
+    raw_incident = \
+        rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
+
+    return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
 
 
 def get_tenant_ids(rest_client, args):
@@ -734,19 +733,15 @@ def close_incident_command(rest_client, args):
         demisto.error('error closing incident and/or updating feedback: ' + str(err))
         raise Exception('error closing incident and/or updating feedback: ' + str(err))
 
-
 def get_incident_command(rest_client, args):
-    respond_tenant_id, external_tenant_id = get_tenant_ids(rest_client, args)
-
-    incident_id = int(args['incident_id'])
-
-    raw_incident = \
-        rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
-
-    if format:
-        return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
-    else:
-        return raw_incident
+    external_tenant_id = args.get('tenant_id')
+    formatted_incident = get_formatted_incident(rest_client, args)
+    new_incident = {
+        'name': external_tenant_id + ': ' + formatted_incident['incidentId'],
+        'occurred': formatted_incident.get('timeGenerated'),
+        'rawJSON': json.dumps(formatted_incident)
+    }
+    return new_incident
 
 def get_escalations_command(rest_client, args):
     start = datetime.now().timestamp()
@@ -801,7 +796,7 @@ def get_remote_data_command(rest_client, args):
     args['incident_id'] = args.get('id').split(':')[1]
     entries = []
     try:
-        updated_incident = get_incident_command(rest_client, args, False)
+        updated_incident = get_formatted_incident(rest_client, args)
         updated_incident['id'] = args.get('id')
         demisto.debug(f"Respond incident {args.get('id')}\n"
                       f"update time:   {arg_to_timestamp(args.get('last_update'), 'last_update')}")
@@ -811,7 +806,7 @@ def get_remote_data_command(rest_client, args):
             f'Error message: {str(e)}')
         raise e
 
-    updated_incident['feedback'] = get_incident_feedback(updated_incident)
+    # updated_incident['feedback'] = get_incident_feedback(updated_incident)
     demisto.debug(f'incident feedback: {updated_incident["feedback"]}')
 
     if updated_incident['feedback'] is not None:
@@ -828,6 +823,8 @@ def get_remote_data_command(rest_client, args):
         entries.append(closing_entry)
 
     demisto.debug(f'entries: {closing_entry} for incident {args["incident_id"]}')
+    demisto.debug(f'update incident: {updated_incident} for incident {args["incident_id"]}')
+
     return [updated_incident] + entries
 
 
@@ -918,8 +915,13 @@ def fetch_incidents(rest_client, last_run=dict()):
         raw_incidents.sort(key=lambda x: x.get('dateCreated'))
         for raw_incident in raw_incidents:
             try:
-                incidents.append(
-                    format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id))
+                formatted_incident = format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
+                new_incident = {
+                    'name': external_tenant_id + ': ' + raw_incident['id'],
+                    'occurred': formatted_incident.get('timeGenerated'),
+                    'rawJSON': json.dumps(formatted_incident)
+                }
+                incidents.append(new_incident)
                 if latest_time is None or raw_incident['dateCreated'] > latest_time:
                     latest_time = raw_incident['dateCreated']
             except Exception as err:
@@ -980,7 +982,6 @@ def main():
             return_results(update_remote_system_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'get-remote-data':
-            demisto.debug('remote data called')
             return_results(get_remote_data_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'respond-get-escalations':
