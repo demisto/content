@@ -139,7 +139,7 @@ tasks:
       version: -1
       name: Get Entity ID
       description: Return data on Entity by IP or Hostname from XM Cyber
-      script: XMCyber|||xmcyber-entity-get
+      script: '|||xmcyber-entity-get'
       type: regular
       iscommand: true
       brand: XMCyber
@@ -265,7 +265,7 @@ tasks:
       version: -1
       name: Is XM Cyber Valid?
       description: Check if current XM version supports Demisto integration
-      script: XMCyber|||xmcyber-version-supported
+      script: '|||xmcyber-version-supported'
       type: regular
       iscommand: true
       brand: XMCyber

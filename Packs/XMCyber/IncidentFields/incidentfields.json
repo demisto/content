@@ -2,7 +2,8 @@
 	"incidentFields": [
 		{
 			"id": "incident_criticalassetsatrisk",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-26T15:47:48.638587519Z",
 			"sortValues": null,
 			"packID": "",
@@ -51,7 +52,8 @@
 		},
 		{
 			"id": "incident_techniqueadvices",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-27T07:36:08.425425618Z",
 			"sortValues": null,
 			"packID": "",
@@ -127,7 +129,8 @@
 		},
 		{
 			"id": "incident_techniqueaffectedassets",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-26T15:50:15.639787271Z",
 			"sortValues": null,
 			"packID": "",
@@ -176,7 +179,8 @@
 		},
 		{
 			"id": "incident_techniqueaffectedassetstrend",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-29T07:04:02.929771107Z",
 			"sortValues": null,
 			"packID": "",
@@ -225,7 +229,8 @@
 		},
 		{
 			"id": "incident_techniquechokepoints",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-26T16:38:08.248882555Z",
 			"sortValues": null,
 			"packID": "",
@@ -274,7 +279,8 @@
 		},
 		{
 			"id": "incident_techniquemitre",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-26T16:28:47.957122695Z",
 			"sortValues": null,
 			"packID": "",
@@ -350,7 +356,8 @@
 		},
 		{
 			"id": "incident_techniquename",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-26T15:44:53.870145028Z",
 			"sortValues": null,
 			"packID": "",
@@ -399,7 +406,8 @@
 		},
 		{
 			"id": "incident_xmcyberaffectedentities",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-15T18:21:24.357588322Z",
 			"sortValues": null,
 			"packID": "",
@@ -450,7 +458,8 @@
 		},
 		{
 			"id": "incident_xmcyberaffectedentitieslist",
-			"version": 2,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T22:11:59.674831946Z",
 			"sortValues": null,
 			"packID": "",
@@ -528,7 +537,8 @@
 		},
 		{
 			"id": "incident_xmcyberaveragecomplexity",
-			"version": 2,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-15T17:57:17.331441535Z",
 			"sortValues": null,
 			"packID": "",
@@ -579,7 +589,8 @@
 		},
 		{
 			"id": "incident_xmcyberaveragecomplexitylevel",
-			"version": 2,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-15T17:57:31.945846658Z",
 			"sortValues": null,
 			"packID": "",
@@ -630,7 +641,8 @@
 		},
 		{
 			"id": "incident_xmcybercompromisingtechniques",
-			"version": 2,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T20:55:42.645738146Z",
 			"sortValues": null,
 			"packID": "",
@@ -708,7 +720,8 @@
 		},
 		{
 			"id": "incident_xmcybercriticalasset",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T20:59:26.189346971Z",
 			"sortValues": null,
 			"packID": "",
@@ -759,7 +772,8 @@
 		},
 		{
 			"id": "incident_xmcybercriticalassetsatrisk",
-			"version": 2,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-15T17:57:43.305987924Z",
 			"sortValues": null,
 			"packID": "",
@@ -810,7 +824,8 @@
 		},
 		{
 			"id": "incident_xmcybercriticalassetsatrisklevel",
-			"version": 2,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-15T17:57:55.562649578Z",
 			"sortValues": null,
 			"packID": "",
@@ -861,7 +876,8 @@
 		},
 		{
 			"id": "incident_xmcybercriticalassetsatrisklist",
-			"version": 2,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T22:31:23.584951248Z",
 			"sortValues": null,
 			"packID": "",
@@ -951,7 +967,8 @@
 		},
 		{
 			"id": "incident_xmcyberdashboard",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-25T16:17:56.419560765Z",
 			"sortValues": null,
 			"packID": "",
@@ -1000,7 +1017,8 @@
 		},
 		{
 			"id": "incident_xmcyberdisplayname",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-27T18:11:33.813524494Z",
 			"sortValues": null,
 			"packID": "",
@@ -1053,7 +1071,8 @@
 		},
 		{
 			"id": "incident_xmcyberentityid",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T20:31:31.827681046Z",
 			"sortValues": null,
 			"packID": "",
@@ -1104,7 +1123,8 @@
 		},
 		{
 			"id": "incident_xmcyberentityreport",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-22T13:48:41.735004377Z",
 			"sortValues": null,
 			"packID": "",
@@ -1155,7 +1175,8 @@
 		},
 		{
 			"id": "incident_xmcyberentitytype",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T22:39:19.37465031Z",
 			"sortValues": null,
 			"packID": "",
@@ -1206,7 +1227,8 @@
 		},
 		{
 			"id": "incident_xmcyberipaddress",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T22:37:31.091239488Z",
 			"sortValues": null,
 			"packID": "",
@@ -1257,7 +1279,8 @@
 		},
 		{
 			"id": "incident_xmcybertechnique",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-25T16:25:14.951273619Z",
 			"sortValues": null,
 			"packID": "",
@@ -1306,7 +1329,8 @@
 		},
 		{
 			"id": "incident_xmcybertechniquebestpractice",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-25T11:26:21.045708682Z",
 			"sortValues": null,
 			"packID": "",
@@ -1355,7 +1379,8 @@
 		},
 		{
 			"id": "incident_xmcybertechniquedescription",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-25T11:09:49.214226268Z",
 			"sortValues": null,
 			"packID": "",
@@ -1404,7 +1429,8 @@
 		},
 		{
 			"id": "incident_xmcybertechqniuechoke",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-25T11:28:17.814519819Z",
 			"sortValues": null,
 			"packID": "",
@@ -1453,7 +1479,8 @@
 		},
 		{
 			"id": "incident_xmsecurityscore",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-29T16:06:20.317541052Z",
 			"sortValues": null,
 			"packID": "",
@@ -1502,7 +1529,8 @@
 		},
 		{
 			"id": "incident_xmsecurityscoregrade",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-29T16:06:36.459050447Z",
 			"sortValues": null,
 			"packID": "",
@@ -1551,7 +1579,8 @@
 		},
 		{
 			"id": "incident_xmsecurityscoretrend",
-			"version": 1,
+			"version": -1,
+			"fromVersion": "6.0.0",
 			"modified": "2020-10-29T16:06:51.576776637Z",
 			"sortValues": null,
 			"packID": "",

@@ -2,7 +2,7 @@ id: XM_Cyber_Risk_Score_To_Jira
 version: -1
 name: XM_Cyber_Risk_Score_To_Jira
 description: XM cyber generates jira ticket based on the security score
-fromversion: 5.0.0
+fromversion: 6.0.0
 starttaskid: "0"
 tasks:
   "0":

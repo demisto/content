@@ -5,15 +5,15 @@ name: XMCyber
 display: XM Cyber
 category: Data Enrichment & Threat Intelligence
 description: XMCyber continuously finds attack vectors to critical assets. This integration fetches events (incidents) on changes in the overall risk score, risk to assets, or impacting attack techniques. Additionally incidents are enriched with incoming attack vectors to the incident's endpoints, and critical assets at risk form the incident.
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests
 configuration:
 - display: API Key
   name: apikey
   defaultvalue: ""
-  type: 0
-  required: true
+  type: 8
+  required: false
 - display: URL
   name: url
   defaultvalue: ""
@@ -61,11 +61,11 @@ script:
       - name: entityId
         default: false
         description: Entity ID
-        isArray: false
+        isArray: true
         required: true
         secret: false
     outputs:
-      - contextPath: entityId
+      - contextPath: XMCyber.entityId
         description: XMCyber Entity ID
         type: String
       - contextPath: XMCyber.criticalAssetsAtRiskList.name
@@ -90,11 +90,11 @@ script:
       - name: entityId
         default: false
         description: Entity ID
-        isArray: false
+        isArray: true
         required: true
         secret: false
     outputs:
-      - contextPath: entityId
+      - contextPath: XMCyber.entityId
         description: XMCyber Entity ID
         type: String
       - contextPath: XMCyber.entitiesAtRiskList.name
@@ -127,37 +127,37 @@ script:
         isArray: true
         required: false
     outputs:
-      - contextPath: entityId
+      - contextPath: XMCyber.entityId
         description: XMCyber Entity ID
         type: String
-      - contextPath: name
+      - contextPath: XMCyber.name
         description: Entity Name
         type: String
-      - contextPath: isAsset
+      - contextPath: XMCyber.isAsset
         description: Is Entity a Critical Asset
         type: Boolean
-      - contextPath: affectedEntities
+      - contextPath: XMCyber.affectedEntities
         description: Number of unique entities at risk from this entity
         type: Number
-      - contextPath: averageComplexity
+      - contextPath: XMCyber.averageComplexity
         description: Average complexity to compromise this entity
         type: Number
-      - contextPath: criticalAssetsAtRisk
+      - contextPath: XMCyber.criticalAssetsAtRisk
         description: Number of unique critical assets at risk from this entity
         type: Number
-      - contextPath: averageComplexityLevel
+      - contextPath: XMCyber.averageComplexityLevel
         description: Level of the average complexity to compromise this entity
         type: String
-      - contextPath: compromisingTechniques.name
+      - contextPath: XMCyber.compromisingTechniques.name
         description: Technique compromising this entity
         type: String
-      - contextPath: compromisingTechniques.count
+      - contextPath: XMCyber.compromisingTechniques.count
         description: Number of vectors with this technique compromising this entity
         type: Number
-      - contextPath: entityType
+      - contextPath: XMCyber.entityType
         description: Entity Type
         type: String
-      - contextPath: entityReport
+      - contextPath: XMCyber.entityReport
         description: Link to the Entity Report
         type: String
       - contextPath: DBotScore.Indicator
@@ -195,37 +195,37 @@ script:
         required: false
         default: true
     outputs:
-      - contextPath: entityId
+      - contextPath: XMCyber.entityId
         description: XMCyber Entity ID
         type: String
-      - contextPath: name
+      - contextPath: XMCyber.name
         description: Entity Name
         type: String
-      - contextPath: isAsset
+      - contextPath: XMCyber.isAsset
         description: Is Entity a Critical Asset
         type: Boolean
-      - contextPath: affectedEntities
+      - contextPath: XMCyber.affectedEntities
         description: Number of unique entities at risk from this entity
         type: Number
-      - contextPath: averageComplexity
+      - contextPath: XMCyber.averageComplexity
         description: Average complexity to compromise this entity
         type: Number
-      - contextPath: criticalAssetsAtRisk
+      - contextPath: XMCyber.criticalAssetsAtRisk
         description: Number of unique critical assets at risk from this entity
         type: Number
-      - contextPath: averageComplexityLevel
+      - contextPath: XMCyber.averageComplexityLevel
         description: Level of the average complexity to compromise this entity
         type: String
-      - contextPath: compromisingTechniques.name
+      - contextPath: XMCyber.compromisingTechniques.name
         description: Technique compromising this entity
         type: String
-      - contextPath: compromisingTechniques.count
+      - contextPath: XMCyber.compromisingTechniques.count
         description: Number of vectors with this technique compromising this entity
         type: Number
-      - contextPath: entityType
+      - contextPath: XMCyber.entityType
         description: Entity Type
         type: String
-      - contextPath: entityReport
+      - contextPath: XMCyber.entityReport
         description: Link to the Entity Report
         type: String
   

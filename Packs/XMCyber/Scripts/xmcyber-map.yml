@@ -2,7 +2,7 @@ commonfields:
   id: xmcyber-map
   version: -1
 name: xmcyber-map
-fromversion: 5.0.0
+fromversion: 6.0.0
 script: |-
   #first section copies over from context to incident fields
 
