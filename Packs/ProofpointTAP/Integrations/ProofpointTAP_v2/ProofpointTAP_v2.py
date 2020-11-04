@@ -55,6 +55,7 @@ def get_fetch_times(last_fetch):
         last_fetch += timedelta(minutes=59)
         times.append(last_fetch.strftime(time_format))
     times.append(now.strftime(time_format))
+    demisto.debug("\n \n fetch times list: {}.\n \n".format(times))
     return times
 
 
@@ -371,6 +372,8 @@ def get_events_command(client, args):
 
 def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
                     limit=DEFAULT_LIMIT, integration_context=None):
+    demisto.debug("\n\n fetch incidents - last_run: {}, first fetch time: {}, event type filter: {}, threat type: {} .\n\n".format(last_run, first_fetch_time, event_type_filter, threat_type))
+    demisto.debug("\n\n fetch incidents - threat status: {}. limit: {}, integration_context: {}. \n\n".format(threat_status, limit, integration_context))
     incidents: list = []
     end_query_time = ''
     # check if there're incidents saved in context
@@ -388,6 +391,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
     for i in range(len(fetch_times) - 1):
         start_query_time = fetch_times[i]
         end_query_time = fetch_times[i + 1]
+        demisto.debug("\n\n fetch incidents - start query time: {}. end query time: {}. \n\n".format(start_query_time, end_query_time))
         raw_events = client.get_events(interval=start_query_time + "/" + end_query_time,
                                        event_type_filter=event_type_filter,
                                        threat_status=threat_status, threat_type=threat_type)
