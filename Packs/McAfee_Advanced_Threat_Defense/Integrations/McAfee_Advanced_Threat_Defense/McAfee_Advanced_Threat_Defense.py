@@ -463,7 +463,7 @@ def file_upload(submit_type, sample, vm_profile_list,
 
 def file_upload_command():
     args = demisto.args()
-    submit_type_with_url_arg = ['1', '2', '3']
+    #submit_type_with_url_arg = ['1', '2', '3']
     if ('entryID' in args and 'url' in args and not args['submitType'] == '2') \
             or ('entryID' not in args and 'url' not in args):
         return_error('You must submit one and only one of the following: url, entryID')
@@ -480,6 +480,7 @@ def file_upload_command():
         given_url = args['url']
         sample = args['entryID']
     else:
+        given_url = None
         sample = args['entryID'] if 'entryID' in args else args['url']
     vm_profile_list = int(args['vmProfileList']) if 'vmProfileList' in args else None
     analyze_again = int(args['analyze_again']) if 'analyze_again' in args else None
