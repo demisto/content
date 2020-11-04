@@ -1580,9 +1580,27 @@ script:
           required: false
           secret: false
         - default: false
-          description: A free-style query. For example, "process_name:svchost.exe".
+          description: A free-style query. For example, "process_name:svchost.exe". A guide can be found here- https://developer.carbonblack.com/resources/query_overview.pdf
           isArray: false
           name: query
+          required: false
+          secret: false
+        - default: false
+          description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is 1 day ago.
+          isArray: false
+          name: start_time
+          required: false
+          secret: false
+        - default: false
+          description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is current time.
+          isArray: false
+          name: end_time
+          required: false
+          secret: false
+        - default: false
+          description: Index of first records to fetch. Default is 0.
+          isArray: false
+          name: start
           required: false
           secret: false
       deprecated: false
@@ -1603,12 +1621,20 @@ script:
           name: process_guid
           required: false
           secret: false
-        - default: false
+        - auto: PREDEFINED
+          default: false
           description: The event type to search.
           isArray: false
           name: event_type
           required: false
           secret: false
+          predefined:
+            - filemod
+            - netconn
+            - regmod
+            - modload
+            - crossproc
+            - childproc
         - default: false
           description: The maximum number of rows to return. Default is 20.
           isArray: false
@@ -1616,9 +1642,27 @@ script:
           required: false
           secret: false
         - default: false
-          description: A free-style query. For example, "process_name:svchost.exe".
+          description: A free-style query. For example, "process_name:svchost.exe". A guide can be found here- https://developer.carbonblack.com/resources/query_overview.pdf
           isArray: false
           name: query
+          required: false
+          secret: false
+        - default: false
+          description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is 1 day ago.
+          isArray: false
+          name: start_time
+          required: false
+          secret: false
+        - default: false
+          description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is current time.
+          isArray: false
+          name: end_time
+          required: false
+          secret: false
+        - default: false
+          description: Index of first records to fetch. Default is 0.
+          isArray: false
+          name: start
           required: false
           secret: false
       deprecated: false
@@ -1765,7 +1809,7 @@ script:
           description: The PID of a process. Can be multi-valued in case of exec/fork on Linux/OSX.
           type: Number
         - contextPath: CarbonBlackEEDR.SearchProcess.results.process_username
-          description: User names related to the process. 
+          description: User names related to the process.
           type: String
         - contextPath: CarbonBlackEEDR.SearchProcess.results.regmod_count
           description: The cumulative count of registry modifications since process tracking started.

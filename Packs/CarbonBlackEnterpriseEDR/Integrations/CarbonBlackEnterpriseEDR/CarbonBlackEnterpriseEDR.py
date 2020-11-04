@@ -345,7 +345,8 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def create_search_process_request(self, process_hash: str, process_name: str, event_id: str, query: str,
-                                      limit: int) -> dict:
+                                      limit: int, start_time: str = None,
+                                      end_time: str = None, start: int = 0) -> dict:
         if not process_hash and not process_name and not event_id and not query:
             raise Exception("To perform an process search, please provide at least one of the following: "
                             "'process_hash', 'process_name', 'event_id' or 'query'")
@@ -359,9 +360,20 @@ class Client(BaseClient):
         ),
             query=query,
             rows=limit,
-            start=0
+            start=start,
 
         )
+        timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+        start_iso = parse_date_range(start_time, date_format=timestamp_format)[0]
+        if end_time:
+            end_iso = parse_date_range(end_time, date_format=timestamp_format)[0]
+        else:
+            end_iso = datetime.now().strftime(timestamp_format)
+        time_range = {
+            "end": end_iso,
+            "start": start_iso
+        }
+        body['time_range'] = time_range
         return self._http_request('POST', suffix_url, json_data=body)
 
     def get_search_process_request(self, job_id) -> dict:
@@ -370,7 +382,8 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def create_search_event_by_process_request(self, process_guid: str, event_type: str,
-                                               query: str, limit: int) -> dict:
+                                               query: str, limit: int, start_time: str, end_time: str,
+                                               start: int = 0) -> dict:
         if event_type and event_type not in ['filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc']:
             raise Exception("Only the following event types can be searched: "
                             "'filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc'")
@@ -381,8 +394,19 @@ class Client(BaseClient):
             criteria=assign_params(event_type=argToList(event_type)),
             query=query,
             rows=limit,
-            start=0
+            start=start
         )
+        timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+        start_iso = parse_date_range(start_time, date_format=timestamp_format)[0]
+        if end_time:
+            end_iso = parse_date_range(end_time, date_format=timestamp_format)[0]
+        else:
+            end_iso = datetime.now().strftime(timestamp_format)
+        time_range = {
+            "end": end_iso,
+            "start": start_iso
+        }
+        body['time_range'] = time_range
 
         response = self._http_request('POST', suffix_url, json_data=body)
         return response
@@ -1188,6 +1212,8 @@ def process_search_command(client: Client, args: Dict) -> CommandResults:
     process_hash = args.get('process_hash', '')
     event_id = args.get('event_id', '')
     query = args.get('query', '')
+    start_time = str(args.get('start_time', '1 day'))
+    end_time = str(args.get('end_time', ''))
     limit = args.get('limit')
     if not limit:
         limit = 20
@@ -1197,7 +1223,8 @@ def process_search_command(client: Client, args: Dict) -> CommandResults:
         raise ValueError("Please provide a number as limit.")
 
     raw_respond = client.create_search_process_request(process_name=process_name, process_hash=process_hash,
-                                                       event_id=event_id, query=query, limit=limit)
+                                                       event_id=event_id, query=query, limit=limit,
+                                                       start_time=start_time, end_time=end_time)
     readable_output = f"job_id is {raw_respond.get('job_id')}."
     output = {'job_id': raw_respond.get('job_id'), 'status': 'In Progress'}
     return CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess', raw_response=raw_respond,
@@ -1211,20 +1238,31 @@ def event_by_process_search_command(client: Client, args: Dict) -> CommandResult
     process_guid = args.get('process_guid', '')
     event_type = args.get('event_type', '')
     query = args.get('query', '')
-    limit = args.get('limit')
-    if not limit:
-        limit = 20
-    try:
+    limit = args.get('limit', 20)
+    start = args.get('start', 0)
+    start_time = str(args.get('start_time', '1 day'))
+    end_time = str(args.get('end_time', ''))
+
+    if str(limit).isdigit():
         limit = int(limit)
-    except ValueError:
+    else:
         raise ValueError("Please provide a number as limit.")
+
+    if str(start).isdigit():
+        start = int(start)
+    else:
+        raise ValueError("Please provide a number as a start index.")
+
     result = client.create_search_event_by_process_request(
         process_guid=process_guid, event_type=event_type,
-        query=query, limit=limit)
+        query=query, limit=limit, start_time=start_time, end_time=end_time, start=start)
+
+    readable = tableToMarkdown(name="Results Found.", t=result.get('results'), removeNull=True)
+    readable += f"Total of {result.get('num_found')} items found. Showing items {start} - {start + limit - 1}."
 
     return CommandResults(outputs_prefix='CarbonBlackEEDR.SearchEvent',
                           outputs=result.get('results'), outputs_key_field='event_guid',
-                          raw_response=result)
+                          raw_response=result, readable_output=readable)
 
 
 def process_search_get_command(client: Client, args: Dict) -> List[CommandResults]:
@@ -1238,7 +1276,8 @@ def process_search_get_command(client: Client, args: Dict) -> List[CommandResult
         status = 'Completed' if raw_result.get('contacted') == raw_result.get('completed') else 'In Progress'
         output = {'status': status, 'job_id': job, 'results': raw_result.get('results')}
         title = f"{status} Search Results:"
-        human_readable = tableToMarkdown(name=title, t=output.get('results'), removeNull=True)
+        headers = ["process_hash", "process_name", "device_name", "device_timestamp", "process_pid", "process_username"]
+        human_readable = tableToMarkdown(name=title, t=output.get('results'), removeNull=True, headers=headers)
         job_result_list.append(CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
                                               outputs=output, outputs_key_field='job_id',
                                               raw_response=raw_result,

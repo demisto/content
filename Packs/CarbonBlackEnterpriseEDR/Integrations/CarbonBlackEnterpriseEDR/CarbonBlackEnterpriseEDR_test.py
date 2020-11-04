@@ -86,6 +86,10 @@ EVENT_CASES = [
     (
         {"process_guid": "1234", 'event_type': 'modload', 'query': None, 'limit': 20},  # args
         {'criteria': {'event_type': ['modload']}, 'rows': 20, 'start': 0}  # expected
+    ),
+    (
+        {"process_guid": "1234", 'event_type': 'modload', 'query': None, 'limit': 20, 'start': 20},  # args
+        {'criteria': {'event_type': ['modload']}, 'rows': 20, 'start': 20}  # expected
     )
 ]
 
