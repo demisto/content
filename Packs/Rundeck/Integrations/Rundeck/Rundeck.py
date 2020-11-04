@@ -5,6 +5,8 @@ import urllib3
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 import ntpath
+from datetime import datetime
+from time import gmtime, strftime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -89,7 +91,8 @@ class Client(BaseClient):
             params=request_params
         )
 
-    def execute_job(self, job_id: str, arg_string: str, log_level: str, as_user: str, node_filter: str, run_at_time: str, options: dict):
+    def execute_job(self, job_id: str, arg_string: str, log_level: str, as_user: str, node_filter: str, run_at_time: str
+                    , options: dict, run_at_time_raw: str):
         """
         This function runs an existing job
         :param arg_string: execution arguments for the selected job: -opt1 value1 -opt2 value2
@@ -97,8 +100,9 @@ class Client(BaseClient):
         :param log_level: specifying the loglevel to use: 'DEBUG','VERBOSE','INFO','WARN','ERROR'
         :param as_user: identifying the user who ran the job
         :param node_filter: can be a node filter string
-        :param run_at_time:  select a time to run the job
+        :param run_at_time:  select a time to run the job. can be either in: 1 hour, 1 week, 1 day.
         :param options: add options for running a job
+        :param run_at_time_raw: select a time to run the job in iso 8061 time as string
         :return: api response
         """
         request_body: Dict[str, Any] = {}
@@ -111,10 +115,12 @@ class Client(BaseClient):
             request_body["asUser"] = as_user
         if node_filter:
             request_body["filter"] = node_filter
-        if run_at_time:
-            request_body["runAtTime"] = run_at_time
         if options:
             request_body["options"] = options
+        if run_at_time:
+            request_body["runAtTime"] = run_at_time
+        elif run_at_time_raw:
+            request_body["runAtTime"] = run_at_time_raw
 
         return self._http_request(
             method='POST',
@@ -538,6 +544,32 @@ def convert_str_to_int(val_to_convert: Optional[str], param_name: str) -> Option
 ''' COMMAND FUNCTIONS '''
 
 
+def calc_run_at_time(selected_time: str) -> str:
+    """
+    This function gets a specified time(1 hour, 1 day, 1 year) and returns the selected time in ISO-8601 format
+    :param selected_time: the delta you want to get from today:
+    '1 hour': for one hour from now
+    '1 week': for one week from now
+    '1 day': for one day from now
+    :return: the selected time in ISO-8601 format.
+    """
+    selected_iso_time = ''
+    if not selected_time:
+        return selected_iso_time
+    current_time = datetime.utcnow()
+    if selected_time == '1 hour':
+        selected_iso_time = (current_time + timedelta(hours=1)).isoformat()
+    elif selected_time == '1 week':
+        selected_iso_time = (current_time + timedelta(days=7)).isoformat()
+    elif selected_time == '1 day':
+        selected_iso_time = (current_time + timedelta(days=1)).isoformat()
+    else:
+        raise DemistoException(f'Got unexpected input: {selected_time} when got run_at_time parameter')
+    time_zone = strftime('%z', gmtime()).replace('+', '')
+    iso_with_timezone = f"{selected_iso_time.split('.')[0]}-{time_zone}"
+    return iso_with_timezone
+
+
 def job_retry_command(client: Client, args: dict):
     arg_string: str = args.get('arg_string', '')
     log_level: str = args.get('log_level', '')
@@ -570,13 +602,14 @@ def execute_job_command(client: Client, args: dict):
     log_level: str = args.get('log_level', '')
     as_user: str = args.get('as_user', '')
     node_filter: str = args.get('filter', '')
-    run_at_time: str = args.get('run_at_time', '')
+    run_at_time: str = calc_run_at_time(args.get('run_at_time', ''))
+    run_at_time_raw: str = args.get('run_at_time_raw', '')
     options: str = args.get('options')
     job_id: str = args.get('job_id')
 
     converted_options: dict = attribute_pairs_to_dict(options)
     demisto.info('sending execute job request')
-    result = client.execute_job(job_id, arg_string, log_level, as_user, node_filter, run_at_time, converted_options)
+    result = client.execute_job(job_id, arg_string, log_level, as_user, node_filter, run_at_time, converted_options, run_at_time_raw)
     demisto.info('finish sending execute job request')
 
     if not isinstance(result, dict):
@@ -754,6 +787,7 @@ def job_execution_output_command(client: Client, args: dict):
     :return: CommandRusult object
     """
     execution_id: Optional[int] = convert_str_to_int(args.get('execution_id'), 'execution_id')
+    return_full_output: bool = argToBoolean(args.get('return_full_output', False))
     demisto.info('sending job execution output request')
     result = client.job_execution_output(execution_id)
     demisto.info('finish sending job execution output request')
@@ -764,12 +798,15 @@ def job_execution_output_command(client: Client, args: dict):
         headers = [key.replace("_", " ") for key in [*result[0].keys()]]
 
     readable_output = tableToMarkdown('Job Execution Output:', result, headers=headers, headerTransform=pascalToSpace)
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Rundeck.ExecutionsOutput',
-        outputs=result,
-        outputs_key_field='id'
-    )
+    if return_full_output:
+        return fileResult(args.get('execution_id'), json.dumps(result))
+    else:
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Rundeck.ExecutionsOutput',
+            outputs=result,
+            outputs_key_field='id'
+        )
 
 
 def job_execution_abort_command(client: Client, args: dict):

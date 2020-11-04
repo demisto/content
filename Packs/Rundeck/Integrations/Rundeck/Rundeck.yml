@@ -167,11 +167,18 @@ script:
       name: node_filter
       required: false
       secret: false
-    - default: false
-      description: A time to run the job in a ISO-8601 date and time stamp with timezone,
-        with optional milliseconds. e.g. 2019-10-12T12:20:55-0800 or 2019-10-12T12:20:55.123-0800
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        A time to run the job.
+        Can pass either run_at_time_raw, run_at_time or neither.
+        when passing both run_at_time_raw and run_at_time, the default is run_at_time.
       isArray: false
       name: run_at_time
+      predefined:
+      - 1 hour
+      - 1 day
+      - 1 week
       required: false
       secret: false
     - default: false
@@ -180,6 +187,16 @@ script:
         For example, if you have a 'foo' and 'bar' options set for a job, you can pass values to them using the next syntax: 'foo=someValue,bar=someValue'
       isArray: true
       name: options
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A time to run the job in a ISO-8601 date and time stamp with timezone, with optional milliseconds. e.g. 2019-10-12T12:20:55-0800 or 2019-10-12T12:20:55.123-0800.
+
+        Can pass either run_at_time_raw, run_at_time or neither.
+        when passing both run_at_time_raw and run_at_time, the default is run_at_time.
+      isArray: false
+      name: run_at_time_raw
       required: false
       secret: false
     deprecated: false
@@ -594,6 +611,19 @@ script:
       isArray: false
       name: execution_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        If 'true' output saves in a returned file and not in Demisto context.
+        If 'false', the number of outputs is limited to 100 and the returned data save in context.
+        The default is 'false'.
+      isArray: false
+      name: return_full_output
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Gets the metadata associated with workflow step state
