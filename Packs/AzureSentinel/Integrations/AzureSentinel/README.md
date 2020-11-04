@@ -2,7 +2,7 @@
 Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
 This integration was integrated and tested with API version ***2019-01-01-preview*** of Azure Sentinel.
 
-> <i>Note:</i> This is a ***beta*** integration which uses a preview version of the API, as the stable API version does not contain endpoints used in some of the integration commands.
+> <i>Note:</i> The integration is in ***beta*** as it uses a preview version of the Azure Sentniel API. The stable Azure Sentniel API version does not contain all  required endpoints used in some of the integration commands.
 
 ## Authorize Cortex XSOAR for Azure Sentinel
 
