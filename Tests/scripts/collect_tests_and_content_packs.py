@@ -3,22 +3,22 @@
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 Overview can be found at: https://confluence.paloaltonetworks.com/display/DemistoContent/Configure+Test+Filter
 """
+import argparse
+import glob
+import json
+import logging
 import os
 import sys
-import json
-import glob
-import random
-import argparse
-import logging
-from Tests.scripts.utils.log_util import install_logging
-from distutils.version import LooseVersion
 from copy import deepcopy
+from distutils.version import LooseVersion
 from typing import Dict, Tuple
-from Tests.Marketplace.marketplace_services import IGNORED_FILES
+
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
+from Tests.Marketplace.marketplace_services import IGNORED_FILES
 from Tests.scripts.utils.content_packs_util import should_test_content_pack
+from Tests.scripts.utils.log_util import install_logging
 
 
 class TestConf(object):
@@ -172,9 +172,6 @@ COMMON_YML_LIST = ["scripts/script-CommonIntegration.yml", "scripts/script-Commo
 
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
-
-# number of random tests to run when there're no runnable tests
-RANDOM_TESTS_NUM = 3
 
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
@@ -556,7 +553,8 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
         if integration_id in integration_ids:
             integration_pack = integration_object.get('pack')
             if integration_pack:
-                logging.info(f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
+                logging.info(
+                    f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
                 packs_to_install.add(integration_object.get('pack'))
             else:
                 logging.warning(f'Found integration {integration_id} without pack - not adding to packs to install')
@@ -909,9 +907,10 @@ def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
         test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
-                                          server_v=server_version,
-                                          to_v=test_conf.get('toversion', '99.99.99')))), None)
+        and is_runnable_in_server_version(
+            from_v=test_conf.get('fromversion', '0.0'),
+            server_v=server_version,
+            to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -1048,18 +1047,6 @@ def is_test_uses_active_integration(integration_ids, conf=deepcopy(CONF)):
     return True
 
 
-def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SET), server_version='0'):
-    """Gets runnable tests for the server version"""
-    all_test_ids = conf.get_test_playbook_ids()
-    runnable_test_ids = [test_id for test_id in all_test_ids if is_test_runnable(test_id, id_set, conf, server_version)]
-    if len(runnable_test_ids) <= tests_num:
-        random_test_ids_to_run = runnable_test_ids
-    else:
-        random_test_ids_to_run = rand.sample(runnable_test_ids, k=tests_num)
-
-    return set(random_test_ids_to_run)
-
-
 def get_tests_for_pack(pack_path):
     pack_yml_files = tools.get_files_in_dir(pack_path, ['yml'])
     pack_test_playbooks = [tools.collect_ids(file) for file in pack_yml_files if
@@ -1183,10 +1170,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
     if not tests:
-        rand = random.Random(branch_name)
-        tests = get_random_tests(
-            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=minimum_server_version)
-        packs_to_install = get_content_pack_name_of_test(tests, id_set)
+        packs_to_install = set()  # No random tests
         if changed_common:
             logging.debug('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
         elif sample_tests:  # Choosing 3 random tests for infrastructure testing
