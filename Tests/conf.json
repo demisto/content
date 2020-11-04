@@ -2398,7 +2398,7 @@
         {
             "integrations": "AWS - S3",
             "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436",
-            "memory_threshold": 77
+            "memory_threshold": 80
         },
         {
             "integrations": "Image OCR",
