@@ -97,7 +97,8 @@ def _extract_analysis_info(res: dict, dbot_score_type: str) -> List[dict]:
                     'Name': result_content.get('display_text', ''),
                     'DbotReputation': dbot_score,
                     'Confidence': result_content.get('confidence', 0),
-                    'ThreatTypes': result_content.get('threat_types', '')
+                    'ThreatTypes': result_content.get('threat_types', ''),
+                    'TypeOfUse': result_content.get('last_seen_as', '')
                 }
                 analysis_results.append({'analysis_info': analysis_info, 'dbot': dbot})
 
@@ -156,7 +157,7 @@ def test_module(client: Client) -> str:
         client.threat_indicator_search(url_suffix='')
         return 'ok'
     except Exception as e:
-        raise DemistoException(f"Error in API call - check the input parameters. Error: {e}")
+        raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {e}.")
 
 
 def ip_command(client: Client, args: dict) -> List[CommandResults]:
@@ -188,7 +189,7 @@ def ip_command(client: Client, args: dict) -> List[CommandResults]:
                                               readable_output=readable_output))
 
     for val in no_match_values:
-        desc = "No results were found"
+        desc = "No results were found on iDefense database"
         dbot = Common.DBotScore(val, DBotScoreType.IP, 'iDefense', 0, desc)
         indicator = Common.IP(val, dbot)
         readable_output = f"No results were found for ip {val}"
@@ -297,10 +298,11 @@ def uuid_command(client: Client, args: dict) -> CommandResults:
             indicator = Common.URL(indicator_value, dbot)
 
         analysis_info = {
-            'Name': res.get('display_text'),
+            'Name': res.get('display_text', ''),
             'DbotReputation': dbot_score,
-            'Confidence': res.get('confidence'),
-            'ThreatTypes': res.get('threat_types')
+            'Confidence': res.get('confidence', 0),
+            'ThreatTypes': res.get('threat_types', ''),
+            'TypeOfUse': res.get('last_seen_as', '')
         }
     return CommandResults(indicator=indicator,
                           raw_response=res,
