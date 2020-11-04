@@ -86,7 +86,7 @@ class TestMetadataParsing:
         """ Price field is not mandatory field and needs to be set to integer value.
 
         """
-        mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
                                                     pack_id="test_pack_id", integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
@@ -232,7 +232,7 @@ class TestHelperFunctions:
     def test_convert_price(self, price_value_input, expected_price, mocker):
         """ Tests that convert price is not failing to convert given input
         """
-        mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         price_result = convert_price(pack_id="dummy_id", price_value_input=price_value_input)
 
         assert price_result == expected_price
@@ -362,7 +362,7 @@ class TestChangelogCreation:
                - return True
        """
         dummy_pack.current_version = '2.0.2'
-        mocker.patch("Tests.Marketplace.marketplace_services.print_color")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         mocker.patch("os.path.exists", return_value=True)
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
@@ -396,8 +396,7 @@ class TestChangelogCreation:
                - return False
        """
         dummy_pack.current_version = '2.0.0'
-        mocker.patch("Tests.Marketplace.marketplace_services.print_error")
-        mocker.patch("Tests.Marketplace.marketplace_services.print_color")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         mocker.patch("os.path.exists", return_value=True)
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
@@ -432,8 +431,7 @@ class TestChangelogCreation:
        """
         dummy_pack.current_version = '2.0.0'
         mocker.patch("os.path.exists", return_value=True)
-        mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
-        mocker.patch("Tests.Marketplace.marketplace_services.print_color")
+        mocker.patch("Tests.Marketplace.marketplace_services")
         dir_list = ['1_0_1.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
@@ -548,7 +546,7 @@ class TestImagesUpload:
                                            'image_path': f'/path/{temp_image_name}'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
         mocker.patch('builtins.open', mock_open(read_data="image_data"))
-        mocker.patch("Tests.Marketplace.marketplace_services.print")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
@@ -579,7 +577,7 @@ class TestImagesUpload:
                                            'image_path': f'/path/{temp_image_name}'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
         mocker.patch("builtins.open", mock_open(read_data="image_data"))
-        mocker.patch("Tests.Marketplace.marketplace_services.print")
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
@@ -607,10 +605,10 @@ class TestLoadUserMetadata:
                - Task should not fail with referenced before assignment error.
        """
         mocker.patch("os.path.exists", return_value=False)
-        print_error_mock = mocker.patch("Tests.Marketplace.marketplace_services.print_error")
+        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.error")
         task_status, user_metadata = dummy_pack.load_user_metadata()
 
-        assert print_error_mock.call_count == 1
+        assert logging_mock.call_count == 1
         assert not task_status
         assert user_metadata == {}
 
