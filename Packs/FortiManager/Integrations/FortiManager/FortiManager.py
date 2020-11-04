@@ -611,7 +611,7 @@ def main() -> None:
     :rtype:
     """
 
-    creds = demisto.params().get('creds')
+    creds = demisto.params().get('credentials')
     base_url = demisto.params().get('url')
     adom = demisto.params().get('adom')
     verify_certificate = not demisto.params().get('insecure', False)
