@@ -194,10 +194,10 @@ script:
     - contextPath: ThreatVault.IP.ipAddress
       description: The IP address.
       type: String
-   - arguments:
-    - name: ip
+  - arguments:
+    - default: true
+      name: ip
       required: false
-      default: true
       description: IP address to query, e.g., !ip 1.1.1.1
     deprecated: false
     description: Check IP location.
@@ -354,7 +354,7 @@ script:
     - contextPath: ThreatVault.Search.search_type
       description: The search type. Can be either "ips", "dns". or "panav".
       type: String
-    - contextPath: ThreatVault.Search.signatures
+    - contextPath: ThreatVault.Searchf.signatures
       description: A list of all the signatures found for this specific search.
       type: Unknown
   dockerimage: demisto/python3:3.8.6.12176
