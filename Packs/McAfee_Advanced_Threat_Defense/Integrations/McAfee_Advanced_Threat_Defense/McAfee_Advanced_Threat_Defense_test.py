@@ -14,10 +14,29 @@ def set_params(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
 
 
+@pytest.mark.parametrize('args', [
+    ({'submitType': '2', 'entryID': 'entry_id'}),
+    ({'submitType': '2', 'url': 'url'}),
+    ({'submitType': '0', 'entryID': 'entry_id', 'url': 'url'}),
+    ({'submitType': '1', 'entryID': 'entry_id', 'url': 'url'}),
+    ({'submitType': '3', 'entryID': 'entry_id', 'url': 'url'}),
+    ({'submitType': '1', 'entryID': 'entry_id'}),
+    ({'submitType': '3', 'entryID': 'entry_id'}),
+    ({'submitType': '0', 'url': 'url'}),
+    ({'submitType': '4'}),
+])
+def test_handling_errors_with_file_upload_command(args):
+    from McAfee_Advanced_Threat_Defense import handling_errors_with_file_upload_command
+    with pytest.raises(SystemExit) as e:
+        handling_errors_with_file_upload_command(args)
+    assert e
+
+
 @pytest.mark.parametrize('given_url, expected_output', [
     ('google.com', 'http://www.google.com'),
     ('http://www.google.com', 'http://www.google.com'),
     ('www.google.com', 'http://www.google.com'),
+    ("", "http://www."),
 ])
 def test_add_prefix_to_given_url(given_url, expected_output):
     from McAfee_Advanced_Threat_Defense import add_prefix_to_given_url

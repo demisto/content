@@ -29,6 +29,7 @@ def load_server_url():
 SUBMIT_TYPE_WITH_FILE = [0, 2]
 SUBMIT_TYPE_WITH_URL = [1, 3]
 SUBMIT_TYPE_WITH_FILE_STR = ['0', '2']
+VALID_SUBMIT_TYPE = ['0', '1', '2', '3']
 
 USERNAME = demisto.params().get('username')
 PASSWORD = demisto.params().get('password')
@@ -485,33 +486,48 @@ def get_url_entry_by_submit_type(submit_type, given_url, sample):
         return sample
 
 
-def handling_errors(args):
+def handling_errors_with_file_upload_command(args):
+    """
+        Args:
+            args (dict) : file upload command arguments
+        Returns:
+            returns error if one of the given arguments does not fit the command's structure
+
+    """
+    # in case submitType is not one of : 0,1,2,3
+    if args['submitType'] not in VALID_SUBMIT_TYPE:
+        return_error('This is not a valid submitType. Should be one of : 0, 1, 2, 3')
+    # in case submitType is 2 but not both arguments (entryID and url) were given
     if ('entryID' not in args or 'url' not in args) and args['submitType'] == '2':
         return_error('When submitType is 2 You must submit both url and entryID')
+    # in case submitType is one of [0,1,3] and both arguments (entryID and url) were given
     if ('entryID' in args and 'url' in args and not args['submitType'] == '2') \
             or ('entryID' not in args and 'url' not in args):
         return_error('You must submit one and only one of the following: url, entryID')
+    # in case one of those happened :
+    # 1. submitType is 1 or 3 and entryID was given (should not be given)
+    # 2. submitType is 0 and url was given
     if ('entryID' in args and args['submitType'] not in SUBMIT_TYPE_WITH_FILE_STR) or \
             ('url' in args and args['submitType'] == '0'):
         return_error(
-            'In order to detonate a file submitType must be 0 '
+            'In order to detonate a file submitType must be 0'
             ' and an entryID of a file must be given.\n'
             'In order to detonate a url submitType must be 1 or 3'
             ' and a url must be given.'
             'In order to submit file with a url submitType must be 2'
-            'and both entryID and a url must be given.')
+            ' and both entryID and a url must be given.')
 
 
 def file_upload_command():
     args = demisto.args()
-    handling_errors(args)
+    handling_errors_with_file_upload_command(args)
     if args['submitType'] == '2':
         # should have both entryID and url
-        given_url = args['url']
-        sample = args['entryID']
+        given_url = args.get('url', "")
+        sample = args.get('entryID', "")
     else:
-        given_url = None
-        sample = args['entryID'] if 'entryID' in args else args['url']
+        given_url = ""
+        sample = args['entryID'] if 'entryID' in args else args.get('url', "")
     vm_profile_list = int(args['vmProfileList']) if 'vmProfileList' in args else None
     analyze_again = int(args['analyze_again']) if 'analyze_again' in args else None
     skip_task_id = int(args['skip_task_id']) if 'skip_task_id' in args else None
