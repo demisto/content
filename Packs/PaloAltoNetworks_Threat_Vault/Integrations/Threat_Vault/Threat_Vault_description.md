@@ -1,4 +1,4 @@
-#### Note: Threat Vault API key is the same as the Auto Focus API key.
+#### Note: The Threat Vault API key is the same as the Auto Focus API key.
 
 ## Get Your API Key
 To get your API key, you need to add an authorization code, and then activate the API.
@@ -11,7 +11,7 @@ To get your API key, you need to add an authorization code, and then activate th
   
  ### Activate the API
   1. From the **Site Licenses** page, click **Enable**.
-  2. Select the API Key link.
+  2. Select the **API Key** link.
 
-  Enter this API key when configuring the AutoFocus integration in Demisto.
-  For more info on activating the license see [Activating AutoFocus Licenses](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/get-started-with-autofocus/activate-autofocus-licenses.html).
+  Enter this API key when configuring the AutoFocus integration in Cortex XSOAR.
+  For more info on activating the license, see [Activating AutoFocus Licenses](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/get-started-with-autofocus/activate-autofocus-licenses.html).
