@@ -2022,8 +2022,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             sort_all_list_incident_fields(incident_data)
 
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
-            incident_data['mirror_instance'] = demisto.integrationInstance()
-            incident_data['last_mirrored_in'] = int(datetime.now().timestamp()*1000)
+            incident_data['mirror_instance'] = integration_instance
+            incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
 
             description = raw_incident.get('description')
             occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')

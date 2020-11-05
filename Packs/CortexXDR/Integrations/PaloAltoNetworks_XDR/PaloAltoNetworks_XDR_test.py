@@ -1,6 +1,7 @@
 import json
 import pytest
 import demistomock as demisto
+from freezegun import freeze_time
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -31,6 +32,7 @@ def test_get_incident_list(requests_mock):
     assert expected_output == outputs
 
 
+@freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents(requests_mock, mocker):
     from PaloAltoNetworks_XDR import fetch_incidents, Client, sort_all_list_incident_fields
 
@@ -42,6 +44,7 @@ def test_fetch_incidents(requests_mock, mocker):
     modified_raw_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     modified_raw_incident['mirror_direction'] = 'In'
     modified_raw_incident['mirror_instance'] = 'MyInstance'
+    modified_raw_incident['last_mirrored_in'] = 740314800000
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
@@ -60,6 +63,7 @@ def test_fetch_incidents(requests_mock, mocker):
 
     if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
         assert False
+    assert json.loads(incidents[0]['rawJSON']).pop('last_mirrored_in')
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
 
 
@@ -71,6 +75,7 @@ def return_extra_data_result(*args):
         return {}, {}, {"incident": incident_from_extra_data_command}
 
 
+@freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     """
     Given:
@@ -90,6 +95,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     modified_raw_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     modified_raw_incident['mirror_direction'] = 'In'
     modified_raw_incident['mirror_instance'] = 'MyInstance'
+    modified_raw_incident['last_mirrored_in'] = 740314800000
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)

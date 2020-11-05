@@ -151,19 +151,10 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
     return incident_in_demisto_was_modified, xdr_update_args
 
 
-def compare_incident_in_xdr_vs_previous_xdr_in_context(incident_id, xdr_incident_in_context, fields_mapping):
-    severity_mapping = {
-        "low": 1,
-        "medium": 2,
-        "high": 3,
-    }
-
+def compare_incident_in_xdr_vs_previous_xdr_in_context(latest_incident_in_xdr, xdr_incident_in_context, fields_mapping):
     # check if incident in xdr was modified
-    incident_in_xdr_was_modified = False
     demisto_update_args = {}
-
-    latest_incident_in_xdr_result, latest_incident_in_xdr, _ = get_latest_incident_from_xdr(incident_id,
-                                                                                            return_only_updated=True)
+    incident_in_xdr_was_modified = False
 
     if latest_incident_in_xdr:
         for field_in_xdr in XDR_INCIDENT_FIELDS:
@@ -176,9 +167,22 @@ def compare_incident_in_xdr_vs_previous_xdr_in_context(incident_id, xdr_incident
                     pass
 
                 if field_in_xdr == 'severity':
-                    current_value = severity_mapping[current_value]
+                    severity_mapping = {
+                        "low": 1,
+                        "medium": 2,
+                        "high": 3,
+                    }
 
-                if current_value != previous_value:
+                    if severity_mapping[current_value] != previous_value:
+                        incident_in_xdr_was_modified = True
+                        field_name_in_demisto = fields_mapping[field_in_xdr]
+
+                        if current_value is None:
+                            demisto_update_args[field_name_in_demisto] = ""
+                        else:
+                            demisto_update_args[field_name_in_demisto] = current_value
+
+                elif current_value != previous_value:
                     incident_in_xdr_was_modified = True
                     field_name_in_demisto = fields_mapping[field_in_xdr]
 
@@ -187,14 +191,12 @@ def compare_incident_in_xdr_vs_previous_xdr_in_context(incident_id, xdr_incident
                     else:
                         demisto_update_args[field_name_in_demisto] = current_value
 
-    modification_time = int(demisto_update_args.get('xdrmodificationtime'))
+    modification_time = demisto_update_args.get('xdrmodificationtime')
     if modification_time:
-        demisto_update_args['xdrmodificationtime'] = (datetime.fromtimestamp(modification_time / 1000).isoformat()) \
-                                                     + 'Z'
+        demisto_update_args['xdrmodificationtime'] = (datetime.fromtimestamp(int(modification_time) / 1000).
+                                                      isoformat()) + 'Z'
 
-    if latest_incident_in_xdr.get('severity'):
-        latest_incident_in_xdr['severity'] = severity_mapping[latest_incident_in_xdr.get('severity')]
-    return incident_in_xdr_was_modified, demisto_update_args, latest_incident_in_xdr_result, latest_incident_in_xdr
+    return incident_in_xdr_was_modified, demisto_update_args
 
 
 def args_to_str(demisto_args, latest_incident_in_xdr):
@@ -340,8 +342,13 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
         return latest_incident_in_xdr
 
     demisto.info("Check if incident in XDR was modified")
-    incident_in_xdr_was_modified, demisto_update_args, latest_incident_in_xdr_result, latest_incident_in_xdr = \
-        compare_incident_in_xdr_vs_previous_xdr_in_context(incident_id, xdr_incident_from_previous_run, fields_mapping)
+    latest_incident_in_xdr_result, latest_incident_in_xdr, _ = get_latest_incident_from_xdr(incident_id,
+                                                                                            return_only_updated=True)
+
+    incident_in_xdr_was_modified, demisto_update_args = \
+        compare_incident_in_xdr_vs_previous_xdr_in_context(latest_incident_in_xdr,
+                                                           xdr_incident_from_previous_run,
+                                                           fields_mapping)
 
     if incident_in_xdr_was_modified:
         demisto.debug("the incident in xdr was modified, updating the incident in demisto")
@@ -369,10 +376,17 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
 
         if playbook_to_run:
             demisto.executeCommand("setPlaybook", {"name": playbook_to_run})
-        # else:
-        #     # rerun the playbook the current playbook
-        #     demisto.executeCommand("setPlaybook", {})
+        else:
+            # rerun the playbook the current playbook
+            demisto.executeCommand("setPlaybook", {})
 
+        if latest_incident_in_xdr.get('severity'):
+            severity_mapping = {
+                "low": 1,
+                "medium": 2,
+                "high": 3,
+            }
+            latest_incident_in_xdr['severity'] = severity_mapping[latest_incident_in_xdr.get('severity')]
         return latest_incident_in_xdr
 
     if first_run:

@@ -107,7 +107,7 @@ def test_compare_incident_in_demisto_vs_xdr_context___incident_not_modified():
 
     incident_in_demisto = copy.deepcopy(INCIDENT_IN_DEMISTO)
     xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
-
+    xdr_incident_in_context['severity'] = 1
     is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto,
                                                                                      xdr_incident_in_context,
                                                                                      incident_id,
@@ -140,6 +140,7 @@ def test_compare_incident_in_demisto_vs_xdr_context___status_was_modified():
     incident_in_demisto["CustomFields"]["xdrstatus"] = "closed"
 
     xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+    xdr_incident_in_context['severity'] = 1
 
     is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto,
                                                                                      xdr_incident_in_context,
@@ -256,6 +257,7 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
 
     incident_in_xdr_latest = copy.deepcopy(INCIDENT_FROM_XDR)
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+    incident_from_xdr_in_context['severity'] = 1
 
     is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
         incident_in_xdr_latest,
@@ -293,6 +295,7 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     incident_in_xdr_latest["modification_time"] += 100
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+    incident_from_xdr_in_context['severity'] = 1
 
     is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
         incident_in_xdr_latest,
@@ -333,6 +336,7 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     incident_in_xdr_latest["modification_time"] += 100
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+    incident_from_xdr_in_context['severity'] = 1
 
     is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
         incident_in_xdr_latest,
@@ -377,6 +381,7 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     incident_in_xdr_latest["modification_time"] += 100
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+    incident_from_xdr_in_context['severity'] = 1
 
     is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
         incident_in_xdr_latest,
