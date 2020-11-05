@@ -409,6 +409,15 @@ def url_upload_raw(body):
     return res
 
 
+def add_prefix_to_given_url(url):
+    if not url.startswith('http://') and not url.startswith('https://'):
+        if url.startswith('www.'):
+            url = "http://" + url
+        else:
+            url = "http://www." + url  # disable-secrets-detection
+    return url
+
+
 def file_upload(submit_type, sample, vm_profile_list,
                 skip_task_id=None, analyze_again=None, x_mode=None, message_id=None,
                 file_priority_q=None, src_ip=None, dest_ip=None, file_name=None, given_url=None):
@@ -417,19 +426,12 @@ def file_upload(submit_type, sample, vm_profile_list,
     data = {}  # type: dict
     data['data'] = {}
     submit_type_with_file = [0, 2]
+    submit_type_with_url = [1, 3]
     # Add missing prefix to url
-    if submit_type not in submit_type_with_file:
-        if not sample.startswith('http://') and not sample.startswith('https://'):
-            if sample.startswith('www.'):
-                sample = "http://" + sample
-            else:
-                sample = "http://www." + sample  # disable-secrets-detection
-    if submit_type == 2:
-        if not given_url.startswith('http://') and not given_url.startswith('https://'):
-            if given_url.startswith('www.'):
-                given_url = "http://" + given_url
-            else:
-                given_url = "http://www." + given_url  # disable-secrets-detection
+    if submit_type in submit_type_with_url:
+        sample = add_prefix_to_given_url(sample)
+    elif submit_type == 2:
+        given_url = add_prefix_to_given_url(given_url)
 
     data['data']['vmProfileList'] = vm_profile_list
     data['data']['submitType'] = submit_type
@@ -453,7 +455,7 @@ def file_upload(submit_type, sample, vm_profile_list,
     filename_to_upload = file_name if (submit_type in submit_type_with_file and file_name) else ''
     if submit_type in submit_type_with_file:
         result_obj = file_upload_raw(body, file_entry_id, filename_to_upload)
-    elif submit_type == 1 or submit_type == 3:
+    elif submit_type in submit_type_with_url:
         result_obj = url_upload_raw(body)
     return {
         'taskId': result_obj['results'][0]['taskId'],
@@ -463,17 +465,22 @@ def file_upload(submit_type, sample, vm_profile_list,
 
 def file_upload_command():
     args = demisto.args()
-    # submit_type_with_url_arg = ['1', '2', '3']
+    submit_type_with_file = ['0', '2']
+    submit_type_with_url_arg = ['1', '2', '3']
+    if 'entryID' not in args or 'url' not in args and args['submitType'] == '2':
+        return_error('When submitType is 2 You must submit both url and entryID')
     if ('entryID' in args and 'url' in args and not args['submitType'] == '2') \
             or ('entryID' not in args and 'url' not in args):
         return_error('You must submit one and only one of the following: url, entryID')
-    # if ('entryID' in args and args['submitType'] != '0') or \
-    #         ('url' in args and args['submitType'] not in submit_type_with_url_arg):
-    #     return_error(
-    #         'In order to detonate a file submitType must be 0'
-    #         ' and an entryID of a file must be given.\n'
-    #         'In order to detonate a url submitType must be 1'
-    #         ' and a url must be given.')
+    if ('entryID' in args and args['submitType'] not in submit_type_with_file) or \
+            ('url' in args and args['submitType'] not in submit_type_with_url_arg):
+        return_error(
+            'In order to detonate a file submitType must be 0 '
+            ' and an entryID of a file must be given.\n'
+            'In order to detonate a url submitType must be 1 or 3'
+            ' and a url must be given.'
+            'In order to submit file with a url submitType must be 2'
+            'and both entryID and a url must be given.')
 
     if args['submitType'] == '2':
         # should have both entryID and url
