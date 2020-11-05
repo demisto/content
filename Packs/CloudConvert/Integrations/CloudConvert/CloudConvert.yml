@@ -193,7 +193,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Convert a priorlt uploaded file to desired format
+    description: Convert a priorly uploaded file to desired format
     execution: false
     name: CloudConvert-convert
     outputs:

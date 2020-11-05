@@ -10,13 +10,6 @@ from typing import Any, Dict
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
-''' CLIENT CLASS '''
-
-
 class Client(BaseClient):
 
     def __init__(self, headers, verify=False, proxy=False):
@@ -58,8 +51,8 @@ class Client(BaseClient):
         port_url = form.get('url')
         params = form.get('parameters')
 
-        # creating a temp file with the same data of the given file
-        # this way the uploaded file has a path that the API can parse properly
+        # Creating a temp file with the same data of the given file
+        # This way the uploaded file has a path that the API can parse properly
         demisto.debug('creating a temp file for upload operation')
         with tempfile.TemporaryFile(suffix=file_name) as temp_file:
             with open(file_path, 'rb') as file:
@@ -181,20 +174,19 @@ def import_command(client: Client, arguments: Dict[str, Any]):
     if arguments.get('url'):
         results = client.import_url(arguments)
         results_data = results.get('data')
-
     elif arguments.get('entry_id'):
         demisto.debug('getting the path of the file from its entry id')
         result = demisto.getFilePath(arguments.get('entry_id'))
         if not result:
             raise ValueError('No file was found for given entry id')
-        file_path = result['path']
-        file_name = result['name']
+        file_path, file_name = result['path'], result['name']
         results = client.import_entry_id(file_path, file_name)
         results_data = results.get('data')
-
     else:
         raise ValueError('No url or entry id specified')
-    if results_data is None:  # no 'data' field was returned from the request, meaning the input was invalid
+
+    # No 'data' field was returned from the request, meaning the input was invalid
+    if results_data is None:
         if results.get('message'):
             raise ValueError(results.get('message'))
         else:
@@ -223,7 +215,8 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
     results = client.convert(arguments)
     results_data = results.get('data')
 
-    if results_data is None:  # no 'data' field was returned from the request, meaning the input was invalid
+    # No 'data' field was returned from the request, meaning the input was invalid
+    if results_data is None:
         if results.get('message'):
             raise ValueError(results.get('message'))
         else:
@@ -253,25 +246,24 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     """
     results = client.check_status(arguments)
 
-    # manually change the operation name in context,
-    # since exporting to entry is not an operation supported by the API originally
+    # If checking on an export to entry operation, manually change the operation name
+    # For other operations, the operation matches the operation field in the API's response, so no change is needed
     if arguments.get('is_entry'):
         results['data']['operation'] = 'export/entry'
     results_data = results.get('data')
 
-    # check if no 'data' field was returned from the request, meaning the input was invalid
+    # Check if no 'data' field was returned from the request, meaning the input was invalid
     if results_data is None:
         if results.get('message'):
             raise ValueError(results.get('message'))
         else:
             raise ValueError('No response from server, check your request')
 
-    # check if an export to war room entry operation is finished,
-    # if it did - create the entry
+    # Check if an export to war room entry operation is finished
+    # If it did - create the entry
     if results.get('data', [{}]).get('status') == 'finished' and argToBoolean(arguments.get('is_entry', 'False')):
         url = results.get('data', {}).get('result', {}).get('files', [{}])[0].get('url')
         file_name = results.get('data', {}).get('result', {}).get('files', [{}])[0].get('filename')
-#        demisto.debug('creating a war room file entry from the url of file')
         file_data = client.get_file_from_url(url)
         war_room_file = fileResult(filename=file_name, data=file_data)
         return_results(CommandResults(
@@ -306,16 +298,19 @@ def export_command(client: Client, arguments: Dict[str, Any]):
     :return: CommandResults object containing the results of the export action as returned from the API, and its readable
      output.
     """
-
-    results = client.export_url(arguments)  # in both url and entry we still first get a url
+    # Call export to url request
+    # In both url and war room entry we still first get a url
+    results = client.export_url(arguments)
     results_data = results.get('data')
 
-    if results_data is None:  # no 'data' field was returned from the request, meaning the input was invalid
+    # No 'data' field was returned from the request, meaning the input was invalid
+    if results_data is None:
         if results.get('message'):
             raise ValueError(results.get('message'))
         else:
             raise ValueError('No response from server, check your request')
 
+    # If exporting to war room entry, manually change the operation name
     if arguments['export_as'] == 'war_room_entry':
         results['data']['operation'] = 'export/entry'
 

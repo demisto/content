@@ -172,7 +172,7 @@
         {
             "integrations": "CloudConvert",
             "playbookID": "CloudConvert-test",
-            "fromversion": "6.0.0"
+            "fromversion": "5.0.0"
         },
 
         {
