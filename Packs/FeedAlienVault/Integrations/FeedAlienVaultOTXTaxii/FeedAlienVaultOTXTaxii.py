@@ -413,38 +413,42 @@ class StixDecode(object):
 
         pprops = package_extract_properties(package)
 
-        observables = package.find_all('Observable')
-        for o in observables:
-            gprops = observable_extract_properties(o)
+        indicators = package.find_all('Indicator')
 
-            obj = next((ob for ob in o if ob.name == 'Object'), None)
-            if obj is None:
-                continue
+        for ind in indicators:
+            observables = ind.find_all('Observable')
+            for o in observables:
+                gprops = observable_extract_properties(o)
 
-            # main properties
-            properties = next((c for c in obj if c.name == 'Properties'), None)
-            if properties is not None:
-                for r in StixDecode.object_extract_properties(properties, kwargs):
-                    r.update(gprops)
-                    r.update(pprops)
+                obj = next((ob for ob in o if ob.name == 'Object'), None)
+                if obj is None:
+                    continue
 
-                    result.append(r)
-
-            # then related objects
-            related = next((c for c in obj if c.name == 'Related_Objects'), None)
-            if related is not None:
-                for robj in related:
-                    if robj.name != 'Related_Object':
-                        continue
-
-                    properties = next((c for c in robj if c.name == 'Properties'), None)
-                    if properties is None:
-                        continue
-
+                # main properties
+                properties = next((c for c in obj if c.name == 'Properties'), None)
+                if properties is not None:
                     for r in StixDecode.object_extract_properties(properties, kwargs):
                         r.update(gprops)
                         r.update(pprops)
+                        r.update({'added_time': ind.get('timestamp') + 'Z'})
+
                         result.append(r)
+
+                # then related objects
+                related = next((c for c in obj if c.name == 'Related_Objects'), None)
+                if related is not None:
+                    for robj in related:
+                        if robj.name != 'Related_Object':
+                            continue
+
+                        properties = next((c for c in robj if c.name == 'Properties'), None)
+                        if properties is None:
+                            continue
+
+                        for r in StixDecode.object_extract_properties(properties, kwargs):
+                            r.update(gprops)
+                            r.update(pprops)
+                            result.append(r)
 
         return timestamp, StixDecode._deduplicate(result)
 
@@ -497,7 +501,7 @@ class Client:
             full_collection_list.append(collection.name)
         return full_collection_list
 
-    def build_iterator(self, collection, begin_date=None):
+    def build_iterator(self, collection, begin_date=None, fetch_interval=None):
         """Returns a list of all XML elements from the given collection.
 
         Args:
@@ -515,7 +519,11 @@ class Client:
         if begin_date.tzinfo is None:
             begin_date = begin_date.replace(tzinfo=pytz.UTC)
 
-        end_date = begin_date + timedelta(minutes=int(demisto.params().get('fetch_interval')))
+        if fetch_interval:
+            end_date = begin_date + timedelta(minutes=int(fetch_interval))
+
+        else:
+            end_date = begin_date + timedelta(minutes=int(demisto.params().get('fetch_interval')))
 
         return list(self.taxii_client.poll(collection_name=collection, begin_date=begin_date, end_date=end_date))
 
@@ -580,7 +588,7 @@ def get_indicators_command(client: Client, args: Dict):
         str,dict,dict. The human readable, and rawJSON from the command - no context created.
     """
     limit = int(args.get('limit', 50))
-    indicator_list = fetch_indicators_command(client, limit=limit)
+    indicator_list, _ = fetch_indicators_command(client, limit=limit)
 
     human_readable = tableToMarkdown("Indicators from AlienVault OTX TAXII:", indicator_list, removeNull=True)
 
@@ -610,6 +618,7 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags, tlp_color):
         indicator['fields'] = {
             "description": indicator["stix_package_short_description"],
             "tags": tags,
+            "firstseenbysource": indicator.get('added_time')
         }
         if tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
@@ -625,7 +634,20 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags, tlp_color):
     return parsed_indicator_list, full_indicator_list
 
 
-def fetch_indicators_command(client: Client, limit=None, begin_date=None):
+def get_latest_indicator_time(indicators_list):
+    if not indicators_list:
+        return None
+
+    latest_indicator_time = dateutil.parser.parse(indicators_list[0].get('added_time', '1970-01-01T00:00:00Z'))
+    for ind in indicators_list:
+        indicator_time = dateutil.parser.parse(ind.get('added_time', '1970-01-01T00:00:00Z'))
+        if indicator_time > latest_indicator_time:
+            latest_indicator_time = indicator_time
+
+    return latest_indicator_time
+
+
+def fetch_indicators_command(client: Client, limit=None, begin_date=None, fetch_interval=None):
     """Fetch indicators from AlienVault OTX.
 
     Args:
@@ -639,7 +661,7 @@ def fetch_indicators_command(client: Client, limit=None, begin_date=None):
     indicator_list = []  # type:List
     for collection in client.collections:
         try:
-            taxii_iter = client.build_iterator(collection, begin_date=begin_date)
+            taxii_iter = client.build_iterator(collection, begin_date=begin_date, fetch_interval=fetch_interval)
 
         except Exception as e:
             if not client.all_collections:
@@ -656,11 +678,14 @@ def fetch_indicators_command(client: Client, limit=None, begin_date=None):
             # this is because AlienVault OTX can return the same indicator several times from the same collection.
             parsed_list, only_indicator_list = parse_indicators(res, only_indicator_list, client.tags, client.tlp_color)
             indicator_list.extend(parsed_list)
+
             if limit is not None and limit <= len(indicator_list):
                 indicator_list = indicator_list[:limit]
                 break
 
-    return indicator_list
+        latest_indicator_time = get_latest_indicator_time(indicator_list)
+
+    return indicator_list, latest_indicator_time
 
 
 def main():
@@ -678,7 +703,9 @@ def main():
         'alienvaultotx-get-indicators': get_indicators_command
     }
     try:
-        begin_date = demisto.getIntegrationContext().get('begin_date')
+        integration_cache = demisto.getIntegrationContext()
+        begin_date = integration_cache.get('begin_date')
+        fetch_interval = integration_cache.get('fetch_interval')
 
         if demisto.command() == 'fetch-indicators':
             if not begin_date:
@@ -688,12 +715,28 @@ def main():
                         begin_date
                     )
 
-            indicators = fetch_indicators_command(client, begin_date=begin_date)
+            if not fetch_interval:
+                fetch_interval = int(demisto.params().get('fetch_interval'))
+
+            indicators, latest_indicator_time = fetch_indicators_command(client, begin_date=begin_date,
+                                                                         fetch_interval=fetch_interval)
             # we submit the indicators in batches
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
-            # demisto.setIntegrationContext({"begin_date": begin_date + timedelta(int(
-            #     demisto.params().get('fetch_interval')))})
+            if indicators:
+                # if new indicators were found - submit them in batches, set the next begin_date and reset the interval
+                for b in batch(indicators, batch_size=2000):
+                    demisto.createIndicators(b)
+                demisto.setIntegrationContext({
+                    "begin_date": latest_indicator_time,
+                    'time_interval': int(demisto.params().get('fetch_interval'))
+                })
+
+            else:
+                # if no indicators entered - dont change begin date and increase the fetch interval by 30 min.
+                demisto.setIntegrationContext({
+                    "begin_date": begin_date,
+                    'time_interval': int(demisto.params().get('fetch_interval')) + 30
+                })
+
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)
