@@ -147,7 +147,7 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
                                        os.path.join(extract_destination_path,
                                                     'private'))
         logging.info("get_private_packs")
-        private_packs = get_private_packs(private_index_path, pack_names, is_private_build,
+        private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
         logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
