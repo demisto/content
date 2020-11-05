@@ -17,7 +17,7 @@ def set_params(mocker):
 @pytest.mark.parametrize('args', [
     ({'submitType': '2', 'entryID': 'entry_id'}),
     ({'submitType': '2', 'url': 'url'}),
-    ({'submitType': '0', 'entryID': 'entry_id', 'url': 'url'}),
+    ({'submitType': '0', 'submitType': 'entry_id', 'url': 'url'}),
     ({'submitType': '1', 'entryID': 'entry_id', 'url': 'url'}),
     ({'submitType': '3', 'entryID': 'entry_id', 'url': 'url'}),
     ({'submitType': '1', 'entryID': 'entry_id'}),
@@ -26,6 +26,17 @@ def set_params(mocker):
     ({'submitType': '4'}),
 ])
 def test_handling_errors_with_file_upload_command(args):
+    """
+    Given:
+        submitType , submitType , url arguments
+
+    When:
+        Execute command atd-file-upload
+
+    Then:
+        Arguments' validation - returns error if one of the given
+        arguments does not fit the command's structure
+    """
     from McAfee_Advanced_Threat_Defense import handling_errors_with_file_upload_command
     with pytest.raises(SystemExit) as e:
         handling_errors_with_file_upload_command(args)
@@ -39,6 +50,16 @@ def test_handling_errors_with_file_upload_command(args):
     ("", "http://www."),
 ])
 def test_add_prefix_to_given_url(given_url, expected_output):
+    """
+    Given:
+        url argument
+
+    When:
+        Execute command atd-file-upload with submitType that is one of : 1,2,3
+
+    Then:
+        Returns the given url argument with a prefix of http://
+    """
     from McAfee_Advanced_Threat_Defense import add_prefix_to_given_url
     assert add_prefix_to_given_url(given_url) == expected_output
 
