@@ -62,7 +62,7 @@ script:
   - arguments:
     - default: true
       description: The SHA256 of the antivirus signature.
-      isArray: false
+      isArray: true
       name: file
       required: false
       secret: false
@@ -176,7 +176,7 @@ script:
   - arguments:
     - default: false
       description: ip to search.
-      isArray: false
+      isArray: true
       name: ip
       required: false
       secret: false
