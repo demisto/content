@@ -1,6 +1,6 @@
-id: Sanity Test - Non-Mocked Integration
+id: Sanity Test - Playbook with Unmockable Integration
 version: -1
-name: Sanity Test - Non-Mocked Integration
+name: Sanity Test - Playbook with Unmockable Integration
 starttaskid: "0"
 tasks:
   "0":

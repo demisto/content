@@ -1,6 +1,6 @@
-id: Sanity Test - Playbook with mocked integration
+id: Sanity Test - Playbook with integration
 version: -1
-name: Sanity Test - Playbook with mocked integration
+name: Sanity Test - Playbook with integration
 starttaskid: "0"
 tasks:
   "0":
