@@ -822,12 +822,16 @@ class Pack(object):
             pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
             blob = storage_bucket.blob(pack_full_path)
             blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-
+            #  In some cases the path given is actually a zip.
+            if pack_artifacts_path.endswith('content_packs.zip'):
+                _pack_artifacts_path = pack_artifacts_path.replace('content_packs.zip', '')
+            else:
+                _pack_artifacts_path = pack_artifacts_path
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
             if private_content:
-                print(f"Copying {zip_pack_path} to {pack_artifacts_path}/{self._pack_name}.zip")
-                shutil.copy(zip_pack_path, f'{pack_artifacts_path}/{self._pack_name}.zip')
+                print(f"Copying {zip_pack_path} to {_pack_artifacts_path}/{self._pack_name}.zip")
+                shutil.copy(zip_pack_path, f'{_pack_artifacts_path}/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
