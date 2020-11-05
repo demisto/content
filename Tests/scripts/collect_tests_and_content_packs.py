@@ -79,6 +79,7 @@ class TestConf(object):
 
         return tested_integrations
 
+    # This function is the same function exactly as 'get_content_pack_name_of_test' and therefore should be removed
     def get_packs_of_collected_tests(self, collected_tests, id_set):
         packs = set([])
         if collected_tests:
@@ -1068,8 +1069,6 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         if test not in tests:
             tests.add(test)
 
-    packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
-
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
@@ -1088,7 +1087,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
     # Get packs containing each of the collected tests
-    packs_of_collected_tests = conf.get_packs_of_collected_tests(tests, id_set)
+    packs_of_collected_tests = conf.get_content_pack_name_of_test(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     # All filtring out of packs should be done here
