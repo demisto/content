@@ -199,7 +199,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     override_all_packs = upload_config.override_all_packs
     enc_key = upload_config.encryption_key
     is_private_build = upload_config.is_private
-    packs_artifacts_dir = upload_config.pack_artifacts_dir
+    packs_artifacts_dir = upload_config.artifacts_path
 
     task_status, user_metadata = pack.load_user_metadata()
     if not task_status:
