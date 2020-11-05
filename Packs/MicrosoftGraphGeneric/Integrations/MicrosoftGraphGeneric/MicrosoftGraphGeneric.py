@@ -19,7 +19,7 @@ class MsGraphClient:
         client_args = {
             'base_url': 'https://graph.microsoft.com',
             'auth_id': app_id,
-            'scope': scope,
+            'scope': Scopes.graph,
             'enc_key': app_secret,
             'tenant_id': tenant_id,
             'verify': verify,
@@ -31,6 +31,7 @@ class MsGraphClient:
         if not (app_secret and tenant_id):
             client_args['grant_type'] = DEVICE_CODE
             client_args['token_retrieval_url'] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+            client_args['scope'] = scope
         self.ms_client = MicrosoftClient(**client_args)
 
     def generic_request(
@@ -80,11 +81,10 @@ def test_command(client: MsGraphClient) -> CommandResults:
 
 
 def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResults:
-    request_body_str = args.get('request_body')
-    request_body = None
-    if request_body_str:
+    request_body = args.get('request_body')
+    if request_body and isinstance(request_body, str):
         try:
-            request_body = json.loads(request_body_str)
+            request_body = json.loads(request_body)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'Invalid request body - {str(e)}')
 
@@ -92,11 +92,17 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
         resource=args.get('resource', ''),
         http_method=args.get('http_method', 'GET'),
         api_version=args.get('api_version', 'v1.0'),
-        odata=args.get('odata'),
+        odata=args.get('odata', '$top=10'),
         request_body=request_body,
     )
 
-    return CommandResults(raw_response=response)
+    results = {'raw_response': response}
+
+    if args.get('populate_context'):
+        results['outputs'] = response.get('value')
+        results['outputs_prefix'] = 'MicrosoftGraphGeneric'
+
+    return CommandResults(**results)
 
 
 def main() -> None:
@@ -121,13 +127,13 @@ def main() -> None:
         if command == 'test-module':
             result = test_module(client, params)
             return_results(result)
-        elif command == 'msgraph-generic':
+        elif command == 'msgraph-generic-request':
             return_results(generic_command(client, demisto.args()))
-        elif command == 'msgraph-auth-start':
+        elif command == 'msgraph-generic-auth-start':
             return_results(start_auth(client))
-        elif command == 'msgraph-auth-complete':
+        elif command == 'msgraph-generic-auth-complete':
             return_results(complete_auth(client))
-        elif command == 'msgraph-test':
+        elif command == 'msgraph-generic-test':
             return_results(test_command(client))
     except Exception as e:
         demisto.error(traceback.format_exc())

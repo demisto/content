@@ -23,11 +23,11 @@ For example, if we wish to use the [List applications](https://docs.microsoft.co
 
 3. The ***Application Secret*** and the ***Tenant ID*** integration parameters should be left blank.
 
-4. Run the *msgraph-auth-start* command - you will be prompted to open the page https://microsoft.com/devicelogin and enter the generated code.
+4. Run the *msgraph-generic-auth-start* command - you will be prompted to open the page https://microsoft.com/devicelogin and enter the generated code.
 
-5. Run the *msgraph-auth-complete* command
+5. Run the *msgraph-generic-auth-complete* command
 
-6. Run the *msgraph-test* command to ensure connectivity to Microsoft. 
+6. Run the *msgraph-generic-test* command to ensure connectivity to Microsoft. 
  
 #### Self Deployed Azure app
 
@@ -65,7 +65,7 @@ The integration supports only Application permission type, and does not support 
 ## Commands
 You can execute the command from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### msgraph-generic
+### msgraph-generic-request
 ***
 Run a Microsoft Graph API query.
 
@@ -81,13 +81,15 @@ Run a Microsoft Graph API query.
 | http_method | The HTTP method used for the request to Microsoft Graph. Possible values are: "GET", "POST", "DELETE", "PUT", or "PATCH". Default is "GET". | Optional | 
 | api_version | The version of the Microsoft Graph API to use. Possible values are: "v1.0" or "beta". Default is "v1.0". | Optional | 
 | request_body | The request body (required for POST queries). | Optional | 
-| odata | OData system query options, e.g. $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters | Optional | 
+| odata | OData system query options, e.g. $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters. Default is "$top=10". | Optional |
+| populate_context | Whether to populate API response to the context data. Default is "true". | Optional | 
 
 
 #### Context Output
 
-Since the response returned from Graph API can be huge, there is no context output for this command.
-Use [Extend Context](https://xsoar.pan.dev/docs/playbooks/playbooks-extend-context) in order to output to the context data.
+The context data output depends on the resource executed.
+The *populate_context* argument sets whether to output to the context data, under the path **MicrosoftGraphGeneric**.
+For resources which return a large response, we recommend to narrow the results by using the *odata* argument or outputting to the context data using [Extend Context](https://xsoar.pan.dev/docs/playbooks/playbooks-extend-context).
 
 
 ## Usage

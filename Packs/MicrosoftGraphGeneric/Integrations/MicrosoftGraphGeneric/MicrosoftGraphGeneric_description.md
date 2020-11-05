@@ -14,11 +14,11 @@ To configure the integration:
 
 3. The ***Application Secret*** and the ***Tenant ID*** integration parameters should be left blank.
 
-4. Run the *msgraph-auth-start* command - you will be prompted to open the page https://microsoft.com/devicelogin and enter the generated code.
+4. Run the *msgraph-generic-auth-start* command - you will be prompted to open the page https://microsoft.com/devicelogin and enter the generated code.
 
-5. Run the *msgraph-auth-complete* command
+5. Run the *msgraph-generic-auth-complete* command
 
-6. Run the *msgraph-test* command to ensure connectivity to Microsoft. 
+6. Run the *msgraph-generic-test* command to ensure connectivity to Microsoft. 
  
 #### Self Deployed Azure app
 

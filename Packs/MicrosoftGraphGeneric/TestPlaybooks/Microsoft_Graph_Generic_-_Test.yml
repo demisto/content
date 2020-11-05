@@ -75,7 +75,7 @@ tasks:
       version: -1
       name: Microsoft Graph Generic - List Applications
       description: Run a Microsoft Graph API query.
-      script: '|||msgraph-generic'
+      script: '|||msgraph-generic-request'
       type: regular
       iscommand: true
       brand: ""
