@@ -982,7 +982,7 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def remove_ignored_tests(tests: set) -> set:
+def remove_ignored_tests(tests: set, id_set: dict) -> set:
     """Removes test playbooks, which are in .pack-ignore, from the given tests set
 
     Args:
@@ -993,7 +993,7 @@ def remove_ignored_tests(tests: set) -> set:
          set: The filtered tests set
     """
     ignored_tests_set = set()
-    content_packs = get_content_pack_name_of_test(tests)
+    content_packs = get_content_pack_name_of_test(tests, id_set)
     for pack in content_packs:
         ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
 
@@ -1022,7 +1022,7 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: json):
 
 
 def filter_tests(tests: set, id_set: json) -> set:
-    tests_without_ignored = remove_ignored_tests(tests)
+    tests_without_ignored = remove_ignored_tests(tests, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     return tests_without_non_supported
