@@ -335,9 +335,9 @@ def test_antispyware_signature_search_wrongful_arguments():
     wrong_args_err = 'Please provide either a signature_name or a cve or a vendor.'
 
     with pytest.raises(Exception, match=wrong_args_err):
-        antispyware_signature_search(client, args={'signature_id': '1234', 'cve': 'CVE-2020'})
+        antispyware_signature_search(client, args={'signature_name': '1234', 'cve': 'CVE-2020'})
     with pytest.raises(Exception, match=wrong_args_err):
-        antispyware_signature_search(client, args={'signature_id': '1234', 'vendor': 'panw'})
+        antispyware_signature_search(client, args={'signature_name': '1234', 'vendor': 'panw'})
     with pytest.raises(Exception, match=wrong_args_err):
         antispyware_signature_search(client, args={'vendor': 'panw', 'cve': 'CVE-2020'})
 
