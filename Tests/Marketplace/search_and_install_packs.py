@@ -13,7 +13,6 @@ from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threa
 from typing import List
 
 from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES
-from Tests.private_build.configure_and_test_integration_instances_private import Build
 from Tests.test_content import ParallelPrintsManager
 
 PACK_METADATA_FILE = 'pack_metadata.json'
