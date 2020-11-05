@@ -114,14 +114,14 @@ class Server:
                                       key_file_path=Build.key_file_path, user='ec2-user')
 
 
-def get_id_set() -> dict:
+def get_id_set(id_set_path) -> dict:
     """
     Used to collect the ID set so it can be passed to the Build class on init.
 
     :return: ID set as a dict if it exists.
     """
-    if os.path.isfile(ID_SET_PATH):
-        return get_json_file(ID_SET_PATH)
+    if os.path.isfile(id_set_path):
+        return get_json_file(id_set_path)
 
 
 class Build:
@@ -150,8 +150,27 @@ class Build:
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
         self.skipped_integrations_conf = conf['skipped_integrations']
-        self.id_set = get_id_set()
+        id_set_path = options.id_set_path if options.id_set_path else ID_SET_PATH
+        self.id_set = get_id_set(id_set_path)
         self.test_pack_path = options.test_pack_path if options.test_pack_path else None
+        self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
+        self.content_root = options.content_root
+
+    @staticmethod
+    def fetch_tests_list(tests_to_run_path: str):
+        """
+        Fetches the test list from the filter.
+
+        :param tests_to_run_path: Path to location of test filter.
+        :return: List of tests if there are any, otherwise empty list.
+        """
+        tests_to_run = []
+        with open(tests_to_run_path, "r") as filter_file:
+            tests_from_file = filter_file.readlines()
+            for test_from_file in tests_from_file:
+                test_clean = test_from_file.rstrip()
+                tests_to_run.append(test_clean)
+        return tests_to_run
 
     @staticmethod
     def get_servers(ami_env):
@@ -178,7 +197,13 @@ def options_handler():
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
-    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.')
+    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.',
+                        default='/home/runner/work/content-private/content-private/content/artifacts/packs')
+    parser.add_argument('--content_root', help='Path to the content root.',
+                        default='/home/runner/work/content-private/content-private/content')
+    parser.add_argument('--id_set_path', help='Path to the ID set.')
+    parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
+                        default='./Tests/filter_file.txt')
 
     options = parser.parse_args()
 

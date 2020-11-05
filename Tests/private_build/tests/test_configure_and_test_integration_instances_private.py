@@ -65,7 +65,7 @@ class BuildMock:
         self.id_set = {}
 
 
-def test_find_needed_test_playbook_paths(tmpdir):
+def test_find_needed_test_playbook_paths():
     """
     Scenario: Matching a test which is needed with available playbooks found in the ID set.
     Given: Test filter with HelloWorld_Scan-Test in it and a sample test playbook conf
@@ -73,9 +73,7 @@ def test_find_needed_test_playbook_paths(tmpdir):
     Then: Return a set with 51 items (50 from DeveloperTools, 1 From test filter) in it where the
           item is the file_path for the test.
     """
-
-    sample_test_filter = tmpdir.mkdir("testdir").join("sample_test_filter.txt")
-    sample_test_filter.write("HelloWorldPremium_Scan-Test\nAnotherTest\n")
+    tests_to_run = ["HelloWorldPremium_Scan-Test", "AnotherTest"]
     test_playbook_conf = [
         {
             "HelloWorldPremium_Scan-Test": {
@@ -94,7 +92,7 @@ def test_find_needed_test_playbook_paths(tmpdir):
     ]
 
     file_paths = find_needed_test_playbook_paths(test_playbooks=test_playbook_conf,
-                                                 filter_file_path=sample_test_filter,
+                                                 filter_file_path=tests_to_run,
                                                  path_to_content='.')
     assert len(file_paths) == 51
     assert './Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml' in file_paths

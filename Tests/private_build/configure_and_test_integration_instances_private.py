@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import glob
-import shutil
 import sys
 import zipfile
 from time import sleep
@@ -63,28 +62,23 @@ def install_packs_private(build: Build, prints_manager: ParallelPrintsManager, p
     return installed_content_packs_successfully
 
 
-def find_needed_test_playbook_paths(test_playbooks: List[dict],
-                                    filter_file_path: str = "./Tests/filter_file.txt",
-                                    path_to_content: str =
-                                    '/home/runner/work/content-private/content-private/content') -> set:
+def find_needed_test_playbook_paths(test_playbooks: List[dict], tests_to_run: List,
+                                    path_to_content: str) -> set:
     """
     Uses the test filter file to determine which test playbooks are needed to run, then will use the
     test playbook IDs found in the ID set to determine what the path is for that test.
 
-    :param filter_file_path: Path to the test filter txt file.
+    :param tests_to_run: List of tests to run.
     :param path_to_content: Path to the content root.
     :param test_playbooks: The test_playbooks dictionary from the ID set.
     :return: tests_file_paths set used to keep file paths of found tests.
     """
     tests_file_paths = set()
-    with open(filter_file_path, "r") as filter_file:
-        tests_to_run = filter_file.readlines()
-        for test_to_run in tests_to_run:
-            test_clean = test_to_run.rstrip()
-            if any(test_clean in d for d in test_playbooks):
-                for test_pb in test_playbooks:
-                    if test_clean in test_pb:
-                        tests_file_paths.add(path_to_content + '/' + test_pb[test_clean].get("file_path"))
+    for test_to_run in tests_to_run:
+        if any(test_to_run in d for d in test_playbooks):
+            for test_pb in test_playbooks:
+                if test_to_run in test_pb:
+                    tests_file_paths.add(path_to_content + '/' + test_pb[test_to_run].get("file_path"))
     #  Adding contents of DeveloperPack for testing.
     #  TODO: Remove this when we have migrated test content out of this pack.
     developer_pack_items = glob.glob(path_to_content + "/Packs/DeveloperTools/*/*.yml")
@@ -93,10 +87,8 @@ def find_needed_test_playbook_paths(test_playbooks: List[dict],
     return tests_file_paths
 
 
-def write_test_pack_zip(tests_file_paths: set, path_to_content: str =
-                        '/home/runner/work/content-private/content-private/content',
-                        zip_destination_dir: str =
-                        '/home/runner/work/content-private/content-private/content') -> str:
+def write_test_pack_zip(tests_file_paths: set, path_to_content: str,
+                        zip_destination_dir: str) -> str:
     """
     Builds and writes the test pack when given a set of file paths.
 
@@ -154,10 +146,13 @@ def main():
     disable_instances(build, all_module_instances, prints_manager)
     #  Gather tests to add to test pack
     test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', [])
-    tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks_from_id_set)
+    tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks=test_playbooks_from_id_set,
+                                                                tests_to_run=build.tests_to_run,
+                                                                path_to_content=build.content_root)
     #  Write the test pack
     private_content_test_zip = write_test_pack_zip(zip_destination_dir=build.test_pack_path,
-                                                   tests_file_paths=tests_to_add_to_test_pack)
+                                                   tests_file_paths=tests_to_add_to_test_pack,
+                                                   path_to_content=build.content_root)
     # Create and install private test pack
     install_private_testing_pack(build, prints_manager, private_content_test_zip)
 
