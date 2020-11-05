@@ -92,7 +92,7 @@ def test_find_needed_test_playbook_paths():
     ]
 
     file_paths = find_needed_test_playbook_paths(test_playbooks=test_playbook_conf,
-                                                 filter_file_path=tests_to_run,
+                                                 tests_to_run=tests_to_run,
                                                  path_to_content='.')
     assert len(file_paths) == 51
     assert './Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml' in file_paths
@@ -142,16 +142,16 @@ def test_write_test_pack_zip(tmpdir):
             zip_ref.extractall(extract_dir)
             #  Check that metadata is present
             expected_metadata_file_path = extract_dir + '/test_pack/metadata.json'
-            assert os.path.isfile(expected_metadata_file_path)
+            assert os.path.exists(expected_metadata_file_path)
 
             #  Check that file from DeveloperTools is present
             expected_test_script_file_path = extract_dir + '/test_pack/TestPlaybooks/script-' \
                                                            'TestCreateIncidentsFile.yml'
-            assert os.path.isfile(expected_test_script_file_path)
+            assert os.path.exists(expected_test_script_file_path)
             #  Check that item collected in needed_test_playbook_paths is present.
             expected_hello_world_test_file_path = extract_dir + '/test_pack/TestPlaybooks/' \
                                                                 'playbook-HelloWorld_Scan-Test.yml'
-            assert os.path.isfile(expected_hello_world_test_file_path)
+            assert os.path.exists(expected_hello_world_test_file_path)
 
 
 def test_install_packs_private(mocker):
