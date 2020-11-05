@@ -37,7 +37,7 @@ except ModuleNotFoundError:
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_integration import Docker, check_integration, disable_all_integrations
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
-from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
+from demisto_sdk.commands.common.constants import FILTER_CONF, PB_Status
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
     LOG_COLORS, str2bool
 
@@ -663,9 +663,8 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
 
     # Skip tests that are missing from filtered list
     if filtered_tests and playbook_id not in filtered_tests:
-        
         return
-    
+
     if playbook_id in filtered_tests:
         playbook_skipped_integration.update(test_skipped_integration)
 

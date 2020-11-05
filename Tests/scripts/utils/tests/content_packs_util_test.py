@@ -1,14 +1,12 @@
 import json
 import os
 import pytest
-from demisto_sdk.commands.common.constants import (PACK_METADATA_CERTIFICATION,
-                                                   PACK_METADATA_SUPPORT,
+from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT,
                                                    PACKS_DIR,
                                                    PACKS_PACK_META_FILE_NAME)
 
-from Tests.scripts.collect_tests_and_content_packs import get_content_pack_name_of_test
 from Tests.scripts.utils.content_packs_util import (is_pack_xsoar_supported,
-                                                    should_test_content_pack, get_test_pack_name)
+                                                    should_test_content_pack)
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
@@ -81,4 +79,3 @@ def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_
     # Mocking os.path.join to return the temp path created instead the path in content
     mocker.patch.object(os.path, 'join', return_value=str(pack_metadata_file))
     assert should_test_content_pack(pack_name) == expected
-

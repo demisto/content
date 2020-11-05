@@ -774,10 +774,9 @@ def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
-            test_conf.get('playbookID') == test_id
-            and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
-                                              server_v=server_version,
-                                              to_v=test_conf.get('toversion', '99.99.99')))), None)
+                test_conf.get('playbookID') == test_id and is_runnable_in_server_version(
+            from_v=test_conf.get('fromversion', '0.0'), server_v=server_version,
+            to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -1093,10 +1092,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     # All filtring out of packs should be done here
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
-    print(tests)
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
-    print(tests)
 
     if not tests:
         rand = random.Random(branch_name)

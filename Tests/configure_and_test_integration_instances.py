@@ -22,7 +22,7 @@ from ruamel import yaml
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
     run_command, get_yaml, str2bool, format_version, find_type
-from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FileType
+from demisto_sdk.commands.common.constants import FileType
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
 from Tests.test_content import extract_filtered_tests, ParallelPrintsManager, \

@@ -14,8 +14,6 @@ from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR, \
     FileType
 
-from Tests.scripts.utils.content_packs_util import should_test_content_pack
-
 INITIAL_FROM_VERSION = "4.5.0"
 NEW_CONF_JSON_OBJECT = []
 
