@@ -33,5 +33,5 @@ def main():
         return_error('could not parse QRadar assets', error=exp)
 
 
-if __name__ == ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     return_results(main())

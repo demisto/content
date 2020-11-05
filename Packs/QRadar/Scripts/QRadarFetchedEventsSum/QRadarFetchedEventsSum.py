@@ -1,19 +1,21 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-HTML_TEMPLATE = """
-<div style='line-height:36px; color:#404142; text-align:center; font-size:20px; line-height:36px;'>
-  <br>
-  {fetched}/{total}
-</div>
-<div class='editable-field-wrapper' style='text-align:center; padding-top:10px;'>
-  Fetched Events / Total
-  <br>
-  <div class='editable-field-wrapper' style='text-align:center;'>
-    {message}
-  </div>
-</div>
-"""
+
+HTML_TEMPLATE = (
+    "</br>"
+    "<div style='line-height:36px; color:#404142; text-align:center; font-size:20px; line-height:36px;'>"
+    "{fetched}/{total}"
+    "</div>"
+
+    "<div class='editable-field-wrapper' style='text-align:center; padding-top:10px;'>"
+    "Fetched Events / Total"
+    "</div>"
+
+    "<div class='editable-field-wrapper' style='text-align:center;'>"
+    "{message}"
+    "</div>"
+)
 
 
 def main():
@@ -41,5 +43,5 @@ def main():
         return_error('could not parse QRadar offense', error=exp)
 
 
-if __name__ == ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     return_results(main())

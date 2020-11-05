@@ -25,5 +25,5 @@ def main():
         return_error('could not parse QRadar events', error=exp)
 
 
-if __name__ == ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     return_results(main())
