@@ -68,8 +68,7 @@ def options_handler():
     parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-t', '--test_type', help='unittests or test_playbooks or sdk_unittests or sdk_faild_steps'
                                                   'or bucket_upload')
-    parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address',
-                        required=True)
+    parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address')
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True)
     parser.add_argument('-ca', '--circle_artifacts', help="The path to the circle artifacts directory")
     parser.add_argument('-j', '--job_name', help='The job name that is running the slack notifier')
@@ -186,6 +185,9 @@ def get_attachments_for_all_steps(build_url, build_title):
 
 
 def get_attachments_for_test_playbooks(build_url, env_results_file_name):
+    if not env_results_file_name or not os.path.exists(env_results_file_name):
+        print_error('When running slack notifier for nightly build, provide env_results_file')
+        sys.exit(0)
     with open(env_results_file_name, 'r') as env_results_file_content:
         env_results = json.load(env_results_file_content)
 
@@ -312,10 +314,11 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
 def main():
     options = options_handler()
     if options.nightly:
+        env_results_file_name = options.env_results_file_name
         slack_notifier(options.url,
                        options.slack,
                        options.test_type,
-                       env_results_file_name=options.env_results_file_name)
+                       env_results_file_name=env_results_file_name)
     elif options.bucket_upload:
         job_name = options.job_name
         circle_artifacts_path = options.circle_artifacts
