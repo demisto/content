@@ -11,7 +11,7 @@ import requests
 import logging
 from datetime import datetime
 from zipfile import ZipFile
-from typing import Any, Tuple, Union
+from typing import Any, Tuple
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
     get_packs_statistics_dataframe
@@ -664,7 +664,6 @@ def main():
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
-    private_bucket_name = option.private_bucket_name
     service_account = option.service_account
     target_packs = option.pack_names if option.pack_names else ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())

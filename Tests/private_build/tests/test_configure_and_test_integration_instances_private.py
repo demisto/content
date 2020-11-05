@@ -135,7 +135,8 @@ def test_write_test_pack_zip(tmpdir):
     """
 
     set_of_test_paths = {'./Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml'}
-    private_content_test_zip = write_test_pack_zip(path_to_content='.', zip_destination_dir=tmpdir, tests_file_paths=set_of_test_paths)
+    private_content_test_zip = write_test_pack_zip(path_to_content='.', zip_destination_dir=tmpdir,
+                                                   tests_file_paths=set_of_test_paths)
     #  Opening created pack
     with tempfile.TemporaryDirectory() as extract_dir:
         with zipfile.ZipFile(private_content_test_zip, "r") as zip_ref:
