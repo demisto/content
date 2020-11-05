@@ -1093,8 +1093,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     # All filtring out of packs should be done here
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
+    print(tests)
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
+    print(tests)
+
     if not tests:
         rand = random.Random(branch_name)
         tests = get_random_tests(
