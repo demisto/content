@@ -1,6 +1,6 @@
 {
     "name": "Cloud Convert",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Use this integration to convert files using CloudConvert API",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

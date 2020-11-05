@@ -1,13 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 import tempfile
 
 import urllib3
 
 from typing import Any, Dict
-import requests
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -121,6 +119,7 @@ class Client(BaseClient):
             ok_codes=(422, 200, 201, 500)
         )
 
+
     def export_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
         Export a converted file to a url
@@ -142,7 +141,7 @@ class Client(BaseClient):
             ok_codes=(422, 200, 201, 500)
         )
 
-    def get_file_from_url(self, url):
+    def get_file_from_url(self, url: str):
         """
         Call a GET http request in order to get the file data given as url
         :param url: url containing a file
@@ -155,6 +154,20 @@ class Client(BaseClient):
             headers={'Content-Type': 'application/json'},
             resp_type='text'
         )
+
+    def check_remaining_minutes(self) -> bool:
+        """
+        Check if the user has remaining conversion minutes
+        Each user has 25 conversion minutes per day, unless more is purchased
+        :return: True if the user has remaining minutes, False otherwise
+        """
+        response = self._http_request(
+            method='GET',
+            url_suffix='/users/me',
+            headers=self._headers
+        )
+        return response.get('data', {}).get('credits') != 0
+
 
 @logger
 def import_command(client: Client, arguments: Dict[str, Any]):
@@ -360,7 +373,9 @@ def main() -> None:
             return_results(test_module(client))
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        err_msg = 'Task id not found or expired' if 'No query results for model' in str(e) else \
+            ('No more conversion minutes for today for this user' if 'Payment Required' in str(e) else str(e))
+        return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
