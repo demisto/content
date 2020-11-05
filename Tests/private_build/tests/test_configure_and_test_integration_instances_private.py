@@ -142,17 +142,19 @@ def test_write_test_pack_zip(tmpdir):
         with zipfile.ZipFile(private_content_test_zip, "r") as zip_ref:
             zip_ref.extractall(extract_dir)
             #  Check that metadata is present
+            dir_containing_metadata = glob.glob(extract_dir + '/test_pack/*')
             expected_metadata_file_path = extract_dir + '/test_pack/metadata.json'
-            assert os.path.exists(expected_metadata_file_path)
+            assert expected_metadata_file_path in dir_containing_metadata
 
             #  Check that file from DeveloperTools is present
+            dir_containing_test_script = glob.glob(extract_dir + '/test_pack/*/*')
             expected_test_script_file_path = extract_dir + '/test_pack/TestPlaybooks/script-' \
                                                            'TestCreateIncidentsFile.yml'
-            assert os.path.exists(expected_test_script_file_path)
+            assert expected_test_script_file_path in dir_containing_test_script
             #  Check that item collected in needed_test_playbook_paths is present.
             expected_hello_world_test_file_path = extract_dir + '/test_pack/TestPlaybooks/' \
                                                                 'playbook-HelloWorld_Scan-Test.yml'
-            assert os.path.exists(expected_hello_world_test_file_path)
+            assert expected_hello_world_test_file_path in dir_containing_test_script
 
 
 def test_install_packs_private(mocker):
