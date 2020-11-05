@@ -1,9 +1,9 @@
 iDefense provides intelligence regarding security threats and vulnerabilities.
-This integration was integrated and tested with version 0 of iDefense
-## Configure iDefense_v2 on Cortex XSOAR
+This integration was integrated and tested with version v2.58.0 of iDefense
+## Configure iDefense v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for iDefense_v2.
+2. Search for iDefense v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
