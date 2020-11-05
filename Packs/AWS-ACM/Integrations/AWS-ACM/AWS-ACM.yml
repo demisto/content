@@ -71,22 +71,30 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.ACM.Certificates.CertificateArn
       description: he Amazon Resource Name (ARN) of the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.DomainName
-      description: The fully qualified domain name for the certificate, such as www.example.com or example.com.
+      description: The fully qualified domain name for the certificate, such as www.example.com
+        or example.com.
       type: string
     - contextPath: AWS.ACM.Certificates.SubjectAlternativeNames
-      description: One or more domain names (subject alternative names) included in the certificate. This list contains the domain names that are bound to the public key that is contained in the certificate. The subject alternative names include the canonical domain name (CN) of the certificate and additional domain names that can be used to connect to the website.
+      description: One or more domain names (subject alternative names) included in
+        the certificate. This list contains the domain names that are bound to the
+        public key that is contained in the certificate. The subject alternative names
+        include the canonical domain name (CN) of the certificate and additional domain
+        names that can be used to connect to the website.
       type: string
     - contextPath: AWS.ACM.Certificates.DomainValidationOptions.DomainName
       description: A fully qualified domain name (FQDN) in the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ValidationEmails
-      description: A list of email addresses that ACM used to send domain validation emails.
+      description: A list of email addresses that ACM used to send domain validation
+        emails.
       type: string
     - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ValidationDomain
       description: The domain name that ACM used to send domain validation emails.
@@ -95,13 +103,15 @@ script:
       description: The validation status of the domain name.
       type: string
     - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ResourceRecord.Name
-      description: The name of the DNS record to create in your domain. This is supplied by ACM.
+      description: The name of the DNS record to create in your domain. This is supplied
+        by ACM.
       type: string
     - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ResourceRecord.Type
       description: The type of DNS record. Currently this can be CNAME.
       type: string
     - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ResourceRecord.Value
-      description: The value of the CNAME record to add to your DNS database. This is supplied by ACM.
+      description: The value of the CNAME record to add to your DNS database. This
+        is supplied by ACM.
       type: string
     - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ValidationMethod
       description: Specifies the domain validation method.
@@ -110,28 +120,35 @@ script:
       description: The serial number of the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.Subject
-      description: The name of the entity that is associated with the public key contained in the certificate.
+      description: The name of the entity that is associated with the public key contained
+        in the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.Issuer
-      description: The name of the certificate authority that issued and signed the certificate.
+      description: The name of the certificate authority that issued and signed the
+        certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.CreatedAt
-      description: The time at which the certificate was requested. This value exists only when the certificate type is AMAZON_ISSUED .
+      description: The time at which the certificate was requested. This value exists
+        only when the certificate type is AMAZON_ISSUED .
       type: date
     - contextPath: AWS.ACM.Certificates.IssuedAt
-      description: The time at which the certificate was issued. This value exists only when the certificate type is AMAZON_ISSUED .
+      description: The time at which the certificate was issued. This value exists
+        only when the certificate type is AMAZON_ISSUED .
       type: date
     - contextPath: AWS.ACM.Certificates.ImportedAt
-      description: The date and time at which the certificate was imported. This value exists only when the certificate type is IMPORTED.
+      description: The date and time at which the certificate was imported. This value
+        exists only when the certificate type is IMPORTED.
       type: date
     - contextPath: AWS.ACM.Certificates.Status
       description: The status of the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.RevokedAt
-      description: The time at which the certificate was revoked. This value exists only when the certificate status is REVOKED.
+      description: The time at which the certificate was revoked. This value exists
+        only when the certificate status is REVOKED.
       type: date
     - contextPath: AWS.ACM.Certificates.RevocationReason
-      description: The reason the certificate was revoked. This value exists only when the certificate status is REVOKED.
+      description: The reason the certificate was revoked. This value exists only
+        when the certificate status is REVOKED.
       type: string
     - contextPath: AWS.ACM.Certificates.NotBefore
       description: The time before which the certificate is not valid.
@@ -140,13 +157,15 @@ script:
       description: The time after which the certificate is not valid.
       type: date
     - contextPath: AWS.ACM.Certificates.KeyAlgorithm
-      description: The algorithm that was used to generate the public-private key pair.
+      description: The algorithm that was used to generate the public-private key
+        pair.
       type: string
     - contextPath: AWS.ACM.Certificates.SignatureAlgorithm
       description: The algorithm that was used to sign the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.InUseBy
-      description: A list of ARNs for the AWS resources that are using the certificate. A certificate can be used by multiple AWS resources.
+      description: A list of ARNs for the AWS resources that are using the certificate.
+        A certificate can be used by multiple AWS resources.
       type: string
     - contextPath: AWS.ACM.Certificates.FailureReason
       description: The reason the certificate request failed.
@@ -161,7 +180,8 @@ script:
       description: A fully qualified domain name (FQDN) in the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ValidationEmails
-      description: A list of email addresses that ACM used to send domain validation emails.
+      description: A list of email addresses that ACM used to send domain validation
+        emails.
       type: string
     - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ValidationDomain
       description: The domain name that ACM used to send domain validation emails.
@@ -170,33 +190,40 @@ script:
       description: The validation status of the domain name.
       type: string
     - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ResourceRecord.Name
-      description: The name of the DNS record to create in your domain. This is supplied by ACM.
+      description: The name of the DNS record to create in your domain. This is supplied
+        by ACM.
       type: string
     - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ResourceRecord.Type
       description: The type of DNS record.
       type: string
     - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ResourceRecord.Value
-      description: The value of the CNAME record to add to your DNS database. This is supplied by ACM.
+      description: The value of the CNAME record to add to your DNS database. This
+        is supplied by ACM.
       type: string
     - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ValidationMethod
       description: Specifies the domain validation method.
       type: string
     - contextPath: AWS.ACM.Certificates.KeyUsages.Name
-      description: A list of Key Usage X.509 v3 extension objects. Each object is a string value that identifies the purpose of the public key contained in the certificate.
+      description: A list of Key Usage X.509 v3 extension objects. Each object is
+        a string value that identifies the purpose of the public key contained in
+        the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.ExtendedKeyUsages.Name
       description: The name of an Extended Key Usage value.
       type: string
     - contextPath: AWS.ACM.Certificates.ExtendedKeyUsages.OID
-      description: An object identifier (OID) for the extension value. OIDs are strings of numbers separated by periods.
+      description: An object identifier (OID) for the extension value. OIDs are strings
+        of numbers separated by periods.
     - contextPath: AWS.ACM.Certificates.CertificateAuthorityArn
-      description: The Amazon Resource Name (ARN) of the ACM PCA private certificate authority (CA) that issued the certificate.
+      description: The Amazon Resource Name (ARN) of the ACM PCA private certificate
+        authority (CA) that issued the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.RenewalEligibility
       description: Specifies whether the certificate is eligible for renewal.
       type: string
     - contextPath: AWS.ACM.Certificates.Options.CertificateTransparencyLoggingPreference
-      description: You can opt out of certificate transparency logging by specifying the DISABLED option. Opt in by specifying ENABLED.
+      description: You can opt out of certificate transparency logging by specifying
+        the DISABLED option. Opt in by specifying ENABLED.
       type: string
     description: Returns detailed metadata about the specified ACM certificate.
   - name: aws-acm-list-certificates
@@ -252,7 +279,8 @@ script:
       - EC_prime256v1
       - EC_secp384r1
       - EC_secp521r1
-      description: Specify one or more algorithms that can be used to generate key pairs.
+      description: Specify one or more algorithms that can be used to generate key
+        pairs.
     - auto: PREDEFINED
       default: false
       description: The AWS Region, if not specified the default region will be used
@@ -282,22 +310,28 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.ACM.Certificates.CertificateArn
       description: Amazon Resource Name (ARN) of the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.DomainName
-      description: Fully qualified domain name (FQDN), such as www.example.com or example.com, for the certificate.
+      description: Fully qualified domain name (FQDN), such as www.example.com or
+        example.com, for the certificate.
       type: string
     - contextPath: AWS.ACM.Certificates.Region
       description: The AWS region were the certificate is located.
-    description: Retrieves a list of certificate ARNs and domain names. You can request that only certificates that match a specific status be listed. You can also filter by specific attributes of the certificate.
+    description: Retrieves a list of certificate ARNs and domain names. You can request
+      that only certificates that match a specific status be listed. You can also
+      filter by specific attributes of the certificate.
   - name: aws-acm-add-tags-to-certificate
     arguments:
     - name: certificateArn
       required: true
-      description: String that contains the ARN of the ACM certificate to which the tag is to be applied.
+      description: String that contains the ARN of the ACM certificate to which the
+        tag is to be applied.
     - name: tags
       required: true
       description: The key-value pair that defines the tag. The tag value is optional.
@@ -330,14 +364,17 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Adds one or more tags to an ACM certificate.
     execution: true
   - name: aws-acm-remove-tags-from-certificate
     arguments:
     - name: certificateArn
       required: true
-      description: The ARN of the ACM Certificate with one or more tags that you want to remove.
+      description: The ARN of the ACM Certificate with one or more tags that you want
+        to remove.
     - name: tags
       required: true
       description: The key-value pair that defines the tag to remove.
@@ -370,7 +407,9 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Remove one or more tags from an ACM certificate.
     execution: true
   - name: aws-acm-list-tags-for-certificate
@@ -407,7 +446,9 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.ACM.Certificates.Tags.Key
       description: The key of the tag.
@@ -415,7 +456,8 @@ script:
     - contextPath: AWS.ACM.Certificates.Tags.Value
       description: The value of the tag.
       type: string
-    description: Lists the tags that have been applied to the ACM certificate. Use the certificate's Amazon Resource Name (ARN) to specify the certificate.
+    description: Lists the tags that have been applied to the ACM certificate. Use
+      the certificate's Amazon Resource Name (ARN) to specify the certificate.
   - name: aws-acm-get-certificate
     arguments:
     - name: certificateArn
@@ -450,16 +492,25 @@ script:
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.ACM.Certificates.Certificate
-      description: String that contains the ACM certificate represented by the ARN specified at input.
+      description: String that contains the ACM certificate represented by the ARN
+        specified at input.
       type: string
     - contextPath: AWS.ACM.Certificates.CertificateChain
-      description: The certificate chain that contains the root certificate issued by the certificate authority (CA).
+      description: The certificate chain that contains the root certificate issued
+        by the certificate authority (CA).
       type: string
-    description: Retrieves a certificate specified by an ARN and its certificate chain . The chain is an ordered list of certificates that contains the end entity certificate, intermediate certificates of subordinate CAs, and the root certificate in that order. The certificate and certificate chain are base64 encoded. If you want to decode the certificate to see the individual fields, you can use OpenSSL.
-  dockerimage: demisto/boto3py3:1.0.0.1030
+    description: Retrieves a certificate specified by an ARN and its certificate chain
+      . The chain is an ordered list of certificates that contains the end entity
+      certificate, intermediate certificates of subordinate CAs, and the root certificate
+      in that order. The certificate and certificate chain are base64 encoded. If
+      you want to decode the certificate to see the individual fields, you can use
+      OpenSSL.
+  dockerimage: demisto/boto3py3:1.0.0.13191
   runonce: false
   subtype: python3
 tests:
