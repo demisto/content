@@ -50,6 +50,7 @@ from argus_api.api.reputation.v1.observation import (
     fetch_observations_for_i_p,
 )
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -58,71 +59,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_INCIDENTS_TO_FETCH = 50
 FETCH_TAG = demisto.params().get("fetch_tag")
-services = [
-    {
-        "id": 2,
-        "shortName": "ids",
-        "name": "Security Monitoring",
-        "caseTypes": [
-            "operationalIncident",
-            "change",
-            "securityIncident",
-            "informational",
-        ],
-        "workflows": [
-            "severityAlert",
-            "escalateInfra",
-            "escalateTI",
-            "escalateDEV",
-            "validation",
-            "customerUpdate",
-            "slaViolation",
-            "escalateNSA",
-            "escalateLog",
-            "internalSlaViolation",
-            "escalateMSSAnalyst",
-            "escalation",
-            "tuning",
-        ],
-    },
-    {
-        "id": 6,
-        "shortName": "support",
-        "name": "Support",
-        "caseTypes": ["informational", "operationalIncident"],
-        "workflows": ["customerUpdate", "escalateDEV"],
-    },
-    {
-        "id": 13,
-        "shortName": "administrative",
-        "name": "Administrative",
-        "caseTypes": ["informational"],
-        "workflows": [
-            "escalateTRS",
-            "customerUpdate",
-            "escalateNSA",
-            "escalateInfra",
-            "escalateTI",
-            "escalateLog",
-            "escalateMSSAnalyst",
-            "escalateDEV",
-        ],
-    },
-    {
-        "id": 221,
-        "shortName": "advisory",
-        "name": "Advisory",
-        "caseTypes": ["informational"],
-        "workflows": ["customerUpdate", "escalateMSSAnalyst"],
-    },
-    {
-        "id": 260,
-        "shortName": "vulnscan",
-        "name": "Vulnerability Scanning",
-        "caseTypes": ["informational", "operationalIncident"],
-        "workflows": ["escalateTRS", "customerUpdate", "escalateDEV"],
-    },
-]
+
 
 """ HELPER FUNCTIONS """
 
@@ -223,17 +160,6 @@ def pretty_print_comments(comments: list, title: str = None) -> str:
     return string
 
 
-def is_valid_service(service: str) -> bool:
-    return any(s["shortName"] == service for s in services)
-
-
-def is_valid_case_type(service: str, case_type: str) -> bool:
-    return is_valid_service(service) and (
-        case_type
-        in next((s for s in services if s["shortName"] == service), {})["caseTypes"]
-    )
-
-
 """ COMMAND FUNCTIONS """
 
 
@@ -252,7 +178,7 @@ def fetch_incidents(last_run: dict, first_fetch_period: str):
     result = advanced_case_search(
         startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
         endTimestamp="now",
-        limit=demisto.params().get("max_fetch", 0),
+        limit=demisto.params().get("max_limit", 0),
         sortBy=["createdTimestamp"],
         priority=build_argus_priority_from_min_severity(
             demisto.params().get("min_severity", "medium")
@@ -270,8 +196,7 @@ def fetch_incidents(last_run: dict, first_fetch_period: str):
                 "occurred": case["createdTime"],
                 "severity": argus_priority_to_demisto_severity(case["priority"]),
                 "status": argus_status_to_demisto_status(case["status"]),
-                "details": case["description"]
-                + str(demisto.getLastRun()),  # TODO markdownify
+                "details": case["description"],  # TODO markdownify
                 "customFields": {
                     "argus_id": str(case["id"]),
                     "type": case["type"],
@@ -427,8 +352,6 @@ def create_case_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("service not specified")
     if not case_type:
         raise ValueError("case_type not specified")
-    if not is_valid_case_type(service, case_type):
-        raise ValueError("invalid service: case type combination")
     if tags:
         tags = str(tags).split(",")
         if len(tags) % 2 != 0:
@@ -592,7 +515,7 @@ def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Argus.Attachment",
+        outputs_prefix="Argus.Attachments",
         outputs=result,
         raw_response=result,
     )

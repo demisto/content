@@ -1,0 +1,277 @@
+id: 845bffb6-999e-4b19-84fa-a584ed9510d9
+version: 11
+vcShouldKeepItemLegacyProdMachine: false
+name: Argus Pull Case
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e46f2f20-aaf8-42ba-8c0a-e63fe26453a7
+    type: start
+    task:
+      id: e46f2f20-aaf8-42ba-8c0a-e63fe26453a7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1bd17da8-b5ce-4543-8335-648414da8d92
+    type: regular
+    task:
+      id: 1bd17da8-b5ce-4543-8335-648414da8d92
+      version: -1
+      name: argus_list_case_comments
+      description: List the comments of an Argus case
+      script: ArgusManagedDefence|||argus_list_case_comments
+      type: regular
+      iscommand: true
+      brand: ArgusManagedDefence
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      after_comment: {}
+      before_comment: {}
+      case_id:
+        simple: ${inputs.Argus Case ID}
+      limit: {}
+      offset: {}
+      sort_by: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d35527ce-1840-43af-8dc5-0cd65a7ef8fe
+    type: regular
+    task:
+      id: d35527ce-1840-43af-8dc5-0cd65a7ef8fe
+      version: -1
+      name: argus_list_case_attachments
+      description: List attachments for an existing case
+      script: ArgusManagedDefence|||argus_list_case_attachments
+      type: regular
+      iscommand: true
+      brand: ArgusManagedDefence
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      case_id:
+        simple: ${inputs.Argus Case ID}
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 90964f7a-3705-480b-8af3-810c3cac938d
+    type: regular
+    task:
+      id: 90964f7a-3705-480b-8af3-810c3cac938d
+      version: -1
+      name: argus_list_case_tags
+      description: List tags attached to an Argus case
+      script: ArgusManagedDefence|||argus_list_case_tags
+      type: regular
+      iscommand: true
+      brand: ArgusManagedDefence
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      case_id:
+        simple: ${inputs.Argus Case ID}
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: df1b2a7c-0969-4d43-8354-93772c6f06ba
+    type: regular
+    task:
+      id: df1b2a7c-0969-4d43-8354-93772c6f06ba
+      version: -1
+      name: argus_get_events_for_case
+      description: Fetch events associated with specified case.
+      script: ArgusManagedDefence|||argus_get_events_for_case
+      type: regular
+      iscommand: true
+      brand: ArgusManagedDefence
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      case_id:
+        simple: ${inputs.Argus Case ID}
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 4a2366db-81b0-41b5-8c8f-41b09e83a215
+    type: condition
+    task:
+      id: 4a2366db-81b0-41b5-8c8f-41b09e83a215
+      version: -1
+      name: Manually review the incident.
+      description: Manually review and investigate this incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: eddde2fa-2bac-498d-8500-d365876b7738
+    type: regular
+    task:
+      id: eddde2fa-2bac-498d-8500-d365876b7738
+      version: -1
+      name: DisplayHTML
+      description: Display HTML in the War Room.
+      scriptName: DisplayHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      header: {}
+      html:
+        simple: ${incident.details}
+      markAsNote: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1275,
+        "width": 590,
+        "x": 670,
+        "y": 130
+      }
+    }
+  }
+inputs:
+- key: Argus Case ID
+  value:
+    simple: ${incident.arguscaseid}
+  required: true
+  description: ""
+  playbookInputQuery: null
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+quiet: true

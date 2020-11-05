@@ -1,0 +1,91 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "b8bcb3b6-2c60-4f0d-8e2b-2d90eb700445",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 2,
+	"mapping": {
+		"Argus Case": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Argus Case Category": {
+					"complex": null,
+					"simple": "category.shortName"
+				},
+				"Argus Case ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"Argus Case Service": {
+					"complex": null,
+					"simple": "service.shortName"
+				},
+				"Argus Case Type": {
+					"complex": null,
+					"simple": "type"
+				},
+				"Argus Customer ID": {
+					"complex": null,
+					"simple": "customer.id"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"category": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "category",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"occurred": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "createdTimestamp",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"severity": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "priority",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"name": "Argus Case Mapper",
+	"nameRaw": "Argus Case Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

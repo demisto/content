@@ -36,25 +36,6 @@ def test_parse_first_fetch():
     assert parse_first_fetch(123) == 123
 
 
-def test_is_valid_service():
-    from ArgusManagedDefence import is_valid_service
-
-    assert is_valid_service("ids")
-    assert is_valid_service("support")
-    assert is_valid_service("administrative")
-    assert is_valid_service("advisory")
-    assert is_valid_service("vulnscan")
-    assert not is_valid_service("not_a_service")
-
-
-def test_is_valid_case_type():
-    from ArgusManagedDefence import is_valid_case_type
-
-    assert is_valid_case_type("ids", "change")
-    assert not is_valid_case_type("not_a_service", "change")
-    assert not is_valid_case_type("ids", "not_a_type")
-
-
 def test_fetch_incidents(requests_mock):
     from ArgusManagedDefence import fetch_incidents
     from argus_json import argus_case_data
