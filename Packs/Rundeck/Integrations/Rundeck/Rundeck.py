@@ -885,7 +885,7 @@ def adhoc_run_command(client: Client, args: dict):
     project_name: str = args.get('project_name', '')
     exec_command: str = args.get('exec_command', '')
     node_thread_count: str = args.get('node_thread_count', '')
-    node_keepgoing: str = args.get('node_keepgoing', '')  # TODO: add list option true\false
+    node_keepgoing: str = args.get('node_keepgoing', '')
     as_user: str = args.get('as_user')
     node_filter: str = args.get('node_filter', '')
 
@@ -953,16 +953,13 @@ def adhoc_script_run_from_url_command(client: Client, args: dict):
     file_extension: str = args.get('file_extension', '')
     node_filter: str = args.get('node_filter', '')
     arg_string: str = args.get('arg_string', '')
-    demisto.log('sending adhoc script run from url request')
+
     result = client.adhoc_script_run_from_url(project_name, script_url, node_thread_count, node_keepgoing, as_user,
                                               node_filter, script_interpreter, interpreter_args_quoted, file_extension,
                                               arg_string)
-    demisto.log('finish sending adhoc script run from url request')
-    # if not isinstance(result, dict):
-    # raise DemistoException(f'Got unexpected response: {result}')
-    demisto.log('start filter results from the api')
+    if not isinstance(result, dict):
+        raise DemistoException(f'Got unexpected response: {result}')
     filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
-    demisto.log('finish filter results from the api')
 
     headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
     readable_output = tableToMarkdown('Adhoc Run Script From Url:', filtered_results, headers=headers, headerTransform=pascalToSpace)
@@ -989,9 +986,7 @@ def webhook_event_send_command(client: Client, args: dict):
             demisto.info('finish convert "options" argument to str')
     except Exception as e:
         raise DemistoException(f'There was a problem converting "free_json" to json. The reason is: {e}')
-    demisto.info('sending webhook event send request')
     result = client.webhook_event_send(auth_token, options_as_str, free_json)
-    demisto.info('finish sending webhook event send request')
 
     headers = [key.replace("_", " ") for key in [*result.keys()]]
     readable_output = tableToMarkdown('Webhook event send:', result, headers=headers,

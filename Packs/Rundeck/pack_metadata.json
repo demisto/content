@@ -1,6 +1,6 @@
 {
     "name": "Rundeck",
-    "description": "Rundeck is runbook automation for incident management, business continuity, and self-service operations\n\n",
+    "description": "Rundeck is runbook automation for incident management, business continuity, and self-service operations",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
