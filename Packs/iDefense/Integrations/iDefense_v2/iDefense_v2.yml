@@ -32,42 +32,42 @@ script:
     arguments:
     - name: ip
       default: true
-      description: IP to check
+      description: IP address to check.
       isArray: true
     outputs:
     - contextPath: IP.Address
-      description: Bad IP Address found
+      description: The IP address that was checked.
       type: String
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
+      description: For malicious IP addresses, the vendor that made the decision.
       type: String
     - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason for the vendor to make the decision
+      description: For malicious IP addresses, the reason the vendor made that decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
       description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
+      description: The vendor that was used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
-    description: Check IP reputation
+    description: Checks the reputation of the given IP address.
   - name: domain
     arguments:
     - name: domain
       default: true
-      description: Domain to check
+      description: The domain to check.
       isArray: true
     outputs:
     - contextPath: Domain.Name
-      description: Bad domain found
+      description: The name of the domain that was checked.
       type: String
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
+      description: For malicious domains, the vendor that made the decision.
       type: String
     - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
+      description: For malicious domains, the reason the vendor made that decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -81,7 +81,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    description: Check domain reputation
+    description: Checks the reputation of the given domain.
   - name: url
     arguments:
     - name: url
@@ -90,13 +90,13 @@ script:
       isArray: true
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found
+      description: The URL that was checked.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: String
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason the vendor made that decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -110,40 +110,40 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    description: Check URL reputation
+    description: Checks the reputation of the given URL.
   - name: idefense-get-ioc-by-uuid
     arguments:
     - name: uuid
       required: true
       default: false
-      description: Unique User ID
+      description: Unique User ID.
     outputs:
     - contextPath: IP.Address
-      description: Bad IP Address found
+      description: The IP address.
       type: String
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
+      description: For malicious IPs, the vendor that made the decision.
       type: String
     - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason for the vendor to make the decision
+      description: For malicious IPs, the reason the vendor made that decision.
       type: String
     - contextPath: Domain.Name
-      description: Bad domain found
+      description: The domain name.
       type: String
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
+      description: For malicious domains, the vendor that made the decision.
       type: String
     - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
+      description: For malicious domains, the reason the vendor made that decision.
       type: String
     - contextPath: URL.Data
-      description: Bad URLs found
+      description: The URL.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: String
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason the vendor made that decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -169,4 +169,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- iDefense_v2_Test
+- No tests
