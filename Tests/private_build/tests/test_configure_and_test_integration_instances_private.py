@@ -63,6 +63,7 @@ class BuildMock:
         self.skipped_integrations_conf = {}
         self.id_set = {}
         self.test_pack_path = ''
+        self.pack_ids_to_install = []
 
 
 def test_find_needed_test_playbook_paths():
@@ -185,6 +186,7 @@ def test_install_packs_private(mocker):
     mocker.patch.object(glob, 'glob', return_value=['content/artifacts/packs/TEST.zip'])
     mock_build = BuildMock()
     mock_build.test_pack_path = 'content/artifacts/packs'
+    mock_build.pack_ids_to_install = ['TestPack']
     test_results = install_packs_private(build=mock_build, prints_manager=prints_manager,
                                          pack_ids=['TEST'])
     assert test_results is True
