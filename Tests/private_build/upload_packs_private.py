@@ -399,6 +399,8 @@ def main():
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.is_private
 
+    print(f"Packs artifact path is: {packs_artifacts_path}")
+
     prepare_test_directories(packs_artifacts_path)
 
     # google cloud storage client initialized
