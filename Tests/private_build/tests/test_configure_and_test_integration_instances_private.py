@@ -134,7 +134,8 @@ def test_write_test_pack_zip(tmpdir):
           test playbook.
     """
 
-    set_of_test_paths = {'./Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml'}
+    set_of_test_paths = {'./Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml',
+                         './Packs/DeveloperTools/TestPlaybooks/script-TestCreateIncidentsFile.yml'}
     private_content_test_zip = write_test_pack_zip(path_to_content='.', zip_destination_dir=tmpdir,
                                                    tests_file_paths=set_of_test_paths)
     #  Opening created pack
