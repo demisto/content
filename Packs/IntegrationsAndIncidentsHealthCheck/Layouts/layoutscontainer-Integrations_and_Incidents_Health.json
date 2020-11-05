@@ -2,11 +2,6 @@
  "detailsV2": {
   "tabs": [
    {
-    "id": "summary",
-    "name": "Legacy Summary",
-    "type": "summary"
-   },
-   {
     "hidden": false,
     "id": "fnfleysvoq",
     "name": "Integrations Health Check",
