@@ -1087,7 +1087,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
     # Get packs containing each of the collected tests
-    packs_of_collected_tests = conf.get_content_pack_name_of_test(tests, id_set)
+    packs_of_collected_tests = get_content_pack_name_of_test(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     # All filtring out of packs should be done here
