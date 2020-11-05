@@ -249,6 +249,8 @@ Gets the pre-defined threats list from a Firewall or Panorama and stores as a JS
 | File.MD5 | string | MD5 hash of the file. | 
 | File.SHA1 | string | SHA1 hash of the file. | 
 | File.SHA256 | string | SHA256 hash of the file. | 
+| File.SHA512 | string | SHA512 hash of the file. |
+| File.SSDeep | string | SSDeep hash of the file. |
 
 
 #### Command Example
@@ -2444,6 +2446,8 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 | File.MD5 | string | MD5 hash of the file. | 
 | File.SHA1 | string | SHA1 hash of the file. | 
 | File.SHA256 | string | SHA256 hash of the file. | 
+| File.SHA512 | string | SHA512 hash of the file. |
+| File.SSDeep | string | SSDeep hash of the file. |
 
 
 #### Command Example

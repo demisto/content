@@ -253,6 +253,12 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: string
+    - contextPath: File.SHA512
+      description: SHA512 hash of the file.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
   - deprecated: false
     description: Commits a configuration to the Palo Alto firewall or Panorama, but does
       not validate if the commit was successful. Committing to Panorama does not push
@@ -2522,6 +2528,12 @@ script:
       type: string
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.SHA512
+      description: SHA512 hash of the file.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
       type: string
   - arguments:
     - auto: PREDEFINED
