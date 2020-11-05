@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 _circle_token=$1
-[ -n "$2" ] && _branch="$2" || _branch="$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')"
+[ -n "$2" ] && _branch="$2" || _branch="$(git branch  --show-current)"
 
 trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
 
