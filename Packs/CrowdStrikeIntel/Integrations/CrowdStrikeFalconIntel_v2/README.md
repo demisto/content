@@ -29,7 +29,7 @@ Check file reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The files hashes (MD5/SHA1/SHA256) to check. Supports comma-separated values.| Required | 
+| file | A comma-separated list of file hashes (MD5/SHA1/SHA256) to check.| Required | 
 
 
 #### Context Output
@@ -171,7 +171,7 @@ Check the given URL reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The URLs to be checked. Supports comma-separated values.| Required | 
+| url | A comma-separated list of URLs to check.| Required | 
 
 
 #### Context Output
@@ -307,7 +307,7 @@ Check the given URL reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domains to be checked. Supports comma-separated values.| Required | 
+| domain | A comma-seperated list of domains to check.| Required | 
 
 
 #### Context Output
@@ -427,7 +427,7 @@ Check IP reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP addresses to check. Supports comma-separated values.| Required | 
+| ip | A comma-separated list of IP addresses to check.| Required | 
 
 
 #### Context Output
