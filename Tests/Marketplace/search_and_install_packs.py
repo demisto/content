@@ -265,22 +265,23 @@ def install_nightly_packs(client: demisto_client, host: str, prints_manager: Par
             prints_manager.execute_thread_prints(thread_index)
 
 
-def install_packs_from_artifacts(build: Build, client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
-                                 thread_index: int):
+def install_packs_from_artifacts(client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
+                                 thread_index: int, test_pack_path: str, pack_ids_to_install: List):
     """
     Installs all the packs located in the artifacts folder of the BitHub actions build. Please note:
     The server always returns a 200 status even if the pack was not installed.
 
-    :param build: The build object.
     :param client: Demisto-py client to connect to the server.
     :param host: FQDN of the server.
     :param prints_manager: ParallelPrintsManager - Will be deprecated.
     :param thread_index: Integer indicating which thread the test is running on.
+    :param test_pack_path: Path the the test pack directory.
+    :param pack_ids_to_install: List of pack IDs to install.
     :return: None. Call to server waits until a successful response.
     """
-    local_packs = glob.glob(f"{build.test_pack_path}/*.zip")
+    local_packs = glob.glob(f"{test_pack_path}/*.zip")
     for local_pack in local_packs:
-        if any(pack_id in local_pack for pack_id in build.pack_ids_to_install):
+        if any(pack_id in local_pack for pack_id in pack_ids_to_install):
             packs_install_msg = f'Installing the following pack: {local_pack}'
             prints_manager.add_print_job(packs_install_msg, print_color, thread_index,
                                          LOG_COLORS.GREEN,
@@ -289,18 +290,21 @@ def install_packs_from_artifacts(build: Build, client: demisto_client, host: str
                                 thread_index=thread_index, pack_path=local_pack)
 
 
-def install_packs_private(build: Build, client: demisto_client, host: str,
-                          prints_manager: ParallelPrintsManager, thread_index: int):
+def install_packs_private(client: demisto_client, host: str,
+                          prints_manager: ParallelPrintsManager, thread_index: int,
+                          pack_ids_to_install: List, test_pack_path: str):
     """ Make a packs installation request.
 
     Args:
-        build (Build): The build object.
         client (demisto_client): The configured client to use.
         host (str): The server URL.
         prints_manager (ParallelPrintsManager): Print manager object.
         thread_index (int): the thread index.
+        pack_ids_to_install (list): List of Pack IDs to install.
+        test_pack_path (str): Path where test packs are located.
     """
-    install_packs_from_artifacts(build, client, host, prints_manager, thread_index)
+    install_packs_from_artifacts(client, host, prints_manager, thread_index, pack_ids_to_install,
+                                 test_pack_path)
 
 
 def install_packs(client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
@@ -487,12 +491,13 @@ def upload_zipped_packs(client: demisto_client, host: str, prints_manager: Paral
         sys.exit(1)
 
 
-def search_and_install_packs_and_their_dependencies_private(build: Build, pack_ids: list, client: demisto_client,
+def search_and_install_packs_and_their_dependencies_private(test_pack_path: str, pack_ids: list,
+                                                            client: demisto_client,
                                                             prints_manager: ParallelPrintsManager,
                                                             thread_index: int = 0):
     """ Searches for the packs from the specified list, searches their dependencies, and then installs them.
     Args:
-        build (Build): The build object.
+        test_pack_path (str): Path of where the test packs are located.
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
         prints_manager (ParallelPrintsManager): A prints manager object.
@@ -526,7 +531,7 @@ def search_and_install_packs_and_their_dependencies_private(build: Build, pack_i
         threads_list.append(thread)
     run_threads_list(threads_list)
 
-    install_packs_private(build, client, host, prints_manager, thread_index)
+    install_packs_private(client, host, prints_manager, thread_index, pack_ids, test_pack_path)
 
     return packs_to_install, SUCCESS_FLAG
 
