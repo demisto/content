@@ -830,7 +830,7 @@ class Pack(object):
                     _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
                 else:
                     _pack_artifacts_path = pack_artifacts_path
-                print(f"Copying {zip_pack_path} to {_pack_artifacts_path}/{self._pack_name}.zip")
+                print(f"Copying {zip_pack_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
                 shutil.copy(zip_pack_path, f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
