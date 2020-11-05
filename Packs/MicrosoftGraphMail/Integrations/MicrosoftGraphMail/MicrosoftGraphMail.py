@@ -799,10 +799,10 @@ class MsGraphClient:
     @staticmethod
     def _get_next_run_time(fetched_emails, start_time):
         """
-        Returns modified time of last email if exist, else utc time that was passed as start_time.
+        Returns received time of last email if exist, else utc time that was passed as start_time.
 
         The elements in fetched emails are ordered by modified time in ascending order,
-        meaning the last element has the latest modified time.
+        meaning the last element has the latest received time.
 
         :type fetched_emails: ``list``
         :param fetched_emails: List of fetched emails
@@ -813,7 +813,7 @@ class MsGraphClient:
         :return: Returns str date of format Y-m-dTH:M:SZ
         :rtype: `str`
         """
-        next_run_time = fetched_emails[-1].get('lastModifiedDateTime') if fetched_emails else start_time
+        next_run_time = fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
 
         return next_run_time
 
