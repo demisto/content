@@ -124,19 +124,6 @@ class Client(BaseClient):
                                   params=self._params)
 
 
-def test_module(client: Client, *_) -> str:
-    """Performs basic get request to get a DNS signature.
-
-    Args:
-        client: Client object with request.
-
-    Returns:
-        string.
-    """
-    client.dns_signature_get_request(dns_signature_id='325235352')
-    return 'ok'
-
-
 def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
     """Get antivirus signature.
 
@@ -443,6 +430,18 @@ def signature_search_results(client: Client, args: dict) -> CommandResults:
         readable_output=readable_output,
         raw_response=response
     )
+
+def test_module(client: Client, *_) -> str:
+    """Performs basic get request to get ip geo data.
+
+    Args:
+        client: Client object with request.
+
+    Returns:
+        string.
+    """
+    client.ip_geo_get_request(ip_='1.1.1.1')
+    return 'ok'
 
 
 def main():

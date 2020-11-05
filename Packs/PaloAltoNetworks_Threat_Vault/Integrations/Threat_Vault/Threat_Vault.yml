@@ -352,5 +352,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No test
+- PANW Threat Vault - Signature Search - Test
 fromversion: 5.0.0
