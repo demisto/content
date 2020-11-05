@@ -8,6 +8,7 @@ API_URL = "https://test.com"
 DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && ' \
            'val.Vendor == obj.Vendor && val.Type == obj.Type)'
 
+
 def test_ip_command():
     """
     Given:
