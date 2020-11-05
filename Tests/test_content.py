@@ -661,6 +661,11 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
     test_skipped_integration, integrations, is_nightly_integration = collect_integrations(
         integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
 
+    # Skip tests that are missing from filtered list
+    if filtered_tests and playbook_id not in filtered_tests:
+        
+        return
+    
     if playbook_id in filtered_tests:
         playbook_skipped_integration.update(test_skipped_integration)
 
@@ -674,11 +679,7 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
                                      include_timestamp=True)
         return
 
-    # Skip tests that are missing from filtered list
-    if filtered_tests and playbook_id not in filtered_tests:
-        return
-
-    # Skip test that appear in the skip section/
+    # Skip test that appear in the skip section
     if playbook_id in skipped_tests_conf:
         skipped_tests.add(f'{playbook_id} - reason: {skipped_tests_conf[playbook_id]}')
         return
