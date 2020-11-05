@@ -22,7 +22,6 @@ ADDRESS_TYPE_MAPPING = {
     6: 'wildcard-fqdn'
 }
 
-
 ''' CLIENT CLASS '''
 
 
@@ -208,19 +207,17 @@ def list_firewall_addresses_command(client, args):
 
 
 def create_address_command(client, args):
-    firewall_addresses = client.fortimanager_api_call("add", f"/pm/config/{get_global_or_adom(client, args)}"
-                                                             f"/obj/firewall/address",
-                                                      data_in_list=setup_request_data(args, ['adom']))
+    client.fortimanager_api_call("add", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/address",
+                                 data_in_list=setup_request_data(args, ['adom']))
 
-    return f"Created new Address {firewall_addresses.get('name')}"
+    return f"Created new Address {args.get('name')}"
 
 
 def update_address_command(client, args):
-    firewall_addresses = client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}"
-                                                                f"/obj/firewall/address",
-                                                      data_in_list=setup_request_data(args, ['adom']))
+    client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/address",
+                                 data_in_list=setup_request_data(args, ['adom']))
 
-    return f"Updated Address {firewall_addresses.get('name')}"
+    return f"Updated Address {args.get('name')}"
 
 
 def delete_address_command(client, args):
@@ -251,23 +248,19 @@ def list_address_groups_command(client, args):
 def create_address_group_command(client, args):
     data = setup_request_data(args, ['adom'])
     data['member'] = data.get('member').split(',')
-    firewall_address_groups = client.fortimanager_api_call("add", f"/pm/config/"
-                                                                  f"{get_global_or_adom(client, args)}"
-                                                                  f"/obj/firewall/addrgrp",
-                                                           data_in_list=data)
+    client.fortimanager_api_call("add", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/addrgrp",
+                                 data_in_list=data)
 
-    return f"Created new Address Group {firewall_address_groups.get('name')}"
+    return f"Created new Address Group {args.get('name')}"
 
 
 def update_address_group_command(client, args):
     data = setup_request_data(args, ['adom'])
     data['member'] = data.get('member').split(',')
-    firewall_address_groups = client.fortimanager_api_call("update", f"/pm/config/"
-                                                                     f"{get_global_or_adom(client, args)}"
-                                                                     f"/obj/firewall/addrgrp",
-                                                           data_in_list=data)
+    client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/addrgrp",
+                                 data_in_list=data)
 
-    return f"Updated Address Group {firewall_address_groups.get('name')}"
+    return f"Updated Address Group {args.get('name')}"
 
 
 def delete_address_group_command(client, args):
@@ -316,23 +309,19 @@ def list_service_groups_command(client, args):
 def create_service_group_command(client, args):
     data = setup_request_data(args, ['adom'])
     data['member'] = data.get('member').split(',')
-    service_groups = client.fortimanager_api_call("add", f"/pm/config/"
-                                                         f"{get_global_or_adom(client, args)}"
-                                                         f"/obj/firewall/service/group",
-                                                  data_in_list=data)
+    client.fortimanager_api_call("add", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/service/group",
+                                 data_in_list=data)
 
-    return f"Created new Service Group {service_groups.get('name')}"
+    return f"Created new Service Group {args.get('name')}"
 
 
 def update_service_group_command(client, args):
     data = setup_request_data(args, ['adom'])
     data['member'] = data.get('member').split(',') if data.get('member') else None
-    service_groups = client.fortimanager_api_call("update", f"/pm/config/"
-                                                            f"{get_global_or_adom(client, args)}"
-                                                            f"/obj/firewall/service/group",
-                                                  data_in_list=data)
+    client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/service/group",
+                                 data_in_list=data)
 
-    return f"Updated Service Group {service_groups.get('name')}"
+    return f"Updated Service Group {args.get('name')}"
 
 
 def delete_service_group_command(client, args):
@@ -361,18 +350,15 @@ def list_custom_service_command(client, args):
 
 
 def create_custom_service_command(client, args):
-    custom_services = client.fortimanager_api_call("add", f"/pm/config/"
-                                                          f"{get_global_or_adom(client, args)}"
-                                                          f"/obj/firewall/service/custom",
-                                                   data_in_list=setup_request_data(args, ['adom']))
-    return f"Created new Custom Service {custom_services.get('name')}"
+    client.fortimanager_api_call("add", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/service/custom",
+                                 data_in_list=setup_request_data(args, ['adom']))
+    return f"Created new Custom Service {args.get('name')}"
 
 
 def update_custom_service_command(client, args):
-    custom_services = client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}"
-                                                             f"/obj/firewall/service/custom",
-                                                   data_in_list=setup_request_data(args, ['adom']))
-    return f"Updated Custom Service {custom_services.get('name')}"
+    client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/service/custom",
+                                 data_in_list=setup_request_data(args, ['adom']))
+    return f"Updated Custom Service {args.get('name')}"
 
 
 def delete_custom_service_command(client, args):
@@ -579,9 +565,11 @@ def install_policy_package_command(client, args):
         outputs_prefix='FortiManager.Installation',
         outputs_key_field='id',
         outputs=formatted_response,
-        readable_output=f"Installed a policy package {args.get('package')} "
+        readable_output=f"Initiated installation of the policy package: {args.get('package')} "
                         f"in ADOM: {get_global_or_adom(client, args)}\n"
-                        f"On Device {args.get('name')} and VDOM {args.get('vdom')}.\nTask ID: {response.get('task')}",
+                        f"On Device {args.get('name')} and VDOM {args.get('vdom')}.\nTask ID: {response.get('task')}."
+                        f"\n\nYou can check the installation status by running:\n"
+                        f"!fortimanager-firewall-policy-package-install-status task_id={response.get('task')}",
         raw_response=response
     )
 
