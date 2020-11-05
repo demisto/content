@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8858dbfc-ac58-4535-8156-ca570ad2bf2b
+    taskid: 0b04420f-6816-4817-84c4-9159ae13bc46
     type: start
     task:
-      id: 8858dbfc-ac58-4535-8156-ca570ad2bf2b
+      id: 0b04420f-6816-4817-84c4-9159ae13bc46
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 78445166-d957-490f-8faa-a9f64e503ff6
+    taskid: a61e5afe-4333-4eda-8aae-ffa06d12ad16
     type: regular
     task:
-      id: 78445166-d957-490f-8faa-a9f64e503ff6
+      id: a61e5afe-4333-4eda-8aae-ffa06d12ad16
       version: -1
       name: Start clean
       scriptName: DeleteContext
@@ -64,10 +64,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: d34da4f4-8c64-4ab1-84f1-9d0b4cff9ce8
+    taskid: f7f45c9f-34f9-4374-8af3-ab08b1eb84dd
     type: regular
     task:
-      id: d34da4f4-8c64-4ab1-84f1-9d0b4cff9ce8
+      id: f7f45c9f-34f9-4374-8af3-ab08b1eb84dd
       version: -1
       name: List all users
       script: '|||gmail-list-users'
@@ -104,10 +104,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 08573238-dec7-47fa-8095-9dd80ce58a15
+    taskid: 2f0776e8-d086-480c-8384-0bbb6cfc2ee6
     type: regular
     task:
-      id: 08573238-dec7-47fa-8095-9dd80ce58a15
+      id: 2f0776e8-d086-480c-8384-0bbb6cfc2ee6
       version: -1
       name: Get specific user
       script: '|||gmail-get-user'
@@ -159,10 +159,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: c5342233-98e9-45da-8cf6-eafc3d589fa5
+    taskid: a1797e64-84f8-4548-8ab5-32c470b5cc0e
     type: regular
     task:
-      id: c5342233-98e9-45da-8cf6-eafc3d589fa5
+      id: a1797e64-84f8-4548-8ab5-32c470b5cc0e
       version: -1
       name: Create new user
       script: '|||gmail-create-user'
@@ -196,10 +196,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 21549ed7-ce58-428c-8dcb-9b20f8100b35
+    taskid: 236a1321-aa02-4e55-82c6-f3b488b50dce
     type: regular
     task:
-      id: 21549ed7-ce58-428c-8dcb-9b20f8100b35
+      id: 236a1321-aa02-4e55-82c6-f3b488b50dce
       version: -1
       name: Delete User
       script: '|||gmail-delete-user'
@@ -250,10 +250,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: f844be4b-6eb4-449d-8914-e82bade4c44a
+    taskid: b20ed4be-0428-415c-8e9f-5b58f100dbda
     type: title
     task:
-      id: f844be4b-6eb4-449d-8914-e82bade4c44a
+      id: b20ed4be-0428-415c-8e9f-5b58f100dbda
       version: -1
       name: Gmail Commands
       type: title
@@ -280,10 +280,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: fe1dd425-d68e-4f7a-89ab-ff3dc0f9c5ce
+    taskid: 3f56579e-b2ad-4a67-8418-e0592d1fc194
     type: regular
     task:
-      id: fe1dd425-d68e-4f7a-89ab-ff3dc0f9c5ce
+      id: 3f56579e-b2ad-4a67-8418-e0592d1fc194
       version: -1
       name: Search emails with attachments
       script: '|||gmail-search'
@@ -329,10 +329,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 51358cb9-e82d-4b5f-813a-e6283bf571a5
+    taskid: 1fc33028-bfeb-43e2-8c5e-86d19b5c40ee
     type: regular
     task:
-      id: 51358cb9-e82d-4b5f-813a-e6283bf571a5
+      id: 1fc33028-bfeb-43e2-8c5e-86d19b5c40ee
       version: -1
       name: Get mail with attachment
       script: '|||gmail-get-attachments'
@@ -384,10 +384,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: e8506e40-2120-43ab-84ef-b79b14c6896b
+    taskid: be0698f8-807d-4bcb-83c1-1e75e3825ca2
     type: regular
     task:
-      id: e8506e40-2120-43ab-84ef-b79b14c6896b
+      id: be0698f8-807d-4bcb-83c1-1e75e3825ca2
       version: -1
       name: Get Tokens
       script: '|||gmail-get-tokens-for-user'
@@ -415,10 +415,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: dfb77785-43ef-4362-8c52-ba6e88976003
+    taskid: 80da6352-2191-484c-84dd-360c2cf67871
     type: regular
     task:
-      id: dfb77785-43ef-4362-8c52-ba6e88976003
+      id: 80da6352-2191-484c-84dd-360c2cf67871
       version: -1
       name: Get Email data
       script: '|||gmail-get-mail'
@@ -471,10 +471,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: cda98c11-4f86-46d3-81e7-cba3ae94f1d5
+    taskid: 60efc593-9cee-48a3-8e98-887e1c400579
     type: regular
     task:
-      id: cda98c11-4f86-46d3-81e7-cba3ae94f1d5
+      id: 60efc593-9cee-48a3-8e98-887e1c400579
       version: -1
       name: Search all mailboxes
       script: '|||gmail-search-all-mailboxes'
@@ -518,10 +518,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 77da4302-cfca-491a-868c-4f4f09b3c4ad
+    taskid: 0a01ec85-5f2f-4741-8019-7292c151a55f
     type: regular
     task:
-      id: 77da4302-cfca-491a-868c-4f4f09b3c4ad
+      id: 0a01ec85-5f2f-4741-8019-7292c151a55f
       version: -1
       name: Get Thread
       script: '|||gmail-get-thread'
@@ -569,10 +569,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 053b89d3-7611-4f8f-83a3-1ef1d09a3fef
+    taskid: 5ebd87ff-c761-4c7a-802f-8815b5892161
     type: regular
     task:
-      id: 053b89d3-7611-4f8f-83a3-1ef1d09a3fef
+      id: 5ebd87ff-c761-4c7a-802f-8815b5892161
       version: -1
       name: Search in mailbox
       script: '|||gmail-search'
@@ -616,10 +616,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 8f1c5ce7-2870-4a5c-8b11-7baf168f21f3
+    taskid: b359e6ec-f8e5-40fa-872d-11a9e94a2635
     type: regular
     task:
-      id: 8f1c5ce7-2870-4a5c-8b11-7baf168f21f3
+      id: b359e6ec-f8e5-40fa-872d-11a9e94a2635
       version: -1
       name: Move mail to other folder
       script: '|||gmail-move-mail'
@@ -669,10 +669,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 45c5c024-a209-4ecc-8159-d3d23eb13a79
+    taskid: 063e9553-1a19-47bb-8147-cd22d99dd944
     type: regular
     task:
-      id: 45c5c024-a209-4ecc-8159-d3d23eb13a79
+      id: 063e9553-1a19-47bb-8147-cd22d99dd944
       version: -1
       name: Move back to inbox
       script: '|||gmail-move-mail'
@@ -722,10 +722,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 7334cd8d-4f6c-4c03-8651-edae2655f1cf
+    taskid: e44697ac-39b9-430d-8a27-0c0b1aed666d
     type: regular
     task:
-      id: 7334cd8d-4f6c-4c03-8651-edae2655f1cf
+      id: e44697ac-39b9-430d-8a27-0c0b1aed666d
       version: -1
       name: block the admin
       script: '|||gmail-add-delete-filter'
@@ -776,10 +776,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: c22f8613-a5cd-48f0-8f48-97b2d24af07e
+    taskid: acbb9924-48bb-49fc-8f1f-375ca71511d4
     type: title
     task:
-      id: c22f8613-a5cd-48f0-8f48-97b2d24af07e
+      id: acbb9924-48bb-49fc-8f1f-375ca71511d4
       version: -1
       name: Check all mailboxes
       type: title
@@ -804,10 +804,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 05f67475-c889-4ea5-881f-4d73305a021a
+    taskid: 5f3c76e8-31da-4f87-8e36-acb473f90758
     type: regular
     task:
-      id: 05f67475-c889-4ea5-881f-4d73305a021a
+      id: 5f3c76e8-31da-4f87-8e36-acb473f90758
       version: -1
       name: Remove the block
       script: '|||gmail-remove-filter'
@@ -857,10 +857,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: f1ec3cc4-184e-409e-8ff7-0565c6f450ae
+    taskid: a7bd0d11-1e61-4362-8b7c-e7fef3f16f15
     type: regular
     task:
-      id: f1ec3cc4-184e-409e-8ff7-0565c6f450ae
+      id: a7bd0d11-1e61-4362-8b7c-e7fef3f16f15
       version: -1
       name: List mailbox filters
       script: '|||gmail-list-filters'
@@ -891,10 +891,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 8dbcd805-c0e2-41fd-82ec-e5c30a0dd04e
+    taskid: 61376dc1-e53e-4577-8e88-f638ca7ca817
     type: regular
     task:
-      id: 8dbcd805-c0e2-41fd-82ec-e5c30a0dd04e
+      id: 61376dc1-e53e-4577-8e88-f638ca7ca817
       version: -1
       name: Delete filters from context
       description: Delete field from context
@@ -927,10 +927,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: c3d62901-150c-467f-8ae1-cbfdacc0a803
+    taskid: 180d02ae-efe3-45fe-837c-d80ecaea50c9
     type: condition
     task:
-      id: c3d62901-150c-467f-8ae1-cbfdacc0a803
+      id: 180d02ae-efe3-45fe-837c-d80ecaea50c9
       version: -1
       name: Verify Filters
       type: condition
@@ -969,10 +969,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: c1ae2592-fac2-4711-86f3-684282bbc5d4
+    taskid: d8b841cd-9317-4a3a-82f1-79deb66714d7
     type: regular
     task:
-      id: c1ae2592-fac2-4711-86f3-684282bbc5d4
+      id: d8b841cd-9317-4a3a-82f1-79deb66714d7
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -998,10 +998,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 29588ed7-ca80-45ba-8f03-85253fdc8748
+    taskid: ad910e8f-58ca-42c9-8a48-3497a6817796
     type: title
     task:
-      id: 29588ed7-ca80-45ba-8f03-85253fdc8748
+      id: ad910e8f-58ca-42c9-8a48-3497a6817796
       version: -1
       name: Done
       type: title
@@ -1013,7 +1013,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 6320
+          "y": 5720
         }
       }
     note: false
@@ -1023,10 +1023,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 9cd57c66-f082-458a-8c93-e0863e816b17
+    taskid: dfce2601-a3dd-4010-87a9-1f223a361af7
     type: regular
     task:
-      id: 9cd57c66-f082-458a-8c93-e0863e816b17
+      id: dfce2601-a3dd-4010-87a9-1f223a361af7
       version: -1
       name: gmail-create-user
       description: Creates a user.
@@ -1061,10 +1061,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 11122077-a766-4575-8a16-73cdbbe3a4a5
+    taskid: b2ee22e8-6645-4e39-8e6e-29be288914aa
     type: regular
     task:
-      id: 11122077-a766-4575-8a16-73cdbbe3a4a5
+      id: b2ee22e8-6645-4e39-8e6e-29be288914aa
       version: -1
       name: gmail-hide-user-in-directory
       description: Hide a user in the Global Directory
@@ -1095,10 +1095,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 5d9c5898-7a8a-4e7d-8894-40ebe4dbc3f4
+    taskid: 25a7d6a1-efaf-4882-8d93-2337ab004c09
     type: condition
     task:
-      id: 5d9c5898-7a8a-4e7d-8894-40ebe4dbc3f4
+      id: 25a7d6a1-efaf-4882-8d93-2337ab004c09
       version: -1
       name: Verify User creation and visbility
       type: condition
@@ -1138,10 +1138,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: bb354cc7-1dda-4f1b-8a4f-f8499b77d54f
+    taskid: 693e41af-9d10-4d2f-86fd-fb0d38e5abf8
     type: regular
     task:
-      id: bb354cc7-1dda-4f1b-8a4f-f8499b77d54f
+      id: 693e41af-9d10-4d2f-86fd-fb0d38e5abf8
       version: -1
       name: gmail-delete-user
       description: Delete a User
@@ -1170,10 +1170,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: bb20e7cd-bf66-461a-832f-533727cb18ff
+    taskid: d2ec23e5-3cdd-471e-8ef4-c5c492c39e05
     type: regular
     task:
-      id: bb20e7cd-bf66-461a-832f-533727cb18ff
+      id: d2ec23e5-3cdd-471e-8ef4-c5c492c39e05
       version: -1
       name: gmail-get-autoreply
       description: Get the auto-reply message set for the user-account
@@ -1202,10 +1202,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 598b83a2-2dd8-4af7-8e20-71cdcf57e1cb
+    taskid: 48ba4efe-9b0d-402c-8a84-1c8dd15b7ef8
     type: regular
     task:
-      id: 598b83a2-2dd8-4af7-8e20-71cdcf57e1cb
+      id: 48ba4efe-9b0d-402c-8a84-1c8dd15b7ef8
       version: -1
       name: gmail-set-autoreply
       description: 'Set auto-reply for the user. Note: if body is not set, the current
@@ -1241,10 +1241,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 34ceae12-92b0-4e24-8dfe-2bc88768e54a
+    taskid: 240b8779-372d-402e-837f-de0196781c20
     type: regular
     task:
-      id: 34ceae12-92b0-4e24-8dfe-2bc88768e54a
+      id: 240b8779-372d-402e-837f-de0196781c20
       version: -1
       name: gmail-get-autoreply
       description: Get the auto-reply message set for the user-account
@@ -1273,10 +1273,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: ec64becd-0858-47c1-8921-247710564b52
+    taskid: 2f2ae812-95ce-43e0-8eac-3af2cafe30ed
     type: condition
     task:
-      id: ec64becd-0858-47c1-8921-247710564b52
+      id: 2f2ae812-95ce-43e0-8eac-3af2cafe30ed
       version: -1
       name: Verify Autoreply
       type: condition
@@ -1319,10 +1319,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 1c811fb8-53c8-4514-89d1-53897a1ab072
+    taskid: 9401bb65-24a2-4e4f-877b-b5b1ce1cc628
     type: regular
     task:
-      id: 1c811fb8-53c8-4514-89d1-53897a1ab072
+      id: 9401bb65-24a2-4e4f-877b-b5b1ce1cc628
       version: -1
       name: gmail-set-autoreply - reset to original autoreply
       description: 'Set auto-reply for the user. Note: if body is not set, the current
@@ -1358,10 +1358,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 322aca7e-f2e2-45c8-8e5d-1528f43384c7
+    taskid: 13897d96-6f21-4a3f-8d05-1c7c4ce0da09
     type: regular
     task:
-      id: 322aca7e-f2e2-45c8-8e5d-1528f43384c7
+      id: 13897d96-6f21-4a3f-8d05-1c7c4ce0da09
       version: -1
       name: gmail-get-mail
       description: Gets the specified message.
@@ -1393,10 +1393,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 8aa92a25-7a76-42fb-8d83-0c19d7b62f79
+    taskid: 432d241f-83ce-4cb5-8ceb-17d9213b686f
     type: condition
     task:
-      id: 8aa92a25-7a76-42fb-8d83-0c19d7b62f79
+      id: 432d241f-83ce-4cb5-8ceb-17d9213b686f
       version: -1
       name: Verify sent mail
       type: condition
@@ -1455,10 +1455,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: a62b6276-ef7b-42cc-8e91-f9fbbd621639
+    taskid: 56a41527-9bb8-4886-8e90-b7aaede2112f
     type: regular
     task:
-      id: a62b6276-ef7b-42cc-8e91-f9fbbd621639
+      id: 56a41527-9bb8-4886-8e90-b7aaede2112f
       version: -1
       name: gmail-delegate-user-mailbox
       description: Adds a delegate to the mailbox, without sending any verification
@@ -1492,10 +1492,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 6a9bad5c-b15c-4efa-8979-67c20b0d216b
+    taskid: 011ebc29-fabd-48af-8d9f-5a7391231037
     type: regular
     task:
-      id: 6a9bad5c-b15c-4efa-8979-67c20b0d216b
+      id: 011ebc29-fabd-48af-8d9f-5a7391231037
       version: -1
       name: gmail-delete-mail
       description: Delete a mail in the user's mailbox.
@@ -1543,10 +1543,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 6a130a75-bd6a-441d-8355-4a56eee69dfb
+    taskid: edacaf8d-548a-457e-89af-626df7afafb6
     type: regular
     task:
-      id: 6a130a75-bd6a-441d-8355-4a56eee69dfb
+      id: edacaf8d-548a-457e-89af-626df7afafb6
       version: -1
       name: gmail-set-password
       description: Set password for the user
@@ -1577,10 +1577,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 1d4ceff5-8696-4ce7-8561-c132062fad77
+    taskid: fb38400f-a248-4132-8720-433f14c5a58a
     type: regular
     task:
-      id: 1d4ceff5-8696-4ce7-8561-c132062fad77
+      id: fb38400f-a248-4132-8720-433f14c5a58a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1613,10 +1613,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: e3237926-4eeb-4f68-8c76-bf5c650e7cff
+    taskid: 4d7696e6-c620-4f1f-8323-9224d95a8317
     type: regular
     task:
-      id: e3237926-4eeb-4f68-8c76-bf5c650e7cff
+      id: 4d7696e6-c620-4f1f-8323-9224d95a8317
       version: -1
       name: gmail-remove-delegated-mailbox
       description: Removes a delegate from the mailbox, without sending any verification
@@ -1629,7 +1629,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "62"
+      - "29"
     scriptarguments:
       removed-mail:
         simple: shai@demistodev.com
@@ -1650,10 +1650,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 63119729-987f-481e-8988-7bc5b93e3a4f
+    taskid: 0afbb516-acec-4dfd-8304-7eb18a5a8f9d
     type: regular
     task:
-      id: 63119729-987f-481e-8988-7bc5b93e3a4f
+      id: 0afbb516-acec-4dfd-8304-7eb18a5a8f9d
       version: -1
       name: send-mail
       description: Send an email
@@ -1700,10 +1700,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 33a2d026-0b0b-41ca-81a5-83afb2d94f2a
+    taskid: f2a8502a-a9f6-4558-8b8a-9bae7c2c7fb7
     type: regular
     task:
-      id: 33a2d026-0b0b-41ca-81a5-83afb2d94f2a
+      id: f2a8502a-a9f6-4558-8b8a-9bae7c2c7fb7
       version: -1
       name: GeneratePassword
       description: "This function generates a password and allows various parameters\
@@ -1752,10 +1752,10 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: f90c5ae4-1109-413d-8e42-31d4ff556e29
+    taskid: e2540794-ca89-47f4-8457-6a97790380fb
     type: regular
     task:
-      id: f90c5ae4-1109-413d-8e42-31d4ff556e29
+      id: e2540794-ca89-47f4-8457-6a97790380fb
       version: -1
       name: check for user's existence
       description: Gets information for a specified user.
@@ -1788,10 +1788,10 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: 2acfc505-c519-4f25-83ca-9187cb227038
+    taskid: 46609a06-7d18-45ed-8c07-56d4a5f5e25a
     type: condition
     task:
-      id: 2acfc505-c519-4f25-83ca-9187cb227038
+      id: 46609a06-7d18-45ed-8c07-56d4a5f5e25a
       version: -1
       name: Check user's existence
       type: condition
@@ -1828,10 +1828,10 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: 79e43c02-be6c-47e8-8ec7-ac22bbcbe7b8
+    taskid: 3c2b40c8-5f74-4252-8265-cc6173a36b0c
     type: regular
     task:
-      id: 79e43c02-be6c-47e8-8ec7-ac22bbcbe7b8
+      id: 3c2b40c8-5f74-4252-8265-cc6173a36b0c
       version: -1
       name: gmail-delete-user
       description: Deletes a Gmail user.
@@ -1860,10 +1860,10 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: 9943b8c9-2ee9-41cf-8416-5a299b85edbf
+    taskid: 7e2fe2d7-0359-49d5-840c-b3bc0329076a
     type: regular
     task:
-      id: 9943b8c9-2ee9-41cf-8416-5a299b85edbf
+      id: 7e2fe2d7-0359-49d5-840c-b3bc0329076a
       version: -1
       name: Get User Role
       description: Retrieves a list of all Google roles for a specified user.
@@ -1894,10 +1894,10 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: c322b433-8319-4a09-8d62-7d7d9fe82102
+    taskid: bbab2e77-7332-45f7-82ca-1fb82399ba60
     type: condition
     task:
-      id: c322b433-8319-4a09-8d62-7d7d9fe82102
+      id: bbab2e77-7332-45f7-82ca-1fb82399ba60
       version: -1
       name: Verify User Role Context Output
       type: condition
@@ -1966,10 +1966,10 @@ tasks:
     quietmode: 0
   "60":
     id: "60"
-    taskid: 49a23200-2e6f-4e13-8bdf-48b4d4ea51d6
+    taskid: 1864bb2d-9030-4fb2-8c81-3cdb37510f5c
     type: regular
     task:
-      id: 49a23200-2e6f-4e13-8bdf-48b4d4ea51d6
+      id: 1864bb2d-9030-4fb2-8c81-3cdb37510f5c
       version: -1
       name: Get Role
       description: gmail get role
@@ -2001,10 +2001,10 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: efc43e58-2d6e-48e4-8324-c6b53fea4ca4
+    taskid: 5b6f4831-770f-432b-83a0-86ea439a9d4d
     type: condition
     task:
-      id: efc43e58-2d6e-48e4-8324-c6b53fea4ca4
+      id: 5b6f4831-770f-432b-83a0-86ea439a9d4d
       version: -1
       name: Verify Get Role Context
       type: condition
@@ -2148,183 +2148,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "62":
-    id: "62"
-    taskid: 18731ab8-8475-4363-86ce-5bf8f9bda67b
-    type: regular
-    task:
-      id: 18731ab8-8475-4363-86ce-5bf8f9bda67b
-      version: -1
-      name: gmail-forwarding-address-add
-      description: Creates a forwarding address. If ownership verification is required,
-        a message will be sent to the recipient and the resource's verification status
-        will be set to pending; otherwise, the resource will be created with verification
-        status set to accepted. This method is only available to service account clients
-        that have been delegated domain-wide authority.
-      script: '|||gmail-forwarding-address-add'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "63"
-    scriptarguments:
-      forwarding_email:
-        simple: deval@nimbledata.io
-      user_id:
-        simple: paulomi@nimbledata.io
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 850,
-          "y": 5690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "63":
-    id: "63"
-    taskid: 6429b293-bc0d-4d7f-8980-b051fb7dafd5
-    type: condition
-    task:
-      id: 6429b293-bc0d-4d7f-8980-b051fb7dafd5
-      version: -1
-      name: Verify outputs
-      description: |-
-        Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
-
-        This command is only available to service account clients that have been delegated domain-wide authority.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "64"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Gmail.ForwardingAddress
-                accessor: userId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Gmail.ForwardingAddress
-                accessor: forwardingEmail
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 850,
-          "y": 5850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "64":
-    id: "64"
-    taskid: d053626f-f3eb-41f9-83ea-0ffd695d3cb4
-    type: regular
-    task:
-      id: d053626f-f3eb-41f9-83ea-0ffd695d3cb4
-      version: -1
-      name: gmail-send-as-add
-      description: |-
-        Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
-
-        This command is only available to service account clients that have been delegated domain-wide authority.
-      script: '|||gmail-send-as-add'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "65"
-    scriptarguments:
-      display_name: {}
-      is_default: {}
-      reply_to_address: {}
-      send_as_email:
-        simple: deval@nimbledata.io
-      signature: {}
-      smtp_host: {}
-      smtp_password: {}
-      smtp_port: {}
-      smtp_securitymode: {}
-      smtp_username: {}
-      treat_as_alias: {}
-      user_id:
-        simple: paulomi@nimbledata.io
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 850,
-          "y": 5990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "65":
-    id: "65"
-    taskid: 9b1dbe26-fbb1-41fc-8d9d-a720cbb017f1
-    type: condition
-    task:
-      id: 9b1dbe26-fbb1-41fc-8d9d-a720cbb017f1
-      version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "29"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Gmail.SendAs
-                accessor: userId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Gmail.SendAs
-                accessor: sendAsEmail
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 850,
-          "y": 6160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -2332,7 +2155,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6955,
+        "height": 6355,
         "width": 2110,
         "x": 50,
         "y": -570
