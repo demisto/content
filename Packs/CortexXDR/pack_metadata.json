@@ -13,7 +13,8 @@
     ],
     "tags": [],
     "useCases": [
-        "Malware"
+        "Malware",
+        "Incident Mirroring"
     ],
     "keywords": [
         "adaptive cyber protection",

@@ -8,10 +8,7 @@
     "email": "",
     "created": "2020-09-22T13:16:00Z",
     "categories": [],
-    "tags": [
-        "Failed Integrations",
-        "Failed Incidents"
-    ],
+    "tags": [],
     "useCases": [
         "Health Check"
     ],
