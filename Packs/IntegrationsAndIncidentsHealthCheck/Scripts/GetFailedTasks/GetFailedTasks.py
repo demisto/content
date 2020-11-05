@@ -10,7 +10,7 @@ def main():
     number_of_failed = 0
     number_of_errors = 0
     total_incidents = []
-    incidents_output = []
+    incidents_output: list = [{}]
     total_failed_incidents = []
 
     while True:
