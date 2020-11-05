@@ -1,6 +1,6 @@
 import pytest
 from Threat_Vault import Client, antivirus_signature_get, file_reputation, dns_get_by_id, antispyware_get_by_id, \
-    ip_geo_get, signature_search_results
+    ip_geo_get, antispyware_signature_search, signature_search_results
 
 
 def test_antivirus_get_by_id(mocker):
@@ -320,6 +320,26 @@ def test_signature_search_results_dns(mocker):
 
     assert output.get('EntryContext') == expected_context
     assert output.get('HumanReadable') == expected_hr
+
+
+def test_antispyware_signature_search_wrongful_arguments():
+    """
+    Given:
+        - wrongful args to the antispyware_signature_search command
+    When:
+        - running antispyware_signature_search
+    Then:
+        - validating the raised error
+    """
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    wrong_args_err = 'Please provide either a signature_name or a cve or a vendor.'
+
+    with pytest.raises(Exception, match=wrong_args_err):
+        antispyware_signature_search(client, args={'signature_id': '1234', 'cve': 'CVE-2020'})
+    with pytest.raises(Exception, match=wrong_args_err):
+        antispyware_signature_search(client, args={'signature_id': '1234', 'vendor': 'panw'})
+    with pytest.raises(Exception, match=wrong_args_err):
+        antispyware_signature_search(client, args={'vendor': 'panw', 'cve': 'CVE-2020'})
 
 
 def test_signature_search_results_anti_spyware_cve(mocker):

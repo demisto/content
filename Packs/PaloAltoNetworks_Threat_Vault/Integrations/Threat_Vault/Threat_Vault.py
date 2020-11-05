@@ -73,8 +73,8 @@ class Client(BaseClient):
 
         Args:
             path: API endpoint path to search.
-            from_: from which signature to return results
-            to_: to which signature to return results
+            from_: from which signature to return results.
+            to_: to which signature to return results.
             signature_name: signature name.
             domain_name: domain name.
             vendor: vendor ID.
@@ -430,6 +430,7 @@ def signature_search_results(client: Client, args: dict) -> CommandResults:
         readable_output=readable_output,
         raw_response=response
     )
+
 
 def test_module(client: Client, *_) -> str:
     """Performs basic get request to get ip geo data.
