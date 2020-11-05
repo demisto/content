@@ -4895,19 +4895,22 @@ def panorama_route_lookup(dest_ip: str, virtual_router=None):
     Given the provided ip address, looks up the outgoing interface and zone on the firewall.
     """
     if not VSYS:
-        raise Exception("The 'panorama-route-lookup' command is only relevant for a Firewall instance.")
+        raise DemistoException("The 'panorama-route-lookup' command is only relevant for a Firewall instance.")
 
     response = panorama_get_routes(virtual_router)
-    if 'entry' not in response['response']['result']:
-        raise Exception("No routes returned from the Firewall.")
+    if 'entry' not in response['response'].get('result'):
+        raise DemistoException("No routes returned from the Firewall.")
     else:
-        routes = response['response']['result']['entry']
+        if response.get('response') and response['response'].get('result') and response['response']['result'].get('entry'):
+                routes = response['response']['result']['entry']
+         else:
+                 routes = []
 
     ip_addr = ipaddress.ip_address(dest_ip)
     current_match = None
     matched_route = None
     for route in routes:
-        subnet_raw = route['destination']
+        subnet_raw = route.get('destination')
 
         subnet = ipaddress.ip_network(subnet_raw)
         # If the given IP address is in the subnet
@@ -4924,7 +4927,7 @@ def panorama_route_lookup(dest_ip: str, virtual_router=None):
     if matched_route:
         return matched_route
     else:
-        raise Exception("Route not found.")
+        raise DemistoException("Route not found.")
 
 
 def panorama_route_lookup_command():
@@ -4949,13 +4952,13 @@ def panorama_zone_lookup_command():
         demisto.results(f"Could find a matching route to {dest_ip}.")
         return
 
-    interface = route["interface"]
+    interface = route.get("interface")
     interfaces = panorama_get_interfaces()
 
     r = {}
-    if "ifnet" in interfaces["response"]["result"]:
+    if "ifnet" in interfaces["response"].get("result"):
         for entry in interfaces["response"]["result"]["ifnet"]["entry"]:
-            if entry["name"] == interface:
+            if entry.get("name") == interface:
                 if "zone" in entry:
                     r = {**entry, **route}
 
