@@ -176,7 +176,7 @@ script:
   - arguments:
     - default: false
       description: The IP address to search.
-      isArray: false
+      isArray: true
       name: ip
       required: false
       secret: false
@@ -216,15 +216,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: From which signature to return results (used for paging). Default is 0.
+      description: From which signature to return results. Default is 0.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: The maximum number of signatures to return. Default is 10.
+      description: To which signature to return results. Default is from plus 10.
       isArray: false
-      name: size
+      name: to
       required: false
       secret: false
     deprecated: false
@@ -252,15 +252,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: From which signature to return results (used for paging). Default is 0.
+      description: From which signature to return results. Default is 0.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: The maximum number of signatures to return. Default is 10.
+      description: To which signature to return results. Default is from plus 10.
       isArray: false
-      name: size
+      name: to
       required: false
       secret: false
     deprecated: false
@@ -294,15 +294,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: From which signature to return results (used for paging). Default is 0.
+      description: From which signature to return results. Default is 0.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: The maximum number of signatures to return. Default is 10.
+      description: To which signature to return results. Default is from plus 10.
       isArray: false
-      name: size
+      name: to
       required: false
       secret: false
     deprecated: false
@@ -366,5 +366,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No test
+- PANW Threat Vault - Signature Search - Test
 fromversion: 5.0.0
