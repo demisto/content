@@ -9,13 +9,13 @@ from typing import List
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, find_type
 from Tests.test_content import ParallelPrintsManager
-from Tests.Marketplace.search_and_install_packs import \
-    search_and_install_packs_and_their_dependencies_private, upload_zipped_packs
 from Tests.configure_and_test_integration_instances import Build, configure_servers_and_restart, \
     get_tests, \
     get_changed_integrations, configure_server_instances, instance_testing, disable_instances, \
     report_tests_status, nightly_install_packs, get_pack_ids_to_install, test_files, \
     test_pack_metadata, options_handler
+from Tests.Marketplace.search_and_install_packs import \
+    search_and_install_packs_and_their_dependencies_private, upload_zipped_packs
 
 
 def install_private_testing_pack(build: Build, prints_manager: ParallelPrintsManager, test_pack_zip_path: str):

@@ -223,8 +223,6 @@ def options_handler():
                         default='./Tests/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
                         default='./Tests/content_packs_to_install.txt')
-
-
     options = parser.parse_args()
 
     return options
