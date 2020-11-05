@@ -8,7 +8,6 @@ import glob
 import json
 import logging
 import os
-import random
 import sys
 from copy import deepcopy
 from distutils.version import LooseVersion
