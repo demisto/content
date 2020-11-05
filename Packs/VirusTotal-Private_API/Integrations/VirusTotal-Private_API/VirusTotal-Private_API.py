@@ -663,6 +663,21 @@ def is_url_response_complete(res):
     return bool(res.get('total'))
 
 
+def update_entry_context_url(ec_url, url, field_name, field_value):
+    if ec_url:
+        if 'VirusTotal' not in ec_url:
+            ec_url['VirusTotal'] = {
+                field_name: field_value
+            }
+        else:
+            ec_url['VirusTotal'][field_name] = field_value
+    else:
+        ec_url.update({
+            'VirusTotal': {field_name: field_value},
+            'Data': url
+        })
+
+
 def create_url_report_output(url, response, threshold, max_len, short_format):
     """
     Returns 3 results:
@@ -705,17 +720,18 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
     additional_info = response.get('additional_info', None)
     if additional_info is not None:
         resolution = additional_info.get('resolution', None)
-        if resolution is not None:
+        if resolution:
             md += 'IP address resolution for this domain is: ' + resolution + '\n'
-        if ec_url:
-            ec_url['VirusTotal'] = {
-                'Resolutions': resolution[:max_len]
-            }
-        else:
-            ec_url.update({
-                'VirusTotal': {'Resolutions': resolution[:max_len]},
-                'Data': url
-            })
+        update_entry_context_url(ec_url, url, field_name='Resolutions', field_value=resolution[:max_len])
+
+        response_sha256 = additional_info.get('Response content SHA-256', None)
+        if response_sha256:
+            md += 'Response content SHA-256: {}\n'.format(response_sha256)
+            update_entry_context_url(ec_url, url, field_name='ResponseContentSHA256', field_value=response_sha256)
+
+        response_headers = additional_info.get('Response headers', None)
+        if response_headers:
+            update_entry_context_url(ec_url, url, field_name='ResponseHeaders', field_value=response_headers)
 
     scans = response.get('scans', None)
 
@@ -739,7 +755,6 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
             ec_url['VirusTotal'] = {
                 'DroppedFiles': dropped_files
             }
-
     return md, ec_url, ec_dbot
 
 
