@@ -368,7 +368,7 @@ async def long_running_loop(
     """
     try:
         offset_to_store = offset
-        sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
+        sample_events_to_store = deque(maxlen=5)  # type: ignore[var-annotated]
         async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
             stream.set_refresh_token(refresh_token)
             async for event in stream.fetch_event(
@@ -397,7 +397,7 @@ async def long_running_loop(
                     try:
                         sample_events_to_store.append(event)
                         demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
-                        sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
+                        sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=5)
                         sample_events += sample_events_to_store
                         integration_context['sample_events'] = list(sample_events)
                     except Exception as e:
