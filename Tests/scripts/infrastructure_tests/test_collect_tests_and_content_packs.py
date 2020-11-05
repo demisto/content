@@ -6,9 +6,10 @@ import demisto_sdk.commands.common.tools as demisto_sdk_tools
 from ruamel.yaml import YAML
 
 from Tests.scripts.collect_tests_and_content_packs import (
-    RANDOM_TESTS_NUM, TestConf, create_filter_envs_file, get_modified_files_for_testing,
+    RANDOM_TESTS_NUM, TestConf, create_filter_envs_file,
     get_test_list_and_content_packs_to_install, collect_content_packs_to_install,
     get_from_version_and_to_version_bounderies)
+from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
@@ -484,7 +485,8 @@ class TestSampleTesting:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Tests/scripts/integration-test.yml"
 
-    def test_sample_tests(self):
+    def test_sample_tests(self, mocker):
+        mocker.patch("Tests.scripts.utils.get_modified_files_for_testing.tools.find_type", return_value=None)
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
