@@ -47,7 +47,7 @@ def install_packs_private(build: Build, prints_manager: ParallelPrintsManager, p
     :param pack_ids: Optional, list of packs to install. List contains pack id and version requested.
     :return: Boolean indicating if the installation was successful.
     """
-    pack_ids = get_pack_ids_to_install() if pack_ids is None else pack_ids
+    pack_ids = build.pack_ids_to_install
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
