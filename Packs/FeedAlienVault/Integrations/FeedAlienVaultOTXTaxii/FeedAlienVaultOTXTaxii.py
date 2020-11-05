@@ -20,7 +20,6 @@ from typing import Dict, List, Optional
 requests.packages.urllib3.disable_warnings()
 
 SOURCE_NAME = "Alien Vault OTX TAXII"
-TAXII_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 # disable insecure warnings
 urllib3.disable_warnings()
