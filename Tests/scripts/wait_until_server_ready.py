@@ -5,12 +5,13 @@ import time
 import re
 from subprocess import check_output
 from time import sleep
-import datetime
 import requests
 import urllib3.util
+from Tests.scripts.utils.log_util import install_logging
+import logging
 import os
 
-from demisto_sdk.commands.common.tools import run_command, print_error, print_warning
+from demisto_sdk.commands.common.tools import run_command
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -34,7 +35,7 @@ def is_release_branch():
 def exit_if_timed_out(loop_start_time, current_time):
     time_since_started = current_time - loop_start_time
     if time_since_started > SETUP_TIMEOUT:
-        print_error("Timed out while trying to set up instances.")
+        logging.critical("Timed out while trying to set up instances.")
         sys.exit(1)
 
 
@@ -53,11 +54,12 @@ def download_cloud_init_logs_from_server(ip: str) -> None:
                       '-o', ' StrictHostKeyChecking=no',
                       f'ec2-user@{ip}:{cloud_init_log_path}',
                       f'{ARTIFACTS_PATH}/{ip}-cloud_init.log'])
-    except Exception as exp:
-        print(f'Could not download cloud-init file from server {ip}. Error: {str(exp)}')
+    except Exception:
+        logging.exception(f'Could not download cloud-init file from server {ip}.')
 
 
 def main():
+    install_logging('Wait Until Server Ready.log')
     global SETUP_TIMEOUT
     instance_name_to_wait_on = sys.argv[1]
     ready_ami_list = []
@@ -70,7 +72,7 @@ def main():
     instance_ips_to_poll = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips if
                             ami_instance_name == instance_name_to_wait_on]
 
-    print(f'[{datetime.datetime.now()}] Starting wait loop')
+    logging.info('Starting wait loop')
     try:
         while instance_ips_to_poll:
             current_time = time.time()
@@ -84,24 +86,24 @@ def main():
                     try:
                         res = requests.request(method=method, url=(host + path), verify=False)
                     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as exp:
-                        print_error(f'{ami_instance_name} encountered an error: {str(exp)}')
+                        logging.error(f'{ami_instance_name} encountered an error: {str(exp)}\n')
                         if SETUP_TIMEOUT != 60 * 10:
-                            print_warning('Setting SETUP_TIMEOUT to 10 minutes.')
+                            logging.warning('Setting SETUP_TIMEOUT to 10 minutes.')
                             SETUP_TIMEOUT = 60 * 10
                         continue
-                    except Exception as exp:
-                        print_warning(f'{ami_instance_name} encountered an error: {str(exp)}\n'
-                                      f'Will retry this step later.')
+                    except Exception:
+                        logging.exception(f'{ami_instance_name} encountered an error, Will retry this step later')
                         continue
                     if res.status_code == 200:
                         if SETUP_TIMEOUT != 60 * 60:
-                            print('Resetting SETUP_TIMEOUT to an hour.')
+                            logging.info('Resetting SETUP_TIMEOUT to an hour.')
                             SETUP_TIMEOUT = 60 * 60
-                        print(f'[{datetime.datetime.now()}] {ami_instance_name} is ready to use')
+                        logging.info(f'{ami_instance_name} is ready to use')
                         instance_ips_to_poll.remove(ami_instance_ip)
                     # printing the message every 30 seconds
                     elif current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:
-                        print(f'{ami_instance_name} at ip {ami_instance_ip} is not ready yet - waiting for it to start')
+                        logging.info(
+                            f'{ami_instance_name} at ip {ami_instance_ip} is not ready yet - waiting for it to start')
 
             if current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:
                 # The interval has passed, which means we printed a status update.
