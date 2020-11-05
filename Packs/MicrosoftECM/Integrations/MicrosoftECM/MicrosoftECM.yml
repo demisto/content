@@ -31,22 +31,19 @@ script:
       required: true
       description: Specifies the name of a device.
     outputs:
-    - contextPath: MicrosoftECM.LastLogOnUser.CreationDate
-      description: The date the computer was created
-      type: date
-    - contextPath: MicrosoftECM.LastLogOnUser.IP
-      description: The IP of the computer
+    - contextPath: MicrosoftECM.LastLogOnUser.IPAddresses
+      description: The IPAddresses of the device
       type: string
     - contextPath: MicrosoftECM.LastLogOnUser.LastLogonTimestamp
-      description: The date of the last login to the computer
+      description: The date of the last login to the device
       type: date
     - contextPath: MicrosoftECM.LastLogOnUser.LastLogonUserName
-      description: The name of the last user who logged in  to the computer
+      description: The name of the last user who logged in  to the device
       type: string
     - contextPath: MicrosoftECM.LastLogOnUser.Name
-      description: The name of the computer
+      description: The name of the device
       type: string
-    description: Gets the last user that logged on to a given computer name
+    description: Gets the last user that logged on to a given device name
   - name: ms-ecm-user-get-primary
     arguments:
     - name: device_name
@@ -54,12 +51,12 @@ script:
       description: Specifies the name of a device.
     outputs:
     - contextPath: MicrosoftECM.PrimaryUsers.MachineName
-      description: The name of the computer
+      description: The name of the device
       type: string
     - contextPath: MicrosoftECM.PrimaryUsers.UserName
       description: The name of the primary user
       type: string
-    description: Get the primary user of a given computer name
+    description: Get the primary user of a given device name
   - name: ms-ecm-collection-list
     arguments:
     - name: collection_type
@@ -68,8 +65,7 @@ script:
       predefined:
       - User
       - Device
-      description: 'Specifies a type for the collection. Valid values are:  Root User
-        Device Unknown'
+      description: 'Specifies a type for the collection. Valid values are: User Device'
     - name: collection_id
       description: Specifies a collection ID. If you do not specify a collection,
         all collections in the hierarchy are returned (can be retrived via `!ms-ecm-collection-list
@@ -147,69 +143,17 @@ script:
     - name: collection_name
       description: Specifies the name of a device collection (can be retrived via
         `!ms-ecm-collection-list collection_type="Device"`)
-    - name: device_name
-      description: Specifies the name of the device (can be retrived via `!ms-ecm-device-list`)
-    - name: resource_id
-      description: Specifies the resource ID of a device (can be retrived via `!ms-ecm-collection-list
-        collection_type="Device"`)
+    - name: limit
+      description: Specifies the maximum number of devices to be returned, default value is 100.
+      defaultvalue: '100'
     outputs:
     - contextPath: MicrosoftECM.Devices.Name
       description: The name of the device
       type: string
-    - contextPath: MicrosoftECM.Devices.ClientVersion
-      description: Version of the installed client software
-      type: string
-    - contextPath: MicrosoftECM.Devices.CurrentLogonUser
-      description: The current logged on user
-      type: string
-    - contextPath: MicrosoftECM.Devices.DeviceCategory
-      description: Category of the device
-      type: string
-    - contextPath: MicrosoftECM.Devices.DeviceOS.DeviceOSBuild
-      description: Device operating system
-      type: string
-    - contextPath: MicrosoftECM.Devices.DeviceOSBuild
-      description: Device operating system build
-      type: string
-    - contextPath: MicrosoftECM.Devices.Domain
-      description: Domain to which the device belongs
-      type: string
-    - contextPath: MicrosoftECM.Devices.IsActive
-      description: true if there has been a recent heartbeat from the client.
-      type: boolean
-    - contextPath: MicrosoftECM.Devices.LastActiveTime
-      description: Comes from Client Health. Represents the last reported time the
-        client was active.
-      type: date
-    - contextPath: MicrosoftECM.Devices.LastHardwareScan
-      description: Timestamp from the last hardware inventory scan
-      type: date
-    - contextPath: MicrosoftECM.Devices.LastInstallationError
-      description: Last reported error code from the installation on this client.
-      type: date
-    - contextPath: MicrosoftECM.Devices.LastLogonUser
-      description: Last logged on user
-      type: string
-    - contextPath: MicrosoftECM.Devices.LastMPServerName
-      description: Management Point server name where the client performed its last
-        policy request.
-      type: string
-    - contextPath: MicrosoftECM.Devices.MACAddress
-      description: The MAC address of the device
-      type: string
-    - contextPath: MicrosoftECM.Devices.PrimaryUser
-      description: Users who have user-device-affinity with this device
-      type: string
     - contextPath: MicrosoftECM.Devices.ResourceID
       description: Unique Configuration Manager-supplied ID for the resource.
       type: number
-    - contextPath: MicrosoftECM.Devices.SiteCode
-      description: Site code of the site that created the collection.
-      type: string
-    - contextPath: MicrosoftECM.Devices.Status
-      description: Current status
-      type: string
-    description: Gets a Configuration Manager device
+    description: Lists a Configuration Manager device
   - name: ms-ecm-script-list
     arguments:
     - name: author
@@ -320,13 +264,64 @@ script:
         collection_type="Device"`)
     - name: device_name
       description: Specifies a device name in Configuration Manager
+    - name: poll_results
+      description: Whether to poll for the script invocation results or not
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - name: timeout
+      required: false
+      description: The timeout in seconds to poll for invocation results. Default is 30 seconds.
+      defaultvalue: '30'
     outputs:
-    - contextPath: MicrosoftECM.ScriptsInvocation.OperationID
-      description: The unique Id of the script operation
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
+      description: The script invocation operation ID
       type: number
-    - contextPath: MicrosoftECM.ScriptsInvocation.ReturnValue
-      description: The Return value of the script operation, 0 upon success
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.CollectionId
+      description: The collection ID of the device on which the script was invoked
+        on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.CollectionName
+      description: The collection Name of the device on which the script was invoked
+        on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.DeviceName
+      description: The name of the device on which the script was invoked on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ResourceId
+      description: The resource ID of the device on which the script was invoked on
       type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.LastUpdateTime
+      description: The last time the Invocation result object was updated
+      type: date
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptExecutionState
+      description: The state of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptExitCode
+      description: The exit code of the script invocation
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptGuid
+      description: 'The unique identifier of the script '
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptLastModifiedDate
+      description: The date of the script's last modification
+      type: date
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptName
+      description: The name of the script
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptOutput
+      description: The output of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptOutputHash
+      description: The hash of the output of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptVersion
+      description: The version of the script when it was invoked
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.TaskID
+      description: The unique identifier of the invocation
+      type: string
     description: Invokes a script in Configuration Manager
   - name: ms-ecm-script-approve
     arguments:
@@ -726,66 +721,18 @@ script:
     - name: collection_name
       description: The name of the collection to start the service in. (can be retrived
         via `!ms-ecm-collection-list collection_type="Device"`)
+    - name: poll_results
+      description: Whether to poll for the script invocation results or not
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - name: timeout
+      required: false
+      description: The timeout in seconds to poll for invocation results. Default is 30 seconds.
+      defaultvalue: '30'
     outputs:
-    - contextPath: MicrosoftECM.ScriptsInvocation.OperationID
-      description: The script execution operation ID
-      type: number
-    - contextPath: MicrosoftECM.ScriptsInvocation.ReturnValue
-      description: The script execution return value
-      type: number
-    description: Starts a service on a device or collection (Implemented by creating
-      and invoking a script named `XSOAR StartService`)
-  - name: ms-ecm-service-restart
-    arguments:
-    - name: service_name
-      required: true
-      description: The name of the service
-    - name: device_name
-      description: The device name to start the service in. (can be retrived via `!ms-ecm-device-list`)
-    - name: collection_id
-      description: The ID of the collection to start the service in. (can be retrived
-        via `!ms-ecm-collection-list collection_type="Device"`)
-    - name: collection_name
-      description: The name of the collection to start the service in. (can be retrived
-        via `!ms-ecm-collection-list collection_type="Device"`)
-    outputs:
-    - contextPath: MicrosoftECM.ScriptsInvocation.OperationID
-      description: The script execution operation ID
-      type: number
-    - contextPath: MicrosoftECM.ScriptsInvocation.ReturnValue
-      description: The script execution return value
-      type: number
-    description: Restarts a service on a device or collection (Implemented by creating
-      and invoking a script named `XSOAR RestartService`)
-  - name: ms-ecm-service-stop
-    arguments:
-    - name: service_name
-      required: true
-      description: The name of the service
-    - name: device_name
-      description: The device name to start the service in. (can be retrived via `!ms-ecm-device-list`)
-    - name: collection_id
-      description: The ID of the collection to start the service in. (can be retrived
-        via `!ms-ecm-collection-list collection_type="Device"`)
-    - name: collection_name
-      description: The name of the collection to start the service in. (can be retrived
-        via `!ms-ecm-collection-list collection_type="Device"`)
-    outputs:
-    - contextPath: MicrosoftECM.ScriptsInvocation.OperationID
-      description: The script execution operation ID
-      type: number
-    - contextPath: MicrosoftECM.ScriptsInvocation.ReturnValue
-      description: The script execution return value
-      type: number
-    description: Stops a service on a device or collection (Implemented by creating
-      and invoking a script named `XSOAR StopService`)
-  - name: ms-ecm-script-invocation-results
-    arguments:
-    - name: operation_id
-      required: true
-      description: The script invocation operation ID
-    outputs:
-    - contextPath: MicrosoftECM.ScriptsInvocationResults.ClientOperationId
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
       type: number
     - contextPath: MicrosoftECM.ScriptsInvocationResults.CollectionId
@@ -832,7 +779,413 @@ script:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.TaskID
       description: The unique identifier of the invocation
       type: string
-    description: Gets a script invocation results
+    description: Starts a service on a device or collection (Implemented by creating
+      and invoking a script named `XSOAR StartService`)
+  - name: ms-ecm-service-restart
+    arguments:
+    - name: service_name
+      required: true
+      description: The name of the service
+    - name: device_name
+      description: The device name to start the service in. (can be retrived via `!ms-ecm-device-list`)
+    - name: collection_id
+      description: The ID of the collection to start the service in. (can be retrived
+        via `!ms-ecm-collection-list collection_type="Device"`)
+    - name: collection_name
+      description: The name of the collection to start the service in. (can be retrived
+        via `!ms-ecm-collection-list collection_type="Device"`)
+    - name: poll_results
+      description: Whether to poll for the script invocation results or not
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - name: timeout
+      required: false
+      description: The timeout in seconds to poll for invocation results. Default is 30 seconds.
+      defaultvalue: '30'
+    outputs:
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
+      description: The script invocation operation ID
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.CollectionId
+      description: The collection ID of the device on which the script was invoked
+        on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.CollectionName
+      description: The collection Name of the device on which the script was invoked
+        on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.DeviceName
+      description: The name of the device on which the script was invoked on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ResourceId
+      description: The resource ID of the device on which the script was invoked on
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.LastUpdateTime
+      description: The last time the Invocation result object was updated
+      type: date
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptExecutionState
+      description: The state of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptExitCode
+      description: The exit code of the script invocation
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptGuid
+      description: 'The unique identifier of the script '
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptLastModifiedDate
+      description: The date of the script's last modification
+      type: date
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptName
+      description: The name of the script
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptOutput
+      description: The output of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptOutputHash
+      description: The hash of the output of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptVersion
+      description: The version of the script when it was invoked
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.TaskID
+      description: The unique identifier of the invocation
+      type: string
+    description: Restarts a service on a device or collection (Implemented by creating
+      and invoking a script named `XSOAR RestartService`)
+  - name: ms-ecm-service-stop
+    arguments:
+    - name: service_name
+      required: true
+      description: The name of the service
+    - name: device_name
+      description: The device name to start the service in. (can be retrived via `!ms-ecm-device-list`)
+    - name: collection_id
+      description: The ID of the collection to start the service in. (can be retrived
+        via `!ms-ecm-collection-list collection_type="Device"`)
+    - name: collection_name
+      description: The name of the collection to start the service in. (can be retrived
+        via `!ms-ecm-collection-list collection_type="Device"`)
+    - name: poll_results
+      description: Whether to poll for the script invocation results or not
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - name: timeout
+      required: false
+      description: The timeout in seconds to poll for invocation results. Default is 30 seconds.
+      defaultvalue: '30'
+    outputs:
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
+      description: The script invocation operation ID
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.CollectionId
+      description: The collection ID of the device on which the script was invoked
+        on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.CollectionName
+      description: The collection Name of the device on which the script was invoked
+        on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.DeviceName
+      description: The name of the device on which the script was invoked on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ResourceId
+      description: The resource ID of the device on which the script was invoked on
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.LastUpdateTime
+      description: The last time the Invocation result object was updated
+      type: date
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptExecutionState
+      description: The state of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptExitCode
+      description: The exit code of the script invocation
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptGuid
+      description: 'The unique identifier of the script '
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptLastModifiedDate
+      description: The date of the script's last modification
+      type: date
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptName
+      description: The name of the script
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptOutput
+      description: The output of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptOutputHash
+      description: The hash of the output of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptVersion
+      description: The version of the script when it was invoked
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.TaskID
+      description: The unique identifier of the invocation
+      type: string
+    description: Stops a service on a device or collection (Implemented by creating
+      and invoking a script named `XSOAR StopService`)
+  - name: ms-ecm-script-invocation-results
+    arguments:
+    - name: operation_id
+      required: true
+      description: The script invocation operation ID
+    - name: timeout
+      required: false
+      description: The timeout in seconds to poll for invocation results. Default is 30 seconds.
+      defaultvalue: '30'
+    outputs:
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
+      description: The script invocation operation ID
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.CollectionId
+      description: The collection ID of the device on which the script was invoked
+        on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.CollectionName
+      description: The collection Name of the device on which the script was invoked
+        on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.DeviceName
+      description: The name of the device on which the script was invoked on
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ResourceId
+      description: The resource ID of the device on which the script was invoked on
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.LastUpdateTime
+      description: The last time the Invocation result object was updated
+      type: date
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptExecutionState
+      description: The state of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptExitCode
+      description: The exit code of the script invocation
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptGuid
+      description: 'The unique identifier of the script '
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptLastModifiedDate
+      description: The date of the script's last modification
+      type: date
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptName
+      description: The name of the script
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptOutput
+      description: The output of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptOutputHash
+      description: The hash of the output of the script invocation
+      type: string
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.ScriptVersion
+      description: The version of the script when it was invoked
+      type: number
+    - contextPath: MicrosoftECM.ScriptsInvocationResults.TaskID
+      description: The unique identifier of the invocation
+      type: string
+  - name: ms-ecm-device-get-collection-member
+    arguments:
+    - name: device_names
+      description: A comma separated list of device names, i.e `name1,name2,etc.`
+      isArray: true
+    - name: resource_ids
+      description: A comma separated list of resource ids, i.e `ID1,ID2,etc.`
+      isArray: true
+    outputs:
+    - contextPath: MicrosoftECM.DeviceCollectionMember.Name
+      description: The name of the device
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.ClientVersion
+      description: Version of the installed client software.
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.DeviceOS
+      description: Device operating system.
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.ResourceID
+      description: Unique Configuration Manager-supplied ID for the resource.
+      type: number
+    - contextPath: MicrosoftECM.DeviceCollectionMember.IsActive
+      description: true if there has been a recent heartbeat from the client.
+      type: boolean
+    - contextPath: MicrosoftECM.DeviceCollectionMember.LastActiveTime
+      description: Comes from Client Health. Represents the last reported time the
+        client was active.
+      type: date
+    - contextPath: MicrosoftECM.DeviceCollectionMember.LastClientCheckTime
+      description: Comes from Client Health. Represents the last reported health evaluation
+        time.
+      type: date
+    - contextPath: MicrosoftECM.DeviceCollectionMember.LastDDR
+      description: Last heartbeat timestamp from client DDR discovery.
+      type: date
+    - contextPath: MicrosoftECM.DeviceCollectionMember.LastHardwareScan
+      description: Timestamp from the last hardware inventory scan.
+      type: date
+    - contextPath: MicrosoftECM.DeviceCollectionMember.LastPolicyRequest
+      description: Timestamp of the last policy request for this client.
+      type: date
+    - contextPath: MicrosoftECM.DeviceCollectionMember. Domain
+      description: Domain to which the resource belongs.
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.PrimaryUser
+      description: The primary user of the device
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.Status
+      description: Current status of the device.
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.MACAddress
+      description: The MAC Address of the device.
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.IsVirtualMachine
+      description: true if the client is a virtual machine.
+      type: boolean
+    - contextPath: MicrosoftECM.DeviceCollectionMember.IsDecommissioned
+      description: true if the collection member is decommissioned.
+      type: boolean
+    - contextPath: MicrosoftECM.DeviceCollectionMember.IsClient
+      description: true, if the client is a Configuration Manager client.
+      type: boolean
+    - contextPath: MicrosoftECM.DeviceCollectionMember.IsBlocked
+      description: true if a system is blocked. Block/unblock is a manual action in
+        the Admin Console UI that the administrator can invoke. By blocking a client,
+        client communication with the server will be cut off.
+      type: boolean
+    - contextPath: MicrosoftECM.DeviceCollectionMember.ExchangeServer
+      description: Name of the Exchange server for Exchange Active Sync (EAS).
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.DeviceThreatLevel
+      description: The threat level of the device
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.CurrentLogonUser
+      description: Current logged on user
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.LastLogonUser
+      description: The last user who logged in to the device
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.DeviceOSBuild
+      description: The OS build number of the device
+      type: string
+    - contextPath: MicrosoftECM.DeviceCollectionMember.ADLastLogonTime
+      description: Last logon timestamp of the computer (discovered from Active Directory).
+      type: date
+    - contextPath: MicrosoftECM.DeviceCollectionMember.SiteCode
+      description: Site code of the site that created the collection.
+      type: string
+    description: Gets a Configuration Manager device By querying the SMS_CM_RES_COLL_SMS00001
+      class. You can use the `ms-ecm-device-get-resource` or `ms-ecm-device-get-collection-member`
+      commands to change the query class. Depending upon your role-based access in
+      the site, you may need to use one of these other commands.
+  - name: ms-ecm-device-get-resource
+    arguments:
+    - name: device_names
+      description: A comma separated list of device names, i.e `name1,name2,etc.`
+      isArray: true
+    - name: resource_ids
+      description: A comma separated list of resource ids, i.e `ID1,ID2,etc.`
+      isArray: true
+    outputs:
+    - contextPath: MicrosoftECM.DeviceResource.Name
+      description: The name of the device
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.AgentName
+      description: List of the names of discovery agents that found the resource.
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.ResourceId
+      description: Configuration Manager-supplied ID that uniquely identifies a Configuration
+        Manager client resource
+      type: number
+    - contextPath: MicrosoftECM.DeviceResource.ADSiteName
+      description: The Active Directory site name that is assigned to the client.
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.AgentSite
+      description: List of sites from which the discovery agents run.
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.AgentTime
+      description: List of discovery dates and times.
+      type: date
+    - contextPath: MicrosoftECM.DeviceResource.CPUType
+      description: The CPU type, for example, StrongARM. Currently, only device clients
+        report this value.
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.DistinguishedName
+      description: The distinguished name of the account.
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.FullDomainName
+      description: The full name of the device's domain
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.IPAddresses
+      description: List of the IP addresses that are associated with the resource.
+        More than one address is listed if the resource has multiple network cards
+        installed.
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.NetbiosName
+      description: Name used by the NetBIOS protocol.
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.UserAccountControl
+      description: User account control value retrieved from Active Directory.
+      type: number
+    - contextPath: MicrosoftECM.DeviceResource.LastLogonUserName
+      description: Name of the last logged-on user at the time the discovery agent
+        ran.
+      type: date
+    - contextPath: MicrosoftECM.DeviceResource.LastLogonUserDomain
+      description: Domain used by the last logged-on user at the time the discovery
+        agent ran.
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.LastLogonTimestamp
+      description: The date of the last user logon.
+      type: date
+    - contextPath: MicrosoftECM.DeviceResource.OperatingSystemNameandVersion
+      description: Free-form string that describes the operating system.
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.VirtualMachineHostName
+      description: Virtual machine host name.
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.VirtualMachineType
+      description: The type of the virtual machine
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.DNSForestGuid
+      description: A unique identifier for the DNS forest
+      type: string
+    - contextPath: MicrosoftECM.DeviceResource.HardwareID
+      description: An ID that uniquely describes the hardware on which the client
+        is installed. This ID remains unchanged through re-imaging or through successive
+        installations of the operating system or client. This differs from the Configuration
+        Manager unique ID, which might change under these circumstances.
+      type: string
+    description: Gets a Configuration Manager device By querying the SMS_R_System class. You can use the `ms-ecm-device-get-resource` or `ms-ecm-device-get-collection-member` commands to change the query class. Depending upon your role-based access in the site, you may need to use one of these other commands.
+  - name: ms-ecm-get-user-device-affinity
+    arguments:
+    - name: user_names
+      description: A comma separated list of usernames with the form of "Domain\username"
+        i.e "Domain\user1,Domain\user2",etc.."
+      isArray: true
+    - name: resource_ids
+      description: A comma separated list of device resource ids, i.e `ID1,ID2,etc.`
+    - name: device_names
+      description: A comma separated list of device names, i.e `name1,name2,etc.`
+      isArray: true
+    outputs:
+    - contextPath: MicrosoftECM.UserDeviceAffinity.DeviceName
+      description: The name of the device.
+      type: string
+    - contextPath: MicrosoftECM.UserDeviceAffinity.UniqueUserName
+      description: User name in domain\user format.
+      type: string
+    - contextPath: MicrosoftECM.UserDeviceAffinity.ResourceID
+      description: The resource ID of the device.
+      type: number
+    - contextPath: MicrosoftECM.UserDeviceAffinity.IsActive
+      description: TRUE if the relationship is active.
+      type: boolean
+    - contextPath: MicrosoftECM.UserDeviceAffinity.CreationTime
+      description: The time when the relationship was created.
+      type: date
+    - contextPath: MicrosoftECM.UserDeviceAffinity.RelationshipResourceID
+      description: The unique identifier for this relationship.
+      type: number
+    description: Get the relationships between a device and its primary users.
   dockerimage: demisto/powershell-ubuntu:7.0.3.12001
   runonce: false
 fromversion: 5.5.0
