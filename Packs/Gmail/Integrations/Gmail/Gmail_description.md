@@ -43,6 +43,12 @@ In order to set a user's password, authorize this API: [https://www.googleapis.c
 In order to send mails, authorize this API:
 [https://www.googleapis.com/auth/gmail.compose](https://www.googleapis.com/auth/gmail.compose) and [https://www.googleapis.com/auth/gmail.send](https://www.googleapis.com/auth/gmail.send)
 
+In order to add the send as email id, authorize this API:
+[https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) 
+
+In order to add the forwarding address for the user, authorize this API: 
+[https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) 
+
 For the email user param, please choose a user with admin permissions and make sure that you follow the steps to perform Google Apps Domain-Wide Delegation of Authority.
 
 In order to revoke/fetch user role, you will need the Immutable Google Apps ID param.
