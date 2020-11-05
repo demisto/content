@@ -1034,14 +1034,15 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         sanity_tests = {
             "Sanity Test - Playbook with no integration",
             "Sanity Test - Playbook with integration",
-            "Sanity Test - MITMProxy",
+            "Sanity Test - Playbook with mocked integration",
             "Sanity Test - Playbook with Unmockable Integration"
         }
         logging.debug(f"Adding sanity tests: {sanity_tests}")
         tests.update(sanity_tests)
+        logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
         packs_to_install.add("HelloWorld")
         logging.debug(
-            f"Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' using it"
+            "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' using it"
         )
         packs_to_install.add("Gmail")
 

@@ -1,6 +1,6 @@
-id: Sanity Test - MITMProxy
+id: Sanity Test - Playbook with mocked integration
 version: -1
-name: Sanity Test - MITMProxy
+name: Sanity Test - Playbook with mocked integration
 starttaskid: "0"
 tasks:
   "0":
