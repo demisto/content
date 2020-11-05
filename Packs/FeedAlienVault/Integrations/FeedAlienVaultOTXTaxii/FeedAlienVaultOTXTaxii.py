@@ -20,7 +20,7 @@ from typing import Dict, List, Optional
 requests.packages.urllib3.disable_warnings()
 
 SOURCE_NAME = "Alien Vault OTX TAXII"
-
+TAXII_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -497,16 +497,27 @@ class Client:
             full_collection_list.append(collection.name)
         return full_collection_list
 
-    def build_iterator(self, collection):
+    def build_iterator(self, collection, begin_date=None):
         """Returns a list of all XML elements from the given collection.
 
         Args:
             collection(str): The collection name to fetch the elements from.
+            begin_date(datetime): what is the first date to fetch indicators from.
 
         Returns:
             list. A list of XML elements (strings).
         """
-        return list(self.taxii_client.poll(collection_name=collection))
+        if not begin_date:
+            begin_date, _ = parse_date_range(
+                demisto.params().get('initial_interval'), utc=False
+            )
+
+        if begin_date.tzinfo is None:
+            begin_date = begin_date.replace(tzinfo=pytz.UTC)
+
+        end_date = begin_date + timedelta(minutes=int(demisto.params().get('fetch_interval')))
+
+        return list(self.taxii_client.poll(collection_name=collection, begin_date=begin_date, end_date=end_date))
 
     def decode_indicators(self, response):
         """Decode the XML response given using STIXDecode class.
@@ -537,7 +548,6 @@ def module_test_command(client: Client, args: Dict):
     failed_collections = []  # type:List
     for collection in client.collections:
         try:
-
             client.build_iterator(collection)
             passed_collections.append(collection)
 
@@ -570,7 +580,7 @@ def get_indicators_command(client: Client, args: Dict):
         str,dict,dict. The human readable, and rawJSON from the command - no context created.
     """
     limit = int(args.get('limit', 50))
-    indicator_list = fetch_indicators_command(client, limit)
+    indicator_list = fetch_indicators_command(client, limit=limit)
 
     human_readable = tableToMarkdown("Indicators from AlienVault OTX TAXII:", indicator_list, removeNull=True)
 
@@ -615,12 +625,13 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags, tlp_color):
     return parsed_indicator_list, full_indicator_list
 
 
-def fetch_indicators_command(client: Client, limit=None):
+def fetch_indicators_command(client: Client, limit=None, begin_date=None):
     """Fetch indicators from AlienVault OTX.
 
     Args:
         client(Client): The AlienVault OTX client.
         limit(any): How many XML elements to parse, None if all should be parsed.
+        begin_date(datetime): what is the first date to fetch indicators from.
 
     Returns:
         list. A list of indicators.
@@ -628,7 +639,7 @@ def fetch_indicators_command(client: Client, limit=None):
     indicator_list = []  # type:List
     for collection in client.collections:
         try:
-            taxii_iter = client.build_iterator(collection)
+            taxii_iter = client.build_iterator(collection, begin_date=begin_date)
 
         except Exception as e:
             if not client.all_collections:
@@ -667,11 +678,22 @@ def main():
         'alienvaultotx-get-indicators': get_indicators_command
     }
     try:
+        begin_date = demisto.getIntegrationContext().get('begin_date')
+
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
+            if not begin_date:
+                begin_date = demisto.params().get('initial_interval')
+                if begin_date:
+                    begin_date, _ = parse_date_range(
+                        begin_date
+                    )
+
+            indicators = fetch_indicators_command(client, begin_date=begin_date)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
+            # demisto.setIntegrationContext({"begin_date": begin_date + timedelta(int(
+            #     demisto.params().get('fetch_interval')))})
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)

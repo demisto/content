@@ -96,6 +96,21 @@ configuration:
   name: collections
   required: false
   type: 0
+- additionalinfo: The time interval for the first fetch (retroactive). <number> <time
+    unit> of type minute/hour/day/year. For example, 1 minute, 12 hour
+  defaultvalue: 1 year
+  display: First Fetch Time
+  hidden: false
+  name: initial_interval
+  required: false
+  type: 0
+- additionalinfo: The interval of time in minutes to fetch indicators from in each batch.
+  defaultvalue: 60
+  display: Fetch Time Interval (in minutes)
+  hidden: false
+  name: fetch_interval
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -123,7 +138,7 @@ script:
     description: Gets the indicators from AlienVault OTX.
     execution: false
     name: alienvaultotx-get-indicators
-  dockerimage: demisto/taxii:1.0.0.9793
+  dockerimage: demisto/taxii:1.0.0.12553
   feed: true
   isfetch: false
   longRunning: false
