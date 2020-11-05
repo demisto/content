@@ -518,7 +518,7 @@ class TestChangedCommonTesting:
 
     def test_all_tests(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
-        assert content_packs == {"DeveloperTools", 'Base', 'HelloWorld'}
+        assert content_packs == {"Gmail", "HelloWorld", "DeveloperTools", "Base"}
 
 
 class TestPackageFilesModified:
@@ -550,7 +550,7 @@ class TestNoChange:
         get_modified_files_ret = create_get_modified_files_ret()
         filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
-        assert content_packs == {"Base", "DeveloperTools", "HelloWorld"}
+        assert content_packs == {"Gmail", "HelloWorld", "Base", "DeveloperTools"}
 
 
 def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=None, changed_common=None,
