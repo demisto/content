@@ -4,6 +4,9 @@ from HTMLParser import HTMLParser
 from re import compile as _Re
 
 from CommonServerPython import *
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')  # pylint: disable=no-member
 
 MAX_TEXT_LENGTH = 10 ** 5
 
@@ -47,6 +50,7 @@ LANGUAGES_TO_MODEL_NAMES = {'English': 'en_core_web_sm',
                             }
 
 _unicode_chr_splitter = _Re('(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)').split
+nlp = None
 
 
 def clean_html(text):
@@ -116,7 +120,9 @@ def tokenize_text_other(unicode_text):
 
 
 def tokenize_text_spacy(unicode_text, language):
-    nlp = spacy.load(LANGUAGES_TO_MODEL_NAMES[language], disable=['tagger', 'parser', 'ner', 'textcat'])
+    global nlp
+    if nlp is None:
+        nlp = spacy.load(LANGUAGES_TO_MODEL_NAMES[language], disable=['tagger', 'parser', 'ner', 'textcat'])
     doc = nlp(unicode(unicode_text))
     original_text_indices_to_words = map_indices_to_words(unicode_text)
     tokens_list = []

@@ -1,8 +1,5 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "ServiceNow Ticket"
-    ],
+    "associatedToAll": true,
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "servicenowurgency",
@@ -25,6 +22,7 @@
     "required": false,
     "script": "",
     "selectValues": [
+        "",
         "1 - High",
         "2 - Medium",
         "3 - Low"

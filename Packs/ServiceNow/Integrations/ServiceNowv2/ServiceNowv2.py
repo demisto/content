@@ -1,6 +1,7 @@
+import os
 import shutil
 import dateparser
-from typing import List, Tuple, Dict, Callable, Any, Union
+from typing import List, Tuple, Dict, Callable, Any, Union, Optional
 
 from CommonServerPython import *
 
@@ -358,6 +359,9 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
                 ticket_fields[arg] = inv_states.get(input_arg, input_arg)
             elif arg == 'approval':
                 ticket_fields[arg] = inv_approval.get(input_arg, input_arg)
+            elif arg == 'change_type':
+                # this change is required in order to use type 'Standard' as well.
+                ticket_fields['type'] = input_arg
             else:
                 ticket_fields[arg] = input_arg
         elif template_name and arg in template_name:
@@ -575,30 +579,33 @@ class Client(BaseClient):
 
         return dic_template
 
-    def get_ticket_attachments(self, ticket_id: str) -> dict:
+    def get_ticket_attachments(self, ticket_id: str, sys_created_on: Optional[str] = None) -> dict:
         """Get ticket attachments by sending a GET request.
 
         Args:
             ticket_id: ticket id
+            sys_created_on: string, when the attachment was created
 
         Returns:
             Response from API.
         """
-        return self.send_request('attachment', 'GET', params={'sysparm_query': f'table_sys_id={ticket_id}'})
+        return self.send_request('attachment', 'GET', params={
+            'sysparm_query': f'table_sys_id={ticket_id}^sys_created_on>{sys_created_on}'})
 
-    def get_ticket_attachment_entries(self, ticket_id: str) -> list:
+    def get_ticket_attachment_entries(self, ticket_id: str, sys_created_on: Optional[str] = None) -> list:
         """Get ticket attachments, including file attachments
         by sending a GET request and using the get_ticket_attachments class function.
 
         Args:
             ticket_id: ticket id
+            sys_created_on: string, when the attachment was created
 
         Returns:
             Array of attachments entries.
         """
         entries = []
         links = []  # type: List[Tuple[str, str]]
-        attachments_res = self.get_ticket_attachments(ticket_id)
+        attachments_res = self.get_ticket_attachments(ticket_id, sys_created_on)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
             links = [(attachment.get('download_link', ''), attachment.get('file_name', ''))
@@ -1927,7 +1934,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     demisto.debug(f'ticket_last_update is {ticket_last_update}')
 
-    if last_update > ticket_last_update:  # type: ignore
+    if last_update > ticket_last_update:
         demisto.debug('Nothing new in the ticket')
         ticket = {}
 
@@ -1936,29 +1943,17 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     # get latest comments and files
     entries = []
-    attachments_res = client.get_ticket_attachments(ticket_id)
-    file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
-    if 'result' in attachments_res:
-        attachments = attachments_res['result']
-        for attachment in attachments:
-            entry_time = arg_to_timestamp(
-                arg=attachment.get('sys_created_on'),
-                arg_name='sys_created_on',
-                required=False
-            )
-
-            if file_entries:
-                for file_ in file_entries:
-                    if file_.get('File') == attachment.get('file_name'):
-                        if last_update > entry_time:
-                            continue
-                        else:
-                            entries.append(file_)
+    file_entries = client.get_ticket_attachment_entries(ticket_id, datetime.fromtimestamp(last_update))  # type: ignore
+    if file_entries:
+        for file in file_entries:
+            if '_mirrored_from_xsoar' not in file.get('File'):
+                entries.append(file)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
 
-    sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
+    sys_param_query = f'element_id={ticket_id}^sys_created_on>' \
+        f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
 
     comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
     demisto.debug(f'Comments result is {comments_result}')
@@ -1968,26 +1963,17 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         return [ticket] + entries
 
     for note in comments_result.get('result', []):
-        entry_time = arg_to_timestamp(
-            arg=note.get('sys_created_on'),
-            arg_name='sys_created_on',
-            required=False
-        )
-        demisto.debug(f'entry_time is {entry_time}')
-
-        if last_update > entry_time:  # type: ignore
-            continue
-
-        comments_context = {'comments_and_work_notes': note.get('value')}
-        entries.append({
-            'Type': note.get('type'),
-            'Category': note.get('category'),
-            'Contents': note.get('value'),
-            'ContentsFormat': note.get('format'),
-            'Tags': note.get('tags'),
-            'Note': True,
-            'EntryContext': comments_context
-        })
+        if 'Mirrored from Cortex XSOAR' not in note.get('value'):
+            comments_context = {'comments_and_work_notes': note.get('value')}
+            entries.append({
+                'Type': note.get('type'),
+                'Category': note.get('category'),
+                'Contents': note.get('value'),
+                'ContentsFormat': note.get('format'),
+                'Tags': note.get('tags'),
+                'Note': True,
+                'EntryContext': comments_context
+            })
     # Parse user dict to email
     assigned_to = ticket.get('assigned_to', {})
     caller = ticket.get('caller_id', {})
@@ -2011,7 +1997,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         user_email = user.get('email')
         ticket['caller_id'] = user_email
 
-    if ticket.get('resolved_by'):
+    if ticket.get('resolved_by') or ticket.get('closed_at'):
         if params.get('close_incident'):
             demisto.debug(f'ticket is closed: {ticket}')
             entries.append({
@@ -2051,6 +2037,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     ticket_id = parsed_args.remote_incident_id
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
+        # Closing sc_type ticket. This ticket type can be closed only when changing the ticket state.
+        if ticket_type == 'sc_task' and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
+            parsed_args.data['state'] = '3'
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if not params.get('close_ticket'):
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
@@ -2069,8 +2058,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
             # Mirroring files as entries
             if entry.get('type') == 3:
                 path_res = demisto.getFilePath(entry.get('id'))
-                file_name = path_res.get('name')
-                client.upload_file(ticket_id, entry.get('id'), file_name, ticket_type)
+                full_file_name = path_res.get('name')
+                file_name, file_extension = os.path.splitext(full_file_name)
+                if not file_extension:
+                    file_extension = ''
+                client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
+                                   ticket_type)
             else:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
@@ -2080,7 +2073,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 elif params.get('comment_tag') in tags:
                     key = 'comments'
                 user = entry.get('user', 'dbot')
-                text = f"({user}): {str(entry.get('contents', ''))}"
+                text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
                 client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
@@ -2116,8 +2109,8 @@ def main():
     LOG(f'Executing command {command}')
 
     params = demisto.params()
-    username = params['credentials']['identifier']
-    password = params['credentials']['password']
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
     verify = not params.get('insecure', False)
 
     version = params.get('api_version')

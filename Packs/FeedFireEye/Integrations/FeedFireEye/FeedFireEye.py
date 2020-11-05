@@ -1,6 +1,9 @@
-from typing import Tuple, List, Dict, Any, Optional
+from typing import Tuple, List, Dict
 
+import math
+from urllib.parse import urlparse, parse_qsl
 import urllib3
+from dateparser import parse
 from requests.auth import HTTPBasicAuth
 
 from CommonServerPython import *
@@ -71,14 +74,29 @@ class STIX21Processor:
         indicator_pattern_value = indicator_pattern_value[1:-1]
 
         if indicator_pattern_value.startswith('file'):
-            hash_values = indicator_pattern_value.split('OR')
+            hash_values = indicator_pattern_value.split(' OR ')
             hashes_dict = dict()  # type: Dict
 
             for h in hash_values:
-                key, value = h.split('=')
-                hashes_dict[key.strip().split('file:hashes.')[1].replace("'", '')] = value.strip().replace("'", '')
+                try:
+                    key, value = h.split('=')
+                    hashes_dict[key.strip().split('file:hashes.')[1].replace("'", '')] = value.strip().replace("'", '')
+                except Exception:
+                    # When an unknown item occurs in the pattern
+                    pass
 
-            return ['file'], [hashes_dict['MD5']], hashes_dict
+            if hashes_dict.get('MD5'):
+                return ['file'], [hashes_dict['MD5']], hashes_dict
+            elif hashes_dict.get('SHA-1'):
+                return ['file'], [hashes_dict['SHA-1']], hashes_dict
+            elif hashes_dict.get('SHA-256'):
+                return ['file'], [hashes_dict['SHA-256']], hashes_dict
+            elif hashes_dict.get('SHA-512'):
+                return ['file'], [hashes_dict['SHA-512']], hashes_dict
+            elif hashes_dict.get('ssdeep'):
+                return ['file'], [hashes_dict['ssdeep']], hashes_dict
+            else:
+                return [], [], {}
 
         try:
             indicator_types = list()  # type: List
@@ -130,10 +148,10 @@ class STIX21Processor:
                 if confidence > threshold:
                     return min(score, Common.DBotScore.SUSPICIOUS)
 
-    def process_indicator(self, raw_data):
+    def process_indicator(self, raw_data: Dict) -> List:
         indicators = list()
 
-        _, values, hashes = self.process_indicator_value(raw_data.get('pattern'))
+        _, values, hashes = self.process_indicator_value(raw_data['pattern'])
 
         for value in values:
             indicator = dict()
@@ -142,8 +160,8 @@ class STIX21Processor:
                 indicator['value'] = value
 
                 indicator['score'] = self.calculate_indicator_reputation(
-                    raw_data.get('confidence'),
-                    raw_data.get('created'),
+                    raw_data.get('confidence', 0),
+                    raw_data.get('created', '2000-01-01T00:00:00.000Z'),
                     self.reputation_interval
                 )
 
@@ -166,12 +184,14 @@ class STIX21Processor:
                     indicator['rawJSON']['SHA-1'] = hashes['SHA-1']
                 if 'SHA-256' in hashes:
                     indicator['rawJSON']['SHA-256'] = hashes['SHA-256']
+                if 'ssdeep' in hashes:
+                    indicator['rawJSON']['SSDeep'] = hashes['ssdeep']
 
                 indicators.append(indicator)
 
         return indicators
 
-    def process_stix_entities(self):
+    def process_stix_entities(self) -> List:
         processed_entities = list()  # type: List
 
         for entity_type, value in self.entities.items():
@@ -193,7 +213,7 @@ class STIX21Processor:
         return processed_reports
 
     @staticmethod
-    def process_malware(raw_data) -> Dict:
+    def process_malware(raw_data: Dict) -> Dict:
         entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Malware'
@@ -221,7 +241,7 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_threat_actor(raw_data) -> Dict:
+    def process_threat_actor(raw_data: Dict) -> Dict:
         entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Threat Actor'
@@ -254,7 +274,7 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_report(raw_data) -> Dict:
+    def process_report(raw_data: Dict) -> Dict:
         report = dict()  # type: Dict[str, Any]
 
         report['type'] = 'STIX Report'
@@ -285,6 +305,62 @@ class STIX21Processor:
         return report
 
 
+def parse_timestamp(next_url_to_extract_timestamp_from: str) -> Optional[int]:
+    """Extract the last fetched indicator timestamp.
+
+    Args:
+        next_url_to_extract_timestamp_from (str): The last indicator fetched timestamp is encoded in the url.
+
+    Returns:
+        int. Last fetch timestamp.
+    """
+    try:
+        url_query = urlparse(next_url_to_extract_timestamp_from).query
+        query_args = parse_qsl(url_query)
+        encoded_string = [value for arg_name, value in query_args if arg_name == 'last_id_modified_timestamp'][0]
+        decoded_string = base64.b64decode(encoded_string).decode('utf-8')
+        timestamp_in_micro_seconds = int(decoded_string.split(',')[0])
+        timestamp_in_seconds = math.floor(timestamp_in_micro_seconds / 1000000)
+        return timestamp_in_seconds
+    except Exception:
+        return None
+
+
+def handle_first_fetch_timestamp():
+    """Parses the first_fetch_timestamp parameter.
+
+    Returns:
+        timestamp as str if valid, None otherwise.
+
+    """
+    user_input = demisto.params().get('first_fetch_timestamp')
+
+    try:
+        first_fetch_timestamp = parse(user_input).timestamp()
+        first_fetch_timestamp = str(first_fetch_timestamp).split('.')[0]
+        return first_fetch_timestamp
+    except Exception:
+        # Timestamp could not be parsed
+        demisto.debug(f'Could not parse requested first fetch timestamp with value {user_input}')
+        return None
+
+
+def get_last_fetch_times():
+    """Returns the last fetch time from the API for indicators and reports.
+
+    Returns:
+        str. Last indicators fetch timestamp.
+        str. Last reports fetch timestamp.
+    """
+    first_fetch_timestamp = handle_first_fetch_timestamp()
+
+    integration_context = demisto.getIntegrationContext()
+    last_indicators_fetch_time = integration_context.get('last_indicators_fetch_time', first_fetch_timestamp)
+    last_reports_fetch_time = integration_context.get('last_reports_fetch_time', first_fetch_timestamp)
+
+    return last_indicators_fetch_time, last_reports_fetch_time
+
+
 class Client(BaseClient):
     """Client to use in the FireEye Feed integration. Overrides BaseClient.
 
@@ -295,7 +371,8 @@ class Client(BaseClient):
         tlp_color (str): Traffic Light Protocol color.
     """
 
-    def __init__(self, public_key: str, private_key: str, malicious_threshold: int, reputation_interval: int,
+    def __init__(self, public_key: str, private_key: str,
+                 malicious_threshold: int, reputation_interval: int,
                  polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
                  tags: list = [], tlp_color: Optional[str] = None):
         super().__init__(base_url=API_URL, verify=not insecure, proxy=proxy)
@@ -345,12 +422,12 @@ class Client(BaseClient):
         expires_in = response.get('expires_in')
         epoch_expiration_time = self.parse_access_token_expiration_time(expires_in)
 
-        demisto.setIntegrationContext(
-            {
-                'auth_token': auth_token,
-                'expiration_time': epoch_expiration_time
-            }
-        )
+        integration_context = demisto.getIntegrationContext()
+        integration_context.update({
+            'auth_token': auth_token,
+            'expiration_time': epoch_expiration_time
+        })
+        demisto.setIntegrationContext(integration_context)
 
         return auth_token
 
@@ -363,24 +440,25 @@ class Client(BaseClient):
         last_token_fetched_expiration_time = demisto.getIntegrationContext().get('expiration_time')
         current_time = int(datetime.now().timestamp())
 
-        if last_token_fetched_expiration_time and last_token_fetched_expiration_time > current_time:
+        if last_token_fetched_expiration_time and int(last_token_fetched_expiration_time) > current_time:
             auth_token = demisto.getIntegrationContext().get('auth_token')
         else:
             auth_token = self.fetch_new_access_token()
 
         return auth_token
 
-    def fetch_all_indicators_from_api(self, limit: int) -> Tuple[List, Dict, Dict]:
+    def fetch_all_indicators_from_api(self, limit: int) -> Tuple[List, Dict, Dict, str]:
         """Collects raw data of indicators and their relationships from the feed.
 
         Args:
             limit (int): Amount of indicators to fetch. -1 means no limit.
 
         Returns:
-            Tuple[List, Dict, Dict].
+            Tuple[List, Dict, Dict, str].
                 raw_indicators - List of STIX 2.1 indicators objects.
                 relationships - Dict of `id: STIX 2.1 relationship object`.
                 stix_entities - Dict of `id: STIX 2.1 entity object`.
+                last_indicators_fetch_time - string of last fetch timestamp.
         """
         raw_indicators = list()  # type: List
         relationships = dict()  # type: Dict
@@ -389,7 +467,6 @@ class Client(BaseClient):
         headers = {
             'Accept': 'application/vnd.oasis.stix+json; version=2.1',
             'X-App-Name': 'content.xsoar.cortex.paloaltonetworks.v1.0',
-            'Authorization': f'Bearer {self.get_access_token()}'
         }
 
         if limit == -1:
@@ -397,7 +474,16 @@ class Client(BaseClient):
         else:
             query_url = f'/collections/indicators/objects?length={min(limit, 1000)}'
 
-        while True:
+        last_indicators_fetch_time, _ = get_last_fetch_times()
+        if last_indicators_fetch_time:
+            query_url += f'&added_after={last_indicators_fetch_time}'
+
+        demisto.debug('Starting raw indicators fetching')
+        round_count = 0
+        while round_count != 50:
+            # For fetching 50K objects each time
+            headers['Authorization'] = f'Bearer {self.get_access_token()}'
+
             response = self._http_request(
                 method='GET',
                 url_suffix=query_url,
@@ -405,11 +491,12 @@ class Client(BaseClient):
                 timeout=self._polling_timeout,
                 resp_type='response'
             )
+            round_count += 1
 
             if response.status_code == 204:
                 demisto.info(f'{INTEGRATION_NAME} info - '
                              f'API Status Code: {response.status_code} No Content Available for this timeframe.')
-                return [], {}, {}
+                return [], {}, {}, last_indicators_fetch_time
 
             if response.status_code != 200:
                 return_error(f'{INTEGRATION_NAME} indicators fetching - '
@@ -430,34 +517,51 @@ class Client(BaseClient):
             try:
                 query_url = response.links['next']['url']
                 query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
+
+                if 'last_id_modified_timestamp=' in query_url:
+                    last_indicators_fetch_time = parse_timestamp(query_url)
+
             except KeyError:
                 break
 
-        return raw_indicators, relationships, stix_entities
+        demisto.debug('Fetching raw indicators from feed fully completed')
+        return raw_indicators, relationships, stix_entities, last_indicators_fetch_time
 
-    def fetch_all_reports_from_api(self, limit: int) -> List:
+    def fetch_all_reports_from_api(self, limit: int) -> Tuple[List, str]:
         """Collects reports raw data from the feed.
 
         Args:
             limit (int): Amount of reports to fetch. -1 means no limit.
 
         Returns:
-            List. List of STIX 2.1 reports objects.
+            Tuple[List, str].
+                raw_reports - List of STIX 2.1 reports objects.
+                last_indicators_fetch_time - string of last fetch timestamp.
+
         """
         raw_reports = list()  # type: List
 
         headers = {
             'Accept': 'application/vnd.oasis.stix+json; version=2.1',
             'X-App-Name': 'content.xsoar.cortex.paloaltonetworks.v1.0',
-            'Authorization': f'Bearer {self.get_access_token()}'
         }
 
         if limit == -1:
             query_url = '/collections/reports/objects?length=100'
         else:
-            query_url = f'/collections/reports/objects?length={limit}'
+            query_url = f'/collections/reports/objects?length={min(limit, 100)}'
 
-        while True:
+        _, last_reports_fetch_time = get_last_fetch_times()
+
+        if last_reports_fetch_time:
+            query_url += f'&added_after={last_reports_fetch_time}'
+
+        demisto.debug('Starting raw reports fetching')
+        round_count = 0
+        while round_count != 50:
+            # For fetching 5K objects each time
+            headers['Authorization'] = f'Bearer {self.get_access_token()}'
+
             response = self._http_request(
                 method='GET',
                 url_suffix=query_url,
@@ -465,6 +569,7 @@ class Client(BaseClient):
                 timeout=self._polling_timeout,
                 resp_type='response'
             )
+            round_count += 1
 
             if response.status_code != 200:
                 return_error(f'{INTEGRATION_NAME} reports fetching - '
@@ -479,16 +584,28 @@ class Client(BaseClient):
             try:
                 query_url = response.links['next']['url']
                 query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
+
+                if 'last_id_modified_timestamp=' in query_url:
+                    last_reports_fetch_time = parse_timestamp(query_url)
+
             except KeyError:
                 break
 
-        return raw_reports
+        demisto.debug('Fetching raw reports from feed fully completed')
+        return raw_reports, last_reports_fetch_time
 
-    def build_iterator(self, limit: int) -> List:
-        self.get_access_token()
+    def build_iterator(self, collections_to_fetch: List, limit: int) -> List:
+        if 'Indicators' in collections_to_fetch:
+            raw_indicators, relationships, stix_entities, last_indicators_fetch_time = \
+                self.fetch_all_indicators_from_api(limit)
+        else:
+            raw_indicators, relationships, stix_entities, last_indicators_fetch_time = \
+                [], {}, {}, get_last_fetch_times()[0]
 
-        raw_indicators, relationships, stix_entities = self.fetch_all_indicators_from_api(limit)
-        raw_reports = self.fetch_all_reports_from_api(limit)
+        if 'Reports' in collections_to_fetch:
+            raw_reports, last_reports_fetch_time = self.fetch_all_reports_from_api(limit)
+        else:
+            raw_reports, last_reports_fetch_time = [], get_last_fetch_times()[1]
 
         stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports,
                                          self.malicious_threshold, self.reputation_interval)
@@ -497,19 +614,27 @@ class Client(BaseClient):
         stix_indicators = stix_processor.process_stix_entities()
         reports = stix_processor.process_reports()
 
+        integration_context = demisto.getIntegrationContext()
+        integration_context.update({
+            'last_indicators_fetch_time': last_indicators_fetch_time,
+            'last_reports_fetch_time': last_reports_fetch_time
+        })
+        demisto.setIntegrationContext(integration_context)
+
         return indicators + stix_indicators + reports
 
 
-def test_module(client: Client):
-    client.build_iterator(limit=10)
+def test_module(client: Client, collections_to_fetch: List):
+    client.build_iterator(collections_to_fetch, limit=10)
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client):
+def get_indicators_command(client: Client, collections_to_fetch: List):
     """Retrieves indicators from the feed to the war-room.
 
     Args:
         client (Client): Client object configured according to instance arguments.
+        collections_to_fetch (List): Which collection(s) to fetch from feed.
 
     Returns:
         Tuple of:
@@ -517,7 +642,7 @@ def get_indicators_command(client: Client):
             Dict. The raw data of the indicators.
     """
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators, raw_response = fetch_indicators_command(client, limit)
+    indicators, raw_response = fetch_indicators_command(client, collections_to_fetch, limit)
 
     human_readable = tableToMarkdown('Indicators from FireEye Feed:', indicators,
                                      headers=['value', 'type', 'rawJSON'], removeNull=True)
@@ -525,13 +650,12 @@ def get_indicators_command(client: Client):
     return human_readable, {}, indicators
 
 
-def add_fields_if_exists(client: Client, fields_dict: Dict):
+def add_fields_if_exists(client: Client, fields_dict: Dict) -> Dict:
     """Adds field mapping if they hold actual values
 
     Args:
         fields_dict: The fields entry of the indicator
         client (Client): Client object configured according to instance arguments.
-
 
     Returns:
         Dict. Updated field mapping
@@ -549,10 +673,11 @@ def add_fields_if_exists(client: Client, fields_dict: Dict):
     return fields_dict
 
 
-def fetch_indicators_command(client: Client, limit: int = -1):
+def fetch_indicators_command(client: Client, collections_to_fetch: List, limit: int = -1) -> Tuple[List, List]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
+        collections_to_fetch (List): Which collection(s) to fetch from feed.
         limit (int): Maximum number of indicators to return.
     Returns:
         Tuple of:
@@ -560,7 +685,7 @@ def fetch_indicators_command(client: Client, limit: int = -1):
             Dict. Data to be entered to context.
             Dict. The raw data of the indicators.
     """
-    iterator = client.build_iterator(limit)
+    iterator = client.build_iterator(collections_to_fetch, limit)
     indicators = []
     raw_response = []
 
@@ -577,6 +702,19 @@ def fetch_indicators_command(client: Client, limit: int = -1):
         raw_response.append(indicator)
 
     return indicators, raw_response
+
+
+def reset_fetch_command():
+    """
+    Reset the last fetch from the integration context
+    """
+    integration_context = demisto.getIntegrationContext()
+    integration_context.pop('last_indicators_fetch_time', None)
+    integration_context.pop('last_reports_fetch_time', None)
+    demisto.setIntegrationContext(integration_context)
+
+    return 'Fetch was reset successfully. Your next indicator fetch will collect indicators ' \
+           'from the configured "First Fetch Time"', {}, {}
 
 
 def verify_threshold_reputation_interval_types(threshold: str, reputation_interval: str):
@@ -596,6 +734,7 @@ def main():
 
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
+    collections_to_fetch = argToList(demisto.params().get('collections_to_fetch'))
     threshold = demisto.params().get('threshold', '70')
     reputation_interval = demisto.params().get('reputation_interval', '30')
     verify_threshold_reputation_interval_types(threshold, reputation_interval)
@@ -615,20 +754,26 @@ def main():
         client = Client(public_key, private_key, int(threshold), int(reputation_interval),
                         polling_timeout, insecure, proxy, feedTags, tlp_color)
         if command == 'test-module':
-            return_outputs(*test_module(client))
+            return_outputs(*test_module(client, collections_to_fetch))
+        elif command == 'fireeye-reset-fetch-indicators':
+            return_outputs(*reset_fetch_command())
         elif command == 'fireeye-get-indicators':
-            return_outputs(*get_indicators_command(client))
+            return_outputs(*get_indicators_command(client, collections_to_fetch))
         elif command == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client)
+            indicators, _ = fetch_indicators_command(client, collections_to_fetch)
 
+            total_fetched = 0
+            demisto.debug('Starting CreateIndicators part')
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
+                total_fetched += len(single_batch)
+                demisto.debug(f'{total_fetched} indicators created so far.')
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
-    except Exception:
-        raise
+    except Exception as e:
+        return_error(str(e))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
