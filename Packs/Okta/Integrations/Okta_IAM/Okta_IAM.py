@@ -20,6 +20,12 @@ ERROR_CODES_TO_SKIP = [
     'E0000016',  # user is already enabled
     USER_IS_DISABLED_ERROR
 ]
+NUMBER_OF_RETRIES = 2
+# 429 - too many requests exception, might happen even when we didn't reach the limit,
+# when re-running the command it usually passes
+ERROR_CODES_TO_RETRY = [
+    429
+]
 
 '''CLIENT CLASS'''
 
@@ -29,9 +35,19 @@ class Client(BaseClient):
     Okta IAM Client class that implements logic to authenticate with Okta.
     """
 
+    def okts_http_request(self, method, url_suffix, params=None, data=None):
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            params=params,
+            data=data,
+            retries=NUMBER_OF_RETRIES,
+            status_list_to_retry=ERROR_CODES_TO_RETRY
+        )
+
     def test(self):
         uri = 'users/me'
-        self._http_request(method='GET', url_suffix=uri)
+        self.okts_http_request(method='GET', url_suffix=uri)
 
     def get_user(self, email):
         uri = 'users'
@@ -39,7 +55,7 @@ class Client(BaseClient):
             'filter': encode_string_results(f'profile.login eq "{email}"')
         }
 
-        res = self._http_request(
+        res = self.okts_http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
@@ -51,14 +67,14 @@ class Client(BaseClient):
 
     def deactivate_user(self, user_id):
         uri = f'users/{user_id}/lifecycle/deactivate'
-        self._http_request(
+        self.okts_http_request(
             method="POST",
             url_suffix=uri
         )
 
     def activate_user(self, user_id):
         uri = f'users/{user_id}/lifecycle/activate'
-        self._http_request(
+        self.okts_http_request(
             method="POST",
             url_suffix=uri
         )
@@ -72,7 +88,7 @@ class Client(BaseClient):
             'activate': 'true',
             'provider': 'true'
         }
-        res = self._http_request(
+        res = self.okts_http_request(
             method='POST',
             url_suffix=uri,
             data=json.dumps(body),
@@ -85,7 +101,7 @@ class Client(BaseClient):
             'profile': user_data
         }
         uri = f'users/{user_id}'
-        res = self._http_request(
+        res = self.okts_http_request(
             method='POST',
             url_suffix=uri,
             data=json.dumps(body)
@@ -95,7 +111,7 @@ class Client(BaseClient):
     def get_okta_fields(self):
         okta_fields = {}
         uri = 'meta/schemas/user/default'
-        res = self._http_request(
+        res = self.okts_http_request(
             method='GET',
             url_suffix=uri
         )
