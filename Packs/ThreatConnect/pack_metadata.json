@@ -2,7 +2,7 @@
     "name": "ThreatConnect",
     "description": "Threat intelligence platform.",
     "support": "xsoar",
-    "currentVersion": "2.0.8",
+    "currentVersion": "2.0.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
