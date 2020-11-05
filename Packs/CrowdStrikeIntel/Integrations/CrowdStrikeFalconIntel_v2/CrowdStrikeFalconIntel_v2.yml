@@ -44,7 +44,7 @@ script:
     - name: file
       required: true
       default: true
-      description: A comma-separated list of files hashes (MD5/SHA1/SHA256) to check. 
+      description: A comma-separated list of file hashes (MD5/SHA1/SHA256) to check. 
       isArray: true
     outputs:
     - contextPath: File.MD5
