@@ -98,7 +98,7 @@ configuration:
   type: 0
 - additionalinfo: The time interval for the first fetch (retroactive). <number> <time
     unit> of type minute/hour/day/year. For example, 1 minute, 12 hour
-  defaultvalue: 1 year
+  defaultvalue: 1 hour
   display: First Fetch Time
   hidden: false
   name: initial_interval
