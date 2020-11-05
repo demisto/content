@@ -827,7 +827,7 @@ class Pack(object):
             if private_content:
                 #  In some cases the path given is actually a zip.
                 if pack_artifacts_path.endswith('content_packs.zip'):
-                    _pack_artifacts_path = pack_artifacts_path.replace('content_packs.zip', '')
+                    _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
                 else:
                     _pack_artifacts_path = pack_artifacts_path
                 print(f"Copying {zip_pack_path} to {_pack_artifacts_path}/{self._pack_name}.zip")
