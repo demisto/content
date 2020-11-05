@@ -199,6 +199,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     override_all_packs = upload_config.override_all_packs
     enc_key = upload_config.encryption_key
     is_private_build = upload_config.is_private
+    packs_artifacts_dir = upload_config.pack_artifacts_dir
 
     task_status, user_metadata = pack.load_user_metadata()
     if not task_status:
@@ -280,7 +281,8 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     (task_status, skipped_pack_uploading, full_pack_path) = \
         pack.upload_to_storage(zip_pack_path, pack.latest_version,
                                bucket_for_uploading, override_all_packs
-                               or pack_was_modified, private_content=True)
+                               or pack_was_modified, pack_artifacts_path=packs_artifacts_dir,
+                               private_content=True)
     if full_pack_path is not None:
         bucket_path = 'https://console.cloud.google.com/storage/browser/marketplace-ci-build-private/'
         bucket_url = bucket_path + full_pack_path
@@ -370,25 +372,20 @@ def option_handler():
     return parser.parse_args()
 
 
-def prepare_test_directories():
+def prepare_test_directories(pack_artifacts_path):
     """
-    Ensures the testing directories are present for the private build. If a directory needs to exist
-    for multiple steps, tempdir is ineffective.
+    :param pack_artifacts_path: Path the the artifacts packs directory.
+    Ensures the artifacts directory is present for the private build
     :return: None
     """
-    packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
-    zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
-    if not os.path.exists(packs_dir):
+
+    if not os.path.exists(pack_artifacts_path):
         logging.info("Packs dir not found. Creating.")
-        os.mkdir(packs_dir)
-    if not os.path.exists(zip_path):
-        logging.info("Temp dir not found. Creating.")
-        os.mkdir(zip_path)
+        os.mkdir(pack_artifacts_path)
 
 
 def main():
     install_logging('upload_packs_private.log')
-    prepare_test_directories()
     upload_config = option_handler()
     packs_artifacts_path = upload_config.artifacts_path
     extract_destination_path = upload_config.extract_path
@@ -401,6 +398,8 @@ def main():
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.is_private
+
+    prepare_test_directories(packs_artifacts_path)
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)

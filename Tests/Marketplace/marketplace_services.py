@@ -789,7 +789,7 @@ class Pack(object):
             return task_status, pack_was_modified
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
-                          private_content=False):
+                          private_content=False, pack_artifacts_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
@@ -801,6 +801,7 @@ class Pack(object):
             storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
             override_pack (bool): whether to override existing pack.
             private_content (bool): Is being used in a private content build.
+            pack_artifacts_path (str): Path to where we are saving pack artifacts.
 
         Returns:
             bool: whether the operation succeeded.
@@ -825,10 +826,8 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
             if private_content:
-                print(f"Copying {zip_pack_path} to /home/runner/work/content-private/content-private/"
-                      f"content/artifacts/packs/{self._pack_name}.zip")
-                shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content'
-                                           f'-private/content/artifacts/packs/{self._pack_name}.zip')
+                print(f"Copying {zip_pack_path} to {pack_artifacts_path}/{self._pack_name}.zip")
+                shutil.copy(zip_pack_path, f'{pack_artifacts_path}/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")

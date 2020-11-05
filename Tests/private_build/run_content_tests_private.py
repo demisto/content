@@ -39,7 +39,6 @@ def options_handler():
     parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
-    parser.add_argument('-p', '--private', help='Is the build private.', type=str2bool, required=False, default=False)
     parser.add_argument('-sa', '--service_account', help="Path to GCS service account.", required=False)
     parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
     parser.add_argument('-m', '--memCheck', type=str2bool,
