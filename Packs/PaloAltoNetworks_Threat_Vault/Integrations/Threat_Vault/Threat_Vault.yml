@@ -205,17 +205,9 @@ script:
     name: ip
     outputs:
     - contextPath: IP.Address
-      description: The IP address
-    - contextPath: IP.Hostname
-      description: The IP hostname
-    - contextPath: IP.ASN
-      description: The IP ASN
-    - contextPath: IP.Geo.Location
-      description: The IP geographic location in coordinates
+      description: The IP address.
     - contextPath: IP.Geo.Country
-      description: The IP country
-    - contextPath: IP.Geo.Description
-      description: The IP location as <City, Region, Postal Code, Country>
+      description: The IP country.
   - arguments:
     - default: false
       description: Signature name to search.
