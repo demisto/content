@@ -258,7 +258,7 @@ def test_ip_command(mocker):
     client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
     return_data = {'ipAddress': '8.8.8.8', 'countryCode': 'US', 'countryName': 'United States'}
     mocker.patch.object(client, 'ip_geo_get_request', return_value=return_data)
-    command_results = ip_command(client, args={'ip': '8.8.8.8'})
+    command_results_list = ip_command(client, args={'ip': '8.8.8.8'})
 
     assert command_results_list[0].indicator.dbot_score.score == 0
     assert command_results_list[0].indicator.geo_country == 'United States'
