@@ -17,7 +17,7 @@ def set_params(mocker):
 @pytest.mark.parametrize('args', [
     ({'submitType': '2', 'entryID': 'entry_id'}),
     ({'submitType': '2', 'url': 'url'}),
-    ({'submitType': '0', 'submitType': 'entry_id', 'url': 'url'}),
+    ({'submitType': '0', 'entry_id': 'entry_id', 'url': 'url'}),
     ({'submitType': '1', 'entryID': 'entry_id', 'url': 'url'}),
     ({'submitType': '3', 'entryID': 'entry_id', 'url': 'url'}),
     ({'submitType': '1', 'entryID': 'entry_id'}),
