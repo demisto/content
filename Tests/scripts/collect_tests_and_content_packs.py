@@ -1011,7 +1011,7 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: json):
         id_set_test_playbook_pack_name = get_content_pack_name_of_test({test}, id_set)
 
         # We don't want to test playbooks from Non-certified partners.
-        if not should_test_content_pack({id_set_test_playbook_pack_name}):
+        if not should_test_content_pack(id_set_test_playbook_pack_name):
             tests_that_should_not_be_tested.add(test)
 
     if tests_that_should_not_be_tested:
