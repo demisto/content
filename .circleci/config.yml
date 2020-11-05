@@ -136,7 +136,6 @@ references:
           echo "installing venv"
           NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
           source ./venv/bin/activate
-          pip install -r .circleci/build-requirements.txt
           pip3 install -r .circleci/build-requirements.txt
         else
           echo "venv exists (from cache). activating"
