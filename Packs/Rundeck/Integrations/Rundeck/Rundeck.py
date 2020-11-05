@@ -172,7 +172,7 @@ class Client(BaseClient):
                             group_path: str, group_path_exact: str, exclude_group_path: str,
                             exclude_group_path_exact: str, job_filter: str, exclude_job_filter: str,
                             job_exact_filter: str, exclude_job_exact_filter: str, execution_type_filter: str,
-                            max_paging: Optional[int], offset: Optional[int], project_name: str):
+                            max_results: Optional[int], offset: Optional[int], project_name: str):
         """
         This function returns previous and active executions
         :param status_filter: execution status, can be either: "running", succeeded", "failed" or "aborted"
@@ -198,7 +198,7 @@ class Client(BaseClient):
         :param job_exact_filter: provide here an exact job name to match
         :param exclude_job_exact_filter: specify an exact job name to exclude
         :param execution_type_filter: specify the execution type, can be: 'scheduled', 'user' or 'user-scheduled'
-        :param max_paging: maximum number of results to get from the api
+        :param max_results: maximum number of results to get from the api
         :param offset: offset for first result to include
         :param project_name: the project name that you want to get its execution
         :return: api response
@@ -248,13 +248,13 @@ class Client(BaseClient):
             request_params['excludeJobExactFilter'] = exclude_job_exact_filter
         if execution_type_filter:
             request_params['executionTypeFilter'] = execution_type_filter
-        if max_paging:
-            request_params['max'] = max_paging
+        if max_results:
+            request_params['max'] = max_results
         if offset:
             request_params['offset'] = offset
 
         project_name_to_pass = project_name if project_name else self.project_name
-        request_params['max'] = max_paging if max_paging else MAX_RESULTS
+        request_params['max'] = max_results if max_results else MAX_RESULTS
 
         request_params.update(self.params)
 
@@ -687,7 +687,7 @@ def jobs_list_command(client: Client, args: dict):
     group_path_exact: str = args.get('group_path_exact', '')
     scheduled_filter: str = args.get('scheduled_filter', '')
     server_node_uuid_filter: str = args.get('server_node_uuid_filter', '')
-    max_paging: Optional[int] = convert_str_to_int(args.get('max_paging', ''), 'max_paging')
+    max_results: Optional[int] = convert_str_to_int(args.get('max_results', ''), 'max_results')
     project_name: str = args.get('project_name', '')
     demisto.info('sending get jobs list request')
     result = client.get_jobs_list(id_list, group_path, job_filter, job_exec_filter, group_path_exact, scheduled_filter,
@@ -698,7 +698,7 @@ def jobs_list_command(client: Client, args: dict):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
     if result:
-        max_results = result[:max_paging] if max_paging else result[:MAX_RESULTS]
+        max_results = result[:max_results] if max_results else result[:MAX_RESULTS]
         filtered_results = filter_results(max_results, ['href', 'permalink'], ['-'])
         headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
 
@@ -721,7 +721,7 @@ def webhooks_list_command(client: Client, args: dict):
     :return: CommandResults object
     """
     project_name: str = args.get('project_name', '')
-    max_paging: Optional[int] = args.get('max_paging', '')
+    max_results: Optional[int] = args.get('max_results', '')
     demisto.info('sending get webhooks list request')
     result = client.get_webhooks_list(project_name)
     demisto.info('finish sending get webhooks list request')
@@ -767,7 +767,7 @@ def job_execution_query_command(client: Client, args: dict):
     job_exact_filter: str = args.get('job_exact_filter', '')
     exclude_job_exact_filter: str = args.get('exclude_job_exact_filter', '')
     execution_type_filter: str = args.get('execution_type_filter', '')
-    max_paging: Optional[int] = convert_str_to_int(args.get('max_paging'), 'max')
+    max_results: Optional[int] = convert_str_to_int(args.get('max_results'), 'max')
     offset: Optional[int] = convert_str_to_int(args.get('offset'), 'offset')
     project_name: str = args.get('project_name', '')
     exclude_group_path: str = args.get('exclude_group_path', '')
@@ -778,29 +778,30 @@ def job_execution_query_command(client: Client, args: dict):
                                         group_path, group_path_exact, exclude_group_path,
                                         exclude_group_path_exact, job_filter, exclude_job_filter,
                                         job_exact_filter, exclude_job_exact_filter, execution_type_filter,
-                                        max_paging, offset, project_name)
+                                        max_results, offset, project_name)
     demisto.info('finish sending job execution query request')
 
-    if isinstance(result, dict):
-        result = result.get('executions')
-        if not result:
-            return "No results were found"
+    if not isinstance(result, dict):
+        raise DemistoException(f'got unexpected results from api: {result}')
+
+    executions: list = result.get('executions', [])
     demisto.info('start filter results from the api')
-    filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    filtered_executions = filter_results(executions, ['href', 'permalink'], ['-'])
     demisto.info('finish filter results from the api')
 
-    if isinstance(result, list):
-        headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
-    elif isinstance(result, dict):
-        headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
+    if isinstance(filtered_executions, list):
+        headers = [key.replace("_", " ") for key in [*filtered_executions[0].keys()]]
     else:
         raise DemistoException(f'Got unexpected results from the api: {result}')
 
-    readable_output = tableToMarkdown('Job Execution Query:', filtered_results, headers=headers, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown(f'Job Execution Query - got total results: {result.get("paging").get("total")}', filtered_executions, headers=headers, headerTransform=pascalToSpace)
+
+    result['executions'] = filtered_executions
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Rundeck.ExecutionsQuery',
-        outputs=filtered_results,
+        outputs=result,
         outputs_key_field='id'
     )
 
@@ -814,7 +815,7 @@ def job_execution_output_command(client: Client, args: dict):
     """
     execution_id: Optional[int] = convert_str_to_int(args.get('execution_id'), 'execution_id')
     return_full_output: bool = argToBoolean(args.get('return_full_output', False))
-    max_paging: Optional[int] = convert_str_to_int(args.get('max_paging', ''), 'max_paging')
+    max_results: Optional[int] = convert_str_to_int(args.get('max_results', ''), 'max_results')
     aggregate_log: bool = argToBoolean(args.get('aggregate_log', False))
     demisto.info('sending job execution output request')
     result = client.job_execution_output(execution_id)
@@ -828,7 +829,7 @@ def job_execution_output_command(client: Client, args: dict):
                                               headerTransform=pascalToSpace)
 
     if result['entries']:
-        result['entries'] = result['entries'][:max_paging] if max_paging else result['entries'][:MAX_RESULTS]
+        result['entries'] = result['entries'][:max_results] if max_results else result['entries'][:MAX_RESULTS]
         readable_output_entries = tableToMarkdown('Job Execution Entries View:', result['entries'],
                                                   headers=collect_headers(result['entries']),
                                                   headerTransform=pascalToSpace)

@@ -97,7 +97,7 @@ script:
     - default: false
       description: maximum number of results to retun. The Default is 100.
       isArray: false
-      name: max_paging
+      name: max_results
       required: false
       secret: false
     - default: false
@@ -534,7 +534,7 @@ script:
     - default: false
       description: maximum number of results to retun. The Default is 100.
       isArray: false
-      name: max_paging
+      name: max_results
       required: false
       secret: false
     - default: false
@@ -617,6 +617,20 @@ script:
     - contextPath: Rundeck.ExecutionsQuery.executions.failedNodes
       description: List of failed nodes
       type: String
+    - contextPath: Rundeck.ExecutionsQuery.paging.total
+      description: Indicate the total results that returned from the api
+      type: Number
+    - contextPath: Rundeck.ExecutionsQuery.paging.offset
+      description: Indicate the 0 indexed offset for the first result to return.
+      type: Number
+    - contextPath: Rundeck.ExecutionsQuery.paging.max
+      description: Indicate the maximum number of results to return. If unspecified,
+        all results are returned.
+      type: Number
+    - contextPath: Rundeck.ExecutionsQuery.paging.count
+      description: Indicates the number of results that accually retuned, after filter
+        them out using the 'offest' and 'max' parameters.
+      type: Number
   - arguments:
     - default: false
       description: Id of the execution
@@ -640,7 +654,7 @@ script:
     - default: false
       description: maximum number of results to retun. The Default is 100.
       isArray: false
-      name: max_paging
+      name: max_results
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1010,7 +1024,7 @@ script:
     - default: false
       description: maximum number of results to retun. The Default is 100.
       isArray: false
-      name: max_paging
+      name: max_results
       required: false
       secret: false
     deprecated: false

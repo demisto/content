@@ -217,7 +217,7 @@ Gets all exections base on job or execution details
 | job_exact_filter | Filter for an exact job name. Include any job name that matches this value. | Optional | 
 | exclude_job_exact_filter | Filter for an exact job name. Exclude any job name that matches this value. | Optional | 
 | execution_type_filter | Type of execution. | Optional | 
-| max_paging | maximum number of results to retun | Optional | 
+| max_results | maximum number of results to retun | Optional | 
 | offset | Offset for first result to include.  | Optional | 
 
 
