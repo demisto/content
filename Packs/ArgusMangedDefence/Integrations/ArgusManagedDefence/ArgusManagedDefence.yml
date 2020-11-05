@@ -11,9 +11,9 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '10'
+- defaultvalue: '50'
   display: Maximum number of incidents per fetch
-  name: max_limit
+  name: max_fetch
   required: false
   type: 0
 - display: API Key
@@ -6688,7 +6688,7 @@ script:
     - contextPath: Argus.ObservationsIP.data.address.address
       description: Argus
       type: String
-  dockerimage: demisto/argus-toolbelt:1.0.0.12913
+  dockerimage: demisto/argus-toolbelt:1.0.0.13208
   feed: false
   isfetch: true
   longRunning: false

@@ -1,135 +1,119 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "0b1c5d47-88bd-4f0a-8977-965fdf9aede3",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"argus_case": "Argus Case"
-	},
-	"locked": false,
-	"logicalVersion": 1,
-	"mapping": null,
-	"name": "Argus Case Classifier",
-	"nameRaw": "Argus Case Classifier",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": {
-			"accessor": "",
-			"filters": [
-				[
-					{
-						"ignoreCase": false,
-						"left": {
-							"isContext": true,
-							"value": {
-								"complex": null,
-								"simple": "service.shortName"
-							}
-						},
-						"operator": "isEqualString",
-						"right": {
-							"isContext": false,
-							"value": {
-								"complex": null,
-								"simple": "ids"
-							}
-						}
-					},
-					{
-						"ignoreCase": false,
-						"left": {
-							"isContext": true,
-							"value": {
-								"complex": null,
-								"simple": "service.shortName"
-							}
-						},
-						"operator": "isEqualString",
-						"right": {
-							"isContext": false,
-							"value": {
-								"complex": null,
-								"simple": "support"
-							}
-						}
-					},
-					{
-						"ignoreCase": false,
-						"left": {
-							"isContext": true,
-							"value": {
-								"complex": null,
-								"simple": "service.shortName"
-							}
-						},
-						"operator": "isEqualString",
-						"right": {
-							"isContext": false,
-							"value": {
-								"complex": null,
-								"simple": "administrative"
-							}
-						}
-					},
-					{
-						"ignoreCase": false,
-						"left": {
-							"isContext": true,
-							"value": {
-								"complex": null,
-								"simple": "service.shortName"
-							}
-						},
-						"operator": "isEqualString",
-						"right": {
-							"isContext": false,
-							"value": {
-								"complex": null,
-								"simple": "vulnscan"
-							}
-						}
-					}
-				]
-			],
-			"root": "service.shortName",
-			"transformers": [
-				{
-					"args": {
-						"regex": {
-							"isContext": false,
-							"value": {
-								"complex": null,
-								"simple": ".*"
-							}
-						},
-						"replaceWith": {
-							"isContext": false,
-							"value": {
-								"complex": null,
-								"simple": "argus_case"
-							}
-						}
-					},
-					"operator": "replaceMatch"
-				}
-			]
-		},
-		"simple": ""
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+ "description": "",
+ "feed": false,
+ "id": "0b1c5d47-88bd-4f0a-8977-965fdf9aede3",
+ "keyTypeMap": {
+  "argus_case": "Argus Case"
+ },
+ "name": "Argus Case Classifier",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+    [
+     {
+      "ignoreCase": false,
+      "left": {
+       "isContext": true,
+       "value": {
+        "complex": null,
+        "simple": "service.shortName"
+       }
+      },
+      "operator": "isEqualString",
+      "right": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "ids"
+       }
+      }
+     },
+     {
+      "ignoreCase": false,
+      "left": {
+       "isContext": true,
+       "value": {
+        "complex": null,
+        "simple": "service.shortName"
+       }
+      },
+      "operator": "isEqualString",
+      "right": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "support"
+       }
+      }
+     },
+     {
+      "ignoreCase": false,
+      "left": {
+       "isContext": true,
+       "value": {
+        "complex": null,
+        "simple": "service.shortName"
+       }
+      },
+      "operator": "isEqualString",
+      "right": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "administrative"
+       }
+      }
+     },
+     {
+      "ignoreCase": false,
+      "left": {
+       "isContext": true,
+       "value": {
+        "complex": null,
+        "simple": "service.shortName"
+       }
+      },
+      "operator": "isEqualString",
+      "right": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "vulnscan"
+       }
+      }
+     }
+    ]
+   ],
+   "root": "service.shortName",
+   "transformers": [
+    {
+     "args": {
+      "regex": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": ".*"
+       }
+      },
+      "replaceWith": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "argus_case"
+       }
+      }
+     },
+     "operator": "replaceMatch"
+    }
+   ]
+  },
+  "simple": ""
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
 }

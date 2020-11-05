@@ -1,7 +1,8 @@
-id: 845bffb6-999e-4b19-84fa-a584ed9510d9
-version: 11
-vcShouldKeepItemLegacyProdMachine: false
+id: Argus Pull Case
+version: -1
 name: Argus Pull Case
+description: Pulls metadata, attachments, comments, tags and events related to the
+  Argus case for later use.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -247,7 +249,7 @@ inputs:
     simple: ${incident.arguscaseid}
   required: true
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ""
   value: {}
   required: false
@@ -255,7 +257,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -263,8 +265,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -272,6 +274,9 @@ inputs:
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 quiet: true
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
