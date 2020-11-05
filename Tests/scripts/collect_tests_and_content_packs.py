@@ -1172,10 +1172,16 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     if not tests:
         logging.info("No tests found running sanity check only")
 
-        sanity_tests = {"Sanity Test - Pure", "Sanity Test - Configuration Check", "Sanity Test - MITMProxy"}
+        sanity_tests = {
+            "Sanity Test - Playbook with no integration",
+            "Sanity Test - Playbook with mocked integration",
+            "Sanity Test - MITMProxy",
+            "Sanity Test - Non-Mocked Integration"
+        }
         logging.debug(f"Adding sanity tests: {sanity_tests}")
         tests.update(sanity_tests)
         packs_to_install.add("HelloWorld")
+        packs_to_install.add("Gmail")
 
     if changed_common:
         tests.add('TestCommonPython')

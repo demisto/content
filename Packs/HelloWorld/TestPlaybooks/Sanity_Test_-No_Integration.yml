@@ -1,14 +1,14 @@
-id: Sanity Test - Configuration Check
+id: Sanity Test - Playbook with no integration
 version: -1
-name: Sanity Test - Configuration Check
+name: Sanity Test - Playbook with no integration
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 46ea29ef-1cc8-4513-80e2-2c4eec319b69
+    taskid: 7cd72cf9-e09d-4d59-81b0-620ca8bcacbb
     type: start
     task:
-      id: 46ea29ef-1cc8-4513-80e2-2c4eec319b69
+      id: 7cd72cf9-e09d-4d59-81b0-620ca8bcacbb
       version: -1
       name: ""
       iscommand: false
@@ -32,24 +32,31 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: ca0d3e51-2b40-4a3f-818a-f56a6a21676d
-    type: regular
+    taskid: 2ec78643-dd4f-4d3c-8210-d1f663359258
+    type: condition
     task:
-      id: ca0d3e51-2b40-4a3f-818a-f56a6a21676d
+      id: 2ec78643-dd4f-4d3c-8210-d1f663359258
       version: -1
-      name: helloworld-say-hello
-      description: Hello command - prints hello to anyone.
-      script: HelloWorld|||helloworld-say-hello
-      type: regular
-      iscommand: true
-      brand: HelloWorld
+      name: A simple sanity if
+      description: "Takes the comments of a given entry ID and stores them in the\
+        \ incident context, under a provided context key. \nFor accessing the last\
+        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+        \ value for the entryId input parameter."
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "2"
-    scriptarguments:
-      name:
-        simple: User
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident
+            iscontext: true
     view: |-
       {
         "position": {
@@ -64,10 +71,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 87dd378a-cac1-4282-87b6-5cc216969473
+    taskid: d3a3d166-eaa8-4e1d-8ebd-3dd2b9d4e43e
     type: title
     task:
-      id: 87dd378a-cac1-4282-87b6-5cc216969473
+      id: d3a3d166-eaa8-4e1d-8ebd-3dd2b9d4e43e
       version: -1
       name: Done
       type: title
@@ -89,10 +96,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 75e497c3-3b56-410d-8999-d701caffd74a
+    taskid: 2846e04c-464e-4379-82ad-f77e28f78979
     type: regular
     task:
-      id: 75e497c3-3b56-410d-8999-d701caffd74a
+      id: 2846e04c-464e-4379-82ad-f77e28f78979
       version: -1
       name: Goals of this test
       description: Prints text to war room (Markdown supported)
@@ -105,9 +112,7 @@ tasks:
       - "1"
     scriptarguments:
       value:
-        simple: |-
-          * Making sure the build infra can configure an integration with the configuration configuration.
-          * Making sure that the locking mechanism is working.
+        simple: '* Pure sanity test for the infra.'
     separatecontext: false
     view: |-
       {
@@ -136,4 +141,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: Tests locking mechanism and configuration.
+description: Tests pack infra
