@@ -1,0 +1,628 @@
+id: Test - ExtFilter
+version: -1
+name: Test - ExtFilter
+description: Run ExtFilter for a test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cb6104e6-1258-4022-8a1a-a33cd1077cf8
+    type: start
+    task:
+      id: cb6104e6-1258-4022-8a1a-a33cd1077cf8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "14"
+      - "15"
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 12eec8d6-abd2-4777-8426-0784d045d4ed
+    type: regular
+    task:
+      id: 12eec8d6-abd2-4777-8426-0784d045d4ed
+      version: -1
+      name: Set Input Source
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Input
+      stringify: {}
+      value:
+        complex:
+          root: inputs.Input
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 37cef208-f453-4f2f-88b5-0316c024995f
+    type: title
+    task:
+      id: 37cef208-f453-4f2f-88b5-0316c024995f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: c0e418c3-48f9-4846-8150-631b00d077e6
+    type: regular
+    task:
+      id: c0e418c3-48f9-4846-8150-631b00d077e6
+      version: -1
+      name: Set ExpectedEncodedOutput
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExpectedEncodedOutput
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: inputs.ExpectedOutput
+          transformers:
+          - operator: ParseJSON
+          - operator: ExtFilter
+            args:
+              ctx_demisto: {}
+              ctx_incident: {}
+              ctx_inputs: {}
+              ctx_lists: {}
+              filter:
+                value:
+                  simple: '{}'
+              operation:
+                value:
+                  simple: 'json: encode array'
+              path: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 439bfe27-9cd4-4f04-8b4d-e92364bcabce
+    type: regular
+    task:
+      id: 439bfe27-9cd4-4f04-8b4d-e92364bcabce
+      version: -1
+      name: Set ExtFilterFilter
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExtFilterFilter
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: inputs.ExtFilterFilter
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 64a11423-235e-4336-8115-249b87f32f46
+    type: regular
+    task:
+      id: 64a11423-235e-4336-8115-249b87f32f46
+      version: -1
+      name: Parse ExtFilterFilter
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExtFilterFilterObject
+      stringify: {}
+      value:
+        complex:
+          root: inputs.ExtFilterFilter
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 6b24851c-5283-4177-8f0b-9598123440a5
+    type: regular
+    task:
+      id: 6b24851c-5283-4177-8f0b-9598123440a5
+      version: -1
+      name: Run ExtFilter
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      append: {}
+      key:
+        simple: EncodedOutput
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: Input
+          transformers:
+          - operator: ExtFilter
+            args:
+              ctx_demisto:
+                value:
+                  simple: .
+                iscontext: true
+              ctx_incident:
+                value:
+                  simple: incident
+                iscontext: true
+              ctx_inputs:
+                value:
+                  simple: inputs
+                iscontext: true
+              ctx_lists:
+                value:
+                  simple: lists
+                iscontext: true
+              filter:
+                value:
+                  simple: ExtFilterFilter
+                iscontext: true
+              operation:
+                value:
+                  simple: inputs.ExtFilterOperation
+                iscontext: true
+              path:
+                value:
+                  simple: inputs.ExtFilterPath
+                iscontext: true
+          - operator: ExtFilter
+            args:
+              ctx_demisto: {}
+              ctx_incident: {}
+              ctx_inputs: {}
+              ctx_lists: {}
+              filter:
+                value:
+                  simple: '{}'
+              operation:
+                value:
+                  simple: 'json: encode array'
+              path: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: c035996e-3218-47b6-8b23-d50bcbf5f808
+    type: condition
+    task:
+      id: c035996e-3218-47b6-8b23-d50bcbf5f808
+      version: -1
+      name: Verify Result
+      description: Prints text to war room (Markdown supported)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EncodedOutput
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: ExpectedEncodedOutput
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 9f28a7ad-a51f-4787-8506-9179f58ae0c4
+    type: regular
+    task:
+      id: 9f28a7ad-a51f-4787-8506-9179f58ae0c4
+      version: -1
+      name: Set Output
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Output
+      stringify: {}
+      value:
+        complex:
+          root: EncodedOutput
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: aa1fb9c5-6432-4c7d-8d49-b219662d937f
+    type: regular
+    task:
+      id: aa1fb9c5-6432-4c7d-8d49-b219662d937f
+      version: -1
+      name: Set Expected Output
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExpectedOutput
+      stringify: {}
+      value:
+        complex:
+          root: ExpectedEncodedOutput
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 8527fdf4-2c5e-4eee-8275-b34bf85213b4
+    type: condition
+    task:
+      id: 8527fdf4-2c5e-4eee-8275-b34bf85213b4
+      version: -1
+      name: Is ExpectedOutput null?
+      description: Set a value in context under the key you entered.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ExpectedOutput
+            iscontext: true
+          right:
+            value:
+              simple: "null"
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 286d4a78-5c4e-4a12-8060-4e2008750294
+    type: regular
+    task:
+      id: 286d4a78-5c4e-4a12-8060-4e2008750294
+      version: -1
+      name: Set null for ExpectedEncodedOutput
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExpectedEncodedOutput
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${
+          accessor: =[null]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: eb869264-7268-43ce-85d0-deb5ac50fc0e
+    type: condition
+    task:
+      id: eb869264-7268-43ce-85d0-deb5ac50fc0e
+      version: -1
+      name: Is EncodedOutput null?
+      description: Set a value in context under the key you entered.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EncodedOutput
+            iscontext: true
+          right:
+            value:
+              simple: '["None"]'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 1b418fdc-0291-4a24-87e6-0bec05422e27
+    type: regular
+    task:
+      id: 1b418fdc-0291-4a24-87e6-0bec05422e27
+      version: -1
+      name: Set null for EncodedOutput
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      append: {}
+      key:
+        simple: EncodedOutput
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${
+          accessor: =[null]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1660,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Input
+  value: {}
+  required: true
+  description: Input Source
+  playbookInputQuery:
+- key: ExtFilterPath
+  value: {}
+  required: false
+  description: path for ExtFilter
+  playbookInputQuery:
+- key: ExtFilterOperation
+  value: {}
+  required: true
+  description: operation for ExtFilter
+  playbookInputQuery:
+- key: ExtFilterFilter
+  value: {}
+  required: true
+  description: filter for ExtFilter
+  playbookInputQuery:
+- key: ExpectedOutput
+  value: {}
+  required: true
+  description: Expected Output
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
