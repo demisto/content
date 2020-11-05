@@ -1,6 +1,5 @@
-id: 7952a25a-656f-4b89-8cec-d2a43fc6b70c
-version: 14
-vcShouldKeepItemLegacyProdMachine: false
+id: xMatters - Example Conditional Actions
+version: -1
 name: xMatters - Example Conditional Actions
 description: 'Example playbook showing how to use the Trigger and Wait sub-playbook
   to fire an event to xMatters and wait for a response from a user. This playbook
@@ -17,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -293,6 +293,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -317,6 +318,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -348,25 +350,25 @@ inputs:
     simple: ${incident.owner}
   required: false
   description: Recipients of the xMatters Message
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: subject
   value:
     simple: ${incident.name}
   required: false
   description: Subject of the xMatters Message
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: body
   value:
     simple: ${incident.details}
   required: false
   description: Body of the xMatters Message
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: incident_id
   value:
     simple: ${incident.id}
   required: false
   description: The related incident id
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: xMatters.UserResponse
   description: The user's response
