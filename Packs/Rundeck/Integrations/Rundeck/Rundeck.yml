@@ -94,6 +94,18 @@ script:
       - ''
       required: false
       secret: false
+    - default: false
+      description: maximum number of results to retun. The Default is 100.
+      isArray: false
+      name: max_paging
+      required: false
+      secret: false
+    - default: false
+      description: The name of the project to list its jobs
+      isArray: false
+      name: project_name
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of all the jobs exist in a project
     execution: false
@@ -520,7 +532,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: maximum number of results to retun
+      description: maximum number of results to retun. The Default is 100.
       isArray: false
       name: max_paging
       required: false
@@ -620,6 +632,24 @@ script:
         The default is 'false'.
       isArray: false
       name: return_full_output
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: maximum number of results to retun. The Default is 100.
+      isArray: false
+      name: max_paging
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: if 'true', all entries of type 'log' are saved in context under
+        'listEntry' in  ExecutionsOutput under the execution you selected to run this
+        command.
+      isArray: false
+      name: aggregate_log
       predefined:
       - 'true'
       - 'false'
@@ -975,6 +1005,12 @@ script:
       description: Name of the project to get its webhooks.
       isArray: false
       name: project_name
+      required: false
+      secret: false
+    - default: false
+      description: maximum number of results to retun. The Default is 100.
+      isArray: false
+      name: max_paging
       required: false
       secret: false
     deprecated: false

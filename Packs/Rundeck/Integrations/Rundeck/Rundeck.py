@@ -7,6 +7,8 @@ from typing import Any, Dict, Tuple, List, Optional, Union, cast
 import ntpath
 from datetime import datetime
 from time import gmtime, strftime
+from dateparser import parse
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -14,7 +16,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 VERSION = 24
-
+MAX_RESULTS = 100
 ''' CLIENT CLASS '''
 
 
@@ -54,7 +56,7 @@ class Client(BaseClient):
 
     def get_jobs_list(self, id_list: list, group_path: str, job_filter: str, job_exec_filter: str,
                       group_path_exact: str,
-                      scheduled_filter: str, server_node_uuid_filter: str):
+                      scheduled_filter: str, server_node_uuid_filter: str, project_name: str):
         """
         This function returns a list of all existing projects.
         :param id_list: list of Job IDs to include
@@ -64,6 +66,7 @@ class Client(BaseClient):
         :param group_path_exact: specify an exact group path to match. if not specified, default is: "*".
         :param scheduled_filter: return only scheduled or only not scheduled jobs. can either be "true" or "false
         :param server_node_uuid_filter: return all jobs related to a selected server UUID".
+        :param project_name: A project name to list its jobs
         :return: api response.
         """
         request_params: Dict[str, Any] = {}
@@ -83,11 +86,12 @@ class Client(BaseClient):
         if server_node_uuid_filter:
             request_params['serverNodeUUIDFilter'] = server_node_uuid_filter
 
+        project_name_to_pass = project_name if project_name else self.project_name
         request_params.update(self.params)
 
         return self._http_request(
             method='GET',
-            url_suffix=f'/project/{self.project_name}/jobs',
+            url_suffix=f'/project/{project_name_to_pass}/jobs',
             params=request_params
         )
 
@@ -248,10 +252,9 @@ class Client(BaseClient):
             request_params['max'] = max_paging
         if offset:
             request_params['offset'] = offset
-        if project_name:
-            project_name_to_pass = project_name
-        else:
-            project_name_to_pass = self.project_name
+
+        project_name_to_pass = project_name if project_name else self.project_name
+        request_params['max'] = max_paging if max_paging else MAX_RESULTS
 
         request_params.update(self.params)
 
@@ -556,18 +559,34 @@ def calc_run_at_time(selected_time: str) -> str:
     selected_iso_time = ''
     if not selected_time:
         return selected_iso_time
-    current_time = datetime.utcnow()
-    if selected_time == '1 hour':
-        selected_iso_time = (current_time + timedelta(hours=1)).isoformat()
-    elif selected_time == '1 week':
-        selected_iso_time = (current_time + timedelta(days=7)).isoformat()
-    elif selected_time == '1 day':
-        selected_iso_time = (current_time + timedelta(days=1)).isoformat()
-    else:
-        raise DemistoException(f'Got unexpected input: {selected_time} when got run_at_time parameter')
-    time_zone = strftime('%z', gmtime()).replace('+', '')
-    iso_with_timezone = f"{selected_iso_time.split('.')[0]}-{time_zone}"
+    iso_with_timezone = parse(f'in {selected_time} UTC').isoformat()
     return iso_with_timezone
+
+
+def collect_headers(entries_list: list) -> list:
+    """
+    This function collect all keys in a list of dictionaries
+    :param entries_list: list of dictionaries
+    :return: list of all keys formatted
+    """
+    headers = ['']
+    for entry in entries_list:
+        for key, value in entry.items():
+            if key == 'log':
+                headers[0] = 'log'
+            headers.append(key.replace("_", " "))
+    if not headers[0]:
+        return headers[1:]
+    return headers
+
+
+def collect_log_from_output(entries: list) -> list:
+    logs_entry = []
+    for entry in entries:
+        if entry['type'] == 'log':
+            logs_entry.append(entry)
+    return logs_entry
+
 
 
 def job_retry_command(client: Client, args: dict):
@@ -666,19 +685,25 @@ def jobs_list_command(client: Client, args: dict):
     job_filter: str = args.get('job_filter', '')
     job_exec_filter: str = args.get('job_exec_filter', '')
     group_path_exact: str = args.get('group_path_exact', '')
-    scheduled_filter: str = args.get('scheduled_filter', '')  # ￿￿￿￿￿ TODO: set it as list option 'true' or 'false'
+    scheduled_filter: str = args.get('scheduled_filter', '')
     server_node_uuid_filter: str = args.get('server_node_uuid_filter', '')
+    max_paging: Optional[int] = convert_str_to_int(args.get('max_paging', ''), 'max_paging')
+    project_name: str = args.get('project_name', '')
     demisto.info('sending get jobs list request')
     result = client.get_jobs_list(id_list, group_path, job_filter, job_exec_filter, group_path_exact, scheduled_filter,
-                                  server_node_uuid_filter)
+                                  server_node_uuid_filter, project_name)
     demisto.info('finish sending get jobs list request')
 
     if not isinstance(result, list):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
-    filtered_results = filter_results(result, ['href', 'permalink'], ['-'])
+    if result:
+        max_results = result[:max_paging] if max_paging else result[:MAX_RESULTS]
+        filtered_results = filter_results(max_results, ['href', 'permalink'], ['-'])
+        headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
 
-    headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
+    else:
+        filtered_results = 'No jobs were found'
 
     readable_output = tableToMarkdown('Jobs List:', filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
@@ -696,6 +721,7 @@ def webhooks_list_command(client: Client, args: dict):
     :return: CommandResults object
     """
     project_name: str = args.get('project_name', '')
+    max_paging: Optional[int] = args.get('max_paging', '')
     demisto.info('sending get webhooks list request')
     result = client.get_webhooks_list(project_name)
     demisto.info('finish sending get webhooks list request')
@@ -788,21 +814,36 @@ def job_execution_output_command(client: Client, args: dict):
     """
     execution_id: Optional[int] = convert_str_to_int(args.get('execution_id'), 'execution_id')
     return_full_output: bool = argToBoolean(args.get('return_full_output', False))
+    max_paging: Optional[int] = convert_str_to_int(args.get('max_paging', ''), 'max_paging')
+    aggregate_log: bool = argToBoolean(args.get('aggregate_log', False))
     demisto.info('sending job execution output request')
     result = client.job_execution_output(execution_id)
     demisto.info('finish sending job execution output request')
 
-    if isinstance(result, dict):
-        headers = [key.replace("_", " ") for key in [*result.keys()]]
-    elif isinstance(result, list):
-        headers = [key.replace("_", " ") for key in [*result[0].keys()]]
+    if not isinstance(result, dict):
+        raise DemistoException(f'Got unexpected response: {result}')
 
-    readable_output = tableToMarkdown('Job Execution Output:', result, headers=headers, headerTransform=pascalToSpace)
+    headers_general = [key.replace("_", " ") for key in [*result.keys()]]
+    readable_output_general = tableToMarkdown('Job Execution Output:', result, headers=headers_general,
+                                              headerTransform=pascalToSpace)
+
+    if result['entries']:
+        result['entries'] = result['entries'][:max_paging] if max_paging else result['entries'][:MAX_RESULTS]
+        readable_output_entries = tableToMarkdown('Job Execution Entries View:', result['entries'],
+                                                  headers=collect_headers(result['entries']),
+                                                  headerTransform=pascalToSpace)
+        if aggregate_log:
+            result['logEntries'] = collect_log_from_output(result['entries'])
+
+        human_readable = readable_output_general + readable_output_entries
+    else:
+        human_readable = readable_output_general
+
     if return_full_output:
         return fileResult(args.get('execution_id'), json.dumps(result))
     else:
         return CommandResults(
-            readable_output=readable_output,
+            readable_output=human_readable,
             outputs_prefix='Rundeck.ExecutionsOutput',
             outputs=result,
             outputs_key_field='id'
