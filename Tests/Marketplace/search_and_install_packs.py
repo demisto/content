@@ -278,6 +278,8 @@ def install_packs_from_artifacts(client: demisto_client, host: str, prints_manag
     :param pack_ids_to_install: List of pack IDs to install.
     :return: None. Call to server waits until a successful response.
     """
+    print(f"Test pack path is: {test_pack_path}")
+    print(f"Pack IDs to install are: {pack_ids_to_install}")
     local_packs = glob.glob(f"{test_pack_path}/*.zip")
     for local_pack in local_packs:
         if any(pack_id in local_pack for pack_id in pack_ids_to_install):
