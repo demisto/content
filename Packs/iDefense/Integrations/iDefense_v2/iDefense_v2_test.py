@@ -1,4 +1,3 @@
-import pytest
 import requests_mock
 from iDefense_v2 import Client, url_command, ip_command, _calculate_dbot_score
 from CommonServerPython import DemistoException
@@ -6,30 +5,8 @@ from test_data.response_constants import URL_RES_JSON, IP_RES_JSON
 
 API_URL = "https://test.com"
 
-MOCK_IP = [
-    (
-        'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0',
-        200,
-        IP_RES_JSON,
-        {
-            'IP': [{'Address': '0.0.0.0'}],
-            'DBOTSCORE': [{'Indicator': '0.0.0.0', 'Type': 'ip', 'Vendor': 'iDefense', 'Score': 2}]
-        }
-    )
-]
 
-MOCK_WRONG_IP = [
-    (
-        'https://test.com/rest/threatindicator/v0/ip?key.values=1.1.1.1',
-        200,
-        {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False},
-        "No results were found for ip 1.1.1.1"
-    )
-]
-
-
-@pytest.mark.parametrize('url, status_code, json_data, expected_output', MOCK_IP)
-def test_ip_command(url, status_code, json_data, expected_output):
+def test_ip_command():
     """
     Given:
         - an IP
@@ -41,6 +18,13 @@ def test_ip_command(url, status_code, json_data, expected_output):
         - return command results containing indicator and dbotscore
 
     """
+
+    url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
+    status_code = 200
+    json_data = IP_RES_JSON
+    expected_output = {
+        'IP': [{'Address': '0.0.0.0'}],
+        'DBOTSCORE': [{'Indicator': '0.0.0.0', 'Type': 'ip', 'Vendor': 'iDefense', 'Score': 2}]}
 
     ip_to_check = {'ip': '0.0.0.0'}
     with requests_mock.Mocker() as m:
@@ -54,8 +38,7 @@ def test_ip_command(url, status_code, json_data, expected_output):
         assert output.get(DBOT_KEY, []) == expected_output.get('DBOTSCORE')
 
 
-@pytest.mark.parametrize('url, status_code, json_data, expected_output', MOCK_WRONG_IP)
-def test_ip_not_found(url, status_code, json_data, expected_output):
+def test_ip_not_found():
     """
     Given:
         - an IP
@@ -68,13 +51,18 @@ def test_ip_not_found(url, status_code, json_data, expected_output):
 
     """
 
+    url = 'https://test.com/rest/threatindicator/v0/ip?key.values=1.1.1.1'
+    status_code = 200
+    json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
+    expected_output = "No results were found for ip 1.1.1.1"
+
     ip_to_check = {'ip': '1.1.1.1'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False)
         results = ip_command(client, ip_to_check)
         output = results[0].to_context().get('HumanReadable')
-        assert "No results were found for ip 1.1.1.1" in output
+        assert expected_output in output
 
 
 def test_wrong_ip():
@@ -143,22 +131,7 @@ def test_connection():
         assert test_module(client) in "ok"
 
 
-MOCK_URL = [
-    (
-        'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com',
-        200,
-        URL_RES_JSON,
-        {
-            'URL': [{'Data': 'http://www.malware.com'}],
-            'DBOTSCORE': [{'Indicator': 'http://www.malware.com', 'Type': 'url', 'Vendor': 'iDefense',
-                           'Score': 2}]
-        }
-    )
-]
-
-
-@pytest.mark.parametrize('url, status_code, json_data, expected_output', MOCK_URL)
-def test_url_command(url, status_code, json_data, expected_output):
+def test_url_command():
     """
     Given:
         - url
@@ -171,6 +144,13 @@ def test_url_command(url, status_code, json_data, expected_output):
 
     """
 
+    url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
+    status_code = 200
+    json_data = URL_RES_JSON
+    expected_output = {
+        'URL': [{'Data': 'http://www.malware.com'}],
+        'DBOTSCORE': [{'Indicator': 'http://www.malware.com', 'Type': 'url', 'Vendor': 'iDefense',
+                       'Score': 2}]}
     url_to_check = {'url': 'http://www.malware.com'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
