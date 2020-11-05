@@ -243,10 +243,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: ff9eb6e6-9b6d-4c85-83a0-5877a505164e
+    taskid: 36eef154-d5b2-4377-84ee-0f46be81eeef
     type: condition
     task:
-      id: ff9eb6e6-9b6d-4c85-83a0-5877a505164e
+      id: 36eef154-d5b2-4377-84ee-0f46be81eeef
       version: -1
       name: test execute job with argstring as parameter
       description: execute job with options as parameter
@@ -270,7 +270,7 @@ tasks:
           right:
             value:
               simple: -arg1 value1
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -685,10 +685,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 8d0141c3-92bc-41b3-8ffd-b8acde83d14f
+    taskid: 08a8fe54-ef58-4ac3-8eda-833cab4c5810
     type: condition
     task:
-      id: 8d0141c3-92bc-41b3-8ffd-b8acde83d14f
+      id: 08a8fe54-ef58-4ac3-8eda-833cab4c5810
       version: -1
       name: test query executions
       description: test query executions
@@ -706,7 +706,7 @@ tasks:
           left:
             value:
               complex:
-                root: Rundeck.ExecutionsQuery.[0]
+                root: Rundeck.ExecutionsQuery.executions.[0]
                 accessor: user
             iscontext: true
           right:
@@ -716,7 +716,7 @@ tasks:
           left:
             value:
               complex:
-                root: Rundeck.ExecutionsQuery.[0]
+                root: Rundeck.ExecutionsQuery.executions.[0]
                 accessor: status
             iscontext: true
           right:
@@ -726,7 +726,7 @@ tasks:
           left:
             value:
               complex:
-                root: Rundeck.ExecutionsQuery.[0]
+                root: Rundeck.ExecutionsQuery.executions.[0]
                 accessor: project
             iscontext: true
           right:
