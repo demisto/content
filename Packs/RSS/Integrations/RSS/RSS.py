@@ -49,4 +49,4 @@ try:
             demisto.results("ok")
 
 except Exception as e:
-    LOG(e)
+    return_error(e)
