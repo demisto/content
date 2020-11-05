@@ -15,7 +15,7 @@ import logging
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe, FAILED_PACKS_PATH_SUFFIX
+    get_packs_statistics_dataframe, PACKS_RESULTS_FILE
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 
@@ -597,14 +597,13 @@ def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_com
         sys.exit(1)
 
 
-def print_packs_summary(successful_packs, skipped_packs, failed_packs, include_pack_status=False):
+def print_packs_summary(successful_packs, skipped_packs, failed_packs):
     """Prints summary of packs uploaded to gcs.
 
     Args:
         successful_packs (list): list of packs that were successfully uploaded.
         skipped_packs (list): list of packs that were skipped during upload.
         failed_packs (list): list of packs that were failed during upload.
-        include_pack_status (bool): indicates whether to include the pack status
 
     """
     logging.info(
@@ -618,7 +617,7 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
         logging.success(f"Number of successful uploaded packs: {len(successful_packs)}")
         logging.success(f"Uploaded packs:\n{successful_packs_table}")
     if skipped_packs:
-        skipped_packs_table = _build_summary_table(skipped_packs, include_pack_status)
+        skipped_packs_table = _build_summary_table(skipped_packs, include_pack_status=True)
         logging.warning(f"Number of skipped packs: {len(skipped_packs)}")
         logging.warning(f"Skipped packs:\n{skipped_packs_table}")
     if failed_packs:
@@ -767,18 +766,25 @@ def get_packs_summary(packs_list):
     return successful_packs, skipped_packs, failed_packs
 
 
-def store_failed_packs_in_ci_artifacts(circle_artifacts_path, failed_packs):
-    """ Saves failed packs to circle ci env - to be used in Upload Packs To Marketplace job (Bucket Upload flow)
+def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, successful_packs, failed_packs):
+    """ Saves successful and failed packs to circle ci env - to be used in Upload Packs To Marketplace job (Bucket Upload flow)
 
     Args:
         circle_artifacts_path (str): The path to the circle artifacts dir path
         failed_packs: The list of all failed packs
+        successful_packs: The list of all successful packs
 
     """
-    with open(os.path.join(circle_artifacts_path, FAILED_PACKS_PATH_SUFFIX), "w") as f:
+    with open(os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), "w") as f:
+        packs_results = dict()
         if failed_packs:
-            failed_packs_dict = {pack.name: pack.status for pack in failed_packs}
-            f.write(json.dumps(failed_packs_dict, indent=4))
+            failed_packs_dict = {"failed_packs": {pack.name: pack.status for pack in failed_packs}}
+            packs_results.update(failed_packs_dict)
+        if successful_packs:
+            successful_packs_dict = {"successful_packs": {pack.name: pack.status for pack in successful_packs}}
+            packs_results.update(successful_packs_dict)
+        if packs_results:
+            f.write(json.dumps(packs_results, indent=4))
 
 
 def main():
@@ -962,11 +968,12 @@ def main():
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
-    # Store failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job (Bucket Upload flow)
-    store_failed_packs_in_ci_artifacts(os.path.dirname(packs_artifacts_path), failed_packs)
+    # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
+    store_successful_and_failed_packs_in_ci_artifacts(os.path.dirname(packs_artifacts_path), successful_packs,
+                                                      failed_packs)
 
     # summary of packs status
-    print_packs_summary(successful_packs, skipped_packs, failed_packs, include_pack_status=True)
+    print_packs_summary(successful_packs, skipped_packs, failed_packs)
 
 
 if __name__ == '__main__':

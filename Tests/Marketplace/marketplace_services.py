@@ -26,7 +26,7 @@ PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
-FAILED_PACKS_PATH_SUFFIX = "failed_packs_prepare_content.json"
+PACKS_RESULTS_FILE = "packs_results.json"
 
 
 class GCPConfig(object):
@@ -853,7 +853,8 @@ class Pack(object):
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status, True, None
 
-    def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack, latest_version):
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack, latest_version,
+                                   successful_packs_dict):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
@@ -864,6 +865,7 @@ class Pack(object):
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
             override_pack (bool): whether to override existing pack.
             latest_version (str): the pack's latest version.
+            successful_packs_dict (str): the list of all packs were uploaded in prepare content step
 
         Returns:
             bool: whether the operation succeeded.
@@ -884,7 +886,7 @@ class Pack(object):
         prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
         existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
         # We check that the pack version was bumped by comparing the pack version in build bucket and production bucket
-        if existing_prod_version_files and not override_pack:
+        if (existing_prod_version_files or self._pack_name not in successful_packs_dict) and not override_pack:
             logging.warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
@@ -1821,19 +1823,19 @@ class Pack(object):
         """
         return os.path.isfile(os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
 
-    def is_failed_to_upload(self, failed_packs_file):
+    def is_failed_to_upload(self, failed_packs_dict):
         """
         Checks if the pack was failed to upload in Prepare Content step in Create Instances job
         Args:
-            failed_packs_file (dict): The failed packs file
+            failed_packs_dict (dict): The failed packs file
 
         Returns:
             bool: Whether the operation succeeded.
             str: The pack's failing status
 
         """
-        if self._pack_name in failed_packs_file:
-            return True, failed_packs_file[self._pack_name]
+        if self._pack_name in failed_packs_dict:
+            return True, failed_packs_dict[self._pack_name]
         else:
             return False, str()
 
