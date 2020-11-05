@@ -35,7 +35,7 @@ class Client(BaseClient):
     Okta IAM Client class that implements logic to authenticate with Okta.
     """
 
-    def okts_http_request(self, method, url_suffix, params=None, data=None):
+    def okta_http_request(self, method, url_suffix, params=None, data=None):
         return self._http_request(
             method=method,
             url_suffix=url_suffix,
@@ -47,7 +47,7 @@ class Client(BaseClient):
 
     def test(self):
         uri = 'users/me'
-        self.okts_http_request(method='GET', url_suffix=uri)
+        self.okta_http_request(method='GET', url_suffix=uri)
 
     def get_user(self, email):
         uri = 'users'
@@ -55,7 +55,7 @@ class Client(BaseClient):
             'filter': encode_string_results(f'profile.login eq "{email}"')
         }
 
-        res = self.okts_http_request(
+        res = self.okta_http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
@@ -67,14 +67,14 @@ class Client(BaseClient):
 
     def deactivate_user(self, user_id):
         uri = f'users/{user_id}/lifecycle/deactivate'
-        self.okts_http_request(
+        self.okta_http_request(
             method="POST",
             url_suffix=uri
         )
 
     def activate_user(self, user_id):
         uri = f'users/{user_id}/lifecycle/activate'
-        self.okts_http_request(
+        self.okta_http_request(
             method="POST",
             url_suffix=uri
         )
@@ -88,7 +88,7 @@ class Client(BaseClient):
             'activate': 'true',
             'provider': 'true'
         }
-        res = self.okts_http_request(
+        res = self.okta_http_request(
             method='POST',
             url_suffix=uri,
             data=json.dumps(body),
@@ -101,7 +101,7 @@ class Client(BaseClient):
             'profile': user_data
         }
         uri = f'users/{user_id}'
-        res = self.okts_http_request(
+        res = self.okta_http_request(
             method='POST',
             url_suffix=uri,
             data=json.dumps(body)
@@ -111,7 +111,7 @@ class Client(BaseClient):
     def get_okta_fields(self):
         okta_fields = {}
         uri = 'meta/schemas/user/default'
-        res = self.okts_http_request(
+        res = self.okta_http_request(
             method='GET',
             url_suffix=uri
         )
