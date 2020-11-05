@@ -26,6 +26,10 @@ def load_server_url():
 
 
 ''' GLOBALS '''
+SUBMIT_TYPE_WITH_FILE = [0, 2]
+SUBMIT_TYPE_WITH_URL = [1, 3]
+SUBMIT_TYPE_WITH_FILE_STR = ['0', '2']
+SUBMIT_TYPE_WITH_URL_ARG_STR = ['1', '2', '3']
 USERNAME = demisto.params().get('username')
 PASSWORD = demisto.params().get('password')
 USE_SSL = not demisto.params().get('unsecure')
@@ -410,6 +414,13 @@ def url_upload_raw(body):
 
 
 def add_prefix_to_given_url(url):
+    """
+        Args:
+            url (str) : the given url argument
+
+        Returns:
+            the given url argument with a prefix of http://
+    """
     if not url.startswith('http://') and not url.startswith('https://'):
         if url.startswith('www.'):
             url = "http://" + url
@@ -425,10 +436,8 @@ def file_upload(submit_type, sample, vm_profile_list,
     body['data'] = {}
     data = {}  # type: dict
     data['data'] = {}
-    submit_type_with_file = [0, 2]
-    submit_type_with_url = [1, 3]
     # Add missing prefix to url
-    if submit_type in submit_type_with_url:
+    if submit_type in SUBMIT_TYPE_WITH_URL:
         sample = add_prefix_to_given_url(sample)
     elif submit_type == 2:
         given_url = add_prefix_to_given_url(given_url)
@@ -438,24 +447,18 @@ def file_upload(submit_type, sample, vm_profile_list,
     data['data']['messageId'] = message_id
     data['data']['srcIp'] = src_ip
     data['data']['destIp'] = dest_ip
-    if submit_type == 0:
-        data['data']['url'] = ''
-    elif submit_type == 2:
-        data['data']['url'] = given_url
-    else:
-        data['data']['url'] = sample
-    # data['data']['url'] = '' if submit_type == 0 else sample
+    data['data']['url'] = get_url_entry_by_submit_type(submit_type, given_url, sample)
     data['data']['skipTaskId'] = int(skip_task_id) if skip_task_id else None
     data['data']['analyzeAgain'] = analyze_again
     data['data']['xMode'] = x_mode
     data['data']['filePriorityQ'] = file_priority_q if file_priority_q else 'run_now'
 
     body['data'] = json.dumps(data)
-    file_entry_id = sample if submit_type in submit_type_with_file else ''
-    filename_to_upload = file_name if (submit_type in submit_type_with_file and file_name) else ''
-    if submit_type in submit_type_with_file:
+    file_entry_id = sample if submit_type in SUBMIT_TYPE_WITH_FILE else ''
+    filename_to_upload = file_name if (submit_type in SUBMIT_TYPE_WITH_FILE and file_name) else ''
+    if submit_type in SUBMIT_TYPE_WITH_FILE:
         result_obj = file_upload_raw(body, file_entry_id, filename_to_upload)
-    elif submit_type in submit_type_with_url:
+    elif submit_type in SUBMIT_TYPE_WITH_URL:
         result_obj = url_upload_raw(body)
     return {
         'taskId': result_obj['results'][0]['taskId'],
@@ -463,17 +466,33 @@ def file_upload(submit_type, sample, vm_profile_list,
     }
 
 
-def file_upload_command():
-    args = demisto.args()
-    submit_type_with_file = ['0', '2']
-    submit_type_with_url_arg = ['1', '2', '3']
-    if 'entryID' not in args or 'url' not in args and args['submitType'] == '2':
+def get_url_entry_by_submit_type(submit_type, given_url, sample):
+    """
+        Args:
+            submit_type (int) : SubmitType argument (can be one of those: 0,1,2,3)
+            given_url (str) : a url if SubmitType arg is 2, None otherwise.
+            sample (str) : a url (if SubmitType is 1 or 3 ) or a file entry id (if SubmitType is 0 or 2)
+
+        Returns:
+            url entry value (str)
+
+    """
+    if submit_type == 0:
+        return ''
+    elif submit_type == 2:
+        return given_url
+    else:
+        return sample
+
+
+def handling_errors(args):
+    if ('entryID' not in args or 'url' not in args) and args['submitType'] == '2':
         return_error('When submitType is 2 You must submit both url and entryID')
     if ('entryID' in args and 'url' in args and not args['submitType'] == '2') \
             or ('entryID' not in args and 'url' not in args):
         return_error('You must submit one and only one of the following: url, entryID')
-    if ('entryID' in args and args['submitType'] not in submit_type_with_file) or \
-            ('url' in args and args['submitType'] not in submit_type_with_url_arg):
+    if ('entryID' in args and args['submitType'] not in SUBMIT_TYPE_WITH_FILE_STR) or \
+            ('url' in args and args['submitType'] not in SUBMIT_TYPE_WITH_URL_ARG_STR):
         return_error(
             'In order to detonate a file submitType must be 0 '
             ' and an entryID of a file must be given.\n'
@@ -482,6 +501,10 @@ def file_upload_command():
             'In order to submit file with a url submitType must be 2'
             'and both entryID and a url must be given.')
 
+
+def file_upload_command():
+    args = demisto.args()
+    handling_errors(args)
     if args['submitType'] == '2':
         # should have both entryID and url
         given_url = args['url']
