@@ -6,7 +6,7 @@ import demisto_client
 import os.path
 
 from Tests.private_build.configure_and_test_integration_instances_private import \
-    find_needed_test_playbook_paths, create_install_private_testing_pack, write_test_pack_zip,\
+    find_needed_test_playbook_paths, install_private_testing_pack, write_test_pack_zip,\
     install_packs_private
 import Tests.Marketplace.search_and_install_packs as script
 from Tests.test_content import ParallelPrintsManager
@@ -122,7 +122,7 @@ def test_create_install_private_testing_pack(mocker):
     mocker.patch.object(demisto_client, 'generic_request_func',
                         side_effect=mocked_generic_request_func)
     mock_build = BuildMock()
-    create_install_private_testing_pack(mock_build, prints_manager, 'testing/path/to/test_pack.zip')
+    install_private_testing_pack(mock_build, prints_manager, 'testing/path/to/test_pack.zip')
     assert script.SUCCESS_FLAG
 
 

@@ -19,7 +19,7 @@ from Tests.configure_and_test_integration_instances import Build, configure_serv
     test_pack_metadata, options_handler
 
 
-def create_install_private_testing_pack(build: Build, prints_manager: ParallelPrintsManager, test_pack_zip_path: str):
+def install_private_testing_pack(build: Build, prints_manager: ParallelPrintsManager, test_pack_zip_path: str):
     """
     Creates and installs the test pack used in the private build. This pack contains the test
     playbooks and test scripts that will be used for the tests.
@@ -159,7 +159,7 @@ def main():
     private_content_test_zip = write_test_pack_zip(zip_destination_dir=build.test_pack_path,
                                                    tests_file_paths=tests_to_add_to_test_pack)
     # Create and install private test pack
-    create_install_private_testing_pack(build, prints_manager, private_content_test_zip)
+    install_private_testing_pack(build, prints_manager, private_content_test_zip)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                   new_integrations, prints_manager)
