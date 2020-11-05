@@ -1,0 +1,17 @@
+
+{
+  "name": "GreatHorn",
+  "description": "",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "GreatHorn",
+  "url": "",
+  "email": "",
+  "created": "2020-11-05T00:00:00Z",
+  "categories": [
+    "Email"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": []
+}
