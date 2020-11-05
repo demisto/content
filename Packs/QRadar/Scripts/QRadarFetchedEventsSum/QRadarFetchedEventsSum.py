@@ -1,27 +1,45 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-incident = demisto.incidents()
-fetched = incident[0].get('CustomFields', {}).get('numberoffetchedevents', 0)  # define which incident field to use
-total = incident[0].get('CustomFields', {}).get('numberofeventsinoffense', 0)  # define which incident field to use
+HTML_TEMPLATE = """
+<div style='line-height:36px; color:#404142; text-align:center; font-size:20px; line-height:36px;'>
+  <br>
+  {fetched}/{total}
+</div>
+<div class='editable-field-wrapper' style='text-align:center; padding-top:10px;'>
+  Fetched Events / Total
+  <br>
+  <div class='editable-field-wrapper' style='text-align:center;'>
+    {message}
+  </div>
+</div>
+"""
 
-if fetched == 0:
-    total = str(total)
-    fetched = str(fetched)
-    html = "<div style='line-height:36px;color: #404142;text-align: center;font-size: 20px;line-height: 36px;'>" + "<br>" + fetched + "/" + total + "</div>" + "<div class='editable-field-wrapper' style='text-align:center;padding-top: 10px;'>" + \
-        "Fetched Events / Total" "<br>" + "<div class='editable-field-wrapper' style='text-align:center;'>" + \
-        "The offense contains Events but non were fetched. Event fetching can be configured in the integration instance settings." "</div>"
+
+def main():
+    try:
+        incident = demisto.incident()
+        custom_fields = incident.get('CustomFields', {})
+        fetched = custom_fields.get('numberoffetchedevents', 0)  # define which incident field to use
+        total = custom_fields.get('numberofeventsinoffense', 0)  # define which incident field to use
+
+        if fetched == 0:
+            message = 'The offense contains Events but non were fetched. ' \
+                      'Event fetching can be configured in the integration instance settings.'
+        else:
+            message = 'Events details on this page are based on the fetched events.'
+
+        html = HTML_TEMPLATE.format(fetched=fetched, total=total, message=message)
+
+        return {
+            'ContentsFormat': 'html',
+            'Type': entryTypes['note'],
+            'Contents': html
+        }
+
+    except Exception as exp:
+        return_error('could not parse QRadar offense', error=exp)
 
 
-else:
-    total = str(total)
-    fetched = str(fetched)
-    html = "<div style='line-height: 36px;color: #404142;text-align: center;font-size: 20px;line-height: 36px;'>" + "<br>" + fetched + "/" + total + "</div>" + "<div class='editable-field-wrapper' style='text-align:center;padding-top: 10px;'>" + \
-        "Fetched Events / Total" "<br>" + "<div class='editable-field-wrapper' style='text-align:center;'>" + \
-        "Events details on this page are based on the fetched events." + "</div>""</div>"
-
-demisto.results({
-    'ContentsFormat': 'html',
-    'Type': entryTypes['note'],
-    'Contents': html
-})
+if __name__ == ('__main__', '__builtin__', 'builtins'):
+    return_results(main())
