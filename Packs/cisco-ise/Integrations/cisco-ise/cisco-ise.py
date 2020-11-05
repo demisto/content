@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = re.sub(r"/+$", "", demisto.params().get('serverURL'))
 SERVER_PORT = demisto.params().get('serverPort')
 SERVER_URL = BASE_URL + ':' + SERVER_PORT
-SERVER_URL_ADMIN = BASE_URL
+SERVER_ADMIN_URL = BASE_URL
 
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
@@ -22,20 +22,28 @@ USE_SSL = not demisto.params().get('insecure', False)
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Connection': 'keep_alive'
+    'Connection': 'keep_alive',
 }
 
-DEFAULT_HEADERS1 = {
+DEFAULT_ADMIN_HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/xml',
-    'Connection': 'keep_alive'
+    'Connection': 'keep_alive',
 }
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADERS):
-    try:
+def http_request(method, url_suffix, params=None, data=None, headers=None, is_admin_api=False):
+    params = params if params is not None else {}
+    if headers is None:
+        headers = DEFAULT_ADMIN_HEADERS if is_admin_api else DEFAULT_HEADERS
+
+    if is_admin_api:
+        url = SERVER_ADMIN_URL + url_suffix
+    else:
         url = SERVER_URL + url_suffix
+
+    try:
         LOG(f'running {method} request with url={url}')
 
         response = requests.request(
@@ -53,15 +61,19 @@ def http_request(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADE
     except requests.exceptions.ConnectionError:
         err_msg = 'Connection Error. Verify that the Server URL and port are correct, and that the port is open.'
         return_error(err_msg)
+
     # handle request failure
     if response.status_code not in {200, 201, 202, 204}:
         message = parse_error_response(response)
         err_msg = f'Error in API call to Cisco ISE Integration [{response.status_code}] - {response.reason}, {message}'
-
         return_error(err_msg)
 
     if response.status_code in (201, 204):
         return
+
+    if is_admin_api:
+        return response.content
+
     try:
         response = response.json()
     except ValueError:
@@ -69,43 +81,6 @@ def http_request(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADE
 
     return response
 
-
-def http_request_admin(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADERS1):
-    try:
-        url = SERVER_URL_ADMIN + url_suffix
-        LOG(f'running {method} request with url={url}')
-        response = requests.request(
-            method,
-            url,
-            auth=(USERNAME, PASSWORD),
-            headers=headers,
-            verify=USE_SSL,
-            params=params,
-            data=data
-        )
-    except requests.exceptions.SSLError:
-        err_msg = 'Could not connect to Cisco ISE: Could not verify certificate.'
-        return_error(err_msg)
-    except requests.exceptions.ConnectionError:
-        err_msg = 'Connection Error. Verify that the Server URL and port are correct, and that the port is open.'
-        return_error(err_msg)
-    # handle request failure
-    demisto.results("http return code {}" .format(response.status_code))
-    if response.status_code not in {200, 201, 202, 204}:
-        message = parse_error_response(response)
-        err_msg = f'Error in API call to Cisco ISE Integration [{response.status_code}] - {response.reason}, {message}'
-
-        return_error(err_msg)
-
-    if response.status_code in (201, 204):
-        return
-    try:
-        response = response.content
-    except ValueError:
-        demisto.results("this is the error ")
-        return_error(response.content)
-
-    return response
 
 def parse_error_response(response):
     try:
@@ -286,7 +261,7 @@ def reauthenticate_endpoint(mac_address, psn_address):
     Reauthenticates an endpoint
     """
     api_endpoint = "/admin/API/mnt/CoA/Reauth/{}/{}/1".format(psn_address, mac_address)
-    response = http_request('GET', api_endpoint)
+    response = http_request('GET', api_endpoint, is_admin_api=True)
     return response
 
 
@@ -295,7 +270,7 @@ def get_psn_for_mac(mac_address):
     Retrieves psn for an endpoint
     """
     api_endpoint = "/admin/API/mnt/AuthStatus/MACAddress/{}/86400/0/0".format(mac_address)
-    response = http_request('GET', api_endpoint)
+    response = http_request('GET', api_endpoint, is_admin_api=True)
     if response:
         return response
     else:
@@ -309,7 +284,7 @@ def reauthenticate_endpoint_command():
     mac_address = demisto.args().get('macAddress').upper()
     if not is_mac_address(mac_address):
         return "Please enter a valid mac address"
-    mac_address = (':').join([x.upper() for x in mac_address.split(':')])
+    mac_address = mac_address.upper()
     mac_address_psn = get_psn_for_mac(mac_address)
     if not mac_address_psn:
         return "Couldn't find psn address for mac: " + mac_address
@@ -517,7 +492,6 @@ def get_policies_request():
 
 
 def get_policies():
-
     """
     Return all ANC policies
     """
@@ -590,7 +564,6 @@ def create_policy_request(data):
 
 
 def create_policy():
-
     """
     Create ANC Policy
     """
@@ -658,6 +631,7 @@ def assign_policy_to_endpoint():
     }
 
     return_outputs(f'The policy "{policy_name}" has been assigned successfully', context)
+
 
 def remove_policy_request(data):
 
@@ -747,18 +721,20 @@ def get_blacklist_endpoints():
 
     return_outputs(tableToMarkdown('CiscoISE Blacklist Endpoints', data, removeNull=True), context, endpoints)
 
+
 def get_session_data_by_ip_request(ip):
     ip_address = f'/admin/API/mnt/Session/EndPointIPAddress/{ip}'
-    response = http_request_admin('GET', ip_address)
+    response = http_request('GET', ip_address, is_admin_api=True)
     byte_conversion = str(response, 'utf-8')
-    jsondata = xml2json(byte_conversion)
-    sessionData = json.loads(jsondata)
+    json_data = xml2json(byte_conversion)
+    session_data = json.loads(json_data)
 
     context = {
-        'CiscoISE.Endpoint(val.ID && val.ID === obj.ID)': sessionData
+        'CiscoISE.Endpoint(val.ID && val.ID === obj.ID)': session_data
     }
 
     return_outputs('The targeted users session xml is being returned ', context)
+
 
 def get_session_data_by_ip():
     """
@@ -767,7 +743,8 @@ def get_session_data_by_ip():
     ip = demisto.args().get('ip_address')
     if not ip:
         return_error('Please enter the ip')
-    response = get_session_data_by_ip_request(ip)
+
+    get_session_data_by_ip_request(ip)
 
     return
 
