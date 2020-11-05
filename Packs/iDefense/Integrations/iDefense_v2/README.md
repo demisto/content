@@ -46,19 +46,19 @@ Checks the reputation of the given IP address.
 
 
 #### Command Example
-```!ip ip=188.241.68.121```
+```!ip ip=0.0.0.0```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "188.241.68.121",
+        "Indicator": "0.0.0.0",
         "Score": 2,
         "Type": "ip",
         "Vendor": "iDefense"
     },
     "IP": {
-        "Address": "188.241.68.121"
+        "Address": "0.0.0.0"
     }
 }
 ```
@@ -68,7 +68,7 @@ Checks the reputation of the given IP address.
 >### Results
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
->| 0 | 2 | 2018-04-25 14:20:30 | 188.241.68.121 | Cyber Espionage | MALWARE_DOWNLOAD,<br/>MALWARE_C2 |
+>| 0 | 2 | 2018-04-25 14:20:30 | 0.0.0.0 | Cyber Espionage | MALWARE_DOWNLOAD,<br/>MALWARE_C2 |
 
 
 ### domain
@@ -100,19 +100,19 @@ Checks the reputation of the given domain.
 
 
 #### Command Example
-```!domain domain=huansohn.duckdns.org```
+```!domain domain=example.org```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "huansohn.duckdns.org",
+        "Indicator": "example.org",
         "Score": 2,
         "Type": "domain",
         "Vendor": "iDefense"
     },
     "Domain": {
-        "Name": "huansohn.duckdns.org"
+        "Name": "example.org"
     }
 }
 ```
@@ -122,7 +122,7 @@ Checks the reputation of the given domain.
 >### Results
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
->| 50 | 2 | 2019-09-18 15:56:49 | huansohn.duckdns.org | Cyber Crime | MALWARE_C2 |
+>| 50 | 2 | 2019-09-18 15:56:49 | example.org | Cyber Crime | MALWARE_C2 |
 
 
 ### url
@@ -154,19 +154,19 @@ Checks the reputation of the given URL.
 
 
 #### Command Example
-```!url url=http://rrkimal.xyz:80/IRemotePanel```
+```!url url=http://example.com```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "http://rrkimal.xyz:80/IRemotePanel",
+        "Indicator": "http://example.com",
         "Score": 2,
         "Type": "url",
         "Vendor": "iDefense"
     },
     "URL": {
-        "Data": "http://rrkimal.xyz:80/IRemotePanel"
+        "Data": "http://example.com"
     }
 }
 ```
@@ -176,7 +176,7 @@ Checks the reputation of the given URL.
 >### Results
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
->| 50 | 2 | 2020-09-16 20:29:35 | http://rrkimal.xyz:80/IRemotePanel | Cyber Crime | MALWARE_C2 |
+>| 50 | 2 | 2020-09-16 20:29:35 | http://example.com | Cyber Crime | MALWARE_C2 |
 
 
 ### idefense-get-ioc-by-uuid
@@ -214,19 +214,19 @@ Get specific indicator reputation
 
 
 #### Command Example
-```!idefense-get-ioc-by-uuid uuid=44a7d355-d160-4bc6-b7f4-4908dc3a4a67```
+```!idefense-get-ioc-by-uuid uuid=xxxx```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "yahoolive.us",
+        "Indicator": "example.org",
         "Score": 2,
         "Type": "domain",
         "Vendor": "iDefense"
     },
     "Domain": {
-        "Name": "yahoolive.us"
+        "Name": "example.org"
     }
 }
 ```
@@ -236,5 +236,5 @@ Get specific indicator reputation
 >### Results
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
->| 0 | 2 | 2017-01-11 20:56:22 | yahoolive.us | Cyber Espionage | MALWARE_C2 |
+>| 0 | 2 | 2017-01-11 20:56:22 | example.org | Cyber Espionage | MALWARE_C2 |
 
