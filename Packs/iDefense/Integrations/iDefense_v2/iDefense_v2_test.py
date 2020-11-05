@@ -5,6 +5,8 @@ from test_data.response_constants import URL_RES_JSON, IP_RES_JSON
 
 API_URL = "https://test.com"
 
+DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && ' \
+           'val.Vendor == obj.Vendor && val.Type == obj.Type)'
 
 def test_ip_command():
     """
@@ -32,8 +34,6 @@ def test_ip_command():
         client = Client(API_URL, 'api_token', True, False)
         results = ip_command(client, ip_to_check)
         output = results[0].to_context().get('EntryContext', {})
-        DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
-                   ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
         assert output.get('IP(val.Address && val.Address == obj.Address)', []) == expected_output.get('IP')
         assert output.get(DBOT_KEY, []) == expected_output.get('DBOTSCORE')
 
@@ -157,8 +157,6 @@ def test_url_command():
         client = Client(API_URL, 'api_token', True, False)
         results = url_command(client, url_to_check)
         output = results[0].to_context().get('EntryContext', {})
-        DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && ' \
-                   'val.Vendor == obj.Vendor && val.Type == obj.Type)'
         assert output.get('URL(val.Data && val.Data == obj.Data)', []) == expected_output.get('URL')
         assert output.get(DBOT_KEY, []) == expected_output.get('DBOTSCORE')
 
