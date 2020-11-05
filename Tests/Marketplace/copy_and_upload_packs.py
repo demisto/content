@@ -387,7 +387,7 @@ def main():
                build_bucket)
 
     # upload id_set.json to bucket
-    copy_id_set(production_bucket, id_set_path)
+    copy_id_set(production_bucket, build_bucket)
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
