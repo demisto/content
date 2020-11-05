@@ -349,7 +349,8 @@ def install_packs_private(client: demisto_client, host: str, prints_manager: Par
 
 
 def install_packs(client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
-                  thread_index: int, packs_to_install: list, request_timeout: int = 999999):
+                  thread_index: int, packs_to_install: list, request_timeout: int = 999999,
+                  is_nightly: bool = False):
     """ Make a packs installation request.
 
     Args:
@@ -359,8 +360,10 @@ def install_packs(client: demisto_client, host: str, prints_manager: ParallelPri
         thread_index (int): the thread index.
         packs_to_install (list): A list of the packs to install.
         request_timeout (int): Timeout settings for the installation request.
+        is_nightly (bool): Is the build nightly or not.
     """
-
+    if is_nightly:
+        install_nightly_packs(client, host, prints_manager, thread_index, packs_to_install)
     request_data = {
         'packs': packs_to_install,
         'ignoreWarnings': True
