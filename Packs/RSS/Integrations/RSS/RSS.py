@@ -32,7 +32,7 @@ def fetch_incidents(url):
             incidents.append(incident)
 
     dtnow = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
-    demisto.setLastRun({'last_fetch': dtnow})
+    demisto.setLastRun({'last_fetch': dt.strftime('%Y-%m-%dT%H:%M:%S.%f')})
 
     return incidents
 
