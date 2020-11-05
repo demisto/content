@@ -147,7 +147,8 @@ def get_all_user_profiles():
     handle_batch(query_result.get('iocs', []))
 
     while query_result.get('searchAfter') is not None:
-        query_result = demisto.searchIndicators(query=query, size=BATCH_SIZE, searchAfter=query_result.get('searchAfter'))
+        query_result = demisto.searchIndicators(query=query, size=BATCH_SIZE,
+                                                searchAfter=query_result.get('searchAfter'))
         handle_batch(query_result.get('iocs', []))
 
     return employee_id_to_user_profile, email_to_user_profile
