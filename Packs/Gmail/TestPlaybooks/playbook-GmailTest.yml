@@ -180,13 +180,13 @@ tasks:
       first-name:
         simple: John
       password:
-        simple: johnpass1!
+        simple: ${NEW_PASSWORD}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1565,
-          "y": 845
+          "y": 915
         }
       }
     note: false
@@ -766,7 +766,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 1040
+          "y": 1080
         }
       }
     note: false
@@ -847,7 +847,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 1215
+          "y": 1235
         }
       }
     note: false
@@ -1884,7 +1884,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 130
+          "y": 100
         }
       }
     note: false
@@ -1956,7 +1956,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 295
+          "y": 245
         }
       }
     note: false
@@ -1991,7 +1991,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 480
+          "y": 410
         }
       }
     note: false
@@ -2012,7 +2012,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "5"
+      - "62"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2084,7 +2084,63 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 650
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 15935b7b-cc78-448a-8e9c-31651838965d
+    type: regular
+    task:
+      id: 15935b7b-cc78-448a-8e9c-31651838965d
+      version: -1
+      name: GeneratePassword
+      description: "This function generates a password and allows various parameters\
+        \ to customize the properties of the password depending on the use case (e.g.\
+        \ password complexity requirements).  The default behavior is to generate\
+        \ a password of  *random length* including all four character classes (upper,\
+        \ lower, digits, symbols) with at least five and at most ten characters per\
+        \ class. \n\nThe min_* values all default to 0. This means that if the command\
+        \ is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible\
+        \ that a password of length zero could be generated. It is therefore recommended\
+        \ to always include a min_* parameter that matches. \n\nThe debug parameter\
+        \ will print certain properties of the command into the WarRoom for easy diagnostics."
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "1"
+      max_lcase:
+        simple: "8"
+      max_symbols:
+        simple: "1"
+      max_ucase:
+        simple: "0"
+      min_digits:
+        simple: "1"
+      min_lcase:
+        simple: "8"
+      min_symbols:
+        simple: "1"
+      min_ucase:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 735
         }
       }
     note: false
