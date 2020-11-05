@@ -1,6 +1,6 @@
 import pytest
-from Threat_Vault import Client, antivirus_signature_get, file_reputation, dns_get_by_id, antispyware_get_by_id, \
-    ip_geo_get, antispyware_signature_search, signature_search_results
+from Threat_Vault import Client, antivirus_signature_get, file_command, dns_get_by_id, antispyware_get_by_id, \
+    ip_geo_get, ip_command, antispyware_signature_search, signature_search_results
 
 
 def test_antivirus_get_by_id(mocker):
@@ -82,12 +82,12 @@ def test_antivirus_get_by_id_no_ids():
         antivirus_signature_get(client, args={})
 
 
-def test_file_reputation(mocker):
+def test_file_command(mocker):
     """
     Given:
         - sha256 representing an antivirus
     When:
-        - running file_reputation command
+        - running file_command command
     Then
         - Validate the reputation of the sha256 is malicious.
     """
@@ -114,7 +114,7 @@ def test_file_reputation(mocker):
         "signatureName": "Worm/Win32.autorun.crck"
     }
     mocker.patch.object(client, 'antivirus_signature_get_request', return_value=return_data)
-    command_results_list = file_reputation(
+    command_results_list = file_command(
         client, args={'file': '7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8'})
 
     assert command_results_list[0].indicator.dbot_score.score == 3
@@ -242,6 +242,26 @@ def test_ip_geo_get(mocker):
     }
 
     assert output.get('EntryContext') == expected_result
+
+
+def test_ip_command(mocker):
+    """
+    https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-direct-searches/get-geolocation.html
+    Given:
+        - an ip
+    When:
+        - mocking the server response for an IP, running ip_command
+    Then:
+        - validating the generated indicator dbot score
+        - validating the generated indicator country
+    """
+    client = Client(api_key='XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX', verify=True, proxy=False)
+    return_data = {'ipAddress': '8.8.8.8', 'countryCode': 'US', 'countryName': 'United States'}
+    mocker.patch.object(client, 'ip_geo_get_request', return_value=return_data)
+    command_results = ip_command(client, args={'ip': '8.8.8.8'})
+
+    assert command_results_list[0].indicator.dbot_score.score == 0
+    assert command_results_list[0].indicator.geo_country == 'United States'
 
 
 def test_antispyware_signature_search_wrongful_arguments():

@@ -156,7 +156,7 @@ def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
     )
 
 
-def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
+def file_command(client: Client, args: Dict) -> List[CommandResults]:
     """Get the reputation of a sha256 representing an antivirus
     Args:
         client: Client object with request.
@@ -304,6 +304,63 @@ def ip_geo_get(client: Client, args: dict) -> CommandResults:
         readable_output=readable_output,
         raw_response=response
     )
+
+
+def ip_command(client: Client, args: dict) -> List[CommandResults]:
+    """Get IP geo location.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        list of CommandResults.
+    """
+    ip_list = argToList(args.get('ip', ''))
+    command_results_list: List[CommandResults] = []
+    for ip_ in ip_list:
+        try:
+            response = client.ip_geo_get_request(ip_)
+            dbot_score = Common.DBotScore(
+                indicator=ip_,
+                indicator_type=DBotScoreType.IP,
+                integration_name=client.name,
+                score=Common.DBotScore.NONE
+            )
+            ip_obj = Common.IP(
+                ip=ip_,
+                dbot_score=dbot_score,
+                geo_country=response.get('countryName'),
+            )
+            readable_output = tableToMarkdown(name="IP location:", t=response, removeNull=True)
+        except Exception as err:
+            if 'Error in API call [404] - Not Found' in str(err):
+                response = {}
+                dbot_score = Common.DBotScore(
+                    indicator=ip_,
+                    indicator_type=DBotScoreType.IP,
+                    integration_name=client.name,
+                    score=Common.DBotScore.NONE
+                )
+                ip_obj = Common.IP(
+                    ip=ip_,
+                    dbot_score=dbot_score
+                )
+                readable_output = 'IP location was not found. Please try with a different IP.'
+            else:
+                raise Exception(err)
+
+        command_results = CommandResults(
+            outputs_prefix=f'{client.name}.IP',
+            outputs_key_field='ipAddress',
+            outputs=response,
+            readable_output=readable_output,
+            raw_response=response,
+            indicator=ip_obj
+        )
+        command_results_list.append(command_results)
+
+    return command_results_list
 
 
 def antivirus_signature_search(client: Client, args: dict) -> CommandResults:
@@ -460,10 +517,11 @@ def main():
         client = Client(api_key=api_key, verify=verify, proxy=proxy)
         commands = {
             'threatvault-antivirus-signature-get': antivirus_signature_get,
-            'file': file_reputation,
+            'file': file_command,
             'threatvault-dns-signature-get-by-id': dns_get_by_id,
             'threatvault-antispyware-signature-get-by-id': antispyware_get_by_id,
             'threatvault-ip-geo-get': ip_geo_get,
+            'ip': ip_command,
             'threatvault-antivirus-signature-search': antivirus_signature_search,
             'threatvault-dns-signature-search': dns_signature_search,
             'threatvault-antispyware-signature-search': antispyware_signature_search,

@@ -195,6 +195,28 @@ script:
       description: IP address.
       type: String
   - arguments:
+    - name: ip
+      required: false
+      default: true
+      description: IP address to query. E.g. !ip 1.1.1.1
+    deprecated: false
+    description: Check IP location.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address
+    - contextPath: IP.Hostname
+      description: The IP hostname
+    - contextPath: IP.ASN
+      description: The IP ASN
+    - contextPath: IP.Geo.Location
+      description: The IP geographic location in coordinates
+    - contextPath: IP.Geo.Country
+      description: The IP country
+    - contextPath: IP.Geo.Description
+      description: The IP location as <City, Region, Postal Code, Country>
+  - arguments:
     - default: false
       description: Signature name to search.
       isArray: false
