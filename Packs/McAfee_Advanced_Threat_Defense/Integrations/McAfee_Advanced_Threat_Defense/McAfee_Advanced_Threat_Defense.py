@@ -29,7 +29,7 @@ def load_server_url():
 SUBMIT_TYPE_WITH_FILE = [0, 2]
 SUBMIT_TYPE_WITH_URL = [1, 3]
 SUBMIT_TYPE_WITH_FILE_STR = ['0', '2']
-SUBMIT_TYPE_WITH_URL_ARG_STR = ['1', '2', '3']
+
 USERNAME = demisto.params().get('username')
 PASSWORD = demisto.params().get('password')
 USE_SSL = not demisto.params().get('unsecure')
@@ -492,7 +492,7 @@ def handling_errors(args):
             or ('entryID' not in args and 'url' not in args):
         return_error('You must submit one and only one of the following: url, entryID')
     if ('entryID' in args and args['submitType'] not in SUBMIT_TYPE_WITH_FILE_STR) or \
-            ('url' in args and args['submitType'] not in SUBMIT_TYPE_WITH_URL_ARG_STR):
+            ('url' in args and args['submitType'] == '0'):
         return_error(
             'In order to detonate a file submitType must be 0 '
             ' and an entryID of a file must be given.\n'
