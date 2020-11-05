@@ -6,7 +6,9 @@ from Rundeck import filter_results, attribute_pairs_to_dict, convert_str_to_int,
 
 
 from CommonServerPython import DemistoException
-
+import logging
+logging.basicConfig()
+logging.getLogger().setLevel(logging.ERROR)
 
 def test_filter_results_when_response_is_dict():
     """
@@ -218,20 +220,20 @@ def test_job_executions_query_command(mocker):
     Then
         - CommonResults object returns with the api response.
     """
-    return_value = [{'id': 195, 'href': '123', 'permalink': '123', 'status': 'failed', 'project': 'Demisto',
+    return_value = {'paging': {'total': 2}, 'executions': [{'id': 195, 'href': '123', 'permalink': '123', 'status': 'failed', 'project': 'Demisto',
                      'executionType': 'user', 'user': 'Galb', 'date-started': {'unixtime': 123, 'date': '123'},
                      'date-ended': {'unixtime': 123, 'date': '123'},
                      'job': {'id': '123', 'averageDuration': 463, 'name': "Arseny's Job", 'group': '',
                              'project': 'Demisto', 'description': 'just a sample job', 'options': {'foo': '0'},
                              'href': '123', 'permalink': '123'}, 'description': "123", 'argstring': '-foo 0',
-                     'failedNodes': ['localhost']}]
-    output = [{'id': 195, 'status': 'failed', 'project': 'Demisto',
+                     'failedNodes': ['localhost']}]}
+    output = {'paging': {'total': 2}, 'executions':[{'id': 195, 'status': 'failed', 'project': 'Demisto',
                      'executionType': 'user', 'user': 'Galb', 'datestarted': {'unixtime': 123, 'date': '123'},
                      'dateended': {'unixtime': 123, 'date': '123'},
                      'job': {'id': '123', 'averageDuration': 463, 'name': "Arseny's Job", 'group': '',
                              'project': 'Demisto', 'description': 'just a sample job', 'options': {'foo': '0'}},
               'description': "123", 'argstring': '-foo 0',
-                     'failedNodes': ['localhost']}]
+                     'failedNodes': ['localhost']}]}
     client = Client(
             base_url='base_url',
             verify=False,
@@ -242,7 +244,6 @@ def test_job_executions_query_command(mocker):
     assert result.outputs == output
     assert result.outputs_key_field == 'id'
     assert result.outputs_prefix == 'Rundeck.ExecutionsQuery'
-    assert result.readable_output == "### Job Execution Query:\n|Id|Status|Project|Execution Type|User|Datestarted|Dateended|Job|Description|Argstring|Failed Nodes|\n|---|---|---|---|---|---|---|---|---|---|---|\n| 195 | failed | Demisto | user | Galb | unixtime: 123<br>date: 123 | unixtime: 123<br>date: 123 | id: 123<br>averageDuration: 463<br>name: Arseny's Job<br>group: <br>project: Demisto<br>description: just a sample job<br>options: {\"foo\": \"0\"} | 123 | -foo 0 | localhost |\n"
 
 
 def test_job_execution_output_command(mocker):
@@ -269,7 +270,7 @@ def test_job_execution_output_command(mocker):
     assert result.outputs == return_value
     assert result.outputs_key_field == 'id'
     assert result.outputs_prefix == 'Rundeck.ExecutionsOutput'
-    assert result.readable_output == "### Job Execution Output:\n|Id|Offset|Completed|Exec Completed|Has Failed Nodes|Exec State|Last Modified|Exec Duration|Percent Loaded|Total Size|Retry Backoff|Cluster Exec|Compacted|Entries|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 69 | 3732 | true | true | true | failed | 123 | 237 | 12 | 3738 | 0 | false | false | {'node': 'localhost', 'step': '1', 'stepctx': '1', 'user': 'admin', 'time': '10:54:52', 'level': 'NORMAL', 'type': 'stepbegin', 'absolute_time': '123', 'log': ''} |\n"
+    assert result.readable_output == "### Job Execution Output:\n|Id|Offset|Completed|Exec Completed|Has Failed Nodes|Exec State|Last Modified|Exec Duration|Percent Loaded|Total Size|Retry Backoff|Cluster Exec|Compacted|Entries|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 69 | 3732 | true | true | true | failed | 123 | 237 | 12 | 3738 | 0 | false | false | {'node': 'localhost', 'step': '1', 'stepctx': '1', 'user': 'admin', 'time': '10:54:52', 'level': 'NORMAL', 'type': 'stepbegin', 'absolute_time': '123', 'log': ''} |\n### Job Execution Entries View:\n|Log|Node|Step|Stepctx|User|Time|Level|Type|Absolute Time|Log|\n|---|---|---|---|---|---|---|---|---|---|\n|  | localhost | 1 | 1 | admin | 10:54:52 | NORMAL | stepbegin |  |  |\n"
 
 
 def test_job_execution_abort_command(mocker):
