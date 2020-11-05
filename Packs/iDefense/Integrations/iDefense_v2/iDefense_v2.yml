@@ -46,12 +46,16 @@ script:
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor that was used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: String
     description: Checks the reputation of the given IP address.
   - name: domain
     arguments:
