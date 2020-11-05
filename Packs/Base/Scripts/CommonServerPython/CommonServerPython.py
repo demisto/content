@@ -952,6 +952,19 @@ def aws_table_to_markdown(response, table_header):
     return human_readable
 
 
+def stringEscape(st):
+    """
+       Escape newline chars in the given string.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string.
+       :rtype: ``str``
+    """
+    return st.replace('\r', '\\r').replace('\n', '\\n').replace('\t', '\\t')
+
+
 def stringUnEscape(st):
     """
        Unescape newline chars in the given string.
@@ -1005,7 +1018,6 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
-            res = stringUnEscape(res)
         except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
@@ -1032,7 +1044,12 @@ class IntegrationLogger(object):
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
         '''
-        to_add = [self.encode(a) for a in args if a]
+        to_add = []
+        for a in args:
+            if a:
+                a = self.encode(a)
+                to_add.append(stringEscape(a))
+                to_add.append(stringUnEscape(a))
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -3536,10 +3553,15 @@ class DebugLogger(object):
         """
         Utility function to log start of debug mode logging
         """
-        msg = "debug-mode started.\nhttp client print found: {}.\nEnv {}.".format(self.http_client_print is not None,
-                                                                                  os.environ)
+        msg = "debug-mode started.\n#### http client print found: {}.\n#### Env {}.".format(self.http_client_print is not None,
+                                                                                            os.environ)
         if hasattr(demisto, 'params'):
-            msg += "\nParams: {}.".format(demisto.params())
+            msg += "\n#### Params: {}.".format(json.dumps(demisto.params(), indent=2))
+        callingContext = demisto.callingContext.get('context', {})
+        msg += "\n#### Docker image: [{}]".format(callingContext.get('DockerImage'))
+        brand = callingContext.get('IntegrationBrand')
+        if brand:
+            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, callingContext.get('IntegrationInstance'))
         self.int_logger.write(msg)
 
 

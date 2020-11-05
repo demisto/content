@@ -873,6 +873,9 @@ class Pack(object):
                     latest_release_notes = found_versions[0].vstring
 
                     logging.info(f"Latest ReleaseNotes version is: {latest_release_notes}")
+                    self.assert_production_bucket_version_matches_release_notes_version(changelog,
+                                                                                        latest_release_notes)
+
                     # load latest release notes
                     latest_rn_file = latest_release_notes.replace('.', '_')
                     latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
@@ -940,10 +943,32 @@ class Pack(object):
 
             task_status = True
             logging.success(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}")
+        except AssertionError:
+            logging.exception(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.")
         except Exception:
             logging.exception(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.")
         finally:
             return task_status, not_updated_build
+
+    def assert_production_bucket_version_matches_release_notes_version(self,
+                                                                       changelog: dict,
+                                                                       latest_release_notes: str) -> None:
+        """
+        Sometimes there is a the current bucket is not merged from master there could be another version in production
+        bucket, that does not exist in the current branch.
+        This case can cause unpredicted behavior and we want to fail the build.
+        This method validates that this is not the case in the current build, and if it does - fails it with an
+        assertion error.
+        Args:
+            changelog: The changelog from the production bucket.
+            latest_release_notes: The latest release notes version string in the current branch
+        """
+        changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))
+        assert latest_release_notes >= changelog_latest_release_notes, \
+            f'{self._pack_name}: Version mismatch detected between production bucket and current branch\n' \
+            f'Production bucket version: {changelog_latest_release_notes}\n' \
+            f'current branch version: {latest_release_notes}\n' \
+            'Please Merge from master and rebuild'
 
     def collect_content_items(self):
         """ Iterates over content items folders inside pack and collects content items data.
