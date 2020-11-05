@@ -981,7 +981,7 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def remove_ignored_tests(tests: set, content_packs: set) -> set:
+def remove_ignored_tests(tests: set) -> set:
     """Removes test playbooks, which are in .pack-ignore, from the given tests set
 
     Args:
@@ -992,7 +992,7 @@ def remove_ignored_tests(tests: set, content_packs: set) -> set:
          set: The filtered tests set
     """
     ignored_tests_set = set()
-
+    content_packs = get_content_pack_name_of_test(tests)
     for pack in content_packs:
         ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
 
@@ -1020,8 +1020,8 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: json):
     return tests
 
 
-def filter_tests(tests: set, content_packs: set, id_set: json) -> set:
-    tests_without_ignored = remove_ignored_tests(tests, content_packs)
+def filter_tests(tests: set, id_set: json) -> set:
+    tests_without_ignored = remove_ignored_tests(tests)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     return tests_without_non_supported
@@ -1077,21 +1077,25 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         tests.add('TestCommonPython')
 
     # get all modified packs - not just tests related
+    # EDIT: this fix is bad and need to be changed in the source (get_modified_files_for_testing) and not after all
+    # packs / tests were collected.
     modified_packs = get_modified_packs(files_string)
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
 
-    packs_to_install.update(["DeveloperTools", "Base"])
-
+    # Get packs of integrations corresponding to the tests the listed in, in conf.json
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
+    # Get packs containing each of the collected tests
     packs_of_collected_tests = conf.get_packs_of_collected_tests(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
+    # All filtring out of packs should be done here
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
-    tests = filter_tests(tests, packs_to_install, id_set)
+    # All filtering out of tests should be done here
+    tests = filter_tests(tests, id_set)
     if not tests:
         rand = random.Random(branch_name)
         tests = get_random_tests(
@@ -1107,6 +1111,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         tests.add('TestCommonPython')  # test with no integration configured
         tests.add('HelloWorld-Test')  # test with integration configured
         packs_to_install.add("HelloWorld")
+
+    packs_to_install.update(["DeveloperTools", "Base"])
 
     return tests, packs_to_install
 
@@ -1191,7 +1197,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
-        tests = filter_tests(set(CONF.get_test_playbook_ids()), packs_to_install, id_set=deepcopy(ID_SET))
+        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET))
     else:
         branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)
