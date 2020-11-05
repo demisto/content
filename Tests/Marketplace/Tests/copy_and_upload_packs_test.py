@@ -5,7 +5,7 @@ import shutil
 from tempfile import mkdtemp
 
 from Tests.Marketplace.marketplace_services import GCPConfig
-from Tests.Marketplace.copy_and_upload_packs import FAILED_PACKS_PATH_SUFFIX
+from Tests.Marketplace.copy_and_upload_packs import PACKS_RESULTS_FILE
 
 
 # disable-secrets-detection-start
@@ -30,7 +30,7 @@ class TestGetPackNames:
 
 
 class TestHelperFunctions:
-    def test_load_failed_packs_file(self):
+    def test_get_successful_and_failed_packs(self):
         """
            Given:
                - File that doesn't exist
@@ -43,22 +43,31 @@ class TestHelperFunctions:
                - Verify that we get an empty dictionary
                - Verify that we get the expected dictionary
        """
-        from Tests.Marketplace.copy_and_upload_packs import load_failed_packs_file
+        from Tests.Marketplace.copy_and_upload_packs import get_successful_and_failed_packs
         tempdir = mkdtemp()
-        failed_packs_file = os.path.join(tempdir, FAILED_PACKS_PATH_SUFFIX)
+        file = os.path.join(tempdir, PACKS_RESULTS_FILE)
 
         # assert path not exist
-        assert load_failed_packs_file(failed_packs_file) == {}
+        successful, failed = get_successful_and_failed_packs(file)
+        assert successful == {}
+        assert failed == {}
 
         # assert empty file
-        with open(failed_packs_file, "w") as f:
+        with open(file, "w") as f:
             f.write('')
-        assert load_failed_packs_file(failed_packs_file) == {}
+        successful, failed = get_successful_and_failed_packs(file)
+        assert successful == {}
+        assert failed == {}
 
         # assert valid file
-        with open(failed_packs_file, "w") as f:
-            f.write(json.dumps({"a": 1}))
-        assert load_failed_packs_file(failed_packs_file) == {"a": 1}
+        with open(file, "w") as f:
+            f.write(json.dumps({
+                "failed_packs": {"TestPack2": "status2"},
+                "successful_packs": {"TestPack1": "status1"}
+            }))
+        successful, failed = get_successful_and_failed_packs(file)
+        assert successful == {"TestPack1": "status1"}
+        assert failed == {"TestPack2": "status2"}
 
         try:
             shutil.rmtree(tempdir)

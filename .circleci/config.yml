@@ -470,7 +470,7 @@ references:
         ID_SET=$CIRCLE_ARTIFACTS/id_set.json
         GCS_PATH=$(mktemp)
         echo $GCS_MARKET_KEY > $GCS_PATH
-        python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o false
+        python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o true
         rm $GCS_PATH
       when: on_success
 
@@ -527,7 +527,7 @@ jobs:
                 shell: /bin/bash
                 command: |
                   if [ -n "${BUCKET_UPLOAD}" ]; then
-                      ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Run Unit Testing And Lint'
+                    ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
                   else
                     ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
                   fi
@@ -615,7 +615,9 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Run Validations'
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
           when: always
 
   Create Instances:
@@ -680,7 +682,9 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Create Instances'
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
           when: always
 
   Server 5_0:
@@ -1000,7 +1004,9 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' "$CIRCLE_ARTIFACTS/failed_packs_prepare_content.json" 'Upload Packs To Marketplace'
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
           when: always
       - *destroy_instances
       - *store_artifacts
@@ -1158,7 +1164,9 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Install Packs in Demisto 6_0'
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
           when: always
       - *persist_to_workspace
 
@@ -1192,7 +1200,9 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'bucket_upload' ./env_results.json 'Install Packs in Demisto Marketplace - Master'
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
           when: always
 
 workflows:

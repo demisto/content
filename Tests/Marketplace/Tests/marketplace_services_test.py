@@ -626,7 +626,7 @@ class TestImagesUpload:
         mocker.patch("Tests.Marketplace.marketplace_services.is_integration_image", return_value=True)
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
-        task_status = dummy_pack.copy_and_upload_integration_images(dummy_prod_bucket, dummy_build_bucket)
+        task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket)
         assert task_status
 
     def test_copy_and_upload_author_image(self, mocker, dummy_pack):
@@ -643,7 +643,7 @@ class TestImagesUpload:
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         blob_name = "content/packs/TestPack/Author_image.png"
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
-        task_status = dummy_pack.copy_and_upload_author_image(dummy_prod_bucket, dummy_build_bucket)
+        task_status = dummy_pack.copy_author_image(dummy_prod_bucket, dummy_build_bucket)
         assert task_status
 
 
@@ -674,7 +674,7 @@ class TestCopyAndUploadToStorage:
         # case: latest version is not in build bucket
         dummy_build_bucket.list_blobs.return_value = []
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
-                                                                          '2.0.0')
+                                                                          '2.0.0', {})
         assert not task_status
         assert not skipped_pack
 
@@ -694,7 +694,7 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_prod_bucket.list_blobs.return_value = [Blob(blob_name, dummy_prod_bucket)]
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
-                                                                          '2.0.0')
+                                                                          '2.0.0', {})
         assert task_status
         assert skipped_pack
 
@@ -714,7 +714,7 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
-                                                                          '2.0.0')
+                                                                          '2.0.0', {"TestPack": "status"})
         assert task_status
         assert not skipped_pack
 

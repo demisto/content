@@ -17,10 +17,11 @@ TEST_PLAYBOOK_TYPE = 'test_playbooks'
 SDK_UNITTESTS_TYPE = 'sdk_unittests'
 SDK_FAILED_STEPS_TYPE = 'sdk_faild_steps'
 SDK_RUN_AGAINST_FAILED_STEPS_TYPE = 'sdk_run_against_failed_steps'
-BUCKET_UPLOAD_TYPE = 'bucket_upload'
+BUCKET_UPLOAD_TYPE = 'bucket_upload_flow'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
 BUCKET_UPLOAD_BUILD_TITLE = 'Upload Packs To Marketplace Storage'
+PACKS_RESULTS_FILE = "failed_packs_prepare_content.json"
 
 
 def get_faild_steps_list():
@@ -67,9 +68,9 @@ def options_handler():
     parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-t', '--test_type', help='unittests or test_playbooks or sdk_unittests or sdk_faild_steps'
                                                   'or bucket_upload')
-    parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address',
-                        required=True)
+    parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address')
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True)
+    parser.add_argument('-ca', '--circle_artifacts', help="The path to the circle artifacts directory")
     parser.add_argument('-j', '--job_name', help='The job name that is running the slack notifier')
     options = parser.parse_args()
 
@@ -124,39 +125,39 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
     return content_team_attachment
 
 
-def get_attachments_for_bucket_upload_flow(build_url, build_title, job_name="", test_type=None,
-                                           failed_packs_file_path=None):
+def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_file_path=None):
     steps_fields = get_entities_fields(entity_title="Failed Steps")
     color = 'good' if not steps_fields else 'danger'
-    title = f'{build_title} - Success' if not steps_fields else f'{build_title} - Failure'
+    title = f'{BUCKET_UPLOAD_BUILD_TITLE} - Success' if not steps_fields else f'{BUCKET_UPLOAD_BUILD_TITLE} - Failure'
 
-    if test_type == BUCKET_UPLOAD_TYPE:
-        if job_name and color == 'danger':
-            steps_fields = [{
-                "title": f'Job Failed: {job_name}',
-                "value": '',
-                "short": False
-            }] + steps_fields
+    if job_name and color == 'danger':
+        steps_fields = [{
+            "title": f'Job Failed: {job_name}',
+            "value": '',
+            "short": False
+        }] + steps_fields
 
-        if job_name and job_name == 'Upload Packs To Marketplace':
-            if os.path.exists(failed_packs_file_path):
-                try:
-                    with open(failed_packs_file_path, 'r') as json_file:
-                        failed_packs_file = json.load(json_file)
-                    if failed_packs_file:
+    if job_name and job_name == 'Upload Packs To Marketplace':
+        if os.path.exists(packs_results_file_path):
+            try:
+                with open(packs_results_file_path, 'r') as json_file:
+                    packs_results_file = json.load(json_file)
+                if packs_results_file:
+                    failed_packs = packs_results_file.get('failed_packs', {})
+                    if failed_packs:
                         steps_fields += [{
                             "title": "Failed Packs:",
                             "value": "\n".join([f"{pack_name}: {pack_status}" for pack_name, pack_status in
-                                                failed_packs_file.items()]),
+                                                failed_packs.items()]),
                             "short": False
                         }]
-                except json.decoder.JSONDecodeError:
-                    pass
+            except json.decoder.JSONDecodeError:
+                pass
 
-        if job_name and job_name != 'Upload Packs To Marketplace' and color == 'good':
-            print_color('On bucket upload flow we are not notifying on jobs that are not Upload Packs. exiting...',
-                        LOG_COLORS.NATIVE)
-            sys.exit(0)
+    if job_name and job_name != 'Upload Packs To Marketplace' and color == 'good':
+        print_color('On bucket upload flow we are not notifying on jobs that are not Upload Packs. exiting...',
+                    LOG_COLORS.NATIVE)
+        sys.exit(0)
 
     container_build_url = build_url + '#queue-placeholder/containers/0'
     content_team_attachment = [{
@@ -186,6 +187,9 @@ def get_attachments_for_all_steps(build_url, build_title):
 
 
 def get_attachments_for_test_playbooks(build_url, env_results_file_name):
+    if not env_results_file_name or not os.path.exists(env_results_file_name):
+        print_error('When running slack notifier for nightly build, provide env_results_file')
+        sys.exit(0)
     with open(env_results_file_name, 'r') as env_results_file_content:
         env_results = json.load(env_results_file_content)
 
@@ -268,7 +272,8 @@ def get_fields():
     return content_team_fields, content_fields, failed_tests
 
 
-def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, job_name=""):
+def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
+                   job_name=""):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
@@ -290,8 +295,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         elif test_type == BUCKET_UPLOAD_TYPE:
             print_color('Starting Slack notifications about upload to production bucket build', LOG_COLORS.GREEN)
             content_team_attachments = get_attachments_for_bucket_upload_flow(
-                build_url, build_title=BUCKET_UPLOAD_BUILD_TITLE, job_name=job_name, test_type=test_type,
-                failed_packs_file_path=env_results_file_name
+                build_url=build_url, job_name=job_name, packs_results_file_path=packs_results_file
             )
         elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_XSOAR_BUILD_TITLE)
@@ -312,15 +316,17 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
 def main():
     options = options_handler()
     if options.nightly:
+        env_results_file_name = options.env_results_file_name
         slack_notifier(options.url,
                        options.slack,
                        options.test_type,
-                       env_results_file_name=options.env_results_file_name)
-    elif options.bucket_upload and options.test_type == BUCKET_UPLOAD_TYPE:
-        # We need to check the test type too because otherwise nightly unit-tests will run too
+                       env_results_file_name=env_results_file_name)
+    elif options.bucket_upload:
         job_name = options.job_name
-        failed_packs_file_path = options.env_results_file_name
-        slack_notifier(options.url, options.slack, options.test_type, failed_packs_file_path, job_name=job_name)
+        circle_artifacts_path = options.circle_artifacts
+        slack_notifier(options.url, options.slack, options.test_type,
+                       packs_results_file=os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE),
+                       job_name=job_name)
     elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
                                SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(options.url, options.slack, options.test_type)

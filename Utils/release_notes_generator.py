@@ -91,7 +91,7 @@ def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
     return name, description
 
 
-def construct_entities_block(entities_data: dict, add_whitespaces: bool = True) -> str:
+def construct_entities_block(entities_data: dict) -> str:
     """
     convert entities information to a pack release note block
 
@@ -108,7 +108,6 @@ def construct_entities_block(entities_data: dict, add_whitespaces: bool = True) 
                 },
                 ...
             }
-        add_whitespaces (bool): whether to add whitespaces to the entity name or not
 
     Returns:
         release note block string
@@ -123,10 +122,7 @@ def construct_entities_block(entities_data: dict, add_whitespaces: bool = True) 
                                'Incident Types', 'Indicator Types', 'Incident Fields'):
                 release_notes += f'- **{name}**\n{description}\n'
             else:
-                if add_whitespaces:
-                    release_notes += f'##### {name}  \n{description}\n'
-                else:
-                    release_notes += f'##### {name}\n{description}\n'
+                release_notes += f'##### {name}\n{description}\n'
 
     return release_notes
 
@@ -256,8 +252,24 @@ def get_release_notes_dict(release_notes_files):
     return release_notes_dict, packs_metadata_dict
 
 
-def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict, pack_header_wrap: bool = True,
-                         add_whitespaces: bool = True, rn_wrapper: str = '') -> str:
+def aggregate_release_notes_for_marketplace(pack_versions_dict: dict):
+    """
+    merge several pack release note versions into a single block - marketplace format.
+
+    Args:
+        pack_versions_dict: a mapping from a pack version to a release notes file content.
+
+    Returns:
+        a single pack release note block
+
+    """
+    pack_release_notes, _ = merge_version_blocks(pack_versions_dict)
+    pack_release_notes = f'{pack_release_notes}\n' if not pack_release_notes.endswith('\n') else pack_release_notes
+    pack_release_notes = f'\n{pack_release_notes}' if not pack_release_notes.startswith('\n') else pack_release_notes
+    return pack_release_notes
+
+
+def aggregate_release_notes(pack_name: str, pack_versions_dict: dict, pack_metadata: dict):
     """
     merge several pack release note versions into a single block.
 
@@ -265,13 +277,27 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata
         pack_name: pack name
         pack_versions_dict: a mapping from a pack version to a release notes file content.
         pack_metadata: the pack metadata contents
-        pack_header_wrap: whether to wrap the rn with the pack header or not.
-        add_whitespaces: a parameter to pass to construct_entities_block function which indicates
-        whether to add whitespaces to the entity name or not
-        rn_wrapper: a wrapper to wrap the release notes (usually /n)
 
     Returns:
         a single pack release note block
+
+    """
+    pack_release_notes, latest_version = merge_version_blocks(pack_versions_dict)
+    partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
+    return (f'### {pack_name} Pack v{latest_version}{partner}\n'
+            f'{pack_release_notes}')
+
+
+def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
+    """
+    merge several pack release note versions into a single block.
+
+    Args:
+        pack_versions_dict: a mapping from a pack version to a release notes file content.
+
+    Returns:
+        str: a single pack release note block
+        str: the pack's latest version
 
     """
     latest_version = '1.0.0'
@@ -304,20 +330,9 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata
                 else:
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
 
-    pack_release_notes = construct_entities_block(entities_data, add_whitespaces).strip()
+    pack_release_notes = construct_entities_block(entities_data).strip()
 
-    if rn_wrapper:
-        pack_release_notes = f'{pack_release_notes}{rn_wrapper}' if not pack_release_notes.endswith(rn_wrapper) else \
-            pack_release_notes
-        pack_release_notes = f'{rn_wrapper}{pack_release_notes}' if not pack_release_notes.startswith(rn_wrapper) else \
-            pack_release_notes
-
-    if pack_header_wrap:
-        partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
-        return (f'### {pack_name} Pack v{latest_version}{partner}\n'
-                f'{pack_release_notes}')
-
-    return pack_release_notes
+    return pack_release_notes, latest_version
 
 
 def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, packs_metadata_dict, version,
@@ -348,7 +363,7 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
 
     for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
         pack_metadata = packs_metadata_dict[pack_name]
-        pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict, pack_metadata))
+        pack_rn_blocks.append(aggregate_release_notes(pack_name, pack_versions_dict, pack_metadata))
         # for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
         #                                                key=lambda pack_item: LooseVersion(pack_item[0])):
         #     pack_rn_blocks.append(f'### {pack_name} Pack v{pack_version}\n'
