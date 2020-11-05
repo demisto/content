@@ -1,11 +1,7 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: d93eba71-70a0-4501-8130-404f0b79c4f2
     propagationLabels:
     - all
-    toServerVersion: ""
 id: AWS GuardDuty | Default
 inputs: []
 name: AWS GuardDuty | Default
@@ -79,6 +75,7 @@ tasks:
       name: Actor or Target
       type: condition
       version: -1
+      description: ''
     taskid: dcc75a80-c594-4335-8fe6-108ba4bebae1
     timertriggers: []
     type: condition

@@ -1,11 +1,7 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: d93eba71-70a0-4501-8130-404f0b79c4f2
     propagationLabels:
     - all
-    toServerVersion: ""
 id: AWS GuardDuty | Trojan
 inputs: []
 name: AWS GuardDuty | Trojan

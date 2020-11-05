@@ -3,8 +3,8 @@
  "feed": false,
  "id": "aba08143-51df-4a27-82dc-9498f20ab3b5",
  "keyTypeMap": {
-  "product\/aws\/guardduty": "AWS Guard Duty",
-  "product\/aws\/securityhub": "AWS Security Hub"
+  "product/aws/guardduty": "AWS Guard Duty",
+  "product/aws/securityhub": "AWS Security Hub"
  },
  "name": "AWS Security Hub (classifier)",
  "propagationLabels": [

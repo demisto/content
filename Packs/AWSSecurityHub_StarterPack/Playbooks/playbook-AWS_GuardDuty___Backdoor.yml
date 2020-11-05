@@ -1,11 +1,7 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: d93eba71-70a0-4501-8130-404f0b79c4f2
     propagationLabels:
     - all
-    toServerVersion: ""
 id: AWS GuardDuty | Backdoor
 inputs: []
 name: AWS GuardDuty | Backdoor
@@ -131,6 +127,7 @@ tasks:
       name: Should this instance be removed from the ASG?
       type: condition
       version: -1
+      description: ''
     taskid: ee5d9485-e63f-40a2-8686-4c63a6cc421e
     timertriggers: []
     type: condition
@@ -294,6 +291,7 @@ tasks:
       script: 388c5adb-4ef5-4a3b-8b08-79c27a8dd93b
       type: regular
       version: -1
+      description: ''
     taskid: c69f55f6-ed04-48cc-8239-c3e30dda30e2
     timertriggers: []
     type: regular

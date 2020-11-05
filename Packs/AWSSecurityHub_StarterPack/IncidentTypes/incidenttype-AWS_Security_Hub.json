@@ -11,7 +11,6 @@
  "layout": "5b00e8d7-2f51-436a-8f82-e5889a4d2c3a",
  "locked": false,
  "name": "AWS Security Hub",
- "playbookId": "",
  "readonly": false,
  "reputationCalc": 0,
  "sla": 168,
@@ -19,5 +18,5 @@
  "version": -1,
  "weeks": 1,
  "weeksR": 0,
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

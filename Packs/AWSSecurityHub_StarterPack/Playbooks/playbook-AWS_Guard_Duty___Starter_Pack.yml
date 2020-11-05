@@ -1,11 +1,7 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: d93eba71-70a0-4501-8130-404f0b79c4f2
     propagationLabels:
     - all
-    toServerVersion: ""
 id: AWS Guard Duty | Starter Pack
 inputs: []
 name: AWS Guard Duty | Starter Pack
@@ -725,6 +721,7 @@ tasks:
       name: Unknown Finding Type
       type: regular
       version: -1
+      description: ''
     taskid: c0e9944a-b08b-474a-8732-f08a65ace119
     timertriggers: []
     type: regular

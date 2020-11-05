@@ -5,7 +5,7 @@ value = demisto.args()["value"]
 
 
 def parse_product(paths):
-    r = {}
+    r: dict = {}
     for k, v in paths.items():
         parts = k.split("/")
         if parts:
