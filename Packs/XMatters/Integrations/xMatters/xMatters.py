@@ -668,7 +668,7 @@ def test_module(from_xm: Client, to_xm: Client, user: str, max_fetch: int) -> st
         raise ValueError("Max Fetch must be between 0 and 201")
 
     try:
-        flow_res = to_xm.xm_trigger_workflow(
+        to_xm.xm_trigger_workflow(
             recipients='nobody',
             subject='Test - please ignore',
             body='Test - please ignore'
