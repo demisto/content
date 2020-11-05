@@ -86,7 +86,7 @@ class Client(BaseClient):
             if signature_name and domain_name:
                 raise Exception('Please provide either a signature_name or a domain_name.')
         elif path == 'ips':  # Anti spyware search
-            if (cve and (vendor or signature_name)) or (vendor and (cve and signature_name)) \
+            if (cve and (vendor or signature_name)) or (vendor and (cve or signature_name)) \
                     or (signature_name and (cve or vendor)):
                 raise Exception('Please provide either a signature_name or a cve or a vendor.')
 
