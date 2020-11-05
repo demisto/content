@@ -169,4 +169,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- iDefenseTest
+- iDefense_v2_Test

@@ -1815,7 +1815,8 @@
         },
          {
             "integrations": "iDefense_v2",
-            "playbookID": "iDefenseTest"
+            "playbookID": "iDefense_v2_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AbuseIPDB",

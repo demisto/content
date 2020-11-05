@@ -6,7 +6,7 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 '''CONSTANTS'''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
 class Client(BaseClient):
@@ -94,7 +94,7 @@ def _extract_analysis_info(res: dict, dbot_score_type: str) -> List[dict]:
                 desc = 'Match found in iDefense database'
                 dbot = Common.DBotScore(indicator_value, dbot_score_type, 'iDefense', dbot_score, desc)
                 last_published = result_content.get('last_published', '')
-                last_published_format = parse_date_string(last_published, '%Y-%m-%d %H:%M:%S')
+                last_published_format = parse_date_string(last_published, DATE_FORMAT)
                 analysis_info = {
                     'Name': result_content.get('display_text', ''),
                     'DbotReputation': dbot_score,
@@ -300,7 +300,7 @@ def uuid_command(client: Client, args: dict) -> CommandResults:
             dbot = Common.DBotScore(indicator_value, DBotScoreType.URL, 'iDefense', dbot_score, desc)
             indicator = Common.URL(indicator_value, dbot)
         last_published = res.get('last_published', '')
-        last_published_format = parse_date_string(last_published, '%Y-%m-%d %H:%M:%S')
+        last_published_format = parse_date_string(last_published, DATE_FORMAT)
         analysis_info = {
             'Name': res.get('display_text', ''),
             'DbotReputation': dbot_score,
