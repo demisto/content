@@ -12,7 +12,7 @@ from Tests.test_content import ParallelPrintsManager
 from Tests.configure_and_test_integration_instances import Build, configure_servers_and_restart, \
     get_tests, \
     get_changed_integrations, configure_server_instances, instance_testing, disable_instances, \
-    report_tests_status, nightly_install_packs, get_pack_ids_to_install, test_files, \
+    report_tests_status, nightly_install_packs, test_files, \
     test_pack_metadata, options_handler
 from Tests.Marketplace.search_and_install_packs import \
     search_and_install_packs_and_their_dependencies_private, upload_zipped_packs
@@ -47,7 +47,7 @@ def install_packs_private(build: Build, prints_manager: ParallelPrintsManager, p
     :param pack_ids: Optional, list of packs to install. List contains pack id and version requested.
     :return: Boolean indicating if the installation was successful.
     """
-    pack_ids = build.pack_ids_to_install
+    pack_ids = pack_ids if pack_ids else build.pack_ids_to_install
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
