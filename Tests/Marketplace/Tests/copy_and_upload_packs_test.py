@@ -30,7 +30,7 @@ class TestGetPackNames:
 
 
 class TestHelperFunctions:
-    def test_load_failed_packs_file(self):
+    def test_get_successful_and_failed_packs(self):
         """
            Given:
                - File that doesn't exist
@@ -45,20 +45,29 @@ class TestHelperFunctions:
        """
         from Tests.Marketplace.copy_and_upload_packs import get_successful_and_failed_packs
         tempdir = mkdtemp()
-        failed_packs_file = os.path.join(tempdir, PACKS_RESULTS_FILE)
+        file = os.path.join(tempdir, PACKS_RESULTS_FILE)
 
         # assert path not exist
-        assert get_successful_and_failed_packs(failed_packs_file) == {}
+        successful, failed = get_successful_and_failed_packs(file)
+        assert successful == {}
+        assert failed == {}
 
         # assert empty file
-        with open(failed_packs_file, "w") as f:
+        with open(file, "w") as f:
             f.write('')
-        assert get_successful_and_failed_packs(failed_packs_file) == {}
+        successful, failed = get_successful_and_failed_packs(file)
+        assert successful == {}
+        assert failed == {}
 
         # assert valid file
-        with open(failed_packs_file, "w") as f:
-            f.write(json.dumps({"a": 1}))
-        assert get_successful_and_failed_packs(failed_packs_file) == {"a": 1}
+        with open(file, "w") as f:
+            f.write(json.dumps({
+                "failed_packs": {"TestPack2": "status2"},
+                "successful_packs": {"TestPack1": "status1"}
+            }))
+        successful, failed = get_successful_and_failed_packs(file)
+        assert successful == {"TestPack1": "status1"}
+        assert failed == {"TestPack2": "status2"}
 
         try:
             shutil.rmtree(tempdir)

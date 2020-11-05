@@ -865,7 +865,7 @@ class Pack(object):
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
             override_pack (bool): whether to override existing pack.
             latest_version (str): the pack's latest version.
-            successful_packs_dict (str): the list of all packs were uploaded in prepare content step
+            successful_packs_dict (dict): the list of all packs were uploaded in prepare content step
 
         Returns:
             bool: whether the operation succeeded.
