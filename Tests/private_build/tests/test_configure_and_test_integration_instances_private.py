@@ -3,7 +3,6 @@ import glob
 import zipfile
 from io import StringIO
 import demisto_client
-import os.path
 
 from Tests.private_build.configure_and_test_integration_instances_private import \
     find_needed_test_playbook_paths, install_private_testing_pack, write_test_pack_zip,\
