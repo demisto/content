@@ -319,3 +319,5 @@ def test_fetch_incidents(requests_mock):
     )
 
     assert len(incidents) == 0
+
+
