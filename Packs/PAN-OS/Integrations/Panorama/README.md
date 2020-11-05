@@ -4,7 +4,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 
 ## Panorama Playbook
 * **PanoramaCommitConfiguration** : Based on the playbook input, the Playbook will commit the configuration to Palo Alto Firewall, or push the configuration from Panorama to predefined device groups of firewalls. The integration is available from Demisto v3.0, but playbook uses the GenericPooling sub-playbook, which is only available from Demisto v4.0.
-* **Panorama Query Logs** : W raps several commands (listed below) with genericPolling to enable a complete flow to query the following log types: traffic, threat, URL, data-filtering, and Wildfire.
+* **Panorama Query Logs** : Wraps several commands (listed below) with genericPolling to enable a complete flow to query the following log types: traffic, threat, URL, data-filtering, and Wildfire.
    * [panorama-query-logs](#panorama-query-logs)
    * [panorama-check-logs-status](#panorama-check-logs-status)
    * [panorama-get-logs](#panorama-get-logs)
@@ -223,7 +223,7 @@ There is no context output for this command.
 
 ### panorama-get-predefined-threats-list
 ***
-Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context.
+Gets the pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context.
 
 
 #### Base Command
@@ -233,7 +233,7 @@ Get pre-defined threats list from a Firewall or Panorama and stores as a JSON fi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | If specified, retrieves the predefined threats from a specific firewall managed by Panorama. | Optional | 
+| target | The firewall managed by Panorama from which to retrieve the predefined threats. | Optional | 
 
 
 #### Context Output
@@ -244,8 +244,8 @@ Get pre-defined threats list from a Firewall or Panorama and stores as a JSON fi
 | File.Name | string | File name. | 
 | File.Type | string | File type. | 
 | File.Info | string | File info. | 
-| File.Extenstion | string | File extension. | 
-| File.EntryID | string | FIle entryID. | 
+| File.Extension | string | File extension. | 
+| File.EntryID | string | File entryID. | 
 | File.MD5 | string | MD5 hash of the file. | 
 | File.SHA1 | string | SHA1 hash of the file. | 
 | File.SHA256 | string | SHA256 hash of the file. | 
@@ -727,9 +727,9 @@ Sets a vulnerability signature to block mode.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| drop_mode | Type of session reject | Optional | 
+| drop_mode | Type of session rejection. Possible values are: "drop", "alert", "block-ip", "reset-both", "reset-client", and "reset-server".' Default is "drop". | Optional | 
 | vulnerability_profile | Name of vulnerability profile. | Required | 
-| threat_id | Numerical Threat ID. | Required | 
+| threat_id | Numerical threat ID. | Required | 
 
 
 #### Context Output
@@ -737,7 +737,7 @@ Sets a vulnerability signature to block mode.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.Vulnerability.ID | string | ID of vulnerability that has been blocked/overridden. | 
-| Panorama.Vulnerability.NewAction | string | New action for vulnerability | 
+| Panorama.Vulnerability.NewAction | string | New action for the vulnerability. | 
 
 
 #### Command Example
@@ -1473,18 +1473,18 @@ Gets a URL category from URL Filtering.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.URLFilter.URL | string | URL. | 
-| Panorama.URLFilter.Category | string | URL category. | 
+| Panorama.URLFilter.Category | string | The URL category. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | URL.Data | String | The URL address. | 
-| URL.Category | String | The URL Category. | 
+| URL.Category | String | The URL category. | 
 
 
 ### panorama-get-url-category-from-cloud
 ***
-Returns a URL category from URL Filtering.
+Returns a URL category from URL filtering.
 
 
 #### Base Command
@@ -1536,7 +1536,7 @@ Returns a URL category from URL Filtering.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.URLFilter.URL | string | The URL. | 
-| Panorama.URLFilter.Category | string | URL category. | 
+| Panorama.URLFilter.Category | string | The URL category. | 
 
 
 #### Command Example
@@ -2542,7 +2542,7 @@ There is no context output for this command.
 
 ### panorama-register-user-tag
 ***
-Registers Users to a tag.
+Registers users to a tag. This command is only available for PAN-OS version 9.x and above.
 
 
 #### Base Command
@@ -2552,8 +2552,8 @@ Registers Users to a tag.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag | Tag for which to register Users. | Required | 
-| Users | Users to register. | Required | 
+| tag | Tag for which to register users. | Required | 
+| Users | A comma-separated list of users to register. | Required | 
 
 
 #### Context Output
@@ -2561,7 +2561,7 @@ Registers Users to a tag.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.DynamicTags.Tag | string | Name of the tag. | 
-| Panorama.DynamicTags.Users | string | Registered Users. | 
+| Panorama.DynamicTags.Users | string | List of registered users. | 
 
 
 #### Command Example
@@ -2573,7 +2573,7 @@ Registers Users to a tag.
 
 ### panorama-unregister-user-tag
 ***
-Unregisters Users from a tag.
+Unregisters users from a tag. This command is only available for PAN-OS version 9.x and above.
 
 
 #### Base Command
@@ -2583,8 +2583,8 @@ Unregisters Users from a tag.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag | Tag for which to unregister Users. | Required | 
-| Users | Users to unregister. | Required | 
+| tag | Tag from which to unregister Users. | Required | 
+| Users | A comma-separated list of users to unregister. | Required | 
 
 
 #### Context Output
@@ -3006,7 +3006,7 @@ enforce the policy. |
 
 ### panorama-security-policy-match
 ***
-Checks whether a session matches the specified security policy. This command is only available on Firewall instances.
+Checks whether a session matches a specified security policy. This command is only available on Firewall instances.
 
 
 #### Base Command
@@ -3100,7 +3100,7 @@ Lists the static routes of a virtual router.
 | --- | --- | --- |
 | virtual_router | The name of the virtual router for which to list static routes. | Required | 
 | template | The template to use to run the command. Overrides the template parameter (Panorama instances). | Optional | 
-| show_uncommitted | Whether to show an uncommitted configuration. | Optional | 
+| show_uncommitted | Whether to show an uncommitted configuration. Default is "false" | Optional | 
 
 
 #### Context Output
@@ -3228,7 +3228,7 @@ Adds a static route.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | virtual_router | Virtual Router to which the routes will be added. | Required | 
-| static_route | The name of the static route. The argument is limited to a maximum of 31 characters, it's case-sensitive, and supports letters, numbers, spaces, hyphens, and underscores. | Required | 
+| static_route | The name of the static route to add. The argument is limited to a maximum of 31 characters, is case-sensitive, and supports letters, numbers, spaces, hyphens, and underscores. | Required | 
 | destination | The IP address and network mask in Classless Inter-domain Routing (CIDR) notation: ip_address/mask. For example, 192.168.0.1/24 for IPv4 or 2001:db8::/32 for IPv6). | Required | 
 | nexthop_type | The type for the nexthop. Can be: "ip-address", "next-vr", "fqdn" or "discard". | Required | 
 | nexthop_value | The next hop value. | Required | 
@@ -3334,7 +3334,7 @@ Show firewall device software version.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of target device. | Optional | 
+| target | Serial number of the target device. | Optional | 
 
 
 #### Context Output
@@ -3343,7 +3343,7 @@ Show firewall device software version.
 | --- | --- | --- |
 | Panorama.Device.Info.Devicename | String | Devicename of the PAN-OS. | 
 | Panorama.Device.Info.Model | String | Model of the PAN-OS. | 
-| Panorama.Device.Info.Serial | String | Serial of the PAN-OS. | 
+| Panorama.Device.Info.Serial | String | Serial number of the PAN-OS. | 
 | Panorama.Device.Info.Version | String | Version of the PAN-OS. | 
 
 
@@ -3393,7 +3393,7 @@ Downloads the latest content update.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Download.JobID | String | JobID of the content download. | 
+| Panorama.Content.Download.JobID | String | Job ID of the content download. | 
 | Panorama.Content.Download.Status | String | Content download status. | 
 
 
@@ -3420,16 +3420,16 @@ Checks the download status of a content update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | The device to which the content update is downloading. | Optional | 
-| job_id | JobID to check. | Required | 
+| job_id | Job ID to check. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Download.JobID | String | JobID to monitor. | 
+| Panorama.Content.Download.JobID | String | Job ID to monitor. | 
 | Panorama.Content.Download.Status | String | Download status. | 
-| Panorama.Content.Download.Details | String | JobID details. | 
+| Panorama.Content.Download.Details | String | Job ID details. | 
 
 
 #### Command Example
@@ -3462,7 +3462,7 @@ Installs the latest content update.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Install.JobID | String | JobID of the installation. | 
+| Panorama.Content.Install.JobID | String | Job ID of the installation. | 
 | Content.Install.Status | String | Installation status. | 
 
 
@@ -3489,15 +3489,15 @@ Gets the installation status of the content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The device for which to check the installation status of the content update. | Optional | 
-| job_id | JobID of the content installation. | Required | 
+| target | The device on which to check the installation status of the content update. | Optional | 
+| job_id | Job ID of the content installation. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Install.JobID | String | JobID of the content installation. | 
+| Panorama.Content.Install.JobID | String | Job ID of the content installation. | 
 | Panorama.Content.Install.Status | String | Content installation status. | 
 | Panorama.Content.Install.Details | String | Content installation status details. | 
 
@@ -3525,7 +3525,7 @@ Checks the PAN-OS software version from the repository.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device for which to get the PAN-OS software version. | Optional | 
+| target | The target device from which to get the PAN-OS software version. | Optional | 
 
 
 #### Context Output
@@ -3548,7 +3548,7 @@ Downloads the target PAN-OS software version to install on the target device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device on which to download the PAN-OS software version. | Optional | 
+| target | The target device from which to download the PAN-OS software version. | Optional | 
 | target_version | The target version number to install. | Required | 
 
 
@@ -3556,7 +3556,7 @@ Downloads the target PAN-OS software version to install on the target device.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.PANOS.Download.JobID | number | JobID of the PAN-OS download. | 
+| Panorama.PANOS.Download.JobID | number | Job ID of the PAN-OS download. | 
 | Panorama.PANOS.Download.Status | String | Status of the PAN-OS download. | 
 
 
@@ -3582,15 +3582,15 @@ Gets the download status of the target PAN-OS software.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device for which to get the download status. | Optional | 
-| job_id | JobID to check. | Required | 
+| target | The target device from which to get the download status. | Optional | 
+| job_id | Job ID to check. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.PANOS.Download.JobID | string | JobID of the PAN-OS download. | 
+| Panorama.PANOS.Download.JobID | string | Job ID of the PAN-OS download. | 
 | Panorama.PANOS.Download.Status | String | PAN-OS download status. | 
 | Panorama.PANOS.Download.Details | String | PAN-OS download details. | 
 
@@ -3625,7 +3625,7 @@ Installs the target PAN-OS version on the specified target device.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.PANOS.Install.JobID | string | JobID from the PAN-OS installation. | 
+| Panorama.PANOS.Install.JobID | string | Job ID from the PAN-OS installation. | 
 | Panorama.PANOS.Install.Status | String | Status of the PAN-OS installation. | 
 
 
@@ -3651,15 +3651,15 @@ Gets the installation status of the PAN-OS software.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | The target device for which to get the installation status. | Optional | 
-| job_id | JobID to check. | Required | 
+| target | The target device from which to get the installation status. | Optional | 
+| job_id | Job ID to check. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.PANOS.Install.JobID | number | JobID of the PAN-OS installation. | 
+| Panorama.PANOS.Install.JobID | number | Job ID of the PAN-OS installation. | 
 | Panorama.PANOS.Install.Status | String | Status of the PAN-OS installation. | 
 | Panorama.PANOS.Install.Details | String | PAN-OS installation details. | 
 
@@ -3709,17 +3709,17 @@ Gets location information for an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | The IP address for which to return information. | Required | 
+| ip_address | The IP address from which to return information. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Location.IP.country_code | String | The IP location country code. | 
-| Panorama.Location.IP.country_name | String | The IP location country name. | 
+| Panorama.Location.IP.country_code | String | The IP address location country code. | 
+| Panorama.Location.IP.country_name | String | The IP addres location country name. | 
 | Panorama.Location.IP.ip_address | String | The IP address. | 
-| Panorama.Location.IP.Status | String | Whether or not the IP address was found. | 
+| Panorama.Location.IP.Status | String | Whether the IP address was found. | 
 
 
 #### Command Example
