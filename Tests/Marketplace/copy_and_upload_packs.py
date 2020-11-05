@@ -266,7 +266,6 @@ def options_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
-    parser.add_argument('-i', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-p', '--pack_names',
                         help=("Target packs to upload to gcs. Optional values are: `All`"
                               " or csv list of packs "
@@ -295,7 +294,6 @@ def main():
     build_number = options.ci_build_number
     circle_branch = options.circle_branch
     override_all_packs = options.override_all_packs
-    id_set_path = options.id_set_path
     production_base_path = options.production_base_path
     target_packs = options.pack_names
 
