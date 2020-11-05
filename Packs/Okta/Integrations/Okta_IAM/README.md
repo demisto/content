@@ -22,9 +22,7 @@ For more information, please refer to the [Identity Lifecycle Management article
 | mapper-in | Incoming Mapper | True |
 | mapper-out | Outgoing Mapper | True |
 
-* Note that the "Incoming Mapper" and "Outgoing Mapper" have to be configured in their respective fields.
-If you haven't added any new fields for provisioning, you may use the existing mappers: `User Profile - Okta (Incoming)` and `User Profile - Okta (Incoming)` respectively.
-Do not configure the `Mapper (outgoing)` input from the dropdown list.
+* To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
 
 
 4. Click **Test** to check that you are able to connect to the integration.
