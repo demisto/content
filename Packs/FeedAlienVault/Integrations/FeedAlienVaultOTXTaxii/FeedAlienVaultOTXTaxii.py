@@ -506,6 +506,7 @@ class Client:
         Args:
             collection(str): The collection name to fetch the elements from.
             begin_date(datetime): what is the first date to fetch indicators from.
+            fetch_interval(int): the time interval in which to bring the indicators.
 
         Returns:
             list. A list of XML elements (strings).
@@ -522,6 +523,7 @@ class Client:
             end_date = begin_date + timedelta(minutes=int(fetch_interval))
 
         else:
+            # for test module - if no fetch_interval is given take the interval from the integration params
             end_date = begin_date + timedelta(minutes=int(demisto.params().get('fetch_interval')))
 
         return list(self.taxii_client.poll(collection_name=collection, begin_date=begin_date, end_date=end_date))
@@ -653,6 +655,7 @@ def fetch_indicators_command(client: Client, limit=None, begin_date=None, fetch_
         client(Client): The AlienVault OTX client.
         limit(any): How many XML elements to parse, None if all should be parsed.
         begin_date(datetime): what is the first date to fetch indicators from.
+        fetch_interval(int): the time interval in which to fetch the indicators.
 
     Returns:
         list. A list of indicators.

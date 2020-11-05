@@ -1,6 +1,7 @@
 import copy
+from dateutil.parser import parse
 
-from FeedAlienVaultOTXTaxii import parse_indicators
+from FeedAlienVaultOTXTaxii import parse_indicators, get_latest_indicator_time
 
 TEST_DATA = [
     {
@@ -155,3 +156,13 @@ def test_parse_indicators_with_tlp():
     parsed_list, only_indicator_list = parse_indicators(test_data, [], tags=['tag1', 'tag2'], tlp_color='RED')
     assert parsed_list == RESULT_PARSED_INDICATORS
     assert only_indicator_list == RESULT_ONLY_INDICATORS_LIST
+
+
+def test_get_latest_indicator_time():
+    indicators_list = [
+        {'added_time': '2020-02-23T12:03:31Z'},
+        {'added_time': '2020-02-23T13:13:31Z'},
+        {'added_time': '2020-02-23T13:03:31Z'}
+    ]
+
+    assert get_latest_indicator_time(indicators_list) == parse('2020-02-23T13:13:31Z')
