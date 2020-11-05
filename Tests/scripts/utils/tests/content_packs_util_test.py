@@ -82,23 +82,3 @@ def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_
     mocker.patch.object(os.path, 'join', return_value=str(pack_metadata_file))
     assert should_test_content_pack(pack_name) == expected
 
-@pytest.mark.parametrize("test_id, expected", [
-    ({'Test XDR Playbook'}, {'CortexXDR'}),
-    ({'PagerDuty Test'}, set()),
-    ({'Dummy Test ID'}, set())
-])
-def test_get_test_pack_name(test_id, expected):
-    """
-    Given
-        - Case A: Valid test playbook ID - 'Test XDR Playbook' that appear in index_json and has a pack.
-        - Case B: Test playbook ID - 'PagerDuty Test' that has no pack in index_json.
-        - Case C: Test playbook ID - 'Dummy Test ID' that doesn't appear in index.json.
-    When
-        Getting the pack name for a given test playbook ID.
-
-    Then
-        - Case A: Verify the returned pack name is 'CortexXDR' (the pack 'Test XDR Playbook' is in).
-        - Case B: Verify no return pack name.
-        - Case C: Verify no return pack name.
-    """
-    assert get_content_pack_name_of_test(test_id, MOCK_ID_SET) == expected
