@@ -57,14 +57,14 @@ Configure Active Directory Query v2 on Demisto
 4. Click **Test** to validate the URLs, token, and connection.
 
 
-##### IAM premium pack configuration
+##### Identity Lifecycle Management premium pack configuration
 
-The premium IAM content pack introduces new functionality that uses both an incoming and an outgoing mapper.
+The premium ILM content pack introduces new functionality that uses both an incoming and an outgoing mapper.
 
-1. Configure the "Incoming Mapper" with the name of the incoming mapper that you're using. IAM's default mapper is "User Profile - Active Directory (Incoming)".
-2. Configure the "Outgoing Mapper" with the name of the outgoing mapper that you're using. IAM's default mapper is "User Profile - Active Directory (Outgoing)".
+1. Configure the "Incoming Mapper" with the name of the incoming mapper that you're using. ILM's default mapper is "User Profile - Active Directory (Incoming)".
+2. Configure the "Outgoing Mapper" with the name of the outgoing mapper that you're using. ILM's default mapper is "User Profile - Active Directory (Outgoing)".
 
-To allow the integration to access the mapper from within the code, as required by the IAM pack, both mappers have to be configured in their proper respective fields and *not* in the "Mapper (outgoing)" dropdown list selector.
+To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and *not* in the "Mapper (outgoing)" dropdown list selector.
 
 Commands
 --------
