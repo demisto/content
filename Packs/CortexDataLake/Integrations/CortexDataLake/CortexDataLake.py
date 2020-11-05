@@ -978,6 +978,8 @@ def fetch_incidents(client: Client,
     incidents = [convert_log_to_incident(record, fetch_table) for record in records]
     max_fetched_event_timestamp = max(records, key=lambda record: record.get('time_generated', 0)).get('time_generated',
                                                                                                        0)
+    # Adding one second to prevent fetch from creating duplicate incidents.
+    max_fetched_event_timestamp += 1000000
     next_run = {'lastRun': human_readable_time_from_epoch_time(max_fetched_event_timestamp)}
     return next_run, incidents
 
