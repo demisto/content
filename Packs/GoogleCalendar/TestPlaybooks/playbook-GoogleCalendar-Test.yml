@@ -1,6 +1,5 @@
 id: GoogleCalendar-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: GoogleCalendar-Test
 description: |-
   This playbook uses the Google Calendar integration and tests the scenarios
@@ -9,14 +8,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 036f61e9-679f-4e16-89fd-d403547ea7ab
+    taskid: 11d0a547-0982-4a12-8f45-affc60765433
     type: start
     task:
-      id: 036f61e9-679f-4e16-89fd-d403547ea7ab
+      id: 11d0a547-0982-4a12-8f45-affc60765433
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -35,10 +35,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 9ae748df-8fe6-4c63-89f9-1b96d316eb26
+    taskid: 8e0d5dfd-ac42-4979-87ab-e01a36eaafd8
     type: regular
     task:
-      id: 9ae748df-8fe6-4c63-89f9-1b96d316eb26
+      id: 8e0d5dfd-ac42-4979-87ab-e01a36eaafd8
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -66,10 +66,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 155349c3-62a8-4981-837c-6af5b5932bfc
+    taskid: 5df86188-04af-41e7-8fec-921804ab44b2
     type: regular
     task:
-      id: 155349c3-62a8-4981-837c-6af5b5932bfc
+      id: 5df86188-04af-41e7-8fec-921804ab44b2
       version: -1
       name: google-calendar-acl-add
       script: '|||google-calendar-acl-add'
@@ -81,16 +81,15 @@ tasks:
       - "3"
     scriptarguments:
       calendar_id:
-        simple: deval@nimbledata.io
+        simple: admin@demistodev.com
       role:
-        simple: writer
+        simple: freeBusyReader
       scope_type:
-        simple: user
-      scope_value:
-        simple: shivang@nimbledata.io
+        simple: default
+      scope_value: {}
       send_notifications: {}
       user_id:
-        simple: deval@nimbledata.io
+        simple: admin@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -106,10 +105,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 5b718e84-d677-4630-865c-9f4dee7c4f71
+    taskid: 64a75d4f-95aa-4de3-872c-731acb361290
     type: condition
     task:
-      id: 5b718e84-d677-4630-865c-9f4dee7c4f71
+      id: 64a75d4f-95aa-4de3-872c-731acb361290
       version: -1
       name: Verify Outputs
       type: condition
@@ -161,10 +160,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: d2da7610-1aa5-46ff-83f6-5a1607cbb8dc
+    taskid: da69df63-4df1-44a4-8e16-e3c84a6b1771
     type: regular
     task:
-      id: d2da7610-1aa5-46ff-83f6-5a1607cbb8dc
+      id: da69df63-4df1-44a4-8e16-e3c84a6b1771
       version: -1
       name: google-calendar-acl-list
       script: '|||google-calendar-acl-list'
@@ -176,14 +175,14 @@ tasks:
       - "5"
     scriptarguments:
       calendar_id:
-        simple: deval@nimbledata.io
+        simple: admin@demistodev.com
       max_results:
         simple: "1"
       page_token: {}
       show_deleted: {}
       sync_token: {}
       user_id:
-        simple: deval@nimbledata.io
+        simple: admin@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -199,10 +198,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 05482f35-4085-40f1-87c8-a5330776c5ea
+    taskid: b9bb0fbb-53f4-4a59-8442-7faf18ff6ca9
     type: condition
     task:
-      id: 05482f35-4085-40f1-87c8-a5330776c5ea
+      id: b9bb0fbb-53f4-4a59-8442-7faf18ff6ca9
       version: -1
       name: Verify Outputs
       type: condition
@@ -239,15 +238,16 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f4dc711c-3fd3-49b3-82c0-bc679cc6a6ab
+    taskid: 95f14def-b21e-4483-8b10-fa0b9f859cbe
     type: title
     task:
-      id: f4dc711c-3fd3-49b3-82c0-bc679cc6a6ab
+      id: 95f14def-b21e-4483-8b10-fa0b9f859cbe
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
