@@ -2508,7 +2508,7 @@ script:
     - contextPath: File.Info
       description: File info.
       type: string
-    - contextPath: File.Extenstion
+    - contextPath: File.Extension
       description: File extension.
       type: string
     - contextPath: File.EntryID
