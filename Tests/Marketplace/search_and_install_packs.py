@@ -304,8 +304,9 @@ def install_packs_private(client: demisto_client, host: str,
         pack_ids_to_install (list): List of Pack IDs to install.
         test_pack_path (str): Path where test packs are located.
     """
-    install_packs_from_artifacts(client, host, prints_manager, thread_index, pack_ids_to_install,
-                                 test_pack_path)
+    install_packs_from_artifacts(client, host, prints_manager, thread_index,
+                                 pack_ids_to_install=pack_ids_to_install,
+                                 test_pack_path=test_pack_path)
 
 
 def install_packs(client: demisto_client, host: str, prints_manager: ParallelPrintsManager,
