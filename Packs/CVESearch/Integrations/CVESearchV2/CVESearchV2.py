@@ -1,5 +1,5 @@
 import urllib3
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Union
 
 from CommonServerPython import *
 
@@ -98,7 +98,7 @@ def cve_latest_command(client: Client, limit) -> List[CommandResults]:
     return command_results
 
 
-def cve_command(client: Client, args: dict) -> List[CommandResults]:
+def cve_command(client: Client, args: dict) -> Union[List[CommandResults], CommandResults]:
     """Search for cve with the given ID and returns the cve data if found.
     Args:
            client: Integration client
@@ -127,12 +127,9 @@ def cve_command(client: Client, args: dict) -> List[CommandResults]:
             )
         )
     if not response:
-        command_results.append(
-            CommandResults(
-                readable_output='No results found'
-            )
+        return CommandResults(
+            readable_output='No results found'
         )
-
     return command_results
 
 
