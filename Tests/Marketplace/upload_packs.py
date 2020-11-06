@@ -451,7 +451,7 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated RN"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated Pack Versions"]
     if include_pack_status:
         table_fields.append("Status")
     table = prettytable.PrettyTable()
@@ -459,7 +459,8 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated]
+        row = [index, pack.name, pack.display_name, pack.latest_version,
+               pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"]
         if include_pack_status:
             row.append(pack_status_message)
         table.add_row(row)
@@ -812,29 +813,32 @@ def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, suc
         successful_packs: The list of all successful packs
 
     """
-    with open(os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), "w") as f:
-        packs_results = dict()
-        if failed_packs:
-            failed_packs_dict = {
-                "failed_packs": {
-                    pack.name: {
-                        "status": PackStatus[pack.status].value,
-                        "aggregated": pack.aggregated
-                    } for pack in successful_packs
-                }
+    packs_results = dict()
+
+    if failed_packs:
+        failed_packs_dict = {
+            "failed_packs": {
+                pack.name: {
+                    "status": PackStatus[pack.status].value,
+                    "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
+                } for pack in successful_packs
             }
-            packs_results.update(failed_packs_dict)
-        if successful_packs:
-            successful_packs_dict = {
-                "successful_packs": {
-                    pack.name: {
-                        "status": PackStatus[pack.status].value,
-                        "aggregated": pack.aggregated
-                    } for pack in successful_packs
-                }
+        }
+        packs_results.update(failed_packs_dict)
+
+    if successful_packs:
+        successful_packs_dict = {
+            "successful_packs": {
+                pack.name: {
+                    "status": PackStatus[pack.status].value,
+                    "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
+                } for pack in successful_packs
             }
-            packs_results.update(successful_packs_dict)
-        if packs_results:
+        }
+        packs_results.update(successful_packs_dict)
+
+    if packs_results:
+        with open(os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), "w") as f:
             f.write(json.dumps(packs_results, indent=4))
 
 
@@ -872,7 +876,7 @@ def main():
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
-                                                                           is_bucket_upload_flow, force_previous_commit)
+                                                                        is_bucket_upload_flow, force_previous_commit)
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs, previous_commit_hash)

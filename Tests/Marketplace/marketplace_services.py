@@ -334,6 +334,12 @@ class Pack(object):
         """
         return self._aggregated
 
+    @property
+    def aggregation_str(self):
+        """ str: pack aggregated release notes or not.
+        """
+        return self._aggregation_str
+
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
@@ -967,11 +973,12 @@ class Pack(object):
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            logging.info(f"Aggregating ReleaseNotes versions:"
-                         f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
-                         f" {latest_release_notes}")
+            aggregation_str = f"{[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} => " \
+                              f"{latest_release_notes}"
+            logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
+            self._aggregation_str = aggregation_str
         else:
             # In case where there is only one new release notes file, OR
             # In case where the pack is up to date, i.e. latest changelog is latest rn file

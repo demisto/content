@@ -231,7 +231,7 @@ def copy_id_set(production_bucket, build_bucket):
 
 
 def options_handler():
-    """Validates and parses script arguments.
+    """ Validates and parses script arguments.
 
     Returns:
         Namespace: Parsed arguments object.
