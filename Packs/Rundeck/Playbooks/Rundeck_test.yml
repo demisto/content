@@ -243,10 +243,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 36eef154-d5b2-4377-84ee-0f46be81eeef
+    taskid: a9b70633-7642-465e-8a06-72e62a75cb71
     type: condition
     task:
-      id: 36eef154-d5b2-4377-84ee-0f46be81eeef
+      id: a9b70633-7642-465e-8a06-72e62a75cb71
       version: -1
       name: test execute job with argstring as parameter
       description: execute job with options as parameter
@@ -264,17 +264,7 @@ tasks:
           left:
             value:
               complex:
-                root: Rundeck.ExecutedJobs
-                accessor: argstring
-            iscontext: true
-          right:
-            value:
-              simple: -arg1 value1
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Rundeck.ExecutedJobs
+                root: Rundeck.ExecutedJobs.[0]
                 accessor: user
             iscontext: true
           right:
