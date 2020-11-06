@@ -363,7 +363,7 @@ def test_job_executions_query_command(mocker):
         project_name="Demisto",
     )
     mocker.patch.object(client, "job_execution_query", return_value=return_value)
-    result = job_execution_query_command(client)
+    result = job_execution_query_command(client, {})
     assert result.outputs == output
     assert result.outputs_key_field == "id"
     assert result.outputs_prefix == "Rundeck.ExecutionsQuery"
