@@ -91,20 +91,46 @@ DATA = [
         'header_1': 'a3',
         'header_2': 'b3',
         'header_3': 'c3'
-    },
+    }
 ]
 
-
-def test_tbl_to_md_only_data():
-    # sanity
-    table = tableToMarkdown('tableToMarkdown test', DATA)
-    expected_table = '''### tableToMarkdown test
+TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
+    (
+        DATA,
+        '''### tableToMarkdown test
 |header_1|header_2|header_3|
 |---|---|---|
 | a1 | b1 | c1 |
 | a2 | b2 | c2 |
 | a3 | b3 | c3 |
 '''
+    ),
+    (
+        [
+            {
+                'header_1|with_pipe': 'a1',
+                'header_2': 'b1',
+            },
+            {
+                'header_1|with_pipe': 'a2',
+                'header_2': 'b2',
+            }
+        ],
+        '''### tableToMarkdown test
+|header_1\\|with_pipe|header_2|
+|---|---|
+| a1 | b1 |
+| a2 | b2 |
+'''
+    )
+]
+
+
+@pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
+def test_tbl_to_md_only_data(data, expected_table):
+    # sanity
+    table = tableToMarkdown('tableToMarkdown test', data)
+
     assert table == expected_table
 
 
@@ -1465,20 +1491,20 @@ class TestCommandResults:
         )
 
         assert results.to_context()['EntryContext'] == {
-          'IP(val.Address && val.Address == obj.Address)': [
-            {
-              'Address': '8.8.8.8'
-            }
-          ],
-          'DBotScore(val.Indicator && val.Indicator == '
-          'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
-            {
-              'Indicator': '8.8.8.8',
-              'Type': 'ip',
-              'Vendor': 'Virus Total',
-              'Score': 1
-            }
-          ]
+            'IP(val.Address && val.Address == obj.Address)': [
+                {
+                    'Address': '8.8.8.8'
+                }
+            ],
+            'DBotScore(val.Indicator && val.Indicator == '
+            'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                {
+                    'Indicator': '8.8.8.8',
+                    'Type': 'ip',
+                    'Vendor': 'Virus Total',
+                    'Score': 1
+                }
+            ]
         }
 
     def test_single_indicator_with_indicators(self, mocker):
@@ -2228,7 +2254,9 @@ INDICATOR_VALUE_AND_TYPE = [
     ('112.126.94.107', 'IP'),
     ('a', None),
     ('*castaneda-thornton.com', 'DomainGlob'),
-    ('53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b', 'File')
+    (
+        '53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b',
+        'File')
 ]
 
 
@@ -2532,7 +2560,8 @@ def test_update_context_no_merge(mocker):
     conversations.extend([new_conversation])
 
     # Arrange
-    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
+    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS,
+                                                                     True)
     new_conversations = json.loads(context['conversations'])
 
     # Assert

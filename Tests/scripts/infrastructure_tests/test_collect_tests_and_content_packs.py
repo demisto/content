@@ -6,7 +6,7 @@ import demisto_sdk.commands.common.tools as demisto_sdk_tools
 from ruamel.yaml import YAML
 
 from Tests.scripts.collect_tests_and_content_packs import (
-    RANDOM_TESTS_NUM, TestConf, create_filter_envs_file,
+    TestConf, create_filter_envs_file,
     get_test_list_and_content_packs_to_install, collect_content_packs_to_install,
     get_from_version_and_to_version_bounderies)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
@@ -489,7 +489,6 @@ class TestSampleTesting:
         mocker.patch("Tests.scripts.utils.get_modified_files_for_testing.tools.find_type", return_value=None)
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
-        assert len(filterd_tests) >= RANDOM_TESTS_NUM
         assert "Base" in content_packs
         assert "DeveloperTools" in content_packs
 
@@ -519,8 +518,7 @@ class TestChangedCommonTesting:
 
     def test_all_tests(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
-        assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == {"DeveloperTools", 'Base', 'HelloWorld'}
+        assert content_packs == {"Gmail", "HelloWorld", "DeveloperTools", "Base"}
 
 
 class TestPackageFilesModified:
@@ -532,9 +530,15 @@ M       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/connect
 A       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/key.pem
 """
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
-        files_list, tests_list, all_tests, is_conf_json, sample_tests, modified_metadata_list, is_reputations_json, \
-            is_indicator_json = get_modified_files_for_testing(self.GIT_DIFF_RET)
+    def test_changed_runnable_test_non_mocked_get_modified_files(self):
+        (files_list,
+         tests_list,
+         all_tests,
+         is_conf_json,
+         sample_tests,
+         modified_metadata_list,
+         is_reputations_json,
+         is_indicator_json) = get_modified_files_for_testing(self.GIT_DIFF_RET)
         assert len(sample_tests) == 0
         assert 'Packs/Active_Directory_Query/Integrations/' \
                'Active_Directory_Query/Active_Directory_Query.yml' in files_list
@@ -546,8 +550,7 @@ class TestNoChange:
         get_modified_files_ret = create_get_modified_files_ret()
         filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
-        assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == {"Base", "DeveloperTools", "HelloWorld"}
+        assert content_packs == {"Gmail", "HelloWorld", "Base", "DeveloperTools"}
 
 
 def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=None, changed_common=None,
@@ -979,7 +982,8 @@ def test_pack_ignore_test_is_skipped(mocker):
 
     try:
         mocker.patch.object(os.path, 'join', return_value=fake_test_playbook['path'])
-        mocker.patch.object(demisto_sdk_tools, 'get_pack_ignore_file_path', return_value=pack_ignore_mgr.pack_ignore_path)
+        mocker.patch.object(demisto_sdk_tools, 'get_pack_ignore_file_path',
+                            return_value=pack_ignore_mgr.pack_ignore_path)
         TestUtils.mock_get_modified_files(mocker, modified_files_list=[fake_integration['path']])
         fake_id_set = TestUtils.create_id_set(
             with_integration=fake_integration["id_set"],
