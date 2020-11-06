@@ -56,8 +56,12 @@ else
   elif [ -n "${BUCKET_UPLOAD}" ]; then
     echo "Updating all content packs for upload packs to production..."
   fi
-  [ -n "${BUCKET_UPLOAD}" ] && REMOVE_PBS=true && OVERRIDE_ALL_PACKS=false || REMOVE_PBS=false && OVERRIDE_ALL_PACKS=true
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -pb 'marketplace-dist-private'
+  [ -n "${BUCKET_UPLOAD}" ] && REMOVE_PBS=true && OVERRIDE_ALL_PACKS=false && BUCKET_UPLOAD_FLOW=true || REMOVE_PBS=false && OVERRIDE_ALL_PACKS=true && BUCKET_UPLOAD_FLOW=true
+  echo OVERRIDE_ALL_PACKS
+  echo $OVERRIDE_ALL_PACKS
+  echo BUCKET_UPLOAD_FLOW
+  echo $BUCKET_UPLOAD_FLOW
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -pb 'marketplace-dist-private' -bu $BUCKET_UPLOAD_FLOW
   echo "Finished updating content packs successfully."
 fi
 
