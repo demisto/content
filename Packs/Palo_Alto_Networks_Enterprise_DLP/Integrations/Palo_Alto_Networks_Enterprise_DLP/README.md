@@ -20,6 +20,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### get-dlp-report
 ***
 Fetches DLP report associated with a Report ID
+ 
 
 
 #### Base Command

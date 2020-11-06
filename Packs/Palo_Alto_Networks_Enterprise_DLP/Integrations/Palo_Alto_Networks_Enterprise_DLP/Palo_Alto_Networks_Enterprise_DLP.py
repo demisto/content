@@ -114,7 +114,6 @@ def convert_to_human_readable(data_patterns):
                 match[col] = detection
                 index += 1
         matches.append(match)
-    print(matches)
     title = 'DLP Report for profile: {}'.format(data_patterns.get("DataProfile"))
     return tableToMarkdown(title, matches, headers)
 
