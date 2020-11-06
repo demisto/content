@@ -637,6 +637,7 @@ def test_webhook_event_send(mocker):
         project_name="Demisto",
     )
     mocker.patch.object(client, "webhook_event_send", return_value=return_value)
+
     result = webhook_event_send_command(client, {"auth_token": "123"})
     assert result.outputs == return_value
     assert result.outputs_key_field == "id"
