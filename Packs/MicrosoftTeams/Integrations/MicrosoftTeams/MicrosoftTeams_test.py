@@ -63,7 +63,7 @@ team_members: list = [
 integration_context: dict = {
     'bot_name': 'DemistoBot',
     'service_url': service_url,
-    'respond_tenant_id': tenant_id,
+    'tenant_id': tenant_id,
     'teams': json.dumps([{
         'mirrored_channels': mirrored_channels,
         'team_id': team_id,
@@ -204,7 +204,7 @@ def test_member_added_handler(mocker, requests_mock):
             'team_members': team_members,
             'team_name': team_name
         }]),
-        'respond_tenant_id': tenant_id,
+        'tenant_id': tenant_id,
         'service_url': service_url
     }
     assert demisto.setIntegrationContext.call_count == 2
@@ -272,7 +272,7 @@ def test_mirror_investigation(mocker, requests_mock):
     })
     expected_integration_context: dict = {
         'bot_name': 'DemistoBot',
-        'respond_tenant_id': tenant_id,
+        'tenant_id': tenant_id,
         'service_url': service_url,
         'teams': json.dumps([{
             'mirrored_channels': updated_mirrored_channels,

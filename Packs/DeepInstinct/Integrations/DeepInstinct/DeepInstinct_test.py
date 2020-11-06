@@ -33,7 +33,7 @@ mock_device = {
     "msp_name": "MSP 1",
     "msp_id": 1,
     "tenant_name": "Tenant 1",
-    "respond_tenant_id": 1
+    "tenant_id": 1
 }
 
 mock_groups = [
@@ -120,7 +120,7 @@ mock_events = {
                 "msp_name": "MSP 1",
                 "msp_id": 1,
                 "tenant_name": "Tenant 1",
-                "respond_tenant_id": 1
+                "tenant_id": 1
             },
             {
                 "file_type": "ZIP",
@@ -161,7 +161,7 @@ mock_events = {
                 "msp_name": "MSP 1",
                 "msp_id": 1,
                 "tenant_name": "Tenant 1",
-                "respond_tenant_id": 1
+                "tenant_id": 1
             }
         ]
 }

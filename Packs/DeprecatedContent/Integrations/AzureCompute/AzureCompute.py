@@ -10,7 +10,7 @@ from datetime import datetime
 
 PARAMS = demisto.params()
 USE_SSL = not demisto.params().get('unsecure')
-TENANT_ID = PARAMS.get('respond_tenant_id')
+TENANT_ID = PARAMS.get('tenant_id')
 TOKEN = PARAMS.get('token')
 HOST = PARAMS.get('host', 'https://management.azure.com')
 SERVER = HOST[:-1] if HOST.endswith('/') else HOST

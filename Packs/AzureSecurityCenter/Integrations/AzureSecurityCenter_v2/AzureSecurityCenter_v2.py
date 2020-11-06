@@ -1279,7 +1279,7 @@ def test_module(client: MsClient):
 def main():
     params: dict = demisto.params()
     server = params.get('server_url', '').rstrip('/') + '/'
-    tenant = params.get('respond_tenant_id')
+    tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key')
     use_ssl = not params.get('unsecure', False)

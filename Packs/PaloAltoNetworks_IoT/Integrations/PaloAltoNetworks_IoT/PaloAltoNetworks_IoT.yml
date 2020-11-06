@@ -10,7 +10,7 @@ configuration:
   type: 0
 - defaultvalue: paloaltonetworks
   display: Tenant ID
-  name: respond_tenant_id
+  name: tenant_id
   required: true
   type: 0
 - display: Access Key ID

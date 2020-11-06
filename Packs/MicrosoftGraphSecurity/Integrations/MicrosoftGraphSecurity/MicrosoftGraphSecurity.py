@@ -507,7 +507,7 @@ def test_function(client: MsGraphClient, args):
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('respond_tenant_id')
+    tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key')
     use_ssl = not params.get('insecure', False)

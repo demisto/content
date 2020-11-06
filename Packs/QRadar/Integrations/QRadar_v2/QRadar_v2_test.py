@@ -329,7 +329,7 @@ def test_enrich_offense_result(mocker):
     """
     closing_reason_dict = [{'is_deleted': False, 'is_reserved': False, 'text': 'False-Positive, Tuned', 'id': 2}]
     offense_types = [{'property_name': 'sourceIP', 'custom': False, 'name': 'Source IP', 'id': 0}]
-    domains = [{'name': '', 'respond_tenant_id': 0, 'id': 0, 'log_source_group_ids': []}]
+    domains = [{'name': '', 'tenant_id': 0, 'id': 0, 'log_source_group_ids': []}]
     rules = [{'name': 'Outbound port scan', 'id': 100452}]
     client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
     offense = deepcopy(RAW_RESPONSES["qradar-update-offense"])

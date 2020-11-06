@@ -5,7 +5,7 @@ import json
 def mock_demisto(mocker):
     mocker.patch.object(demisto, 'params', return_value={'proxy': True,
                                                          'url': 'https://api.securitycenter.windows.com',
-                                                         'respond_tenant_id': '1234',
+                                                         'tenant_id': '1234',
                                                          'enc_key': 'key',
                                                          'auth_id': '1234567@1234567',
                                                          'fetch_severity': 'Informational,Low,Medium,High',

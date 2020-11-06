@@ -187,7 +187,7 @@ EXPECTED_ALERT_DETAILS_HR_FILE_STATE = \
     "|---|---|---|\n" \
     "| f809b926576cab647125a3907ef9265bdb130a0a | <file_name> | <file_path> |\n"
 
-client_mocker = MsGraphClient(tenant_id="respond_tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
+client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
                               base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed')
 
 

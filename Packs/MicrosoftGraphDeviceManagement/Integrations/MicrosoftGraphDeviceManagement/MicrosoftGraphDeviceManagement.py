@@ -381,7 +381,7 @@ def main():
     args: dict = demisto.args()
     params: dict = demisto.params()
     self_deployed: bool = params.get('self_deployed', False)
-    tenant_id: str = params.get('respond_tenant_id', '')
+    tenant_id: str = params.get('tenant_id', '')
     auth_and_token_url: str = params.get('auth_id', '')
     enc_key: str = params.get('enc_key', '')
     base_url: str = urljoin(params.get('url', ''), '/v1.0')

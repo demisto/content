@@ -685,7 +685,7 @@ def poweroff_vm_command(client: MsGraphClient, args: dict):
 def main():
     params: dict = demisto.params()
     server = params.get('host', 'https://management.azure.com').rstrip('/')
-    tenant = params.get('respond_tenant_id')
+    tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id')
     enc_key = params.get('enc_key')
     verify = not params.get('unsecure', False)

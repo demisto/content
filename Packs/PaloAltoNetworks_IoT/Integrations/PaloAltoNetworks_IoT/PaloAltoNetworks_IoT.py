@@ -513,7 +513,7 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    tenant_id = demisto.params()['respond_tenant_id']
+    tenant_id = demisto.params()['tenant_id']
     access_key_id = demisto.params()['access_key_id']
     secret_access_key = demisto.params()['secret_access_key']
 

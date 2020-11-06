@@ -609,7 +609,7 @@ def delete_file_command(client: MsGraphClient, args):
 def main():
     params: dict = demisto.params()
     base_url: str = params.get('host', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('respond_tenant_id')
+    tenant = params.get('tenant_id')
     auth_id = params.get('auth_id')
     enc_key = params.get('enc_key')
     use_ssl: bool = not params.get('insecure', False)
