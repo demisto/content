@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.10.0"
+      CONTENT_VERSION: "20.10.1"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "8a93f9ad1328fc1f2e4ed75aec24d10159d68312" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "52bf3a89b48721112f6899cf766fa7bf5ccc2c1b" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -68,7 +68,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.12681  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -136,7 +136,6 @@ references:
           echo "installing venv"
           NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
           source ./venv/bin/activate
-          pip install -r .circleci/build-requirements.txt
           pip3 install -r .circleci/build-requirements.txt
         else
           echo "venv exists (from cache). activating"
@@ -209,7 +208,7 @@ references:
 
   restore_cache: &restore_cache
     restore_cache:
-      key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
 
   destroy_instances: &destroy_instances
     run:
@@ -290,10 +289,9 @@ references:
         python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
         python3 -m pytest ./Tests/Marketplace/Tests/ -v
         python3 -m pytest ./Tests/scripts/utils/tests -v
-
-        # TODO: replace this line with running all unit tests in Utils directory
-        # see issue https://github.com/demisto/etc/issues/29435
-        python3 -m pytest ./Utils/github_workflow_scripts/ -v
+        python3 -m pytest ./Tests/tests -v
+        python3 -m pytest ./Tests/private_build/ -v
+        python3 -m pytest Utils -v
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
           ./Tests/scripts/sdk_pylint_check.sh
@@ -411,7 +409,7 @@ jobs:
           paths:
             - venv
             - node_modules
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+          key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
