@@ -1007,11 +1007,7 @@ def job_execution_output_command(client: Client, args: dict):
     )
 
     if result["entries"]:
-        result["entries"] = (
-            result["entries"][:max_results]
-            if max_results
-            else result["entries"][:MAX_RESULTS]
-        )
+        result["entries"] = result["entries"][:max_results] if max_results else result["entries"][:MAX_RESULTS]
         readable_output_entries = tableToMarkdown(
             "Job Execution Entries View:",
             result["entries"],

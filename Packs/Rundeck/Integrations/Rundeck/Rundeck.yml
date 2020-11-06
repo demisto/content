@@ -56,14 +56,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify a filter for a job Name, apply this command to any job
-        name that contains this value.
+      description: |-
+        Specify a filter for a job Name, apply this command to any job name that contains this value.
+        Example: to find 'testJob' you can pass 'test'.
       isArray: false
       name: job_filter
       required: false
       secret: false
     - default: false
-      description: Specify an exact job name to match.
+      description: |-
+        Specify an exact job name to match.
+        Example: to find 'testJob' you should pass 'testJob'.
       isArray: false
       name: job_exact_filter
       required: false
@@ -407,9 +410,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify when the execution has occur. The format is ''XY'' when
-        ''X'' is a number and ''Y'' can be: h - hour, d - day, w - week, m - month,
-        y - year'
+      description: |-
+        Specify when the execution has occur. The format is 'XY' when 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year.
+        Example: 2w returns executions that completed within the last two weeks.
       isArray: false
       name: recent_filter
       required: false
@@ -417,7 +420,8 @@ script:
     - default: false
       description: |-
         specify executions that completed before the specified relative period of time.
-        the format is 'XY' when 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year
+        the format is 'XY' when 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year.
+        Example: 30d returns executions older than 30 days.
       isArray: false
       name: older_filter
       required: false
@@ -495,27 +499,33 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter for a job name. Include any job name that matches this value.
+      description: |-
+        Filter for a job name. Include any job name that matches this value.
+        Example: to find 'testJob' you can pass 'test'.
       isArray: false
       name: job_filter
       required: false
       secret: false
     - default: false
-      description: Filter for the job Name. Exclude any job name that matches this
+      description: |-
+        Filter for the job Name. Exclude any job name that matches this value.
+        Example: to find 'testJob' you can pass 'test'.
       isArray: false
       name: exclude_job_filter
       required: false
       secret: false
     - default: false
-      description: Filter for an exact job name. Include any job name that matches
-        this value.
+      description: |-
+        Filter for an exact job name. Include any job name that matches this value.
+        Example: to find 'testJob' you should pass 'testJob'.
       isArray: false
       name: job_exact_filter
       required: false
       secret: false
     - default: false
-      description: Filter for an exact job name. Exclude any job name that matches
-        this value.
+      description: |-
+        Filter for an exact job name. Exclude any job name that matches this value.
+        Example: to find 'testJob' you should pass 'testJob'.
       isArray: false
       name: exclude_job_exact_filter
       required: false
