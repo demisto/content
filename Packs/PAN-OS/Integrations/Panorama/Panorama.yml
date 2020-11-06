@@ -4389,11 +4389,39 @@ script:
     description: Lookup a given IP address in the Firewall routing table
     execution: false
     name: panorama-lookup-route
+    outputs:
+    - contextPath: Panorama.RouteLookup.dest_ip
+      description: The IP address tested
+      type: String
+    - contextPath: Panorama.RouteLookup.dp
+      description: Firewall dataplane
+      type: String
+    - contextPath: Panorama.RouteLookup.interface
+      description: Outgoing interface
+      type: String
+    - contextPath: Panorama.RouteLookup.ip
+      description: The next hop IP address
+      type: String
+    - contextPath: Panorama.RouteLookup.metric
+      description: Route metric
+      type: String
+    - contextPath: Panorama.RouteLookup.nh
+      description: next hop type
+      type: String
+    - contextPath: Panorama.RouteLookup.src
+      description: Outgoing interface IP
+      type: String
   - arguments:
     - default: false
       description: Destination IP to lookup
       isArray: false
       name: dest_ip
+      required: true
+      secret: false
+    - default: false
+      description: Virtual Router to lookup against
+      isArray: false
+      name: virtual_router
       required: true
       secret: false
     deprecated: false
@@ -4402,9 +4430,51 @@ script:
     execution: false
     name: panorama-lookup-zone
     outputs:
-    - contextPath: Panorama.ZoneLookup
-      description: Zone, route, and interface information.
-      type: Unknown
+    - contextPath: Panorama.ZoneLookup.name
+      description: 'Outgoing Interface Name'
+      type: String
+    - contextPath: Panorama.ZoneLookup.zone
+      description: 'Outgoing Zone Name'
+      type: String
+    - contextPath: Panorama.ZoneLookup.fwd
+      description: 'Forwarding Virtual Router'
+      type: String
+    - contextPath: Panorama.ZoneLookup.dyn-addr
+      description: ''
+      type: String
+    - contextPath: Panorama.ZoneLookup.addr6.member
+      description: 'Outgoing interface IPv6 addresses'
+      type: String
+    - contextPath: Panorama.ZoneLookup.tag
+      description: 'Outgoing interface VLAN tag'
+      type: String
+    - contextPath: Panorama.ZoneLookup.ip
+      description: 'Outgoing interface IP'
+      type: String
+    - contextPath: Panorama.ZoneLookup.id
+      description: ''
+      type: String
+    - contextPath: Panorama.ZoneLookup.addr.member
+      description: 'Outgoing interface IPv4 addresses'
+      type: String
+    - contextPath: Panorama.ZoneLookup.nh
+      description: 'Next hop type'
+      type: String
+    - contextPath: Panorama.ZoneLookup.src
+      description: 'Outgoing interface IP'
+      type: String
+    - contextPath: Panorama.ZoneLookup.metric
+      description: 'Route metric'
+      type: String
+    - contextPath: Panorama.ZoneLookup.interface
+      description: 'Outgoing interface'
+      type: String
+    - contextPath: Panorama.ZoneLookup.dp
+      description: 'Firewall Dataplane'
+      type: String
+    - contextPath: Panorama.ZoneLookup.dest_ip
+      description: 'Destination IP'
+      type: String
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false

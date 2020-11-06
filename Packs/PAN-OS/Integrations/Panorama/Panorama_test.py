@@ -11,7 +11,7 @@ integration_params = {
 mock_demisto_args = {
     'threat_id': "11111",
     'vulnerability_profile': "mock_vuln_profile",
-    'dest_ip': "10.10.10.10"
+    'dest_ip': "10.20.20.20",
 }
 
 
@@ -167,6 +167,23 @@ def patched_requests_mocker(requests_mock):
                                        "&cmd=<show><interface>all</interface></show>")
     requests_mock.get(interface_path, text=mock_interface_xml, status_code=200)
 
+    mock_test_routing = """
+    <response status="success">
+    <result>
+        <nh>ip</nh>
+        <src>192.168.2.1</src>
+        <ip>192.168.2.2</ip>
+        <metric>10</metric>
+        <interface>ae1.3</interface>
+        <dp>s2dp0</dp>
+    </result>
+    </response>
+    """
+    test_route_path = "{}{}{}{}".format(base_url, "?type=op&key=", integration_params['key'],
+                                        "&cmd=<test><routing><fib-lookup><ip>10.20.20.20</ip>"
+                                        + "<virtual-router>default</virtual-router>"
+                                        + f"</fib-lookup></routing></test>")
+    requests_mock.get(test_route_path, text=mock_test_routing, status_code=200)
     return requests_mock
 
 
@@ -189,12 +206,12 @@ def test_panorama_get_routes(patched_requests_mocker):
 
 
 def test_panorama_route_lookup(patched_requests_mocker):
-    from Panorama import panorama_route_lookup
-    r = panorama_route_lookup("10.10.10.10")
-    assert r['destination'] == '10.10.0.0/16'
+    from Panorama import panorama_route_lookup_command
+    r = panorama_route_lookup_command()
+    assert r['interface'] == 'ae1.3'
 
 
-def test_panorama_route_lookup_v6(patched_requests_mocker):
+def _test_panorama_route_lookup_v6(patched_requests_mocker):
     from Panorama import panorama_route_lookup
     r = panorama_route_lookup("2000::1")
     assert r['destination'] == '2000::/16'
@@ -203,7 +220,7 @@ def test_panorama_route_lookup_v6(patched_requests_mocker):
 def test_panorama_zone_lookup(patched_requests_mocker):
     from Panorama import panorama_zone_lookup_command
     r = panorama_zone_lookup_command()
-    assert r['zone'] == 'INSIDE'
+    assert r['zone'] == 'DMZ'
 
 
 def test_panoram_get_os_version(patched_requests_mocker):
