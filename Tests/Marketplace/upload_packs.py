@@ -87,9 +87,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path, storage
         str: downloaded index generation.
 
     """
-    logging.info(f"downloading and extracting {storage_bucket.name} index")
     index_storage_path = os.path.join(storage_bath_path, f"{GCPConfig.INDEX_NAME}.zip")
-    logging.info(f"index path in bucket: {index_storage_path}")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -107,7 +105,6 @@ def download_and_extract_index(storage_bucket, extract_destination_path, storage
     index_blob.reload()
     index_generation = index_blob.generation
     index_blob.download_to_filename(download_index_path, if_generation_match=index_generation)
-    logging.info(f"{storage_bucket.name} index file exists locally: {os.path.exists(download_index_path)}")
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
@@ -118,7 +115,8 @@ def download_and_extract_index(storage_bucket, extract_destination_path, storage
             sys.exit(1)
 
         os.remove(download_index_path)
-        logging.info(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to {extract_destination_path}")
+        logging.success(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to "
+                        f"{extract_destination_path}")
 
         return index_folder_path, index_blob, index_generation
     else:
@@ -534,17 +532,28 @@ def get_content_git_client(content_repo_path):
     return git.Repo(content_repo_path)
 
 
-def get_recent_commits_data(content_repo, index_folder_path):
+def get_recent_commits_data(content_repo, index_folder_path, is_bucket_upload_flow, force_previous_commit):
     """ Returns recent commits hashes (of head and remote master)
 
     Args:
         content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path (str): the path to the local index folder
+        is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
+        force_previous_commit (str): if exists, this should be the commit to diff with
 
     Returns:
         str: last commit hash of head.
-        str: previous commit of origin/master (origin/master~1)
+        str: previous commit depending on the flow the script is running
     """
-    return content_repo.head.commit.hexsha, get_last_upload_commit_hash(index_folder_path)
+    head_commit = content_repo.head.commit.hexsha
+    if force_previous_commit:
+        try:
+            return head_commit, content_repo.commit(force_previous_commit).hexsha
+        except Exception as e:
+            logging.critical(f'Force commit {force_previous_commit} does not exist in content repo. Additional '
+                             f'info:\n {e}')
+            sys.exit(1)
+    return head_commit, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow)
 
 
 def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_commit_hash, storage_bucket):
@@ -681,6 +690,8 @@ def option_handler():
                         required=False)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
+    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
+    parser.add_argument('-c', '--force_previous_commit', help='A commit to be used as the previous commit to diff with')
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -721,14 +732,35 @@ def handle_github_response(response):
     return res_dict
 
 
-def get_last_upload_commit_hash(index_folder_path):
+def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow):
+    """ If running in bucket upload workflow we want to get the commit in the index which is the index
+    We've last uploaded to production bucket. Otherwise, we are in a commit workflow and the diff should be from the
+    head of origin/master
+
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path (str): the path to the local index folder
+        is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
+
+    Returns:
+        str: previous commit depending on the flow the script is running
+
+    """
+    if is_bucket_upload_flow:
+        return get_last_upload_commit_hash(index_folder_path)
+    else:
+        return content_repo.commit('origin/master').hexsha
+
+
+def get_last_upload_commit_hash(content_repo, index_folder_path):
     """
     Returns the last origin/master commit hash that was uploaded to the bucket
     Args:
+        content_repo (git.repo.base.Repo): content repo object.
         index_folder_path: The path to the index folder
 
-    Returns: The commit hash
-
+    Returns:
+        The commit hash
     """
 
     inner_index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
@@ -744,7 +776,12 @@ def get_last_upload_commit_hash(index_folder_path):
             logging.critical(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
             sys.exit(1)
 
-    return last_upload_commit_hash
+    try:
+        return content_repo.commit(last_upload_commit_hash).hexsha
+    except Exception as e:
+        logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
+                         f'repo. Additional info:\n {e}')
+        sys.exit(1)
 
 
 def get_packs_summary(packs_list):
@@ -803,6 +840,8 @@ def main():
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
     storage_base_path = option.storage_base_path
     remove_test_playbooks = option.remove_test_playbooks
+    is_bucket_upload_flow = option.bucket_upload
+    force_previous_commit = option.force_previous_commit
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -818,7 +857,8 @@ def main():
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    current_commit_hash, last_upload_commit_hash = get_recent_commits_data(content_repo, index_folder_path)
+    current_commit_hash, last_upload_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
+                                                                           is_bucket_upload_flow, force_previous_commit)
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs, last_upload_commit_hash)
