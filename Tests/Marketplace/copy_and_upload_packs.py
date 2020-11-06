@@ -49,14 +49,14 @@ def get_pack_names(target_packs):
 
 def copy_index(index_folder_path, build_index_blob, build_index_generation, production_bucket,
                build_bucket):
-    """Upload updated index zip to cloud storage.
+    """ Copies the build bucket index to the production bucket index path.
 
     Args:
         index_folder_path (str): index folder full path.
         build_index_blob (Blob): google cloud storage object that represents build index.zip blob.
         build_index_generation (str): downloaded build index generation.
-        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is uploaded to.
-        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is downloaded from.
+        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is copied to.
+        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is copied from.
 
     """
     try:
@@ -113,8 +113,15 @@ def upload_core_packs_config(production_bucket, build_number, extract_destinatio
 
     # change the storage paths to the prod bucket
     corepacks_list = corepacks_file.get('corePacks', [])
-    corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, GCPConfig.STORAGE_BASE_PATH,
-                                   LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in corepacks_list]
+    try:
+        corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, GCPConfig.STORAGE_BASE_PATH,
+                                       LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in corepacks_list]
+    except IndexError:
+        corepacks_list_str = '\n'.join(corepacks_list)
+        logging.exception(f"GCS paths in build bucket corepacks.json file are not of format: "
+                          f"{GCPConfig.GCS_PUBLIC_URL}/<BUCKET_NAME>/.../content/packs/...\n"
+                          f"List of build bucket corepacks paths:\n{corepacks_list_str}")
+        sys.exit(1)
 
     # construct core pack data with public gcs urls
     core_packs_data = {
@@ -180,7 +187,7 @@ def download_and_extract_index(build_bucket, extract_destination_path):
 
 
 def get_successful_and_failed_packs(packs_results_file_path):
-    """ Loads the failed_packs_prepare_content.txt file to get the failed packs list
+    """ Loads the packs_results.json file to get the successful and failed packs dicts
 
     Args:
         packs_results_file_path: The path to the file
@@ -199,12 +206,11 @@ def get_successful_and_failed_packs(packs_results_file_path):
 
 
 def copy_id_set(production_bucket, build_bucket):
-    """
-    Uploads the id_set.json artifact to the bucket.
+    """ Copies the id_set.json artifact from the build bucket to the production bucket.
 
     Args:
-        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where id_set is uploaded to.
-        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where id_set is downloaded from.
+        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where id_set is copied to.
+        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where id_set is copied from.
     """
 
     build_id_set_path = os.path.join(os.path.dirname(GCPConfig.BUILD_BASE_PATH), 'id_set.json')
@@ -287,7 +293,6 @@ def main():
     if production_base_path:
         GCPConfig.STORAGE_BASE_PATH = production_base_path
 
-    # TODO: what if no commit was found, for example: there was a squash of several master commits?
     # TODO: refactor force upload
 
     # Download and extract build and prod index from build and prod buckets
@@ -365,10 +370,10 @@ def main():
     copy_id_set(production_bucket, build_bucket)
 
     # get the lists of packs divided by their status
-    successful_packs_dict, skipped_packs, failed_packs_dict = get_packs_summary(packs_list)
+    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # summary of packs status
-    print_packs_summary(successful_packs_dict, skipped_packs, failed_packs_dict)
+    print_packs_summary(successful_packs, skipped_packs, failed_packs)
 
 
 if __name__ == '__main__':

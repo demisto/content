@@ -714,7 +714,8 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
-                                                                          '2.0.0', {"TestPack": "status"})
+                                                                          '2.0.0', {"TestPack": {"status": "status1",
+                                                                                                 "aggregated": True}})
         assert task_status
         assert not skipped_pack
 

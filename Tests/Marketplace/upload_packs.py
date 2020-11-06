@@ -785,8 +785,8 @@ def get_last_upload_commit_hash(content_repo, index_folder_path):
 
 
 def get_packs_summary(packs_list):
-    """
-    Returns the packs list divided into 3 lists by their status
+    """ Returns the packs list divided into 3 lists by their status
+
     Args:
         packs_list (list): The full packs list
 
@@ -815,11 +815,24 @@ def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, suc
     with open(os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), "w") as f:
         packs_results = dict()
         if failed_packs:
-            failed_packs_dict = {"failed_packs": {pack.name: PackStatus[pack.status].value for pack in failed_packs}}
+            failed_packs_dict = {
+                "failed_packs": {
+                    pack.name: {
+                        "status": PackStatus[pack.status].value,
+                        "aggregated": pack.aggregated
+                    } for pack in successful_packs
+                }
+            }
             packs_results.update(failed_packs_dict)
         if successful_packs:
-            successful_packs_dict = {"successful_packs": {pack.name: PackStatus[pack.status].value for pack in
-                                                          successful_packs}}
+            successful_packs_dict = {
+                "successful_packs": {
+                    pack.name: {
+                        "status": PackStatus[pack.status].value,
+                        "aggregated": pack.aggregated
+                    } for pack in successful_packs
+                }
+            }
             packs_results.update(successful_packs_dict)
         if packs_results:
             f.write(json.dumps(packs_results, indent=4))
@@ -843,8 +856,6 @@ def main():
     remove_test_playbooks = option.remove_test_playbooks
     is_bucket_upload_flow = option.bucket_upload
     force_previous_commit = option.force_previous_commit
-    print(f'ovvvvvv: {override_all_packs}')
-    print(f'bu f: {is_bucket_upload_flow}')
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)

@@ -147,7 +147,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
                     if failed_packs:
                         steps_fields += [{
                             "title": "Failed Packs:",
-                            "value": "\n".join([f"{pack_name}: {pack_status}" for pack_name, pack_status in
+                            "value": "\n".join([f"{pack_name}: {pack_data.get('status')}" for pack_name, pack_data in
                                                 failed_packs.items()]),
                             "short": False
                         }]

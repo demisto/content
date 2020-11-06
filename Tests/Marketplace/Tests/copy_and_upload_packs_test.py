@@ -62,12 +62,12 @@ class TestHelperFunctions:
         # assert valid file
         with open(file, "w") as f:
             f.write(json.dumps({
-                "failed_packs": {"TestPack2": "status2"},
-                "successful_packs": {"TestPack1": "status1"}
+                "failed_packs": {"TestPack2": {"status": "status2", "aggregated": False}},
+                "successful_packs": {"TestPack1": {"status": "status1", "aggregated": True}}
             }))
         successful, failed = get_successful_and_failed_packs(file)
-        assert successful == {"TestPack1": "status1"}
-        assert failed == {"TestPack2": "status2"}
+        assert successful == {"TestPack1": {"status": "status1", "aggregated": True}}
+        assert failed == {"TestPack2": {"status": "status2", "aggregated": False}}
 
         try:
             shutil.rmtree(tempdir)

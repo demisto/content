@@ -856,10 +856,11 @@ class Pack(object):
 
     def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack, latest_version,
                                    successful_packs_dict):
-        """ Manages the upload of pack zip artifact to correct path in cloud storage.
-        The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
-        In case that zip pack artifact already exist at constructed path, the upload will be skipped.
-        If flag override_pack is set to True, pack will forced for upload.
+        """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
+        The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version.
+        In case that zip pack artifact already exist at constructed path, or the pack exists in the
+        successful_packs_dict from Prepare content step in Create Instances job, the copy will be skipped.
+        If flag override_pack is set to True, pack will forced to copy.
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
@@ -870,7 +871,7 @@ class Pack(object):
 
         Returns:
             bool: whether the operation succeeded.
-            bool: True in case of pack existence at targeted path and upload was skipped, otherwise returned False.
+            bool: True in case of pack existence at targeted path and copy was skipped, otherwise returned False.
 
         """
         task_status = True
@@ -902,6 +903,9 @@ class Pack(object):
         copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
         self.public_storage_path = copied_blob.public_url
         task_status = task_status and copied_blob.exists()
+
+        if self._pack_name in successful_packs_dict:
+            self._aggregated = successful_packs_dict[self._pack_name].get('aggregated')
 
         if not task_status:
             logging.error(f"Failed in uploading {self._pack_name} pack to gcs.")
@@ -1174,8 +1178,8 @@ class Pack(object):
             return task_status, not_updated_build
 
     def create_local_changelog(self, build_index_folder_path):
-        """
-        Copies the pack index changelog.json file to the pack path
+        """ Copies the pack index changelog.json file to the pack path
+
         Args:
             build_index_folder_path: The path to the build index folder
 
@@ -1674,7 +1678,7 @@ class Pack(object):
             return task_status, uploaded_integration_images
 
     def copy_integration_images(self, production_bucket, build_bucket):
-        """ Uploads pack integrations images to gcs.
+        """ Copies all pack's integration images from the build bucket to the production bucket
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
@@ -1769,10 +1773,10 @@ class Pack(object):
             return task_status, author_image_storage_path
 
     def copy_author_image(self, production_bucket, build_bucket):
-        """ Uploads pack author image to gcs.
+        """ Copies pack's author image from the build bucket to the production bucket
 
-        Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
-        default Base pack image path is used and it's gcp path is returned.
+        Searches for `Author_image.png`, In case no such image was found, default Base pack image path is used and
+        it's gcp path is returned.
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
@@ -1838,7 +1842,7 @@ class Pack(object):
 
         """
         if self._pack_name in failed_packs_dict:
-            return True, failed_packs_dict[self._pack_name]
+            return True, failed_packs_dict[self._pack_name].get('status')
         else:
             return False, str()
 
