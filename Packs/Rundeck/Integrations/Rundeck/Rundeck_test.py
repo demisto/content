@@ -327,7 +327,7 @@ def test_job_executions_query_command(mocker):
                 "description": "123",
                 "argstring": "-foo 0",
                 "failedNodes": ["localhost"],
-            }
+            }, {"another": "one"}
         ],
     }
     output = {
@@ -363,7 +363,7 @@ def test_job_executions_query_command(mocker):
         project_name="Demisto",
     )
     mocker.patch.object(client, "job_execution_query", return_value=return_value)
-    result = job_execution_query_command(client, {})
+    result = job_execution_query_command(client, {"max_results": 1})
     assert result.outputs == output
     assert result.outputs_key_field == "id"
     assert result.outputs_prefix == "Rundeck.ExecutionsQuery"
@@ -403,7 +403,8 @@ def test_job_execution_output_command(mocker):
                 "type": "stepbegin",
                 "absolute_time": "123",
                 "log": "",
-            }
+            },
+            {"another": "output"}
         ],
     }
     client = Client(
@@ -413,7 +414,7 @@ def test_job_execution_output_command(mocker):
         project_name="Demisto",
     )
     mocker.patch.object(client, "job_execution_output", return_value=return_value)
-    result = job_execution_output_command(client, {"execution_id": "69"})
+    result = job_execution_output_command(client, {"execution_id": "69", 'max_results': 1})
     assert result.outputs == return_value
     assert result.outputs_key_field == "id"
     assert result.outputs_prefix == "Rundeck.ExecutionsOutput"
@@ -598,7 +599,7 @@ def test_webhooks_list_command(mocker):
             "authToken": "123",
             "eventPlugin": "webhook-run-job",
             "config": {"jobId": "123", "argString": "123"},
-        }
+        }, {'another': 'one'}
     ]
     client = Client(
         base_url="base_url",
@@ -607,7 +608,7 @@ def test_webhooks_list_command(mocker):
         project_name="Demisto",
     )
     mocker.patch.object(client, "get_webhooks_list", return_value=return_value)
-    result = webhooks_list_command(client, {})
+    result = webhooks_list_command(client, {'max_results': 1})
     assert result.outputs == return_value
     assert result.outputs_key_field == "id"
     assert result.outputs_prefix == "Rundeck.Webhooks"
