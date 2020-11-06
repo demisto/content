@@ -206,15 +206,42 @@ def test_panorama_get_routes(patched_requests_mocker):
 
 
 def test_panorama_route_lookup(patched_requests_mocker):
+    """
+    Test the route lookup
+    """
     from Panorama import panorama_route_lookup_command
     r = panorama_route_lookup_command()
     assert r['interface'] == 'ae1.3'
 
 
-def _test_panorama_route_lookup_v6(patched_requests_mocker):
-    from Panorama import panorama_route_lookup
-    r = panorama_route_lookup("2000::1")
-    assert r['destination'] == '2000::/16'
+def test_panorama_route_lookup_bad(patched_requests_mocker, mocker):
+    """
+    Test a route lookup where there is no resolved next hop
+    Should raise DemistoException
+    """
+    from Panorama import panorama_route_lookup_command, DemistoException
+
+    dargs = {
+        "dest_ip": "8.8.8.8"
+    }
+    mocker.patch.object(demisto, 'args', return_value=dargs)
+
+    mock_test_routing_noresult = """
+    <response status="success">
+    <result>
+        <dp>s2dp0</dp>
+    </result>
+    </response>
+    """
+    base_url = "{}:{}/api/".format(integration_params['server'], integration_params['port'])
+    test_route_path = "{}{}{}{}".format(base_url, "?type=op&key=", integration_params['key'],
+                                        "&cmd=<test><routing><fib-lookup><ip>8.8.8.8</ip>"
+                                        + "<virtual-router>default</virtual-router>"
+                                        + f"</fib-lookup></routing></test>")
+    patched_requests_mocker.get(test_route_path, text=mock_test_routing_noresult, status_code=200)
+
+    with pytest.raises(DemistoException):
+        panorama_route_lookup_command()
 
 
 def test_panorama_zone_lookup(patched_requests_mocker):

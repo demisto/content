@@ -4907,50 +4907,12 @@ def panorama_route_lookup(dest_ip: str, virtual_router=None):
 
     if r.get("response").get("result"):
         r = r.get("response").get("result")
-        return r
+        if r.get("interface"):
+            return r
+        else:
+            raise DemistoException(f"Failed to test FIB to {dest_ip}")
     else:
         raise DemistoException(f"Failed to test FIB to {dest_ip}")
-
-
-def panorama_search_routes(dest_ip: str, virtual_router=None):
-    """
-    Given the provided ip address, looks up the outgoing interface and zone on the firewall.
-    """
-    if not VSYS:
-        raise DemistoException("The 'panorama-route-lookup' command is only relevant for a Firewall instance.")
-
-    response = panorama_get_routes(virtual_router)
-    if 'entry' not in response['response'].get('result'):
-        raise DemistoException("No routes returned from the Firewall.")
-    else:
-        if response.get('response') and response['response'].get('result') and response['response']['result'].get(
-                'entry'):
-            routes = response['response']['result']['entry']
-        else:
-            routes = []
-
-    ip_addr = ipaddress.ip_address(dest_ip)
-    current_match = None
-    matched_route = None
-    for route in routes:
-        subnet_raw = route.get('destination')
-
-        subnet = ipaddress.ip_network(subnet_raw)
-        # If the given IP address is in the subnet
-        if ip_addr in subnet:
-            # IF we haven't matched yet
-            if not current_match:
-                current_match = subnet
-                matched_route = route
-            # If this is a greater subnet
-            elif subnet.prefixlen > current_match.prefixlen:
-                current_match = subnet
-                matched_route = route
-
-    if matched_route:
-        return matched_route
-    else:
-        raise DemistoException("Route not found.")
 
 
 def panorama_route_lookup_command():
@@ -4958,6 +4920,9 @@ def panorama_route_lookup_command():
     Gets the outgoing interface from the Palo Alto Firewall route table
     Must be run against a firewall instance
     """
+    if not VSYS:
+        raise DemistoException("The 'panorama-route-lookup' command is only relevant for a Firewall instance.")
+
     dest_ip = demisto.args().get("dest_ip")
     vr = demisto.args().get("virtual_router", "default")
     r = panorama_route_lookup(dest_ip, vr)
@@ -4976,9 +4941,12 @@ def panorama_route_lookup_command():
 
 def panorama_zone_lookup_command():
     """
-    Gets the outgoing interface from the Palo Alto Firewall route table, and the list of interfaces
-    comparing the two
+    Gets the outgoing interface from the PAN Firewall using "test routing fib-lookup", and the interfaces
+    from "show interfaces", then joins the two to determine the outgoing zone.
     """
+    if not VSYS:
+        raise DemistoException("The 'panorama-route-lookup' command is only relevant for a Firewall instance.")
+
     dest_ip = demisto.args().get("dest_ip")
     vr = demisto.args().get("virtual_router", "default")
     route = panorama_route_lookup(dest_ip, vr)
