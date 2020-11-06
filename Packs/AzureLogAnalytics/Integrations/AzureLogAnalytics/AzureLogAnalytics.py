@@ -39,7 +39,7 @@ class Client:
             refresh_token=refresh_token,
             enc_key=enc_key,
             redirect_uri=redirect_uri,
-            token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
+            token_retrieval_url='https://login.microsoftonline.com/{respond_tenant_id}/oauth2/token',
             grant_type=AUTHORIZATION_CODE,  # disable-secrets-detection
             app_name=APP_NAME,
             base_url=base_url,

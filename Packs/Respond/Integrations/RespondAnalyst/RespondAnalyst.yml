@@ -47,7 +47,7 @@ script:
     - default: false
       description: ID of the Tenant in which the incident resides
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -68,7 +68,7 @@ script:
     - default: false
       description: ID of the Tenant in which the incident resides
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -108,7 +108,7 @@ script:
     - default: false
       description: tenant id
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -131,7 +131,7 @@ script:
     - default: false
       description: tenant id
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -152,7 +152,7 @@ script:
       secret: false
     - default: false
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: true
       secret: false
     deprecated: false

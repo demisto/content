@@ -109,7 +109,7 @@ script:
     - contextPath: DeepInstinct.devices.tenant_name
       description: Device tenant name
       type: string
-    - contextPath: DeepInstinct.devices.tenant_id
+    - contextPath: DeepInstinct.devices.respond_tenant_id
       description: Device tenant ID
       type: number
     description: get specific device by ID
@@ -163,7 +163,7 @@ script:
     - contextPath: DeepInstinct.Events.events.action
       description: event action
       type: string
-    - contextPath: DeepInstinct.Events.events.tenant_id
+    - contextPath: DeepInstinct.Events.events.respond_tenant_id
       description: event tenant id
       type: number
     - contextPath: DeepInstinct.Events.events.msp_id

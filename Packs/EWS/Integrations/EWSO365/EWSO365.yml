@@ -12,7 +12,7 @@ configuration:
 - additionalinfo: Token can be received from the admin consent procedure - see Detailed
     Instructions.
   display: Token / Tenant ID
-  name: tenant_id
+  name: respond_tenant_id
   required: true
   type: 4
 - additionalinfo: Key can be received from the admin consent procedure - see Detailed

@@ -119,7 +119,7 @@ def get_azure_compliance_assessment():
     Get the latest Azure compliance assessment
     """
 
-    tenant_id = demisto.args().get('tenant_id')
+    tenant_id = demisto.args().get('respond_tenant_id')
     subscription_id = demisto.args().get('subscription_id')
     report_type = demisto.args().get('report_type', 'AZURE_CIS')
 
@@ -193,7 +193,7 @@ def run_azure_compliance_assessment():
     Run an Azure compliance assessment
     """
 
-    tenant_id = demisto.args().get('tenant_id')
+    tenant_id = demisto.args().get('respond_tenant_id')
 
     run_report_response = lacework_client.run_reports.azure(tenant_id)
 

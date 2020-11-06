@@ -435,7 +435,7 @@ def get_graph_access_token() -> str:
     if access_token and valid_until:
         if epoch_seconds() < valid_until:
             return access_token
-    tenant_id: str = integration_context.get('tenant_id', '')
+    tenant_id: str = integration_context.get('respond_tenant_id', '')
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
@@ -993,7 +993,7 @@ def create_personal_conversation(integration_context: dict, team_member_id: str)
     """
     bot_id: str = demisto.params().get('bot_id', '')
     bot_name: str = integration_context.get('bot_name', '')
-    tenant_id: str = integration_context.get('tenant_id', '')
+    tenant_id: str = integration_context.get('respond_tenant_id', '')
     conversation: dict = {
         'bot': {
             'id': f'28:{bot_id}',
@@ -1296,7 +1296,7 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
         if bot_id in member_id:
             # The bot was added to a team, caching team ID and team members
             demisto.info(f'The bot was added to team {team_name}')
-            integration_context['tenant_id'] = tenant_id
+            integration_context['respond_tenant_id'] = tenant_id
             integration_context['bot_name'] = recipient_name
             break
     team_members: list = get_team_members(service_url, team_id)
@@ -1529,7 +1529,7 @@ def ring_user():
     """
     bot_id = demisto.params().get('bot_id')
     integration_context: dict = demisto.getIntegrationContext()
-    tenant_id: str = integration_context.get('tenant_id', '')
+    tenant_id: str = integration_context.get('respond_tenant_id', '')
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '

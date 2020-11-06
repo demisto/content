@@ -30,18 +30,21 @@ RESPOND_FEEDBACK_STATUS = {
 }
 
 RESPOND_INCIDENT_FIELDS = {
-    "feedback": {
+    "feedback comments": {
         "description": "the user assigned outcome of a closed incident",
-         "xsoar_field_name": "feedback"
+        "xsoar_field_name": "feedbackcomments"
     },
     "title": {
         "description": "incident title",
         "xsoar_field_name": "Title"
+    },
+    "feedback outcome": {
+        "description": "the outcome of the incident close",
+        "xsoar_field_name": "feedbackoutcome"
     }
 }
 
 RESPOND_INCIDENT_TYPE_NAME = 'Respond Software Incident'
-
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -441,49 +444,45 @@ class RestClient(BaseClient):
         )
         return res.get('data').get('newEscalations')
 
-    def construct_and_send_update_description_mutation(self, tenant_id, incident_id, input):
+    def construct_and_send_update_description_mutation(self, respond_tenant_id, incident_id, description):
         data = {
-            "query": '''mutation updateIncidentDescription(
-                $incidentId: ID!, $input: IncidentDescription!
-            ) {
-                updateIncidentDescription(
-                    incidentId: $incidentId,
-                    input: $input
-                ) {
-                    id
-                    description
-                }
-            }''',
-            "variables": {"id": incident_id, "input": input}
+            "query": "mutation updateIncidentDescription($incidentId: ID!, $input: IncidentDescription!) { "
+                     "updateIncidentDescription( "
+                     "incidentId: $incidentId "
+                     "input: $input "
+                     ") { "
+                     "id "
+                     "description"
+                     "} "
+                     "}",
+            "variables": {"incidentId": incident_id, "input": {"description": description}}
         }
 
         res = self._http_request(
             method='POST',
-            url_suffix='/graphql?tenantId=' + tenant_id,
+            url_suffix='/graphql?tenantId=' + respond_tenant_id,
             retries=3,
             json_data=data
         )
         return res.get('data').get('updateIncidentDescription')
 
-    def construct_and_send_update_title_mutation(self, tenant_id, incident_id, input):
+    def construct_and_send_update_title_mutation(self, respond_tenant_id, incident_id, title):
         data = {
-            "query": '''mutation updateIncidentTitle(
-            $incidentId: ID!, $input: IncidentTitle!
-            ) {
-                updateIncidentTitle(
-                    incidentId: $incidentId,
-                    input: $input
-                ) {
-                    id
-                    title
-                }
-            }''',
-            "variables": {"id": incident_id, "input": input}
+            "query": "mutation updateIncidentTitle($incidentId: ID!, $input: IncidentTitle!) { "
+                     "updateIncidentTitle( "
+                     "incidentId: $incidentId "
+                     "input: $input "
+                     ") { "
+                     "id "
+                     "title"
+                     "} "
+                     "}",
+            "variables": {"incidentId": incident_id, "input": {"title": title}}
         }
 
         res = self._http_request(
             method='POST',
-            url_suffix='/graphql?tenantId=' + tenant_id,
+            url_suffix='/graphql?tenantId=' + respond_tenant_id,
             retries=3,
             json_data=data
         )
@@ -620,7 +619,7 @@ def get_user_id_from_email(email, users):
 
 
 def get_formatted_incident(rest_client, args):
-    external_tenant_id = args.get('tenant_id')
+    external_tenant_id = args.get('respond_tenant_id')
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
     if external_tenant_id is None:
@@ -639,7 +638,7 @@ def get_formatted_incident(rest_client, args):
 
 
 def get_tenant_ids(rest_client, args):
-    external_tenant_id = args.get('tenant_id')
+    external_tenant_id = args.get('respond_tenant_id')
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
     if external_tenant_id is None:
@@ -753,7 +752,7 @@ def close_incident_command(rest_client, args):
 
 
 def get_incident_command(rest_client, args):
-    external_tenant_id = args.get('tenant_id')
+    external_tenant_id = args.get('respond_tenant_id')
     formatted_incident = get_formatted_incident(rest_client, args)
     new_incident = {
         'name': external_tenant_id + ': ' + formatted_incident['incidentId'],
@@ -767,17 +766,17 @@ def get_escalations_command(rest_client, args):
     start = datetime.now().timestamp()
     fourMinutes = 240
     demisto.debug(
-        f'getting escalations for incident {args["incident_id"]} on {args["tenant_id"]} starting at {start}')
+        f'getting escalations for incident {args["incident_id"]} on {args["respond_tenant_id"]} starting at {start}')
     try:
         entries = []
         user_tenant_mappings = rest_client.get_tenant_mappings()
         respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                          args['tenant_id'])
+                                                                          args['respond_tenant_id'])
         more_data = True
         while more_data:
             if datetime.now().timestamp() - start > fourMinutes:
                 demisto.debug(
-                    f'exiting safely for incident {args["incident_id"]} on {args["tenant_id"]} starting at {start}')
+                    f'exiting safely for incident {args["incident_id"]} on {args["respond_tenant_id"]} starting at {start}')
                 entries.append({
                     'Type': EntryType.NOTE,
                     'Contents': 'Safely exited before timeout, but more data needs to be collected. Please re-run command.',
@@ -795,7 +794,7 @@ def get_escalations_command(rest_client, args):
                     }
                     entries.append(valid_entry)
                     demisto.debug(
-                        f'found escalation for incident {args["incident_id"]} on {args["tenant_id"]}')
+                        f'found escalation for incident {args["incident_id"]} on {args["respond_tenant_id"]}')
             if len(all_escalations) == 0:
                 more_data = False
     except Exception as e:
@@ -811,12 +810,12 @@ def get_escalations_command(rest_client, args):
         })
 
     demisto.debug(
-        f'returning escalations for incident {args["incident_id"]} on {args["tenant_id"]}: {entries}')
+        f'returning escalations for incident {args["incident_id"]} on {args["respond_tenant_id"]}: {entries}')
     return entries
 
 
 def get_remote_data_command(rest_client, args):
-    args['tenant_id'] = args.get('id').split(':')[0]
+    args['respond_tenant_id'] = args.get('id').split(':')[0]
     args['incident_id'] = args.get('id').split(':')[1]
     entries = []
     try:
@@ -853,51 +852,48 @@ def get_remote_data_command(rest_client, args):
 
 
 def update_remote_system_command(rest_client, args):
-    demisto.debug('in update remote system command')
     remote_args = UpdateRemoteSystemArgs(args)
     try:
         if remote_args.delta:
             # get incident id and tenant id from remote_system_id
-            tenant_id = remote_args.get('remote_incident_id').split(':')[0]
-            incident_id = remote_args.get('remote_incident_id').split(':')[1]
+            tenant_id = remote_args.remote_incident_id.split(':')[0]
+            incident_id = remote_args.remote_incident_id.split(':')[1]
+            user_tenant_mappings = rest_client.get_tenant_mappings()
+            respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings, tenant_id)
 
-            changed_fields = list(remote_args.delta.keys())
-            demisto.debug(f'Got the following delta keys {str(changed_fields)} to '
+            demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to '
                           f' update Respond incident {remote_args.remote_incident_id}')
-            demisto.debug(f'delta values: {remote_args.delta.value}')
-            demisto.debug(remote_args.data)
-            if changed_fields['title']:
+
+            if remote_args.delta.get('title') is not None:
                 demisto.debug(
-                    f' title for {remote_args.remote_incident_id}: {changed_fields["title"]}, {remote_args["data"]["title"]}')
-                res = rest_client.construct_and_send_update_title_mutation(tenant_id, incident_id,
-                                                                           remote_args['data'][
+                    f'changed title for {remote_args.remote_incident_id}: {remote_args.delta["title"]}')
+                rest_client.construct_and_send_update_title_mutation(respond_tenant_id, incident_id,
+                                                                           remote_args.delta[
                                                                                'title'])
-                demisto.debg(f'update title result {res}')
-            # if changed_fields['description']:
-            #     demisto.debug(f'changed_fields['description'])
-            #     res = rest_client.construct_and_send_update_description_mutation(tenant_id, incident_id,
-            #                                                                remote_args['data'][
-            #                                                                    'description'])
-            if changed_fields['feedback']:
-                demisto.debug(
-                    f' feedback for {remote_args.remote_incident_id}: {changed_fields["feedback"]}, {remote_args["data"]["feedback"]}')
-                # best thing to do here is probably fit the args into the feedback mold already in close_incident_commmand
-                feedback = remote_args['data']['feedback']
+
+            # todo uncomment once we have description in the new export in a later card
+            # if remote_args.delta.get('description'):
+            #     demisto.debug(
+            #         f'changed description for {remote_args.remote_incident_id}: {remote_args.delta["description"]}')
+            #     rest_client.construct_and_send_update_description_mutation(respond_tenant_id, incident_id,
+            #                                                            remote_args.delta[
+            #                                                                'description'])
+
+            if remote_args.delta.get('closeReason'):
+                #todo do we want to map xsoar close reasons to respond incident outcomes
+                # for now just set everything to inconclusive
                 feedback_args = {
-                    'tenant_id': tenant_id,
+                    'respond_tenant_id': tenant_id,
                     'incident_id': incident_id,
-                    'incident_feedback': feedback['outcome'],
-                    'incident_comments': feedback['comments']
+                    'incident_feedback': 'Inconclusive',
+                    'incident_comments': remote_args.delta.get('closeNotes')
                 }
                 demisto.debug(
                     f'feedback args for {remote_args.remote_incident_id}: {feedback_args}')
-                res = close_incident_command(rest_client, args)
-                demisto.debug(f'close incident command result: {res}')
-
+                close_incident_command(rest_client, feedback_args)
     except Exception as e:
         demisto.debug(
-            f"Error in XDR outgoing mirror for incident {remote_args.remote_incident_id} \n"
-            f"Error message: {str(e)}")
+            f"Error in Respond outgoing mirror for incident {remote_args.remote_incident_id} Error message: {str(e)}")
 
     return remote_args.remote_incident_id
 

@@ -190,7 +190,7 @@ client = MsGraphClient(
 
 @pytest.mark.parametrize(
     'error_message, tenant, expected_error_message',
-    [("Error Message tenant_id", "tenant_id", "Error Message <xxxxxxxxx>")]
+    [("Error Message respond_tenant_id", "respond_tenant_id", "Error Message <xxxxxxxxx>")]
 )
 def test_screen_errors(error_message, tenant, expected_error_message):
     assert expected_error_message == screen_errors(error_message, tenant)

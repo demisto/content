@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - display: Tenant ID (received from the admin consent - see Detailed Instructions (?) section)
-  name: tenant_id
+  name: respond_tenant_id
   required: true
   type: 4
 - display: Token (received from the admin consent - see detailed instructions (?))

@@ -16,7 +16,7 @@ if not demisto.params()['proxy']:
 
 SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
 BASE_URL = SERVER + '/api'
-TENANT_ID = demisto.params()['tenant_id']
+TENANT_ID = demisto.params()['respond_tenant_id']
 AUTH_AND_TOKEN_URL = demisto.params()['auth_id'].split('@')
 AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = demisto.params()['enc_key']

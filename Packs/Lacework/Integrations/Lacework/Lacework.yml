@@ -200,7 +200,7 @@ script:
     - default: false
       description: The Azure Tenant ID to use when fetching compliance data.
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: true
       secret: false
     - default: false
@@ -499,7 +499,7 @@ script:
     - default: false
       description: The Azure Tenant ID to run a compliance assessment against.
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: true
       secret: false
     deprecated: false

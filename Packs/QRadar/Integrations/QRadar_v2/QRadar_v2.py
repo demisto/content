@@ -142,7 +142,7 @@ DEVICE_MAP = {
     "log_source_group_ids": "LogSourceGroupIDs",
     "name": "Name",
     "qvm_scanner_ids": "QVMScannerIDs",
-    "tenant_id": "TenantID",
+    "respond_tenant_id": "TenantID",
 }
 
 

@@ -83,7 +83,7 @@ def test_get_incident_command(requests_mock):
         json=full_incidents_response
     )
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 6
     }
     incident = get_incident_command(client, args)
@@ -183,7 +183,7 @@ def test_remove_user(mocker, requests_mock):
     )
 
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user2@respond-software.com'
     }
@@ -225,7 +225,7 @@ def test_assign_user(mocker, requests_mock):
     )
 
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user2@respond-software.com',
     }
@@ -279,7 +279,7 @@ def test_close_incident(mocker, requests_mock):
     )
 
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'incident_feedback': 'NonActionable',
         'feedback_selected_options': [{'id': '4', 'key': 'unmonitoredAssets', 'value': 'true'},
@@ -333,7 +333,7 @@ def test_assign_user_raise_exception(mocker, requests_mock):
               'firstname': 'jay', 'lastname': 'blue'}
     )
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user2@respond-software.com',
     }
@@ -372,7 +372,7 @@ def test_remove_user_raises_exception(mocker, requests_mock):
               'firstname': 'jay', 'lastname': 'blue'}
     )
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user4@respond-software.com'
     }
@@ -416,7 +416,7 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
     )
 
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'incident_feedback': 'NonActionable',
         'feedback_selected_options': [{'id': '4', 'key': 'unmonitoredAssets', 'value': 'true'},
@@ -484,9 +484,40 @@ def test_get_remote_data_command(requests_mock):
     assert res == expected_result
 
 
+def test_update_remote_system_command(mocker, requests_mock):
+    from RespondAnalyst import update_remote_system_command, RestClient
+    args = {
+        "data": "tons of data",
+        "entries": "entries val",
+        "incidentChanged": True,
+        "remoteId": "Tenant 1:1",
+        "status": "status val",
+        "delta": {"title": "title val", "closeReason": "False Positive",
+                  "closeNotes": "closing note"}
+    }
+    rest_client = RestClient(
+        base_url='https://localhost:6078',
+        auth=('un', 'pw'),
+        verify=False
+    )
+    get_all_users_response = load_test_data('test_data/users.json')
+
+    requests_mock.get(
+        f'{BASE_URL}/api/v0/users',
+        json=get_all_users_response
+    )
+    # mocker.patch.object(rest_client, 'construct_and_send_update_title_mutation', return_value=None)
+    requests_mock.post(
+        f'{BASE_URL}/graphql?tenantId=dev1',
+        json={}
+    )
+    res = update_remote_system_command(rest_client, args)
+    assert res == 'Tenant 1:1'
+
 def test_get_mapping_fields_command():
     from RespondAnalyst import get_mapping_fields_command
     res = get_mapping_fields_command()
     expected = [{'Respond Software Incident': {
-        'feedback': 'the user assigned outcome of a closed incident', 'title': 'incident title'}}]
+        'feedback comments': 'the user assigned outcome of a closed incident',
+        'title': 'incident title', 'feedback outcome': 'the outcome of the incident close'}}]
     assert res.extract_mapping() == expected

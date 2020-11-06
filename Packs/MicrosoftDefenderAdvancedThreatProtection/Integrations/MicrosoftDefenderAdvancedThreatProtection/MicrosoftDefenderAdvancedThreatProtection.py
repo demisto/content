@@ -2285,7 +2285,7 @@ def test_module(client: MsClient):
 def main():
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
-    tenant_id = params.get('tenant_id')
+    tenant_id = params.get('respond_tenant_id')
     auth_id = params.get('auth_id')
     enc_key = params.get('enc_key')
     use_ssl: bool = not params.get('insecure', False)

@@ -26,7 +26,7 @@ class File(object):
 
 
 client_mocker = MsGraphClient(
-    tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
+    tenant_id="respond_tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
     base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed', ok_codes=(1, 2, 3))
 
 

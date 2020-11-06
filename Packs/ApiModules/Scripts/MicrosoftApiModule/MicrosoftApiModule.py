@@ -28,7 +28,7 @@ class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
                  enc_key: str = '',
-                 token_retrieval_url: str = 'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token',
+                 token_retrieval_url: str = 'https://login.microsoftonline.com/{respond_tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
                  auth_code: str = '',
