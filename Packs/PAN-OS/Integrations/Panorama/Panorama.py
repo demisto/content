@@ -324,22 +324,22 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'action': api_action,
         'key': API_KEY,
         'element': add_argument_open(action, 'action', False)
-                + add_argument_target(target, 'target')
-                + add_argument_open(description, 'description', False)
-                + add_argument_list(source, 'source', True, True)
-                + add_argument_list(destination, 'destination', True, True)
-                + add_argument_list(application, 'application', True)
-                + add_argument_list(category, 'category', True)
-                + add_argument_open(source_user, 'source-user', True)
-                + add_argument_list(from_, 'from', True, True)  # default from will always be any
-                + add_argument_list(to, 'to', True, True)  # default to will always be any
-                + add_argument_list(service, 'service', True, True)
-                + add_argument_yes_no(negate_source, 'negate-source')
-                + add_argument_yes_no(negate_destination, 'negate-destination')
-                + add_argument_yes_no(disable, 'disabled')
-                + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-                + add_argument(log_forwarding, 'log-setting', False)
-                + add_argument_list(tags, 'tag', True)
+                   + add_argument_target(target, 'target')
+                   + add_argument_open(description, 'description', False)
+                   + add_argument_list(source, 'source', True, True)
+                   + add_argument_list(destination, 'destination', True, True)
+                   + add_argument_list(application, 'application', True)
+                   + add_argument_list(category, 'category', True)
+                   + add_argument_open(source_user, 'source-user', True)
+                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
+                   + add_argument_list(to, 'to', True, True)  # default to will always be any
+                   + add_argument_list(service, 'service', True, True)
+                   + add_argument_yes_no(negate_source, 'negate-source')
+                   + add_argument_yes_no(negate_destination, 'negate-destination')
+                   + add_argument_yes_no(disable, 'disabled')
+                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+                   + add_argument(log_forwarding, 'log-setting', False)
+                   + add_argument_list(tags, 'tag', True)
     }
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
@@ -4901,10 +4901,11 @@ def panorama_route_lookup(dest_ip: str, virtual_router=None):
     if 'entry' not in response['response'].get('result'):
         raise DemistoException("No routes returned from the Firewall.")
     else:
-        if response.get('response') and response['response'].get('result') and response['response']['result'].get('entry'):
-                routes = response['response']['result']['entry']
-         else:
-                 routes = []
+        if response.get('response') and response['response'].get('result') and response['response']['result'].get(
+                'entry'):
+            routes = response['response']['result']['entry']
+        else:
+            routes = []
 
     ip_addr = ipaddress.ip_address(dest_ip)
     current_match = None
@@ -4937,7 +4938,16 @@ def panorama_route_lookup_command():
     """
     dest_ip = demisto.args().get("dest_ip")
     vr = demisto.args().get("virtual_router", None)
-    demisto.results(panorama_route_lookup(dest_ip, vr))
+    r = panorama_route_lookup(dest_ip, vr)
+    r["dest_ip"] = dest_ip
+    markdown = tableToMarkdown('Route Lookup Results', r, headers=["dest_ip", "interface", "flags", "nexthop"])
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='Panorama.RouteLookup',
+        outputs_key_field='dest_ip',
+        outputs=r
+    )
+    return_results(results)
 
 
 def panorama_zone_lookup_command():
@@ -4963,17 +4973,19 @@ def panorama_zone_lookup_command():
                     r = {**entry, **route}
 
     if r:
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': r,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': f'The IP {dest_ip} is in zone {r["zone"]}',
-            'EntryContext': {"Panorama.ZoneLookup(val.Name == obj.Name)": r}  # add key -> deleted: true
-        })
+        # add the given dest_ip as another item int the object for simplicity
+        r["dest_ip"] = dest_ip
+        markdown = tableToMarkdown('Zone Lookup Results', r, headers=["dest_ip", "zone", "interface"])
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix='Panorama.ZoneLookup',
+            outputs_key_field='dest_ip',
+            outputs=r
+        )
+        return_results(results)
         return r
     else:
-        demisto.results(f"Could not map {dest_ip} to zone.")
+        return_results(f"Could not map {dest_ip} to zone.")
         return {}
 
 
