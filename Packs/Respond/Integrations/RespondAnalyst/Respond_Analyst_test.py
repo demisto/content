@@ -506,7 +506,6 @@ def test_update_remote_system_command(mocker, requests_mock):
         f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
     )
-    # mocker.patch.object(rest_client, 'construct_and_send_update_title_mutation', return_value=None)
     requests_mock.post(
         f'{BASE_URL}/graphql?tenantId=dev1',
         json={}
