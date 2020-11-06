@@ -960,17 +960,19 @@ class Pack(object):
         latest_release_notes = latest_release_notes_version.vstring
         logging.info(f"Latest ReleaseNotes version is: {latest_release_notes}")
 
-        if pack_versions_dict:
-            # wrap all release notes together for one changelog entry
+        if len(pack_versions_dict) > 1:
+            # In case that there is more than 1 new release notes file, wrap all release notes together for one
+            # changelog entry
             logging.info(f"Aggregating ReleaseNotes versions:"
                          f" {[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} =>"
                          f" {latest_release_notes}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
         else:
+            # In case where there is only one new release notes file, OR
             # In case where the pack is up to date, i.e. latest changelog is latest rn file
-            with open(os.path.join(release_notes_dir, f"{latest_release_notes.replace('.', '_')}.md"), 'r') \
-                    as rn_file:
+            latest_release_notes_suffix = f"{latest_release_notes.replace('.', '_')}.md"
+            with open(os.path.join(release_notes_dir, latest_release_notes_suffix), 'r') as rn_file:
                 release_notes_lines = self._clean_release_notes(rn_file.read())
 
         return release_notes_lines, latest_release_notes

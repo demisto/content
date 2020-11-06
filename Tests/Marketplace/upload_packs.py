@@ -815,10 +815,11 @@ def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, suc
     with open(os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), "w") as f:
         packs_results = dict()
         if failed_packs:
-            failed_packs_dict = {"failed_packs": {pack.name: pack.status for pack in failed_packs}}
+            failed_packs_dict = {"failed_packs": {pack.name: PackStatus[pack.status].value for pack in failed_packs}}
             packs_results.update(failed_packs_dict)
         if successful_packs:
-            successful_packs_dict = {"successful_packs": {pack.name: pack.status for pack in successful_packs}}
+            successful_packs_dict = {"successful_packs": {pack.name: PackStatus[pack.status].value for pack in
+                                                          successful_packs}}
             packs_results.update(successful_packs_dict)
         if packs_results:
             f.write(json.dumps(packs_results, indent=4))
