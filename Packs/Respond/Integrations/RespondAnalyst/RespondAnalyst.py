@@ -707,7 +707,7 @@ def close_incident_command(rest_client, args):
         raise Exception('error closing incident and/or updating feedback: ' + str(err))
 
 def get_incident_command(rest_client, args):
-    external_tenant_id = args.get('tenant_id')
+    external_tenant_id = args.get('respond_tenant_id')
     formatted_incident = get_formatted_incident(rest_client, args)
     new_incident = {
         'name': external_tenant_id + ': ' + formatted_incident['incidentId'],

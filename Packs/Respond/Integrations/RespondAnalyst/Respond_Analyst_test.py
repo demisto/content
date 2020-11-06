@@ -83,7 +83,7 @@ def test_get_incident_command(requests_mock):
         json=full_incidents_response
     )
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 6
     }
     incident = get_incident_command(client, args)
