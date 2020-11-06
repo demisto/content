@@ -866,19 +866,19 @@ def update_remote_system_command(rest_client, args):
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to '
                           f' update Respond incident {remote_args.remote_incident_id}')
 
-            if remote_args.delta.get('title') is not None:
+            if remote_args.delta.get('title'):
                 demisto.debug(
                     f'changed title for {remote_args.remote_incident_id}: {remote_args.delta["title"]}')
                 rest_client.construct_and_send_update_title_mutation(internal_tenant_id, incident_id,
                                                                            remote_args.delta[
                                                                                'title'])
 
-            if remote_args.delta.get('description'):
+            if remote_args.delta.get('responddescription'):
                 demisto.debug(
-                    f'changed description for {remote_args.remote_incident_id}: {remote_args.delta["description"]}')
+                    f'changed description for {remote_args.remote_incident_id}: {remote_args.delta["responddescription"]}')
                 rest_client.construct_and_send_update_description_mutation(internal_tenant_id, incident_id,
                                                                        remote_args.delta[
-                                                                           'description'])
+                                                                           'responddescription'])
 
             if remote_args.delta.get('closeReason'):
                 #todo do we want to map xsoar close reasons to respond incident outcomes
@@ -892,10 +892,21 @@ def update_remote_system_command(rest_client, args):
                 demisto.debug(
                     f'feedback args for {remote_args.remote_incident_id}: {feedback_args}')
                 close_incident_command(rest_client, feedback_args)
+            if remote_args.delta.get('owner'):
+                #todo support unassign
+                demisto.debug(f'changed owner for {remote_args.remote_incident_id}: {remote_args.delta["owner"]}')
+                user_email = demisto.findUser(username=remote_args.delta['owner']).get('email')
+                assigned_user_args = {
+                    'respond_tenant_id': tenant_id,
+                    'incident_id': incident_id,
+                    'username': user_email
+                }
+                demisto.debug(f'assigned user args {assigned_user_args}')
+                assign_user_command(rest_client, assigned_user_args)
+
     except Exception as e:
         demisto.debug(
             f"Error in Respond outgoing mirror for incident {remote_args.remote_incident_id} Error message: {str(e)}")
-        raise e
 
     return remote_args.remote_incident_id
 

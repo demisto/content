@@ -491,7 +491,7 @@ def test_update_remote_system_command(mocker, requests_mock):
         "incidentChanged": True,
         "remoteId": "Tenant 1:1",
         "status": "status val",
-        "delta": {"title": "title val", "description": "description val"}
+        "delta": {"title": "title val", "responddescription": "description val"}
     }
     rest_client = RestClient(
         base_url='https://localhost:6078',
