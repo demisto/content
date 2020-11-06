@@ -124,9 +124,7 @@ def test_fetch_incidents_no_new(mocker, requests_mock):
 def test_fetch_incidents(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents, RestClient
 
-    get_ids_response = [{'id': '6'}, {'id': '8'}, {'id': '11'}, {'id': '14'}, {'id': '16'},
-                        {'id': '27'}]
-
+    get_ids_response = [{'id': '8'}, {'id': '14'}]
     get_full_incidents_response = load_test_data('test_data/full_incidents.json')
 
     client = RestClient(
@@ -148,7 +146,7 @@ def test_fetch_incidents(mocker, requests_mock):
 
     next_run, response = fetch_incidents(client, None)
     assert expected_output == response
-    assert next_run['Tenant 1']['time'] == '1591374031591'
+    assert next_run['Tenant 1']['time'] == '1591374028642'
 
 
 def test_remove_user(mocker, requests_mock):
@@ -460,10 +458,11 @@ def test_get_remote_data_command(requests_mock):
          "URL": "https://localhost:6078/secure/incidents/6?tenantId=dev1",
          "closeURL": "https://localhost:6078/secure/incidents/feedback/6?tenantId=dev1",
          "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
+         "description":"description of the incident",
          "status": "Closed", "severity": "Critical", "probability": "VeryHigh",
          "attackStage": "LateralMovement", "attackTactic": None,
          "assetCriticality": "Critical", "internalSystemsCount": 1,
-         "internalSystems": [{"hostname": "enterprise.com"}], "escalationReasons": [
+         "internalSystems": [{"hostname": "enterprise.com", "ipAddress": "100.100.100.100"}], "escalationReasons": [
             {"label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"}],
          "assignedUsers": ["cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"],
          "feedback": {"timeUpdated": "1593469076049",
@@ -492,8 +491,7 @@ def test_update_remote_system_command(mocker, requests_mock):
         "incidentChanged": True,
         "remoteId": "Tenant 1:1",
         "status": "status val",
-        "delta": {"title": "title val", "closeReason": "False Positive",
-                  "closeNotes": "closing note"}
+        "delta": {"title": "title val", "description": "description val"}
     }
     rest_client = RestClient(
         base_url='https://localhost:6078',
@@ -501,16 +499,27 @@ def test_update_remote_system_command(mocker, requests_mock):
         verify=False
     )
     get_all_users_response = load_test_data('test_data/users.json')
-
+    requests_mock.get(
+        f'{BASE_URL}/session/tenantIdMapping',
+        json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
+    )
     requests_mock.get(
         f'{BASE_URL}/api/v0/users',
         json=get_all_users_response
     )
-    requests_mock.post(
-        f'{BASE_URL}/graphql?tenantId=dev1',
-        json={}
+    requests_mock.get(
+        f'{BASE_URL}/session/activeUser',
+        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
+              'email': 'qa-user@respond-software.com',
+              'firstname': 'jay', 'lastname': 'blue'}
     )
+    mocker.patch.object(rest_client, 'construct_and_send_update_title_mutation', return_value={})
+    mocker.patch.object(rest_client, 'construct_and_send_update_description_mutation', return_value={})
+    title_spy = mocker.spy(rest_client, 'construct_and_send_update_title_mutation')
+    desc_spy = mocker.spy(rest_client, 'construct_and_send_update_description_mutation')
     res = update_remote_system_command(rest_client, args)
+    assert title_spy.call_count == 1
+    assert desc_spy.call_count == 1
     assert res == 'Tenant 1:1'
 
 def test_get_mapping_fields_command():

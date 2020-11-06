@@ -131,6 +131,7 @@ class RestClient(BaseClient):
                                                                               "firstEventTime "
                                                                               "lastEventTime "
                                                                               "title "
+                                                                              "description "
                                                                               "attackStage "
                                                                               "assetClass "
                                                                               "probabilityBucket "
@@ -138,6 +139,7 @@ class RestClient(BaseClient):
                                                                               "priority "
                                                                               "internalSystems{ "
                                                                               "hostname "
+                                                                              "ipAddress"
                                                                               "} "
                                                                               "internalSystemsCount "
                                                                               "feedback { "
@@ -536,6 +538,7 @@ def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
         'closeURL': BASE_URL + '/secure/incidents/feedback/' + raw_incident.get(
             'id') + '?tenantId=' + respond_tenant_id,
         'title': raw_incident.get('title'),
+        'description': raw_incident.get('description'),
         'status': raw_incident.get('status'),
         'severity': raw_incident.get('priority'),
         'probability': raw_incident.get('probabilityBucket'),
@@ -567,16 +570,16 @@ def format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id):
     return formatted_incident
 
 
-def get_respond_tenant_from_mapping_with_external(tenant_mappings, external_tenant_id):
+def get_internal_tenant_from_mapping_with_external(tenant_mappings, external_tenant_id):
     """
     finds the respond tenant id that matches the external tenant id provided, if exists and accessible
     :param tenant_mappings: dictionary where (k,v) -> (respond_tenant_id,external_tenant_id)
     :param external_tenant_id:
     :return:
     """
-    for curr_respond_tid, curr_external_tid in tenant_mappings.items():
+    for curr_internal_tid, curr_external_tid in tenant_mappings.items():
         if external_tenant_id == curr_external_tid:
-            return curr_respond_tid
+            return curr_internal_tid
     demisto.error(
         'no respond tenant matches external tenant: ' + external_tenant_id + 'or user does not have '
                                                                              'permission to access tenant')
@@ -623,18 +626,18 @@ def get_formatted_incident(rest_client, args):
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
     if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
+        internal_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
             user_tenant_mappings)
     else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                          external_tenant_id)
+        internal_tenant_id = get_internal_tenant_from_mapping_with_external(user_tenant_mappings,
+                                                                            external_tenant_id)
 
     incident_id = int(args['incident_id'])
 
     raw_incident = \
-        rest_client.construct_and_send_full_incidents_query(respond_tenant_id, [incident_id])[0]
+        rest_client.construct_and_send_full_incidents_query(internal_tenant_id, [incident_id])[0]
 
-    return format_raw_incident(raw_incident, external_tenant_id, respond_tenant_id)
+    return format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id)
 
 
 def get_tenant_ids(rest_client, args):
@@ -642,12 +645,12 @@ def get_tenant_ids(rest_client, args):
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
     if external_tenant_id is None:
-        respond_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
+        internal_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
             user_tenant_mappings)
     else:
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                          external_tenant_id)
-    return respond_tenant_id, external_tenant_id
+        internal_tenant_id = get_internal_tenant_from_mapping_with_external(user_tenant_mappings,
+                                                                           external_tenant_id)
+    return internal_tenant_id, external_tenant_id
 
 
 def validate_user(rest_client, args):
@@ -752,10 +755,9 @@ def close_incident_command(rest_client, args):
 
 
 def get_incident_command(rest_client, args):
-    external_tenant_id = args.get('respond_tenant_id')
     formatted_incident = get_formatted_incident(rest_client, args)
     new_incident = {
-        'name': external_tenant_id + ': ' + formatted_incident['incidentId'],
+        'name': args['respond_tenant_id'] + ': ' + formatted_incident['incidentId'],
         'occurred': formatted_incident.get('timeGenerated'),
         'rawJSON': json.dumps(formatted_incident)
     }
@@ -770,8 +772,8 @@ def get_escalations_command(rest_client, args):
     try:
         entries = []
         user_tenant_mappings = rest_client.get_tenant_mappings()
-        respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                          args['respond_tenant_id'])
+        internal_tenant_id = get_internal_tenant_from_mapping_with_external(user_tenant_mappings,
+                                                                                    args['respond_tenant_id'])
         more_data = True
         while more_data:
             if datetime.now().timestamp() - start > fourMinutes:
@@ -784,7 +786,7 @@ def get_escalations_command(rest_client, args):
                 })
                 break
             all_escalations = rest_client.construct_and_send_new_escalations_query(
-                respond_tenant_id, args['incident_id'])
+                internal_tenant_id, args['incident_id'])
             for escalation in all_escalations:
                 if escalation['incident']['id'] == args['incident_id']:
                     valid_entry = {
@@ -859,7 +861,7 @@ def update_remote_system_command(rest_client, args):
             tenant_id = remote_args.remote_incident_id.split(':')[0]
             incident_id = remote_args.remote_incident_id.split(':')[1]
             user_tenant_mappings = rest_client.get_tenant_mappings()
-            respond_tenant_id = get_respond_tenant_from_mapping_with_external(user_tenant_mappings, tenant_id)
+            internal_tenant_id = get_internal_tenant_from_mapping_with_external(user_tenant_mappings, tenant_id)
 
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to '
                           f' update Respond incident {remote_args.remote_incident_id}')
@@ -867,17 +869,16 @@ def update_remote_system_command(rest_client, args):
             if remote_args.delta.get('title') is not None:
                 demisto.debug(
                     f'changed title for {remote_args.remote_incident_id}: {remote_args.delta["title"]}')
-                rest_client.construct_and_send_update_title_mutation(respond_tenant_id, incident_id,
+                rest_client.construct_and_send_update_title_mutation(internal_tenant_id, incident_id,
                                                                            remote_args.delta[
                                                                                'title'])
 
-            # todo uncomment once we have description in the new export in a later card
-            # if remote_args.delta.get('description'):
-            #     demisto.debug(
-            #         f'changed description for {remote_args.remote_incident_id}: {remote_args.delta["description"]}')
-            #     rest_client.construct_and_send_update_description_mutation(respond_tenant_id, incident_id,
-            #                                                            remote_args.delta[
-            #                                                                'description'])
+            if remote_args.delta.get('description'):
+                demisto.debug(
+                    f'changed description for {remote_args.remote_incident_id}: {remote_args.delta["description"]}')
+                rest_client.construct_and_send_update_description_mutation(internal_tenant_id, incident_id,
+                                                                       remote_args.delta[
+                                                                           'description'])
 
             if remote_args.delta.get('closeReason'):
                 #todo do we want to map xsoar close reasons to respond incident outcomes
@@ -894,6 +895,7 @@ def update_remote_system_command(rest_client, args):
     except Exception as e:
         demisto.debug(
             f"Error in Respond outgoing mirror for incident {remote_args.remote_incident_id} Error message: {str(e)}")
+        raise e
 
     return remote_args.remote_incident_id
 
