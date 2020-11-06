@@ -378,7 +378,7 @@ def test_job_execution_output_command(mocker):
     Then
         - CommonResults object returns with the api response.
     """
-    return_value = {
+    return_value_test = {
         "id": "69",
         "offset": "3732",
         "completed": True,
@@ -403,8 +403,7 @@ def test_job_execution_output_command(mocker):
                 "type": "stepbegin",
                 "absolute_time": "123",
                 "log": "",
-            },
-            {"another": "output"}
+            }
         ],
     }
     client = Client(
@@ -413,9 +412,9 @@ def test_job_execution_output_command(mocker):
         params={"authtoken": "123"},
         project_name="Demisto",
     )
-    mocker.patch.object(client, "job_execution_output", return_value=return_value)
-    result = job_execution_output_command(client, {"execution_id": "69", 'max_results': 1})
-    assert result.outputs == return_value
+    mocker.patch.object(client, "job_execution_output", return_value=return_value_test)
+    result = job_execution_output_command(client, {"execution_id": "69"})
+    assert result.outputs == return_value_test
     assert result.outputs_key_field == "id"
     assert result.outputs_prefix == "Rundeck.ExecutionsOutput"
     assert (
@@ -599,7 +598,7 @@ def test_webhooks_list_command(mocker):
             "authToken": "123",
             "eventPlugin": "webhook-run-job",
             "config": {"jobId": "123", "argString": "123"},
-        }, {'another': 'one'}
+        }
     ]
     client = Client(
         base_url="base_url",
@@ -608,7 +607,7 @@ def test_webhooks_list_command(mocker):
         project_name="Demisto",
     )
     mocker.patch.object(client, "get_webhooks_list", return_value=return_value)
-    result = webhooks_list_command(client, {'max_results': 1})
+    result = webhooks_list_command(client, {})
     assert result.outputs == return_value
     assert result.outputs_key_field == "id"
     assert result.outputs_prefix == "Rundeck.Webhooks"
