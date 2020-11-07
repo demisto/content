@@ -1818,9 +1818,9 @@
             "timeout": 500
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
+            "integrations": "iDefense_v2",
+            "playbookID": "iDefense_v2_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AbuseIPDB",
