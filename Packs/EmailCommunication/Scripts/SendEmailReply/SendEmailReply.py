@@ -33,7 +33,7 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
 
 
 def send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-                      entry_id_list, email_latest_message,  additional_header):
+                      entry_id_list, email_latest_message):
     mail_content = {
         "to": email_to,
         "inReplyTo": email_latest_message,
