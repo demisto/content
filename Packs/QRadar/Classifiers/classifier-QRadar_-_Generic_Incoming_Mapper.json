@@ -359,7 +359,7 @@
      },
      "simple": ""
     },
-    "Destination Ports": {
+    "Dst Ports": {
      "complex": {
       "accessor": "destinationport",
       "filters": [
@@ -1238,7 +1238,7 @@
      },
      "simple": ""
     },
-    "Source Ports": {
+    "Src Ports": {
      "complex": {
       "accessor": "sourceport",
       "filters": [
