@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: OpenLDAP_2
+  id: OpenLDAP
   version: -1
 configuration:
 - display: Server IP or Host Name (e.g. 192.168.0.1)
@@ -79,7 +79,7 @@ configuration:
   type: 8
 description: Authenticate using Open LDAP
 display: OpenLDAP (Beta)
-name: OpenLDAP_2
+name: OpenLDAP
 beta: true
 script:
   commands:
