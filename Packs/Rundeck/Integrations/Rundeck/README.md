@@ -42,6 +42,10 @@ There are no input arguments for this command.
 !rundeck-projects-list
 
 #### Human Readable Output
+### Projects List:
+|Name|Description|
+|---|---|
+| Demisto | Demisto Test |
 
 
 
@@ -59,8 +63,8 @@ Gets a list of all the jobs exist in a project
 | --- | --- | --- |
 | id_list | A list of job IDs. | Optional | 
 | group_path | A path for a specific group to include all jobs within that group path. | Optional | 
-| job_filter | Specify a filter for a job Name, apply this command to any job name that contains this value.<br/>Example: to find 'testJob' you can pass 'test'. | Optional | 
-| job_exact_filter | Specify an exact job name to match.<br/>Example: to find 'testJob' you should pass 'testJob'. | Optional | 
+| job_filter | Specify a filter for a job Name, apply this command to any job name that contains this value. Example: to find 'testJob' you can pass 'test'. | Optional | 
+| job_exact_filter | Specify an exact job name to match. Example: to find 'testJob' you should pass 'testJob'. | Optional | 
 | group_path_exact | Specify an exact group path to match. if not specified, default is: "*". | Optional | 
 | scheduled_filter | 'true' to return only scheduled or 'false' for only not scheduled jobs. | Optional | 
 | server_node_uuid_filter | A UUID for a selected server to return all jobs related to it. | Optional | 
@@ -82,6 +86,10 @@ Gets a list of all the jobs exist in a project
 !rundeck-jobs-list scheduled_filter=false id_list={first_id},{second_id}
 
 #### Human Readable Output
+### Jobs List:
+|Id|Schedule Enabled|Scheduled|Enabled|Group|Description|Project|Name|
+|---|---|---|---|---|---|---|---|
+| 123 | true | false | true |  | just a sample job | Demisto | Arseny\'s Job |
 
 
 
@@ -101,10 +109,10 @@ Executes a new job
 | arg_string | Execution arguments for the selected job. for example: -opt1 value1 -opt2 value2 | Optional | 
 | log_level | specifying the log level to use | Optional | 
 | as_user | Username for identifying the user who ran the job. | Optional | 
-| node_filter | node filter string, or .* for all nodes.<br/><br/>Examples:<br/>To select a specific node by its name:<br/>nodeName1 nodeName2<br/><br/>To filter nodes by attribute value:<br/>Include: attribute: value<br/>Exclude: !attribute: value<br/><br/>To use regular expressions:<br/>Hostname: dev(\d+).com<br/><br/>To use Regex syntex checking:<br/>attribute: /regex/<br/><br/>for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters | Optional | 
-| run_at_time | A time to run the job.<br/>Can pass either run_at_time_raw, run_at_time or neither.<br/>when passing both run_at_time_raw and run_at_time, the default is run_at_time. | Optional | 
-| options | Options for running the job.<br/>For example, if you have a 'foo' and 'bar' options set for a job, you can pass values to them using the next syntax: 'foo=someValue,bar=someValue' | Optional | 
-| run_at_time_raw | A time to run the job in a ISO-8601 date and time stamp with timezone, with optional milliseconds. e.g. 2019-10-12T12:20:55-0800 or 2019-10-12T12:20:55.123-0800.<br/><br/>Can pass either run_at_time_raw, run_at_time or neither.<br/>when passing both run_at_time_raw and run_at_time, the default is run_at_time. | Optional | 
+| node_filter | node filter string, or .* for all nodes.  Examples: To select a specific node by its name: nodeName1 nodeName2  To filter nodes by attribute value: Include: attribute: value Exclude: !attribute: value  To use regular expressions: Hostname: dev(\d+).com  To use Regex syntex checking: attribute: /regex/  for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters | Optional | 
+| run_at_time | A time to run the job. Can pass either run_at_time_raw, run_at_time or neither. when passing both run_at_time_raw and run_at_time, the default is run_at_time. | Optional | 
+| options | Options for running the job. For example, if you have a 'foo' and 'bar' options set for a job, you can pass values to them using the next syntax: 'foo=someValue,bar=someValue' | Optional | 
+| run_at_time_raw | A time to run the job in a ISO-8601 date and time stamp with timezone, with optional milliseconds. e.g. 2019-10-12T12:20:55-0800 or 2019-10-12T12:20:55.123-0800.  Can pass either run_at_time_raw, run_at_time or neither. when passing both run_at_time_raw and run_at_time, the default is run_at_time. | Optional | 
 
 
 #### Context Output
@@ -133,6 +141,10 @@ Executes a new job
 !rundeck-job-execute job_id={job_id} arg_string="-arg1 value1" as_user=galb log_level=ERROR
 
 #### Human Readable Output
+### Execute Job:
+|Id|Status|Project|Execution Type|User|Datestarted|Job|Description|Argstring|
+|---|---|---|---|---|---|---|---|---|
+| 194 | running | Demisto | user | Galb | unixtime: 123 date: 123 | id: 123 averageDuration: 463 name: Arseny's Job group:  project: Demisto description: just a sample job options: {"foo": "0"} | 123 | -foo 0 |
 
 
 
@@ -183,6 +195,10 @@ Retry running a failed execution
 !rundeck-job-retry execution_id=122 job_id={job_id}
 
 #### Human Readable Output
+### Execute Job:
+|Id|Status|Project|Execution Type|User|Datestarted|Job|Description|Argstring|
+|---|---|---|---|---|---|---|---|---|
+| 194 | running | Demisto | user | Galb | unixtime: 123 date: 123 | id: 123 averageDuration: 463 name: Arseny's Job group:  project: Demisto description: just a sample job options: {"foo": "0"} | 123 | -foo 0 |
 
 
 
@@ -202,8 +218,8 @@ Gets all exections base on job or execution details
 | status_filter | Status of the execution | Optional | 
 | aborted_by_filter | Username of the person aborted to execution | Optional | 
 | user_filter | Username of the person stated the execution | Optional | 
-| recent_filter | Specify when the execution has occur. The format is 'XY' when 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year.<br/>Example: 2w returns executions that completed within the last two weeks. | Optional | 
-| older_filter | specify executions that completed before the specified relative period of time.<br/>the format is 'XY' when 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year.<br/>Example: 30d returns executions older than 30 days. | Optional | 
+| recent_filter | Specify when the execution has occur. The format is 'XY' when 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year. Example: 2w returns executions that completed within the last two weeks. | Optional | 
+| older_filter | specify executions that completed before the specified relative period of time. the format is 'XY' when 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year. Example: 30d returns executions older than 30 days. | Optional | 
 | begin | Exact date for the earliest execution completion time. | Optional | 
 | end | Exact date for the latest execution completion time. | Optional | 
 | adhoc | 'true' for include Adhoc executions. 'false' otherwise. | Optional | 
@@ -215,10 +231,10 @@ Gets all exections base on job or execution details
 | group_path_exact | Full group path to include all jobs within that group path. | Optional | 
 | exclude_group_path | Full or partical group path to exclude all jobs within that group path. | Optional | 
 | exclude_group_path_exact | Full group path to exclude all jobs within that group path. | Optional | 
-| job_filter | Filter for a job name. Include any job name that matches this value.<br/>Example: to find 'testJob' you can pass 'test'. | Optional | 
-| exclude_job_filter | Filter for the job Name. Exclude any job name that matches this value.<br/>Example: to find 'testJob' you can pass 'test'. | Optional | 
-| job_exact_filter | Filter for an exact job name. Include any job name that matches this value.<br/>Example: to find 'testJob' you should pass 'testJob'. | Optional | 
-| exclude_job_exact_filter | Filter for an exact job name. Exclude any job name that matches this value.<br/>Example: to find 'testJob' you should pass 'testJob'. | Optional | 
+| job_filter | Filter for a job name. Include any job name that matches this value. Example: to find 'testJob' you can pass 'test'. | Optional | 
+| exclude_job_filter | Filter for the job Name. Exclude any job name that matches this value. Example: to find 'testJob' you can pass 'test'. | Optional | 
+| job_exact_filter | Filter for an exact job name. Include any job name that matches this value. Example: to find 'testJob' you should pass 'testJob'. | Optional | 
+| exclude_job_exact_filter | Filter for an exact job name. Exclude any job name that matches this value. Example: to find 'testJob' you should pass 'testJob'. | Optional | 
 | execution_type_filter | Type of execution. | Optional | 
 | max_results | maximum number of results to retun. The Default is 100. | Optional | 
 | offset | Offset for first result to include.  | Optional | 
@@ -261,6 +277,10 @@ Gets all exections base on job or execution details
 !rundeck-job-executions-query adhoc=false max_results=3 project_name=Demisto user_filter=galb status_filter=failed
 
 #### Human Readable Output
+### Job Execution Query - got total results: 2
+|Id|Status|Project|Execution Type|User|Datestarted|Dateended|Job|Description|Argstring|Failed Nodes|
+|---|---|---|---|---|---|---|---|---|---|---|
+| 195 | failed | Demisto | user | Galb | unixtime: 123 date: 123 | unixtime: 123 date: 123 | id: 123 averageDuration: 463 name: Arseny's Job group: <br>project: Demisto<br>description: just a sample job<br>options: {"foo": "0"} | 123 | -foo 0 | localhost |
 
 
 
@@ -277,7 +297,7 @@ Gets the metadata associated with workflow step state
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | execution_id | Id of the execution | Required | 
-| return_full_output | If 'true' output saves in a returned file and not in Demisto context.<br/>If 'false', the number of outputs is limited to 100 and the returned data save in context.<br/>The default is 'false'. | Optional | 
+| return_full_output | If 'true' output saves in a returned file and not in Demisto context. If 'false', the number of outputs is limited to 100 and the returned data save in context.  The default is 'false'. | Optional | 
 | max_results | maximum number of results to retun. The Default is 100. | Optional | 
 | aggregate_log | if 'true', all entries of type 'log' are saved in context under 'listEntry' in  ExecutionsOutput under the execution you selected to run this command. | Optional | 
 
@@ -312,6 +332,14 @@ Gets the metadata associated with workflow step state
 !rundeck-job-execution-output execution_id=118 aggregate_log=true
 
 #### Human Readable Output
+### Job Execution Output:
+|Id|Offset|Completed|Exec Completed|Has Failed Nodes|Exec State|Last Modified|Exec Duration|Percent Loaded|Total Size|Retry Backoff|Cluster Exec|Compacted|Entries|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 69 | 3732 | true | true | true | failed | 123 | 237 | 12 | 3738 | 0 | false | false | {'node': 'localhost', 'step': '1', 'stepctx': '1', 'user': 'admin', 'time': '10:54:52', 'level': 'NORMAL', 'type': 'stepbegin', 'absolute_time': '123', 'log': ''} |
+### Job Execution Entries View:
+|Log|Node|Step|Stepctx|User|Time|Level|Type|Absolute Time|Log|
+|---|---|---|---|---|---|---|---|---|---|
+|  | localhost | 1 | 1 | admin | 10:54:52 | NORMAL | stepbegin |  |  |
 
 
 
@@ -344,6 +372,10 @@ Aborts an active execution
 !rundeck-job-execution-abort execution_id=65
 
 #### Human Readable Output
+### Job Execution Abort:
+|Abort|Execution|
+|---|---|
+| status: failed reason: Job is not running | id: 69 status: failed |
 
 
 
@@ -364,7 +396,7 @@ Executes shell commands in nodes
 | node_thread_count | Threadcount to use | Optional | 
 | node_keepgoing | 'true' for continue executing on other nodes after a failure. 'false' otherwise. | Optional | 
 | as_user | Username identifying the user who ran the command. | Optional | 
-| node_filter | node filter string, or .* for all nodes.<br/><br/>Examples:<br/>To select a specific node by its name:<br/>nodeName1 nodeName2<br/><br/>To filter nodes by attribute value:<br/>Include: attribute: value<br/>Exclude: !attribute: value<br/><br/>To use regular expressions:<br/>Hostname: dev(\d+).com<br/><br/>To use Regex syntex checking:<br/>attribute: /regex/<br/><br/>for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters | Optional | 
+| node_filter | node filter string, or .* for all nodes.  Examples: To select a specific node by its name:  nodeName1 nodeName2  To filter nodes by attribute value:  Include: attribute: value  Exclude: !attribute: value  To use regular expressions:<br/>Hostname: dev(\d+).com  To use Regex syntex checking:<br/>attribute: /regex/  for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters | Optional | 
 
 
 #### Context Output
@@ -379,6 +411,10 @@ Executes shell commands in nodes
 !rundeck-adhoc-command-run exec_command="echo hello" as_user=adhocTest project_name=Demisto node_keepgoing=true
 
 #### Human Readable Output
+### Adhoc Run:
+|Message|Execution|
+|---|---|
+| Immediate execution scheduled (196) | id: 196 |
 
 
 
@@ -400,7 +436,7 @@ Runs a script from file
 | node_thread_count | threadcount to use | Optional | 
 | node_keepgoing | 'true' for continue executing on other nodes after a failure. 'false' otherwise. | Optional | 
 | as_user | Username identifying the user who rans the script. | Optional | 
-| node_filter | node filter string, or .* for all nodes.<br/><br/>Examples:<br/>To select a specific node by its name:<br/>nodeName1 nodeName2<br/><br/>To filter nodes by attribute value:<br/>Include: attribute: value<br/>Exclude: !attribute: value<br/><br/>To use regular expressions:<br/>Hostname: dev(\d+).com<br/><br/>To use Regex syntex checking:<br/>attribute: /regex/<br/><br/>for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters | Optional | 
+| node_filter | node filter string, or .* for all nodes.  Examples:<br/>To select a specific node by its name:<br/>nodeName1 nodeName2  To filter nodes by attribute value:<br/>Include: attribute: value<br/>Exclude: !attribute: value  To use regular expressions:<br/>Hostname: dev(\d+).com  To use Regex syntex checking:<br/>attribute: /regex/  for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters | Optional | 
 | script_interpreter | Command to use to run the script file | Optional | 
 | interpreter_args_quoted | 'true', the script file and arguments will be quoted as the last argument to the script_interpreter. 'false' otherwise. | Optional | 
 | file_extension | Extension of the script file | Optional | 
@@ -418,6 +454,10 @@ Runs a script from file
 !rundeck-adhoc-script-run entry_id=@121 as_user='test'
 
 #### Human Readable Output
+### Adhoc Run Script:
+|Message|Execution|
+|---|---|
+| Immediate execution scheduled (196) | id: 196 |
 
 
 
@@ -438,7 +478,7 @@ Runs a script from URL
 | node_thread_count | threadcount to use. | Optional | 
 | node_keepgoing | 'true' for continue executing on other nodes after a failure. 'false' otherwise. | Optional | 
 | as_user | Username identifying the user who rans the script file. | Optional | 
-| node_filter | node filter string, or .* for all nodes.<br/><br/>Examples:<br/>To select a specific node by its name:<br/>nodeName1 nodeName2<br/><br/>To filter nodes by attribute value:<br/>Include: attribute: value<br/>Exclude: !attribute: value<br/><br/>To use regular expressions:<br/>Hostname: dev(\d+).com<br/><br/>To use Regex syntex checking:<br/>attribute: /regex/<br/><br/>for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters | Optional | 
+| node_filter | node filter string, or .* for all nodes.  Examples:<br/>To select a specific node by its name:<br/>nodeName1 nodeName2  To filter nodes by attribute value:<br/>Include: attribute: value<br/>Exclude: !attribute: value  To use regular expressions:<br/>Hostname: dev(\d+).com  To use Regex syntex checking:<br/>attribute: /regex/  for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters | Optional | 
 | script_interpreter | Command to use to run the script file | Optional | 
 | interpreter_args_quoted | 'true', the script file and arguments will be quoted as the last argument to the script_interpreter. 'false' otherwise. | Optional | 
 | file_extension | Extension of the script file | Optional | 
@@ -453,6 +493,10 @@ There is no context output for this command.
 !rundeck-adhoc-script-run-from-url script_url='URL' node_keepgoing=true
 
 #### Human Readable Output
+### Adhoc Run Script From Url:
+|Message|Execution|
+|---|---|
+| Immediate execution scheduled (196) | id: 196 |
 
 
 
@@ -493,6 +537,10 @@ Gets a list of all existing webhooks
 !rundeck-webhooks-list project_name="TEST"
 
 #### Human Readable Output
+### Webhooks List:
+|Id|Uuid|Name|Project|Enabled|User|Creator|Roles|Auth Token|Event Plugin|Config|
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 123 | Arseny's hook | Demisto | true | admin | admin | 123 | 123 | webhook-run-job | jobId: 123 argString: 123 |
 
 
 
@@ -525,5 +573,9 @@ Send webhook event
 !rundeck-webhook-event-send json=`{"test":1}` auth_token={auth_id}
 
 #### Human Readable Output
+### Webhook event send:
+|Job Id|Execution Id|
+|---|---|
+| 123 | 199 |
 
 
