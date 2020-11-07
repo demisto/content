@@ -770,8 +770,8 @@ def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
-            test_conf.get('playbookID') == test_id and
-            is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
+        test_conf.get('playbookID') == test_id
+        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
                                           server_v=server_version,
                                           to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf

@@ -1,10 +1,7 @@
 import json
 import os
 
-from demisto_sdk.commands.common.constants import (PACK_METADATA_CERTIFICATION,
-                                                   PACK_METADATA_SUPPORT,
-                                                   PACKS_DIR,
-                                                   PACKS_PACK_META_FILE_NAME)
+from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT, PACKS_DIR, PACKS_PACK_META_FILE_NAME)
 
 SKIPPED_PACKS = ['DeprecatedContent', 'NonSupported']
 
