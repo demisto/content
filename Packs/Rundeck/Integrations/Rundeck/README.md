@@ -144,7 +144,7 @@ Executes a new job
 ### Execute Job:
 |Id|Status|Project|Execution Type|User|Datestarted|Job|Description|Argstring|
 |---|---|---|---|---|---|---|---|---|
-| 194 | running | Demisto | user | Galb | unixtime: 123<br>date: 123 | id: 123<br>averageDuration: 463<br>name: Arseny's Job<br>group: <br>project: Demisto<br>description: just a sample job<br>options: {"foo": "0"} | 123 | -foo 0 |
+| 194 | running | Demisto | user | Galb | unixtime: 123 date: 123 | id: 123 averageDuration: 463 name:  Test Job group:  project: Demisto description: just a sample job options: {"foo": "0"} | 123 | -foo 0 |
 
 
 
@@ -198,7 +198,7 @@ Retry running a failed execution
 ### Execute Job:
 |Id|Status|Project|Execution Type|User|Datestarted|Job|Description|Argstring|
 |---|---|---|---|---|---|---|---|---|
-| 194 | running | Demisto | user | Galb | unixtime: 123<br>date: 123 | id: 123<br>averageDuration: 463<br>name: Arseny's Job<br>group: <br>project: Demisto<br>description: just a sample job<br>options: {"foo": "0"} | 123 | -foo 0 |
+| 194 | running | Demisto | user | Galb | unixtime: 123 date: 123 | id: 123 averageDuration: 463 name:  Test Job group: project: Demisto description: just a sample job options: {"foo": "0"} | 123 | -foo 0 |
 
 
 
@@ -280,7 +280,7 @@ Gets all exections base on job or execution details
 ### Job Execution Query - got total results: 2
 |Id|Status|Project|Execution Type|User|Datestarted|Dateended|Job|Description|Argstring|Failed Nodes|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 195 | failed | Demisto | user | Galb | unixtime: 123<br>date: 123 | unixtime: 123<br>date: 123 | id: 123<br>averageDuration: 463<br>name: Arseny's Job<br>group: <br>project: Demisto<br>description: just a sample job<br>options: {"foo": "0"} | 123 | -foo 0 | localhost |
+| 195 | failed | Demisto | user | Galb | unixtime: 123 date: 123 | unixtime: 123 date: 123 | id: 123 averageDuration: 463 name:  Test Job group:  project: Demisto description: just a sample job options: {"foo": "0"} | 123 | -foo 0 | localhost |
 
 
 
@@ -375,7 +375,7 @@ Aborts an active execution
 ### Job Execution Abort:
 |Abort|Execution|
 |---|---|
-| status: failed<br>reason: Job is not running | id: 69<br>status: failed |
+| status: failed reason: Job is not running | id: 69 status: failed |
 
 
 
@@ -540,7 +540,7 @@ Gets a list of all existing webhooks
 ### Webhooks List:
 |Id|Uuid|Name|Project|Enabled|User|Creator|Roles|Auth Token|Event Plugin|Config|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 123 | Arseny's hook | Demisto | true | admin | admin | 123 | 123 | webhook-run-job | jobId: 123<br>argString: 123 |
+| 1 | 123 |  Test hook | Demisto | true | admin | admin | 123 | 123 | webhook-run-job | jobId: 123 argString: 123 |
 
 
 
