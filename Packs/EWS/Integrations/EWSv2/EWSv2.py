@@ -1856,7 +1856,7 @@ def get_compliance_search(search_name, show_only_recipients):
         }
         if show_only_recipients == 'True':
             res = filter(lambda x: int(x['Item count']) > 0, res)
-            
+
             entry['EntryContext'] = {
                 'EWS.ComplianceSearch(val.Name == obj.Name)': {
                     'Name': search_name,
