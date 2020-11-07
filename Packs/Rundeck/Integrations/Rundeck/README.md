@@ -42,6 +42,10 @@ There are no input arguments for this command.
 !rundeck-projects-list
 
 #### Human Readable Output
+### Projects List:
+|Name|Description|
+|---|---|
+| Demisto | Demisto Test |
 
 
 
@@ -82,6 +86,10 @@ Gets a list of all the jobs exist in a project
 !rundeck-jobs-list scheduled_filter=false id_list={first_id},{second_id}
 
 #### Human Readable Output
+### Jobs List:
+|Id|Schedule Enabled|Scheduled|Enabled|Group|Description|Project|Name|
+|---|---|---|---|---|---|---|---|
+| 123 | true | false | true |  | just a sample job | Demisto | Arseny\'s Job |
 
 
 
@@ -133,6 +141,10 @@ Executes a new job
 !rundeck-job-execute job_id={job_id} arg_string="-arg1 value1" as_user=galb log_level=ERROR
 
 #### Human Readable Output
+### Execute Job:
+|Id|Status|Project|Execution Type|User|Datestarted|Job|Description|Argstring|
+|---|---|---|---|---|---|---|---|---|
+| 194 | running | Demisto | user | Galb | unixtime: 123<br>date: 123 | id: 123<br>averageDuration: 463<br>name: Arseny's Job<br>group: <br>project: Demisto<br>description: just a sample job<br>options: {"foo": "0"} | 123 | -foo 0 |
 
 
 
@@ -183,6 +195,10 @@ Retry running a failed execution
 !rundeck-job-retry execution_id=122 job_id={job_id}
 
 #### Human Readable Output
+### Execute Job:
+|Id|Status|Project|Execution Type|User|Datestarted|Job|Description|Argstring|
+|---|---|---|---|---|---|---|---|---|
+| 194 | running | Demisto | user | Galb | unixtime: 123<br>date: 123 | id: 123<br>averageDuration: 463<br>name: Arseny's Job<br>group: <br>project: Demisto<br>description: just a sample job<br>options: {"foo": "0"} | 123 | -foo 0 |
 
 
 
@@ -261,6 +277,10 @@ Gets all exections base on job or execution details
 !rundeck-job-executions-query adhoc=false max_results=3 project_name=Demisto user_filter=galb status_filter=failed
 
 #### Human Readable Output
+### Job Execution Query - got total results: 2
+|Id|Status|Project|Execution Type|User|Datestarted|Dateended|Job|Description|Argstring|Failed Nodes|
+|---|---|---|---|---|---|---|---|---|---|---|
+| 195 | failed | Demisto | user | Galb | unixtime: 123<br>date: 123 | unixtime: 123<br>date: 123 | id: 123<br>averageDuration: 463<br>name: Arseny's Job<br>group: <br>project: Demisto<br>description: just a sample job<br>options: {"foo": "0"} | 123 | -foo 0 | localhost |
 
 
 
@@ -312,6 +332,14 @@ Gets the metadata associated with workflow step state
 !rundeck-job-execution-output execution_id=118 aggregate_log=true
 
 #### Human Readable Output
+### Job Execution Output:
+|Id|Offset|Completed|Exec Completed|Has Failed Nodes|Exec State|Last Modified|Exec Duration|Percent Loaded|Total Size|Retry Backoff|Cluster Exec|Compacted|Entries|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 69 | 3732 | true | true | true | failed | 123 | 237 | 12 | 3738 | 0 | false | false | {'node': 'localhost', 'step': '1', 'stepctx': '1', 'user': 'admin', 'time': '10:54:52', 'level': 'NORMAL', 'type': 'stepbegin', 'absolute_time': '123', 'log': ''} |
+### Job Execution Entries View:
+|Log|Node|Step|Stepctx|User|Time|Level|Type|Absolute Time|Log|
+|---|---|---|---|---|---|---|---|---|---|
+|  | localhost | 1 | 1 | admin | 10:54:52 | NORMAL | stepbegin |  |  |
 
 
 
@@ -344,6 +372,10 @@ Aborts an active execution
 !rundeck-job-execution-abort execution_id=65
 
 #### Human Readable Output
+### Job Execution Abort:
+|Abort|Execution|
+|---|---|
+| status: failed<br>reason: Job is not running | id: 69<br>status: failed |
 
 
 
@@ -379,6 +411,10 @@ Executes shell commands in nodes
 !rundeck-adhoc-command-run exec_command="echo hello" as_user=adhocTest project_name=Demisto node_keepgoing=true
 
 #### Human Readable Output
+### Adhoc Run:
+|Message|Execution|
+|---|---|
+| Immediate execution scheduled (196) | id: 196 |
 
 
 
@@ -418,6 +454,10 @@ Runs a script from file
 !rundeck-adhoc-script-run entry_id=@121 as_user='test'
 
 #### Human Readable Output
+### Adhoc Run Script:
+|Message|Execution|
+|---|---|
+| Immediate execution scheduled (196) | id: 196 |
 
 
 
@@ -453,6 +493,10 @@ There is no context output for this command.
 !rundeck-adhoc-script-run-from-url script_url='URL' node_keepgoing=true
 
 #### Human Readable Output
+### Adhoc Run Script From Url:
+|Message|Execution|
+|---|---|
+| Immediate execution scheduled (196) | id: 196 |
 
 
 
@@ -493,6 +537,10 @@ Gets a list of all existing webhooks
 !rundeck-webhooks-list project_name="TEST"
 
 #### Human Readable Output
+### Webhooks List:
+|Id|Uuid|Name|Project|Enabled|User|Creator|Roles|Auth Token|Event Plugin|Config|
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 123 | Arseny's hook | Demisto | true | admin | admin | 123 | 123 | webhook-run-job | jobId: 123<br>argString: 123 |
 
 
 
@@ -525,5 +573,9 @@ Send webhook event
 !rundeck-webhook-event-send json=`{"test":1}` auth_token={auth_id}
 
 #### Human Readable Output
+### Webhook event send:
+|Job Id|Execution Id|
+|---|---|
+| 123 | 199 |
 
 
