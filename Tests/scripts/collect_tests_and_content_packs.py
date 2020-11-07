@@ -1070,7 +1070,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
-    # Get packs containing each of the collected tests
+    # Get packs that contains each of the collected tests
     packs_of_collected_tests = get_content_pack_name_of_test(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
@@ -1092,11 +1092,10 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         logging.debug(f"Adding sanity tests: {sanity_tests}")
         tests.update(sanity_tests)
         logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
-        packs_to_install.add("HelloWorld")
         logging.debug(
-            "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' using it"
+            "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
         )
-        packs_to_install.add("Gmail")
+        packs_to_install.update(["HelloWorld", "Gmail"])
 
     # We add Base andDeveloperTools packs for every build
     packs_to_install.update(["DeveloperTools", "Base"])
