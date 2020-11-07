@@ -1074,7 +1074,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     packs_of_collected_tests = get_content_pack_name_of_test(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
-    # All filtring out of packs should be done here
+    # All filtering out of packs should be done here
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
     # All filtering out of tests should be done here
@@ -1098,6 +1098,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         )
         packs_to_install.add("Gmail")
 
+    # We add Base andDeveloperTools packs for every build
     packs_to_install.update(["DeveloperTools", "Base"])
 
     return tests, packs_to_install
