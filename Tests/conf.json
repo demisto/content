@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "FireEyeNX",
+            "playbookID": "FireEyeNX-Test"
+        },
+        {
             "integrations": "EmailRepIO",
             "playbookID": "TestEmailRepPlaybook",
             "fromversion": "5.0.0"
