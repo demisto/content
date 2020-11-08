@@ -9,7 +9,7 @@ configuration:
   type: 0
 - display: Username
   hidden: false
-  name: credentials
+  name: creds
   required: true
   type: 9
 - defaultvalue: global
@@ -27,21 +27,20 @@ configuration:
   required: false
   type: 8
 description: FortiManager is a single console central management system that manages
-  Fortinet Devices.
+  Fortinet devices.
 display: FortiManager (Beta)
 name: FortiManager
 script:
   commands:
   - arguments:
     - default: false
-      description: The ADOM from which to fetch the devices. Leave empty to use the
-        instance ADOM.
+      description: The FortiManager Administrative Domain (ADOM) from which to fetch the devices. Leave empty to use the instance ADOM.
       isArray: false
       name: adom
       required: false
       secret: false
     - default: false
-      description: The name of a specific device to get. If not specified will get
+      description: The name of a specific device to get. If not specified, will get
         all devices.
       isArray: false
       name: device
@@ -49,67 +48,67 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which index to start the list.
+      description: From which index to start the list. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: To which index to get the list.
+      description: Until which index to get the list. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: List all devices in the instance ADOM
+    description: List all devices in the ADOM instance.
     execution: false
     name: fortimanager-devices-list
     outputs:
     - contextPath: FortiManager.Device.adm_pass
-      description: ADOM password.
+      description: The ADOM password.
       type: String
     - contextPath: FortiManager.Device.adm_usr
-      description: ADOM user.
+      description: The ADOM user.
       type: String
     - contextPath: FortiManager.Device.app_ver
-      description: Device app version.
+      description: The app version of the device.
       type: String
     - contextPath: FortiManager.Device.av_ver
-      description: Device AV version.
+      description: The antivirus version of the device.
       type: String
     - contextPath: FortiManager.Device.beta
-      description: Beta.
+      description: The beta version of the device.
       type: Number
     - contextPath: FortiManager.Device.branch_pt
-      description: Branch pt.
+      description: The branch point of the device.
       type: Number
     - contextPath: FortiManager.Device.build
-      description: Build.
+      description: The build of the device.
       type: Number
     - contextPath: FortiManager.Device.checksum
-      description: Checksum.
+      description: The checksum of the device.
       type: String
     - contextPath: FortiManager.Device.conf_status
-      description: Conf status
+      description: The configuration status of the device.
       type: String
     - contextPath: FortiManager.Device.conn_mode
-      description: Conn mode
+      description: The connection mode of the device.
       type: String
     - contextPath: FortiManager.Device.conn_status
-      description: Conn status.
+      description: The connection status of the device.
       type: String
     - contextPath: FortiManager.Device.db_status
-      description: DB status.
+      description: The database status of the device.
       type: String
     - contextPath: FortiManager.Device.desc
-      description: Desc.
+      description: The description of the device.
       type: String
     - contextPath: FortiManager.Device.dev_status
-      description: Device status.
+      description: The status of the device.
       type: String
     - contextPath: FortiManager.Device.fap_cnt
-      description: Fap count.
+      description: The FortiManager access point count.
       type: Number
     - contextPath: FortiManager.Device.faz.full_act
       description: Full act.
@@ -118,7 +117,7 @@ script:
       description: Perm.
       type: Number
     - contextPath: FortiManager.Device.faz.quota
-      description: Quota
+      description: Quota.
       type: Number
     - contextPath: FortiManager.Device.faz.used
       description: Used.
@@ -130,7 +129,7 @@ script:
       description: Flags.
       type: String
     - contextPath: FortiManager.Device.foslic_cpu
-      description: Foslic cpu.
+      description: Foslic CPU.
       type: Number
     - contextPath: FortiManager.Device.foslic_dr_site
       description: Foslic dr site.
@@ -139,13 +138,13 @@ script:
       description: Foslic inst time.
       type: Number
     - contextPath: FortiManager.Device.foslic_last_sync
-      description: Foslic Last sync.
+      description: Foslic last sync.
       type: Number
     - contextPath: FortiManager.Device.foslic_ram
       description: Foslic RAM.
       type: Number
     - contextPath: FortiManager.Device.foslic_type
-      description: Foslic Type.
+      description: Foslic type.
       type: String
     - contextPath: FortiManager.Device.foslic_utm
       description: Foslic UTM.
@@ -154,13 +153,13 @@ script:
       description: FSW count.
       type: Number
     - contextPath: FortiManager.Device.ha_group_id
-      description: Ha group id.
+      description: HA group ID.
       type: Number
     - contextPath: FortiManager.Device.ha_group_name
-      description: Ha group name.
+      description: HA group name.
       type: String
     - contextPath: FortiManager.Device.ha_mode
-      description: Ha mode.
+      description: HA mode.
       type: String
     - contextPath: FortiManager.Device.hdisk_size
       description: Hard disk size.
@@ -169,10 +168,10 @@ script:
       description: Hostname.
       type: String
     - contextPath: FortiManager.Device.hw_rev_major
-      description: HW rev major.
+      description: Hardware major revision number.
       type: Number
     - contextPath: FortiManager.Device.hw_rev_minor
-      description: HW rev minor.
+      description: Hardware minor revision number.
       type: Number
     - contextPath: FortiManager.Device.ip
       description: Device IP.
@@ -193,10 +192,10 @@ script:
       description: Latitude.
       type: String
     - contextPath: FortiManager.Device.lic_flags
-      description: Lic flags.
+      description: License flags.
       type: Number
     - contextPath: FortiManager.Device.lic_region
-      description: Lic region.
+      description: License region.
       type: String
     - contextPath: FortiManager.Device.location_from
       description: Location from.
@@ -208,7 +207,7 @@ script:
       description: Longitude.
       type: String
     - contextPath: FortiManager.Device.maxvdom
-      description: Max VDOM.
+      description: Maximum VDOM.
       type: Number
     - contextPath: FortiManager.Device.meta_fields
       description: Meta fields.
@@ -226,7 +225,7 @@ script:
       description: Management VDOM.
       type: String
     - contextPath: FortiManager.Device.module_sn
-      description: Module sn.
+      description: Module serial number.
       type: String
     - contextPath: FortiManager.Device.mr
       description: Mr.
@@ -235,10 +234,10 @@ script:
       description: Device name.
       type: String
     - contextPath: FortiManager.Device.os_type
-      description: Device OS type.
+      description: Device operating system type.
       type: String
     - contextPath: FortiManager.Device.os_ver
-      description: Device OS version.
+      description: Device operating system version.
       type: String
     - contextPath: FortiManager.Device.patch
       description: Patch.
@@ -259,7 +258,7 @@ script:
       description: Device role.
       type: String
     - contextPath: FortiManager.Device.sn
-      description: SN.
+      description: Serial number.
       type: String
     - contextPath: FortiManager.Device.vdom.comments
       description: VDOM comments.
@@ -271,13 +270,13 @@ script:
       description: VDOM opmode.
       type: String
     - contextPath: FortiManager.Device.vdom.rtm_prof_id
-      description: VDOM rtm prof id.
+      description: VDOM rtm prof ID.
       type: Number
     - contextPath: FortiManager.Device.vdom.status
       description: VDOM status.
       type: String
     - contextPath: FortiManager.Device.vdom.vpn_id
-      description: VDOM VPN id.
+      description: VDOM VPN ID.
       type: Number
     - contextPath: FortiManager.Device.version
       description: Device version.
@@ -289,7 +288,7 @@ script:
       description: VM CPU limit.
       type: Number
     - contextPath: FortiManager.Device.vm_lic_expire
-      description: VM licence expiration.
+      description: VM license expiration.
       type: Number
     - contextPath: FortiManager.Device.vm_mem
       description: VM memory.
@@ -309,7 +308,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of a device group to fetch.  If not specified will get
+      description: The name of a device group to fetch.  If not specified, will get
         all device groups.
       isArray: false
       name: group
@@ -317,14 +316,14 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which index to start the list.
+      description: From which index to start the list. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: To which index to get the list.
+      description: Until which index to get the list. Default is 50.
       isArray: false
       name: limit
       required: false
@@ -335,7 +334,7 @@ script:
     name: fortimanager-device-groups-list
     outputs:
     - contextPath: FortiManager.DeviceGroup.desc
-      description: Desc.
+      description: Description.
       type: String
     - contextPath: FortiManager.DeviceGroup.meta_fields
       description: Device group meta fields.
@@ -344,10 +343,10 @@ script:
       description: Device group name.
       type: String
     - contextPath: FortiManager.DeviceGroup.os_type
-      description: Device group OS type.
+      description: Device group operating system type.
       type: String
     - contextPath: FortiManager.DeviceGroup.type
-      description: Device group type
+      description: Device group type.
       type: String
   - arguments:
     - default: false
@@ -359,32 +358,32 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which index to start the list.
+      description: From which index to start the list. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: To which index to get the list.
+      description: To which index to get the list. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The name of a specific address to fetch.  If not specified will
+      description: The name of a specific address to fetch.  If not specified, will
         get all addresses.
       isArray: false
       name: address
       required: false
       secret: false
     deprecated: false
-    description: List ADOM firewall IPv4 addresses
+    description: List ADOM firewall IPv4 addresses.
     execution: false
     name: fortimanager-address-list
     outputs:
     - contextPath: FortiManager.Address._image-base64
-      description: Base64 of the address image
+      description: Base64 of the address image.
       type: String
     - contextPath: FortiManager.Address.allow-routing
       description: Enable/disable use of this address in the static route configuration.
@@ -397,86 +396,86 @@ script:
         measured in seconds.
       type: Number
     - contextPath: FortiManager.Address.color
-      description: Color of icon on the GUI.
+      description: The color of the icon in the GUI.
       type: Number
     - contextPath: FortiManager.Address.comment
-      description: Comments attached to the address.
+      description: The comments attached to the address.
       type: String
     - contextPath: FortiManager.Address.country
-      description: IP addresses associated to a specific country.
+      description: The IP addresses associated with a specific country.
       type: String
     - contextPath: FortiManager.Address.dynamic_mapping
-      description: Address dynamic mapping information.
+      description: The address dynamic mapping information.
       type: String
     - contextPath: FortiManager.Address.end-ip
-      description: Final IP address (inclusive) in the range for the address.
+      description: The final IP address (inclusive) in the range for the address.
       type: String
     - contextPath: FortiManager.Address.epg-name
-      description: Endpoint group name.
+      description: The endpoint group name.
       type: String
     - contextPath: FortiManager.Address.filter
-      description: Match criteria filter.
+      description: The match criteria filter.
       type: String
     - contextPath: FortiManager.Address.fqdn
-      description: Fully Qualified Domain Name address.
+      description: The fully qualified domain name (fqdn) address.
       type: String
     - contextPath: FortiManager.Address.list.ip
-      description: IP list associated with the address.
+      description: The IP list associated with the address.
       type: String
     - contextPath: FortiManager.Address.name
-      description: Address name.
+      description: The address name.
       type: String
     - contextPath: FortiManager.Address.obj-id
-      description: Object ID for NSX.
+      description: The object ID for NSX.
       type: String
     - contextPath: FortiManager.Address.organization
-      description: 'Organization domain name (Syntax: organization/domain).'
+      description: 'The organization domain name (Syntax: organization/domain).'
       type: String
     - contextPath: FortiManager.Address.policy-group
-      description: Policy group name.
+      description: The policy group name.
       type: String
     - contextPath: FortiManager.Address.sdn
-      description: SDN.
+      description: The software defined networking (SDN).
       type: String
     - contextPath: FortiManager.Address.sdn-tag
-      description: SDN Tag.
+      description: The software defined networking (SDN) tag.
       type: String
     - contextPath: FortiManager.Address.start-ip
-      description: First IP address (inclusive) in the range for the address.
+      description: The first IP address (inclusive) in the range for the address.
       type: String
     - contextPath: FortiManager.Address.subnet
-      description: IP address and subnet mask of address.
+      description: The IP address and subnet mask of address.
       type: String
     - contextPath: FortiManager.Address.subnet-name
-      description: Subnet name.
+      description: The subnet name.
       type: String
     - contextPath: FortiManager.Address.tagging.category
-      description: Tag category.
+      description: The tag category.
       type: String
     - contextPath: FortiManager.Address.tagging.name
-      description: Tagging entry name.
+      description: The tagging entry name.
       type: String
     - contextPath: FortiManager.Address.tagging.tags
-      description: Tags.
+      description: The tags.
       type: String
     - contextPath: FortiManager.Address.tenant
-      description: Tenant.
+      description: The tenant.
       type: String
     - contextPath: FortiManager.Address.type
-      description: Type of address.
+      description: The type of address.
       type: String
     - contextPath: FortiManager.Address.uuid
-      description: Universally Unique Identifier (UUID; automatically assigned but
-        can be manually reset).
+      description: Universally Unique Identifier (UUID). This is automatically assigned but
+        can be manually reset.
       type: String
     - contextPath: FortiManager.Address.visibility
       description: Enable/disable address visibility in the GUI.
       type: String
     - contextPath: FortiManager.Address.wildcard
-      description: IP address and wildcard netmask.
+      description: The IP address and wildcard netmask.
       type: String
     - contextPath: FortiManager.Address.wildcard-fqdn
-      description: Fully Qualified Domain Name with wildcard characters.
+      description: The fully qualified domain name (fqdn) with wildcard characters.
       type: String
   - arguments:
     - default: false
@@ -494,7 +493,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of address.
+      description: 'The type of address. Possible values are: "ipmask", "iprange", "fqdn", "wildcard", "geography", "wildcard-fqdn", and "dynamic".'
       isArray: false
       name: type
       predefined:
@@ -514,19 +513,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comment to add to the address
+      description: A comment to add to the address.
       isArray: false
       name: comment
       required: false
       secret: false
     - default: false
-      description: Network interface associated with address.
+      description: The network interface associated with the address.
       isArray: false
       name: associated_interface
       required: false
       secret: false
     - default: false
-      description: Fully Qualified Domain Name address. Required for fqdn address
+      description: The fully qualified domain name (fqdn) address. Required for fqdn address
         type.
       isArray: false
       name: fqdn
@@ -561,7 +560,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The address SDN. Required for dynamic address type.
+      description: 'The address SDN. Required for dynamic address type. Possible values are: "aci", "aws", "nsx", "nuage", and "azure".'
       isArray: false
       name: sdn
       predefined:
@@ -580,21 +579,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fully Qualified Domain Name with wildcard characters. Required
+      description: The fully qualified domain name (fqdn) with wildcard characters. Required
         for wildcard-fqdn address type.
       isArray: false
       name: wildcard_fqdn
       required: false
       secret: false
     - default: false
-      description: '2 letter representing a country associated to an IP address (for
-        example: ''us''). Required for geography address type. '
+      description: 'The two letter abbreviation representing a country associated with an IP address (for
+        example: "us"). Required for geography address type. '
       isArray: false
       name: country
       required: false
       secret: false
     deprecated: false
-    description: Add a new IPv4 address to the
+    description: Add a new IPv4 address.
     execution: false
     name: fortimanager-address-create
   - arguments:
@@ -613,7 +612,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of address.
+      description: 'Type of address. Possible values are: "ipmask", "iprange", "fqdn", "wildcard", "geography", "wildcard-fqdn", and "dynamic".'
       isArray: false
       name: type
       predefined:
@@ -633,7 +632,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comment to add to the address
+      description: A comment to add to the address.
       isArray: false
       name: comment
       required: false
@@ -645,7 +644,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fully Qualified Domain Name address. Required for fqdn address
+      description: The fully qualified domain name (fqdn) address. Required for fqdn address
         type.
       isArray: false
       name: fqdn
@@ -680,7 +679,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The address SDN. Required for dynamic address type.
+      description: 'The address SDN. Required for dynamic address type. Possible values are: "aci", "aws", "nsx", "nuage", and "azure".'
       isArray: false
       name: sdn
       predefined:
@@ -699,21 +698,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fully Qualified Domain Name with wildcard characters. Required
+      description: The fully qualified domain name (fqdn) with wildcard characters. Required
         for wildcard-fqdn address type.
       isArray: false
       name: wildcard_fqdn
       required: false
       secret: false
     - default: false
-      description: '2 letter representing a country associated to an IP address (for
-        example: ''us''). Required for geography address type. '
+      description: 'The two letter abbreviation representing a country associated with an IP address (for
+        example: "us"). Required for geography address type. '
       isArray: false
       name: country
       required: false
       secret: false
     deprecated: false
-    description: Add a new IPv4 address to the
+    description: Add a new IPv4 address.
     execution: false
     name: fortimanager-address-update
   - arguments:
@@ -725,13 +724,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The address to delete
+      description: The address to delete.
       isArray: false
       name: address
       required: true
       secret: false
     deprecated: false
-    description: Delete an address
+    description: Delete an address.
     execution: false
     name: fortimanager-address-delete
   - arguments:
@@ -744,103 +743,103 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which index to start the list.
+      description: From which index to start the list. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: To which index to get the list.
+      description: To which index to get the list. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Name for a specific address group to fetch. If not specified will
+      description: Name for a specific address group to fetch. If not specified, will
         get all address groups.
       isArray: false
       name: address_group
       required: false
       secret: false
     deprecated: false
-    description: List ADOM IPv4 address groups
+    description: List ADOM IPv4 address groups.
     execution: false
     name: fortimanager-address-group-list
     outputs:
     - contextPath: FortiManager.AddressGroup._image-base64
-      description: Base64 of the address group image
+      description: Base64 of the address group image.
       type: String
     - contextPath: FortiManager.AddressGroup.allow-routing
       description: Enable/disable use of this group in the static route configuration.
       type: String
     - contextPath: FortiManager.AddressGroup.color
-      description: Color of icon on the GUI.
+      description: The color of the icon in the GUI.
       type: Number
     - contextPath: FortiManager.AddressGroup.comment
-      description: Comment about the address group.
+      description: The comment about the address group.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping._image-base64
-      description: Address group dynamic mapping base64 image.
+      description: The address group dynamic mapping base64 image.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping._scope.name
-      description: Address group dynamic mapping scope name.
+      description: The address group dynamic mapping scope name.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping._scope.vdom
-      description: Address group dynamic mapping scope VDOM.
+      description: The address group dynamic mapping scope VDOM.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.allow-routing
       description: Enable/disable use of this dynamic mapping in the static route
         configuration.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.color
-      description: Color of icon on the GUI.
+      description: The color of the icon in the GUI.
       type: Number
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.comment
-      description: Comment about the address group dynamic mapping.
+      description: The comment about the address group dynamic mapping.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.exclude
       description: Whether to enable or disable the exclusion of the dynamic mapping.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.exclude-member
-      description: Exclude member.
+      description: The exclude member.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.global-object
-      description: Global object.
+      description: The global object.
       type: Number
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.member
-      description: Address group dynamic mapping member.
+      description: The address group dynamic mapping member.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.tags
-      description: Address group dynamic mapping tags.
+      description: The address group dynamic mapping tags.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.type
-      description: Address group dynamic mapping type.
+      description: The address group dynamic mapping type.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.uuid
-      description: Address group dynamic mapping uuid.
+      description: The address group dynamic mapping UUID.
       type: String
     - contextPath: FortiManager.AddressGroup.dynamic_mapping.visibility
-      description: Address group dynamic mapping visibility.
+      description: The address group dynamic mapping visibility.
       type: String
     - contextPath: FortiManager.AddressGroup.member
-      description: Address objects contained within the group.
+      description: The address objects contained within the group.
       type: String
     - contextPath: FortiManager.AddressGroup.name
-      description: Address group name.
+      description: The address group name.
       type: String
     - contextPath: FortiManager.AddressGroup.tagging.category
-      description: Tag category.
+      description: The tag category.
       type: String
     - contextPath: FortiManager.AddressGroup.tagging.name
-      description: Tagging entry name.
+      description: The tagging entry name.
       type: String
     - contextPath: FortiManager.AddressGroup.tagging.tags
-      description: Tags.
+      description: The tags.
       type: String
     - contextPath: FortiManager.AddressGroup.uuid
-      description: Universally Unique Identifier (UUID; automatically assigned but
-        can be manually reset).
+      description: Universally Unique Identifier (UUID). This is automatically assigned but
+        can be manually reset.
       type: String
     - contextPath: FortiManager.AddressGroup.visibility
       description: Enable/disable address visibility in the GUI.
@@ -860,20 +859,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV list of the Address or Address Groups objects contained within
+      description: A comma-separated list of the address or address group objects contained within
         the group.
       isArray: false
       name: member
       required: true
       secret: false
     - default: false
-      description: A comment about the address group
+      description: A comment about the address group.
       isArray: false
       name: comment
       required: false
       secret: false
     deprecated: false
-    description: Create a new Address Group
+    description: Create a new address group.
     execution: false
     name: fortimanager-address-group-create
   - arguments:
@@ -891,20 +890,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV list of the Address or Address Groups objects contained within
+      description: A comma-separated list of the address or address group objects contained within
         the group.
       isArray: false
       name: member
       required: false
       secret: false
     - default: false
-      description: A comment about the address group
+      description: A comment about the address group.
       isArray: false
       name: comment
       required: false
       secret: false
     deprecated: false
-    description: Create a new Address Group
+    description: Create a new address group.
     execution: false
     name: fortimanager-address-group-update
   - arguments:
@@ -935,27 +934,27 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which index to start the list.
+      description: From which index to start the list. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: To which index to get the list.
+      description: To which index to get the list. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Name of a specific category to fetch. If not specified will get
+      description: Name of a specific category to fetch. If not specified, will get
         all service groups.
       isArray: false
       name: service_category
       required: false
       secret: false
     deprecated: false
-    description: List ADOM service categories
+    description: List the ADOM service categories.
     execution: false
     name: fortimanager-service-categories-list
     outputs:
@@ -975,41 +974,41 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which index to start the list.
+      description: From which index to start the list. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: To which index to get the list.
+      description: To which index to get the list. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Name of a specific service group to fetch. If not specified will
+      description: Name of a specific service group to fetch. If not specified, will
         get all service groups.
       isArray: false
       name: service_group
       required: false
       secret: false
     deprecated: false
-    description: List ADOM service groups
+    description: List ADOM service groups.
     execution: false
     name: fortimanager-service-group-list
     outputs:
     - contextPath: FortiManager.ServiceGroup.color
-      description: Color of icon on the GUI.
+      description: The color of the icon in the GUI.
       type: Number
     - contextPath: FortiManager.ServiceGroup.comment
       description: Comment.
       type: String
     - contextPath: FortiManager.ServiceGroup.member
-      description: Service objects contained within the group.
+      description: The service objects contained within the group.
       type: String
     - contextPath: FortiManager.ServiceGroup.name
-      description: Address group name.
+      description: The address group name.
       type: String
     - contextPath: FortiManager.ServiceGroup.proxy
       description: Enable/disable web proxy service group.
@@ -1036,7 +1035,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Enable/disable web proxy service group.
+      description: Enable/disable a web proxy service group.
       isArray: false
       name: proxy
       predefined:
@@ -1045,13 +1044,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of Service objects to be contained within the group.
+      description: A comma-separated list of service objects to be contained within the group.
       isArray: false
       name: member
       required: true
       secret: false
     deprecated: false
-    description: Create a new Service Group
+    description: Creates a new service group.
     execution: false
     name: fortimanager-service-group-create
   - arguments:
@@ -1076,7 +1075,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Enable/disable web proxy service group.
+      description: Enable/disable a web proxy service group.
       isArray: false
       name: proxy
       predefined:
@@ -1085,13 +1084,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of Service objects to be contained within the group.
+      description: A comma-sperated list of service objects to be contained within the group.
       isArray: false
       name: member
       required: false
       secret: false
     deprecated: false
-    description: Create a new Service Group
+    description: Create a new service group.
     execution: false
     name: fortimanager-service-group-update
   - arguments:
@@ -1109,12 +1108,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a service group
+    description: Delete a service group.
     execution: false
     name: fortimanager-service-group-delete
   - arguments:
     - default: false
-      description: The ADOM from which to fetch the custom servicse. Leave empty to
+      description: The ADOM from which to fetch the custom service. Leave empty to
         use the instance ADOM.
       isArray: false
       name: adom
@@ -1122,20 +1121,20 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which index to start the list.
+      description: From which index to start the list. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: To which index to get the list.
+      description: To which index to get the list. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Name of a specific custom service to fetch.  If not specified will
+      description: Name of a specific custom service to fetch.  If not specified, will
         get all custom services.
       isArray: false
       name: custom_service
@@ -1162,13 +1161,13 @@ script:
       description: Configure the type of ICMP error message verification.
       type: String
     - contextPath: FortiManager.CustomService.color
-      description: Color of icon on the GUI.
+      description: Color of icon in the GUI.
       type: Number
     - contextPath: FortiManager.CustomService.comment
       description: Comment.
       type: String
     - contextPath: FortiManager.CustomService.fqdn
-      description: Fully qualified domain name.
+      description: Fully qualified domain (fqdn) name.
       type: String
     - contextPath: FortiManager.CustomService.helper
       description: Helper name.
@@ -1192,48 +1191,47 @@ script:
       description: IP protocol number.
       type: Number
     - contextPath: FortiManager.CustomService.proxy
-      description: Enable/disable web proxy service.
+      description: Enable/disable a web proxy service.
       type: String
     - contextPath: FortiManager.CustomService.sctp-portrange
       description: Multiple SCTP port ranges.
       type: String
     - contextPath: FortiManager.CustomService.session-ttl
-      description: Session TTL (300 - 604800, 0 = default).
+      description: Session TTL (300 - 604800. Default is 0.).
       type: Number
     - contextPath: FortiManager.CustomService.tcp-halfclose-timer
       description: Wait time to close a TCP session waiting for an unanswered FIN
-        packet (1 - 86400 sec, 0 = default).
+        packet (1 - 86400 sec. Default is 0.).
       type: Number
     - contextPath: FortiManager.CustomService.tcp-halfopen-timer
       description: Wait time to close a TCP session waiting for an unanswered open
-        session packet (1 - 86400 sec, 0 = default).
+        session packet (1 - 86400 sec. Default is 0.).
       type: Number
     - contextPath: FortiManager.CustomService.tcp-portrange
       description: Multiple TCP port ranges.
       type: String
     - contextPath: FortiManager.CustomService.tcp-timewait-timer
-      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec,
-        0 = default).
+      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec. Default is 0.).
       type: Number
     - contextPath: FortiManager.CustomService.udp-idle-timer
-      description: UDP half close timeout (0 - 86400 sec, 0 = default).
+      description: UDP half close timeout (0 - 86400 sec. Default is 0.).
       type: Number
     - contextPath: FortiManager.CustomService.udp-portrange
       description: Multiple UDP port ranges.
       type: String
     - contextPath: FortiManager.CustomService.visibility
-      description: Enable/disable the visibility of the service on the GUI.
+      description: Enable/disable the visibility of the service in the GUI.
       type: String
   - arguments:
     - default: false
-      description: The ADOM from which to fetch the custom servicse. Leave empty to
+      description: The ADOM from which to fetch the custom service. Leave empty to
         use the instance ADOM.
       isArray: false
       name: adom
       required: false
       secret: false
     - default: false
-      description: The name of the new custom service
+      description: The name of the new custom service.
       isArray: false
       name: name
       required: true
@@ -1247,7 +1245,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Application service type.
+      description: 'Application service type. Possible values are: "app-id", "disable", and "app-category". Default is "disable".'
       isArray: false
       name: app_service_type
       predefined:
@@ -1263,14 +1261,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The service category
+      description: The service category.
       isArray: false
       name: category
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Configure the type of ICMP error message verification.
+      description: 'Configure the type of ICMP error message verification. Possible values are: "disable", "default", and "strict".'
       isArray: false
       name: check_reset_range
       predefined:
@@ -1286,7 +1284,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fully qualified domain name.
+      description: Fully qualified domain name (fqdn).
       isArray: false
       name: fqdn
       required: false
@@ -1332,14 +1330,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Start and end of the IP range associated with service.
+      description: Start and end of the IP range associated with the service.
       isArray: false
       name: iprange
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Protocol type based on IANA numbers.
+      description: 'Protocol type based on IANA numbers. Possible values are: "ICMP", "IP", "TCP/UDP/SCTP", "ICMP6", "HTTP", "FTP", "CONNECT", "SOCKS", "ALL", "SOCKS-TCP", and "SOCKS-UDP".'
       isArray: false
       name: protocol
       predefined:
@@ -1358,7 +1356,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Enable/disable web proxy service.
+      description: Enable/disable a web proxy service.
       isArray: false
       name: proxy
       predefined:
@@ -1374,7 +1372,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Session TTL in the range of 300 - 604800.
+      description: Session TTL in the range of 300 - 604800. Default is 0.
       isArray: false
       name: session_ttl
       required: false
@@ -1382,7 +1380,7 @@ script:
     - default: false
       defaultValue: '0'
       description: Wait time to close a TCP session waiting for an unanswered FIN
-        packet (1 - 86400 sec).
+        packet (1 - 86400 sec). Default is 0.
       isArray: false
       name: tcp_halfclose_timer
       required: false
@@ -1390,7 +1388,7 @@ script:
     - default: false
       defaultValue: '0'
       description: Wait time to close a TCP session waiting for an unanswered open
-        session packet (1 - 86400 sec).
+        session packet (1 - 86400 sec). Default is 0.
       isArray: false
       name: tcp_halfopen_timer
       required: false
@@ -1403,14 +1401,14 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec).
+      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec). Default is 0.
       isArray: false
       name: tcp_timewait_timer
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: UDP half close timeout (0 - 86400 sec).
+      description: UDP half close timeout (0 - 86400 sec). Default is 0.
       isArray: false
       name: udp_idle_timer
       required: false
@@ -1427,14 +1425,14 @@ script:
     name: fortimanager-custom-service-create
   - arguments:
     - default: false
-      description: The ADOM in which to update the custom servicse. Leave empty to
+      description: The ADOM in which to update the custom service. Leave empty to
         use the instance ADOM.
       isArray: false
       name: adom
       required: false
       secret: false
     - default: false
-      description: The name of the new custom service
+      description: The name of the new custom service.
       isArray: false
       name: name
       required: true
@@ -1448,7 +1446,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Application service type.
+      description: 'Application service type. Possible values are: "app-id", "disable", and "app-category". Default is "disable".'
       isArray: false
       name: app_service_type
       predefined:
@@ -1464,14 +1462,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The service category
+      description: The service category.
       isArray: false
       name: category
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Configure the type of ICMP error message verification.
+      description: 'Configure the type of ICMP error message verification. Possible values are: "disable", "default", and "strict".'
       isArray: false
       name: check_reset_range
       predefined:
@@ -1487,7 +1485,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fully qualified domain name.
+      description: Fully qualified domain name (fqdn).
       isArray: false
       name: fqdn
       required: false
@@ -1540,7 +1538,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Protocol type based on IANA numbers.
+      description: 'Protocol type based on IANA numbers. Possible values are: "ICMP", "IP", "TCP/UDP/SCTP", "ICMP6", "HTTP", "FTP", "CONNECT", "SOCKS", "ALL", "SOCKS-TCP", and "SOCKS-UDP".'
       isArray: false
       name: protocol
       predefined:
@@ -1559,7 +1557,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Enable/disable web proxy service.
+      description: Enable/disable a web proxy service.
       isArray: false
       name: proxy
       predefined:
@@ -1575,7 +1573,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Session TTL in the range of 300 - 604800.
+      description: Session TTL in the range of 300 - 604800. Default is 0.
       isArray: false
       name: session_ttl
       required: false
@@ -1583,7 +1581,7 @@ script:
     - default: false
       defaultValue: '0'
       description: Wait time to close a TCP session waiting for an unanswered FIN
-        packet (1 - 86400 sec).
+        packet (1 - 86400 sec). Default is 0.
       isArray: false
       name: tcp_halfclose_timer
       required: false
@@ -1591,7 +1589,7 @@ script:
     - default: false
       defaultValue: '0'
       description: Wait time to close a TCP session waiting for an unanswered open
-        session packet (1 - 86400 sec).
+        session packet (1 - 86400 sec). Default is 0.
       isArray: false
       name: tcp_halfopen_timer
       required: false
@@ -1604,14 +1602,14 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec).
+      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec). Default is 0.
       isArray: false
       name: tcp_timewait_timer
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: UDP half close timeout (0 - 86400 sec).
+      description: UDP half close timeout (0 - 86400 sec). Default is 0.
       isArray: false
       name: udp_idle_timer
       required: false
@@ -1654,32 +1652,32 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which index to start the list.
+      description: From which index to start the list. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: To which index to get the list.
+      description: To which index to get the list. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Name of a specific policy package to fetch. If not specified will
+      description: Name of a specific policy package to fetch. If not specified, will
         get all policy packages.
       isArray: false
       name: policy_package
       required: false
       secret: false
     deprecated: false
-    description: List ADOM policy packages
+    description: List ADOM policy packages.
     execution: false
     name: fortimanager-firewall-policy-package-list
     outputs:
     - contextPath: FortiManager.PolicyPackage.name
-      description: Policy Package name.
+      description: Policy package name.
       type: String
     - contextPath: FortiManager.PolicyPackage.obj_ver
       description: Policy package object version.
@@ -1688,7 +1686,7 @@ script:
       description: Policy package OID.
       type: Number
     - contextPath: FortiManager.PolicyPackage.package setting.central-nat
-      description: Whether to use central NAT.
+      description: Whether to use the central NAT.
       type: String
     - contextPath: FortiManager.PolicyPackage.package setting.consolidated-firewall-mode
       description: Whether to enable consolidate firewall mode.
@@ -1712,13 +1710,13 @@ script:
       description: Policy package scope member name.
       type: String
     - contextPath: FortiManager.PolicyPackage.scope_member.vdom
-      description: Policy Package scope member VDOM.
+      description: Policy package scope member VDOM.
       type: String
     - contextPath: FortiManager.PolicyPackage.subobj
-      description: Policy Package sub-objects.
+      description: Policy package sub-objects.
       type: Unknown
     - contextPath: FortiManager.PolicyPackage.type
-      description: Policy Package type.
+      description: Policy package type.
       type: String
   - arguments:
     - default: false
@@ -1729,14 +1727,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the new Policy Package.
+      description: The name of the new policy package.
       isArray: false
       name: name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type og package
+      description: 'The type of package. Possible values are: "pkg" and "folder".'
       isArray: false
       name: type
       predefined:
@@ -1747,7 +1745,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Whether to use central NAT
+      description: Whether to use central NAT. Default is "disable".
       isArray: false
       name: central_nat
       predefined:
@@ -1758,7 +1756,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Whether to enable consolidate firewall mode
+      description: Whether to enable consolidate firewall mode. Default is "disable".
       isArray: false
       name: consolidated_firewall_mode
       predefined:
@@ -1769,7 +1767,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Whether to enable firewall policy implicit log
+      description: Whether to enable firewall policy implicit log. Default is "disable".
       isArray: false
       name: fwpolicy_implicit_log
       predefined:
@@ -1780,7 +1778,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: Whether to enable firewall policy 6 implicit log
+      description: Whether to enable firewall policy 6 implicit log. Default is "disable".
       isArray: false
       name: fwpolicy6_implicit_log
       predefined:
@@ -1791,18 +1789,18 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: proxy
-      description: Package inspection mode.
+      description: 'Package inspection mode. Possible values are: "proxy" and "flow". Default is "proxy".'
       isArray: false
       name: inspection_mode
       predefined:
       - proxy
       - flow
       required: false
-      secret: false
+      secret: false 
     - auto: PREDEFINED
       default: false
       defaultValue: profile-based
-      description: Package NGFW mode
+      description: 'Package NGFW mode. Possible values are: "profile-based" and "policy-based". Default is "profile-based".'
       isArray: false
       name: ngfw_mode
       predefined:
@@ -1811,7 +1809,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Package SSL SSH profile
+      description: Package SSL SSH profile.
       isArray: false
       name: ssl_ssh_profile
       predefined:
@@ -1838,7 +1836,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type og package
+      description: 'The type og package. Possible values are: "pkg" and "folder".'
       isArray: false
       name: type
       predefined:
@@ -1848,7 +1846,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use central NAT
+      description: Whether to use central NAT.
       isArray: false
       name: central_nat
       predefined:
@@ -1858,7 +1856,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to enable consolidate firewall mode
+      description: Whether to enable consolidate firewall mode.
       isArray: false
       name: consolidated_firewall_mode
       predefined:
@@ -1868,7 +1866,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to enable firewall policy implicit log
+      description: Whether to enable firewall policy implicit log.
       isArray: false
       name: fwpolicy_implicit_log
       predefined:
@@ -1878,7 +1876,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to enable firewall policy 6 implicit log
+      description: Whether to enable firewall policy 6 implicit log.
       isArray: false
       name: fwpolicy6_implicit_log
       predefined:
@@ -1888,7 +1886,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Package inspection mode.
+      description: 'Package inspection mode. Possible values are: "proxy" and "flow".'
       isArray: false
       name: inspection_mode
       predefined:
@@ -1898,7 +1896,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Package NGFW mode
+      description: 'Package NGFW mode. Possible values are: "profile-based" and "policy-based".'
       isArray: false
       name: ngfw_mode
       predefined:
@@ -1907,7 +1905,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Package SSL SSH profile
+      description: Package SSL SSH profile.
       isArray: false
       name: ssl_ssh_profile
       predefined:
@@ -1938,7 +1936,7 @@ script:
     name: fortimanager-firewall-policy-package-delete
   - arguments:
     - default: false
-      description: The package from which to fetch the policies
+      description: The package from which to fetch the policies.
       isArray: false
       name: package
       required: true
@@ -1953,7 +1951,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: '0'
-      description: From which index to start the list.
+      description: From which index to start the list. Default is 0.
       isArray: false
       name: offset
       predefined:
@@ -1967,14 +1965,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: An id for the specific policy to fetch. If not specified will get
+      description: An ID for the specific policy to fetch. If not specified, will get
         all policies.
       isArray: false
       name: policy_id
       required: false
       secret: false
     deprecated: false
-    description: List specific firewall policies from a policy package
+    description: List specific firewall policies from a policy package.
     execution: false
     name: fortimanager-firewall-policy-list
     outputs:
@@ -1991,7 +1989,7 @@ script:
       description: Application ID list.
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.application-list
-      description: Name of an existing Application list.
+      description: Name of an existing application list.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.auth-cert
       description: HTTPS server certificate for policy authentication.
@@ -2006,7 +2004,7 @@ script:
       description: Enable/disable offloading security profile processing to CP processors.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.av-profile
-      description: Name of an existing Antivirus profile.
+      description: Name of an existing antivirus profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.block-notification
       description: Enable/disable block notification.
@@ -2069,7 +2067,7 @@ script:
       description: Destination address and address group names.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dstaddr-negate
-      description: When enabled dstaddr specifies what the destination address must
+      description: When enabled, dstaddr specifies what the destination address must
         NOT be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.dstintf
@@ -2083,7 +2081,7 @@ script:
       description: Enable to prevent source NAT from changing a session source port.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.fsso
-      description: Enable/disable Fortinet Single Sign-On.
+      description: Enable/disable Fortinet single sign-on.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.fsso-agent-for-ntlm
       description: FSSO agent to use for NTLM authentication.
@@ -2105,39 +2103,39 @@ script:
       description: Name of identity-based routing rule.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.inbound
-      description: 'Policy-based IPsec VPN: only traffic from the remote network can
+      description: 'Policy-based IPsec VPN. Only traffic from the remote network can
         initiate a VPN.'
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service
-      description: Enable/disable use of Internet Services for this policy. If enabled,
+      description: Enable/disable use of internet services for this policy. If enabled,
         destination address and service are not used.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-custom
-      description: Custom Internet Service name.
+      description: Custom internet service name.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-id
-      description: Internet Service ID.
+      description: Internet service ID.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-negate
-      description: When enabled internet-service specifies what the service must NOT
+      description: When enabled, internet service specifies what the service must NOT
         be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src
-      description: Enable/disable use of Internet Services in source for this policy.
+      description: Enable/disable use of internet services in source for this policy.
         If enabled, source address is not used.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src-custom
-      description: Custom Internet Service source name.
+      description: Custom internet service source name.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src-id
-      description: Internet Service source ID.
+      description: Internet service source ID.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src-negate
-      description: When enabled internet-service-src specifies what the service must
+      description: When enabled, internet-service-src specifies what the service must
         NOT be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ippool
-      description: Enable to use IP Pools for source NAT.
+      description: Enable to use IP pools for source NAT.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.ips-sensor
       description: Name of an existing IPS sensor.
@@ -2168,7 +2166,7 @@ script:
       description: Policy name.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.nat
-      description: Enable/disable source NAT.
+      description: Enable/disable a source NAT.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.natinbound
       description: 'Policy-based IPsec VPN: apply destination NAT to inbound traffic.'
@@ -2209,13 +2207,13 @@ script:
       description: Policy ID.
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.poolname
-      description: IP Pool names.
+      description: IP pool names.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.profile-group
       description: Name of profile group.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.profile-protocol-options
-      description: Name of an existing Protocol options profile.
+      description: Name of an existing protocol options profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.profile-type
       description: Determine whether the firewall policy allows security profile groups
@@ -2226,7 +2224,7 @@ script:
         be received from RADIUS server.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.redirect-url
-      description: URL users are directed to after seeing and accepting the disclaimer
+      description: The URL users are directed to after seeing and accepting the disclaimer
         or authenticating.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.replacemsg-override-group
@@ -2260,20 +2258,20 @@ script:
       description: Service and service group names.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.service-negate
-      description: When enabled service specifies what the service must NOT be.
+      description: When enabled, service specifies what the service must NOT be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.session-ttl
-      description: TTL in seconds for sessions accepted by this policy (0 means use
-        the system default session TTL).
+      description: TTL in seconds for sessions accepted by this policy. (0 means use
+        the system default session TTL.)
       type: Number
     - contextPath: FortiManager.PolicyPackage.Policy.spamfilter-profile
-      description: Name of an existing Spam filter profile.
+      description: Name of an existing spam filter profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.srcaddr
       description: Source address and address group names.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.srcaddr-negate
-      description: When enabled srcaddr specifies what the source address must NOT
+      description: When enabled, srcaddr specifies what the source address must NOT
         be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.srcintf
@@ -2386,16 +2384,16 @@ script:
         WCCP server.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.webcache
-      description: Enable/disable web cache.
+      description: Enable/disable a web cache.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.webcache-https
-      description: Enable/disable web cache for HTTPS.
+      description: Enable/disable a web cache for HTTPS.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.webfilter-profile
       description: Name of an existing Web filter profile.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.wsso
-      description: Enable/disable WiFi Single Sign On (WSSO).
+      description: Enable/disable WiFi single sign-on (WSSO).
       type: String
   - arguments:
     - default: false
@@ -2413,7 +2411,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The policy action
+      description: The policy action. Possible values are: "deny", "accept", "ipsec", and "ssl-vpn".
       isArray: false
       name: action
       predefined:
@@ -2424,7 +2422,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comment
+      description: A comment.
       isArray: false
       name: comments
       required: false
@@ -2444,7 +2442,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Enable/disable negated destination address match.
+      description: Enable/disable a negated destination address match.
       isArray: false
       name: dstaddr_negate
       predefined:
@@ -2474,7 +2472,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Enable/disable negated source address match.
+      description: Enable/disable a negated source address match.
       isArray: false
       name: srcaddr_negate
       predefined:
@@ -2490,7 +2488,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A CSV list of additional params and their values. exmaple: Field1=Value1,Field2=Value2'
+      description: 'A comma-separated list of additional params and their values. For example: Field1=Value1,Field2=Value2.'
       isArray: false
       name: additional_params
       required: false
@@ -2504,8 +2502,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: utm
-      description: Enable or disable logging. Log all sessions or security profile
-        sessions.
+      description: 'Enable or disable logging. Log all sessions or security profile
+        sessions. Possible values are: "enable", "disable", "all", and "utm".'
       isArray: false
       name: logtraffic
       predefined:
@@ -2517,14 +2515,14 @@ script:
       secret: false
     - default: false
       defaultValue: always
-      description: Schedule name.
+      description: Schedule name. Default is "always".
       isArray: false
       name: schedule
       required: true
       secret: false
     - default: false
       defaultValue: ALL
-      description: Service and service group names.
+      description: Service and service group names. Default is "ALL".
       isArray: false
       name: service
       required: true
@@ -2566,7 +2564,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The policy action
+      description: 'The policy action. Possible values are: "deny", "accept", "ipsec", and "ssl-vpn".'
       isArray: false
       name: action
       predefined:
@@ -2577,7 +2575,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comment
+      description: A comment.
       isArray: false
       name: comments
       required: false
@@ -2597,7 +2595,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Enable/disable negated destination address match.
+      description: Enable/disable a negated destination address match.
       isArray: false
       name: dstaddr_negate
       predefined:
@@ -2626,7 +2624,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Enable/disable negated source address match.
+      description: Enable/disable a negated source address match.
       isArray: false
       name: srcaddr_negate
       predefined:
@@ -2641,7 +2639,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A CSV list of additional params and their values. exmaple: Field1=Value1,Field2=Value2'
+      description: 'A comma-separated list of additional params and their values. exmaple: Field1=Value1,Field2=Value2.'
       isArray: false
       name: additional_params
       required: false
@@ -2654,8 +2652,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Enable or disable logging. Log all sessions or security profile
-        sessions.
+      description: 'Enable or disable logging. Log all sessions or security profile
+        sessions. Possible values are: "enable", "disable", "all", and "utm".'
       isArray: false
       name: logtraffic
       predefined:
@@ -2750,7 +2748,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: before
-      description: Whether to move the policy before or after the target policy.
+      description: 'Whether to move the policy before or after the target policy. Possible values are: "before" and "after". Default is "before".'
       isArray: false
       name: option
       predefined:
@@ -2759,7 +2757,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Move a policy in the package
+    description: Move a policy in the package.
     execution: false
     name: fortimanager-firewall-policy-move
   - arguments:
@@ -2772,14 +2770,14 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which index to start the list.
+      description: From which index to start the list. Default is 0. 
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: To which index to get the list.
+      description: To which index to get the list. Default is 50. 
       isArray: false
       name: limit
       required: false
@@ -2790,7 +2788,7 @@ script:
     name: fortimanager-dynamic-interface-list
     outputs:
     - contextPath: FortiManager.DynamicInterface.color
-      description: Color of icon on the GUI.
+      description: Color of the icon in the GUI.
       type: Number
     - contextPath: FortiManager.DynamicInterface.default-mapping
       description: Default mapping of the Interface.
@@ -2915,7 +2913,7 @@ script:
       description: The installation task end time.
       type: Number
     - contextPath: FortiManager.Installation.flags
-      description: The installation_task_flags
+      description: The installation_task_flags.
       type: Number
     - contextPath: FortiManager.Installation.id
       description: The installation task ID.
