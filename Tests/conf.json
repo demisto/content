@@ -13,6 +13,15 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "FireEyeNX",
+            "playbookID": "FireEyeNX-Test"
+        },
+        {
+            "integrations": "EmailRepIO",
+            "playbookID": "TestEmailRepPlaybook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Microsoft Endpoint Configuration Manager",
             "playbookID": "Microsoft ECM - Test",
             "fromversion": "5.5.0"
@@ -33,6 +42,11 @@
             "fromversion": "5.5.0",
             "memory_threshold": 250,
             "timeout": 500
+        },
+        {
+            "integrations": "Anomali Enterprise",
+            "playbookID": "Anomali Enterprise Forensic Search - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "RiskIQDigitalFootprint",
@@ -1814,9 +1828,9 @@
             "timeout": 500
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
+            "integrations": "iDefense_v2",
+            "playbookID": "iDefense_v2_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AbuseIPDB",
@@ -1839,7 +1853,8 @@
         },
         {
             "integrations": "FireEyeFeed",
-            "playbookID": "playbook-FeedFireEye_test"
+            "playbookID": "playbook-FeedFireEye_test",
+            "memory_threshold": 110
         },
         {
             "integrations": "Phish.AI",
@@ -2397,7 +2412,8 @@
         },
         {
             "integrations": "AWS - S3",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
+            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436",
+            "memory_threshold": 80
         },
         {
             "integrations": "Image OCR",
@@ -3206,9 +3222,17 @@
         "AWS-securityhub Test": "Issue 29796",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
-        "Wildfire Test": "Issue 24936"
+        "IAM - Test Playbook": "Issue 30013",
+        "Trend Micro Apex - Test": "Issue 27280",
+        "Azure Compute - Test": "Issue 28056",
+        "Recorded Future Test": "Issue 26741",
+        "Test - CrowdStrike Falcon": "Issue 30068",
+        "TestEmailRepPlaybook": "Issue 30070",
+        "CounterCraft - Test": "Issue 30069",
+        "Test-BPA": "Issue 28406"
     },
     "skipped_integrations": {
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "ZeroFox": "Issue 29284",
         "Recorded Future v2": "Issue 29090",
@@ -3302,9 +3326,13 @@
         "Hatching Triage": "Community contribution",
         "SNDBOX": "Issue 28826",
         "illuminate": "Will be replaced by analyst1 - Issue 9401",
+        "Workday": "License expired Issue: 29590, 29595",
+        "QuestKace": "License expired Issue: 29594",
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
@@ -3312,11 +3340,13 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
+        
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
         "Smokescreen IllusionBLACK": "partner integration",
+        
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3485,6 +3515,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
