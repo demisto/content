@@ -2,7 +2,7 @@ commonfields:
   id: AMP
   version: -1
 name: AMP
-display: Cisco AMP
+display: AMP
 category: Endpoint
 image: data:image/png;base64,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
 description: Uses CISCO AMP Endpoint
@@ -68,7 +68,6 @@ script:
         'amp_delete_computers_isolation': 'DELETE',
         'amp_put_computers_isolation': 'PUT',
         'amp_get_computers_isolation': 'GET',
-        'amp_options_computers_isolation': 'OPTIONS',
         'amp_get_computers': 'GET',
         'amp_get_computer_by_connector': 'GET',
         'amp_get_computer_trajctory': 'GET',
@@ -95,7 +94,6 @@ script:
         'amp_delete_computers_isolation':'/v1/computers',
         'amp_put_computers_isolation':'/v1/computers',
         'amp_get_computers_isolation':'/v1/computers',
-        'amp_options_computers_isolation':'/v1/computers',
         'amp_get_computers': '/v1/computers',
         'amp_get_computer_by_connector': '/v1/computers',
         'amp_get_computer_trajctory': '/v1/computers',
@@ -134,16 +132,8 @@ script:
                 base += '/' + args['connector_guid'] + '/isolation';
                 delete args['connector_guid'];
                 break;
-            case 'amp_options_computers_isolation':
-                base += '/' + args['connector_guid']  + '/isolation';
-                delete args['connector_guid'];
-                break;
 
             case 'amp_get_computer_by_connector':
-                base += '/' + args['connector_guid'];
-                delete args['connector_guid'];
-                break;
-            case 'amp_move_computer':
                 base += '/' + args['connector_guid'];
                 delete args['connector_guid'];
                 break;
@@ -484,9 +474,7 @@ script:
       required: true
       default: true
       description: connector GUID.
-    - name: unlock_code
-      description: Comment about unlocking the computer. Use the amp_get_computers_isolation command to retrieve the unlock_code.
-    description: Request to unlock an isolated computer. Can also be
+    description: Performs a feature availability request on a computer. Can also be
       used as a course-grained isolation status request.
   - name: amp_put_computers_isolation
     arguments:
@@ -494,27 +482,19 @@ script:
       required: true
       default: true
       description: connector GUID.
-    - name: unlock_code
-      description: Comment used when locking the computer. Use the amp_get_computers_isolation command to retrieve the unlock_code.
-    description: Requests isolation for a Computer.  If a computer is already isolated
-      a 409 conflict error status is returned.
+    description: Request Isolation for a Computer.  If a computer is already isolated
+      a 409 Conflict error status will be sent. Returns the same result of a GET request
+      on the /isolation endpoint.
   - name: amp_get_computers_isolation
     arguments:
     - name: connector_guid
       required: true
       default: true
       description: connector GUID.
-    - name: status
-      description: 'The status of the computer. Can be: "not_isolated", "pending_start", "isolated", or "pending_stop".'
-    description: 'Returns a fine grained isolation status for a computer.' 
-  - name: amp_options_computers_isolation
-    arguments:
-    - name: connector_guid
-      required: true
-      default: true
-      description: connector GUID.
-    description: Performs a feature availability request on a computer. Can also be
-      used as a fine grained isolation status request.
-system: true
+    description: 'Returns a fine grained isolation status for a computer.  The available
+      flag is set to true if isolation can be performed on the computer.  status will
+      be set to one of:  not_isolated pending_start isolated pending_stop'
+  runonce: false
+fromversion: 5.0.0
 tests:
-  - No test - missing instace
+- No test - missing instace
