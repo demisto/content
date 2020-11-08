@@ -1,4 +1,4 @@
-This display the amount of fetched events vs the total amount of events in the offense.
+This script displays the amount of fetched events vs the total number of events in the offense.
 
 ## Script Data
 ---
