@@ -501,7 +501,7 @@ def handling_errors_with_file_upload_command(args):
     if ('entryID' not in args or 'url' not in args) and args['submitType'] == '2':
         return_error('When submitType is 2 You must submit both url and entryID')
     # in case submitType is one of [0,1,3] and both arguments (entryID and url) were given
-    if ('entryID' in args and 'url' in args and not args['submitType'] == '2') \
+    if ('entryID' in args and 'url' in args and args['submitType'] != '2') \
             or ('entryID' not in args and 'url' not in args):
         return_error('You must submit one and only one of the following: url, entryID')
     # in case one of those happened :
