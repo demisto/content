@@ -48,7 +48,7 @@ threshold == 0.9 -> TP = 0  FP = 1 -> Precision = 0
 
 def test_threshold_found_0(mocker):
     global y_true, y_pred
-    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+    entry = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0,
                                 target_recall=0)
@@ -57,7 +57,7 @@ def test_threshold_found_0(mocker):
 
 def test_threshold_found_1(mocker):
     global y_true, y_pred
-    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+    entry = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.63,
                                 target_recall=0)
@@ -66,7 +66,7 @@ def test_threshold_found_1(mocker):
 
 def test_threshold_found_2(mocker):
     global y_true, y_pred
-    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+    entry = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.7,
                                 target_recall=0)
@@ -75,7 +75,7 @@ def test_threshold_found_2(mocker):
 
 def test_threshold_found_3(mocker):
     global y_true, y_pred
-    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+    entry = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.875,
                                 target_recall=0)
@@ -83,7 +83,7 @@ def test_threshold_found_3(mocker):
 
 
 def test_no_existing_threshold(mocker):
-    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+    entry = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.9,
                                 target_recall=0)
@@ -93,7 +93,7 @@ def test_no_existing_threshold(mocker):
 def test_predictions_are_correct_and_all_equals_one_prob(mocker):
     y_true = ['class1'] * 7 + ['class2'] * 7
     y_pred = [{'class1': 0.95}] * 7 + [{'class2': 0.95}] * 7
-    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+    entry = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.6,
                                 target_recall=0)
@@ -103,7 +103,7 @@ def test_predictions_are_correct_and_all_equals_one_prob(mocker):
 def test_predictions_are_correct_and_almost_all_equals_one_prob(mocker):
     y_true = ['class1'] * 7 + ['class2'] * 7
     y_pred = [{'class1': 1}] * 6 + [{'class1': 0.95}] + [{'class2': 1}] * 7
-    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+    entry = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.6,
                                 target_recall=0)
@@ -113,7 +113,7 @@ def test_predictions_are_correct_and_almost_all_equals_one_prob(mocker):
 def test_plabook_test_simulation(mocker):
     y_pred = [{"spam": 0.9987042546272278}, {"ham": 0.9987037777900696}]
     y_true = ["spam", "ham"]
-    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+    entry = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.7,
                                 target_recall=0)
@@ -123,7 +123,7 @@ def test_plabook_test_simulation(mocker):
 def test_all_wrong_predictions(mocker):
     y_true = ['class1'] * 7 + ['class2'] * 7
     y_pred = [{'class2': 0.5}] * 7 + [{'class1': 0.5}] * 7
-    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+    entry = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.6,
                                 target_recall=0)
@@ -133,7 +133,7 @@ def test_all_wrong_predictions(mocker):
 def test_all_wrong_predictions_2(mocker):
     y_true = ['class1'] * 7 + ['class2'] * 7
     y_pred = [{'class2': 0.5}] * 7 + [{'class1': 0.5}] * 7
-    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+    entry = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0,
                                 target_recall=0)

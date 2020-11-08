@@ -390,8 +390,7 @@ def main():
         target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
     else:
         target_recall = 0
-    threshold_metrics_entry = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall,
-                                                                         detailed=True)
+    threshold_metrics_entry = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
     # show results for the threshold found - last result so it will appear first
     confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
                                                res=threshold_metrics_entry, context_field='DBotPhishingClassifier')

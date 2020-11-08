@@ -101,7 +101,8 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
     csr_matrix_at_threshold = calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, found_threshold)
     csr_matrix_no_threshold = calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, 0)
 
-    metrics_df, metrics_explanation = generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, found_threshold)
+    metrics_df, metrics_explanation = generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class,
+                                                          found_threshold)
 
     coverage = metrics_df.loc[['All']]['Coverage'][0]
     test_set_size = metrics_df.loc[['All']]['Total'][0]
@@ -183,7 +184,7 @@ def merge_entries(entry, per_class_entry):
         'HumanReadable': entry['HumanReadable'] + '\n' + per_class_entry['HumanReadable'],
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': {**entry['EntryContext'], **per_class_entry['EntryContext']}
-        }
+    }
     return entry
 
 
@@ -204,7 +205,8 @@ def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_rec
 
     class_to_arrs = {class_: {} for class_ in labels}  # type: Dict[str, Dict[str, Any]]
     for class_ in labels:
-        precision_arr, recall_arr, thresholds_arr = precision_recall_curve(y_true_per_class[class_], y_pred_per_class[class_])
+        precision_arr, recall_arr, thresholds_arr = precision_recall_curve(y_true_per_class[class_],
+                                                                           y_pred_per_class[class_])
         class_to_arrs[class_]['precisions'] = precision_arr
         class_to_arrs[class_]['recalls'] = recall_arr
         class_to_arrs[class_]['thresholds'] = thresholds_arr
