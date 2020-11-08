@@ -1232,7 +1232,7 @@ script:
     - contextPath: GSuite.DataTransfer.requestTime
       description: The time at which the data transfer was requested.
       type: Date
-  dockerimage: demisto/googleapi-python3:1.0.0.12264
+  dockerimage: demisto/googleapi-python3:1.0.0.12698
   feed: false
   isfetch: false
   longRunning: false
