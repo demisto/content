@@ -11,7 +11,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, init_big
     get_packs_statistics_dataframe
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index,\
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config,\
-    upload_id_set, load_json, get_content_git_client, check_if_index_is_updated, print_packs_summary
+    upload_id_set, load_json, get_content_git_client, check_if_index_is_updated, print_packs_summary, get_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -492,8 +492,11 @@ def main():
     # upload id_set.json to bucket
     upload_id_set(default_storage_bucket, id_set_path)
 
+    # get the lists of packs divided by their status
+    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+
     # summary of packs status
-    print_packs_summary(packs_list)
+    print_packs_summary(successful_packs, skipped_packs, failed_packs)
 
 
 if __name__ == '__main__':
