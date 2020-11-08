@@ -1,8 +1,10 @@
 import json
 from unittest.mock import patch
+
 import pytest
+
 import demistomock as demisto
-from GSuiteAdmin import DemistoException, MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES
+from GSuiteAdmin import MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES
 
 with open('test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
@@ -38,9 +40,9 @@ def test_main(mocker):
     }
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(GSuiteAdmin, 'test_function', return_value='ok')
+    mocker.patch.object(GSuiteAdmin, 'test_module', return_value='ok')
     GSuiteAdmin.main()
-    assert GSuiteAdmin.test_function.called
+    assert GSuiteAdmin.test_module.called
 
 
 @patch('GSuiteAdmin.return_error')
@@ -64,7 +66,7 @@ def test_main_failure(mock_return_error, capfd, mocker):
     }
     mocker.patch.object(GSuiteAdmin.demisto, 'params', return_value=params)
     mocker.patch.object(GSuiteAdmin.demisto, 'command', return_value='test-module')
-    mocker.patch.object(GSuiteAdmin, 'test_function', side_effect=Exception)
+    mocker.patch.object(GSuiteAdmin, 'test_module', side_effect=Exception)
     with capfd.disabled():
         GSuiteAdmin.main()
 
@@ -84,33 +86,10 @@ def test_test_function(mocker, gsuite_client):
     Then:
     - Ensure 'ok' should be return.
     """
-    from GSuiteAdmin import test_function, GSuiteClient, service_account
+    from GSuiteAdmin import test_module, GSuiteClient
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
-    mocker.patch.object(service_account.Credentials, 'refresh')
-    gsuite_client.credentials.token = True
-    assert test_function(gsuite_client) == 'ok'
-
-
-def test_test_function_error(mocker, gsuite_client):
-    """
-    Scenario: Call to test-module should return 'ok' if API call succeeds.
-
-    Given:
-    - gsuite_client object
-
-    When:
-    - Calling test function.
-
-    Then:
-    - Ensure 'ok' should be return.
-    """
-    from GSuiteAdmin import test_function, service_account
-    mocker.patch.object(GSuiteClient, 'set_authorized_http')
-    mocker.patch.object(service_account.Credentials, 'refresh')
-    gsuite_client.credentials.token = None
-
-    with pytest.raises(DemistoException, match=MESSAGES['TEST_FAILED_ERROR']):
-        test_function(gsuite_client)
+    mocker.patch.object(GSuiteClient, 'http_request')
+    assert test_module(gsuite_client) == 'ok'
 
 
 @patch(MOCKER_HTTP_METHOD)
@@ -735,7 +714,7 @@ def test_datatransfer_request_create_command_success(mocker_http_request, gsuite
     assert result.outputs == response_data
     assert result.readable_output.startswith(
         "### " + HR_MESSAGES['DATATRANSFER_REQUEST_CREATE_SUCCESS'])
-    assert result.outputs_prefix == OUTPUT_PREFIX['DATA_TRANSFER_LIST']
+    assert result.outputs_prefix == OUTPUT_PREFIX['DATA_TRANSFER_REQUEST_CREATE']
 
 
 def test_get_transfer_params_list_from_str_invalid_param_format():
@@ -796,3 +775,53 @@ def test_prepare_datatransfer_payload_from_arguments():
 
     from GSuiteAdmin import prepare_datatransfer_payload_from_arguments
     assert prepare_datatransfer_payload_from_arguments(args) == output
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_user_delete_command(gsuite_client):
+    """
+    Scenario: user delete command successful execution.
+
+    Given:
+    - Working API integration and correct parameters
+
+    When:
+    - Calling command method user_delete_command.
+
+    Then:
+    - Ensure expected human readable output is being set.
+    """
+    from GSuiteAdmin import user_delete_command
+    response = user_delete_command(gsuite_client, {'user_key': 'user1'})
+    assert response.readable_output == HR_MESSAGES['USER_DELETE'].format('user1')
+
+
+def test_user_update_command(gsuite_client, mocker):
+    """
+    Scenario: gsuite-user-update should works if valid arguments are provided.
+
+    Given:
+    - Command args.
+
+    When:
+    - Calling gsuite-user-update command with the arguments provided.
+
+    Then:
+    - Ensure CommandResult entry should be as expected.
+    """
+    from GSuiteAdmin import user_update_command
+    with open('test_data/user_create_args.json', 'r') as file:
+        args = json.load(file)
+    args['archived'] = 'true'
+    args['org_unit_path'] = '\\'
+    with open('test_data/user_update_response.json') as file:
+        api_response = json.load(file)
+    with open('test_data/user_update_entry_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = user_update_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['HumanReadable']
+    assert command_result.outputs == expected_entry_context['EntryContext']['GSuite.User(val.id == obj.id)']
+    assert command_result.raw_response == expected_entry_context['Contents']
+    assert command_result.outputs_key_field == ['id']
+    assert command_result.outputs_prefix == 'GSuite.User'

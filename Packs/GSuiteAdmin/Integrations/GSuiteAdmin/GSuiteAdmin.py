@@ -7,7 +7,6 @@ import urllib3
 import hashlib
 import copy
 from typing import List, Dict, Any, Callable
-from google.auth.transport.requests import Request
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -46,12 +45,14 @@ HR_MESSAGES: Dict[str, str] = {
     'CUSTOM_USER_SCHEMA_FIELD_DETAILS': 'Field Details',
     'CUSTOM_USER_SCHEMA_UPDATE': 'Updated Custom User Schema Details',
     'DATATRANSFER_REQUEST_CREATE_SUCCESS': 'Data Transfer Details',
-    'NOT_FOUND': 'No {} found.'
+    'NOT_FOUND': 'No {} found.',
+    'USER_DELETE': 'User with user key {} deleted successfully.',
+    'USER_UPDATE': 'Updated User Details'
 }
 
 URL_SUFFIX: Dict[str, str] = {
     'DATA_TRANSFER': 'admin/datatransfer/v1/transfers',
-    'CREATE_USER': 'admin/directory/v1/users',
+    'USER': 'admin/directory/v1/users',
     'MOBILE_UPDATE': 'admin/directory/v1/customer/{}/devices/mobile/{}/action',
     'MOBILE_DELETE': 'admin/directory/v1/customer/{}/devices/mobile/{}',
     'USER_ALIAS': 'admin/directory/v1/users/{}/aliases',
@@ -91,6 +92,7 @@ OUTPUT_PREFIX: Dict[str, str] = {
     'ROLE_ASSIGNMENT_CREATE': 'GSuite.RoleAssignment',
     'ROLE': 'GSuite.Role',
     'DATA_TRANSFER_LIST': 'GSuite.DataTransfer(val.id == obj.id)',
+    'DATA_TRANSFER_REQUEST_CREATE': 'GSuite.DataTransfer',
     'DATA_TRANSFER_LIST_PAGE_TOKEN': 'GSuite.PageToken.DataTransfer',
     'CUSTOM_USER_SCHEMA': 'GSuite.UserSchema',
 }
@@ -113,9 +115,9 @@ def prepare_output_user_alias_add(alias: Dict[str, Any]) -> List[Dict[str, Any]]
     })
 
 
-def prepare_args_for_create_user(args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_args_for_user(args: Dict[str, str]) -> Dict[str, Any]:
     """
-    Prepares and maps argument for gsuite-user-create command.
+    Prepares and maps argument for gsuite-user-create and gsuite-user-update command.
 
     :param args: Command arguments.
 
@@ -124,13 +126,14 @@ def prepare_args_for_create_user(args: Dict[str, str]) -> Dict[str, Any]:
     GSuiteClient.validate_set_boolean_arg(args, 'is_address_primary')
     GSuiteClient.validate_set_boolean_arg(args, 'is_phone_number_primary')
     GSuiteClient.validate_set_boolean_arg(args, 'suspended')
+    GSuiteClient.validate_set_boolean_arg(args, 'archived')
     GSuiteClient.validate_set_boolean_arg(args, 'is_ip_white_listed')
     return GSuiteClient.remove_empty_entities({
         'name': {'familyName': args.get('last_name'),
                  'givenName': args.get('first_name')
                  },
-        'password': hashlib.md5(args.get('password', '').encode()).hexdigest(),  # NOSONAR
-        'hashFunction': 'MD5',
+        'password': hashlib.md5(args['password'].encode()).hexdigest() if args.get('password') else None,  # NOSONAR
+        'hashFunction': 'MD5' if args.get('password') else None,
         'primaryEmail': args.get('primary_email'),
         'addresses': [{
             'country': args.get('country'),
@@ -161,7 +164,9 @@ def prepare_args_for_create_user(args: Dict[str, str]) -> Dict[str, Any]:
         }],
         'recoveryEmail': args.get('recovery_email'),
         'recoveryPhone': args.get('recovery_phone'),
-        'suspended': args.get('suspended')
+        'suspended': args.get('suspended'),
+        'archived': args.get('archived'),
+        'orgUnitPath': args.get('org_unit_path')
     })
 
 
@@ -175,6 +180,7 @@ def prepare_output_for_user_create(response: Dict[str, Any]) -> Dict[str, Any]:
     """
     outputs = {
         'firstName': response.get('name', {}).pop('givenName', ''),
+        'fullName': response.get('name', {}).pop('fullName', ''),
         'lastName': response.get('name', {}).pop('familyName', ''),
         'gender': response.pop('gender', {}).get('type', ''),
         'notesValue': response.get('notes', {}).pop('value', ''),
@@ -457,13 +463,11 @@ def is_email_valid(email: str) -> bool:
 
 
 @logger
-def test_function(client) -> str:
+def test_module(client) -> str:
     """
     Performs test connectivity by valid http response
 
     :param client: client object which is used to get response from api.
-    :param last_run: Demisto last run dictionary.
-    :param params: configuration parameters.
 
     :return: raise ValueError if any error occurred during connection
     :raises DemistoException: If there is any other issues while making the http call.
@@ -471,10 +475,10 @@ def test_function(client) -> str:
 
     with GSuiteClient.http_exception_handler():
         client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
-        client.credentials.refresh(Request())
-
-    if not client.credentials.valid:
-        raise DemistoException(MESSAGES['TEST_FAILED_ERROR'])
+        if ADMIN_EMAIL:
+            client.http_request(url_suffix=f"{URL_SUFFIX['USER']}/{ADMIN_EMAIL}", method='GET')
+        else:
+            return_results("Please insert Admin Email parameter for the test to run")
     return 'ok'
 
 
@@ -528,10 +532,10 @@ def user_create_command(client, args: Dict[str, str]) -> CommandResults:
 
     :return: Command Result.
     """
-    prepared_args = prepare_args_for_create_user(args)
+    prepared_args = prepare_args_for_user(args)
     client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
 
-    response = client.http_request(url_suffix=URL_SUFFIX['CREATE_USER'], body=prepared_args, method='POST')
+    response = client.http_request(url_suffix=URL_SUFFIX['USER'], body=prepared_args, method='POST')
 
     # Context
     outputs = prepare_output_for_user_create(copy.deepcopy(response))
@@ -923,11 +927,66 @@ def datatransfer_request_create_command(client, args: Dict[str, str]) -> Command
                                          'requestTime', 'applicationDataTransfers'])
 
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX['DATA_TRANSFER_LIST'],
+        outputs_prefix=OUTPUT_PREFIX['DATA_TRANSFER_REQUEST_CREATE'],
         outputs=GSuiteClient.remove_empty_entities(response),
         readable_output=hr_output,
-        raw_response=GSuiteClient.remove_empty_entities(response)
+        raw_response=GSuiteClient.remove_empty_entities(response),
+        outputs_key_field='id'
     )
+
+
+@logger
+def user_delete_command(client, args: Dict[str, str]) -> CommandResults:
+    """
+    Deletes a user.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: CommandResults.
+    """
+    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
+    user_key = args.get('user_key', '')
+    url_suffix = f"{URL_SUFFIX['USER']}/{urllib.parse.quote(user_key)}"
+    client.http_request(url_suffix=url_suffix, method='DELETE')
+
+    return CommandResults(readable_output=HR_MESSAGES['USER_DELETE'].format(user_key))
+
+
+@logger
+def user_update_command(client, args: Dict[str, str]) -> CommandResults:
+    """
+    updates a user.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    prepared_args = prepare_args_for_user(args)
+    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
+    user_key = args.get('user_key', '')
+    url_suffix = f"{URL_SUFFIX['USER']}/{urllib.parse.quote(user_key)}"
+    response = client.http_request(url_suffix=url_suffix, body=prepared_args, method='PUT')
+
+    # Context
+    outputs = prepare_output_for_user_create(copy.deepcopy(response))
+
+    # Readable Output
+    readable_output_dict = prepare_readable_output_for_user_create(copy.deepcopy(outputs))
+    readable_output = tableToMarkdown(HR_MESSAGES['USER_UPDATE'], readable_output_dict,
+                                      ['id', 'customerId', 'primaryEmail', 'firstName', 'lastName', 'gender',
+                                       'archived', 'suspended',
+                                       'orgUnitPath', 'notesValue', 'notesContentType', 'isAdmin', 'creationTime',
+                                       'phoneDetails',
+                                       'addressDetails', 'secondaryEmailDetails', 'ipWhitelisted', 'recoveryEmail',
+                                       'recoveryPhone'],
+                                      headerTransform=pascalToSpace, removeNull=True)
+
+    return CommandResults(outputs_prefix=OUTPUT_PREFIX['CREATE_USER'],
+                          outputs_key_field=['id'],
+                          outputs=outputs, raw_response=response,
+                          readable_output=readable_output)
 
 
 def main() -> None:
@@ -949,7 +1008,9 @@ def main() -> None:
         'gsuite-group-create': group_create_command,
         'gsuite-role-create': role_create_command,
         'gsuite-token-revoke': token_revoke_command,
-        'gsuite-datatransfer-request-create': datatransfer_request_create_command
+        'gsuite-datatransfer-request-create': datatransfer_request_create_command,
+        'gsuite-user-delete': user_delete_command,
+        'gsuite-user-update': user_update_command
 
     }
     command = demisto.command()
@@ -982,7 +1043,7 @@ def main() -> None:
 
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
-            result = test_function(gsuite_client)
+            result = test_module(gsuite_client)
             demisto.results(result)
 
         elif command in commands:

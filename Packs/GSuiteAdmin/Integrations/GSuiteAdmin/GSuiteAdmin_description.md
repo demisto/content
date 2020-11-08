@@ -1,10 +1,11 @@
 # Configure an API account on G Suite Admin
-Configure a Service Account and retrieve it's key in JSON format by following the steps mentioned here: [https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount) 
+Configure a Service Account and retrieve its key in JSON format by following the steps mentioned here: [https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount) or in the integration README.
+ 
 
 Provide at least one of the scopes mentioned for each command.
 
-### Commands and it's scopes
-* gsuite-user-create 
+### Commands and its scopes
+* gsuite-user-create, gsuite-user-update, and gsuite-user-delete
 	* https://www.googleapis.com/auth/admin.directory.user  
 * gsuite-mobile-update 
 	*  https://www.googleapis.com/auth/admin.directory.device.mobile.action   		
@@ -38,14 +39,14 @@ Provide at least one of the scopes mentioned for each command.
 	* https://www.googleapis.com/auth/admin.directory.userschema 
 
 
-To execute the command either provide the value of the Admin Email in integration configuration or provide the value of argument admin_email for the command or provide the admin role to the created service account's email by following the below steps:
+To execute the command either provide the value of the Admin Email in the integration configuration or provide the value of the *admin_email* argument for the command or provide the admin role to the created service account's email by performing the following steps:
 
 1. You must be signed in as a super administrator for this task.
-2. In your Google Admin console (at [https://admin.google.com](https://admin.google.com)).
+2. Open your Google Admin console (at [https://admin.google.com](https://admin.google.com)).
 3. Go to Admin roles.
-4. Click the role you want to assign. (the appropriate role)
-5. Click on **'Assign Admin'**.
-6. On the opened page click on the **'Assign users'**.
-7. Append the email id of the service account created and press on the **'ASSIGN ROLE'** to save.
+4. Click the role you want to assign (the appropriate role).
+5. Click on *Assign Admin*.
+6. On the opened page, click *Assign users*.
+7. Append the email ID of the service account created and click *ASSIGN ROLE* to save.
 
 Precedence of this will be admin_email in command argument > Admin Email in integration configuration > admin role provided to the service account.

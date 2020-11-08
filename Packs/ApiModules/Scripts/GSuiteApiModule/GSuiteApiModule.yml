@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common G Suite code that will be appended into each Google/GSuite integration when it's deployed.
+comment: Common G Suite code that will be appended to each Google/GSuite integration when it is deployed.
 system: true
 scripttarget: 0
 dependson: {}

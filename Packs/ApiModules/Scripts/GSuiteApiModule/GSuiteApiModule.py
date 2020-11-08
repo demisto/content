@@ -137,8 +137,6 @@ class GSuiteClient:
         except TimeoutError as error:
             raise DemistoException(COMMON_MESSAGES['TIMEOUT_ERROR'].format(error))
         except Exception as error:
-            if error.args:
-                raise DemistoException(error.args[0])
             raise DemistoException(error)
 
     @staticmethod
@@ -167,7 +165,7 @@ class GSuiteClient:
                 proxy_user=parsed_proxy.username,
                 proxy_pass=parsed_proxy.password)
 
-        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=verify, timeout=timeout)
+        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=not verify, timeout=timeout)
 
     @staticmethod
     def validate_and_extract_response(response: Tuple[httplib2.Response, Any]) -> Dict[str, Any]:
