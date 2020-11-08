@@ -1147,6 +1147,7 @@ class Pack(object):
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version
                     )
+                    self.assert_production_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions

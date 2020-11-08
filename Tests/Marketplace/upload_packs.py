@@ -19,7 +19,8 @@ from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
 
-def get_packs_names(target_packs: str, previous_commit_hash: str) -> set:
+
+def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
     """Detects and returns packs names to upload.
 
     In case that `Modified` is passed in target_packs input, checks the git difference between two commits,
@@ -42,7 +43,7 @@ def get_packs_names(target_packs: str, previous_commit_hash: str) -> set:
             # return all available packs names
             return all_packs
         else:
-            logging.error((f"Folder {PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}"))
+            logging.error(f"Folder {PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}")
             sys.exit(1)
     elif target_packs.lower() == "modified":
         cmd = f"git diff --name-only HEAD..{previous_commit_hash} | grep 'Packs/'"
@@ -481,12 +482,13 @@ def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket
     return head_commit, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow)
 
 
-def check_if_index_is_updated(content_repo: Any, current_commit_hash: str, previous_commit_hash: str,
-                              storage_bucket: Any):
+def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current_commit_hash: str,
+                              previous_commit_hash: str, storage_bucket: Any):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
     added/modified/deleted, all other steps are not performed.
 
     Args:
+        index_folder_path (str): index folder full path.
         content_repo (git.repo.base.Repo): content repo object.
         current_commit_hash (str): last commit hash of head.
         previous_commit_hash (str): the previous commit to diff with
@@ -500,8 +502,18 @@ def check_if_index_is_updated(content_repo: Any, current_commit_hash: str, previ
             logging.info("Skipping index update check in non production/build bucket")
             return
 
+        if not os.path.exists(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")):
+            # will happen only in init bucket run
+            logging.warning(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
+            return
+
+        with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as index_file:
+            index_json = json.load(index_file)
+
+        index_commit_hash = index_json.get('commit', previous_commit_hash)
+
         try:
-            index_commit = content_repo.commit(previous_commit_hash)
+            index_commit = content_repo.commit(index_commit_hash)
         except Exception:
             # not updated build will receive this exception because it is missing more updated commit
             logging.exception(f"Index is already updated. {skipping_build_task_message}")

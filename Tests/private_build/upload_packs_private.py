@@ -11,8 +11,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, init_big
     get_packs_statistics_dataframe
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index,\
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config,\
-    upload_id_set, load_json, get_content_git_client,\
-    get_recent_commits_data, check_if_index_is_updated, print_packs_summary
+    upload_id_set, load_json, get_content_git_client, check_if_index_is_updated, print_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -387,6 +386,17 @@ def prepare_test_directories(pack_artifacts_path):
     if not os.path.exists(zip_path):
         logging.info("Temp dir not found. Creating.")
         os.mkdir(zip_path)
+
+
+def get_recent_commits_data(content_repo: Any):
+    """ Returns recent commits hashes (of head and remote master)
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+    Returns:
+        str: last commit hash of head.
+        str: previous commit of origin/master (origin/master~1)
+    """
+    return content_repo.head.commit.hexsha, content_repo.commit('origin/master~1').hexsha
 
 
 def main():
