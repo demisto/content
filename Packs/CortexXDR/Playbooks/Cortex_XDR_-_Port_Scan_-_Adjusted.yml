@@ -1131,8 +1131,8 @@ inputs:
   value: {}
   required: false
   description: |-
-    Please use "InternalIPRanges" input instead.
-    This input deprecated.
+    This input is deprecated.
+    Use "InternalIPRanges" input instead.
   playbookInputQuery: null  
 outputs:
 - contextPath: PortScan.BlockPorts
