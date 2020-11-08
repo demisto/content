@@ -46,7 +46,7 @@ script:
       description: Status of current task
       type: String
     - contextPath: CloudConvert.Task.message
-      description: Response message from API
+      description: Response message from the API
       type: String
     - contextPath: CloudConvert.Task.operation
       description: The operation conducted
