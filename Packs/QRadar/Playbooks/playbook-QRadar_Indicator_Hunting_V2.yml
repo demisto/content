@@ -2789,11 +2789,11 @@ outputs:
   description: External IP addresses detected based on fields and inputs in your search.
   type: string
 - contextPath: QRadar.DetectedInternalHosts
-  description: Internal host names detected based on hosts in your asset table. Note
+  description: Internal host names detected based on hosts in your assets table. Note
     that the data accuracy depends on how the Asset mapping is configured in QRadar.
   type: string
 - contextPath: QRadar.DetectedExternalHosts
-  description: External host names detected based on hosts in your asset table. Note
+  description: External host names detected based on hosts in your assets table. Note
     that the data accuracy depends on how the Asset mapping is configured in QRadar.
   type: string
 tests:
