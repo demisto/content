@@ -1539,6 +1539,33 @@ class TestCommandResults:
             )
         assert e.value.args[0] == 'indicators is DEPRECATED, use only indicator'
 
+    def test_indicator_with_no_auto_extract(self):
+        """
+       Given:
+           - a list of an indicator
+           - ignore_auto_extract set to True
+       When
+           - creating a CommandResults object with an indicator
+           - using Ignore Auto Extract
+
+       Then
+           - the IgnoreAutoExtract field is set to True
+       """
+        from CommonServerPython import CommandResults
+
+        indicators = ['8.8.8.8']
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=None,
+            ignore_auto_extract=True
+        )
+
+        assert results.to_context().get('IgnoreAutoExtract') == True
+
 
 class TestBaseClient:
     from CommonServerPython import BaseClient

@@ -2773,8 +2773,8 @@ class CommandResults:
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None, indicator=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator) -> None
+                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool) -> None
         if raw_response is None:
             raw_response = outputs
 
@@ -2803,6 +2803,7 @@ class CommandResults:
         self.raw_response = raw_response
         self.readable_output = readable_output
         self.indicators_timeline = indicators_timeline
+        self.ignore_auto_extract = ignore_auto_extract
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -2812,6 +2813,7 @@ class CommandResults:
             human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
+        ignore_auto_extract = False  # type: bool
 
         indicators = [self.indicator] if self.indicator else self.indicators
 
@@ -2827,6 +2829,9 @@ class CommandResults:
 
         if self.raw_response:
             raw_response = self.raw_response
+
+        if self.ignore_auto_extract:
+            ignore_auto_extract = True
 
         if self.indicators_timeline:
             indicators_timeline = self.indicators_timeline.indicators_timeline
@@ -2858,6 +2863,7 @@ class CommandResults:
             'HumanReadable': human_readable,
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
+            'IgnoreAutoExtract': True if ignore_auto_extract else False
         }
 
         return return_entry
