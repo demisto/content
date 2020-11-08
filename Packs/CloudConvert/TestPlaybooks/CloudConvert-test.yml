@@ -42,6 +42,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: import file
     nexttasks:
       '#none#':
       - "14"
