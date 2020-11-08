@@ -1,6 +1,5 @@
-id: 27d078f8-e515-4cfc-83d7-30ab49a8b38e
-version: 97
-vcShouldKeepItemLegacyProdMachine: false
+id: CloudConvert
+version: -1
 name: CloudConvert
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -42,6 +42,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: Import the file
     nexttasks:
       '#none#':
       - "2"
@@ -146,6 +147,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: Convert the file
     nexttasks:
       '#none#':
       - "5"
@@ -257,6 +259,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: Export the file
     nexttasks:
       '#none#':
       - "13"
@@ -366,6 +369,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Check if exporting to entry
     nexttasks:
       '#default#':
       - "14"
@@ -477,22 +481,26 @@ inputs:
   value: {}
   required: false
   description: This is the url of the imported file
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: entry_id
   value: {}
   required: false
   description: This is the entry id of the imported file
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: output_format
   value: {}
   required: true
   description: |
     This is the desired output format
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: export_via
   value: {}
   required: true
   description: |
     The method for exporting the resulted file, url or war_room_entry
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- CloudConvert-test
+fromversion: 5.0.0
+description: Use this Playbook to convert a file using CloudConvert
