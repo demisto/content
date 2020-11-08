@@ -4362,7 +4362,7 @@ Returns the auto-reply message set for the user-account.
 
 ### gmail-set-autoreply
 ***
-Set auto-reply for the user. Note: if the body is not set, the current body will be deleted
+Sets auto-reply for the user. Note: If the body is not set, the current body will be deleted
 
 
 #### Base Command
@@ -4376,12 +4376,12 @@ Set auto-reply for the user. Note: if the body is not set, the current body will
 | enable-autoReply | Whether Gmail automatically replies to messages. Boolean. Set to true to automatically reply (default). | Optional | 
 | response-subject | Optional text to add to the subject line in vacation responses. To enable auto-replies, either the response subject or the response body must not be empty. | Optional | 
 | response-body | Response body in plain text format. | Optional | 
-| response-body-entry-id | Sets the away/vacation message by passing a War room entryID of the file for the given user. | Optional | 
-| start-time | Sets a start date for the vacation message to be enabled for the given user. Valid format- YYYY-MM-DD or Epoch time in milliseconds. | Optional | 
-| end-time | Sets an end date for the vacation message to be enabled for the given user. Valid format- YYYY-MM-DD or Epoch time in milliseconds. | Optional | 
-| contacts-only | Allows to send away/vacation messages to users in contact list when set to true. | Optional | 
-| domain-only | Prevent sending away/vacation messages to recipients who are outside of the user's domain when set to true. | Optional | 
-| response-body-type | Sets message response body type to text or HTML. | Optional | 
+| response-body-entry-id | Set the away/vacation message by passing a War Room entryID of the file for the given user. | Optional | 
+| start-time | Set a start date for the vacation message to be enabled for the given user. The valid format is YYYY-MM-DD or Epoch time in milliseconds. | Optional | 
+| end-time | Sets an end date for the vacation message to be enabled for the given user. The valid format is YYYY-MM-DD or Epoch time in milliseconds. | Optional | 
+| contacts-only | Whether to send away/vacation messages to users in the contact list when set to true. Default is "false". | Optional | 
+| domain-only | Whether to prevent sending away/vacation messages to recipients who are outside of the user's domain when set to true. Default is "false". | Optional | 
+| response-body-type | Whether message response body type is text or HTML. Default is "Text". | Optional | 
 
 
 #### Context Output
@@ -4765,7 +4765,7 @@ Creates a forwarding address. If ownership verification is required, a message w
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | forwarding_email | An email address to which messages can be forwarded. | Required | 
-| user_id | User's email address. | Required | 
+| user_id | The user's email address. | Required | 
 
 
 #### Context Output
@@ -4773,7 +4773,7 @@ Creates a forwarding address. If ownership verification is required, a message w
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
-| Gmail.ForwardingAddress.userId | String | User's email address. | 
+| Gmail.ForwardingAddress.userId | String | The user's email address. | 
 | Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
 
 
@@ -4799,7 +4799,7 @@ Creates a forwarding address. If ownership verification is required, a message w
 ***
 Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
 
-This command is only available to service account clients that have been delegated domain-wide authority.
+This command is only available to service account clients who have been delegated domain-wide authority.
 
 
 #### Base Command
@@ -4809,25 +4809,25 @@ This command is only available to service account clients that have been delegat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User's email address. | Required | 
+| user_id | The user's email address. | Required | 
 | send_as_email | The email address that appears in the "From:" header for mail sent using this alias. | Required | 
 | display_name | A name that appears in the "From:" header for mail sent using this alias. For custom "from" addresses, when this is empty, Gmail will populate the "From:" header with the name that is used for the primary address associated with the account. If the admin has disabled the ability for users to update their name format, requests to update this field for the primary login will silently fail. | Optional | 
 | signature | An optional HTML signature that is included in messages composed with this alias in the Gmail web UI. | Optional | 
 | reply_to_address | An optional email address that is included in a "Reply-To:" header for mail sent using this alias. If this is empty, Gmail will not generate a "Reply-To:" header. | Optional | 
 | is_default | Whether this address is selected as the default "From:" address in situations such as composing a new message or sending a vacation auto-reply. Every Gmail account has exactly one default send-as address, so the only legal value that clients may write to this field is true. Changing this from false to true for an address will result in this field becoming false for the other previous default address. | Optional | 
 | treat_as_alias | Whether Gmail should treat this address as an alias for the user's primary email address. This setting only applies to custom "from" aliases. | Optional | 
-| smtp_host | The hostname of the SMTP service. Required for smtp configuration. | Optional | 
-| smtp_port | The port of the SMTP service. Required for smtp configuration. | Optional | 
+| smtp_host | The hostname of the SMTP service. Required for SMTP configuration. | Optional | 
+| smtp_port | The port of the SMTP service. Required for SMTP configuration. | Optional | 
 | smtp_username | The username that will be used for authentication with the SMTP service. This is a write-only field that can be specified in requests to create or update SendAs settings. | Optional | 
 | smtp_password | The password that will be used for authentication with the SMTP service. This is a write-only field that can be specified in requests to create or update SendAs settings. | Optional | 
-| smtp_securitymode | The protocol that will be used to secure communication with the SMTP service. Required for smtp configuration.<br/><br/>Available Options:<br/>SECURITY_MODE_UNSPECIFIED - Unspecified security mode.<br/><br/>NONE - Communication with the remote SMTP service is unsecured. Requires port 25.<br/><br/>SSL - Communication with the remote SMTP service is secured using SSL.<br/><br/>STARTTLS - Communication with the remote SMTP service is secured using STARTTLS. | Optional | 
+| smtp_securitymode | The protocol that will be used to secure communication with the SMTP service. Required for SMTP configuration.<br/><br/>Available Options:<br/>SECURITY_MODE_UNSPECIFIED - Unspecified security mode.<br/><br/>NONE - Communication with the remote SMTP service is unsecured. Requires port 25.<br/><br/>SSL - Communication with the remote SMTP service is secured using SSL.<br/><br/>STARTTLS - Communication with the remote SMTP service is secured using STARTTLS. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.SendAs.userId | String | User's email address. | 
+| Gmail.SendAs.userId | String | The user's email address. | 
 | Gmail.SendAs.sendAsEmail | String | The updated send-as alias. | 
 | Gmail.SendAs.signature | String | An optional HTML signature that is included in messages composed with this alias in the Gmail web UI. | 
 | Gmail.SendAs.isPrimary | Boolean | Whether this address is the primary address used to login to the account. | 
@@ -4837,7 +4837,7 @@ This command is only available to service account clients that have been delegat
 | Gmail.SendAs.smtpMsaPort | String | The port of the SMTP service. | 
 | Gmail.SendAs.smtpMsaSecurityMode | String | The protocol that will be used to secure communication with the SMTP service. | 
 | Gmail.SendAs.verificationStatus | String | Indicates whether this address has been verified for use as a send-as alias. | 
-| Gmail.SendAs.replyToAddress | String | A name that appears in the "From:" header for mail sent using this alias. | 
+| Gmail.SendAs.replyToAddress | String | A name that appears in the "From:" header for email sent using this alias. | 
 
 
 #### Command Example
