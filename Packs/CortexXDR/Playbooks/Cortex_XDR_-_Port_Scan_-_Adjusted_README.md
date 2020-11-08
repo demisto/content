@@ -34,7 +34,7 @@ send-mail
 | RoleForEscalation | The name of the Cortex XSOAR role of the users that the incident can be escalated to in case of developments like lateral movement. If this input is left empty, no escalation will take place. |  | Optional |
 | OnCall | Set to true to assign only the users that are currently on shift. | false | Optional |
 | xdr_alert_id | Unique ID for the XDR alert. |  | Optional |
-| InternalIPRange | This input is deprecated. Use the "InternalIPRanges" input instead. |  | Optional |
+| InternalIPRange | This input is deprecated. Use the *InternalIPRanges* input instead. |  | Optional |
 
 ## Playbook Outputs
 ---
