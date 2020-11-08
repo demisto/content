@@ -1149,6 +1149,7 @@ class Client(BaseClient):
     def get_file(self, file_link):
         reply = self._http_request(
             method='POST',
+            url_suffix=str(),
             full_url=file_link,
             timeout=self.timeout
         )
