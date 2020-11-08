@@ -1,5 +1,7 @@
 id: Cortex XDR - Port Scan - Adjusted
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex XDR - Port Scan - Adjusted
 description: |-
   Investigates a Cortex XDR incident containing internal port scan alerts. The playbook:
@@ -44,10 +46,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 1b4bbd64-b7ee-4c7d-8cdc-0ed013a62734
+    taskid: 44559a5b-7260-4894-8379-7c4265ec76a0
     type: regular
     task:
-      id: 1b4bbd64-b7ee-4c7d-8cdc-0ed013a62734
+      id: 44559a5b-7260-4894-8379-7c4265ec76a0
       version: -1
       name: Check if attacker is internal or external
       description: Uses an automated script to determine if the IP used in the incident
@@ -65,7 +67,8 @@ tasks:
           root: AttackerIPs
           transformers:
           - operator: uniq
-      ipRanges: {}
+      ipRanges:
+        simple: ${inputs.InternalIPRanges}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -1061,6 +1064,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1093,7 +1097,8 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Determines whether attacking IPs should be automatically blocked using firewalls.
+  description: Determines whether attacking IPs should be automatically blocked using
+    firewalls.
   playbookInputQuery:
 - key: EmailAddressesToNotify
   value: {}
@@ -1113,8 +1118,9 @@ inputs:
 - key: RoleForEscalation
   value: {}
   required: false
-  description: The name of the Cortex XSOAR role of the users that the incident can be
-    escalated to in case of developments like lateral movement. If this input is left empty, no escalation will take place.
+  description: The name of the Cortex XSOAR role of the users that the incident can
+    be escalated to in case of developments like lateral movement. If this input is
+    left empty, no escalation will take place.
   playbookInputQuery:
 - key: OnCall
   value:
@@ -1131,17 +1137,9 @@ inputs:
   value: {}
   required: false
   description: |-
-    This input is deprecated.
-    Use "InternalIPRanges" input instead.
-  playbookInputQuery: null  
-outputs:
-- key: InternalIPRange
-  value: {}
-  required: false
-  description: |-
     Please use "InternalIPRanges" input instead.
-    this command in deprecate.
-  playbookInputQuery: null
+    this input  deprecated.
+  playbookInputQuery:
 outputs:
 - contextPath: PortScan.BlockPorts
   description: Indicates whether there's a need to block the ports used for exploitation

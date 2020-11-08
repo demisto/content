@@ -15,6 +15,7 @@ IP Enrichment - Internal - Generic v2
 This playbook does not use any integrations.
 
 ### Scripts
+
 * IsIPInRanges
 * AssignAnalystToIncident
 * SetAndHandleEmpty
