@@ -25,8 +25,5 @@
 !xdr-get-scripts created_by="Palo Alto Networks" is_high_risk=true
 !xdr-get-script-metadata script_uid=43973479d389f2ac7e99b6db88eaee40
 !xdr-get-script-code script_uid=548023b6e4a01ec51a495ba6e5d2a15d
-!xdr-run-script script_uid=43973479d389f2ac7e99b6db88eaee40 endpoint_ids=23a86310665d413a958926fce5b794b3 timeout=30 parameters="path=C:\\,number_of_levels=3"
-!xdr-get-script-execution-status action_id=1777
-!xdr-insert-simple-indicators indicator=IndicatorTest severity=LOW type=DOMAIN_NAME class="Test" comment="Test this integration" reliability=C reputation=UNKNOWN expiration_date=12413524
 !xdr-action-status-get action_id="1819"
 !xdr-delete-endpoints endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916

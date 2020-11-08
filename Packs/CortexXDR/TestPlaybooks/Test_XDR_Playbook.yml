@@ -1,5 +1,5 @@
 id: Test XDR Playbook
-version: 23
+version: 32
 vcShouldKeepItemLegacyProdMachine: false
 name: Test XDR Playbook
 description: Cortex XDR Test Playbook
@@ -981,7 +981,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9790
+          "y": 8915
         }
       }
     note: false
@@ -1679,10 +1679,10 @@ tasks:
     task:
       id: f127310a-5826-40e7-82c7-a89cbb802002
       version: -1
-      name: xdr-get-endpoint-violations
+      name: xdr-get-endpoint-device-control-violations
       description: Gets a list of device control violations filtered by selected fields.
         You can retrieve up to 100 violations.
-      script: Cortex XDR - IR|||xdr-get-endpoint-violations
+      script: Cortex XDR - IR|||xdr-get-endpoint-device-control-violations
       type: regular
       iscommand: true
       brand: Cortex XDR - IR
@@ -2014,10 +2014,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 6cfee8a0-b4b7-4126-833d-98e354292c1a
+    taskid: 0b386ddf-817c-46d1-8aa5-861d183bb26a
     type: condition
     task:
-      id: 6cfee8a0-b4b7-4126-833d-98e354292c1a
+      id: 0b386ddf-817c-46d1-8aa5-861d183bb26a
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -2026,7 +2026,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "52"
+      - "58"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2048,173 +2048,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "52":
-    id: "52"
-    taskid: b4de97c6-ce6f-46bd-87c2-bab661785499
-    type: regular
-    task:
-      id: b4de97c6-ce6f-46bd-87c2-bab661785499
-      version: -1
-      name: xdr-run-script
-      description: Initiate a new endpoint script execution action using a script
-        from the script library.
-      script: Cortex XDR - IR|||xdr-run-script
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "53"
-    scriptarguments:
-      endpoint_ids:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
-                iscontext: true
-              right:
-                value:
-                  simple: CONNECTED
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_type
-                iscontext: true
-              right:
-                value:
-                  simple: Workstation
-          accessor: endpoint_id
-      parameters: {}
-      script_uid:
-        simple: 956e8989f67ebcb2c71c4635311e47e4
-      timeout:
-        simple: "30"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 8565
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "53":
-    id: "53"
-    taskid: 6403929e-f2f3-421d-8b6f-a67ac0c9c281
-    type: condition
-    task:
-      id: 6403929e-f2f3-421d-8b6f-a67ac0c9c281
-      version: -1
-      name: Verify Outputs
-      description: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "54"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.RunScript.action_id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 8740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "54":
-    id: "54"
-    taskid: 723b02c9-8803-40a1-804b-7680a435b522
-    type: regular
-    task:
-      id: 723b02c9-8803-40a1-804b-7680a435b522
-      version: -1
-      name: xdr-get-script-execution-status
-      description: Retrieve the status of a script execution action.
-      script: Cortex XDR - IR|||xdr-get-script-execution-status
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "55"
-    scriptarguments:
-      action_id:
-        simple: ${PaloAltoNetworksXDR.RunScript.action_id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 8915
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "55":
-    id: "55"
-    taskid: e295d578-704e-4720-8606-67529d85b564
-    type: condition
-    task:
-      id: e295d578-704e-4720-8606-67529d85b564
-      version: -1
-      name: Verify Outputs
-      description: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "58"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.ScriptExecutionStatus.general_status
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 9090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "58":
     id: "58"
-    taskid: 4228c759-b9e4-419a-8c34-335bcdb4701e
+    taskid: cdc2ba25-29e4-42a6-8d08-8a2f52a004db
     type: regular
     task:
-      id: 4228c759-b9e4-419a-8c34-335bcdb4701e
+      id: cdc2ba25-29e4-42a6-8d08-8a2f52a004db
       version: -1
       name: xdr-get-script-code
       description: Get the code of a specific script in the script library.
@@ -2237,7 +2076,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9265
+          "y": 8565
         }
       }
     note: false
@@ -2247,10 +2086,10 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 23eb1954-c412-494a-8b5f-84fee5c5f63a
+    taskid: 0df29988-1c75-4918-894c-910b9c648665
     type: condition
     task:
-      id: 23eb1954-c412-494a-8b5f-84fee5c5f63a
+      id: 0df29988-1c75-4918-894c-910b9c648665
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -2259,7 +2098,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "60"
+      - "25"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2273,53 +2112,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "60":
-    id: "60"
-    taskid: a924a5c2-0dce-4527-8f74-49e4d89061d7
-    type: regular
-    task:
-      id: a924a5c2-0dce-4527-8f74-49e4d89061d7
-      version: -1
-      name: xdr-insert-simple-indicators
-      description: Upload IOCs as JSON objects that you retrieved from external threat
-        intelligence sources.
-      script: Cortex XDR - IR|||xdr-insert-simple-indicators
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      class: {}
-      comment: {}
-      expiration_date: {}
-      indicator:
-        simple: Test
-      reliability: {}
-      reputation: {}
-      severity:
-        simple: INFO
-      type:
-        simple: DOMAIN_NAME
-      vendor_name: {}
-      vendor_reliability: {}
-      vendor_reputation: {}
-      vendors: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 9615
+          "y": 8740
         }
       }
     note: false
@@ -2332,7 +2125,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9805,
+        "height": 8930,
         "width": 922.5,
         "x": 50,
         "y": 50
