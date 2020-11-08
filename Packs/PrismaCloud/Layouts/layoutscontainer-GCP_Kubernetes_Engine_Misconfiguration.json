@@ -1,0 +1,690 @@
+{
+    "description": "",
+    "detailsV2": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "gfrgdzfgei",
+                "name": "Case Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-aa0d7560-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 24,
+                                "id": "0acff760-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 0,
+                                "listId": "gfrgdzfgei-aa0d7560-b338-11e9-b119-d93d58ec6fe8",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 24,
+                                "id": "0d2d2140-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 24,
+                                "id": "108218a0-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 24,
+                                "id": "19d3ced0-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 24,
+                                "id": "21f23520-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 4,
+                                "listId": "gfrgdzfgei-aa0d7560-b338-11e9-b119-d93d58ec6fe8",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 24,
+                                "id": "282bfcf0-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 5,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-ba344900-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-c0c5f4d0-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-c690a720-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Incident Timeline",
+                        "query": {
+                            "categories": [
+                                "incidentInfo"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 2,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-d95ef410-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-de75bfb0-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-f0395360-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-f2767220-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-f84ce440-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_attachment",
+                                "height": 55,
+                                "id": "f8545e50-b338-11e9-b119-d93d58ec6fe8",
+                                "index": 0,
+                                "isVisible": true,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Attachments",
+                        "static": false,
+                        "type": "",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "description": "Prisma Cloud alert summary details.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "prismacloudalertid",
+                                "height": 24,
+                                "id": "959c3cc0-f766-11e9-8c27-6359f1848ae7",
+                                "index": 0,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismacloudalertstatus",
+                                "height": 24,
+                                "id": "9a8baa40-f766-11e9-8c27-6359f1848ae7",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismacloudalertreason",
+                                "height": 24,
+                                "id": "9d27b1e0-f766-11e9-8c27-6359f1848ae7",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "prismacloudalerttime",
+                                "height": 24,
+                                "id": "9bae0a30-f766-11e9-8c27-6359f1848ae7",
+                                "index": 0,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismacloudid",
+                                "height": 24,
+                                "id": "7a4369a0-f8b8-11e9-a470-b7537b797c27",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "prismacloudtime",
+                                "height": 24,
+                                "id": "97ada000-f8b8-11e9-a470-b7537b797c27",
+                                "index": 1,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "prismacloudstatus",
+                                "height": 24,
+                                "id": "7fc5c850-f8b8-11e9-a470-b7537b797c27",
+                                "index": 2,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismacloudreason",
+                                "height": 24,
+                                "id": "7cf9fe20-f8b8-11e9-a470-b7537b797c27",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "firstseen",
+                                "height": 24,
+                                "id": "a5bd1cf0-f766-11e9-8c27-6359f1848ae7",
+                                "index": 0,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "lastseen",
+                                "height": 24,
+                                "id": "a6b97e50-f766-11e9-8c27-6359f1848ae7",
+                                "index": 1,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "riskscore",
+                                "height": 24,
+                                "id": "b062f170-f766-11e9-8c27-6359f1848ae7",
+                                "index": 2,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "riskrating",
+                                "height": 24,
+                                "id": "aa6fa880-f766-11e9-8c27-6359f1848ae7",
+                                "index": 3,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Prisma Cloud Alert Summary",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "fyjdlofdhd",
+                "name": "Investigation",
+                "sections": [
+                    {
+                        "description": "Remediation tasks information.",
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "fyjdlofdhd-f70ad9a0-93c3-11e9-a1e7-13edb5b78371",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "policyrecommendation",
+                                "height": 48,
+                                "id": "25b6c980-93c4-11e9-a1e7-13edb5b78371",
+                                "index": 0,
+                                "listId": "fyjdlofdhd-f70ad9a0-93c3-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Remediation Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "description": "Violated policy information.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "fyjdlofdhd-3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "policyid",
+                                "height": 24,
+                                "id": "60add970-93c4-11e9-a1e7-13edb5b78371",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "policytype",
+                                "height": 24,
+                                "id": "650d8a10-93c4-11e9-a1e7-13edb5b78371",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "policyseverity",
+                                "height": 24,
+                                "id": "569fc100-a9d1-11e9-a91e-57df9227e86a",
+                                "index": 2,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "policydescription",
+                                "height": 48,
+                                "id": "52384830-a9d1-11e9-a91e-57df9227e86a",
+                                "index": 3,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "systemdefault",
+                                "height": 24,
+                                "id": "dbf3d150-a9d8-11e9-a91e-57df9227e86a",
+                                "index": 4,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "policyremediable",
+                                "height": 24,
+                                "id": "67e58940-93c4-11e9-a1e7-13edb5b78371",
+                                "index": 5,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "policydeleted",
+                                "height": 24,
+                                "id": "642758b0-a9d1-11e9-a91e-57df9227e86a",
+                                "index": 6,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "lastmodifiedon",
+                                "height": 24,
+                                "id": "ad90aa40-a9d8-11e9-a91e-57df9227e86a",
+                                "index": 7,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastmodifiedby",
+                                "height": 24,
+                                "id": "b07a0e90-a9d8-11e9-a91e-57df9227e86a",
+                                "index": 8,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Policy Violated",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "Violating resource information.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "fyjdlofdhd-9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "resourceid",
+                                "height": 24,
+                                "id": "bac55b40-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 0,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "resourcename",
+                                "height": 24,
+                                "id": "b80a59f0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 1,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "resourcetype",
+                                "height": 24,
+                                "id": "c9fc50a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "region",
+                                "height": 24,
+                                "id": "c61a8290-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 3,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "accountname",
+                                "height": 24,
+                                "id": "c264f4a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 4,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "accountid",
+                                "height": 24,
+                                "id": "18654c40-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 5,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "resourceapiname",
+                                "height": 24,
+                                "id": "0a428600-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 6,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "resourcecloudtype",
+                                "height": 24,
+                                "id": "cc430c50-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 7,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Violating Resource",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "Policy compliance-related information.",
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "fyjdlofdhd-98793800-a9d5-11e9-a91e-57df9227e86a",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "compliancemetadata",
+                                "height": 110,
+                                "id": "bea01080-a9d5-11e9-a91e-57df9227e86a",
+                                "index": 1,
+                                "listId": "fyjdlofdhd-98793800-a9d5-11e9-a91e-57df9227e86a",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Policy Compliance Metadata",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "description": "Alert Rules created using the policy.",
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "fyjdlofdhd-1adf4900-f761-11e9-8abd-b54c9337d32a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "prismacloudrules",
+                                "height": 110,
+                                "id": "aabb18d0-f8b8-11e9-a470-b7537b797c27",
+                                "index": 0,
+                                "listId": "fyjdlofdhd-1adf4900-f761-11e9-8abd-b54c9337d32a",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Alert Rules",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "GCP Kubernetes Engine Misconfiguration",
+    "name": "GCP Kubernetes Engine Misconfiguration",
+    "system": false,
+    "fromVersion": "6.0.0",
+    "version": -1
+}
