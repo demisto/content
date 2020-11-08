@@ -1796,7 +1796,7 @@ script:
       - proxy
       - flow
       required: false
-      secret: false 
+      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: profile-based
@@ -2411,7 +2411,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The policy action. Possible values are: "deny", "accept", "ipsec", and "ssl-vpn".
+      description: 'The policy action. Possible values are: "deny", "accept", "ipsec", and "ssl-vpn".'
       isArray: false
       name: action
       predefined:
@@ -2770,14 +2770,14 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which index to start the list. Default is 0. 
+      description: From which index to start the list. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: To which index to get the list. Default is 50. 
+      description: To which index to get the list. Default is 50.
       isArray: false
       name: limit
       required: false

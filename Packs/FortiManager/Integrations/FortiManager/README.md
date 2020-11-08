@@ -20,7 +20,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortimanager-devices-list
 ***
-List all devices in the instance ADOM
+List all devices in the ADOM instance.
 
 
 #### Base Command
@@ -30,91 +30,91 @@ List all devices in the instance ADOM
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| adom | The ADOM from which to fetch the devices. Leave empty to use the instance ADOM. | Optional | 
-| device | The name of a specific device to get. If not specified will get all devices. | Optional | 
-| offset | From which index to start the list. | Optional | 
-| limit | To which index to get the list. | Optional | 
+| adom | The FortiManager Administrative Domain (ADOM) from which to fetch the devices. Leave empty to use the instance ADOM. | Optional | 
+| device | The name of a specific device to get. If not specified, will get all devices. | Optional | 
+| offset | From which index to start the list. Default is 0. | Optional | 
+| limit | Until which index to get the list. Default is 50. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiManager.Device.adm_pass | String | ADOM password. | 
-| FortiManager.Device.adm_usr | String | ADOM user. | 
-| FortiManager.Device.app_ver | String | Device app version. | 
-| FortiManager.Device.av_ver | String | Device AV version. | 
-| FortiManager.Device.beta | Number | Beta. | 
-| FortiManager.Device.branch_pt | Number | Branch pt. | 
-| FortiManager.Device.build | Number | Build. | 
-| FortiManager.Device.checksum | String | Checksum. | 
-| FortiManager.Device.conf_status | String | Conf status | 
-| FortiManager.Device.conn_mode | String | Conn mode | 
-| FortiManager.Device.conn_status | String | Conn status. | 
-| FortiManager.Device.db_status | String | DB status. | 
-| FortiManager.Device.desc | String | Desc. | 
-| FortiManager.Device.dev_status | String | Device status. | 
-| FortiManager.Device.fap_cnt | Number | Fap count. | 
+| FortiManager.Device.adm_pass | String | The ADOM password. | 
+| FortiManager.Device.adm_usr | String | The ADOM user. | 
+| FortiManager.Device.app_ver | String | The app version of the device. | 
+| FortiManager.Device.av_ver | String | The antivirus version of the device. | 
+| FortiManager.Device.beta | Number | The beta version of the device. | 
+| FortiManager.Device.branch_pt | Number | The branch point of the device. | 
+| FortiManager.Device.build | Number | The build of the device. | 
+| FortiManager.Device.checksum | String | The checksum of the device. | 
+| FortiManager.Device.conf_status | String | The configuration status of the device. | 
+| FortiManager.Device.conn_mode | String | The connection mode of the device. | 
+| FortiManager.Device.conn_status | String | The connection status of the device. | 
+| FortiManager.Device.db_status | String | The database status of the device. | 
+| FortiManager.Device.desc | String | The description of the device. | 
+| FortiManager.Device.dev_status | String | The status of the device. | 
+| FortiManager.Device.fap_cnt | Number | The FortiManager access point count. | 
 | FortiManager.Device.faz.full_act | Number | Full act. | 
 | FortiManager.Device.faz.perm | Number | Perm. | 
-| FortiManager.Device.faz.quota | Number | Quota | 
+| FortiManager.Device.faz.quota | Number | Quota. | 
 | FortiManager.Device.faz.used | Number | Used. | 
 | FortiManager.Device.fex_cnt | Number | Fex count. | 
 | FortiManager.Device.flags | String | Flags. | 
-| FortiManager.Device.foslic_cpu | Number | Foslic cpu. | 
+| FortiManager.Device.foslic_cpu | Number | Foslic CPU. | 
 | FortiManager.Device.foslic_dr_site | String | Foslic dr site. | 
 | FortiManager.Device.foslic_inst_time | Number | Foslic inst time. | 
-| FortiManager.Device.foslic_last_sync | Number | Foslic Last sync. | 
+| FortiManager.Device.foslic_last_sync | Number | Foslic last sync. | 
 | FortiManager.Device.foslic_ram | Number | Foslic RAM. | 
-| FortiManager.Device.foslic_type | String | Foslic Type. | 
+| FortiManager.Device.foslic_type | String | Foslic type. | 
 | FortiManager.Device.foslic_utm | String | Foslic UTM. | 
 | FortiManager.Device.fsw_cnt | Number | FSW count. | 
-| FortiManager.Device.ha_group_id | Number | Ha group id. | 
-| FortiManager.Device.ha_group_name | String | Ha group name. | 
-| FortiManager.Device.ha_mode | String | Ha mode. | 
+| FortiManager.Device.ha_group_id | Number | HA group ID. | 
+| FortiManager.Device.ha_group_name | String | HA group name. | 
+| FortiManager.Device.ha_mode | String | HA mode. | 
 | FortiManager.Device.hdisk_size | Number | Hard disk size. | 
 | FortiManager.Device.hostname | String | Hostname. | 
-| FortiManager.Device.hw_rev_major | Number | HW rev major. | 
-| FortiManager.Device.hw_rev_minor | Number | HW rev minor. | 
+| FortiManager.Device.hw_rev_major | Number | Hardware major revision number. | 
+| FortiManager.Device.hw_rev_minor | Number | Hardware minor revision number. | 
 | FortiManager.Device.ip | String | Device IP. | 
 | FortiManager.Device.ips_ext | Number | External IP. | 
 | FortiManager.Device.ips_ver | String | IP version. | 
 | FortiManager.Device.last_checked | Number | Last checked. | 
 | FortiManager.Device.last_resync | Number | Last resync. | 
 | FortiManager.Device.latitude | String | Latitude. | 
-| FortiManager.Device.lic_flags | Number | Lic flags. | 
-| FortiManager.Device.lic_region | String | Lic region. | 
+| FortiManager.Device.lic_flags | Number | License flags. | 
+| FortiManager.Device.lic_region | String | License region. | 
 | FortiManager.Device.location_from | String | Location from. | 
 | FortiManager.Device.logdisk_size | Number | Log disk size. | 
 | FortiManager.Device.longitude | String | Longitude. | 
-| FortiManager.Device.maxvdom | Number | Max VDOM. | 
+| FortiManager.Device.maxvdom | Number | Maximum VDOM. | 
 | FortiManager.Device.meta_fields | String | Meta fields. | 
 | FortiManager.Device.mgmt_id | Number | Management ID. | 
 | FortiManager.Device.mgmt_if | String | Management IF. | 
 | FortiManager.Device.mgmt_mode | String | Management mode. | 
 | FortiManager.Device.mgt_vdom | String | Management VDOM. | 
-| FortiManager.Device.module_sn | String | Module sn. | 
+| FortiManager.Device.module_sn | String | Module serial number. | 
 | FortiManager.Device.mr | Number | Mr. | 
 | FortiManager.Device.name | String | Device name. | 
-| FortiManager.Device.os_type | String | Device OS type. | 
-| FortiManager.Device.os_ver | String | Device OS version. | 
+| FortiManager.Device.os_type | String | Device operating system type. | 
+| FortiManager.Device.os_ver | String | Device operating system version. | 
 | FortiManager.Device.patch | Number | Patch. | 
 | FortiManager.Device.platform_str | String | Platform string. | 
 | FortiManager.Device.prefer_img_ver | String | Prefer image version. | 
 | FortiManager.Device.prio | Number | Prio. | 
 | FortiManager.Device.psk | String | PSK. | 
 | FortiManager.Device.role | String | Device role. | 
-| FortiManager.Device.sn | String | SN. | 
+| FortiManager.Device.sn | String | Serial number. | 
 | FortiManager.Device.vdom.comments | String | VDOM comments. | 
 | FortiManager.Device.vdom.name | String | VDOM name. | 
 | FortiManager.Device.vdom.opmode | String | VDOM opmode. | 
-| FortiManager.Device.vdom.rtm_prof_id | Number | VDOM rtm prof id. | 
+| FortiManager.Device.vdom.rtm_prof_id | Number | VDOM rtm prof ID. | 
 | FortiManager.Device.vdom.status | String | VDOM status. | 
-| FortiManager.Device.vdom.vpn_id | Number | VDOM VPN id. | 
+| FortiManager.Device.vdom.vpn_id | Number | VDOM VPN ID. | 
 | FortiManager.Device.version | Number | Device version. | 
 | FortiManager.Device.vm_cpu | Number | VM CPU. | 
 | FortiManager.Device.vm_cpu_limit | Number | VM CPU limit. | 
-| FortiManager.Device.vm_lic_expire | Number | VM licence expiration. | 
+| FortiManager.Device.vm_lic_expire | Number | VM license expiration. | 
 | FortiManager.Device.vm_mem | Number | VM memory. | 
 | FortiManager.Device.vm_mem_limit | Number | VM memory limit. | 
 | FortiManager.Device.vm_status | Number | VM status. | 
@@ -274,20 +274,20 @@ List ADOM device groups.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the device groups. Leave empty to use the instance ADOM. | Optional | 
-| group | The name of a device group to fetch. If not specified will get all device groups. | Optional | 
-| offset | From which index to start the list. | Optional | 
-| limit | To which index to get the list. | Optional | 
+| group | The name of a device group to fetch.  If not specified, will get all device groups. | Optional | 
+| offset | From which index to start the list. Default is 0. | Optional | 
+| limit | Until which index to get the list. Default is 50. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiManager.DeviceGroup.desc | String | Desc. | 
+| FortiManager.DeviceGroup.desc | String | Description. | 
 | FortiManager.DeviceGroup.meta_fields | String | Device group meta fields. | 
 | FortiManager.DeviceGroup.name | String | Device group name. | 
-| FortiManager.DeviceGroup.os_type | String | Device group OS type. | 
-| FortiManager.DeviceGroup.type | String | Device group type | 
+| FortiManager.DeviceGroup.os_type | String | Device group operating system type. | 
+| FortiManager.DeviceGroup.type | String | Device group type. | 
 
 
 #### Command Example
@@ -328,7 +328,7 @@ List ADOM device groups.
 
 ### fortimanager-address-list
 ***
-List ADOM firewall IPv4 addresses
+List ADOM firewall IPv4 addresses.
 
 
 #### Base Command
@@ -339,46 +339,46 @@ List ADOM firewall IPv4 addresses
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the addresses. Leave empty to use the instance ADOM. | Optional | 
-| offset | From which index to start the list. | Optional | 
-| limit | To which index to get the list. | Optional | 
-| address | The name of a specific address to fetch.  If not specified will get all addresses. | Optional | 
+| offset | From which index to start the list. Default is 0. | Optional | 
+| limit | To which index to get the list. Default is 50. | Optional | 
+| address | The name of a specific address to fetch.  If not specified, will get all addresses. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiManager.Address._image-base64 | String | Base64 of the address image | 
+| FortiManager.Address._image-base64 | String | Base64 of the address image. | 
 | FortiManager.Address.allow-routing | String | Enable/disable use of this address in the static route configuration. | 
 | FortiManager.Address.associated-interface | String | Network interface associated with address. | 
 | FortiManager.Address.cache-ttl | Number | Defines the minimal TTL of individual IP addresses in FQDN cache measured in seconds. | 
-| FortiManager.Address.color | Number | Color of icon on the GUI. | 
-| FortiManager.Address.comment | String | Comments attached to the address. | 
-| FortiManager.Address.country | String | IP addresses associated to a specific country. | 
-| FortiManager.Address.dynamic_mapping | String | Address dynamic mapping information. | 
-| FortiManager.Address.end-ip | String | Final IP address \(inclusive\) in the range for the address. | 
-| FortiManager.Address.epg-name | String | Endpoint group name. | 
-| FortiManager.Address.filter | String | Match criteria filter. | 
-| FortiManager.Address.fqdn | String | Fully Qualified Domain Name address. | 
-| FortiManager.Address.list.ip | String | IP list associated with the address. | 
-| FortiManager.Address.name | String | Address name. | 
-| FortiManager.Address.obj-id | String | Object ID for NSX. | 
-| FortiManager.Address.organization | String | Organization domain name \(Syntax: organization/domain\). | 
-| FortiManager.Address.policy-group | String | Policy group name. | 
-| FortiManager.Address.sdn | String | SDN. | 
-| FortiManager.Address.sdn-tag | String | SDN Tag. | 
-| FortiManager.Address.start-ip | String | First IP address \(inclusive\) in the range for the address. | 
-| FortiManager.Address.subnet | String | IP address and subnet mask of address. | 
-| FortiManager.Address.subnet-name | String | Subnet name. | 
-| FortiManager.Address.tagging.category | String | Tag category. | 
-| FortiManager.Address.tagging.name | String | Tagging entry name. | 
-| FortiManager.Address.tagging.tags | String | Tags. | 
-| FortiManager.Address.tenant | String | Tenant. | 
-| FortiManager.Address.type | String | Type of address. | 
-| FortiManager.Address.uuid | String | Universally Unique Identifier \(UUID; automatically assigned but can be manually reset\). | 
+| FortiManager.Address.color | Number | The color of the icon in the GUI. | 
+| FortiManager.Address.comment | String | The comments attached to the address. | 
+| FortiManager.Address.country | String | The IP addresses associated with a specific country. | 
+| FortiManager.Address.dynamic_mapping | String | The address dynamic mapping information. | 
+| FortiManager.Address.end-ip | String | The final IP address \(inclusive\) in the range for the address. | 
+| FortiManager.Address.epg-name | String | The endpoint group name. | 
+| FortiManager.Address.filter | String | The match criteria filter. | 
+| FortiManager.Address.fqdn | String | The fully qualified domain name \(fqdn\) address. | 
+| FortiManager.Address.list.ip | String | The IP list associated with the address. | 
+| FortiManager.Address.name | String | The address name. | 
+| FortiManager.Address.obj-id | String | The object ID for NSX. | 
+| FortiManager.Address.organization | String | The organization domain name \(Syntax: organization/domain\). | 
+| FortiManager.Address.policy-group | String | The policy group name. | 
+| FortiManager.Address.sdn | String | The software defined networking \(SDN\). | 
+| FortiManager.Address.sdn-tag | String | The software defined networking \(SDN\) tag. | 
+| FortiManager.Address.start-ip | String | The first IP address \(inclusive\) in the range for the address. | 
+| FortiManager.Address.subnet | String | The IP address and subnet mask of address. | 
+| FortiManager.Address.subnet-name | String | The subnet name. | 
+| FortiManager.Address.tagging.category | String | The tag category. | 
+| FortiManager.Address.tagging.name | String | The tagging entry name. | 
+| FortiManager.Address.tagging.tags | String | The tags. | 
+| FortiManager.Address.tenant | String | The tenant. | 
+| FortiManager.Address.type | String | The type of address. | 
+| FortiManager.Address.uuid | String | Universally Unique Identifier \(UUID\). This is automatically assigned but can be manually reset. | 
 | FortiManager.Address.visibility | String | Enable/disable address visibility in the GUI. | 
-| FortiManager.Address.wildcard | String | IP address and wildcard netmask. | 
-| FortiManager.Address.wildcard-fqdn | String | Fully Qualified Domain Name with wildcard characters. | 
+| FortiManager.Address.wildcard | String | The IP address and wildcard netmask. | 
+| FortiManager.Address.wildcard-fqdn | String | The fully qualified domain name \(fqdn\) with wildcard characters. | 
 
 
 #### Command Example
@@ -446,7 +446,7 @@ List ADOM firewall IPv4 addresses
 
 ### fortimanager-address-create
 ***
-Add a new IPv4 address to the
+Add a new IPv4 address.
 
 
 #### Base Command
@@ -458,19 +458,19 @@ Add a new IPv4 address to the
 | --- | --- | --- |
 | adom | The ADOM on which to create the address. Leave empty to use the instance ADOM. | Optional | 
 | name | The address name. | Required | 
-| type | Type of address. | Required | 
+| type | The type of address. Possible values are: "ipmask", "iprange", "fqdn", "wildcard", "geography", "wildcard-fqdn", and "dynamic". | Required | 
 | policy_group | Policy group name. | Optional | 
-| comment | A comment to add to the address | Optional | 
-| associated_interface | Network interface associated with address. | Optional | 
-| fqdn | Fully Qualified Domain Name address. Required for fqdn address type. | Optional | 
+| comment | A comment to add to the address. | Optional | 
+| associated_interface | The network interface associated with the address. | Optional | 
+| fqdn | The fully qualified domain name (fqdn) address. Required for fqdn address type. | Optional | 
 | start_ip | First IP address (inclusive) in the range for the address. Required for iprange address type. | Optional | 
 | end_ip | Final IP address (inclusive) in the range for the address. Required for iprange address type. | Optional | 
 | subnet | IP address and subnet mask of address. Required for ipmask address type. | Optional | 
 | subnet_name | The subnet name | Optional | 
-| sdn | The address SDN. Required for dynamic address type. | Optional | 
+| sdn | The address SDN. Required for dynamic address type. Possible values are: "aci", "aws", "nsx", "nuage", and "azure". | Optional | 
 | wildcard | IP address and wildcard netmask. Required for wildcard address type. | Optional | 
-| wildcard_fqdn | Fully Qualified Domain Name with wildcard characters. Required for wildcard-fqdn address type. | Optional | 
-| country | 2 letter representing a country associated to an IP address (for example: 'us'). Required for geography address type.  | Optional | 
+| wildcard_fqdn | The fully qualified domain name (fqdn) with wildcard characters. Required for wildcard-fqdn address type. | Optional | 
+| country | The two letter abbreviation representing a country associated with an IP address (for example: "us"). Required for geography address type.  | Optional | 
 
 
 #### Context Output
@@ -487,7 +487,7 @@ There is no context output for this command.
 
 ### fortimanager-address-update
 ***
-Add a new IPv4 address to the
+Add a new IPv4 address.
 
 
 #### Base Command
@@ -499,19 +499,19 @@ Add a new IPv4 address to the
 | --- | --- | --- |
 | adom | The ADOM on which to update the address. Leave empty to use the instance ADOM. | Optional | 
 | name | The address name. | Required | 
-| type | Type of address. | Optional | 
+| type | Type of address. Possible values are: "ipmask", "iprange", "fqdn", "wildcard", "geography", "wildcard-fqdn", and "dynamic". | Optional | 
 | policy_group | Policy group name. | Optional | 
-| comment | A comment to add to the address | Optional | 
+| comment | A comment to add to the address. | Optional | 
 | associated_interface | Network interface associated with address. | Optional | 
-| fqdn | Fully Qualified Domain Name address. Required for fqdn address type. | Optional | 
+| fqdn | The fully qualified domain name (fqdn) address. Required for fqdn address type. | Optional | 
 | start_ip | First IP address (inclusive) in the range for the address. Required for iprange address type. | Optional | 
 | end_ip | Final IP address (inclusive) in the range for the address. Required for iprange address type. | Optional | 
 | subnet | IP address and subnet mask of address. Required for ipmask address type. | Optional | 
 | subnet_name | The subnet name | Optional | 
-| sdn | The address SDN. Required for dynamic address type. | Optional | 
+| sdn | The address SDN. Required for dynamic address type. Possible values are: "aci", "aws", "nsx", "nuage", and "azure". | Optional | 
 | wildcard | IP address and wildcard netmask. Required for wildcard address type. | Optional | 
-| wildcard_fqdn | Fully Qualified Domain Name with wildcard characters. Required for wildcard-fqdn address type. | Optional | 
-| country | 2 letter representing a country associated to an IP address (for example: 'us'). Required for geography address type.  | Optional | 
+| wildcard_fqdn | The fully qualified domain name (fqdn) with wildcard characters. Required for wildcard-fqdn address type. | Optional | 
+| country | The two letter abbreviation representing a country associated with an IP address (for example: "us"). Required for geography address type.  | Optional | 
 
 
 #### Context Output
@@ -527,7 +527,7 @@ There is no context output for this command.
 
 ### fortimanager-address-delete
 ***
-Delete an address
+Delete an address.
 
 
 #### Base Command
@@ -538,7 +538,7 @@ Delete an address
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to delete the address. Leave empty to use the default integration ADOM. | Optional | 
-| address | The address to delete | Required | 
+| address | The address to delete. | Required | 
 
 
 #### Context Output
@@ -554,7 +554,7 @@ There is no context output for this command.
 
 ### fortimanager-address-group-list
 ***
-List ADOM IPv4 address groups
+List ADOM IPv4 address groups.
 
 
 #### Base Command
@@ -565,39 +565,39 @@ List ADOM IPv4 address groups
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the address groups. Leave empty to use the instance ADOM. | Optional | 
-| offset | From which index to start the list. | Optional | 
-| limit | To which index to get the list. | Optional | 
-| address_group | Name for a specific address group to fetch. If not specified will get all address groups. | Optional | 
+| offset | From which index to start the list. Default is 0. | Optional | 
+| limit | To which index to get the list. Default is 50. | Optional | 
+| address_group | Name for a specific address group to fetch. If not specified, will get all address groups. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiManager.AddressGroup._image-base64 | String | Base64 of the address group image | 
+| FortiManager.AddressGroup._image-base64 | String | Base64 of the address group image. | 
 | FortiManager.AddressGroup.allow-routing | String | Enable/disable use of this group in the static route configuration. | 
-| FortiManager.AddressGroup.color | Number | Color of icon on the GUI. | 
-| FortiManager.AddressGroup.comment | String | Comment about the address group. | 
-| FortiManager.AddressGroup.dynamic_mapping._image-base64 | String | Address group dynamic mapping base64 image. | 
-| FortiManager.AddressGroup.dynamic_mapping._scope.name | String | Address group dynamic mapping scope name. | 
-| FortiManager.AddressGroup.dynamic_mapping._scope.vdom | String | Address group dynamic mapping scope VDOM. | 
+| FortiManager.AddressGroup.color | Number | The color of the icon in the GUI. | 
+| FortiManager.AddressGroup.comment | String | The comment about the address group. | 
+| FortiManager.AddressGroup.dynamic_mapping._image-base64 | String | The address group dynamic mapping base64 image. | 
+| FortiManager.AddressGroup.dynamic_mapping._scope.name | String | The address group dynamic mapping scope name. | 
+| FortiManager.AddressGroup.dynamic_mapping._scope.vdom | String | The address group dynamic mapping scope VDOM. | 
 | FortiManager.AddressGroup.dynamic_mapping.allow-routing | String | Enable/disable use of this dynamic mapping in the static route configuration. | 
-| FortiManager.AddressGroup.dynamic_mapping.color | Number | Color of icon on the GUI. | 
-| FortiManager.AddressGroup.dynamic_mapping.comment | String | Comment about the address group dynamic mapping. | 
+| FortiManager.AddressGroup.dynamic_mapping.color | Number | The color of the icon in the GUI. | 
+| FortiManager.AddressGroup.dynamic_mapping.comment | String | The comment about the address group dynamic mapping. | 
 | FortiManager.AddressGroup.dynamic_mapping.exclude | String | Whether to enable or disable the exclusion of the dynamic mapping. | 
-| FortiManager.AddressGroup.dynamic_mapping.exclude-member | String | Exclude member. | 
-| FortiManager.AddressGroup.dynamic_mapping.global-object | Number | Global object. | 
-| FortiManager.AddressGroup.dynamic_mapping.member | String | Address group dynamic mapping member. | 
-| FortiManager.AddressGroup.dynamic_mapping.tags | String | Address group dynamic mapping tags. | 
-| FortiManager.AddressGroup.dynamic_mapping.type | String | Address group dynamic mapping type. | 
-| FortiManager.AddressGroup.dynamic_mapping.uuid | String | Address group dynamic mapping uuid. | 
-| FortiManager.AddressGroup.dynamic_mapping.visibility | String | Address group dynamic mapping visibility. | 
-| FortiManager.AddressGroup.member | String | Address objects contained within the group. | 
-| FortiManager.AddressGroup.name | String | Address group name. | 
-| FortiManager.AddressGroup.tagging.category | String | Tag category. | 
-| FortiManager.AddressGroup.tagging.name | String | Tagging entry name. | 
-| FortiManager.AddressGroup.tagging.tags | String | Tags. | 
-| FortiManager.AddressGroup.uuid | String | Universally Unique Identifier \(UUID; automatically assigned but can be manually reset\). | 
+| FortiManager.AddressGroup.dynamic_mapping.exclude-member | String | The exclude member. | 
+| FortiManager.AddressGroup.dynamic_mapping.global-object | Number | The global object. | 
+| FortiManager.AddressGroup.dynamic_mapping.member | String | The address group dynamic mapping member. | 
+| FortiManager.AddressGroup.dynamic_mapping.tags | String | The address group dynamic mapping tags. | 
+| FortiManager.AddressGroup.dynamic_mapping.type | String | The address group dynamic mapping type. | 
+| FortiManager.AddressGroup.dynamic_mapping.uuid | String | The address group dynamic mapping UUID. | 
+| FortiManager.AddressGroup.dynamic_mapping.visibility | String | The address group dynamic mapping visibility. | 
+| FortiManager.AddressGroup.member | String | The address objects contained within the group. | 
+| FortiManager.AddressGroup.name | String | The address group name. | 
+| FortiManager.AddressGroup.tagging.category | String | The tag category. | 
+| FortiManager.AddressGroup.tagging.name | String | The tagging entry name. | 
+| FortiManager.AddressGroup.tagging.tags | String | The tags. | 
+| FortiManager.AddressGroup.uuid | String | Universally Unique Identifier \(UUID\). This is automatically assigned but can be manually reset. | 
 | FortiManager.AddressGroup.visibility | String | Enable/disable address visibility in the GUI. | 
 
 
@@ -655,7 +655,7 @@ List ADOM IPv4 address groups
 
 ### fortimanager-address-group-create
 ***
-Create a new Address Group
+Create a new address group.
 
 
 #### Base Command
@@ -667,8 +667,8 @@ Create a new Address Group
 | --- | --- | --- |
 | adom | The ADOM on which to create the address group. Leave empty to use the instance ADOM. | Optional | 
 | name | Address group name. | Required | 
-| member | A CSV list of the Address or Address Groups objects contained within the group. | Required | 
-| comment | A comment about the address group | Optional | 
+| member | A comma-separated list of the address or address group objects contained within the group. | Required | 
+| comment | A comment about the address group. | Optional | 
 
 
 #### Context Output
@@ -685,7 +685,7 @@ There is no context output for this command.
 
 ### fortimanager-address-group-update
 ***
-Create a new Address Group
+Create a new address group.
 
 
 #### Base Command
@@ -697,8 +697,8 @@ Create a new Address Group
 | --- | --- | --- |
 | adom | The ADOM on which to update the address group. Leave empty to use the instance ADOM. | Optional | 
 | name | Address group name. | Required | 
-| member | A CSV list of the Address or Address Groups objects contained within the group. | Optional | 
-| comment | A comment about the address group | Optional | 
+| member | A comma-separated list of the address or address group objects contained within the group. | Optional | 
+| comment | A comment about the address group. | Optional | 
 
 
 #### Context Output
@@ -743,7 +743,7 @@ There is no context output for this command.
 
 ### fortimanager-service-categories-list
 ***
-List ADOM service categories
+List the ADOM service categories.
 
 
 #### Base Command
@@ -754,9 +754,9 @@ List ADOM service categories
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the service categories. Leave empty to use the instance ADOM. | Optional | 
-| offset | From which index to start the list. | Optional | 
-| limit | To which index to get the list. | Optional | 
-| service_category | Name of a specific category to fetch. If not specified will get all service groups. | Optional | 
+| offset | From which index to start the list. Default is 0. | Optional | 
+| limit | To which index to get the list. Default is 50. | Optional | 
+| service_category | Name of a specific category to fetch. If not specified, will get all service groups. | Optional | 
 
 
 #### Context Output
@@ -801,7 +801,7 @@ List ADOM service categories
 
 ### fortimanager-service-group-list
 ***
-List ADOM service groups
+List ADOM service groups.
 
 
 #### Base Command
@@ -812,19 +812,19 @@ List ADOM service groups
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the service groups. Leave empty to use the instance ADOM. | Optional | 
-| offset | From which index to start the list. | Optional | 
-| limit | To which index to get the list. | Optional | 
-| service_group | Name of a specific service group to fetch. If not specified will get all service groups. | Optional | 
+| offset | From which index to start the list. Default is 0. | Optional | 
+| limit | To which index to get the list. Default is 50. | Optional | 
+| service_group | Name of a specific service group to fetch. If not specified, will get all service groups. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiManager.ServiceGroup.color | Number | Color of icon on the GUI. | 
+| FortiManager.ServiceGroup.color | Number | The color of the icon in the GUI. | 
 | FortiManager.ServiceGroup.comment | String | Comment. | 
-| FortiManager.ServiceGroup.member | String | Service objects contained within the group. | 
-| FortiManager.ServiceGroup.name | String | Address group name. | 
+| FortiManager.ServiceGroup.member | String | The service objects contained within the group. | 
+| FortiManager.ServiceGroup.name | String | The address group name. | 
 | FortiManager.ServiceGroup.proxy | String | Enable/disable web proxy service group. | 
 
 
@@ -876,7 +876,7 @@ List ADOM service groups
 
 ### fortimanager-service-group-create
 ***
-Create a new Service Group
+Creates a new service group.
 
 
 #### Base Command
@@ -889,8 +889,8 @@ Create a new Service Group
 | adom | The ADOM on which to create the service group. Leave empty to use the instance ADOM. | Optional | 
 | comment | A comment. | Optional | 
 | name | The created service group name. | Required | 
-| proxy | Enable/disable web proxy service group. | Optional | 
-| member | A CSV list of Service objects to be contained within the group. | Required | 
+| proxy | Enable/disable a web proxy service group. | Optional | 
+| member | A comma-separated list of service objects to be contained within the group. | Required | 
 
 
 #### Context Output
@@ -906,7 +906,7 @@ There is no context output for this command.
 
 ### fortimanager-service-group-update
 ***
-Create a new Service Group
+Create a new service group.
 
 
 #### Base Command
@@ -919,8 +919,8 @@ Create a new Service Group
 | adom | The ADOM on which to update the service group. Leave empty to use the instance ADOM. | Optional | 
 | comment | A comment. | Optional | 
 | name | The created service group name. | Required | 
-| proxy | Enable/disable web proxy service group. | Optional | 
-| member | A CSV list of Service objects to be contained within the group. | Optional | 
+| proxy | Enable/disable a web proxy service group. | Optional | 
+| member | A comma-sperated list of service objects to be contained within the group. | Optional | 
 
 
 #### Context Output
@@ -973,10 +973,10 @@ List the custom services.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| adom | The ADOM from which to fetch the custom servicse. Leave empty to use the instance ADOM. | Optional | 
-| offset | From which index to start the list. | Optional | 
-| limit | To which index to get the list. | Optional | 
-| custom_service | Name of a specific custom service to fetch.  If not specified will get all custom services. | Optional | 
+| adom | The ADOM from which to fetch the custom service. Leave empty to use the instance ADOM. | Optional | 
+| offset | From which index to start the list. Default is 0. | Optional | 
+| limit | To which index to get the list. Default is 50. | Optional | 
+| custom_service | Name of a specific custom service to fetch.  If not specified, will get all custom services. | Optional | 
 
 
 #### Context Output
@@ -988,9 +988,9 @@ List the custom services.
 | FortiManager.CustomService.application | Number | Application ID. | 
 | FortiManager.CustomService.category | String | Service category. | 
 | FortiManager.CustomService.check-reset-range | String | Configure the type of ICMP error message verification. | 
-| FortiManager.CustomService.color | Number | Color of icon on the GUI. | 
+| FortiManager.CustomService.color | Number | Color of icon in the GUI. | 
 | FortiManager.CustomService.comment | String | Comment. | 
-| FortiManager.CustomService.fqdn | String | Fully qualified domain name. | 
+| FortiManager.CustomService.fqdn | String | Fully qualified domain \(fqdn\) name. | 
 | FortiManager.CustomService.helper | String | Helper name. | 
 | FortiManager.CustomService.icmpcode | Number | ICMP code. | 
 | FortiManager.CustomService.icmptype | Number | ICMP type. | 
@@ -998,16 +998,16 @@ List the custom services.
 | FortiManager.CustomService.name | String | Custom service name. | 
 | FortiManager.CustomService.protocol | String | Protocol type based on IANA numbers. | 
 | FortiManager.CustomService.protocol-number | Number | IP protocol number. | 
-| FortiManager.CustomService.proxy | String | Enable/disable web proxy service. | 
+| FortiManager.CustomService.proxy | String | Enable/disable a web proxy service. | 
 | FortiManager.CustomService.sctp-portrange | String | Multiple SCTP port ranges. | 
-| FortiManager.CustomService.session-ttl | Number | Session TTL \(300 - 604800, 0 = default\). | 
-| FortiManager.CustomService.tcp-halfclose-timer | Number | Wait time to close a TCP session waiting for an unanswered FIN packet \(1 - 86400 sec, 0 = default\). | 
-| FortiManager.CustomService.tcp-halfopen-timer | Number | Wait time to close a TCP session waiting for an unanswered open session packet \(1 - 86400 sec, 0 = default\). | 
+| FortiManager.CustomService.session-ttl | Number | Session TTL \(300 - 604800. Default is 0.\). | 
+| FortiManager.CustomService.tcp-halfclose-timer | Number | Wait time to close a TCP session waiting for an unanswered FIN packet \(1 - 86400 sec. Default is 0.\). | 
+| FortiManager.CustomService.tcp-halfopen-timer | Number | Wait time to close a TCP session waiting for an unanswered open session packet \(1 - 86400 sec. Default is 0.\). | 
 | FortiManager.CustomService.tcp-portrange | String | Multiple TCP port ranges. | 
-| FortiManager.CustomService.tcp-timewait-timer | Number | Set the length of the TCP TIME-WAIT state in seconds \(1 - 300 sec, 0 = default\). | 
-| FortiManager.CustomService.udp-idle-timer | Number | UDP half close timeout \(0 - 86400 sec, 0 = default\). | 
+| FortiManager.CustomService.tcp-timewait-timer | Number | Set the length of the TCP TIME-WAIT state in seconds \(1 - 300 sec. Default is 0.\). | 
+| FortiManager.CustomService.udp-idle-timer | Number | UDP half close timeout \(0 - 86400 sec. Default is 0.\). | 
 | FortiManager.CustomService.udp-portrange | String | Multiple UDP port ranges. | 
-| FortiManager.CustomService.visibility | String | Enable/disable the visibility of the service on the GUI. | 
+| FortiManager.CustomService.visibility | String | Enable/disable the visibility of the service in the GUI. | 
 
 
 #### Command Example
@@ -1098,28 +1098,28 @@ Create a new custom service.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| adom | The ADOM from which to fetch the custom servicse. Leave empty to use the instance ADOM. | Optional | 
-| name | The name of the new custom service | Required | 
+| adom | The ADOM from which to fetch the custom service. Leave empty to use the instance ADOM. | Optional | 
+| name | The name of the new custom service. | Required | 
 | app_category | Application category ID. | Optional | 
-| app_service_type | Application service type. | Optional | 
+| app_service_type | Application service type. Possible values are: "app-id", "disable", and "app-category". Default is "disable". | Optional | 
 | application | The application ID. | Optional | 
-| category | The service category | Optional | 
-| check_reset_range | Configure the type of ICMP error message verification. | Optional | 
+| category | The service category. | Optional | 
+| check_reset_range | Configure the type of ICMP error message verification. Possible values are: "disable", "default", and "strict". | Optional | 
 | comment | A comment. | Optional | 
-| fqdn | Fully qualified domain name. | Optional | 
+| fqdn | Fully qualified domain name (fqdn). | Optional | 
 | helper | Helper name. | Optional | 
 | icmpcode | ICMP code. | Optional | 
 | icmptype | ICMP type. | Optional | 
-| iprange | Start and end of the IP range associated with service. | Optional | 
-| protocol | Protocol type based on IANA numbers. | Optional | 
-| proxy | Enable/disable web proxy service. | Optional | 
+| iprange | Start and end of the IP range associated with the service. | Optional | 
+| protocol | Protocol type based on IANA numbers. Possible values are: "ICMP", "IP", "TCP/UDP/SCTP", "ICMP6", "HTTP", "FTP", "CONNECT", "SOCKS", "ALL", "SOCKS-TCP", and "SOCKS-UDP". | Optional | 
+| proxy | Enable/disable a web proxy service. | Optional | 
 | sctp_portrange | Multiple SCTP port ranges. | Optional | 
-| session_ttl | Session TTL in the range of 300 - 604800. | Optional | 
-| tcp_halfclose_timer | Wait time to close a TCP session waiting for an unanswered FIN packet (1 - 86400 sec). | Optional | 
-| tcp_halfopen_timer | Wait time to close a TCP session waiting for an unanswered open session packet (1 - 86400 sec). | Optional | 
+| session_ttl | Session TTL in the range of 300 - 604800. Default is 0. | Optional | 
+| tcp_halfclose_timer | Wait time to close a TCP session waiting for an unanswered FIN packet (1 - 86400 sec). Default is 0. | Optional | 
+| tcp_halfopen_timer | Wait time to close a TCP session waiting for an unanswered open session packet (1 - 86400 sec). Default is 0. | Optional | 
 | tcp_portrange | Multiple TCP port ranges. | Optional | 
-| tcp_timewait_timer | Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec). | Optional | 
-| udp_idle_timer | UDP half close timeout (0 - 86400 sec). | Optional | 
+| tcp_timewait_timer | Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec). Default is 0. | Optional | 
+| udp_idle_timer | UDP half close timeout (0 - 86400 sec). Default is 0. | Optional | 
 | udp_portrange | Multiple UDP port ranges. | Optional | 
 
 
@@ -1147,28 +1147,28 @@ Update a custom service.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| adom | The ADOM in which to update the custom servicse. Leave empty to use the instance ADOM. | Optional | 
-| name | The name of the new custom service | Required | 
+| adom | The ADOM in which to update the custom service. Leave empty to use the instance ADOM. | Optional | 
+| name | The name of the new custom service. | Required | 
 | app_category | Application category ID. | Optional | 
-| app_service_type | Application service type. | Optional | 
+| app_service_type | Application service type. Possible values are: "app-id", "disable", and "app-category". Default is "disable". | Optional | 
 | application | The application ID. | Optional | 
-| category | The service category | Optional | 
-| check_reset_range | Configure the type of ICMP error message verification. | Optional | 
+| category | The service category. | Optional | 
+| check_reset_range | Configure the type of ICMP error message verification. Possible values are: "disable", "default", and "strict". | Optional | 
 | comment | A comment. | Optional | 
-| fqdn | Fully qualified domain name. | Optional | 
+| fqdn | Fully qualified domain name (fqdn). | Optional | 
 | helper | Helper name. | Optional | 
 | icmpcode | ICMP code. | Optional | 
 | icmptype | ICMP type. | Optional | 
 | iprange | Start and end of the IP range associated with service. | Optional | 
-| protocol | Protocol type based on IANA numbers. | Optional | 
-| proxy | Enable/disable web proxy service. | Optional | 
+| protocol | Protocol type based on IANA numbers. Possible values are: "ICMP", "IP", "TCP/UDP/SCTP", "ICMP6", "HTTP", "FTP", "CONNECT", "SOCKS", "ALL", "SOCKS-TCP", and "SOCKS-UDP". | Optional | 
+| proxy | Enable/disable a web proxy service. | Optional | 
 | sctp_portrange | Multiple SCTP port ranges. | Optional | 
-| session_ttl | Session TTL in the range of 300 - 604800. | Optional | 
-| tcp_halfclose_timer | Wait time to close a TCP session waiting for an unanswered FIN packet (1 - 86400 sec). | Optional | 
-| tcp_halfopen_timer | Wait time to close a TCP session waiting for an unanswered open session packet (1 - 86400 sec). | Optional | 
+| session_ttl | Session TTL in the range of 300 - 604800. Default is 0. | Optional | 
+| tcp_halfclose_timer | Wait time to close a TCP session waiting for an unanswered FIN packet (1 - 86400 sec). Default is 0. | Optional | 
+| tcp_halfopen_timer | Wait time to close a TCP session waiting for an unanswered open session packet (1 - 86400 sec). Default is 0. | Optional | 
 | tcp_portrange | Multiple TCP port ranges. | Optional | 
-| tcp_timewait_timer | Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec). | Optional | 
-| udp_idle_timer | UDP half close timeout (0 - 86400 sec). | Optional | 
+| tcp_timewait_timer | Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec). Default is 0. | Optional | 
+| udp_idle_timer | UDP half close timeout (0 - 86400 sec). Default is 0. | Optional | 
 | udp_portrange | Multiple UDP port ranges. | Optional | 
 
 
@@ -1214,7 +1214,7 @@ There is no context output for this command.
 
 ### fortimanager-firewall-policy-package-list
 ***
-List ADOM policy packages
+List ADOM policy packages.
 
 
 #### Base Command
@@ -1225,19 +1225,19 @@ List ADOM policy packages
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to fetch the firewall policy packages. Leave empty to use the instance ADOM. | Optional | 
-| offset | From which index to start the list. | Optional | 
-| limit | To which index to get the list. | Optional | 
-| policy_package | Name of a specific policy package to fetch. If not specified will get all policy packages. | Optional | 
+| offset | From which index to start the list. Default is 0. | Optional | 
+| limit | To which index to get the list. Default is 50. | Optional | 
+| policy_package | Name of a specific policy package to fetch. If not specified, will get all policy packages. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiManager.PolicyPackage.name | String | Policy Package name. | 
+| FortiManager.PolicyPackage.name | String | Policy package name. | 
 | FortiManager.PolicyPackage.obj_ver | Number | Policy package object version. | 
 | FortiManager.PolicyPackage.oid | Number | Policy package OID. | 
-| FortiManager.PolicyPackage.package setting.central-nat | String | Whether to use central NAT. | 
+| FortiManager.PolicyPackage.package setting.central-nat | String | Whether to use the central NAT. | 
 | FortiManager.PolicyPackage.package setting.consolidated-firewall-mode | String | Whether to enable consolidate firewall mode. | 
 | FortiManager.PolicyPackage.package setting.fwpolicy-implicit-log | String | Whether to enable firewall policy implicit log. | 
 | FortiManager.PolicyPackage.package setting.fwpolicy6-implicit-log | String | Whether to enable firewall policy 6 implicit log. | 
@@ -1245,9 +1245,9 @@ List ADOM policy packages
 | FortiManager.PolicyPackage.package setting.ngfw-mode | String | Package NGFW mode. | 
 | FortiManager.PolicyPackage.package setting.ssl-ssh-profile | String | Package SSL SSH profile. | 
 | FortiManager.PolicyPackage.scope_member.name | String | Policy package scope member name. | 
-| FortiManager.PolicyPackage.scope_member.vdom | String | Policy Package scope member VDOM. | 
-| FortiManager.PolicyPackage.subobj | Unknown | Policy Package sub-objects. | 
-| FortiManager.PolicyPackage.type | String | Policy Package type. | 
+| FortiManager.PolicyPackage.scope_member.vdom | String | Policy package scope member VDOM. | 
+| FortiManager.PolicyPackage.subobj | Unknown | Policy package sub-objects. | 
+| FortiManager.PolicyPackage.type | String | Policy package type. | 
 
 
 #### Command Example
@@ -1312,15 +1312,15 @@ Create a new firewall policy package.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM on which to create the service group. Leave empty to use the instance ADOM. | Optional | 
-| name | The name of the new Policy Package. | Required | 
-| type | The type og package | Required | 
-| central_nat | Whether to use central NAT | Optional | 
-| consolidated_firewall_mode | Whether to enable consolidate firewall mode | Optional | 
-| fwpolicy_implicit_log | Whether to enable firewall policy implicit log | Optional | 
-| fwpolicy6_implicit_log | Whether to enable firewall policy 6 implicit log | Optional | 
-| inspection_mode | Package inspection mode. | Optional | 
-| ngfw_mode | Package NGFW mode | Optional | 
-| ssl_ssh_profile | Package SSL SSH profile | Optional | 
+| name | The name of the new policy package. | Required | 
+| type | The type of package. Possible values are: "pkg" and "folder". | Required | 
+| central_nat | Whether to use central NAT. Default is "disable". | Optional | 
+| consolidated_firewall_mode | Whether to enable consolidate firewall mode. Default is "disable". | Optional | 
+| fwpolicy_implicit_log | Whether to enable firewall policy implicit log. Default is "disable". | Optional | 
+| fwpolicy6_implicit_log | Whether to enable firewall policy 6 implicit log. Default is "disable". | Optional | 
+| inspection_mode | Package inspection mode. Possible values are: "proxy" and "flow". Default is "proxy". | Optional | 
+| ngfw_mode | Package NGFW mode. Possible values are: "profile-based" and "policy-based". Default is "profile-based". | Optional | 
+| ssl_ssh_profile | Package SSL SSH profile. | Optional | 
 
 
 #### Context Output
@@ -1349,14 +1349,14 @@ Create a new firewall policy package.
 | --- | --- | --- |
 | adom | The ADOM on which to update the service group. Leave empty to use the instance ADOM. | Optional | 
 | name | The name of the Policy Package to update. | Required | 
-| type | The type og package | Optional | 
-| central_nat | Whether to use central NAT | Optional | 
-| consolidated_firewall_mode | Whether to enable consolidate firewall mode | Optional | 
-| fwpolicy_implicit_log | Whether to enable firewall policy implicit log | Optional | 
-| fwpolicy6_implicit_log | Whether to enable firewall policy 6 implicit log | Optional | 
-| inspection_mode | Package inspection mode. | Optional | 
-| ngfw_mode | Package NGFW mode | Optional | 
-| ssl_ssh_profile | Package SSL SSH profile | Optional | 
+| type | The type og package. Possible values are: "pkg" and "folder". | Optional | 
+| central_nat | Whether to use central NAT. | Optional | 
+| consolidated_firewall_mode | Whether to enable consolidate firewall mode. | Optional | 
+| fwpolicy_implicit_log | Whether to enable firewall policy implicit log. | Optional | 
+| fwpolicy6_implicit_log | Whether to enable firewall policy 6 implicit log. | Optional | 
+| inspection_mode | Package inspection mode. Possible values are: "proxy" and "flow". | Optional | 
+| ngfw_mode | Package NGFW mode. Possible values are: "profile-based" and "policy-based". | Optional | 
+| ssl_ssh_profile | Package SSL SSH profile. | Optional | 
 
 
 #### Context Output
@@ -1399,7 +1399,7 @@ There is no context output for this command.
 
 ### fortimanager-firewall-policy-list
 ***
-List specific firewall policies from a policy package
+List specific firewall policies from a policy package.
 
 
 #### Base Command
@@ -1409,11 +1409,11 @@ List specific firewall policies from a policy package
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| package | The package from which to fetch the policies | Required | 
+| package | The package from which to fetch the policies. | Required | 
 | adom | The ADOM from which to fetch the policies. Leave empty to use the instance ADOM. | Optional | 
-| offset | From which index to start the list. | Optional | 
+| offset | From which index to start the list. Default is 0. | Optional | 
 | limit | To which index to get the list. | Optional | 
-| policy_id | An id for the specific policy to fetch. If not specified will get all policies. | Optional | 
+| policy_id | An ID for the specific policy to fetch. If not specified, will get all policies. | Optional | 
 
 
 #### Context Output
@@ -1424,12 +1424,12 @@ List specific firewall policies from a policy package
 | FortiManager.PolicyPackage.Policy.app-category | String | Application category ID list. | 
 | FortiManager.PolicyPackage.Policy.app-group | String | Application group names. | 
 | FortiManager.PolicyPackage.Policy.application | Number | Application ID list. | 
-| FortiManager.PolicyPackage.Policy.application-list | String | Name of an existing Application list. | 
+| FortiManager.PolicyPackage.Policy.application-list | String | Name of an existing application list. | 
 | FortiManager.PolicyPackage.Policy.auth-cert | String | HTTPS server certificate for policy authentication. | 
 | FortiManager.PolicyPackage.Policy.auth-path | String | Enable/disable authentication-based routing. | 
 | FortiManager.PolicyPackage.Policy.auth-redirect-addr | String | HTTP-to-HTTPS redirect address for firewall authentication. | 
 | FortiManager.PolicyPackage.Policy.auto-asic-offload | String | Enable/disable offloading security profile processing to CP processors. | 
-| FortiManager.PolicyPackage.Policy.av-profile | String | Name of an existing Antivirus profile. | 
+| FortiManager.PolicyPackage.Policy.av-profile | String | Name of an existing antivirus profile. | 
 | FortiManager.PolicyPackage.Policy.block-notification | String | Enable/disable block notification. | 
 | FortiManager.PolicyPackage.Policy.captive-portal-exempt | String | Enable to exempt some users from the captive portal. | 
 | FortiManager.PolicyPackage.Policy.capture-packet | String | Enable/disable capture packets. | 
@@ -1449,27 +1449,27 @@ List specific firewall policies from a policy package
 | FortiManager.PolicyPackage.Policy.dscp-value | String | DSCP value. | 
 | FortiManager.PolicyPackage.Policy.dsri | String | Enable DSRI to ignore HTTP server responses. | 
 | FortiManager.PolicyPackage.Policy.dstaddr | String | Destination address and address group names. | 
-| FortiManager.PolicyPackage.Policy.dstaddr-negate | String | When enabled dstaddr specifies what the destination address must NOT be. | 
+| FortiManager.PolicyPackage.Policy.dstaddr-negate | String | When enabled, dstaddr specifies what the destination address must NOT be. | 
 | FortiManager.PolicyPackage.Policy.dstintf | String | Outgoing \(egress\) interface. | 
 | FortiManager.PolicyPackage.Policy.firewall-session-dirty | String | How to handle sessions if the configuration of this firewall policy changes. | 
 | FortiManager.PolicyPackage.Policy.fixedport | String | Enable to prevent source NAT from changing a session source port. | 
-| FortiManager.PolicyPackage.Policy.fsso | String | Enable/disable Fortinet Single Sign-On. | 
+| FortiManager.PolicyPackage.Policy.fsso | String | Enable/disable Fortinet single sign-on. | 
 | FortiManager.PolicyPackage.Policy.fsso-agent-for-ntlm | String | FSSO agent to use for NTLM authentication. | 
 | FortiManager.PolicyPackage.Policy.global-label | String | Label for the policy that appears when the GUI is in Global View mode. | 
 | FortiManager.PolicyPackage.Policy.groups | String | Names of user groups that can authenticate with this policy. | 
 | FortiManager.PolicyPackage.Policy.gtp-profile | String | GTP profile. | 
 | FortiManager.PolicyPackage.Policy.icap-profile | String | Name of an existing ICAP profile. | 
 | FortiManager.PolicyPackage.Policy.identity-based-route | String | Name of identity-based routing rule. | 
-| FortiManager.PolicyPackage.Policy.inbound | String | Policy-based IPsec VPN: only traffic from the remote network can initiate a VPN. | 
-| FortiManager.PolicyPackage.Policy.internet-service | String | Enable/disable use of Internet Services for this policy. If enabled, destination address and service are not used. | 
-| FortiManager.PolicyPackage.Policy.internet-service-custom | String | Custom Internet Service name. | 
-| FortiManager.PolicyPackage.Policy.internet-service-id | String | Internet Service ID. | 
-| FortiManager.PolicyPackage.Policy.internet-service-negate | String | When enabled internet-service specifies what the service must NOT be. | 
-| FortiManager.PolicyPackage.Policy.internet-service-src | String | Enable/disable use of Internet Services in source for this policy. If enabled, source address is not used. | 
-| FortiManager.PolicyPackage.Policy.internet-service-src-custom | String | Custom Internet Service source name. | 
-| FortiManager.PolicyPackage.Policy.internet-service-src-id | String | Internet Service source ID. | 
-| FortiManager.PolicyPackage.Policy.internet-service-src-negate | String | When enabled internet-service-src specifies what the service must NOT be. | 
-| FortiManager.PolicyPackage.Policy.ippool | String | Enable to use IP Pools for source NAT. | 
+| FortiManager.PolicyPackage.Policy.inbound | String | Policy-based IPsec VPN. Only traffic from the remote network can initiate a VPN. | 
+| FortiManager.PolicyPackage.Policy.internet-service | String | Enable/disable use of internet services for this policy. If enabled, destination address and service are not used. | 
+| FortiManager.PolicyPackage.Policy.internet-service-custom | String | Custom internet service name. | 
+| FortiManager.PolicyPackage.Policy.internet-service-id | String | Internet service ID. | 
+| FortiManager.PolicyPackage.Policy.internet-service-negate | String | When enabled, internet service specifies what the service must NOT be. | 
+| FortiManager.PolicyPackage.Policy.internet-service-src | String | Enable/disable use of internet services in source for this policy. If enabled, source address is not used. | 
+| FortiManager.PolicyPackage.Policy.internet-service-src-custom | String | Custom internet service source name. | 
+| FortiManager.PolicyPackage.Policy.internet-service-src-id | String | Internet service source ID. | 
+| FortiManager.PolicyPackage.Policy.internet-service-src-negate | String | When enabled, internet-service-src specifies what the service must NOT be. | 
+| FortiManager.PolicyPackage.Policy.ippool | String | Enable to use IP pools for source NAT. | 
 | FortiManager.PolicyPackage.Policy.ips-sensor | String | Name of an existing IPS sensor. | 
 | FortiManager.PolicyPackage.Policy.label | String | Label for the policy that appears when the GUI is in Section View mode. | 
 | FortiManager.PolicyPackage.Policy.learning-mode | String | Enable to allow everything, but log all of the meaningful data for security information gathering. A learning report will be generated. | 
@@ -1478,7 +1478,7 @@ List specific firewall policies from a policy package
 | FortiManager.PolicyPackage.Policy.match-vip | String | Enable to match packets that have had their destination addresses changed by a VIP. | 
 | FortiManager.PolicyPackage.Policy.mms-profile | String | Name of an existing MMS profile. | 
 | FortiManager.PolicyPackage.Policy.name | String | Policy name. | 
-| FortiManager.PolicyPackage.Policy.nat | String | Enable/disable source NAT. | 
+| FortiManager.PolicyPackage.Policy.nat | String | Enable/disable a source NAT. | 
 | FortiManager.PolicyPackage.Policy.natinbound | String | Policy-based IPsec VPN: apply destination NAT to inbound traffic. | 
 | FortiManager.PolicyPackage.Policy.natip | String | Policy-based IPsec VPN: source NAT IP address for outgoing traffic. | 
 | FortiManager.PolicyPackage.Policy.natoutbound | String | Policy-based IPsec VPN: apply source NAT to outbound traffic. | 
@@ -1491,12 +1491,12 @@ List specific firewall policies from a policy package
 | FortiManager.PolicyPackage.Policy.permit-any-host | String | Accept UDP packets from any host. | 
 | FortiManager.PolicyPackage.Policy.permit-stun-host | String | Accept UDP packets from any Session Traversal Utilities for NAT \(STUN\) host. | 
 | FortiManager.PolicyPackage.Policy.policyid | Number | Policy ID. | 
-| FortiManager.PolicyPackage.Policy.poolname | String | IP Pool names. | 
+| FortiManager.PolicyPackage.Policy.poolname | String | IP pool names. | 
 | FortiManager.PolicyPackage.Policy.profile-group | String | Name of profile group. | 
-| FortiManager.PolicyPackage.Policy.profile-protocol-options | String | Name of an existing Protocol options profile. | 
+| FortiManager.PolicyPackage.Policy.profile-protocol-options | String | Name of an existing protocol options profile. | 
 | FortiManager.PolicyPackage.Policy.profile-type | String | Determine whether the firewall policy allows security profile groups or single profiles only. | 
 | FortiManager.PolicyPackage.Policy.radius-mac-auth-bypass | String | Enable MAC authentication bypass. The bypassed MAC address must be received from RADIUS server. | 
-| FortiManager.PolicyPackage.Policy.redirect-url | String | URL users are directed to after seeing and accepting the disclaimer or authenticating. | 
+| FortiManager.PolicyPackage.Policy.redirect-url | String | The URL users are directed to after seeing and accepting the disclaimer or authenticating. | 
 | FortiManager.PolicyPackage.Policy.replacemsg-override-group | String | Override the default replacement message group for this policy. | 
 | FortiManager.PolicyPackage.Policy.rsso | String | Enable/disable RADIUS single sign-on \(RSSO\). | 
 | FortiManager.PolicyPackage.Policy.rtp-addr | String | Address names if this is an RTP NAT policy. | 
@@ -1506,11 +1506,11 @@ List specific firewall policies from a policy package
 | FortiManager.PolicyPackage.Policy.schedule-timeout | String | Enable to force current sessions to end when the schedule object times out. Disable allows them to end from inactivity. | 
 | FortiManager.PolicyPackage.Policy.send-deny-packet | String | Enable to send a reply when a session is denied or blocked by a firewall policy. | 
 | FortiManager.PolicyPackage.Policy.service | String | Service and service group names. | 
-| FortiManager.PolicyPackage.Policy.service-negate | String | When enabled service specifies what the service must NOT be. | 
-| FortiManager.PolicyPackage.Policy.session-ttl | Number | TTL in seconds for sessions accepted by this policy \(0 means use the system default session TTL\). | 
-| FortiManager.PolicyPackage.Policy.spamfilter-profile | String | Name of an existing Spam filter profile. | 
+| FortiManager.PolicyPackage.Policy.service-negate | String | When enabled, service specifies what the service must NOT be. | 
+| FortiManager.PolicyPackage.Policy.session-ttl | Number | TTL in seconds for sessions accepted by this policy. \(0 means use the system default session TTL.\) | 
+| FortiManager.PolicyPackage.Policy.spamfilter-profile | String | Name of an existing spam filter profile. | 
 | FortiManager.PolicyPackage.Policy.srcaddr | String | Source address and address group names. | 
-| FortiManager.PolicyPackage.Policy.srcaddr-negate | String | When enabled srcaddr specifies what the source address must NOT be. | 
+| FortiManager.PolicyPackage.Policy.srcaddr-negate | String | When enabled, srcaddr specifies what the source address must NOT be. | 
 | FortiManager.PolicyPackage.Policy.srcintf | String | Incoming \(ingress\) interface. | 
 | FortiManager.PolicyPackage.Policy.ssh-filter-profile | String | Name of an existing SSH filter profile. | 
 | FortiManager.PolicyPackage.Policy.ssl-mirror | String | Enable to copy decrypted SSL traffic to a FortiGate interface \(called SSL mirroring\). | 
@@ -1545,10 +1545,10 @@ List specific firewall policies from a policy package
 | FortiManager.PolicyPackage.Policy.wanopt-peer | String | WAN optimization peer. | 
 | FortiManager.PolicyPackage.Policy.wanopt-profile | String | WAN optimization profile. | 
 | FortiManager.PolicyPackage.Policy.wccp | String | Enable/disable forwarding traffic matching this policy to a configured WCCP server. | 
-| FortiManager.PolicyPackage.Policy.webcache | String | Enable/disable web cache. | 
-| FortiManager.PolicyPackage.Policy.webcache-https | String | Enable/disable web cache for HTTPS. | 
+| FortiManager.PolicyPackage.Policy.webcache | String | Enable/disable a web cache. | 
+| FortiManager.PolicyPackage.Policy.webcache-https | String | Enable/disable a web cache for HTTPS. | 
 | FortiManager.PolicyPackage.Policy.webfilter-profile | String | Name of an existing Web filter profile. | 
-| FortiManager.PolicyPackage.Policy.wsso | String | Enable/disable WiFi Single Sign On \(WSSO\). | 
+| FortiManager.PolicyPackage.Policy.wsso | String | Enable/disable WiFi single sign-on \(WSSO\). | 
 
 
 #### Command Example
@@ -1694,21 +1694,21 @@ Create a firewall policy.
 | --- | --- | --- |
 | adom | The ADOM on which to create the service group. Leave empty to use the instance ADOM. | Optional | 
 | package | The package from which to create the policy. | Required | 
-| action | The policy action | Required | 
-| comments | A comment | Optional | 
+| action | The policy action. Possible values are: "deny", "accept", "ipsec", and "ssl-vpn". | Required | 
+| comments | A comment. | Optional | 
 | dstaddr | Destination address name. Note: dstaddr6 or dstaddr must be set. | Optional | 
 | dstaddr6 | IPv6 destination address (web proxy only). Note: dstaddr6 or dstaddr must be set. | Optional | 
-| dstaddr_negate | Enable/disable negated destination address match. | Optional | 
+| dstaddr_negate | Enable/disable a negated destination address match. | Optional | 
 | dstintf | Destination interface name. | Optional | 
 | srcaddr | Source address name. Note: srcaddr or srcaddr6 must be set. | Optional | 
 | srcaddr6 | IPv6 source address (web proxy only). Note: srcaddr or srcaddr6 must be set. | Optional | 
-| srcaddr_negate | Enable/disable negated source address match. | Optional | 
+| srcaddr_negate | Enable/disable a negated source address match. | Optional | 
 | srcintf | Source interface name. | Optional | 
-| additional_params | A CSV list of additional params and their values. exmaple: Field1=Value1,Field2=Value2 | Optional | 
+| additional_params | A comma-separated list of additional params and their values. For example: Field1=Value1,Field2=Value2. | Optional | 
 | name | The name of the policy to create. | Required | 
-| logtraffic | Enable or disable logging. Log all sessions or security profile sessions. | Required | 
-| schedule | Schedule name. | Required | 
-| service | Service and service group names. | Required | 
+| logtraffic | Enable or disable logging. Log all sessions or security profile sessions. Possible values are: "enable", "disable", "all", and "utm". | Required | 
+| schedule | Schedule name. Default is "always". | Required | 
+| service | Service and service group names. Default is "ALL". | Required | 
 | status | Enable or disable this policy. | Required | 
 | policyid | The ID of the policy to create. Leave empty to use system default. | Optional | 
 
@@ -1739,19 +1739,19 @@ Update a firewall policy.
 | --- | --- | --- |
 | adom | The ADOM on which to update the service group. Leave empty to use the instance ADOM. | Optional | 
 | package | The package from which to update the policy. | Required | 
-| action | The policy action | Optional | 
-| comments | A comment | Optional | 
+| action | The policy action. Possible values are: "deny", "accept", "ipsec", and "ssl-vpn". | Optional | 
+| comments | A comment. | Optional | 
 | dstaddr | Destination address name. Note: dstaddr6 or dstaddr must be set. | Optional | 
 | dstaddr6 | IPv6 destination address (web proxy only). Note: dstaddr6 or dstaddr must be set. | Optional | 
-| dstaddr_negate | Enable/disable negated destination address match. | Optional | 
+| dstaddr_negate | Enable/disable a negated destination address match. | Optional | 
 | dstintf | Destination interface name. | Optional | 
 | srcaddr | Source address name. Note: srcaddr or srcaddr6 must be set. | Optional | 
 | srcaddr6 | IPv6 source address (web proxy only). Note: srcaddr or srcaddr6 must be set. | Optional | 
-| srcaddr_negate | Enable/disable negated source address match. | Optional | 
+| srcaddr_negate | Enable/disable a negated source address match. | Optional | 
 | srcintf | Source interface name. | Optional | 
-| additional_params | A CSV list of additional params and their values. exmaple: Field1=Value1,Field2=Value2 | Optional | 
+| additional_params | A comma-separated list of additional params and their values. exmaple: Field1=Value1,Field2=Value2. | Optional | 
 | name | The name of the policy to update. | Optional | 
-| logtraffic | Enable or disable logging. Log all sessions or security profile sessions. | Optional | 
+| logtraffic | Enable or disable logging. Log all sessions or security profile sessions. Possible values are: "enable", "disable", "all", and "utm". | Optional | 
 | schedule | Schedule name. | Optional | 
 | service | Service and service group names. | Optional | 
 | status | Enable or disable this policy. | Optional | 
@@ -1801,7 +1801,7 @@ There is no context output for this command.
 
 ### fortimanager-firewall-policy-move
 ***
-Move a policy in the package
+Move a policy in the package.
 
 
 #### Base Command
@@ -1815,7 +1815,7 @@ Move a policy in the package
 | package | The policy package from which we want to move the policy. | Required | 
 | policy | The policy we want to move. | Required | 
 | target | The target policy by which we want to move the policy. | Required | 
-| option | Whether to move the policy before or after the target policy. | Required | 
+| option | Whether to move the policy before or after the target policy. Possible values are: "before" and "after". Default is "before". | Required | 
 
 
 #### Context Output
@@ -1843,15 +1843,15 @@ List dynamic interfaces
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adom | The ADOM from which to list dynamic interfaces. Leave empty to use the default integration ADOM. | Optional | 
-| offset | From which index to start the list. | Optional | 
-| limit | To which index to get the list. | Optional | 
+| offset | From which index to start the list. Default is 0. | Optional | 
+| limit | To which index to get the list. Default is 50. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiManager.DynamicInterface.color | Number | Color of icon on the GUI. | 
+| FortiManager.DynamicInterface.color | Number | Color of the icon in the GUI. | 
 | FortiManager.DynamicInterface.default-mapping | String | Default mapping of the Interface. | 
 | FortiManager.DynamicInterface.defmap-intf | String | Default mapping interface. | 
 | FortiManager.DynamicInterface.defmap-intrazone-deny | String | Default mapping intrazone deny. | 
@@ -1962,7 +1962,7 @@ Schedule a policy package installation.
 | adom | The ADOM in which to install the policy package. Leave empty to use the default integration ADOM. | Optional | 
 | dev_rev_comment | The comment for the device configuration revision that will be generated during install. | Optional | 
 | package | The policy package to install. | Required | 
-| name | The device name on which to install the package. | Required | 
+| name | The device or device group name on which to install the package. | Required | 
 | vdom | vdom on which to install the package. | Optional | 
 
 
@@ -2014,7 +2014,7 @@ Get installation status.
 | --- | --- | --- |
 | FortiManager.Installation.adom | Number | The ADOM on which the installation occurred. | 
 | FortiManager.Installation.end_tm | Number | The installation task end time. | 
-| FortiManager.Installation.flags | Number | The installation_task_flags | 
+| FortiManager.Installation.flags | Number | The installation_task_flags. | 
 | FortiManager.Installation.id | Number | The installation task ID. | 
 | FortiManager.Installation.line.detail | String | The installation status details. | 
 | FortiManager.Installation.line.end_tm | Number | The installation task end time. | 
