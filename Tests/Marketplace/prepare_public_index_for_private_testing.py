@@ -8,7 +8,7 @@ import logging
 from zipfile import ZipFile
 from contextlib import contextmanager
 from datetime import datetime
-from Tests.Marketplace.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
+from Tests.private_build.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
     extract_packs_artifacts
 from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
 from Tests.scripts.utils.log_util import install_logging
