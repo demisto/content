@@ -950,7 +950,8 @@ class Client(BaseClient):
                                                ip_list: list, vendor: list, vendor_id: list, product: list,
                                                product_id: list,
                                                serial: list,
-                                               hostname: list, violation_ids: list, username: list) -> Dict[str, Any]:
+                                               hostname: list, violation_ids: list, username: list)\
+            -> Dict[str, Any]:
         arg_list = {'type': type_of_violation,
                     'endpoint_id_list': endpoint_ids,
                     'ip_list': ip_list,
@@ -2320,9 +2321,9 @@ def get_endpoint_device_control_violations_command(client: Client, args: Dict[st
 
     headers = ['date', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
                'serial']
-    violations = reply.get('violations')
+    violations: list = reply.get('violations')  # type: ignore
     for violation in violations:
-        timestamp = violation.get('timestamp')
+        timestamp: str = violation.get('timestamp')
         violation['date'] = timestamp_to_datestring(timestamp, TIME_FORMAT)
 
     return (
@@ -2357,12 +2358,15 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
     )
 
 
-def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]:
+def retrieve_file_details_command(client: Client, args):
     action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
     result = []
     raw_result = []
+    file_results = []
+    endpoints_count = 0
+    retrived_files_count =0
 
     for action_id in action_id_list:
         data = client.retrieve_file_details(action_id)
@@ -2373,17 +2377,21 @@ def retrieve_file_details_command(client: Client, args) -> Tuple[str, dict, Any]
                 'action_id': action_id,
                 'endpoint_id': key
             }
+            endpoints_count += 1
             if val:
+                retrived_files_count += 1
                 obj['file_link'] = val
+                file_results.append(fileResult(filename='', data=val, file_type=entryTypes['infoFile']))
             result.append(obj)
 
-    return (
-        tableToMarkdown(name='Retrieve file Details', t=result, headerTransform=string_to_table_header),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
-        },
-        raw_result
-    )
+    return_entry = {
+        'Type': entryTypes['note'],
+        'HumanReadable': f'### Action id : {action_id} \n'
+                         f'Retrieved {retrived_files_count} files from {endpoints_count} endpoints.',
+        'Contents': raw_result
+    }
+    demisto.results(return_entry)
+    demisto.results(file_results)
 
 
 def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -2406,7 +2414,7 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk]
     )
-    scripts = result.get('scripts')[offset:limit]
+    scripts = result.get('scripts')[offset:limit]  # type: ignore
     for script in scripts:
         timestamp = script.get('modification_date')
         script['modification_date_timestamp'] = timestamp
@@ -2451,39 +2459,6 @@ def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, 
         f'### Script code: \n ``` {str(reply)} ```',
         {
             f'{INTEGRATION_CONTEXT_BRAND}.ScriptCode(val.script_uid == obj.script_uid)': context
-        },
-        reply
-    )
-
-
-def run_script_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    script_uid = args.get('script_uid')
-    endpoint_ids: list = argToList(args.get('endpoint_ids'))
-    timeout: int = arg_to_int(arg=args.get('timeout'), arg_name='timeout')
-    parameters: dict = arg_to_dictionary(args.get('parameters'))
-
-    result = client.run_script(script_uid, endpoint_ids, timeout, parameters)
-    obj = {'action_id': result.get('action_id')}
-
-    return (
-        tableToMarkdown(name='Run Script Command', t=obj, removeNull=True, headerTransform=string_to_table_header),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.RunScript(val.action_id == obj.action_id)': obj
-        },
-        result
-    )
-
-
-def get_script_execution_status_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    action_id = args.get('action_id')
-
-    reply = client.get_script_execution_status(action_id)
-    reply['action_id'] = action_id
-
-    return (
-        tableToMarkdown(name='Execution Status', t=reply, removeNull=True),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.ScriptExecutionStatus(val.actionId == obj.actionId)': reply
         },
         reply
     )
@@ -2652,7 +2627,7 @@ def main():
             return_outputs(*retrieve_files_command(client, args))
 
         elif demisto.command() == 'xdr-retrieve-file-details':
-            return_outputs(*retrieve_file_details_command(client, args))
+            retrieve_file_details_command(client, args)
 
         elif demisto.command() == 'xdr-get-scripts':
             return_outputs(*get_scripts_command(client, args))
@@ -2662,12 +2637,6 @@ def main():
 
         elif demisto.command() == 'xdr-get-script-code':
             return_outputs(*get_script_code_command(client, args))
-
-        elif demisto.command() == 'xdr-run-script':
-            return_outputs(*run_script_command(client, args))
-
-        elif demisto.command() == 'xdr-get-script-execution-status':
-            return_outputs(*get_script_execution_status_command(client, args))
 
         elif demisto.command() == 'xdr-action-status-get':
             return_outputs(*action_status_get_command(client, args))

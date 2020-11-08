@@ -1740,11 +1740,17 @@ script:
       - disk drive
       - floppy disk
       - portable device
-    - description: Timestamp of the violation - Greater than or equal, This
-        is a Unix epoch timestamp value, in milliseconds.
+    - description: Timestamp of the violation - Greater than or equal,
+        Supported values -
+        1579039377301 (time in milliseconds)
+        "3 days ago" (relative date)
+        "2019-10-21T23:45:00" (date)
       name: timestamp_gte
-    - description: Timestamp of the violation - Less than or equal, This
-        is a Unix epoch timestamp value, in milliseconds.
+    - description: Timestamp of the violation - Less than or equal,
+                    Supported values -
+                    1579039377301 (time in milliseconds)
+                    "3 days ago" (relative date)
+                    "2019-10-21T23:45:00" (date)
       name: timestamp_lte
     - description: Comma separated list of IP addresses
       isArray: true
@@ -1932,78 +1938,6 @@ script:
       type: string
     - contextPath: PaloAltoNetworksXDR.ScriptCode.script_uid
       description: Script uid
-      type: string
-  - arguments:
-    - description: GUID, unique identifier of the script, returned by the “get scripts”
-        API per script.
-      name: script_uid
-      required: true
-    - description: List of endpoint IDs.
-      name: endpoint_ids
-      required: true
-    - description: 'Please enter comma separated parameters at the following way :
-        "param1_name=param1_value,param2_name=param2_value". You can find which parameters
-        required for the script, by running "xdr-get-script-metadata" command.'
-      name: parameters
-    - description: Integer, represents the timeout in seconds for this execution.
-      name: timeout
-      required: true
-    description: Initiate a new endpoint script execution action using a script from
-      the script library.
-    name: xdr-run-script
-    outputs:
-    - contextPath: PaloAltoNetworksXDR.RunScript.action_id
-      description: Action ID of the action initiated. ID will be used as a reference
-        to track in the action center.
-      type: string
-  - arguments:
-    - description: Integer, identifier of the action, can be found in Cortex XDR console
-        ResponseAction CenterAction ID field, or as return value after running - "xdr-run-script"
-        command.
-      name: action_id
-      required: true
-    description: Retrieve the status of a script execution action.
-    name: xdr-get-script-execution-status
-    outputs:
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus
-      description: Get Script execution status command results.
-      type: unknown
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.general_status
-      description: general status of the action, considering the status of all the
-        endpoints.
-      type: string
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.error_message
-      description: Error message regarding permissions for running APIs or the action
-        doesn’t exist.
-      type: string
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.endpoints_timeout
-      description: number of endpoints in “timeout” status.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.endpoints_pending_abort
-      description: Number of endpoints in “pending abort” status.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.endpoints_pending
-      description: Number of endpoints in pending status.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.endpoints_in_progress
-      description: Nnumber of endpoints in “in progress” status.
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.endpoints_failed
-      description: Number of endpoints in “failed” status.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.endpoints_expired
-      description: Number of endpoints in “expired” status.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.endpoints_completed_successfully
-      description: Number of endpoints in “completed successfully” status.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.endpoints_canceled
-      description: Number of endpoints in “canceled” status.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.endpoints_aborted
-      description: Number of endpoints in “aborted” status.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.ScriptExecutionStatus.action_id
-      description: Action ID of script execution.
       type: string
   - arguments:
     - description: The Action ID of the selected request. After performing an action,

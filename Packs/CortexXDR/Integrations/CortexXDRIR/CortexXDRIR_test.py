@@ -1,5 +1,6 @@
 import json
 import pytest
+import copy
 import demistomock as demisto
 
 XDR_URL = 'https://api.xdrurl.com'
@@ -1082,11 +1083,16 @@ def test_get_endpoint_violations_command(requests_mock):
             - returns markdown, context data and raw response.
         """
     from CortexXDRIR import get_endpoint_device_control_violations_command, Client
+    from CommonServerPython import timestamp_to_datestring
 
     get_endpoint_violations_reply = load_test_data('./test_data/get_endpoint_violations.json')
+    violations = get_endpoint_violations_reply.get('reply').get('violations')
+    for violation in violations:
+        timestamp = violation.get('timestamp')
+        violation['date'] = timestamp_to_datestring(timestamp, "%Y-%m-%dT%H:%M:%S")
     get_endpoint_violations_expected_result = {
         'PaloAltoNetworksXDR.EndpointViolations(val.violation_id==obj.violation_id)':
-            get_endpoint_violations_reply.get('reply').get('violations')
+            violations
     }
     requests_mock.post(f'{XDR_URL}/public_api/v1/device_control/get_violations/', json=get_endpoint_violations_reply)
 
@@ -1174,10 +1180,16 @@ def test_get_scripts_command(requests_mock):
             - returns markdown, context data and raw response.
         """
     from CortexXDRIR import get_scripts_command, Client
+    from CommonServerPython import timestamp_to_datestring
 
     get_scripts_response = load_test_data('./test_data/get_scripts.json')
+    scripts = copy.deepcopy(get_scripts_response.get('reply').get('scripts')[0::50])
+    for script in scripts:
+        timestamp = script.get('modification_date')
+        script['modification_date_timestamp'] = timestamp
+        script['modification_date'] = timestamp_to_datestring(timestamp, "%Y-%m-%dT%H:%M:%S")
     get_scripts_expected_result = {
-        'PaloAltoNetworksXDR.Scripts(val.script_uid == obj.script_uid)': get_scripts_response.get('reply').get('scripts')
+        'PaloAltoNetworksXDR.Scripts(val.script_uid == obj.script_uid)': scripts
     }
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_scripts/', json=get_scripts_response)
 
@@ -1220,67 +1232,6 @@ def test_get_script_metadata_command(requests_mock):
     _, context, _ = get_script_metadata_command(client, args)
 
     assert get_scripts_expected_result == context
-
-
-def test_run_script_command(requests_mock):
-    """
-        Given:
-            -script_uid
-            -endpoint_ids
-            -timeout
-        When:
-            Initiate a new endpoint script execution action using a script from the script library.
-        Then:
-            - returns markdown, context data and raw response.
-        """
-    from CortexXDRIR import run_script_command, Client
-
-    run_script_expected_result = {'PaloAltoNetworksXDR.RunScript(val.action_id == obj.action_id)': {'action_id': 1787}}
-    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json={"reply": {"action_id": 1787, "status": 1,
-                                                                                       "endpoints_count": 1}})
-
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
-    args = {
-        'script_uid': '956e8989f67ebcb2c71c4635311e47e4',
-        'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
-        'timeout': '30'
-    }
-
-    _, context, _ = run_script_command(client, args)
-    assert run_script_expected_result == context
-
-
-def test_get_script_execution_status_command(requests_mock):
-    """
-        Given:
-            -action_id
-        When:
-            Retrieve the status of a script execution action.
-        Then:
-            - returns markdown, context data and raw response.
-        """
-    from CortexXDRIR import get_script_execution_status_command, Client
-
-    get_script_execution_status_reply = load_test_data('./test_data/get_script_execution_status.json')
-    expected_context = get_script_execution_status_reply.get('reply')
-    expected_context["action_id"] = '1799'
-    get_script_execution_status_expected_result = {
-        'PaloAltoNetworksXDR.ScriptExecutionStatus(val.actionId == obj.actionId)':
-            expected_context}
-    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_status/',
-                       json=get_script_execution_status_reply)
-
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
-    args = {
-        'action_id': '1799'
-    }
-
-    _, context, _ = get_script_execution_status_command(client, args)
-    assert get_script_execution_status_expected_result == context
 
 
 def test_get_script_code_command(requests_mock):
