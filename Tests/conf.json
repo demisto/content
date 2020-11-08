@@ -2,6 +2,16 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+           {
+              "integrations": "GoogleCalendar",
+              "playbookID": "GoogleCalendar-Test",
+              "fromversion": "5.0.0"
+          },
+         {
+            "integrations": "GSuiteAdmin",
+            "playbookID": "GSuiteAdmin-Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
