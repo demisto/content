@@ -42,9 +42,8 @@ def build_query_in_reepect_to_phishing_labels(args):
     if mapping != ALL_LABELS and 'query' not in args:
         args['query'] = mapping_query
     else:
-        args['query'] = '({}) and ({})'.format(args['query'], mapping_query)
+        args['query'] = '({}) and ({})'.format(query, mapping_query)
     return args
-
 
 
 def main():

@@ -76,7 +76,7 @@ class Tokenizer:
         self.spacy_count = 0
         self.spacy_reset_count = 500
 
-    def handle_long_text(self, t, input_length):
+    def handle_long_text(self):
         return '', ''
 
     def map_indices_to_words(self, text):
