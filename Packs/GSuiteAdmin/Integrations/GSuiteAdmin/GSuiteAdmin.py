@@ -476,7 +476,10 @@ def test_module(client) -> str:
 
     with GSuiteClient.http_exception_handler():
         client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
-        client.http_request(url_suffix=f"{URL_SUFFIX['USER']}/{ADMIN_EMAIL}", method='GET')
+        if ADMIN_EMAIL:
+            client.http_request(url_suffix=f"{URL_SUFFIX['USER']}/{ADMIN_EMAIL}", method='GET')
+        else:
+            return_results("Please insert Admin Email parameter for the test to run")
     return 'ok'
 
 
