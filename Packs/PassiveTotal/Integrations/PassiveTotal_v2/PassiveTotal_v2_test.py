@@ -619,6 +619,8 @@ def test_pt_whois_search_command_success(request_mocker, mock_cr, client):
         dummy_custom_context = json.load(f)
     with open('TestData/whois_command/whois_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
+    with open('TestData/whois_command/whois_command_standard_domain_readable_output.md', 'r') as f:
+        dummy_standard_domain_readable_output = f.read()
     request_mocker.return_value = dummy_response
 
     # Execute
@@ -634,6 +636,8 @@ def test_pt_whois_search_command_success(request_mocker, mock_cr, client):
     assert readable_output == dummy_readable_output
     # asserts the custom context
     assert custom_context == dummy_custom_context
+    # assert the standard domain readable output
+    assert dummy_standard_domain_readable_output == mock_cr.call_args_list[0][1]['readable_output']
     # assert overall command output
     mock_cr.assert_called_with(
         outputs_prefix='PassiveTotal.WHOIS',
@@ -642,8 +646,6 @@ def test_pt_whois_search_command_success(request_mocker, mock_cr, client):
         readable_output=dummy_readable_output,
         raw_response=dummy_response
     )
-
-    assert '4534dfdfg.biz' in mock_cr.call_args_list[0][1]['readable_output']
 
 
 @patch('PassiveTotal_v2.Client.http_request')

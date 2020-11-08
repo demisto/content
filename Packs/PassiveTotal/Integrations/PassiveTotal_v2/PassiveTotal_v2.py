@@ -181,9 +181,10 @@ def get_host_attribute_context_data(records: List[Dict[str, Any]]) -> Tuple[list
                                           integration_name=INTEGRATION_NAME, score=Common.DBotScore.NONE)
             if auto_detect_indicator_type(hostname) == FeedIndicatorType.Domain:
                 domain_ioc = Common.Domain(domain=hostname, dbot_score=dbot_score)
+                # add standard output with standard readable output
                 standard_results.append(CommandResults(
                     indicator=domain_ioc,
-                    readable_output=tableToMarkdown('Domain', domain_ioc.to_context())
+                    readable_output=tableToMarkdown('', domain_ioc.to_context().get(Common.Domain.CONTEXT_PATH))
                 ))
         elif record.get('address'):
             address = record.get('address')
@@ -191,9 +192,10 @@ def get_host_attribute_context_data(records: List[Dict[str, Any]]) -> Tuple[list
                                           integration_name=INTEGRATION_NAME, score=Common.DBotScore.NONE)
             if auto_detect_indicator_type(address) == FeedIndicatorType.IP:
                 ip_ioc = Common.IP(ip=address, dbot_score=dbot_score)
+                # add standard output with standard readable output
                 standard_results.append(CommandResults(
                     indicator=ip_ioc,
-                    readable_output=tableToMarkdown('IP', ip_ioc.to_context())
+                    readable_output=tableToMarkdown('', ip_ioc.to_context().get(Common.IP.CONTEXT_PATH))
                 ))
 
     return standard_results, custom_ec
@@ -388,9 +390,11 @@ def get_context_for_whois_commands(domains: List[Dict[str, Any]]) -> Tuple[list,
                     score=Common.DBotScore.NONE
                 )
             )
+            # add standard output with standard readable output
             command_results.append(CommandResults(
                 indicator=standard_context_domain,
-                readable_output=tableToMarkdown('Domain', standard_context_domain.to_context())
+                readable_output=tableToMarkdown('',
+                                                standard_context_domain.to_context().get(Common.Domain.CONTEXT_PATH))
             ))
 
         # set custom context for whois commands
@@ -570,17 +574,19 @@ def create_pdns_standard_context(results: List[Dict[str, Any]]) -> List[CommandR
             dbot_score = Common.DBotScore(resolve, resolve_type, INTEGRATION_NAME, Common.DBotScore.NONE)
             if auto_detect_indicator_type(resolve) == FeedIndicatorType.Domain:
                 domain_ioc = Common.Domain(resolve, dbot_score)
+                # add standard output with standard readable output
                 standard_results.append(CommandResults(
                     indicator=domain_ioc,
-                    readable_output=tableToMarkdown('Domain', domain_ioc.to_context())
+                    readable_output=tableToMarkdown('', domain_ioc.to_context().get(Common.Domain.CONTEXT_PATH))
                 ))
         elif 'ip' == resolve_type:
             dbot_score = Common.DBotScore(resolve, resolve_type, INTEGRATION_NAME, Common.DBotScore.NONE)
             if auto_detect_indicator_type(resolve) == FeedIndicatorType.IP:
                 ip_ioc = Common.IP(resolve, dbot_score)
+                # add standard output with standard readable output
                 standard_results.append(CommandResults(
                     indicator=ip_ioc,
-                    readable_output=tableToMarkdown('Domain', ip_ioc.to_context())
+                    readable_output=tableToMarkdown('', ip_ioc.to_context().get(Common.IP.CONTEXT_PATH))
                 ))
 
     return standard_results
