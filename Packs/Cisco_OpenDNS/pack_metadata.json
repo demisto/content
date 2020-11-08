@@ -1,0 +1,14 @@
+{
+    "name": "Cisco_OpenDNS",
+    "description": "Cisco OpenDNS API Integration\nAllows listing, adding, and removing domains to blacklist (custom Integration)",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Osama Shenoda",
+    "url": "",
+    "email": "",
+    "created": "2020-11-08T11:47:34Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

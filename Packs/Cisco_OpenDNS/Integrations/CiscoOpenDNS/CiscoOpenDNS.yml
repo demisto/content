@@ -1,0 +1,67 @@
+category: Network Security
+commonfields:
+  id: Cisco_OpenDNS
+  version: -1
+configuration:
+- defaultvalue: https://s-platform.api.opendns.com/1.0/
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: APIKey
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Cisco OpenDNS Integration , add and remove domain  to/from Custom Integration
+  List
+display: Cisco_OpenDNS
+name: Cisco_OpenDNS
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Domain
+      name: domain
+      required: true
+    description: Open DNS  Block Domain
+    name: OpenDNSblockDomain
+  - arguments: []
+    description: Gel List of all Blaclist Items
+    name: OpenDNSgetBlackList
+  - arguments:
+    - description: Domain
+      name: domain
+      required: true
+    description: Check if Domain already exist on the Blacklist
+    name: OpenDNScheckDomainInBlackList
+  - arguments:
+    - description: Domainto be deleted
+      name: domain
+      required: true
+    name: OpenDNSdeleteDomain
+  dockerimage: demisto/python3:3.8.6.12176
+  longRunning: true
+  runonce: true
+  script: ''
+  subtype: python3
+  type: python
+  dockerimage45: demisto/python3:3.7.4.2245
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
