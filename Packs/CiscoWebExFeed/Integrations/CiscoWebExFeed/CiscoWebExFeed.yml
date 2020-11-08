@@ -125,7 +125,6 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage45: demisto/btfl-soup:1.0.1.12410
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
