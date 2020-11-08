@@ -1334,3 +1334,9 @@ workflows:
                 - master
     jobs:
       *bucket_upload_jobs
+
+  bucket_upload_trigger:
+    # will initiate when using the trigger script.
+    when: << pipeline.parameters.bucket_upload>>
+    jobs:
+      *bucket_upload_jobs
