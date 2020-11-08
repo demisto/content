@@ -476,10 +476,7 @@ def test_module(client) -> str:
 
     with GSuiteClient.http_exception_handler():
         client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
-        client.credentials.refresh(Request())
-
-    if not client.credentials.valid:
-        raise DemistoException(MESSAGES['TEST_FAILED_ERROR'])
+        client.http_request(url_suffix=f"{URL_SUFFIX['USER']}/{ADMIN_EMAIL}", method='GET')
     return 'ok'
 
 
