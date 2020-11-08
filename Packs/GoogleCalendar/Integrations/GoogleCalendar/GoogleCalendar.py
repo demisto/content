@@ -23,6 +23,7 @@ HR_MESSAGES: Dict[str, str] = {
 }
 
 URL_SUFFIX: Dict[str, str] = {
+    'TEST_MODULE': 'calendar/v3/users/me/calendarList',
     'CALENDAR_ACL': 'calendar/v3/calendars/{}/acl'
 }
 
@@ -163,11 +164,8 @@ def test_module(gsuite_client) -> str:
     """
 
     with GSuiteClient.http_exception_handler():
-        gsuite_client.set_authorized_http(scopes=SCOPES['TEST_MODULE'])
-        gsuite_client.credentials.refresh(Request())
-
-    if not gsuite_client.credentials.valid:
-        raise DemistoException(MESSAGES['TEST_FAILED_ERROR'])
+        gsuite_client.set_authorized_http(scopes=SCOPES['CALENDAR'])
+        gsuite_client.http_request(url_suffix=URL_SUFFIX['TEST_MODULE'], method='GET')
     return 'ok'
 
 
