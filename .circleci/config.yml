@@ -794,7 +794,7 @@ jobs:
             - *store_artifacts
   Server Master:
     <<: *container_config
-    resource_class: medium
+    resource_class: medium+
     <<: *environment
     steps:
       - when:
