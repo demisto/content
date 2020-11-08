@@ -992,11 +992,13 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
 def remove_tests_for_non_supported_packs(tests: set, id_set: json):
     tests_that_should_not_be_tested = set()
     for test in tests:
-        id_set_test_playbook_pack_name = list(get_content_pack_name_of_test({test}, id_set))[0]
+        content_pack_name_list = list(get_content_pack_name_of_test({test}, id_set))
+        if content_pack_name_list:
+            id_set_test_playbook_pack_name = content_pack_name_list[0]
 
-        # We don't want to test playbooks from Non-certified partners.
-        if not should_test_content_pack(id_set_test_playbook_pack_name):
-            tests_that_should_not_be_tested.add(test)
+            # We don't want to test playbooks from Non-certified partners.
+            if not should_test_content_pack(id_set_test_playbook_pack_name):
+                tests_that_should_not_be_tested.add(test)
 
     if tests_that_should_not_be_tested:
         logging.info('The following test playbooks are not supported and will not be tested: \n{} '.format(
