@@ -6,9 +6,9 @@ This integration replaces the Gmail functionality in the GoogleApps API and G Su
 
 There are several procedures you have to perform in Google before configuring the integration on Demisto.
 
-* [Get a New Private Key](#get-a-new-private-key)
-* [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account)
-* [Get an Immutable Google Apps ID](#get-an-immutable-google-apps-id-parameters)
+* Get a New Private Key
+* Delegate Domain-wide Authority to Your Service Account
+* Get an Immutable Google Apps ID
 
 ### Get a New Private Key
 
@@ -116,35 +116,36 @@ compare
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 TODO: go over the numbers and missing command
-1.  Delete a user: gmail-delete-user
-2.  Get tokens for a user: gmail-get-tokens-for-user
-3.  Get information for a Google user: gmail-get-user
-4.  Get all available Google roles: gmail-get-user-roles
-5.  Get Gmail message attachments: gmail-get-attachments
-6.  Get a Gmail message: gmail-get-mail
-7.  Search a user's Gmail records: gmail-search
-8.  Search in all Gmail mailboxes: gmail-search-all-mailboxes
-9.  List all Google users: gmail-list-users
-10.  Revoke a Google user's role: gmail-revoke-user-role
-11.  Create a new user: gmail-create-user
-12.  Delete mail from a mailbox: gmail-delete-mail
-13.  Get message in an email thread: gmail-get-thread
-14.  Move mail to a different folder: gmail-move-mail
-15.  Move a mail to a different mailbox: gmail-move-mail-to-mailbox
-16.  Add a rule to delete an email: gmail-add-delete-filter
-17.  Add a new filter: gmail-add-filter
-18.  Get a list of filters in a mailbox: gmail-list-fillter
-19.  Remove a filter from a mail: gmail-remove-filter
-20.  Move a mail to a different mailbox: gmail-move-mail-to-mailbox
-21.  Hide a user's information: gmail-hide-user-in-directory
-22.  Set a password: gmail-set-password
-23.  Get an auto reply message for the user: gmail-get-autoreply
-24.  Set an auto-reply for the user: gmail-set-autoreply
-25.  Add a delete user to a mailbox: gmail-delegate-user-mailbox
-26.  Send an email using Gmail: send-mail
-27.  Reply an email using Gmail: reply-mail
-28.  Removers a delegate from a mailbox: gmail-remove-delegated-mailbox
-29.  Get details of a specific role: gmail-get-role
+- Delete a user: **gmail-delete-user**
+- Get tokens for a user: **gmail-get-tokens-for-user**
+- Get information for a Google user: **gmail-get-user**
+- Get all available Google roles: **gmail-get-user-roles**
+- Get Gmail message attachments: **gmail-get-attachments**
+- Get a Gmail message: **gmail-get-mail**
+- Search a user's Gmail records: **gmail-search**
+- Search in all Gmail mailboxes: **gmail-search-all-mailboxes**
+- List all Google users: **gmail-list-users**
+- Revoke a Google user's role: **gmail-revoke-user-role**
+- Create a new user: **gmail-create-user**
+- Delete mail from a mailbox: **gmail-delete-mail**
+- Get message in an email thread: **gmail-get-thread**
+- Move mail to a different folder: **gmail-move-mail**
+- Move a mail to a different mailbox: **gmail-move-mail-to-mailbox**
+- Add a rule to delete an email: **gmail-add-delete-filter**
+- Add a new filter: **gmail-add-filter**
+- Get a list of filters in a mailbox: **gmail-list-filter**
+- Remove a filter from a mail: **gmail-remove-filter**
+- Hide a user's information: **gmail-hide-user-in-directory**
+- Set a password: **gmail-set-password**
+- Get an auto reply message for the user: **gmail-get-autoreply**
+- Set an auto-reply for the user: **gmail-set-autoreply**
+- Add a delete user to a mailbox: **gmail-delegate-user-mailbox**
+- Send an email using Gmail: **send-mail**
+- Reply an email using Gmail: **reply-mail**
+- Removers a delegate from a mailbox: **gmail-remove-delegated-mailbox**
+- Get details of a specific role: **gmail-get-role**
+- Creates a forwarding address.: **gmail-forwarding-address-add**
+- Create a custom "from" send-as alias: **gmail-send-as-add**
 
 
 ### gmail-delete-user
