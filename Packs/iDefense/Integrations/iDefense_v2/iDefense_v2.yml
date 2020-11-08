@@ -1,0 +1,176 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: iDefense_v2
+  version: -1
+configuration:
+- display: URL
+  name: url
+  defaultvalue: https://api.intelgraph.idefense.com/
+  type: 0
+  required: true
+- display: API Token
+  name: api_token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: use_proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+description: iDefense provides intelligence regarding security threats and vulnerabilities.
+display: iDefense v2
+name: iDefense_v2
+script:
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      default: true
+      description: IP address to check.
+      isArray: true
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address that was checked.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the reason the vendor made that decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor that was used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: String
+    description: Checks the reputation of the given IP address.
+  - name: domain
+    arguments:
+    - name: domain
+      default: true
+      description: The domain to check.
+      isArray: true
+    outputs:
+    - contextPath: Domain.Name
+      description: The name of the domain that was checked.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason the vendor made that decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    description: Checks the reputation of the given domain.
+  - name: url
+    arguments:
+    - name: url
+      default: true
+      description: The URL to check (must start with "http://").
+      isArray: true
+    outputs:
+    - contextPath: URL.Data
+      description: The URL that was checked.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason the vendor made that decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    description: Checks the reputation of the given URL.
+  - name: idefense-get-ioc-by-uuid
+    arguments:
+    - name: uuid
+      required: true
+      default: false
+      description: Unique User ID.
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason the vendor made that decision.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason the vendor made that decision.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason the vendor made that decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    description: Get specific indicator reputation
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- No tests
