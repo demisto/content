@@ -65,4 +65,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Detonate Remote File from URL - McAfee ATD](Insert the link to your image here)
+![Detonate Remote File from URL - McAfee ATD](https://raw.githubusercontent.com/demisto/content/3e59763fcdac721e65f193226952d740adbe4a9e/Packs/McAfee_Advanced_Threat_Defense/doc_files/playbook_denote_file_from_url_image.png)
