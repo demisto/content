@@ -469,7 +469,7 @@ class Client(BaseClient):
                                                                   client_id=oauth_params.get('client_id', ''),
                                                                   client_secret=oauth_params.get('client_secret', ''),
                                                                   url=oauth_params.get('url', ''),
-                                                                  verify=oauth_params.get('insecure', False),
+                                                                  verify=oauth_params.get('verify', False),
                                                                   proxy=oauth_params.get('proxy', False),
                                                                   headers=oauth_params.get('headers', ''))
         else:
@@ -2210,7 +2210,7 @@ def main():
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            'insecure': params.get('insecure'),
+            'verify': verify,
             'proxy': params.get('proxy'),
             'use_oauth': use_oauth
         }
