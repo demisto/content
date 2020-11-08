@@ -401,6 +401,25 @@
         },
         {
             "integrations": "HelloWorld",
+            "playbookID": "Sanity Test - Playbook with integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "HelloWorld",
+            "playbookID": "Sanity Test - Playbook with mocked integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Sanity Test - Playbook with no integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Gmail",
+            "playbookID": "Sanity Test - Playbook with Unmockable Integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0",
             "timeout": 400
@@ -1200,16 +1219,6 @@
             ]
         },
         {
-            "integrations": [
-                "Mail Sender (New)",
-                "Gmail"
-            ],
-            "playbookID": "Mail Sender (New) Test",
-            "instance_names": [
-                "Mail_Sender_(New)_SSL/TLS"
-            ]
-        },
-        {
             "playbookID": "buildewsquery_test"
         },
         {
@@ -1818,9 +1827,9 @@
             "timeout": 500
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
+            "integrations": "iDefense_v2",
+            "playbookID": "iDefense_v2_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AbuseIPDB",
@@ -3186,7 +3195,6 @@
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
-        "Mail Sender (New) Test": "Issue 25602",
         "Luminate-TestPlaybook": "Issue 27016",
         "AutoFocus V2 test": "Issue 26464",
         "Fidelis Elevate Network": "Issue 26453",
