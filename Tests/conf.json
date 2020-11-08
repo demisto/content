@@ -1219,16 +1219,6 @@
             ]
         },
         {
-            "integrations": [
-                "Mail Sender (New)",
-                "Gmail"
-            ],
-            "playbookID": "Mail Sender (New) Test",
-            "instance_names": [
-                "Mail_Sender_(New)_SSL/TLS"
-            ]
-        },
-        {
             "playbookID": "buildewsquery_test"
         },
         {
@@ -3205,7 +3195,6 @@
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
-        "Mail Sender (New) Test": "Issue 25602",
         "Luminate-TestPlaybook": "Issue 27016",
         "AutoFocus V2 test": "Issue 26464",
         "Fidelis Elevate Network": "Issue 26453",
