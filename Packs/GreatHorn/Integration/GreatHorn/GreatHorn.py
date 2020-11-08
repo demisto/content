@@ -21,7 +21,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def get_policy(self, policy_id=None) -> Dict[str, Any]:
+    def get_policy(self, policy_id: Optional[str] = None) -> Dict[str, Any]:
         if policy_id:
             return self._http_request(
                 method='GET',
@@ -340,17 +340,18 @@ def gh_get_message_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
         policies = []
 
-        for policy_id in message.get("flag"):
-            policy = client.get_policy(policy_id).get("policy", {})
-            actions = []
-            for action in policy.get("actions"):
-                actions.append(action.get("type"))
-            p = {
-                "ID": policy.get("id"),
-                "Name": policy.get("name"),
-                "Actions": ",".join(actions)
-            }
-            policies.append(p)
+        if message.get("flag") is not None:
+            for policy_id in message.get("flag"):
+                policy = client.get_policy(policy_id).get("policy", {})
+                actions = []
+                for action in policy.get("actions"):
+                    actions.append(action.get("type"))
+                p = {
+                    "ID": policy.get("id"),
+                    "Name": policy.get("name"),
+                    "Actions": ",".join(actions)
+                }
+                policies.append(p)
 
         policies_md = tableToMarkdown("Policies", policies, ["ID", "Name", "Actions"])
 
