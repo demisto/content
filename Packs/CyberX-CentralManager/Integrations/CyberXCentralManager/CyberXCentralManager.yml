@@ -45,7 +45,6 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage45: demisto/python3-deb:3.7.2.214
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
