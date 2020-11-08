@@ -500,33 +500,24 @@ class Client:
             full_collection_list.append(collection.name)
         return full_collection_list
 
-    def build_iterator(self, collection, begin_date=None, fetch_interval=None):
+    def build_iterator(self, collection, begin_date=None):
         """Returns a list of all XML elements from the given collection.
 
         Args:
             collection(str): The collection name to fetch the elements from.
             begin_date(datetime): what is the first date to fetch indicators from.
-            fetch_interval(int): the time interval in which to bring the indicators.
 
         Returns:
             list. A list of XML elements (strings).
         """
         if not begin_date:
-            begin_date, _ = parse_date_range(
-                demisto.params().get('initial_interval'), utc=False
-            )
+            begin_date, _ = parse_date_range(demisto.params().get('initial_interval'))
 
         if begin_date.tzinfo is None:
             begin_date = begin_date.replace(tzinfo=pytz.UTC)
 
-        if fetch_interval:
-            end_date = begin_date + timedelta(minutes=int(fetch_interval))
-
-        else:
-            # for test module - if no fetch_interval is given take the interval from the integration params
-            end_date = begin_date + timedelta(minutes=int(demisto.params().get('fetch_interval')))
-
-        return list(self.taxii_client.poll(collection_name=collection, begin_date=begin_date, end_date=end_date))
+        # bring all the indicators created from the last date until now.
+        return list(self.taxii_client.poll(collection_name=collection, begin_date=begin_date))
 
     def decode_indicators(self, response):
         """Decode the XML response given using STIXDecode class.
@@ -589,7 +580,8 @@ def get_indicators_command(client: Client, args: Dict):
         str,dict,dict. The human readable, and rawJSON from the command - no context created.
     """
     limit = int(args.get('limit', 50))
-    indicator_list, _ = fetch_indicators_command(client, limit=limit)
+    begin_date, _ = parse_date_range(args.get('begin_date')) if args.get('begin_date') else None
+    indicator_list, _ = fetch_indicators_command(client, limit=limit, begin_date=begin_date)
 
     human_readable = tableToMarkdown("Indicators from AlienVault OTX TAXII:", indicator_list, removeNull=True)
 
@@ -648,14 +640,13 @@ def get_latest_indicator_time(indicators_list):
     return latest_indicator_time
 
 
-def fetch_indicators_command(client: Client, limit=None, begin_date=None, fetch_interval=None):
+def fetch_indicators_command(client: Client, limit=None, begin_date=None):
     """Fetch indicators from AlienVault OTX.
 
     Args:
         client(Client): The AlienVault OTX client.
         limit(any): How many XML elements to parse, None if all should be parsed.
         begin_date(datetime): what is the first date to fetch indicators from.
-        fetch_interval(int): the time interval in which to fetch the indicators.
 
     Returns:
         list. A list of indicators.
@@ -663,7 +654,7 @@ def fetch_indicators_command(client: Client, limit=None, begin_date=None, fetch_
     indicator_list = []  # type:List
     for collection in client.collections:
         try:
-            taxii_iter = client.build_iterator(collection, begin_date=begin_date, fetch_interval=fetch_interval)
+            taxii_iter = client.build_iterator(collection, begin_date=begin_date)
 
         except Exception as e:
             if not client.all_collections:
@@ -707,37 +698,28 @@ def main():
     try:
         integration_cache = demisto.getIntegrationContext()
         begin_date = integration_cache.get('begin_date')
-        fetch_interval = integration_cache.get('fetch_interval')
 
         if demisto.command() == 'fetch-indicators':
             if not begin_date:
                 begin_date = demisto.params().get('initial_interval')
                 if begin_date:
-                    begin_date, _ = parse_date_range(
-                        begin_date
-                    )
-
-            if not fetch_interval:
-                fetch_interval = int(demisto.params().get('fetch_interval'))
-
-            indicators, latest_indicator_time = fetch_indicators_command(client, begin_date=begin_date,
-                                                                         fetch_interval=fetch_interval)
-            # we submit the indicators in batches
-            if indicators:
-                # if new indicators were found - submit them in batches, set the next begin_date and reset the interval
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b)
-                demisto.setIntegrationContext({
-                    "begin_date": latest_indicator_time,
-                    'time_interval': int(demisto.params().get('fetch_interval'))
-                })
+                    begin_date, _ = parse_date_range(begin_date)
 
             else:
-                # if no indicators entered - dont change begin date and increase the fetch interval by 30 min.
-                demisto.setIntegrationContext({
-                    "begin_date": begin_date,
-                    'time_interval': int(demisto.params().get('fetch_interval')) + 30
-                })
+                begin_date = dateutil.parser.parse(begin_date)
+
+            indicators, latest_indicator_time = fetch_indicators_command(client, begin_date=begin_date)
+            # we submit the indicators in batches
+            if indicators:
+                # if new indicators were found - submit them in batches, set the next begin_date
+                # to the time of the last indicator found
+                for b in batch(indicators, batch_size=2000):
+                    demisto.createIndicators(b)
+                demisto.setIntegrationContext({"begin_date": str(latest_indicator_time)})
+
+            else:
+                # if no indicators entered - dont change begin date.
+                demisto.setIntegrationContext({"begin_date": str(begin_date)})
 
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
