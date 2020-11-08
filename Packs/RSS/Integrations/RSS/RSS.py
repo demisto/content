@@ -46,7 +46,7 @@ try:
     elif demisto.command() == 'test-module':
         feed = feedparser.parse(feedurl)
         if 'title' in feed.feed:
-            demisto.results("ok")
+            return_results("ok")
 
 except Exception as e:
     return_error(str(e))
