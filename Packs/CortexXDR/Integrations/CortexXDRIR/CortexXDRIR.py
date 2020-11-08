@@ -1146,6 +1146,14 @@ class Client(BaseClient):
 
         return reply.get('reply').get('data')
 
+    def get_file(self, file_link):
+        reply = self._http_request(
+            method='POST',
+            full_url=file_link,
+            timeout=self.timeout
+        )
+        return reply
+
 
 def get_incidents_command(client, args):
     """
@@ -2381,7 +2389,11 @@ def retrieve_file_details_command(client: Client, args):
             if val:
                 retrived_files_count += 1
                 obj['file_link'] = val
-                file_results.append(fileResult(filename='', data=val, file_type=entryTypes['infoFile']))
+
+                file = client.get_file(file_link=val)
+
+                file_results.append(fileResult(filename=f'{key}_{retrived_files_count}',
+                                               data=file, file_type=entryTypes['infoFile']))
             result.append(obj)
 
     return_entry = {
