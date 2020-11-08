@@ -1,0 +1,14 @@
+{
+    "name": "Cisco IronPort EMail API",
+    "description": "Cisco IronPort (ESA) API Integration\n\nSearch in IronPort \nSearch in Quarantined / Spam Emails\nRelease from SPAM/  Quarantined \n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Osama Shenoda",
+    "url": "",
+    "email": "",
+    "created": "2020-11-08T11:02:42Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
