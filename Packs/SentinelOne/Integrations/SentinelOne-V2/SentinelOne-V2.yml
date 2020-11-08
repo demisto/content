@@ -828,7 +828,7 @@ script:
       name: site_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Expires a site.
     execution: false
     name: sentinelone-expire-site
