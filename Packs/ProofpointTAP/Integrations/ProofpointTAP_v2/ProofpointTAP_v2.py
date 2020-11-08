@@ -46,12 +46,17 @@ def get_fetch_times(last_fetch):
     now = get_now()
     times = list()
     time_format = "%Y-%m-%dT%H:%M:%SZ"
+
     if isinstance(last_fetch, str):
         times.append(last_fetch)
         last_fetch = datetime.strptime(last_fetch, time_format)
     elif isinstance(last_fetch, datetime):
         times.append(last_fetch.strftime(time_format))
-    while now - last_fetch > timedelta(minutes=59) and now - last_fetch > timedelta(minutes=60):
+
+    if now - last_fetch < timedelta(seconds=60):
+        return []
+
+    while now - last_fetch > timedelta(minutes=60):
         last_fetch += timedelta(minutes=59)
         times.append(last_fetch.strftime(time_format))
     times.append(now.strftime(time_format))
@@ -441,6 +446,9 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
                     "threatTime"]
             }
             incidents.append(incident)
+
+    if not end_query_time:
+        end_query_time = start_query_time
 
     # Cut the milliseconds from last fetch if exists
     end_query_time = end_query_time[:-5] + 'Z' if end_query_time[-5] == '.' else end_query_time
