@@ -17,7 +17,7 @@ class ServiceNowClient(BaseClient):
             - client_secret - the client secret of the application of the user.
             - url: the instance url of the user, i.e: https://<instance>.service-now.com.
                    NOTE - url should be given without an API specific suffix as it is also used for the OAuth process.
-            - insecure: Whether the request should verify the SSL certificate.
+            - verify: Whether the request should verify the SSL certificate.
             - proxy: Whether to run the integration using the system proxy.
             - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
@@ -32,7 +32,7 @@ class ServiceNowClient(BaseClient):
             self._auth = (self.username, self.password)
 
         self.base_url = url
-        super().__init__(base_url=self.base_url, verify=not verify, proxy=proxy, headers=headers)  # type: ignore[misc]
+        super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers)  # type: ignore[misc]
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
                      files=None, return_empty_response=False, auth=None):
