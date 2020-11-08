@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "FireEyeNX",
+            "playbookID": "FireEyeNX-Test"
+        },
+        {
             "integrations": "EmailRepIO",
             "playbookID": "TestEmailRepPlaybook",
             "fromversion": "5.0.0"
@@ -1814,9 +1818,9 @@
             "timeout": 500
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
+            "integrations": "iDefense_v2",
+            "playbookID": "iDefense_v2_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AbuseIPDB",
@@ -1839,7 +1843,8 @@
         },
         {
             "integrations": "FireEyeFeed",
-            "playbookID": "playbook-FeedFireEye_test"
+            "playbookID": "playbook-FeedFireEye_test",
+            "memory_threshold": 110
         },
         {
             "integrations": "Phish.AI",
@@ -2397,7 +2402,8 @@
         },
         {
             "integrations": "AWS - S3",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
+            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436",
+            "memory_threshold": 80
         },
         {
             "integrations": "Image OCR",
@@ -3210,7 +3216,10 @@
         "Trend Micro Apex - Test": "Issue 27280",
         "Azure Compute - Test": "Issue 28056",
         "Recorded Future Test": "Issue 26741",
-        "Test - CrowdStrike Falcon": "Issue 30068"
+        "Test - CrowdStrike Falcon": "Issue 30068",
+        "TestEmailRepPlaybook": "Issue 30070",
+        "CounterCraft - Test": "Issue 30069",
+        "Test-BPA": "Issue 28406"
     },
     "skipped_integrations": {
         
