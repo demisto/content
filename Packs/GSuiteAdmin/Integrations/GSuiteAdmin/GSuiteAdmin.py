@@ -7,7 +7,6 @@ import urllib3
 import hashlib
 import copy
 from typing import List, Dict, Any, Callable
-from google.auth.transport.requests import Request
 
 # Disable insecure warnings
 urllib3.disable_warnings()
