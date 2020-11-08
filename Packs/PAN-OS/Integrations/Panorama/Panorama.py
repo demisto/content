@@ -6,7 +6,6 @@ from typing import Dict, List, Any, Optional, Tuple
 import uuid
 import json
 import requests
-import ipaddress
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -4951,7 +4950,7 @@ def panorama_zone_lookup_command():
     vr = demisto.args().get("virtual_router", "default")
     route = panorama_route_lookup(dest_ip, vr)
     if not route:
-        demisto.results(f"Could find a matching route to {dest_ip}.")
+        return_results(f"Could find a matching route to {dest_ip}.")
         return
 
     interface = route.get("interface")
