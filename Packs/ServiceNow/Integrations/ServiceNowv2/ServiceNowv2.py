@@ -1,5 +1,6 @@
 import os
 import shutil
+import urllib
 import dateparser
 from typing import List, Tuple, Dict, Callable, Any, Union, Optional
 
@@ -775,7 +776,10 @@ class Client(BaseClient):
         """
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = sys_param_query
+            query_params['sysparm_query'] = []
+            sysparm_query_args = urllib.parse.parse_qsl(sys_param_query)
+            for arg in sysparm_query_args:
+                query_params['sysparm_query'].append(urllib.parse.urlencode([arg]))
         if system_params:
             query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
