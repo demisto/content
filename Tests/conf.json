@@ -3218,7 +3218,6 @@
         "AttackIQ - Test": "Issue 29774",
         "CyberTotal_TestPlaybook": "Issue 29776",
         "AWS-securityhub Test": "Issue 29796",
-        "Carbon Black Enterprise EDR Test": "Issue 29775",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
         "IAM - Test Playbook": "Issue 30013",
         "Trend Micro Apex - Test": "Issue 27280",
@@ -3227,7 +3226,8 @@
         "Test - CrowdStrike Falcon": "Issue 30068",
         "TestEmailRepPlaybook": "Issue 30070",
         "CounterCraft - Test": "Issue 30069",
-        "Test-BPA": "Issue 28406"
+        "Test-BPA": "Issue 28406",
+        "Indicators reputation-.json Test": "Issue 30116"
     },
     "skipped_integrations": {
         
