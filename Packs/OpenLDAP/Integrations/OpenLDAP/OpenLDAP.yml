@@ -44,6 +44,12 @@ configuration:
   name: user_filter_class
   required: false
   type: 0
+- display: User Defined Attributes
+  name: custom_attributes
+  required: false
+  type: 0
+  additionalinfo: User attributes will be added to the user filter in `ad-authenticate-and-roles`.
+    Attributes should be in the format "attrA=valA,attrB=valB,...".
 - defaultvalue: uid
   display: User Unique Identifier Attribute
   name: user_identifier_attribute
