@@ -2,15 +2,15 @@ id: 32f3be4c-4061-496b-894e-9f27641875cc
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: DevSecOps - PR - Triage
-description: A Git PR Triage Playbook
+description: A CodeQL Code Analysis Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5926124d-6c46-423b-8b64-c04ac8565b70
+    taskid: 71b41a7e-cafb-41bb-8e1e-85d2049fadf8
     type: start
     task:
-      id: 5926124d-6c46-423b-8b64-c04ac8565b70
+      id: 71b41a7e-cafb-41bb-8e1e-85d2049fadf8
       version: -1
       name: ""
       iscommand: false
@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -320
+          "x": 265,
+          "y": 50
         }
       }
     note: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 16481c0a-0165-44f9-8640-d2c1379c0a54
+    taskid: 0580f38a-9160-4ef0-895c-caf7c48683f1
     type: regular
     task:
-      id: 16481c0a-0165-44f9-8640-d2c1379c0a54
+      id: 0580f38a-9160-4ef0-895c-caf7c48683f1
       version: -1
       name: Wait for Git Deliveries
       type: regular
@@ -46,8 +46,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 530
+          "x": 265,
+          "y": 895
         }
       }
     note: false
@@ -57,10 +57,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 6528c1b7-7574-40e6-8536-70a1e7ac89c7
+    taskid: 297d01a2-2792-4665-8005-baa51d58f9bf
     type: regular
     task:
-      id: 6528c1b7-7574-40e6-8536-70a1e7ac89c7
+      id: 297d01a2-2792-4665-8005-baa51d58f9bf
       version: -1
       name: Parse PR Details
       description: commands.local.cmd.set.incident
@@ -626,8 +626,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -180
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -637,10 +637,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 99114e89-8214-4b81-8bed-9ff5354f361f
+    taskid: 8523e99a-4668-43a5-8f90-833747259cf5
     type: regular
     task:
-      id: 99114e89-8214-4b81-8bed-9ff5354f361f
+      id: 8523e99a-4668-43a5-8f90-833747259cf5
       version: -1
       name: Get Head Commit
       description: Get a commit
@@ -660,8 +660,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -20
+          "x": 265,
+          "y": 370
         }
       }
     note: false
@@ -671,10 +671,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: b7336906-1ff8-48de-81df-0332d4105cf0
+    taskid: 84f515ca-43f7-4f9a-8efb-a69d5fe73469
     type: regular
     task:
-      id: b7336906-1ff8-48de-81df-0332d4105cf0
+      id: 84f515ca-43f7-4f9a-8efb-a69d5fe73469
       version: -1
       name: Record Head Commit Details
       description: commands.local.cmd.set.incident
@@ -1213,8 +1213,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 160
+          "x": 265,
+          "y": 545
         }
       }
     note: false
@@ -1224,10 +1224,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: a140194d-6f30-42d7-8225-d931b235866e
+    taskid: 6e084090-5976-498d-8394-c278139ca6fb
     type: regular
     task:
-      id: a140194d-6f30-42d7-8225-d931b235866e
+      id: 6e084090-5976-498d-8394-c278139ca6fb
       version: -1
       name: Create a Commit Tracking Record
       description: commands.local.cmd.new.indicator
@@ -1376,8 +1376,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 330
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -1390,10 +1390,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 945,
+        "height": 940,
         "width": 380,
-        "x": 695,
-        "y": -320
+        "x": 265,
+        "y": 50
       }
     }
   }

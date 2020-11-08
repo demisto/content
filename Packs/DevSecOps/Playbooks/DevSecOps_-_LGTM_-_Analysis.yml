@@ -1,16 +1,16 @@
-id: 4c670fb8-a21e-4311-8520-402585379c10
+id: 455d5cf1-aeea-4db2-8943-5d9f3027a6b1
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: DevSecOps - LGTM Task - Analysis
-description: A CodeQL Task Analysis Playbook
+name: DevSecOps - LGTM - Analysis
+description: A CodeQL Code Analysis Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a3f140f9-de4c-4b32-86d7-ab3825712004
+    taskid: e7398152-bb01-4901-88ce-6efcaf6e2dde
     type: start
     task:
-      id: a3f140f9-de4c-4b32-86d7-ab3825712004
+      id: e7398152-bb01-4901-88ce-6efcaf6e2dde
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 0ec6606d-ffe6-4007-8b6e-82454601028d
+    taskid: 96710df1-3fff-42cf-897f-0691560518fa
     type: condition
     task:
-      id: 0ec6606d-ffe6-4007-8b6e-82454601028d
+      id: 96710df1-3fff-42cf-897f-0691560518fa
       version: -1
       name: Alerts Found?
       type: condition
@@ -56,7 +56,7 @@ tasks:
             value:
               complex:
                 root: LGTM
-                accessor: Analysis.languages.alerts
+                accessor: analysis_summary.languages.alerts
             iscontext: true
           right:
             value:
@@ -75,14 +75,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 159ec6e3-3fa1-4b69-84f8-188c943734fd
+    taskid: 35253daa-ffd8-462d-8e9b-ecd6c8cb44a5
     type: regular
     task:
-      id: 159ec6e3-3fa1-4b69-84f8-188c943734fd
+      id: 35253daa-ffd8-462d-8e9b-ecd6c8cb44a5
       version: -1
       name: Get Alerts Details
-      description: Get LGTM Alerts Details By Analysis ID
-      script: '|||lgtm-get-alerts-details'
+      description: Get detailed alert information
+      script: '|||lgtm-get-alerts'
       type: regular
       iscommand: true
       brand: ""
@@ -91,8 +91,10 @@ tasks:
       - "8"
       - "25"
     scriptarguments:
-      analysis_id:
-        simple: ${LGTM.Analysis.id}
+      analysis-id:
+        simple: ${LGTM.analysis_summary.id}
+      excluded-files: {}
+      sarif-version: {}
     separatecontext: false
     view: |-
       {
@@ -108,10 +110,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: f464edb3-e207-40b0-808c-90da6ab6a1dc
+    taskid: 707e1618-1c72-4940-8683-00eb0e0a330d
     type: condition
     task:
-      id: f464edb3-e207-40b0-808c-90da6ab6a1dc
+      id: 707e1618-1c72-4940-8683-00eb0e0a330d
       version: -1
       name: SQL-Injection Discovered?
       type: condition
@@ -131,7 +133,7 @@ tasks:
             value:
               complex:
                 root: LGTM
-                accessor: Alerts.alert.ruleId
+                accessor: alerts.alert.ruleId
             iscontext: true
           right:
             value:
@@ -150,14 +152,14 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 8c4821ef-ea8e-4221-8377-575c008a51dd
+    taskid: b3edc077-5f4b-4dfe-8dc7-f61b07afca40
     type: regular
     task:
-      id: 8c4821ef-ea8e-4221-8377-575c008a51dd
+      id: b3edc077-5f4b-4dfe-8dc7-f61b07afca40
       version: -1
       name: Run a SQL Injection CodeQL Query Across All Project
-      description: Run CodeQL Query on A Project
-      script: '|||lgtm-run-project-query'
+      description: Run analysis of a specific commit
+      script: '|||lgtm-request-analysis'
       type: regular
       iscommand: true
       brand: ""
@@ -165,16 +167,14 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      commit:
+        simple: ${LGTM.analysis_summary.commit-id}
       language:
         complex:
           root: LGTM
-          accessor: Projects.languages.language
-      project_id:
-        complex:
-          root: LGTM
-          accessor: Projects.id
-      query:
-        simple: ${lists.CodeQL-Queries-SQL_Injection}
+          accessor: project_details.languages.language
+      project-id:
+        simple: ${LGTM.project_details.id}
     separatecontext: false
     view: |-
       {
@@ -190,10 +190,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 5779ef50-74c2-4d85-8407-a1751e07ed8e
+    taskid: 90bd1281-fb65-462f-862a-0876b1d05fbd
     type: regular
     task:
-      id: 5779ef50-74c2-4d85-8407-a1751e07ed8e
+      id: 90bd1281-fb65-462f-862a-0876b1d05fbd
       version: -1
       name: Create SAST Alerts
       description: commands.local.cmd.new.indicator
@@ -212,11 +212,14 @@ tasks:
       adminname: {}
       adminphone: {}
       asn: {}
+      assignedrole: {}
+      assigneduser: {}
       associatedfilenames: {}
       associations: {}
       biosversion: {}
       campaign: {}
       category: {}
+      commitid: {}
       creationdate: {}
       customFields: {}
       cvedescription: {}
@@ -256,6 +259,7 @@ tasks:
       md5: {}
       memory: {}
       merge: {}
+      message: {}
       mitrealiases: {}
       mitrecontributors: {}
       mitredatasources: {}
@@ -305,6 +309,10 @@ tasks:
       relatedIncidents: {}
       reportedby: {}
       reputation: {}
+      ruleid: {}
+      sastcategory: {}
+      sastprecision: {}
+      sastseverity: {}
       seenNow: {}
       service: {}
       sha1: {}
@@ -321,6 +329,21 @@ tasks:
       sourceTimeStamp: {}
       sourceoriginalseverity: {}
       ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
       subdomains: {}
       tags: {}
       threattypes: {}
@@ -330,7 +353,7 @@ tasks:
       updateddate: {}
       username: {}
       value:
-        simple: ${LGTM.Alerts.alert.ruleId}
+        simple: ${LGTM.alerts.runs.results.ruleId}
       vulnerabilityname: {}
       xdrstatus: {}
     separatecontext: false
@@ -348,13 +371,13 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: d2598cb0-6cf9-40ee-87eb-7192b282fd6a
+    taskid: 92e661cc-58b1-4a06-8058-dc244b2633c3
     type: regular
     task:
-      id: d2598cb0-6cf9-40ee-87eb-7192b282fd6a
+      id: 92e661cc-58b1-4a06-8058-dc244b2633c3
       version: -1
       name: Get The Query Config
-      description: Get Extraction and Analysis Config by Project ID
+      description: Get configuration for a project identified by numeric identifier
       script: '|||lgtm-get-project-config'
       type: regular
       iscommand: true
@@ -363,10 +386,10 @@ tasks:
       '#none#':
       - "23"
     scriptarguments:
-      id:
-        complex:
-          root: LGTM
-          accessor: Projects.id
+      id: {}
+      project-id:
+        simple: ${LGTM.project_details.id}
+      source: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -383,14 +406,14 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: f0a0c544-179f-447f-8fa0-17567746b760
+    taskid: 30055379-e473-4529-843e-aa6bf405ed7c
     type: regular
     task:
-      id: f0a0c544-179f-447f-8fa0-17567746b760
+      id: 30055379-e473-4529-843e-aa6bf405ed7c
       version: -1
       name: Get LGTM Project ID
-      description: Get Project by Org and Name Identifiers
-      script: '|||lgtm-get-project-by-url'
+      description: Get project by URL identifier
+      script: '|||lgtm-get-project-by-url-identifier'
       type: regular
       iscommand: true
       brand: ""
@@ -420,10 +443,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 4e7604dc-cd28-4185-801a-6fc725832b2c
+    taskid: a33c8c84-bcfd-494a-8ebd-2847efae9e37
     type: regular
     task:
-      id: 4e7604dc-cd28-4185-801a-6fc725832b2c
+      id: a33c8c84-bcfd-494a-8ebd-2847efae9e37
       version: -1
       name: Parse LGTM Project Details
       description: commands.local.cmd.set.incident
@@ -453,7 +476,24 @@ tasks:
       app: {}
       appendMultiSelect: {}
       approximatenumberofaffecteddatasubjects: {}
+      apptaskaction: {}
+      apptaskappid: {}
+      apptaskappname: {}
+      apptaskcompletedat: {}
+      apptaskconclusion: {}
+      apptaskheadcommit: {}
+      apptaskid: {}
+      apptaskname: {}
+      apptaskoutputsummary: {}
+      apptaskoutputtitle: {}
+      apptaskownerlogin: {}
+      apptaskprid: {}
+      apptaskprnumber: {}
+      apptaskstartedat: {}
+      apptaskstatus: {}
       assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
       associatedmaliciousdomains: {}
       attachmentcount: {}
       attachmentextension: {}
@@ -466,9 +506,15 @@ tasks:
       attackeripblocked: {}
       attorneygeneralnotification: {}
       beforecommitid: {}
+      behaviourobjective: {}
+      behaviourscenario: {}
+      behaviourtactic: {}
       blockedaction: {}
       breachconfirmation: {}
       bugtraq: {}
+      caller: {}
+      ccdomain: {}
+      ccip: {}
       city: {}
       clarotyalertresolved: {}
       clarotyalerttype: {}
@@ -479,6 +525,7 @@ tasks:
       clarotysiteid: {}
       closeNotes: {}
       closeReason: {}
+      cloudservice: {}
       code42alerttype: {}
       code42fileevents: {}
       codeqlalerts: {}
@@ -509,6 +556,7 @@ tasks:
       countrywherethebreachtookplace: {}
       criticalassets: {}
       customFields: {}
+      customfield1: {}
       cve: {}
       cvss: {}
       cymulateimmediatethreatsattackid: {}
@@ -529,6 +577,7 @@ tasks:
       dbotpredictionprobability: {}
       dbottextsuggestionhighlighted: {}
       deleteEmptyField: {}
+      description: {}
       dest: {}
       desthostname: {}
       destinationhostname: {}
@@ -551,9 +600,12 @@ tasks:
       detectionurl: {}
       developeremail: {}
       developername: {}
+      deviceexternalip: {}
       devicegsuiteaccountstatus: {}
       devicehash: {}
       deviceip: {}
+      devicelocalip: {}
+      devicemodel: {}
       devicename: {}
       digitalguardianactivity: {}
       digitalguardianalarmname: {}
@@ -610,6 +662,7 @@ tasks:
       employeedisplayname: {}
       employeeemail: {}
       employeemanageremail: {}
+      escalation: {}
       eventid: {}
       eventtype: {}
       exactlywhathappenedandatwhattimes: {}
@@ -630,6 +683,8 @@ tasks:
       firstname: {}
       firstseen: {}
       from: {}
+      gitissuedetails: {}
+      gitissuenumber: {}
       gitpushername: {}
       globaldirectoryvisibility: {}
       googleaccountstatus: {}
@@ -654,6 +709,10 @@ tasks:
       howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
       howwastheincidentcontainedanderadicated: {}
       howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      iacvulnerability: {}
+      iacvulnerabilitydescription: {}
+      iacvulnerabilityseverity: {}
+      iacvulnerablefiles: {}
       id: {}
       illusionblackattackerid: {}
       illusionblackattacktype: {}
@@ -667,6 +726,7 @@ tasks:
       illusivenetworkssourceoperatingsystem: {}
       illusivenetworksstepstocrownjewel: {}
       illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
       indenideviceid: {}
       indeniissueid: {}
       individualsnotification: {}
@@ -689,19 +749,27 @@ tasks:
       lgtmanalysisstatus:
         simple: ' '
       lgtmprojectconfig:
-        simple: ${LGTM.Configs.[0]}
+        complex:
+          root: LGTM
+          accessor: config
       lgtmprojectgrade:
-        simple: ${LGTM.Projects.languages.grade}
+        complex:
+          root: LGTM
+          accessor: project_details.languages.grade
       lgtmprojectid:
-        simple: ${LGTM.Projects.id}
+        simple: ${LGTM.project_details.id}
       lgtmprojectlanguage:
-        simple: ${LGTM.Projects.languages.language}
+        complex:
+          root: LGTM
+          accessor: project_details.languages.language
       lgtmprojectname:
-        simple: ${LGTM.Projects.name}
+        simple: ${LGTM.project_details.name}
       lgtmprojectstatus:
-        simple: ${LGTM.Projects.languages.status}
+        complex:
+          root: LGTM
+          accessor: project_details.languages.status
       lgtmprojecturl:
-        simple: ${LGTM.Projects.url}}
+        simple: ${LGTM.project_details.url}
       likelyimpact: {}
       loginattemptcount: {}
       logsource: {}
@@ -717,6 +785,7 @@ tasks:
       malwarefamily: {}
       managementnotification: {}
       manageremail: {}
+      md5: {}
       measurestomitigate: {}
       medianotification: {}
       medicalinformationbreached: {}
@@ -733,6 +802,7 @@ tasks:
       os: {}
       osversion: {}
       otherpiidatabreached: {}
+      outgoingmirrorerror: {}
       owner: {}
       parentprocessid: {}
       participants: {}
@@ -763,10 +833,29 @@ tasks:
       portsblocked: {}
       possiblecauseofthebreach: {}
       postalcode: {}
+      praction: {}
+      pradditions: {}
+      prassignee: {}
+      prassignees: {}
+      prbaselabel: {}
+      prbasesize: {}
+      prbody: {}
+      prbranch: {}
+      prchangedfiles: {}
+      prclosedat: {}
+      prcomments: {}
+      prcommits: {}
+      prcreatedat: {}
+      prdeletions: {}
       previouscoordinates: {}
       previouscountry: {}
       previoussignindatetime: {}
       previoussourceip: {}
+      prheadcommit: {}
+      prheadid: {}
+      prheadopenissues: {}
+      prid: {}
+      prinstallationid: {}
       prismacloudcomputeactivitytype: {}
       prismacloudcomputeappid: {}
       prismacloudcomputecategory: {}
@@ -806,9 +895,17 @@ tasks:
       prismacloudrules: {}
       prismacloudstatus: {}
       prismacloudtime: {}
+      prmergeablestate: {}
+      prnumber: {}
       projectid: {}
       protocol: {}
       protocols: {}
+      prpushedat: {}
+      prsize: {}
+      prstate: {}
+      prtitle: {}
+      prupdatedat: {}
+      prwatchers: {}
       quarantined: {}
       rating: {}
       rawparticipants: {}
@@ -838,6 +935,7 @@ tasks:
       secretarynotification: {}
       sectorofaffectedparty: {}
       severity: {}
+      sha256: {}
       signature: {}
       signindatetime: {}
       sixgillalertid: {}
@@ -860,8 +958,10 @@ tasks:
       srcntdomain: {}
       srcos: {}
       srcuser: {}
+      state: {}
       statecisonotification: {}
       statewherethebreachtookplace: {}
+      subcategory: {}
       subject: {}
       subscriptionassignedby: {}
       subscriptioncreatedby: {}
@@ -887,6 +987,9 @@ tasks:
       threatactor: {}
       threatlevel: {}
       threatname: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
       to: {}
       trapsid: {}
       travelmaplink: {}
@@ -949,10 +1052,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: cc28c018-ee61-4ae9-8d58-3525ba49a93c
+    taskid: e4f4243a-cad8-4bf4-84a2-d79e72afe1c9
     type: regular
     task:
-      id: cc28c018-ee61-4ae9-8d58-3525ba49a93c
+      id: e4f4243a-cad8-4bf4-84a2-d79e72afe1c9
       version: -1
       name: Parse LGTM Analysis Details - PR
       description: commands.local.cmd.set.incident
@@ -998,6 +1101,8 @@ tasks:
       apptaskstartedat: {}
       apptaskstatus: {}
       assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
       associatedmaliciousdomains: {}
       attachmentcount: {}
       attachmentextension: {}
@@ -1010,9 +1115,15 @@ tasks:
       attackeripblocked: {}
       attorneygeneralnotification: {}
       beforecommitid: {}
+      behaviourobjective: {}
+      behaviourscenario: {}
+      behaviourtactic: {}
       blockedaction: {}
       breachconfirmation: {}
       bugtraq: {}
+      caller: {}
+      ccdomain: {}
+      ccip: {}
       city: {}
       clarotyalertresolved: {}
       clarotyalerttype: {}
@@ -1023,6 +1134,7 @@ tasks:
       clarotysiteid: {}
       closeNotes: {}
       closeReason: {}
+      cloudservice: {}
       code42alerttype: {}
       code42fileevents: {}
       codeqlalerts: {}
@@ -1074,6 +1186,7 @@ tasks:
       dbotpredictionprobability: {}
       dbottextsuggestionhighlighted: {}
       deleteEmptyField: {}
+      description: {}
       dest: {}
       desthostname: {}
       destinationhostname: {}
@@ -1096,9 +1209,12 @@ tasks:
       detectionurl: {}
       developeremail: {}
       developername: {}
+      deviceexternalip: {}
       devicegsuiteaccountstatus: {}
       devicehash: {}
       deviceip: {}
+      devicelocalip: {}
+      devicemodel: {}
       devicename: {}
       digitalguardianactivity: {}
       digitalguardianalarmname: {}
@@ -1155,6 +1271,7 @@ tasks:
       employeedisplayname: {}
       employeeemail: {}
       employeemanageremail: {}
+      escalation: {}
       eventid: {}
       eventtype: {}
       exactlywhathappenedandatwhattimes: {}
@@ -1175,6 +1292,8 @@ tasks:
       firstname: {}
       firstseen: {}
       from: {}
+      gitissuedetails: {}
+      gitissuenumber: {}
       gitpushername: {}
       globaldirectoryvisibility: {}
       googleaccountstatus: {}
@@ -1199,6 +1318,10 @@ tasks:
       howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
       howwastheincidentcontainedanderadicated: {}
       howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      iacvulnerability: {}
+      iacvulnerabilitydescription: {}
+      iacvulnerabilityseverity: {}
+      iacvulnerablefiles: {}
       id:
         simple: ${inputs.PR_ID}
       illusionblackattackerid: {}
@@ -1213,6 +1336,7 @@ tasks:
       illusivenetworkssourceoperatingsystem: {}
       illusivenetworksstepstocrownjewel: {}
       illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
       indenideviceid: {}
       indeniissueid: {}
       individualsnotification: {}
@@ -1229,15 +1353,15 @@ tasks:
       lastname: {}
       lastseen: {}
       lgtmanalysisid:
-        simple: ${LGTM.Analysis.id}
+        simple: ${LGTM.analysis_summary.id}
       lgtmanalysislogsurl:
-        simple: ${LGTM.Analysis.log-url}
+        simple: ${LGTM.analysis_summary.log-url}
       lgtmanalysisprojectid:
-        simple: ${LGTM.Analysis.project.id}
+        simple: ${LGTM.analysis_summary.project.id}
       lgtmanalysisresultsurl:
-        simple: ${LGTM.Analysis.results-url}
+        simple: ${LGTM.analysis_summary.results-url}
       lgtmanalysisstatus:
-        simple: ${LGTM.Analysis.languages.status}
+        simple: ${LGTM.analysis_summary.languages.status}
       lgtmprojectconfig: {}
       lgtmprojectgrade: {}
       lgtmprojectid: {}
@@ -1260,6 +1384,7 @@ tasks:
       malwarefamily: {}
       managementnotification: {}
       manageremail: {}
+      md5: {}
       measurestomitigate: {}
       medianotification: {}
       medicalinformationbreached: {}
@@ -1276,6 +1401,7 @@ tasks:
       os: {}
       osversion: {}
       otherpiidatabreached: {}
+      outgoingmirrorerror: {}
       owner: {}
       parentprocessid: {}
       participants: {}
@@ -1408,6 +1534,7 @@ tasks:
       secretarynotification: {}
       sectorofaffectedparty: {}
       severity: {}
+      sha256: {}
       signature: {}
       signindatetime: {}
       sixgillalertid: {}
@@ -1430,8 +1557,10 @@ tasks:
       srcntdomain: {}
       srcos: {}
       srcuser: {}
+      state: {}
       statecisonotification: {}
       statewherethebreachtookplace: {}
+      subcategory: {}
       subject: {}
       subscriptionassignedby: {}
       subscriptioncreatedby: {}
@@ -1457,6 +1586,9 @@ tasks:
       threatactor: {}
       threatlevel: {}
       threatname: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
       to: {}
       trapsid: {}
       travelmaplink: {}
@@ -1519,10 +1651,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 4e3af6b5-6f2d-4c84-881a-53957d2c19c4
+    taskid: 137b5a2b-e6af-40d2-8c0b-d54a255c4bb5
     type: regular
     task:
-      id: 4e3af6b5-6f2d-4c84-881a-53957d2c19c4
+      id: 137b5a2b-e6af-40d2-8c0b-d54a255c4bb5
       version: -1
       name: Mirror Investigation to Slack
       description: Mirrors the investigation between Slack and the Demisto War Room.
@@ -1559,14 +1691,14 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: b3d188f5-d729-4982-8eea-e51761d1c129
+    taskid: 5ea4e02c-7e16-404c-8b7f-7e2913793229
     type: regular
     task:
-      id: b3d188f5-d729-4982-8eea-e51761d1c129
+      id: 5ea4e02c-7e16-404c-8b7f-7e2913793229
       version: -1
       name: Get LGTM Analysis Details
-      description: Get Analysis Results
-      script: '|||lgtm-get-analysis-status'
+      description: Get analysis summary for a specific commit
+      script: '|||lgtm-get-analysis-for-commit'
       type: regular
       iscommand: true
       brand: ""
@@ -1575,11 +1707,10 @@ tasks:
       - "24"
       - "28"
     scriptarguments:
-      analysis_id: {}
-      commit_id:
+      commit-id:
         simple: latest
-      project_id:
-        simple: ${LGTM.Projects.id}
+      project-id:
+        simple: ${LGTM.project_details.id}
     separatecontext: false
     view: |-
       {
@@ -1595,10 +1726,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: e7d82f83-bf46-43b3-8dee-a6774ae44dac
+    taskid: 13c30a1b-facb-4bf5-8291-009c9b7e2c64
     type: regular
     task:
-      id: e7d82f83-bf46-43b3-8dee-a6774ae44dac
+      id: 13c30a1b-facb-4bf5-8291-009c9b7e2c64
       version: -1
       name: Close Incident
       description: commands.local.cmd.close.inv
@@ -1629,10 +1760,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 33f4608b-ccc5-41da-82f8-47aa1dfa690a
+    taskid: 482b701d-a75f-4df0-8849-4f51e41602b3
     type: regular
     task:
-      id: 33f4608b-ccc5-41da-82f8-47aa1dfa690a
+      id: 482b701d-a75f-4df0-8849-4f51e41602b3
       version: -1
       name: Parse LGTM Analysis Details Locally
       description: commands.local.cmd.set.incident
@@ -1678,6 +1809,8 @@ tasks:
       apptaskstartedat: {}
       apptaskstatus: {}
       assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
       associatedmaliciousdomains: {}
       attachmentcount: {}
       attachmentextension: {}
@@ -1690,9 +1823,15 @@ tasks:
       attackeripblocked: {}
       attorneygeneralnotification: {}
       beforecommitid: {}
+      behaviourobjective: {}
+      behaviourscenario: {}
+      behaviourtactic: {}
       blockedaction: {}
       breachconfirmation: {}
       bugtraq: {}
+      caller: {}
+      ccdomain: {}
+      ccip: {}
       city: {}
       clarotyalertresolved: {}
       clarotyalerttype: {}
@@ -1703,6 +1842,7 @@ tasks:
       clarotysiteid: {}
       closeNotes: {}
       closeReason: {}
+      cloudservice: {}
       code42alerttype: {}
       code42fileevents: {}
       codeqlalerts: {}
@@ -1754,6 +1894,7 @@ tasks:
       dbotpredictionprobability: {}
       dbottextsuggestionhighlighted: {}
       deleteEmptyField: {}
+      description: {}
       dest: {}
       desthostname: {}
       destinationhostname: {}
@@ -1776,9 +1917,12 @@ tasks:
       detectionurl: {}
       developeremail: {}
       developername: {}
+      deviceexternalip: {}
       devicegsuiteaccountstatus: {}
       devicehash: {}
       deviceip: {}
+      devicelocalip: {}
+      devicemodel: {}
       devicename: {}
       digitalguardianactivity: {}
       digitalguardianalarmname: {}
@@ -1835,6 +1979,7 @@ tasks:
       employeedisplayname: {}
       employeeemail: {}
       employeemanageremail: {}
+      escalation: {}
       eventid: {}
       eventtype: {}
       exactlywhathappenedandatwhattimes: {}
@@ -1855,6 +2000,8 @@ tasks:
       firstname: {}
       firstseen: {}
       from: {}
+      gitissuedetails: {}
+      gitissuenumber: {}
       gitpushername: {}
       globaldirectoryvisibility: {}
       googleaccountstatus: {}
@@ -1879,6 +2026,10 @@ tasks:
       howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
       howwastheincidentcontainedanderadicated: {}
       howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      iacvulnerability: {}
+      iacvulnerabilitydescription: {}
+      iacvulnerabilityseverity: {}
+      iacvulnerablefiles: {}
       id: {}
       illusionblackattackerid: {}
       illusionblackattacktype: {}
@@ -1892,6 +2043,7 @@ tasks:
       illusivenetworkssourceoperatingsystem: {}
       illusivenetworksstepstocrownjewel: {}
       illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
       indenideviceid: {}
       indeniissueid: {}
       individualsnotification: {}
@@ -1908,15 +2060,15 @@ tasks:
       lastname: {}
       lastseen: {}
       lgtmanalysisid:
-        simple: ${LGTM.Analysis.id}
+        simple: ${LGTM.analysis_summary.id}
       lgtmanalysislogsurl:
-        simple: ${LGTM.Analysis.log-url}
+        simple: ${LGTM.analysis_summary.log-url}
       lgtmanalysisprojectid:
-        simple: ${LGTM.Analysis.project.id}
+        simple: ${LGTM.analysis_summary.project.id}
       lgtmanalysisresultsurl:
-        simple: ${LGTM.Analysis.results-url}
+        simple: ${LGTM.analysis_summary.results-url}
       lgtmanalysisstatus:
-        simple: ${LGTM.Analysis.languages.status}
+        simple: ${LGTM.analysis_summary.languages.status}
       lgtmprojectconfig: {}
       lgtmprojectgrade: {}
       lgtmprojectid: {}
@@ -1939,6 +2091,7 @@ tasks:
       malwarefamily: {}
       managementnotification: {}
       manageremail: {}
+      md5: {}
       measurestomitigate: {}
       medianotification: {}
       medicalinformationbreached: {}
@@ -1955,6 +2108,7 @@ tasks:
       os: {}
       osversion: {}
       otherpiidatabreached: {}
+      outgoingmirrorerror: {}
       owner: {}
       parentprocessid: {}
       participants: {}
@@ -2087,6 +2241,7 @@ tasks:
       secretarynotification: {}
       sectorofaffectedparty: {}
       severity: {}
+      sha256: {}
       signature: {}
       signindatetime: {}
       sixgillalertid: {}
@@ -2109,8 +2264,10 @@ tasks:
       srcntdomain: {}
       srcos: {}
       srcuser: {}
+      state: {}
       statecisonotification: {}
       statewherethebreachtookplace: {}
+      subcategory: {}
       subject: {}
       subscriptionassignedby: {}
       subscriptioncreatedby: {}
@@ -2136,6 +2293,9 @@ tasks:
       threatactor: {}
       threatlevel: {}
       threatname: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
       to: {}
       trapsid: {}
       travelmaplink: {}
@@ -2198,10 +2358,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 2e194d3e-1f49-4606-88f7-b5aa13c52423
+    taskid: 764e472f-2d50-4737-8493-9ac9c739f61d
     type: regular
     task:
-      id: 2e194d3e-1f49-4606-88f7-b5aa13c52423
+      id: 764e472f-2d50-4737-8493-9ac9c739f61d
       version: -1
       name: Link Alerts to PR
       description: commands.local.cmd.associate.indicators
@@ -2233,10 +2393,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: a525240f-c092-4f6d-8ebd-8439d76742fd
+    taskid: 23a77a11-8ef5-431d-8144-ca3881790bc8
     type: regular
     task:
-      id: a525240f-c092-4f6d-8ebd-8439d76742fd
+      id: 23a77a11-8ef5-431d-8144-ca3881790bc8
       version: -1
       name: Close Task Record
       description: commands.local.cmd.close.inv

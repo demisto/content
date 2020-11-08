@@ -2,15 +2,15 @@ id: e1d553c7-7053-479a-837a-229d80074674
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: DevSecOps - App Task - Analysis
-description: Git Task Analysis Playbook
+description: A CodeQL Code Analysis Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6083872e-8f46-49ea-89dc-1d679e76bf1b
+    taskid: 34bc455f-4c38-4019-815f-edf3ad481601
     type: start
     task:
-      id: 6083872e-8f46-49ea-89dc-1d679e76bf1b
+      id: 34bc455f-4c38-4019-815f-edf3ad481601
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 2ba817b3-aff7-4872-8b66-fbbe29e0d0f4
+    taskid: 2c85aef3-70bb-4f4f-811a-241e9b4747ca
     type: regular
     task:
-      id: 2ba817b3-aff7-4872-8b66-fbbe29e0d0f4
+      id: 2c85aef3-70bb-4f4f-811a-241e9b4747ca
       version: -1
       name: Parse App Task Details
       description: commands.local.cmd.set.incident
@@ -615,10 +615,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: bafa2bb1-15c3-43e3-8fcf-b9ba53ca463b
+    taskid: 4b1321f2-ab43-4f3a-89fd-1efc8ed1ec16
     type: regular
     task:
-      id: bafa2bb1-15c3-43e3-8fcf-b9ba53ca463b
+      id: 4b1321f2-ab43-4f3a-89fd-1efc8ed1ec16
       version: -1
       name: Link to the PR Case
       description: commands.local.cmd.linkIncidents
@@ -649,55 +649,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "28":
-    id: "28"
-    taskid: 5eb165e2-03e2-4aee-818a-3f3e65f783ac
-    type: playbook
-    task:
-      id: 5eb165e2-03e2-4aee-818a-3f3e65f783ac
-      version: -1
-      name: DevSecOps - LGTM - Analysis
-      description: A CodeQL Code Analysis Playbook
-      playbookName: DevSecOps - LGTM - Analysis
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      Organization:
-        simple: ${incident.repositoryorganization}
-      PR_ID:
-        simple: ${similarIncident.rawId}
-      Platform:
-        simple: g
-      Repository:
-        simple: ${incident.repositoryname}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -20,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "29":
     id: "29"
-    taskid: 61929440-6943-4c0b-8442-45f118cc966c
+    taskid: 49ee7f4e-9613-420e-8415-2a2ba4336046
     type: condition
     task:
-      id: 61929440-6943-4c0b-8442-45f118cc966c
+      id: 49ee7f4e-9613-420e-8415-2a2ba4336046
       version: -1
       name: LGTM Task?
       type: condition
@@ -707,7 +664,7 @@ tasks:
       '#default#':
       - "30"
       "yes":
-      - "28"
+      - "35"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -734,10 +691,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 673bc92f-1cd1-4b57-8f21-ff2f6cf744f9
+    taskid: daf28ad0-1786-4eab-8adf-2159b643b22f
     type: regular
     task:
-      id: 673bc92f-1cd1-4b57-8f21-ff2f6cf744f9
+      id: daf28ad0-1786-4eab-8adf-2159b643b22f
       version: -1
       name: Close Task Record
       description: commands.local.cmd.close.inv
@@ -768,10 +725,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 13d304c4-cbda-47ab-80aa-a5d48638fb99
+    taskid: bd958174-c0e3-46ff-8280-8a7b648cd12a
     type: condition
     task:
-      id: 13d304c4-cbda-47ab-80aa-a5d48638fb99
+      id: bd958174-c0e3-46ff-8280-8a7b648cd12a
       version: -1
       name: Prisma Cloud Task?
       type: condition
@@ -808,17 +765,17 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 047f4139-2cb5-40e0-87bc-a62251ad4fd8
+    taskid: a7917712-5702-4a5a-8f96-f4a208e713d4
     type: regular
     task:
-      id: 047f4139-2cb5-40e0-87bc-a62251ad4fd8
+      id: a7917712-5702-4a5a-8f96-f4a208e713d4
       version: -1
       name: Get The PR XSOAR ID
       description: |-
         Finds similar incidents by common incident keys, labels, custom fields or context keys.
         It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
         For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
-      scriptName: FindSimilarIncidents
+      scriptName: FindSimilarIncidentsUpdated
       type: regular
       iscommand: false
       brand: ""
@@ -827,7 +784,8 @@ tasks:
       - "27"
     scriptarguments:
       filterQuery: {}
-      hoursBack: {}
+      hoursBack:
+        simple: "5000"
       ignoreClosedIncidents: {}
       incidentFieldsAppliedCondition: {}
       maxNumberOfIncidents: {}
@@ -855,12 +813,13 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 5524b8b3-3253-46ac-8176-66b43e56f6f3
+    taskid: fed1f89e-2a5e-4bb9-82c9-b6d22e8c09b4
     type: playbook
     task:
-      id: 5524b8b3-3253-46ac-8176-66b43e56f6f3
+      id: fed1f89e-2a5e-4bb9-82c9-b6d22e8c09b4
       version: -1
       name: DevSecOps - Prisma - Analysis
+      description: Prisma Task Analysis Playbook
       playbookName: DevSecOps - Prisma - Analysis
       type: playbook
       iscommand: false
@@ -904,14 +863,58 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "35":
+    id: "35"
+    taskid: 925cead5-68e1-4eff-8e82-33dbb177f7b7
+    type: playbook
+    task:
+      id: 925cead5-68e1-4eff-8e82-33dbb177f7b7
+      version: -1
+      name: DevSecOps - LGTM - Analysis
+      description: A CodeQL Code Analysis Playbook
+      playbookName: DevSecOps - LGTM - Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      Alerts: {}
+      Organization:
+        simple: ${incident.repositoryorganization}
+      PR_ID:
+        simple: ${similarIncident.rawId}
+      Platform:
+        simple: g
+      Repository:
+        simple: ${incident.repositoryname}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1155,
-        "width": 1185,
-        "x": -20,
+        "width": 1215,
+        "x": -50,
         "y": 50
       }
     }
