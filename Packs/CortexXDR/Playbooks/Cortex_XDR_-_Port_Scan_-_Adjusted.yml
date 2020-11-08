@@ -1127,6 +1127,21 @@ inputs:
   required: false
   description: Unique ID for the XDR alert.
   playbookInputQuery:
+- key: InternalIPRange
+  value: {}
+  required: false
+  description: |-
+    This input is deprecated.
+    Use "InternalIPRanges" input instead.
+  playbookInputQuery: null  
+outputs:
+- key: InternalIPRange
+  value: {}
+  required: false
+  description: |-
+    Please use "InternalIPRanges" input instead.
+    this command in deprecate.
+  playbookInputQuery: null
 outputs:
 - contextPath: PortScan.BlockPorts
   description: Indicates whether there's a need to block the ports used for exploitation

@@ -9,31 +9,32 @@ The playbook is used as a sub- playbook in 'Cortex XDR Incident Handling - v2'
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* IP Enrichment - Internal - Generic v2
+IP Enrichment - Internal - Generic v2
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
 * IsIPInRanges
-* SetAndHandleEmpty
 * AssignAnalystToIncident
+* SetAndHandleEmpty
 
 ### Commands
-* send-mail
+send-mail
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| WhitelistedPorts | A list of comma\-separated ports that should not be blocked even if used in an attack. |  | Optional |
+| WhitelistedPorts | A list of comma-separated ports that should not be blocked even if used in an attack. |  | Optional |
 | BlockAttackerIP | Determines whether attacking IPs should be automatically blocked using firewalls. | False | Optional |
-| EmailAddressesToNotify | A list of comma\-separated values of email addresses that should receive a notification about compromised hosts. |  | Optional |
+| EmailAddressesToNotify | A list of comma-separated values of email addresses that should receive a notification about compromised hosts. |  | Optional |
 | InternalIPRanges | A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | RoleForEscalation | The name of the Cortex XSOAR role of the users that the incident can be escalated to in case of developments like lateral movement. If this input is left empty, no escalation will take place. |  | Optional |
 | OnCall | Set to true to assign only the users that are currently on shift. | false | Optional |
 | xdr_alert_id | Unique ID for the XDR alert. |  | Optional |
+| InternalIPRange | This input is deprecated. Use the *InternalIPRanges* input instead. |  | Optional |
 
 ## Playbook Outputs
 ---
