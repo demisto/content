@@ -34,10 +34,24 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
 
 def send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
                       entry_id_list, email_latest_message):
+    if f'#{incident_id}' not in email_subject:
+        subject_with_id = f"#{incident_id} {email_subject}"
+
+        # setting the email's subject for gmail adjustments
+        try:
+            demisto.executeCommand('setIncident',
+                                   {'id': incident_id, 'customFields': {'emailsubject': f'{subject_with_id}'}})
+        except Exception:
+            demisto.debug(f'SetIncident Failed.'
+                          f'"emailsubject" field was not updated with {subject_with_id} value '
+                          f'for incident: {incident_id}')
+    else:
+        subject_with_id = email_subject
+
     mail_content = {
         "to": email_to,
         "inReplyTo": email_latest_message,
-        "subject": f"#{incident_id} {email_subject}",
+        "subject": subject_with_id,
         "cc": email_cc,
         "htmlBody": reply_html_body,
         "body": reply_body,
@@ -124,22 +138,31 @@ def create_file_data_json(attachment):
     return json.dumps(file_data)
 
 
-def get_reply_body(notes, incident_id):
+def get_reply_body(notes, incident_id, attachments):
     """ Get the notes and the incident id and return the reply body
     Args:
         notes (dict): The notes of the email.
         incident_id (str): The incident id.
+        attachments (list): The email's attachments.
     Returns:
         The reply body and the html body.
     """
     reply_body = ''
     if notes:
         for note in notes:
-            reply_body += note['Contents'] + "\n\n"
+            note_user = note['Metadata']['user']
+            note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
+            user_fullname = note_userdata[0].get('Contents', {}).get('name', '')
+            reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
+            if attachments:
+                attachment_names = [attachment.get('name') for attachment in attachments]
+                reply_body += f'Attachments: {attachment_names}\n'
+            entry_note = json.dumps(
+                [{"Type": 1, "ContentsFormat": 'html', "Contents": reply_body, "tags": ['email-thread']}])
+            entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id})
+
             entry_note_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/note", "body": json.dumps(
                 {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "data": "false"})})
-            entry_tags_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/tags", "body": json.dumps(
-                {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "tags": ['email-thread']})})
             if is_error(entry_note_res):
                 return_error(get_error(entry_note_res))
             if is_error(entry_tags_res):
@@ -168,8 +191,9 @@ def get_email_recipients(email_to, email_from, service_mail):
     email_to_set = {email_from}
     email_to = argToList(email_to)
     email_to_set = email_to_set.union(set(email_to))
-    if service_mail in email_to_set:
-        email_to_set.remove(service_mail)
+    service_mail_recipient = next(recipient for recipient in email_to_set if service_mail in recipient)
+    if service_mail_recipient:
+        email_to_set.remove(service_mail_recipient)
 
     email_recipients = ','.join(email_to_set)
     return email_recipients
@@ -194,7 +218,7 @@ def main():
 
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
-        reply_body, reply_html_body = get_reply_body(notes, incident_id)
+        reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments)
         entry_id_list = get_entry_id_list(incident_id, attachments, files)
         result = send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc,
                             reply_html_body, entry_id_list, email_latest_message)

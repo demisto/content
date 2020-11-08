@@ -8,7 +8,7 @@ QUOTE_MARKERS = ['<div class="gmail_quote">',
                  '<hr tabindex="-1" style="display:inline-block; width:98%"><div id="divRplyFwdMsg"']
 
 
-def create_email_html(email_html, entry_id_list):
+def create_email_html(email_html='', entry_id_list=[]):
     """Modify the email's html body to use entry IDs instead of CIDs and remove the original message body if exists.
     Args:
         email_html (str): The attachments of the email.
