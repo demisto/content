@@ -8,7 +8,7 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         incident = demisto.incident()
-        assets = incident.get('CustomFields', {}).get('assetstable', {})
+        assets = incident.get('CustomFields', {}).get('assettable', {})
 
         if not assets:
             return ''
@@ -26,7 +26,7 @@ def main():
                 # using yaml to prettify the output of the field
                 asset["interfaces"] = yaml.dump(asset["interfaces"])
 
-        markdown = tableToMarkdown("Assets Table", assets)
+        markdown = tableToMarkdown("Asset Table", assets)
         return {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown}
 
     except Exception as exp:

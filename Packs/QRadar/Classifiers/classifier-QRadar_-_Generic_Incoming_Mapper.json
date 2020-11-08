@@ -62,7 +62,7 @@
   "Qradar Generic": {
    "dontMapEventToLabels": false,
    "internalMapping": {
-    "Assets Table": {
+    "Asset Table": {
      "complex": {
       "accessor": "",
       "filters": [

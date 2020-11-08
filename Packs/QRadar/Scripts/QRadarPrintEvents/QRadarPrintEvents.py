@@ -16,9 +16,9 @@ def main():
             events_arr = []
             for event in events:
                 events_arr.append(json.loads(event))
-            markdown = tableToMarkdown("Events From The Offense", events_arr, headers=events_arr[0].keys())
+            markdown = tableToMarkdown("Offense Events", events_arr, headers=events_arr[0].keys())
         else:
-            markdown = tableToMarkdown("Events From The Offense", json.loads(events))
+            markdown = tableToMarkdown("Offense Events", json.loads(events))
 
         return {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown}
     except Exception as exp:
