@@ -293,7 +293,7 @@ def main():
     if production_base_path:
         GCPConfig.STORAGE_BASE_PATH = production_base_path
 
-    # Download and extract build and prod index from build and prod buckets
+    # Download and extract build index from build and prod buckets
     build_index_folder_path, build_index_blob, build_index_generation = \
         download_and_extract_index(build_bucket, extract_destination_path)
 
