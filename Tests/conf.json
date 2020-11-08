@@ -3465,6 +3465,7 @@
         "GooglePubSub": "googleclient sdk has time based challenge exchange",
         "Google Resource Manager": "googleclient sdk has time based challenge exchange",
         "Google Cloud Storage": "SDK",
+        "GoogleCalendar": "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
