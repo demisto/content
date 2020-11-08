@@ -3,7 +3,7 @@
  "version": -1,
  "TypeName": "Email Communication",
  "kind": "details",
- "fromVersion": "5.0.0",
+ "fromVersion": "5.5.0",
  "layout": {
   "TypeName": "",
   "id": "Email Communication",
