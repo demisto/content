@@ -137,7 +137,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
             "short": False
         }] + steps_fields
 
-    if job_name and job_name == 'Upload Packs To Marketplace' or job_name == 'Force Upload Packs To Marketplace':
+    if job_name and job_name == 'Upload Packs To Marketplace':
         if os.path.exists(packs_results_file_path):
             try:
                 with open(packs_results_file_path, 'r') as json_file:

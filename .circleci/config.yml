@@ -945,14 +945,6 @@ jobs:
             echo $GCS_MARKET_KEY > $GCS_PATH
             python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist-dev' -bb 'marketplace-ci-build' -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp 'wow/content/packs' -p "${PACKS_TO_UPLOAD}" -o true -c "${FORCE_PREVIOUS_COMMIT}"
             rm $GCS_PATH
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
-            fi
-          when: always
       - *destroy_instances
       - *store_artifacts
 
@@ -1241,16 +1233,14 @@ workflows:
     jobs:
       - Setup Environment:
           context: bucket_upload_env
-      - Run Validations:
-          context: bucket_upload_env
-          requires:
-            - Setup Environment
       - Create Instances:
           context: bucket_upload_env
           filters:
             branches:
               only:
                 - upload-packs-build-flow
+          requires:
+            - Setup Environment
       - Force Upload Packs To Marketplace:
           context: bucket_upload_env
           filters:
