@@ -307,11 +307,11 @@ def test_get_components_command_domain_success(mocker_http_request, client):
 
     result = get_components_command(client, HOST_ATTRIBUTE_ARGS['component_by_domain'])
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ''
-    assert result.outputs_prefix == 'PassiveTotal.Component'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ''
+    assert result[0].outputs_prefix == 'PassiveTotal.Component'
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -338,11 +338,11 @@ def test_get_components_command_ip_success(mocker_http_request, client):
 
     result = get_components_command(client, HOST_ATTRIBUTE_ARGS['component_by_ip'])
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ''
-    assert result.outputs_prefix == 'PassiveTotal.Component'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ''
+    assert result[0].outputs_prefix == 'PassiveTotal.Component'
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -399,11 +399,11 @@ def test_get_trackers_command_domain_success(mocker_http_request, client):
 
     result = get_trackers_command(client, HOST_ATTRIBUTE_ARGS['tracker_by_domain'])
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ''
-    assert result.outputs_prefix == 'PassiveTotal.Tracker'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ''
+    assert result[0].outputs_prefix == 'PassiveTotal.Tracker'
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -430,11 +430,11 @@ def test_get_trackers_command_ip_success(mocker_http_request, client):
 
     result = get_trackers_command(client, HOST_ATTRIBUTE_ARGS['tracker_by_ip'])
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ''
-    assert result.outputs_prefix == 'PassiveTotal.Tracker'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ''
+    assert result[0].outputs_prefix == 'PassiveTotal.Tracker'
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -635,14 +635,15 @@ def test_pt_whois_search_command_success(request_mocker, mock_cr, client):
     # asserts the custom context
     assert custom_context == dummy_custom_context
     # assert overall command output
-    mock_cr.assert_called_once_with(
+    mock_cr.assert_called_with(
         outputs_prefix='PassiveTotal.WHOIS',
         outputs_key_field='domain',
         outputs=dummy_custom_context,
-        indicators=mock.ANY,
         readable_output=dummy_readable_output,
         raw_response=dummy_response
     )
+
+    assert '4534dfdfg.biz' in mock_cr.call_args_list[0][1]['readable_output']
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -739,11 +740,11 @@ def test_get_pdns_details_command_success(mocker_http_request, client):
 
     result = get_pdns_details_command(client, PDNS_ARGS)
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_prefix == 'PassiveTotal.PDNS(val.resolve == obj.resolve && val.recordType == obj.recordType' \
-                                    ' && val.resolveType == obj.resolveType)'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_prefix == 'PassiveTotal.PDNS(val.resolve == obj.resolve && val.recordType == obj.recordType' \
+                                       ' && val.resolveType == obj.resolveType)'
 
 
 @patch("PassiveTotal_v2.Client.http_request")
@@ -942,7 +943,7 @@ def test_domain_reputatoin_command_success(request_mocker, mock_cr, client):
         is_reputation_command=True
     )
     # get custom context via dummy response
-    custom_context = get_context_for_whois_commands(domains)[1]
+    standard_commands, custom_context = get_context_for_whois_commands(domains)
     domain_reputation_command(client, args)
 
     # Assert
@@ -951,18 +952,17 @@ def test_domain_reputatoin_command_success(request_mocker, mock_cr, client):
     # asserts the custom context
     assert custom_context == dummy_custom_context
     # assert overall command output
-    mock_cr.assert_called_once_with(
+    mock_cr.assert_called_with(
         outputs_prefix='PassiveTotal.Domain',
         outputs_key_field='domain',
         outputs=dummy_custom_context,
-        indicators=mock.ANY,
         readable_output=dummy_readable_output
     )
 
 
 @patch('PassiveTotal_v2.CommandResults')
 @patch('PassiveTotal_v2.Client.http_request')
-def test_domain_reputatoin_command_empty_response(request_mocker, mock_cr, client):
+def test_domain_reputatin_command_empty_response(request_mocker, mock_cr, client):
     """
         Proper message should be display in case of empty response from whois-search API endpoint
     """
@@ -981,10 +981,9 @@ def test_domain_reputatoin_command_empty_response(request_mocker, mock_cr, clien
     domain_reputation_command(client, args)
 
     # Assert
-    mock_cr.assert_called_once_with(
+    mock_cr.assert_called_with(
         outputs_prefix='PassiveTotal.Domain',
         outputs_key_field='domain',
         outputs=[],
-        indicators=mock.ANY,
         readable_output='### Domain(s)\n**No entries.**\n'
     )
