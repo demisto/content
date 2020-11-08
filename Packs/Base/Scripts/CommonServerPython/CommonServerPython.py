@@ -4745,7 +4745,7 @@ class IAMVendorActionResult:
     """
 
     def __init__(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
-                 error_message=None, details=None, skip=False, skip_reason=None, action=None):
+                 error_message=None, details=None, skip=False, skip_reason=None, action=None, return_error=False):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
         :param success: (bool) whether or not the command succeeded.
@@ -4759,6 +4759,7 @@ class IAMVendorActionResult:
         :param skip: (bool) whether or not the command is skipped.
         :param skip_reason: (str) If the command is skipped, describes the reason.
         :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
+        :param return_error: (bool) Whether or not to return an error entry.
         """
         self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
         self._instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
@@ -4773,6 +4774,10 @@ class IAMVendorActionResult:
         self._skip = skip
         self._skip_reason = skip_reason
         self._action = action
+        self._return_error = return_error
+
+    def should_return_error(self):
+        return self._return_error
 
     def create_outputs(self):
         """ Sets the outputs in `_outputs` attribute.
@@ -4861,17 +4866,21 @@ class IAMUserProfile:
         }
 
         return_entry = {
-            'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': outputs,
-            'HumanReadable': readable_output,
             'EntryContext': entry_context
         }
+
+        if self._vendor_action_results[0].should_return_error():
+            return_entry['Type'] = EntryType.ERROR
+        else:
+            return_entry['Type'] = EntryType.NOTE
+            return_entry['HumanReadable'] = readable_output
 
         return return_entry
 
     def set_result(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
-                   error_message=None, details=None, skip=False, skip_reason=None, action=None):
+                   error_message=None, details=None, skip=False, skip_reason=None, action=None, return_error=False):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
         :param success: (bool) whether or not the command succeeded.
@@ -4885,6 +4894,7 @@ class IAMUserProfile:
         :param skip: (bool) whether or not the command is skipped.
         :param skip_reason: (str) If the command is skipped, describes the reason.
         :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
+        :param return_error: (bool) Whether or not to return an error entry.
         """
         if not email:
             email = self.get_attribute('email')
@@ -4900,7 +4910,8 @@ class IAMUserProfile:
             details=details,
             skip=skip,
             skip_reason=skip_reason if skip_reason else '',
-            action=action
+            action=action,
+            return_error=return_error
         )
 
         self._vendor_action_results.append(vendor_action_result)
