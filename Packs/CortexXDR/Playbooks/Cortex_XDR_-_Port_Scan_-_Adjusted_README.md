@@ -9,7 +9,7 @@ The playbook is used as a sub- playbook in 'Cortex XDR Incident Handling - v2'
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* IP Enrichment - Internal - Generic v2
+IP Enrichment - Internal - Generic v2
 
 ### Integrations
 This playbook does not use any integrations.
@@ -20,7 +20,7 @@ This playbook does not use any integrations.
 * SetAndHandleEmpty
 
 ### Commands
-* send-mail
+send-mail
 
 ## Playbook Inputs
 ---
@@ -34,7 +34,7 @@ This playbook does not use any integrations.
 | RoleForEscalation | The name of the Cortex XSOAR role of the users that the incident can be escalated to in case of developments like lateral movement. If this input is left empty, no escalation will take place. |  | Optional |
 | OnCall | Set to true to assign only the users that are currently on shift. | false | Optional |
 | xdr_alert_id | Unique ID for the XDR alert. |  | Optional |
-| InternalIPRange | Please use "InternalIPRanges" input instead.<br/>This input deprecated. |  | Optional |
+| InternalIPRange | This input is deprecated. Use the "InternalIPRanges" input instead. |  | Optional |
 
 ## Playbook Outputs
 ---
