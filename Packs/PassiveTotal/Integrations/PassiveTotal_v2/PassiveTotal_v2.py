@@ -180,20 +180,20 @@ def get_host_attribute_context_data(records: List[Dict[str, Any]]) -> Tuple[list
             dbot_score = Common.DBotScore(indicator=hostname, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME, score=Common.DBotScore.NONE)
             if auto_detect_indicator_type(hostname) == FeedIndicatorType.Domain:
-                indicator = Common.Domain(domain=hostname, dbot_score=dbot_score)
+                domain_ioc = Common.Domain(domain=hostname, dbot_score=dbot_score)
                 standard_results.append(CommandResults(
-                    indicator=indicator,
-                    readable_output=tableToMarkdown('Domain', indicator.to_context())
+                    indicator=domain_ioc,
+                    readable_output=tableToMarkdown('Domain', domain_ioc.to_context())
                 ))
         elif record.get('address'):
             address = record.get('address')
             dbot_score = Common.DBotScore(indicator=address, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME, score=Common.DBotScore.NONE)
             if auto_detect_indicator_type(address) == FeedIndicatorType.IP:
-                indicator = Common.IP(ip=address, dbot_score=dbot_score)
+                ip_ioc = Common.IP(ip=address, dbot_score=dbot_score)
                 standard_results.append(CommandResults(
-                    indicator=indicator,
-                    readable_output=tableToMarkdown('IP', indicator.to_context())
+                    indicator=ip_ioc,
+                    readable_output=tableToMarkdown('IP', ip_ioc.to_context())
                 ))
 
     return standard_results, custom_ec
@@ -569,18 +569,18 @@ def create_pdns_standard_context(results: List[Dict[str, Any]]) -> List[CommandR
         if 'domain' == resolve_type:
             dbot_score = Common.DBotScore(resolve, resolve_type, INTEGRATION_NAME, Common.DBotScore.NONE)
             if auto_detect_indicator_type(resolve) == FeedIndicatorType.Domain:
-                indicator = Common.Domain(resolve, dbot_score)
+                domain_ioc = Common.Domain(resolve, dbot_score)
                 standard_results.append(CommandResults(
-                    indicator=indicator,
-                    readable_output=tableToMarkdown('Domain', indicator.to_context())
+                    indicator=domain_ioc,
+                    readable_output=tableToMarkdown('Domain', domain_ioc.to_context())
                 ))
         elif 'ip' == resolve_type:
             dbot_score = Common.DBotScore(resolve, resolve_type, INTEGRATION_NAME, Common.DBotScore.NONE)
             if auto_detect_indicator_type(resolve) == FeedIndicatorType.IP:
-                indicator = Common.IP(resolve, dbot_score)
+                ip_ioc = Common.IP(resolve, dbot_score)
                 standard_results.append(CommandResults(
-                    indicator=indicator,
-                    readable_output=tableToMarkdown('Domain', indicator.to_context())
+                    indicator=ip_ioc,
+                    readable_output=tableToMarkdown('Domain', ip_ioc.to_context())
                 ))
 
     return standard_results
@@ -770,7 +770,7 @@ def ssl_cert_search_command(client: Client, args: Dict[str, Any]) -> Union[str, 
 
 
 @logger
-def get_pdns_details_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def get_pdns_details_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
     """
     Retrieve passive DNS details based on ip or host.
 
@@ -856,7 +856,7 @@ def get_host_pairs_command(client: Client, args: Dict[str, Any]) -> Union[str, C
 
 
 @logger
-def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
     """
     Reputation command for domain.
 
@@ -872,8 +872,8 @@ def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union
         raise ValueError('domain(s) not specified')
 
     command_results: List[CommandResults] = []
-    custom_domain_context = []
-    domain_responses = []
+    custom_domain_context: List[Dict[str, Any]] = []
+    domain_responses: List[Dict[str, Any]] = []
 
     for domain in domains:
         # argument validation
