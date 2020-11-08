@@ -1,4 +1,4 @@
-This enables to color the field according to the magnitude. The scale is 
+This script applies colors to the field according to the magnitude based on the following scale: 
 1-3 green
 4-7 yellow
 8-10 red
