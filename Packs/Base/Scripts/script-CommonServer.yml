@@ -2,15 +2,21 @@ commonfields:
   id: CommonServer
   version: -1
 name: CommonServer
-script: |-
+script: >-
   // Common functions script
+
   // =======================
+
   // This script will be appended to each server script before being executed.
+
   // Place here all common functions you'd like to share between server scripts.
 
 
+
   // ============= Fix vault credentials =============
+
   // =================================================
+
   try {
       if(params && typeof params === 'object'){
           for(var key in params){
@@ -21,8 +27,11 @@ script: |-
           }
       }
   }
+
   catch (e) {}
+
   // =================================================
+
 
   /**
    * Returns true if string starts with search string
@@ -35,6 +44,7 @@ script: |-
           return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
       };
   }
+
 
   /**
    * Returns true if string ends with search string
@@ -51,6 +61,7 @@ script: |-
       };
   }
 
+
   /**
    * Removes the final slash / from the given url. This function should be used to prevent double slash situations such as https://192.12.12.3:8443//api/
    *
@@ -64,6 +75,7 @@ script: |-
 
       return url;
   }
+
   /**
    * Removes the final slash / from the given url. This function should be used to prevent double slash situations such as https://192.12.12.3:8443//api/
    *
@@ -71,6 +83,7 @@ script: |-
    * @return {String} url without slash in the end - e.g https://some_url.com:8080
    */
   var removeLastSlash = fixUrl;
+
 
   /**
    * Formats a string in place
@@ -86,6 +99,7 @@ script: |-
      return content;
   }
 
+
   cleanSingleObject = function(contents) {
       var cleanContents = {};
       var keys = Object.keys(contents);
@@ -96,6 +110,7 @@ script: |-
       }
       return cleanContents;
   }
+
 
   /**
    * Clean an object from empty fields
@@ -113,6 +128,7 @@ script: |-
       return cleanSingleObject(obj);
   }
 
+
   /**
     * Merge a list of objects into a single object.
     * Note: to avoid loss of data, use only on objects with foreign properties.
@@ -128,6 +144,7 @@ script: |-
       }
       return merged;
   }
+
 
   /**
    * Creates a string from an object
@@ -152,7 +169,9 @@ script: |-
       }
   }
 
+
   MARKDOWN_CHARS = "\\`*_{}[]()#+-!|"
+
 
   /**
    * Escapes markdown characters in a string
@@ -186,6 +205,7 @@ script: |-
       return escapedSt;
   };
 
+
   var HTML_ENTITY_MAP = {
     '&': '&amp;',
     '<': '&lt;',
@@ -197,6 +217,7 @@ script: |-
     '=': '&#x3D;'
   };
 
+
   /**
    * Escapes html characters in a string
    * @param {String} st - The string to fix
@@ -207,6 +228,7 @@ script: |-
           return HTML_ENTITY_MAP[s];
       });
   }
+
 
   /**
    * Converts textual keys to pascal format (e.g. "Threat Score" -> "ThreatScore")
@@ -222,6 +244,7 @@ script: |-
 
       return pascalDict;
   }
+
 
   /**
    * Gets a parameter that can be either an array, a JSON array or a string list separated by ',' and returns an array
@@ -243,6 +266,7 @@ script: |-
       }
       return arg;
   }
+
 
   /**
    * Converts a JSON demisto table to a Markdown table
@@ -321,7 +345,9 @@ script: |-
       return mdResults;
   }
 
+
   var tblToMd = tableToMarkdown;
+
 
 
   /**
@@ -356,34 +382,41 @@ script: |-
     return md;
   }
 
+
   /**
    * Converts underscore case strings to camel case
    * @param {String} string - The string to be converted - i.e. hello_world
    * @return {String} - The converted string - i.e. HelloWorld
   */
+
   var underscoreToCamelCase = function(string) {
       var ret_string = '_'+string;
       return ret_string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
   };
+
 
   /**
    * Converts dots into spaces and capitalizes
    * @param {String} string - The string to be converted - i.e. hello.world
    * @return {String} - The converted string - i.e. Hello World
   */
+
   var dotToSpace = function(string) {
       var ret_string = '.'+string;
       return ret_string.replace(/\.([a-z,A-Z])/g, function (g) { return ' '+g[1].toUpperCase(); });
   };
+
 
   /**
    * Converts pascal strings to human readable (e.g. "ThreatScore" -> "Threat Score")
    * @param {String} string - The string to be converted
    * @return {String} - The converted string
   */
+
   var pascalToSpace = function(string) {
       return string.replace(/([a-z][A-Z])/g, function (g) { return g[0] + ' ' + g.slice(1); });
   };
+
 
   function mapObjFunction(mapFields, filter) {
       var transformSingleObj= function(obj) {
@@ -409,6 +442,7 @@ script: |-
           return transformSingleObj(obj);
       };
   }
+
 
   function createContext(data, id) {
       var createContextSingle = function(obj) {
@@ -440,9 +474,11 @@ script: |-
       return createContextSingle(data);
   }
 
+
   var isFunction = function(functionToCheck) {
       return functionToCheck && typeof functionToCheck === 'function';
   }
+
 
   /**
    * Creates a dq query string. Used by easyDQ.
@@ -451,6 +487,7 @@ script: |-
    * @param {function | string} returnValue - string or function that defines returned data format (e.g. '{Name : val.name}' or function(val){return {Name:val.name};} )
    * @return {string} - the query string to pass to dq function
   */
+
   var dqQueryBuilder = function(path, filter, returnValue){
       var query = path;
       if(!filter){
@@ -475,6 +512,7 @@ script: |-
       return query;
   };
 
+
   /**
    * Creates a dq query from arguments and calls dq
    * @param {Object} data - The raw data object
@@ -483,16 +521,20 @@ script: |-
    * @param {Function | String} returnValue - string or function that defines the returned data format (e.g. '{Name : val.name}' or function(val){return {Name:val.name};} )
    * @return {Object} - The value returned from the dq function
   */
+
   easyDQ = function(data, path, filter, returnValue){
       return dq(data, dqQueryBuilder(path, filter, returnValue));
   };
 
+
   /* creates array from obj, if obj is not already an array */
+
   var toArray = function(obj){
       if(obj && !Array.isArray(obj))
           return [obj];
       return obj;
   };
+
 
   /**
    * Creates a war room entry
@@ -516,6 +558,7 @@ script: |-
    * @param {function} [headerTransform] - transform mark down headers to readable format.
    * @return {Object} - the war room entry
   */
+
   var createEntry = function(result, translator, MDfilter, headerTransform) {
       /* filters out all fields where humanReadable is false */
       var filter = function(obj) {
@@ -544,6 +587,7 @@ script: |-
       entry.EntryContext[translator.contextPath] = context;
       return entry;
   };
+
 
   /**
    * Converts a demisto table in JSON form to a HTML table
@@ -587,14 +631,22 @@ script: |-
       return htmlResults;
   }
 
+
   /**
 
+
   * Verifies that the given fields exists in the content and verifies its value
+
   * @param {String} fieldName - the name of the field (dq format)
+
   * @param {Object} expectedValue - the value to verify
+
   * @param {String} [comparisonType] - 'stringContains' or 'stringEquals'. Default is 'stringEquals'
+
   * @return {Object} Returns the value if value at the field matches, throws an error an exeption otherwise
+
   */
+
   function verifyContextField(fieldName, expectedValue, comparisonType) {
       value = dq(invContext, fieldName);
 
@@ -617,11 +669,13 @@ script: |-
       return value;
   }
 
+
   /**
    * Get all properties of objects in an array.
    * @param {Array} t - Array of elements
    * @return {Array} - Array of object properties
   */
+
   function GetAllObjectsProperties(t) {
       var properties = {};
       t.forEach(function (element) {
@@ -631,6 +685,7 @@ script: |-
       });
       return Object.keys(properties).sort();
   }
+
 
   /**
    * Checks if the given string represents a valid IPv4 address
@@ -650,10 +705,15 @@ script: |-
     return ok;
   }
 
+
   var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, playgroundError: 8, entryInfoFile: 9, map: 15, widget: 17};
+
   var formats = {html: 'html', table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
+
   // The object below does not represent DBot Scores correctly, and should not be used
+
   var dbotscores = {critical : 4, high: 3, medium: 2, low: 1, informational: 0.5, unknown: 0};
+
 
   /**
    * Returns the name of the file as stored in our investigation artifacts on disk.
@@ -673,6 +733,7 @@ script: |-
     return null;
   }
 
+
   /**
    * Closes the current investigation
    * @param {Object} args - Closing details (what happened, damage, etc.)
@@ -682,6 +743,7 @@ script: |-
     return executeCommand('closeInvestigation', args);
   }
 
+
   /**
    * Sets severity an incident. The incident must be related to current investigation.
    * @param {Object} arg - Has 2 keys, 'id' - the incident id, 'severity' - the new severity value (Critical, High, Medium etc.).
@@ -690,6 +752,7 @@ script: |-
   function setSeverity(arg) {
     return executeCommand('setSeverity', arg);
   }
+
 
   /**
    * Sets fields of the incident. The incident must be related to current investigation and be the only incident in it.
@@ -701,6 +764,7 @@ script: |-
     return executeCommand('setIncident', args);
   }
 
+
   /**
    * Create a new incident with the fields specified, only if an incident with the same name does not exist as an active incident.
    * If an active incident with the same name exists, ignore the request.
@@ -711,6 +775,7 @@ script: |-
     return executeCommand('createNewIncident', args);
   }
 
+
   /**
    * Sets playbook according to type.
    * @param {String} type - The incident type, according to which the playbook is chosen
@@ -719,6 +784,7 @@ script: |-
   function setPlaybookAccordingToType(type) {
     return executeCommand('setPlaybookAccordingToType', {type: type});
   }
+
 
   /**
    * Sets Owner to an incident. The incident must be related to current investigation.
@@ -729,6 +795,7 @@ script: |-
     return executeCommand('setOwner', { owner: name });
   }
 
+
   /**
    * Assigns a playbook task to a user.
    * @param {Object} arg - Has 2 keys, 'id' - the task id, 'assignee' - the user name of the assignee.
@@ -737,6 +804,7 @@ script: |-
   function taskAssign(arg) {
     return executeCommand('taskAssign', arg);
   }
+
 
   /**
    * Sets task due date.
@@ -747,6 +815,7 @@ script: |-
     return executeCommand('setTaskDueDate', arg);
   }
 
+
   /**
    * Sets investigation playbook
    * @param {String} name - The playbook name.
@@ -755,6 +824,7 @@ script: |-
   function setPlaybook(name) {
     return executeCommand('setPlaybook', { name: name });
   }
+
 
   /**
    * Adds task to Workplan
@@ -769,6 +839,7 @@ script: |-
   function addTask(arg) {
     return executeCommand('addTask', arg);
   }
+
 
   /**
    * Encode json object to URL. Supports multiple arguments of the same value if input is an array.
@@ -801,6 +872,7 @@ script: |-
         return query;
   }
 
+
   /**
    * Translate ThreatConnect rating to score
    * @param {rating} TC rating as int
@@ -817,11 +889,17 @@ script: |-
       return tcScore;
   }
 
+
   /**
+
   * Check the list of available modules to see whether a command is currently available to be run.
+
   * @param {Object} cmd - The command to check.
+
   * @return {bool} True if command is available, false otherwise
+
   */
+
   function isCommandAvailable(cmd) {
       var all = getAllSupportedCommands();
       var modules = Object.keys(all);
@@ -838,6 +916,7 @@ script: |-
       return false;
   }
 
+
   /**
    * Check if the given entry is an error entry
    * @param {Object} entry - The entry to check
@@ -846,6 +925,7 @@ script: |-
   function isError(entry) {
     return entry && typeof entry === 'object' && entry.Type === entryTypes.error;
   }
+
 
   /**
    * Check if the given result entry is an array and is not an error
@@ -856,6 +936,7 @@ script: |-
     return res && Array.isArray(res) && res.length && !isError(res[0]);
   }
 
+
   /**
    * If the given value exists, return it. Otherwise, return default and if not provided 'Unknown'
    * @param {Object} v - Value that can be anything
@@ -865,6 +946,7 @@ script: |-
   function nvl(v, def) {
     return v ? v : def ? def : 'Unknown';
   }
+
 
   /**
    * Flatten the fields into a map of dot notation key and value
@@ -890,7 +972,9 @@ script: |-
     }
   }
 
+
   var formatCell = objToStr;
+
 
   /**
    * Convert a given object to md while descending multiple levels
@@ -908,6 +992,7 @@ script: |-
       }
       return md;
   }
+
 
   /**
    * Convert a given object to md list (-) while each value is converted to a simple string
@@ -927,20 +1012,32 @@ script: |-
     return md;
   }
 
+
   /**
+
   * Converts the given timestamp to a string
+
   * @param {int} timestamp - The timestamp in UNIX format
+
   * @return {String} A string representing the time - e.g. 'Thu, 11 May 2017 11:18:56 UTC'
+
   */
+
   function convertTimestampToString(timestamp) {
     return (new Date(parseInt(timestamp))).toISOString();
   }
 
+
   /**
+
   * Converts the given number (uint32) to an IP address string
+
   * @param {int} num -  The number to convert
+
   * @return {String} A string representing the IP address - e.g. '192.168.2.1'
+
   */
+
   var numToIp = function(num) {
     var ip = num % 256;
 
@@ -951,6 +1048,7 @@ script: |-
 
     return ip;
   }
+
 
   /**
    * Convert a given array to a markdown table
@@ -963,6 +1061,7 @@ script: |-
       }
       return tableToMarkdown('', arr);
   }
+
 
   /**
    * Query the given object with the given path and retrive it
@@ -1006,6 +1105,7 @@ script: |-
     return obj;
   }
 
+
   /**
    * Replace the given args with the actual values in the input template
    * @param {String} input - The template to replace values in
@@ -1020,6 +1120,7 @@ script: |-
     }
     return res;
   }
+
 
   /**
    * Replace the given args with the actual values in the input template and remove from args
@@ -1039,6 +1140,7 @@ script: |-
       return res;
   }
 
+
   var xmlReservedChars = {
     '&': '&amp;',
     '\"': '&quot;',
@@ -1046,6 +1148,7 @@ script: |-
     '<': '&lt;',
     '>': '&gt;'
   };
+
 
   /**
    * Escape reserved XML chars in the input
@@ -1061,6 +1164,7 @@ script: |-
       return res;
   }
 
+
   /**
    * Convert a string representing a comma separated list into an array
    * @param {String} listName - The name of the list
@@ -1074,6 +1178,7 @@ script: |-
       }
       return [];
   }
+
 
   /**
    * Convert a JSON list/array into an object
@@ -1092,10 +1197,15 @@ script: |-
       return null;
   }
 
+
   var brands = {xfe: 'xfe', vt: 'VirusTotal', cy: 'cylance', wf: 'WildFire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
+
   var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
+
   // Thresholds for the various reputation services to mark something as positive
+
   var thresholds = {xfeScore: 3, vtPositives: 10, vtPositiveUrlsForIP: 10};
+
 
   /**
    * Checks if the given entry from a URL reputation query is positive (known bad)
@@ -1116,6 +1226,7 @@ script: |-
     }
     return false;
   }
+
 
   /**
    * Checks if the given entry from a file reputation query is positive (known bad)
@@ -1147,6 +1258,7 @@ script: |-
     return false;
   }
 
+
   /**
    * Checks if the given entry from an IP reputation query is positive (known bad)
    * @deprecated
@@ -1172,6 +1284,7 @@ script: |-
     }
     return false;
   }
+
 
   /**
    * Display CrowdStrike Intel results in Markdown
@@ -1207,6 +1320,7 @@ script: |-
     return entry;
   }
 
+
   /**
    * Formats a URL reputation entry into a short table
    * @deprecated
@@ -1239,6 +1353,7 @@ script: |-
     }
     return entry;
   }
+
 
   /**
    * Formats a file reputation entry into a short table
@@ -1290,6 +1405,7 @@ script: |-
     return entry;
   }
 
+
   /**
    * Formats an ip reputation entry into a short table
    * @deprecated
@@ -1328,6 +1444,7 @@ script: |-
     return entry;
   }
 
+
   /**
    * Formats a domain reputation entry into a short table
    * @deprecated
@@ -1351,6 +1468,7 @@ script: |-
     }
     return entry;
   }
+
 
   /**
    * Flatten a JSON tree object to key-value format
@@ -1377,6 +1495,7 @@ script: |-
       }
       return retVal;
   };
+
 
 
   /**
@@ -1409,6 +1528,7 @@ script: |-
         }
   };
 
+
   /**
    * Add the given obj to the path while making sure to append Malicious property
    * @param {Object} context - The current war room context, to which the value should be added
@@ -1421,7 +1541,9 @@ script: |-
       context[path] = obj;
   }
 
+
   // Constants for common merge paths
+
   var outputPaths = {
       file: 'File(val.MD5 && val.MD5 === obj.MD5 || val.SHA1 && val.SHA1 === obj.SHA1 || val.SHA256 && val.SHA256 === obj.SHA256)',
       ip: 'IP(val.Address && val.Address === obj.Address)',
@@ -1430,6 +1552,7 @@ script: |-
       cve: 'CVE(val.ID && val.ID === obj.ID)',
       email: 'Account.Email(val.Address && val.Address === obj.Address)'
   };
+
 
 
   /**
@@ -1449,6 +1572,7 @@ script: |-
       }
       return 'None';
   };
+
 
   /**
    * Check if the given IP address is in the given subnet
@@ -1478,6 +1602,7 @@ script: |-
       }
       return false;
   }
+
 
   /**
    * Converts all cells in a JSON form Demisto table to human-readable strings
@@ -1551,7 +1676,9 @@ script: |-
     return res;
   }
 
+
   /********************************** Date Formatting **************************************/
+
   /* Date formats
     %d - day 01, 02 ... 31
     %m - month 01, 02 .. 12
@@ -1564,9 +1691,11 @@ script: |-
     %z - timezone (empty), +0000, -0400, +1030
     %Z - timezone (empty), UTC, EST, CST
   */
+
   var month_names_short = {
       'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun':6, 'Jul':7, 'Aug':8, 'Sep':9, 'Oct':20, 'Nov':11, 'Dec':0
   };
+
 
   /**
    * Formats a date object to a string according to the given format.
@@ -1639,6 +1768,7 @@ script: |-
       return dateString;
   }
 
+
   /**
    * Parses date string to date object.
    * @deprecated
@@ -1705,7 +1835,9 @@ script: |-
       return newDate;
   }
 
+
   /********************************** Date Formatting end **************************************/
+
 
   /********************************** HMAC_SHA256 **************************************/
 
@@ -1977,4 +2109,5 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 tests:
-  - 'Test CommonServer'
+- 'Test CommonServer'
+fromversion: 5.0.0

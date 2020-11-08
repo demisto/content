@@ -3,9 +3,10 @@ commonfields:
   version: -1
 name: JiraIssueQuery
 deprecated: true
-script: |2
+script: >2
 
   resp = demisto.executeCommand("jira-issue-query", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -30,13 +31,11 @@ args:
   required: true
 - description: The index of the first issue to return (0-based) - format int
   name: startAt
-- description: the maximum number of issues to return (defaults to 50). The maximum
-    allowable value is dictated by the JIRA property 'jira.search.views.default.max'.
-    If you specify a value that is higher than this number, your search results will
-    be truncated.
+- description: the maximum number of issues to return (defaults to 50). The maximum allowable value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated.
   name: maxResults
 scripttarget: 0
 timeout: 0s
 dependson:
   must:
   - jira-issue-query
+fromversion: 5.0.0

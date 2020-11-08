@@ -1,0 +1,33 @@
+{
+    "email": "test@example.com",
+    "reputation": "none",
+    "suspicious": true,
+    "references": 143,
+    "details": {
+        "blacklisted": true,
+        "malicious_activity": true,
+        "malicious_activity_recent": true,
+        "credentials_leaked": true,
+        "credentials_leaked_recent": false,
+        "data_breach": true,
+        "first_seen": "07/01/2008",
+        "last_seen": "10/18/2020",
+        "domain_exists": true,
+        "domain_reputation": "n/a",
+        "new_domain": false,
+        "days_since_domain_creation": 9197,
+        "suspicious_tld": false,
+        "spam": true,
+        "free_provider": true,
+        "disposable": false,
+        "deliverable": false,
+        "accept_all": false,
+        "valid_mx": true,
+        "spoofable": true,
+        "spf_strict": true,
+        "dmarc_enforced": false,
+        "profiles": [
+            "twitter"
+        ]
+    }
+}

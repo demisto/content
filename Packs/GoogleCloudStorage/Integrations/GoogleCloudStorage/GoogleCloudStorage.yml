@@ -15,8 +15,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Google Cloud Storage is a RESTful online file storage web service for
-  storing and accessing data on Google Cloud Platform infrastructure.
+description: Google Cloud Storage is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure.
 display: Google Cloud Storage
 name: Google Cloud Storage
 script:
@@ -162,8 +161,7 @@ script:
       description: Object owner ID.
       type: String
     - contextPath: GCS.BucketObject.CRC32c
-      description: CRC32c checksum (as described in RFC 4960, Appendix B https://tools.ietf.org/html/rfc4960#appendix-B),
-        encoded using Base64 in big-endian byte order.
+      description: CRC32c checksum (as described in RFC 4960, Appendix B https://tools.ietf.org/html/rfc4960#appendix-B), encoded using Base64 in big-endian byte order.
       type: String
     - contextPath: GCS.BucketObject.EncryptionAlgorithm
       description: The encryption algorithm.
@@ -185,9 +183,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the file in which the object is downloaded (if not specified,
-        the name is derived from the object name, but this may fail if the object
-        contains invalid filename characters).
+      description: Name of the file in which the object is downloaded (if not specified, the name is derived from the object name, but this may fail if the object contains invalid filename characters).
       isArray: false
       name: saved_file_name
       required: false
@@ -518,3 +514,4 @@ script:
   subtype: python3
 tests:
 - GCS - Test
+fromversion: 5.0.0

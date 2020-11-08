@@ -52,6 +52,6 @@ script:
       type: string
     description: sends contextual message to single user
   runonce: false
-fromversion: 4.5.0
+fromversion: 5.0.0
 tests:
 - SecurityAdvisor-Test

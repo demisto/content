@@ -76,3 +76,4 @@ dependson:
   - qradar-searches
 tests:
 - no tests
+fromversion: 5.0.0

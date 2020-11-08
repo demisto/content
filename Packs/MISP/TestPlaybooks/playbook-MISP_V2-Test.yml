@@ -1105,8 +1105,7 @@ tasks:
       - "29"
     scriptarguments:
       attributes:
-        simple: '{''description'': ''Bars Ferrari'', ''make'': ''Ferrari'', ''model'':
-          ''308 GTS''}'
+        simple: '{''description'': ''Bars Ferrari'', ''make'': ''Ferrari'', ''model'': ''308 GTS''}'
       event_id:
         simple: ${MISP.Event.ID}
       template:
@@ -2120,8 +2119,7 @@ tasks:
       - "53"
     scriptarguments:
       message:
-        simple: 'Failed to check to create events and add tags (Check if all of the
-          events succeed) - using-brand MISP V2 '
+        simple: 'Failed to check to create events and add tags (Check if all of the events succeed) - using-brand MISP V2 '
     separatecontext: false
     view: |-
       {
@@ -2153,8 +2151,7 @@ tasks:
       - "54"
     scriptarguments:
       message:
-        simple: 'Failed to check to create events and add tags (Check if one of the
-          events succeed) - using-brand MISP V2 '
+        simple: 'Failed to check to create events and add tags (Check if one of the events succeed) - using-brand MISP V2 '
     separatecontext: false
     view: |-
       {
@@ -2186,8 +2183,7 @@ tasks:
       - "62"
     scriptarguments:
       message:
-        simple: 'Failed to check to create events and add tags (Check if all of the
-          events failed) - using-brand MISP V2 '
+        simple: 'Failed to check to create events and add tags (Check if all of the events failed) - using-brand MISP V2 '
     separatecontext: false
     view: |-
       {
@@ -2219,3 +2215,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: MISP V2 Test
+fromversion: 5.0.0

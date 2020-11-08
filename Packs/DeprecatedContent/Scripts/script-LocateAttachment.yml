@@ -2,10 +2,13 @@ commonfields:
   id: LocateAttachment
   version: -1
 name: LocateAttachment
-script: |-
+script: >-
   entries = demisto.executeCommand('getEntries', {})
+
   typefilter = demisto.get(demisto.args(), 'typefilter')
+
   namefilter = demisto.get(demisto.args(), 'namefilter')
+
   for e in entries:
       filetype = demisto.get(e, 'FileMetadata.info')
       filename = demisto.get(e, 'File')
@@ -25,9 +28,7 @@ subtype: python2
 tags:
 - email
 - Condition
-comment: Deprecated. Identify whether the incident includes an attached file. Optional typefilter
-  argument can be used to only match if the filetype includes that string. Same for filename.
-  Filetype is according to the linux "file" command (filemagic format identification).
+comment: Deprecated. Identify whether the incident includes an attached file. Optional typefilter argument can be used to only match if the filetype includes that string. Same for filename. Filetype is according to the linux "file" command (filemagic format identification).
 system: true
 deprecated: true
 args:
@@ -44,3 +45,4 @@ outputs:
   description: if there incident has an attached file
 - contextPath: no
   description: if incident does not contain an attached file
+fromversion: 5.0.0

@@ -2,8 +2,9 @@ commonfields:
   id: ticksToTime
   version: -1
 name: ticksToTime
-script: |
+script: >
   //get date in string
+
   var getDateString = function(obj) {
       var month = "0" + obj.Month;
       var day = "0" + obj.Day;
@@ -14,12 +15,19 @@ script: |
       return strTime;
   }
 
+
   //ticks are in nanotime; convert to millis
+
   var ticksToMillis = args.ticks / 10000;
+
   //ticks are recorded from 1/1/1601. this is mili diff
+
   var epocDiff = -11644473600000;
+
   //create date object with the tick time
+
   var tickDate = new Date(Math.round(ticksToMillis + epocDiff));
+
 
   var obj = {
       Epoc: tickDate.getTime(),
@@ -40,15 +48,17 @@ script: |
           Seconds: tickDate.getSeconds()
       }
   };
+
   obj.UTC.Display = getDateString(obj.UTC);
+
   obj.Local.Display = getDateString(obj.Local);
+
 
   return({'HumanReadable': obj.Local.Display,'ContentsFormat': formats.json, 'Type': entryTypes['note'], 'Contents': obj});
 type: javascript
 tags:
 - Utility
-comment: 'Converting time in Ticks to readable time. Ticks are used to represent time
-  by some vendors, most commonly by Microsoft. '
+comment: 'Converting time in Ticks to readable time. Ticks are used to represent time by some vendors, most commonly by Microsoft. '
 enabled: true
 args:
 - name: ticks
@@ -56,3 +66,4 @@ args:
   default: true
   description: Time in ticks
 scripttarget: 0
+fromversion: 5.0.0

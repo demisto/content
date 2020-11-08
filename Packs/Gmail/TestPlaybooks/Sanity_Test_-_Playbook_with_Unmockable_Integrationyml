@@ -1,0 +1,152 @@
+id: Sanity Test - Playbook with Unmockable Integration
+version: -1
+name: Sanity Test - Playbook with Unmockable Integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9f27a34d-8ce9-472a-857f-177a32fad718
+    type: start
+    task:
+      id: 9f27a34d-8ce9-472a-857f-177a32fad718
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ec30567f-b39d-4f05-87ac-98be6fc9ab1f
+    type: regular
+    task:
+      id: ec30567f-b39d-4f05-87ac-98be6fc9ab1f
+      version: -1
+      name: gmail-search
+      description: Searches for Gmail records of a specified Google user.
+      script: Gmail|||gmail-search
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash: {}
+      labels-ids: {}
+      max-results:
+        simple: "3"
+      page-token: {}
+      query: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f910cc8d-3358-456b-8bb3-789dfa3e67bd
+    type: title
+    task:
+      id: f910cc8d-3358-456b-8bb3-789dfa3e67bd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 003e372d-81f0-4ae0-8b4f-413213f05953
+    type: regular
+    task:
+      id: 003e372d-81f0-4ae0-8b4f-413213f05953
+      version: -1
+      name: Goals of this test
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      value:
+        simple: '* Checks a non-mocked integration as a sanity test'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Sanity check for a non-mocked integration

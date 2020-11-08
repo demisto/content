@@ -2,13 +2,17 @@ commonfields:
   id: ExtractHTMLTables
   version: -1
 name: ExtractHTMLTables
-script: |-
+script: >-
   from bs4 import BeautifulSoup
 
+
   soup = BeautifulSoup(demisto.getArg('html'), 'html.parser')
+
   indexes = argToList(demisto.getArg('indexes'))
 
+
   tables = []
+
   for index, tab in enumerate(soup.find_all('table')):
       if len(indexes) > 0 and index not in indexes and str(index) not in indexes:
           continue
@@ -73,3 +77,4 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/bs4
+fromversion: 5.0.0

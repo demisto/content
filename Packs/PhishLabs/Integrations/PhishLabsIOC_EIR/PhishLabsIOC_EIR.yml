@@ -98,8 +98,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: How to sort returned incidents. This will be applied to the given
-        sort parameter. Can be "asc" (ascending) or "desc" (descending).
+      description: How to sort returned incidents. This will be applied to the given sort parameter. Can be "asc" (ascending) or "desc" (descending).
       isArray: false
       name: direction
       predefined:
@@ -128,8 +127,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns EIR incidents from PhishLabs-IOC EIR service. The default
-      number of incidents returned is 25.
+    description: Returns EIR incidents from PhishLabs-IOC EIR service. The default number of incidents returned is 25.
     execution: false
     name: phishlabs-ioc-eir-get-incidents
     outputs:
@@ -395,3 +393,4 @@ script:
   type: python
 tests:
 - PhishlabsIOC_EIR-Test
+fromversion: 5.0.0

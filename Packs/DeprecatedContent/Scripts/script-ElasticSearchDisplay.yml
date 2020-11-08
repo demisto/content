@@ -2,16 +2,21 @@ commonfields:
   id: ElasticSearchDisplay
   version: -1
 name: ElasticSearchDisplay
-script: |-
+script: >-
   var index = args.index ? args.index : '*';
+
   var query = args.query;
+
   var params = {'using-brand': 'elasticsearch', query: query, index: index};
+
   if (args.fields) {
       params.fields = args.fields;
   } else {
       params.fields = 'text';
   }
+
   var res = executeCommand('search', params);
+
   if (res && res.length > 0 && res[0].Type !== entryTypes.error) {
       var collectFields = function(f) {
           if (fields[f] && fields[f].length && fields[f].length > 0) {
@@ -34,6 +39,7 @@ script: |-
       }
       return results;
   }
+
   return res;
 type: javascript
 tags:
@@ -59,4 +65,5 @@ dependson:
   - elasticsearch|||search
 timeout: 0s
 tests:
-  - No test - deprecated
+- No test - deprecated
+fromversion: 5.0.0

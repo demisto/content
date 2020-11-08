@@ -1,11 +1,8 @@
 id: PhishingDemo-Onboarding
 version: -1
 name: PhishingDemo-Onboarding
-fromversion: 4.1.0
-description: This playbook is part of the on-boarding experience, and focuses on phishing
-  scenarios. To use this playbook, you'll need to enable the `on-boarding` integration
-  and configure incidents of type `Phishing`. For more information, refer to the on-boarding
-  walkthroughs in the help section.
+fromversion: 5.0.0
+description: This playbook is part of the on-boarding experience, and focuses on phishing scenarios. To use this playbook, you'll need to enable the `on-boarding` integration and configure incidents of type `Phishing`. For more information, refer to the on-boarding walkthroughs in the help section.
 starttaskid: "0"
 tasks:
   "0":
@@ -433,4 +430,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No Tests
+- No Tests

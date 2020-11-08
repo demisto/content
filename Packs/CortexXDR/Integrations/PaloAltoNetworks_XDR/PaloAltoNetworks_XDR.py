@@ -1,3 +1,6 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 from datetime import timezone
 import secrets
 import string
@@ -6,7 +9,7 @@ from typing import Any, Dict
 import dateparser
 import urllib3
 import traceback
-from CommonServerPython import *
+from operator import itemgetter
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,6 +19,46 @@ NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
+XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
+
+XDR_INCIDENT_FIELDS = {
+    "status": {"description": "Current status of the incident: \"new\",\"under_"
+                              "investigation\",\"resolved_threat_handled\","
+                              "\"resolved_known_issue\",\"resolved_duplicate\","
+                              "\"resolved_false_positive\",\"resolved_other\"",
+               "xsoar_field_name": 'xdrstatusv2'},
+    "assigned_user_mail": {"description": "Email address of the assigned user.",
+                           'xsoar_field_name': "xdrassigneduseremail"},
+    "assigned_user_pretty_name": {"description": "Full name of the user assigned to the incident.",
+                                  "xsoar_field_name": "xdrassigneduserprettyname"},
+    "resolve_comment": {"description": "Comments entered by the user when the incident was resolved.",
+                        "xsoar_field_name": "xdrresolvecomment"},
+    "manual_severity": {"description": "Incident severity assigned by the user. "
+                                       "This does not affect the calculated severity low medium high",
+                        "xsoar_field_name": "severity"},
+}
+
+XDR_RESOLVED_STATUS_TO_XSOAR = {
+    'resolved_threat_handled': 'Resolved',
+    'resolved_known_issue': 'Other',
+    'resolved_duplicate': 'Duplicate',
+    'resolved_false_positive': 'False Positive',
+    'resolved_other': 'Other'
+}
+
+XSOAR_RESOLVED_STATUS_TO_XDR = {
+    'Resolved': 'resolved_threat_handled',
+    'Other': 'resolved_other',
+    'Duplicate': 'resolved_duplicate',
+    'False Positive': 'resolved_false_positive'
+}
+
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Both': 'Both'
+}
 
 
 def convert_epoch_to_milli(timestamp):
@@ -1650,35 +1693,338 @@ def endpoint_scan_command(client, args):
     )
 
 
-def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: int = 10):
+def sort_by_key(list_to_sort, main_key, fallback_key):
+    """Sorts a given list elements by main_key for all elements with the key,
+    uses sorting by fallback_key on all elements that dont have the main_key"""
+    list_elements_with_main_key = [element for element in list_to_sort if element.get(main_key)]
+    sorted_list = sorted(list_elements_with_main_key, key=itemgetter(main_key))
+    if len(list_to_sort) == len(sorted_list):
+        return sorted_list
+
+    list_elements_with_fallback_without_main = [element for element in list_to_sort
+                                                if element.get(fallback_key) and not element.get(main_key)]
+    sorted_list.extend(sorted(list_elements_with_fallback_without_main, key=itemgetter(fallback_key)))
+
+    if len(sorted_list) == len(list_to_sort):
+        return sorted_list
+
+    list_elements_without_fallback_and_main = [element for element in list_to_sort
+                                               if not element.get(fallback_key) and not element.get(main_key)]
+
+    sorted_list.extend(list_elements_without_fallback_and_main)
+    return sorted_list
+
+
+def sort_all_list_incident_fields(incident_data):
+    """Sorting all lists fields in an incident - without this, elements may shift which results in false
+    identification of changed fields"""
+    if incident_data.get('hosts', []):
+        incident_data['hosts'] = sorted(incident_data.get('hosts', []))
+        incident_data['hosts'] = [host.upper() for host in incident_data.get('hosts', [])]
+
+    if incident_data.get('users', []):
+        incident_data['users'] = sorted(incident_data.get('users', []))
+        incident_data['users'] = [user.upper() for user in incident_data.get('users', [])]
+
+    if incident_data.get('incident_sources', []):
+        incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
+
+    if incident_data.get('alerts', []):
+        incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
+        reformat_sublist_fields(incident_data['alerts'])
+
+    if incident_data.get('file_artifacts', []):
+        incident_data['file_artifacts'] = sort_by_key(incident_data.get('file_artifacts', []), main_key='file_name',
+                                                      fallback_key='file_sha256')
+        reformat_sublist_fields(incident_data['file_artifacts'])
+
+    if incident_data.get('network_artifacts', []):
+        incident_data['network_artifacts'] = sort_by_key(incident_data.get('network_artifacts', []),
+                                                         main_key='network_domain', fallback_key='network_remote_ip')
+        reformat_sublist_fields(incident_data['network_artifacts'])
+
+
+def drop_field_underscore(section):
+    section_copy = section.copy()
+    for field in section_copy.keys():
+        if '_' in field:
+            section[field.replace('_', '')] = section.get(field)
+
+
+def reformat_sublist_fields(sublist):
+    for section in sublist:
+        drop_field_underscore(section)
+
+
+def sync_incoming_incident_owners(incident_data):
+    if incident_data.get('assigned_user_mail') and demisto.params().get('sync_owners'):
+        user_info = demisto.findUser(email=incident_data.get('assigned_user_mail'))
+        if user_info:
+            demisto.debug(f"Syncing incident owners: XDR incident {incident_data.get('incident_id')}, "
+                          f"owner {user_info.get('username')}")
+            incident_data['owner'] = user_info.get('username')
+
+        else:
+            demisto.debug(f"The user assigned to XDR incident {incident_data.get('incident_id')} "
+                          f"is not registered on XSOAR")
+
+
+def handle_incoming_user_unassignment(incident_data):
+    incident_data['assigned_user_mail'] = ''
+    incident_data['assigned_user_pretty_name'] = ''
+    if demisto.params().get('sync_owners'):
+        demisto.debug(f'Unassigning owner from XDR incident {incident_data.get("incident_id")}')
+        incident_data['owner'] = ''
+
+
+def handle_incoming_closing_incident(incident_data):
+    closing_entry = {}  # type: Dict
+    if incident_data.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug(f"Closing XDR issue {incident_data.get('incident_id')}")
+        closing_entry = {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
+                'closeNotes': incident_data.get('resolve_comment')
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }
+        incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
+        incident_data['closeNotes'] = incident_data.get('resolve_comment')
+
+        if incident_data.get('status') == 'resolved_known_issue':
+            closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
+            incident_data['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
+
+    return closing_entry
+
+
+def get_mapping_fields_command():
+    xdr_incident_type_scheme = SchemeTypeMapping(type_name=XDR_INCIDENT_TYPE_NAME)
+    for field in XDR_INCIDENT_FIELDS:
+        xdr_incident_type_scheme.add_field(name=field, description=XDR_INCIDENT_FIELDS[field].get('description'))
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(xdr_incident_type_scheme)
+
+    return mapping_response
+
+
+def get_remote_data_command(client, args):
+    remote_args = GetRemoteDataArgs(args)
+    incident_data = {}
+    try:
+        incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
+                                                                 "alerts_limit": 1000})[2].get('incident')
+
+        incident_data['id'] = incident_data.get('incident_id')
+        current_modified_time = int(str(incident_data.get('modification_time')))
+        demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"  # type:ignore
+                      f"modified time: {int(incident_data.get('modification_time'))}\n"
+                      f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
+
+        sort_all_list_incident_fields(incident_data)
+
+        # deleting creation time as it keeps updating in the system
+        del incident_data['creation_time']
+
+        if arg_to_timestamp(current_modified_time, 'modification_time') > \
+                arg_to_timestamp(remote_args.last_update, 'last_update'):
+            demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
+
+            # handle unasignment
+            if incident_data.get('assigned_user_mail') is None:
+                handle_incoming_user_unassignment(incident_data)
+
+            else:
+                # handle owner sync
+                sync_incoming_incident_owners(incident_data)
+
+            # handle closed issue in XDR and handle outgoing error entry
+            entries = [handle_incoming_closing_incident(incident_data)]
+
+            reformatted_entries = []
+            for entry in entries:
+                if entry:
+                    reformatted_entries.append(entry)
+
+            incident_data['in_mirror_error'] = ''
+
+            return GetRemoteDataResponse(
+                mirrored_object=incident_data,
+                entries=reformatted_entries
+            )
+
+        else:
+            # no new data modified - resetting error if needed
+            incident_data['in_mirror_error'] = ''
+
+            # handle unasignment
+            if incident_data.get('assigned_user_mail') is None:
+                handle_incoming_user_unassignment(incident_data)
+
+            return GetRemoteDataResponse(
+                mirrored_object=incident_data,
+                entries=[]
+            )
+
+    except Exception as e:
+        demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        if "Rate limit exceeded" in str(e):
+            return_error("API rate limit")
+
+        if incident_data:
+            incident_data['in_mirror_error'] = str(e)
+            sort_all_list_incident_fields(incident_data)
+
+            # deleting creation time as it keeps updating in the system
+            del incident_data['creation_time']
+
+        else:
+            incident_data = {
+                'id': remote_args.remote_incident_id,
+                'in_mirror_error': str(e)
+            }
+
+        return GetRemoteDataResponse(
+            mirrored_object=incident_data,
+            entries=[]
+        )
+
+
+def handle_outgoing_incident_owner_sync(update_args):
+    if 'owner' in update_args and demisto.params().get('sync_owners'):
+        if update_args.get('owner'):
+            user_info = demisto.findUser(username=update_args.get('owner'))
+            if user_info:
+                update_args['assigned_user_mail'] = user_info.get('email')
+        else:
+            # handle synced unassignment
+            update_args['assigned_user_mail'] = None
+
+
+def handle_user_unassignment(update_args):
+    if ('assigned_user_mail' in update_args and update_args.get('assigned_user_mail') in ['None', 'null', '', None]) \
+            or ('assigned_user_pretty_name' in update_args
+                and update_args.get('assigned_user_pretty_name') in ['None', 'null', '', None]):
+        update_args['unassign_user'] = 'true'
+        update_args['assigned_user_mail'] = None
+        update_args['assigned_user_pretty_name'] = None
+
+
+def handle_outgoing_issue_closure(update_args, inc_status):
+    if inc_status == 2:
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason'))
+        demisto.debug(f"Closing Remote XDR incident with status {update_args['status']}")
+        update_args['resolve_comment'] = update_args.get('closeNotes')
+
+
+def get_update_args(delta, inc_status):
+    """Change the updated field names to fit the update command"""
+    update_args = delta
+    handle_outgoing_incident_owner_sync(update_args)
+    handle_user_unassignment(update_args)
+    handle_outgoing_issue_closure(update_args, inc_status)
+    return update_args
+
+
+def update_remote_system_command(client, args):
+    remote_args = UpdateRemoteSystemArgs(args)
+    try:
+        if remote_args.delta and remote_args.incident_changed:
+            demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
+                          f'incident {remote_args.remote_incident_id}')
+            update_args = get_update_args(remote_args.delta, remote_args.inc_status)
+
+            update_args['incident_id'] = remote_args.remote_incident_id
+            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to XDR\n')
+            update_incident_command(client, update_args)
+
+        else:
+            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+                          f'as it is not new nor changed')
+
+        return remote_args.remote_incident_id
+
+    except Exception as e:
+        demisto.debug(f"Error in XDR outgoing mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        return remote_args.remote_incident_id
+
+
+def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
-
+    incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
+                                                                                                dict) else []
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
 
     incidents = []
-    raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
-                                         limit=max_fetch, sort_by_creation_time='asc')
+    if incidents_from_previous_run:
+        raw_incidents = incidents_from_previous_run
+    else:
+        raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
+                                             limit=max_fetch, sort_by_creation_time='asc')
 
-    for raw_incident in raw_incidents:
-        incident_id = raw_incident.get('incident_id')
-        description = raw_incident.get('description')
-        occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
-        incident = {
-            'name': f'#{incident_id} - {description}',
-            'occurred': occurred,
-            'rawJSON': json.dumps(raw_incident)
-        }
+    # maintain a list of non created incidents in a case of a rate limit exception
+    non_created_incidents: list = raw_incidents.copy()
+    next_run = dict()
 
-        # Update last run and add incident if the incident is newer than last fetch
-        if raw_incident['creation_time'] > last_fetch:
-            last_fetch = raw_incident['creation_time']
+    try:
+        for raw_incident in raw_incidents:
+            incident_id = raw_incident.get('incident_id')
 
-        incidents.append(incident)
+            if demisto.params().get('extra_data'):
+                incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
+                                                                         "alerts_limit": 1000})[2].get('incident')
+            else:
+                incident_data = raw_incident
 
-    next_run = {'time': last_fetch + 1}
+            sort_all_list_incident_fields(incident_data)
+
+            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
+                                                                     None)
+            incident_data['mirror_instance'] = integration_instance
+
+            description = raw_incident.get('description')
+            occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
+            incident = {
+                'name': f'#{incident_id} - {description}',
+                'occurred': occurred,
+                'rawJSON': json.dumps(incident_data),
+            }
+
+            if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
+                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
+
+            # Update last run and add incident if the incident is newer than last fetch
+            if raw_incident['creation_time'] > last_fetch:
+                last_fetch = raw_incident['creation_time']
+
+            incidents.append(incident)
+            non_created_incidents.remove(raw_incident)
+
+    except Exception as e:
+        if "Rate limit exceeded" in str(e):
+            demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
+                         f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
+
+        else:
+            raise
+
+    if non_created_incidents:
+        next_run['incidents_from_previous_run'] = non_created_incidents
+    else:
+        next_run['incidents_from_previous_run'] = []
+
+    next_run['time'] = last_fetch + 1
+
     return next_run, incidents
 
 
@@ -1733,7 +2079,9 @@ def main():
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(client, first_fetch_time, demisto.getLastRun(), max_fetch)
+            integration_instance = demisto.integrationInstance()
+            next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance, demisto.getLastRun(),
+                                                  max_fetch)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
@@ -1796,6 +2144,16 @@ def main():
 
         elif demisto.command() == 'xdr-endpoint-scan':
             return_outputs(*endpoint_scan_command(client, demisto.args()))
+
+        elif demisto.command() == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
+
+        elif demisto.command() == 'get-remote-data':
+            return_results(get_remote_data_command(client, demisto.args()))
+
+        elif demisto.command() == 'update-remote-system':
+            return_results(update_remote_system_command(client, demisto.args()))
+
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
             LOG(str(err))

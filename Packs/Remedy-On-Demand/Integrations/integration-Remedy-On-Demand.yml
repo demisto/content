@@ -45,22 +45,30 @@ configuration:
   type: 13
   required: false
 script:
-  script: |
+  script: >
     // remove '/' at the end of the url (if exists)
+
     params.url = params.url.replace(/[\/]+$/, '');
 
+
     var baseUrl = params.url;
+
     if (params.port) {
         baseUrl = baseUrl + ':' + params.port;
     }
+
     var insecure = params.insecure;
+
     var proxy = params.proxy;
 
+
     // returns incId padded with '0's that is 15 length string. e.g. '82' -> '000000000000082'
+
     var preperIncId = function (incId) {
         var res = '000000000000000' + incId;
         return res.substr(-15);
     };
+
 
     var createTableEntry = function (name, contents, context, headers) {
         return {
@@ -77,7 +85,9 @@ script:
         };
     };
 
+
     // mutetor that removes all falsly fields
+
     var filterEmptyFields = function(obj) {
         Object.keys(obj).forEach(function(key) {
             if (obj[key] === undefined || obj[key] === null) {
@@ -85,6 +95,7 @@ script:
             }
         });
     };
+
 
     var sendRequest = function(url, token, method, body) {
 
@@ -112,6 +123,7 @@ script:
 
         return res;
     };
+
 
     var login = function() {
         var url = baseUrl + '/api/jwt/login';
@@ -145,10 +157,12 @@ script:
         return res.Body;
     };
 
+
     var logout = function(token) {
         var url = baseUrl + '/api/jwt/logout/';
         sendRequest(url, token, 'POST');
     };
+
 
     var convertIncidentToTicket = function(incident) {
         return {
@@ -167,6 +181,7 @@ script:
             ModifiedDate: incident['Modified Date']
         };
     };
+
 
     var createIncident = function(firstName, lastName, description, status, source, serviceType, impact, urgency, customFields) {
         var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create';
@@ -209,6 +224,7 @@ script:
         return createTableEntry("Incident created:",incident, context);
     };
 
+
     var getIncident = function(id, title) {
         var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + id;
         var token = login();
@@ -223,10 +239,13 @@ script:
         return createTableEntry(title || "Incident:",incident, context);
     };
 
-    var fetchIncidents = function(query) {
+    var fetchIncidents = function(query, test_module=false) {
         var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/';
         if(query) {
             url += '?q=' + encodeURIComponent(query);
+        }
+        if (test_module) {
+            url += '?limit=1'
         }
         var token = login();
         var res = sendRequest(url, token);
@@ -241,6 +260,7 @@ script:
         return createTableEntry("Incidents:",incidents, context);
     };
 
+
     var updateIncident = function(incID, updateObject) {
         var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + incID + '|' + incID;
         var token = login();
@@ -253,6 +273,7 @@ script:
         sendRequest(url, token, "PUT", JSON.stringify(body));
         return getIncident(incID, 'Updated incident:');
     };
+
 
     var fetchIncidentsToDemisto = function() {
         var lastRun = getLastRun();
@@ -288,9 +309,10 @@ script:
         return JSON.stringify(incidents);
     };
 
+
     switch (command) {
         case 'test-module':
-            fetchIncidents();
+            fetchIncidents(query=null, test_module=true);
             return 'ok';
         case 'fetch-incidents':
             return fetchIncidentsToDemisto();
@@ -393,8 +415,7 @@ script:
       - 4-Low
       description: Incident urgency
     - name: custom-fields
-      description: Custom fields for incident creation. Should be comma separated
-        query (i.e. field1=value1,field2=value2).
+      description: Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2).
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -440,8 +461,7 @@ script:
   - name: remedy-fetch-incidents
     arguments:
     - name: query
-      description: Search query/qualification format of '<field> LIKE "<values>"'
-        (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
+      description: Search query/qualification format of '<field> LIKE "<values>"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -538,3 +558,4 @@ script:
     description: Update exiting incident
   isfetch: true
 hidden: false
+fromversion: 5.0.0

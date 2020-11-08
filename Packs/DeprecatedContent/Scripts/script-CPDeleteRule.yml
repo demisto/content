@@ -2,9 +2,11 @@ commonfields:
   id: CPDeleteRule
   version: -1
 name: CPDeleteRule
-script: |-
+script: >-
   dArgs = demisto.args()
+
   dArgs['command'] = 'delete-access-rule'
+
   if 'uid' in dArgs or 'name' in dArgs:
       resp = demisto.executeCommand('checkpoint', dArgs)
       resp += demisto.executeCommand('checkpoint', {'command': 'publish'})
@@ -32,3 +34,4 @@ dependson:
   must:
   - checkpoint
 timeout: 0s
+fromversion: 5.0.0

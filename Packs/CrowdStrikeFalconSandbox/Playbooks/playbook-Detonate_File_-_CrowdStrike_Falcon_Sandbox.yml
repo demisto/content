@@ -1,13 +1,8 @@
 id: CrowdStrike Falcon Sandbox - Detonate file
 version: -1
 name: CrowdStrike Falcon Sandbox - Detonate file
-description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
-  This playbook returns relevant reports to the War Room and file reputations to the
-  context data. The detonation supports the following file types - PE32, EXE, DLL, JAR,
-  JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML,
-  SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF,
-  JSE, VBE, CHM
-fromversion: 4.0.0
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - PE32, EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -308,8 +303,7 @@ tasks:
       id: c6e5c638-5c9e-470c-8f57-7931c2689dba
       version: -1
       name: GenericPolling
-      description: Initiated the generic polling playbook that will do the polling
-        command
+      description: Initiated the generic polling playbook that will do the polling command
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -371,8 +365,7 @@ inputs:
   value:
     simple: "100"
   required: false
-  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
-    command.
+  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments command.
 - key: Interval
   value:
     simple: "5"

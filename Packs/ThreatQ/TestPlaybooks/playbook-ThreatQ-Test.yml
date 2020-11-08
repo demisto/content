@@ -913,8 +913,7 @@ tasks:
       id: e8c9b246-ac2d-48af-845c-cc4a6cebcdda
       version: -1
       name: Verify linking
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1004,8 +1003,7 @@ tasks:
       id: 44fc4cec-689f-4463-8c97-a4c5dfd7a4fb
       version: -1
       name: Update context (search by ID)
-      description: Searches for an object by object type and ID. Generic and DBotScore
-        contexts also may be generated.
+      description: Searches for an object by object type and ID. Generic and DBotScore contexts also may be generated.
       script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
@@ -1041,8 +1039,7 @@ tasks:
       id: b5706755-f3f8-4720-8e9d-5476c0853e74
       version: -1
       name: Update context (search by ID)
-      description: Searches for an object by object type and ID. Generic and DBotScore
-        contexts also may be generated.
+      description: Searches for an object by object type and ID. Generic and DBotScore contexts also may be generated.
       script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
@@ -1248,8 +1245,7 @@ tasks:
       id: 1f08f13c-ddc9-4c20-879a-7481e916cc7d
       version: -1
       name: Verify unlinking
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1287,8 +1283,7 @@ tasks:
       id: dc5403b2-b1a7-4020-8dda-06eeaa0f1f7f
       version: -1
       name: Update context - indicator (search by ID)
-      description: Searches for an object by object type and ID. Generic and DBotScore
-        contexts also may be generated.
+      description: Searches for an object by object type and ID. Generic and DBotScore contexts also may be generated.
       script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
@@ -1457,8 +1452,7 @@ tasks:
       id: 854cad55-394b-4a84-85e8-01468e734dba
       version: -1
       name: Update indicator score
-      description: Modifies an indicator's score in ThreatQ. The final indicator score
-        is the highest of the manual and generated scores.
+      description: Modifies an indicator's score in ThreatQ. The final indicator score is the highest of the manual and generated scores.
       script: ThreatQ v2|||threatq-update-score
       type: regular
       iscommand: true
@@ -2292,3 +2286,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

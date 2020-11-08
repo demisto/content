@@ -1,18 +1,19 @@
+import concurrent.futures
+import json
+import time
+import traceback
+from copy import deepcopy
+from threading import Lock
+from typing import Callable, Dict, List, Optional
+from urllib import parse
+
+import requests
+import urllib3
+from requests.exceptions import HTTPError
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-import json
-import time
-import urllib3
-import traceback
-from urllib import parse
-from copy import deepcopy
-import concurrent.futures
-from threading import Lock
-
-import requests
-from requests.exceptions import HTTPError
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -193,6 +194,10 @@ class QRadarClient:
         if not (self._username and self._password):
             raise Exception("Please provide a username/password or an API token.")
         self.lock = Lock()
+
+    @property
+    def server(self):
+        return self._server
 
     @property
     def offenses_per_fetch(self):
@@ -528,6 +533,44 @@ class QRadarClient:
         return self.send_request(
             "POST", url, params=params, data=json.dumps(indicators_list)
         )
+
+    def get_custom_fields(
+            self, limit: Optional[int] = None, field_name: Optional[List[str]] = None,
+            likes: Optional[List[str]] = None, filter_: Optional[str] = None, fields: Optional[List[str]] = None
+    ) -> List[dict]:
+        """Get regex event properties from the API.
+
+        Args:
+            limit: Max properties to fetch.
+            field_name: a list of exact names to pull.
+            likes: a list of case insensitive and name (contains).
+            filter_: a filter to send instead of likes/field names.
+            fields: a list of fields to retrieve from the API.
+
+        Returns:
+            List of properties
+        """
+        url = urljoin(self._server, "api/config/event_sources/custom_properties/regex_properties")
+        headers = self._auth_headers
+        if limit is not None:
+            headers['Range'] = f"items=0-{limit-1}"
+        params = {}
+        # Build filter if not given
+        if not filter_:
+            filter_ = ''
+            if field_name:
+                for field in field_name:
+                    filter_ += f'name= "{field}" or '
+            if likes:
+                for like in likes:
+                    filter_ += f'name ILIKE "%{like}%" or '
+            # Remove trailing `or `
+            filter_ = filter_.rstrip('or ')
+        if filter_:
+            params['filter'] = filter_
+        if fields:
+            params['fields'] = ' or '.join(fields)
+        return self.send_request("GET", url, headers=headers, params=params)
 
     def enrich_source_addresses_dict(self, src_adrs):
         """
@@ -1029,7 +1072,7 @@ def create_incident_from_offense(offense, incident_type):
     """
     Creates incidents from offense
     """
-    occured = offense["start_time"]
+    occured = epoch_to_iso(offense["start_time"])
     keys = list(offense.keys())
     labels = []
     for i in range(len(keys)):
@@ -1088,6 +1131,7 @@ def enrich_offense_result(
     * Rule id -> name
     * IP id -> value
     * IP value -> Asset
+    * Add offense link
     """
     domain_ids = set()
     rule_ids = set()
@@ -1097,6 +1141,8 @@ def enrich_offense_result(
             include_deleted=True, include_reserved=True
         )
         for offense in response:
+            offense["LinkToOffense"] = f"{client.server}/console/do/sem/offensesummary?" \
+                                       f"appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}"
             enrich_offense_timestamps_and_closing_reason(
                 client, offense, type_dict, closing_reason_dict
             )
@@ -1108,7 +1154,7 @@ def enrich_offense_result(
                         rule_ids.add(rule['id'])
 
         if ip_enrich or asset_enrich:
-            enrich_offense_res_with_source_and_destination_address(
+            enrich_offenses_with_assets_and_source_destination_addresses(
                 client, response, ip_enrich, asset_enrich
             )
             if asset_enrich:
@@ -1173,38 +1219,82 @@ def enrich_offense_timestamps_and_closing_reason(
         )
 
 
-def enrich_offense_res_with_source_and_destination_address(
-    client: QRadarClient, response, ip_enrich=False, asset_enrich=False
+def enrich_offenses_with_assets_and_source_destination_addresses(
+    client: QRadarClient, offenses, ip_enrich=False, asset_enrich=False
 ):
     """
-    Enriches offense result dictionary with source and destination addresses
+    Enriches offense result dictionary with source and destination addresses and assets depending on the ips
     """
-    src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(response)
+    src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(offenses)
     # This command might encounter HTML error page in certain cases instead of JSON result. Fallback: cancel operation
     try:
         if src_adrs:
             client.enrich_source_addresses_dict(src_adrs)
         if dst_adrs:
             client.enrich_destination_addresses_dict(dst_adrs)
-        if isinstance(response, list) and (ip_enrich or asset_enrich):
-            for offense in response:
-                asset_ip_ids = enrich_single_offense_res_with_source_and_destination_address(
+        if isinstance(offenses, list) and (ip_enrich or asset_enrich):
+            for offense in offenses:
+                # calling this function changes given offenses IP ids to IP values
+                assets_ips = get_asset_ips_and_enrich_offense_addresses(
                     offense, src_adrs, dst_adrs, not ip_enrich
                 )
                 if asset_enrich:
-                    for b in batch(list(asset_ip_ids), batch_size=BATCH_SIZE):
-                        query = ""
-                        for val in b:
-                            query = (f"{query} or " if query else "") + 'interfaces contains ip_addresses ' \
-                                                                        f'contains value="{val}"'
-                        if query:
-                            assets = client.get_assets(_filter=query)
-                            if assets:
-                                transform_asset_time_fields_recursive(assets)
-                                offense["assets"] = assets
-    # The function is meant to be safe, so it shouldn't raise any error
+                    assets = get_assets_for_offense(client, assets_ips)
+                    if assets:
+                        offense["assets"] = assets
     finally:
-        return response
+        return offenses
+
+
+def get_assets_for_offense(client: QRadarClient, assets_ips):
+    """
+    Get the assets that correlate to the given asset_ip_ids in the expected offense result format
+    """
+    assets = []
+    for ips_batch in batch(list(assets_ips), batch_size=BATCH_SIZE):
+        query = ""
+        for ip in ips_batch:
+            query = (f"{query} or " if query else "") + f'interfaces contains ip_addresses contains value="{ip}"'
+        if query:
+            assets = client.get_assets(_filter=query)
+            if assets:
+                transform_asset_time_fields_recursive(assets)
+                for asset in assets:
+                    # flatten properties
+                    if isinstance(asset.get('properties'), list):
+                        properties = {p['name']: p['value'] for p in asset['properties'] if
+                                      ('name' in p and 'value' in p)}
+                        asset.update(properties)
+                        # remove previous format of properties
+                        asset.pop('properties')
+                    # simplify interfaces
+                    if isinstance(asset.get('interfaces'), list):
+                        asset['interfaces'] = get_simplified_asset_interfaces(asset['interfaces'])
+    return assets
+
+
+def get_simplified_asset_interfaces(interfaces):
+    """
+    Get a simplified version of asset interfaces with just the following fields:
+     * id
+     * mac_address
+     * ip_addresses.type
+     * ip_addresses.value
+    """
+    new_interfaces = []
+    for interface in interfaces:
+        new_ip_adrss = []
+        for ip_adrs in interface.get('ip_addresses', []):
+            new_ip_adrss.append(assign_params(
+                type=ip_adrs.get('type'),
+                value=ip_adrs.get('value')
+            ))
+        new_interfaces.append(assign_params(
+            mac_address=interface.get('mac_address'),
+            id=interface.get('id'),
+            ip_addresses=new_ip_adrss
+        ))
+    return new_interfaces
 
 
 def transform_asset_time_fields_recursive(asset):
@@ -1255,11 +1345,13 @@ def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
     return None
 
 
-def enrich_single_offense_res_with_source_and_destination_address(
+def get_asset_ips_and_enrich_offense_addresses(
     offense, src_adrs, dst_adrs, skip_enrichment=False
 ):
     """
-    helper function: For a single offense replaces the source and destination ids with the actual addresses
+    Get offense asset IPs,
+    and given skip_enrichment=False,
+        replace the source and destination ids of the offense with the real addresses
     """
     asset_ips = set()
     if isinstance(offense.get("source_address_ids"), list):
@@ -1691,10 +1783,11 @@ def update_reference_set_value_command(
         values = [
             date_to_timestamp(v, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for v in values
         ]
-    if len(values) > 1:
+    if len(values) > 1 and not source:
         raw_ref = client.upload_indicators_list_request(ref_name, values)
-    elif len(values) == 1:
-        raw_ref = client.update_reference_set_value(ref_name, values[0], source)
+    elif len(values) >= 1:
+        for value in values:
+            raw_ref = client.update_reference_set_value(ref_name, value, source)
     else:
         raise DemistoException(
             "Expected at least a single value, cant create or update an empty value"
@@ -1956,6 +2049,176 @@ def reset_fetch_incidents():
     return "fetch-incidents was reset successfully."
 
 
+def get_mapping_fields(client: QRadarClient) -> dict:
+    offense = {
+        "username_count": "int",
+        "description": "str",
+        "rules": {
+            "id": "int",
+            "type": "str",
+            "name": "str"
+        },
+        "event_count": "int",
+        "flow_count": "int",
+        "assigned_to": "NoneType",
+        "security_category_count": "int",
+        "follow_up": "bool",
+        "source_address_ids": "str",
+        "source_count": "int",
+        "inactive": "bool",
+        "protected": "bool",
+        "closing_user": "str",
+        "destination_networks": "str",
+        "source_network": "str",
+        "category_count": "int",
+        "close_time": "str",
+        "remote_destination_count": "int",
+        "start_time": "str",
+        "magnitude": "int",
+        "last_updated_time": "str",
+        "credibility": "int",
+        "id": "int",
+        "categories": "str",
+        "severity": "int",
+        "policy_category_count": "int",
+        "closing_reason_id": "str",
+        "device_count": "int",
+        "offense_type": "str",
+        "relevance": "int",
+        "domain_id": "int",
+        "offense_source": "str",
+        "local_destination_address_ids": "int",
+        "local_destination_count": "int",
+        "status": "str",
+        "domain_name": "str"
+    }
+    events = {
+        "events": {
+            "qidname_qid": "str",
+            "logsourcename_logsourceid": "str",
+            "categoryname_highlevelcategory": "str",
+            "categoryname_category": "str",
+            "protocolname_protocolid": "str",
+            "sourceip": "str",
+            "sourceport": "int",
+            "destinationip": "str",
+            "destinationport": "int",
+            "qiddescription_qid": "str",
+            "username": "NoneType",
+            "rulename_creeventlist": "str",
+            "sourcegeographiclocation": "str",
+            "sourceMAC": "str",
+            "sourcev6": "str",
+            "destinationgeographiclocation": "str",
+            "destinationv6": "str",
+            "logsourcetypename_devicetype": "str",
+            "credibility": "int",
+            "severity": "int",
+            "magnitude": "int",
+            "eventcount": "int",
+            "eventDirection": "str",
+            "postNatDestinationIP": "str",
+            "postNatDestinationPort": "int",
+            "postNatSourceIP": "str",
+            "postNatSourcePort": "int",
+            "preNatDestinationPort": "int",
+            "preNatSourceIP": "str",
+            "preNatSourcePort": "int",
+            "utf8_payload": "str",
+            "starttime": "str",
+            "devicetime": "int"
+        }
+    }
+    assets = {
+        "assets": {
+            "interfaces": {
+                "mac_address": "str",
+                "ip_addresses": {
+                    "type": "str",
+                    "value": "str"
+                },
+                "id": "int",
+                'Unified Name': "str",
+                'Technical User': "str",
+                'Switch ID': "str",
+                'Business Contact': "str",
+                'CVSS Availability Requirement': "str",
+                'Compliance Notes': "str",
+                'Primary OS ID': "str",
+                'Compliance Plan': "str",
+                'Switch Port ID': "str",
+                'Weight': "str",
+                'Location': "str",
+                'CVSS Confidentiality Requirement': "str",
+                'Technical Contact': "str",
+                'Technical Owner': "str",
+                'CVSS Collateral Damage Potential': "str",
+                'Description': "str",
+                'Business Owner': "str",
+                'CVSS Integrity Requirement': "str"
+            },
+            "id": "int",
+            "domain_id": "int",
+            "domain_name": "str"
+        }
+    }
+    custom_fields = {
+        'events': {field['name']: field['property_type'] for field in client.get_custom_fields()}
+    }
+    fields = {
+        'Offense': offense,
+        'Events: Builtin Fields': events,
+        'Events: Custom Fields': custom_fields,
+        'Assets': assets,
+    }
+    return fields
+
+
+def get_custom_properties_command(
+        client: QRadarClient, limit: Optional[str] = None, field_name: Optional[str] = None,
+        like_name: Optional[str] = None, filter: Optional[str] = None, fields: Optional[str] = None) -> dict:
+    """Gives the user the regex event properties
+
+    Args:
+        client: QRadar Client
+        limit: Maximum of properties to fetch
+        field_name: exact name in `field`
+        like_name: contains and case insensitive name in `field`
+        filter: a custom filter query
+        fields: Fields to retrieve. if None, will retrieve them all
+
+    Returns:
+        CortexXSOAR entry.
+    """
+    limit = int(limit) if limit else None
+    field_names = argToList(field_name)
+    likes = argToList(like_name)
+    fields = argToList(fields)
+    if filter and (likes or field_names):
+        raise DemistoException('Can\'t send the `filter` argument with `field_name` or `like_name`')
+    response = client.get_custom_fields(limit, field_names, likes, filter, fields)
+    # Convert epoch times
+    if not fields:
+        for i in range(len(response)):
+            for key in ['creation_date', 'modification_date']:
+                try:
+                    response[i][key] = epochToTimestamp(response[i][key])
+                except KeyError:
+                    pass
+    return {
+        "Type": entryTypes["note"],
+        "Contents": response,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": tableToMarkdown(
+            "Custom Properties",
+            response,
+            removeNull=True
+        ),
+        "EntryContext": {'QRadar.Properties': response},
+    }
+
+
 def main():
     params = demisto.params()
 
@@ -2004,7 +2267,7 @@ def main():
     command = demisto.command()
     try:
         demisto.debug(f"Command being called is {command}")
-        normal_commands = {
+        normal_commands: Dict[str, Callable] = {
             "test-module": test_module,
             "qradar-offenses": get_offenses_command,
             "qradar-offense-by-id": get_offense_by_id_command,
@@ -2026,10 +2289,11 @@ def main():
             "qradar-get-domains": get_domains_command,
             "qradar-get-domain-by-id": get_domains_by_id_command,
             "qradar-upload-indicators": upload_indicators_command,
+            "qradar-get-custom-properties": get_custom_properties_command
         }
         if command in normal_commands:
             args = demisto.args()
-            demisto.results(normal_commands[command](client, **args))  # type: ignore[operator]
+            demisto.results(normal_commands[command](client, **args))
         elif command == "fetch-incidents":
             demisto.incidents(fetch_incidents_long_running_samples())
         elif command == "long-running-execution":
@@ -2045,6 +2309,8 @@ def main():
             )
         elif command == "qradar-reset-last-run":
             demisto.results(reset_fetch_incidents())
+        elif command == "get-mapping-fields":
+            demisto.results(get_mapping_fields(client))
     except Exception as e:
         error = f"Error has occurred in the QRadar Integration: {str(e)}"
         LOG(traceback.format_exc())

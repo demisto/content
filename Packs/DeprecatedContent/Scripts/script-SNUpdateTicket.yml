@@ -2,15 +2,19 @@ commonfields:
   id: SNUpdateTicket
   version: -1
 name: SNUpdateTicket
-script: |-
+script: >-
   DISPLAY_FIELDS = ['number', 'severity', 'category', 'opened_at', 'subcategory', 'priority', 'comments', 'short_description']
+
   res = []
+
   dArgs = demisto.args()
+
   if 'assignmentgroup' in dArgs:
       dArgs['assignment-group'] = dArgs.pop('assignmentgroup')
   if 'shortdescription' in dArgs:
       dArgs['short-description'] = dArgs.pop('shortdescription')
   resCmdName = demisto.executeCommand("servicenow-incident-update", dArgs)
+
   try:
       for entry in resCmdName:
           if isError(entry):
@@ -55,3 +59,4 @@ dependson:
   must:
   - servicenow-incident-update
 timeout: 0s
+fromversion: 5.0.0

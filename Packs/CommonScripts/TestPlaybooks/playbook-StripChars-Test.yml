@@ -70,10 +70,7 @@ tasks:
       id: 3028e6d1-583b-44a8-8459-97573efefa51
       version: -1
       name: comments to context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+      description: "Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. \nFor accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -123,8 +120,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: How I need a drink after the heavy lectures involving quantum
-                mechanics
+              simple: How I need a drink after the heavy lectures involving quantum mechanics
     view: |-
       {
         "position": {
@@ -172,3 +168,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

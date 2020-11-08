@@ -1,8 +1,7 @@
 id: ExtraHop - Ticket Tracking
 version: -1
 name: ExtraHop - Ticket Tracking
-description: Deprecated. Links the Demisto incident back to the ExtraHop detection that created
-  it for ticket tracking purposes.
+description: Deprecated. Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
 starttaskid: "0"
 hidden: true
 tasks:
@@ -39,9 +38,7 @@ tasks:
       id: be00a185-8d20-4e46-8012-4ae44b3687fc
       version: -1
       name: Track the incident status in ExtraHop Reveal(x)
-      description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This
-        uses the ExtraHop ticket tracking functionality to properly display ticket
-        status within ExtraHop.
+      description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This uses the ExtraHop ticket tracking functionality to properly display ticket status within ExtraHop.
       script: '|||extrahop-track-ticket'
       type: regular
       iscommand: true
@@ -271,8 +268,7 @@ tasks:
       owner: {}
       page: {}
       query:
-        simple: type:"ExtraHop Detection" and incident.detectionticketed:F and incident.created:>="1
-          day ago"
+        simple: type:"ExtraHop Detection" and incident.detectionticketed:F and incident.created:>="1 day ago"
       reason: {}
       size: {}
       sort: {}
@@ -438,9 +434,7 @@ tasks:
       id: 50b89e52-0733-477b-8929-8b595f704ca4
       version: -1
       name: Track the incident status in ExtraHop Reveal(x)
-      description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This
-        uses the ExtraHop ticket tracking functionality to properly display ticket
-        status within ExtraHop.
+      description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This uses the ExtraHop ticket tracking functionality to properly display ticket status within ExtraHop.
       script: '|||extrahop-track-ticket'
       type: regular
       iscommand: true
@@ -628,8 +622,7 @@ tasks:
       id: 1619242b-d813-4dfb-8801-cd45a61906f3
       version: -1
       name: Assign an ExtraHop analyst to the incident
-      description: Assign an analyst randomly from the pool of users with the ExtraHop
-        role.
+      description: Assign an analyst randomly from the pool of users with the ExtraHop role.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -666,8 +659,7 @@ tasks:
       id: dffb9228-cc49-4adf-88f5-13001f85ba70
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
-      description: Checks if there is an active instance of the ExtraHop Reveal(x)
-        integration enabled.
+      description: Checks if there is an active instance of the ExtraHop Reveal(x) integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -737,9 +729,8 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Set to true to assign only user that is currently on shift. Requires
-    Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
 outputs: []
-fromversion: 4.5.0
+fromversion: 5.0.0
 tests:
 - ExtraHop_v2-Test

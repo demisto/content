@@ -1,9 +1,4 @@
-description: 'Playbook should be run as a scheduled job at a recommended interval
-  of once every 15 minutes. Playbook simply calls sub playbook: "Send Investigation
-  Summary Reports" and closes the incident. Playbook by default will search all closed
-  incidents within the last hour. If you wish to run the playbook more frequently,
-  you should adjust the search query of the child playbook: Send Investigation Summary
-  Reports.'
+description: 'Playbook should be run as a scheduled job at a recommended interval of once every 15 minutes. Playbook simply calls sub playbook: "Send Investigation Summary Reports" and closes the incident. Playbook by default will search all closed incidents within the last hour. If you wish to run the playbook more frequently, you should adjust the search query of the child playbook: Send Investigation Summary Reports.'
 id: Send Investigation Summary Reports - Test
 inputs: []
 name: Send Investigation Summary Reports - Test
@@ -62,8 +57,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'This playbook iterates over closed incidents, generates a summary
-        report for each closed incident, and emails the reports to specified users. '
+      description: 'This playbook iterates over closed incidents, generates a summary report for each closed incident, and emails the reports to specified users. '
       id: f833a3ac-e3a6-4391-861b-90fd86652dd7
       iscommand: false
       name: Send Investigation Summary Reports
@@ -370,8 +364,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       id: bee224c9-9ad9-4b18-8336-153d2b249bcc
       iscommand: false
       name: Verify ReportSent is set
@@ -494,3 +487,4 @@ view: |-
       }
     }
   }
+fromversion: 5.0.0

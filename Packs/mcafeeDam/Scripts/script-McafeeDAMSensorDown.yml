@@ -2,12 +2,16 @@ commonfields:
   id: DamSensorDown
   version: -1
 name: DamSensorDown
-script: |-
+script: >-
   import sys
 
+
   res = demisto.incidents()[0]
+
   subject = ''
+
   body = ''
+
   for t in demisto.incidents()[0]['labels']:
       if t['type'] == 'Email/subject':
           subject = t['value']
@@ -21,7 +25,9 @@ script: |-
   if "this is a second notification" in subject:
       res = False
   labels = []
+
   s = body.find("with sensor: ")
+
   if s > 0:
       endNamePos = min(body.index(" ",s+13),body.index("<",s+13))
       sensorName = body[s+13:endNamePos]
@@ -43,6 +49,7 @@ script: |-
   demisto.executeCommand("setIncident", {
       'addLabels': json.dumps(labels)
   });
+
   demisto.results(res);
 type: python
 subtype: python2
@@ -56,3 +63,4 @@ scripttarget: 0
 dependson:
   must:
   - dam-get-latest-by-rule
+fromversion: 5.0.0

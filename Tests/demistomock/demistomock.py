@@ -741,6 +741,16 @@ def incidents(incidents=None):
         )
 
 
+def incident():
+    """Retrieves the current incident
+
+    Returns:
+      dict: dict representing an incident object
+
+    """
+    return incidents()[0]
+
+
 def setContext(contextPath, value):
     """(Script only)
     Sets given value in path in the context data
@@ -859,17 +869,16 @@ def createIncidents(incidents, lastRun=None, userID=None):
     Creates incident in long running execution
 
     Args:
-      incidents (list):
-        List of incident objects to create, with the following required keys, and some common optional keys
-            - name (required) - str
-            - type (required - if not provided will create unclassified incident) - str
-            - labels (optonal) - list of {"type": _, "value": _} objects
-            - rawJSON (required) - str
-            - occurred (optional) - str
-            - details (optional) - str
-            - severity (optional) - str
+      incidents (list): List of incident objects to create, with the following optional keys:
+            - name (str)
+            - type (str) - If not provided, an Unclassified incident will be created
+            - labels (list) - List of {"type": _, "value": _} objects
+            - rawJSON (str) - Will be omitted after the classification & mapping step
+            - occurred (str)
+            - details (str)
+            - severity (int)
       lastRun (dict): the LastRun object to set (Default value = None)
-      userID lastIndicator: The user associated with the request (Default value = None)
+      userID (str): The user associated with the request (Default value = None)
 
     Returns:
       Union[list, dict]: Created incident object
@@ -949,7 +958,7 @@ def createIndicators(indicators_batch):
     return ""
 
 
-def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value=''):
+def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None):
     """Searches for indicators according to given query
 
     Args:
@@ -959,6 +968,7 @@ def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value='
       page (int): Response paging (Default value = 0)
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
+      searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
 
     Returns:
       dict: Object contains the search results
@@ -986,3 +996,13 @@ def getLicenseID():
 
     """
     return ''
+
+
+def mapObject(obj, mapper, mapper_type):
+    """Mapping an object using chosen mapper
+
+    Returns:
+      dict: the obj after mapping
+
+    """
+    return {}

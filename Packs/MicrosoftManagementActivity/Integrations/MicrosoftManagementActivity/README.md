@@ -193,11 +193,12 @@ Returns all content of a specific content type.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | content_type | The content type for which to receive content. | Required | 
-| start_time | The earliest time to get content from. If start_time is specified, end_time must also be specified. The start_time must be before the end_time, can be at most 7 days ago, and has to be within 24 hours from end_time. Required format: YYYY-MM-DDTHH-MM-SS. If not specified, start time will be 24 hours ago. | Optional | 
-| end_time | The latest time to get content from. If end_time is specified, start_time must be also specified. The start_time must be before the end_time and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH-MM-SS. If not specified, end_time will be now. | Optional | 
+| start_time | The earliest time to get content from. If start_time is specified, end_time must also be specified. The start_time must be before the end_time, can be at most 7 days ago, and has to be within 24 hours from end_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours ago. | Optional | 
+| end_time | The latest time to get content from. If end_time is specified, start_time must be also specified. The start_time must be before the end_time and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, end_time will be now. | Optional | 
 | record_types_filter | A comma-separated list of the record types to fetch. Content records with a record  type that isn&#x27;t specified will not be fetched. If this field is left empty, all record types will be fetched. | Optional | 
 | workloads_filter | A comma-separated list of the workloads to fetch. Content records with a workload that isn&#x27;t specified will not be fetched. If this field is left empty, all workloads will be fetched. | Optional | 
-| operations_filter | A comma-separated list of the operations to fetch. Content records with an operation that isn&#x27;t specified will not be fetched. If this field is left empty, all operations will be fetched. | Optional | 
+| operations_filter | A comma-separated list of the operations to fetch. Content records with an operation that isn&#x27;t specified will not be fetched. If this field is left empty, all operations will be fetched. | Optional |
+| timeout | The timeout for the content requesting http call. | Optional 
 
 
 ##### Context Output

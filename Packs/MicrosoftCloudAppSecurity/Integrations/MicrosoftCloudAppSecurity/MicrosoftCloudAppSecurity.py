@@ -1,5 +1,9 @@
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Union
+
+from dateparser import parse
+from pytz import utc
+
 import demistomock as demisto
 import requests
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -18,13 +22,15 @@ DEFAULT_INCIDENT_TO_FETCH = 50
 SEVERITY_OPTIONS = {
     'Low': 0,
     'Medium': 1,
-    'High': 2
+    'High': 2,
+    'All': [0, 1, 2]
 }
 
 RESOLUTION_STATUS_OPTIONS = {
     'Open': 0,
     'Dismissed': 1,
-    'Resolved': 2
+    'Resolved': 2,
+    'All': [0, 1, 2]
 }
 
 # Note that number 4 is missing
@@ -87,7 +93,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def list_alerts(self, url_suffix, request_data):
+    def list_alerts(self, url_suffix: str, request_data: dict):
         data = self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -95,7 +101,7 @@ class Client(BaseClient):
         )
         return data
 
-    def dismiss_bulk_alerts(self, request_data):
+    def dismiss_bulk_alerts(self, request_data: dict):
         data = self._http_request(
             method='POST',
             url_suffix='/alerts/dismiss_bulk/',
@@ -103,7 +109,7 @@ class Client(BaseClient):
         )
         return data
 
-    def resolve_bulk_alerts(self, request_data):
+    def resolve_bulk_alerts(self, request_data: dict):
         data = self._http_request(
             method='POST',
             url_suffix='/alerts/resolve/',
@@ -111,7 +117,7 @@ class Client(BaseClient):
         )
         return data
 
-    def list_activities(self, url_suffix, request_data):
+    def list_activities(self, url_suffix: str, request_data: dict):
         data = self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -119,7 +125,7 @@ class Client(BaseClient):
         )
         return data
 
-    def list_users_accounts(self, url_suffix, request_data):
+    def list_users_accounts(self, url_suffix: str, request_data: dict):
         data = self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -127,7 +133,7 @@ class Client(BaseClient):
         )
         return data
 
-    def list_files(self, url_suffix, request_data):
+    def list_files(self, url_suffix: str, request_data: dict):
         data = self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -135,18 +141,19 @@ class Client(BaseClient):
         )
         return data
 
-    def list_incidents(self, filters, limit):
+    def list_incidents(self, filters: dict, limit: Union[int, str]):
         return self._http_request(
             method='POST',
             url_suffix='/alerts/',
             json_data={
                 'filters': filters,
-                'limit': limit
+                'limit': limit,
+                'sortDirection': 'asc'
             }
         )
 
 
-def args_or_params_to_filter(arguments, args_or_params='args'):
+def args_to_filter(arguments: dict):
     request_data: Dict[str, Any] = {}
     filters: Dict[str, Any] = {}
     for key, value in arguments.items():
@@ -182,13 +189,12 @@ def args_or_params_to_filter(arguments, args_or_params='args'):
             filters['isExternal'] = {'eq': IS_EXTERNAL_OPTIONS[value]}
         if key == 'status':
             filters[key] = {'eq': STATUS_OPTIONS[value]}
-    if args_or_params == 'params':
-        return filters
     request_data['filters'] = filters
     return request_data
 
 
-def build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, specific_id_to_search=''):
+def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional[Any], arguments: dict,
+                                        specific_id_to_search: Any = ''):
     """
         This function build the filters dict or url to filter with.
 
@@ -207,12 +213,12 @@ def build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, sp
     elif custom_filter:
         request_data = json.loads(custom_filter)
     else:
-        request_data = args_or_params_to_filter(arguments)
+        request_data = args_to_filter(arguments)
     return request_data, url_suffix
 
 
-def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comments):
-    request_data = {}
+def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter: Any, comments: Any):
+    request_data: Dict[str, Any] = {}
     filters = {}
     if alert_ids:
         ids = {'eq': alert_ids.split(',')}
@@ -223,21 +229,21 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comm
     elif custom_filter:
         request_data = json.loads(custom_filter)
     else:
-        return_error("Error: You must enter at least one of these arguments: alert ID, custom filter.")
+        raise DemistoException("Error: You must enter at least one of these arguments: alert ID, custom filter.")
     return request_data
 
 
-def test_module(client):
+def test_module(client: Client, is_fetch: bool, custom_filter: Optional[str]):
     try:
         client.list_alerts(url_suffix='/alerts/', request_data={})
-        if demisto.params().get('isFetch'):
+        if is_fetch:
             client.list_incidents(filters={}, limit=1)
-            if demisto.params().get('custom_filter'):
-                custom_filter = demisto.params().get('custom_filter')
+            if custom_filter:
                 try:
                     json.loads(custom_filter)
                 except ValueError:
-                    return_error('Custom Filter Error: Your custom filter format is incorrect, please try again.')
+                    raise DemistoException('Custom Filter Error: Your custom filter format is incorrect, '
+                                           'please try again.')
     except Exception as e:
         if 'No connection' in str(e):
             return 'Connection Error: The URL you entered is probably incorrect, please try again.'
@@ -247,7 +253,7 @@ def test_module(client):
     return 'ok'
 
 
-def alerts_to_human_readable(alerts):
+def alerts_to_human_readable(alerts: List[dict]):
     alerts_readable_outputs = []
     for alert in alerts:
         readable_output = assign_params(alert_id=alert.get('_id'), title=alert.get('title'),
@@ -256,18 +262,19 @@ def alerts_to_human_readable(alerts):
                                                       if alert.get('statusValue') == value],
                                         severity_value=[key for key, value in SEVERITY_OPTIONS.items()
                                                         if alert.get('severityValue') == value],
-                                        alert_date=datetime.fromtimestamp(alert.get('timestamp') / 1000.0).isoformat())
+                                        alert_date=datetime.fromtimestamp(
+                                            alert.get('timestamp', 0) / 1000.0).isoformat())
         alerts_readable_outputs.append(readable_output)
     headers = ['alert_id', 'alert_date', 'title', 'description', 'status_value', 'severity_value', 'is_open']
     human_readable = tableToMarkdown('Microsoft CAS Alerts', alerts_readable_outputs, headers, removeNull=True)
     return human_readable
 
 
-def extract_ip_indicators(activities):
-    indicators = []
+def create_ip_command_results(activities: List[dict]):
+    command_results: List[CommandResults] = []
     for activity in activities:
         ip_address = dict_safe_get(activity, ['device', 'clientIP'])
-        indicators.append(Common.IP(
+        indicator = Common.IP(
             ip=ip_address,
             dbot_score=Common.DBotScore(
                 ip_address,
@@ -277,19 +284,28 @@ def extract_ip_indicators(activities):
             ),
             geo_latitude=dict_safe_get(activity, ['location', 'latitude']),
             geo_longitude=dict_safe_get(activity, ['location', 'longitude']),
+        )
+        human_readable = activity_to_human_readable(activity)
+        command_results.append(CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='MicrosoftCloudAppSecurity.Activities',
+            outputs_key_field='_id',
+            outputs=activities,
+            indicator=indicator
         ))
-    return indicators
+    return command_results
 
 
-def arrange_alerts_descriptions(alerts):
+def arrange_alerts_descriptions(alerts: List[dict]):
     for alert in alerts:
-        if alert.get('description') and '__siteIcon__' in alert.get('description'):
-            description = alert.get('description').replace('__siteIcon__', 'siteIcon')
+        description = alert.get('description', '')
+        if isinstance(description, str) and '__siteIcon__' in description:
+            description = description.replace('__siteIcon__', 'siteIcon')
             alert['description'] = description
     return alerts
 
 
-def set_alerts_is_open(alerts):
+def set_alerts_is_open(alerts: List[dict]):
     for alert in alerts:
         if alert.get('resolveTime'):
             alert['is_open'] = False
@@ -298,7 +314,7 @@ def set_alerts_is_open(alerts):
     return alerts
 
 
-def list_alerts_command(client, args):
+def list_alerts_command(client: Client, args: dict):
     url_suffix = '/alerts/'
     alert_id = args.get('alert_id')
     custom_filter = args.get('custom_filter')
@@ -318,7 +334,7 @@ def list_alerts_command(client, args):
     )
 
 
-def bulk_dismiss_alert_command(client, args):
+def bulk_dismiss_alert_command(client: Client, args: dict):
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
@@ -328,7 +344,7 @@ def bulk_dismiss_alert_command(client, args):
         dismissed_alerts_data = client.dismiss_bulk_alerts(request_data)
     except Exception as e:
         if 'alertsNotFound' in str(e):
-            return_error('Error: This alert id is already dismissed or does not exist.')
+            raise DemistoException('Error: This alert id is already dismissed or does not exist.')
     number_of_dismissed_alerts = dismissed_alerts_data['dismissed']
     return CommandResults(
         readable_output=f'{number_of_dismissed_alerts} alerts dismissed',
@@ -337,7 +353,7 @@ def bulk_dismiss_alert_command(client, args):
     )
 
 
-def bulk_resolve_alert_command(client, args):
+def bulk_resolve_alert_command(client: Client, args: dict):
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
@@ -352,20 +368,17 @@ def bulk_resolve_alert_command(client, args):
     )
 
 
-def activities_to_human_readable(activities):
-    activities_readable_outputs = []
-    for activity in activities:
-        readable_output = assign_params(activity_id=activity.get('_id'), severity=activity.get('severity'),
-                                        activity_date=datetime.fromtimestamp(activity.get('timestamp') / 1000.0)
-                                        .isoformat(),
-                                        app_name=activity.get('appName'), description=activity.get('description'))
-        activities_readable_outputs.append(readable_output)
+def activity_to_human_readable(activity: dict):
+    readable_output = assign_params(activity_id=activity.get('_id'), severity=activity.get('severity'),
+                                    activity_date=datetime.fromtimestamp(activity.get('timestamp', 0) / 1000.0)
+                                    .isoformat(),
+                                    app_name=activity.get('appName'), description=activity.get('description'))
     headers = ['activity_id', 'activity_date', 'app_name', 'description', 'severity']
-    human_readable = tableToMarkdown('Microsoft CAS Activities', activities_readable_outputs, headers, removeNull=True)
+    human_readable = tableToMarkdown('Microsoft CAS Activity', readable_output, headers, removeNull=True)
     return human_readable
 
 
-def arrange_entities_data(activities):
+def arrange_entities_data(activities: List[dict]):
     for activity in activities:
         entities_data = []
         if 'entityData' in activity.keys():
@@ -379,7 +392,7 @@ def arrange_entities_data(activities):
     return activities
 
 
-def list_activities_command(client, args):
+def list_activities_command(client: Client, args: dict):
     url_suffix = '/activities/'
     activity_id = args.get('activity_id')
     custom_filter = args.get('custom_filter')
@@ -389,18 +402,10 @@ def list_activities_command(client, args):
     list_activities = activities_response_data.get('data') if activities_response_data.get('data') \
         else [activities_response_data]
     activities = arrange_entities_data(list_activities)
-    ip_indicators = extract_ip_indicators(activities)
-    human_readable = activities_to_human_readable(activities)
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='MicrosoftCloudAppSecurity.Activities',
-        outputs_key_field='_id',
-        outputs=activities,
-        indicators=ip_indicators,
-    )
+    return create_ip_command_results(activities)
 
 
-def files_to_human_readable(files):
+def files_to_human_readable(files: List[dict]):
     files_readable_outputs = []
     for file in files:
         readable_output = assign_params(owner_name=file.get('ownerName'), file_id=file.get('_id'),
@@ -415,7 +420,7 @@ def files_to_human_readable(files):
     return human_readable
 
 
-def arrange_files_type_access_level_and_status(files):
+def arrange_files_type_access_level_and_status(files: List[dict]):
     """
         This function refines the file to look better.
 
@@ -435,7 +440,7 @@ def arrange_files_type_access_level_and_status(files):
     return files
 
 
-def list_files_command(client, args):
+def list_files_command(client: Client, args: dict):
     url_suffix = '/files/'
     file_id = args.get('file_id')
     custom_filter = args.get('custom_filter')
@@ -453,7 +458,7 @@ def list_files_command(client, args):
     )
 
 
-def users_accounts_to_human_readable(users_accounts):
+def users_accounts_to_human_readable(users_accounts: List[dict]):
     users_accounts_readable_outputs = []
     for entity in users_accounts:
         readable_output = assign_params(display_name=entity.get('displayName'), last_seen=entity.get('lastSeen'),
@@ -467,7 +472,7 @@ def users_accounts_to_human_readable(users_accounts):
     return human_readable
 
 
-def list_users_accounts_command(client, args):
+def list_users_accounts_command(client: Client, args: dict):
     url_suffix = '/entities/'
     custom_filter = args.get('custom_filter')
     arguments = assign_params(**args)
@@ -484,19 +489,19 @@ def list_users_accounts_command(client, args):
     )
 
 
-def calculate_fetch_start_time(last_fetch, first_fetch):
+def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[str]):
     if last_fetch is None:
         if not first_fetch:
             first_fetch = '3 days'
-        first_fetch_time = date_to_timestamp(first_fetch)
+        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)
+        # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
+        first_fetch_time = int(first_fetch_dt.timestamp()) * 1000
         return first_fetch_time
     else:
-        last_fetch = int(last_fetch)
-    latest_created_time = last_fetch
-    return latest_created_time
+        return int(last_fetch)
 
 
-def arrange_alerts_by_incident_type(alerts):
+def arrange_alerts_by_incident_type(alerts: List[dict]):
     for alert in alerts:
         incident_types: Dict[str, Any] = {}
         for entity in alert['entities']:
@@ -508,8 +513,17 @@ def arrange_alerts_by_incident_type(alerts):
     return alerts
 
 
-def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time):
+def is_the_first_alert_is_already_fetched_in_previous_fetch(alerts: List[dict], last_run: dict):
+    last_incident_in_previous_fetch = last_run.get('last_fetch_id')
+    alert = alerts[0]
+    return alert.get('_id') == last_incident_in_previous_fetch
+
+
+def alerts_to_incidents_and_fetch_start_from(alerts: List[dict], fetch_start_time: str, last_run: dict):
     incidents = []
+    current_last_incident_fetched = ''
+    if is_the_first_alert_is_already_fetched_in_previous_fetch(alerts, last_run):
+        alerts = alerts[1:]
     for alert in alerts:
         incident_created_time = (alert['timestamp'])
         incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
@@ -522,10 +536,16 @@ def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time):
         incidents.append(incident)
         if incident_created_time > fetch_start_time:
             fetch_start_time = incident_created_time
-    return incidents, fetch_start_time
+            current_last_incident_fetched = str(alert.get('_id', ''))
+
+    if not current_last_incident_fetched:
+        current_last_incident_fetched = str(last_run.get('last_fetch_id', ''))
+
+    return incidents, fetch_start_time, current_last_incident_fetched
 
 
-def fetch_incidents(client, max_results, last_run, first_fetch, filters):
+def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, first_fetch: Optional[str],
+                    filters: dict):
     max_results = int(max_results) if max_results else DEFAULT_INCIDENT_TO_FETCH
     last_fetch = last_run.get('last_fetch')
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
@@ -533,21 +553,48 @@ def fetch_incidents(client, max_results, last_run, first_fetch, filters):
     alerts_response_data = client.list_incidents(filters, limit=max_results)
     alerts = alerts_response_data.get('data')
     alerts = arrange_alerts_by_incident_type(alerts)
-    incidents, fetch_start_time = alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time)
-    next_run = {'last_fetch': fetch_start_time}
+    incidents, fetch_start_time, last_fetch_id = alerts_to_incidents_and_fetch_start_from(
+        alerts, fetch_start_time, last_run)
+    next_run = {'last_fetch': fetch_start_time, 'last_fetch_id': last_fetch_id}
     return next_run, incidents
+
+
+def params_to_filter(severity: List[str], resolution_status: str):
+    filters: Dict[str, Any] = {}
+    if len(severity) == 1:
+        filters['severity'] = {'eq': SEVERITY_OPTIONS[severity[0]]}
+
+    else:
+        severities = []
+        for severity_option in severity:
+            severities.append(SEVERITY_OPTIONS[severity_option])
+        filters['severity'] = {'eq': severities}
+
+    if len(resolution_status) == 1:
+        filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[resolution_status[0]]}
+
+    else:
+        resolution_statuses = []
+        for resolution in resolution_status:
+            resolution_statuses.append(RESOLUTION_STATUS_OPTIONS[resolution])
+        filters['resolutionStatus'] = {'eq': resolution_statuses}
+    return filters
 
 
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
+
+    params = demisto.params()
     token = demisto.params().get('token')
     base_url = f'{demisto.params().get("url")}/api/v1'
     verify_certificate = not demisto.params().get('insecure', False)
     first_fetch = demisto.params().get('first_fetch')
     max_results = demisto.params().get('max_fetch')
     proxy = demisto.params().get('proxy', False)
+    severity = params.get('severity')
+    resolution_status = params.get('resolution_status')
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
@@ -557,17 +604,14 @@ def main():
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            result = test_module(client)
+            result = test_module(client, params.get('isFetch'), params.get('custom_filter'))
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            params = demisto.params()
             if params.get('custom_filter'):
                 filters = json.loads(params.get('custom_filter'))
             else:
-                parameters = assign_params(severity=params.get('severity'),
-                                           resolution_status=params.get('resolution_status'))
-                filters = args_or_params_to_filter(parameters, args_or_params="params")
+                filters = params_to_filter(severity, resolution_status)
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,

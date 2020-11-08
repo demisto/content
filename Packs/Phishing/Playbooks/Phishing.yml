@@ -1,7 +1,7 @@
 id: playbook2
 version: -1
 system: true
-fromversion: 2.5.0
+fromversion: 5.0.0
 name: Phishing Playbook - Manual
 description: Master playbook for phishing incidents. This playbook is a manual playbook.
 starttaskid: "0"
@@ -79,8 +79,7 @@ tasks:
       id: 21cb9178-78a0-4610-801f-3bc5f808e4a2
       version: -1
       name: Initial triage
-      description: 1. Make sure that there is relevant information in the incident
-        - system name, end user name and initial severity as reported.
+      description: 1. Make sure that there is relevant information in the incident - system name, end user name and initial severity as reported.
       iscommand: false
       brand: ""
     nexttasks:
@@ -122,8 +121,7 @@ tasks:
       id: 30e833d0-8336-4ecd-8a36-a997ac1bb100
       version: -1
       name: Inspect the email body for malicious URLs
-      description: Check the email body attached to the incident and see if it has
-        malicious URLs in it using threat feeds
+      description: Check the email body attached to the incident and see if it has malicious URLs in it using threat feeds
       iscommand: false
       brand: ""
     nexttasks:
@@ -144,8 +142,7 @@ tasks:
       id: 0aba5f0e-c71f-4a1f-8f7a-993f727e3825
       version: -1
       name: Inspect the email attachments
-      description: Check the attachments with threat services to see if any of them
-        is known bad
+      description: Check the attachments with threat services to see if any of them is known bad
       iscommand: false
       brand: ""
     nexttasks:
@@ -233,8 +230,7 @@ tasks:
       id: b37377be-5c13-41f5-8635-69ea34571af7
       version: -1
       name: Close the investigation as false positive
-      description: Close the investigation as false positive and reply to the user
-        sending the email that it is not malicious.
+      description: Close the investigation as false positive and reply to the user sending the email that it is not malicious.
       iscommand: false
       brand: ""
     nexttasks:
@@ -255,8 +251,7 @@ tasks:
       id: e76cfd73-35f3-4065-8e59-c37e365cd06c
       version: -1
       name: Assess severity
-      description: 'Based on the end user affected, and other information assess and
-        change the severity if needed. '
+      description: 'Based on the end user affected, and other information assess and change the severity if needed. '
       type: regular
       iscommand: false
       brand: ""
@@ -278,8 +273,7 @@ tasks:
       id: 5445acdd-df36-403e-8635-a0cbc3bd3f04
       version: -1
       name: Assign and involve appropriate personnel
-      description: 'Invite the relevant users for investigation - malware expert and
-        network experts if needed. '
+      description: 'Invite the relevant users for investigation - malware expert and network experts if needed. '
       type: regular
       iscommand: false
       brand: ""
@@ -364,8 +358,7 @@ tasks:
       id: 05855c19-9221-478d-8c83-4145aa2cff16
       version: -1
       name: Fetch all the files from the URL
-      description: 'Use curl or similar tool to download all the files from the URLs
-        in the email. '
+      description: 'Use curl or similar tool to download all the files from the URLs in the email. '
       iscommand: false
       brand: ""
     nexttasks:
@@ -432,8 +425,7 @@ tasks:
       id: 24063b39-4c30-4ef2-8e7c-36081b45faaa
       version: -1
       name: Is any URL malicious based on sandbox inspection?
-      description: 'Use Cuckoo or similar sandbox solutions for fetching the content
-        of the URL for deeper analysis. '
+      description: 'Use Cuckoo or similar sandbox solutions for fetching the content of the URL for deeper analysis. '
       iscommand: false
       brand: ""
     nexttasks:
@@ -540,8 +532,7 @@ tasks:
       id: 78cc334d-fe36-4cb0-8e63-dbb571077edc
       version: -1
       name: Did we have a similar phishing email earlier?
-      description: Search past phishing investigations for subject sender, email content
-        and URLs.
+      description: Search past phishing investigations for subject sender, email content and URLs.
       iscommand: false
       brand: ""
     nexttasks:
@@ -585,8 +576,7 @@ tasks:
       id: e3710c0f-861d-4a9a-8e89-3488f572d74e
       version: -1
       name: Link old and new incidents to this master incident.
-      description: Future emails with similar subject should be associated with this
-        incident
+      description: Future emails with similar subject should be associated with this incident
       iscommand: false
       brand: ""
     nexttasks:
@@ -628,9 +618,7 @@ tasks:
       id: faf506e6-c1bd-49ee-8348-bdb258984785
       version: -1
       name: Notify internal PR team if this is a campaign
-      description: 'If we identified multiple emails with similar content, subject
-        and identified this as a campaign, we need to notify our users. Send an email
-        to internal communications team with the details - like sender, content etc. '
+      description: 'If we identified multiple emails with similar content, subject and identified this as a campaign, we need to notify our users. Send an email to internal communications team with the details - like sender, content etc. '
       iscommand: false
       brand: ""
     nexttasks:
@@ -676,8 +664,7 @@ tasks:
       id: e93a15aa-1c5d-46ff-813c-b1f6eed114f3
       version: -1
       name: Notify IT to update SPAM filters
-      description: 'Give IT the phishing email so that they can train the SPAM filter
-        with this email to avoid future attacks. '
+      description: 'Give IT the phishing email so that they can train the SPAM filter with this email to avoid future attacks. '
       iscommand: false
       brand: ""
     nexttasks:
@@ -721,9 +708,7 @@ tasks:
       id: 1b6d8f94-452c-43b2-8606-da89d3f738c8
       version: -1
       name: Remove email from inboxes
-      description: 'Work with IT to completely delete similar emails from all user
-        inboxes. Search through the SMTP logs to find all the recipients and delete
-        the emails. '
+      description: 'Work with IT to completely delete similar emails from all user inboxes. Search through the SMTP logs to find all the recipients and delete the emails. '
       iscommand: false
       brand: ""
     nexttasks:
@@ -792,8 +777,7 @@ tasks:
       id: ffa62d59-1b44-4305-8324-3cc29f4585ff
       version: -1
       name: Report malware sample to AV vendors
-      description: Report all the files that were downloaded from URL to AV vendor
-        and virustotal like services.
+      description: Report all the files that were downloaded from URL to AV vendor and virustotal like services.
       iscommand: false
       brand: ""
     view: |-
@@ -816,4 +800,4 @@ view: |-
     }
   }
 tests:
-  - No tests
+- No tests

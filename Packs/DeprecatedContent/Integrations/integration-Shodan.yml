@@ -24,12 +24,15 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var base = params.baseUrl;
+
 
     var apiKey = params.apiKey;
 
+
     var insecure = params.insecure;
+
 
     var sendRequest = function(uri) {
             var res = http(
@@ -49,7 +52,9 @@ script:
             return JSON.parse(res.Body);
     };
 
+
     // The command input arg holds the command sent from the user.
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -106,20 +111,13 @@ script:
     - name: query
       required: true
       default: true
-      description: 'Shodan search query. The provided string is used to search the
-        database of banners in Shodan, with the additional option to provide filters
-        inside the search query using a "filter:value" format. For example, the following
-        search query would find Apache webservers located in Germany: "apache country:DE"'
+      description: 'Shodan search query. The provided string is used to search the database of banners in Shodan, with the additional option to provide filters inside the search query using a "filter:value" format. For example, the following search query would find Apache webservers located in Germany: "apache country:DE"'
     - name: facets
-      description: A comma-separated list of properties to get summary information
-        on. Property names can also be in the format of "property:count", where "count"
-        is the number of facets that will be returned for a property (i.e. "country:100"
-        to get the top 100 countries for a search query)
+      description: A comma-separated list of properties to get summary information on. Property names can also be in the format of "property:count", where "count" is the number of facets that will be returned for a property (i.e. "country:100" to get the top 100 countries for a search query)
     - name: page
       description: Result page number to be fetched. Each page contains up to 100 results.
       defaultValue: "1"
-    description: Search Shodan using the same query syntax as the website and use
-      facets to get summary information for different properties.
+    description: Search Shodan using the same query syntax as the website and use facets to get summary information for different properties.
   - name: ip
     arguments:
     - name: ip
@@ -142,4 +140,5 @@ script:
     description: Returns all services that have been found on the given host IP.
   runonce: false
 tests:
-  - No tests
+- No tests
+fromversion: 5.0.0

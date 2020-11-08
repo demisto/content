@@ -2,11 +2,15 @@ commonfields:
   id: LoadJSON
   version: -1
 name: LoadJSON
-script: |-
+script: >-
   import json
+
   JSON_CONTEXT_KEY = "JsonObject"
+
   json_str = demisto.args()['input']
+
   obj = json.loads(json_str)
+
 
   demisto.results({
       "EntryContext": {JSON_CONTEXT_KEY: obj},
@@ -31,3 +35,4 @@ scripttarget: 0
 runonce: false
 tests:
 - JSONtoCSV-Test
+fromversion: 5.0.0

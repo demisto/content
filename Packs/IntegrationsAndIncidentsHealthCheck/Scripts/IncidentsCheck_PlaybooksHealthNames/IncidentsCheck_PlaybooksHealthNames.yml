@@ -1,0 +1,20 @@
+comment: Health Check dynamic section, showing the top ten playbook
+  names of the failed incidents in a bar chart.
+commonfields:
+  id: IncidentsCheck-PlaybooksHealthNames
+  version: -1
+dockerimage: demisto/python3:3.8.6.12176
+enabled: true
+name: IncidentsCheck-PlaybooksHealthNames
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+- failedIncidents
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

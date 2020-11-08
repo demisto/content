@@ -1,7 +1,7 @@
 id: block_ip_-_generic
 version: -1
 name: Block IP - Generic
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: |-
   Deprecated. Use "Block IP - Generic v2" playbook instead. This playbook blocks malicious IPs using all integrations that you have enabled.
 
@@ -229,8 +229,7 @@ tasks:
       id: bebb5a4e-9e67-4334-86e2-4cf1064abc72
       version: -1
       name: Is Palo Alto Networks Panorama enabled?
-      description: Verify that there is a valid instance of Palo Alto Networks Panorama
-        enabled.
+      description: Verify that there is a valid instance of Palo Alto Networks Panorama enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -468,9 +467,7 @@ inputs:
   description: Array of malicious IPs to block.
 outputs:
 - contextPath: CheckpointFWRule.Destination
-  description: Collection of Network objects identified by the name or UID. How much
-    details are returned depends on the details-level field of the request. This table
-    shows the level of detail shown when details-level is set to standard.
+  description: Collection of Network objects identified by the name or UID. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard.
 - contextPath: CheckpointFWRule.DestinationNegate
   description: True if negate is set for destination.
 - contextPath: PanoramaRule.Direction
@@ -491,17 +488,13 @@ outputs:
 - contextPath: CheckpointFWRule.Type
   description: Type of the object.
 - contextPath: CheckpointFWRule.Action
-  description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
-    depends on the details-level field of the request. This table shows the level
-    of detail shown when details-level is set to standard.
+  description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard.
 - contextPath: CheckpointFWRule.ActionSetting
   description: Action settings.
 - contextPath: CheckpointFWRule.CustomFields
   description: Custom fields.
 - contextPath: CheckpointFWRule.Data
-  description: How much details are returned depends on the details-level field of
-    the request. This table shows the level of detail shown when details-level is
-    set to standard.
+  description: How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard.
 - contextPath: CheckpointFWRule.DataDirection
   description: On which direction the file types processing is applied.
 - contextPath: CheckpointFWRule.DataNegate
@@ -533,4 +526,4 @@ outputs:
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of hits.
 tests:
-  - block_indicators_-_generic_-_test
+- block_indicators_-_generic_-_test

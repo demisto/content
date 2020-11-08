@@ -2,7 +2,7 @@ commonfields:
   id: RegCollectValues
   version: -1
 name: RegCollectValues
-script: |-
+script: >-
   def Reg2Markdown(baseKey,regResp):
       res, mdRows  = [], ''
       if isError(regResp[0]):
@@ -19,8 +19,11 @@ script: |-
                   mdRows += '\n|' + str(baseKey) + '|' + str(sk) + '|' + str( subkeys[sk] ) + '|'
       return ( res, mdRows )
   # Note: Don't use !d2_status as that only shows systems with generated agents - the correct way is below:
+
   res = []
+
   regPath = NormalizeRegistryPath( demisto.args()['regpath'] )
+
   for system in demisto.investigation()['systems']:
      if system['os'] == 'windows':
           mdTable = '### Values retrieved from system *' + system['name'] + '*'
@@ -37,8 +40,7 @@ subtype: python2
 tags:
 - registry
 - enhancement
-comment: Collect values for the given registry path from all Windows systems in this
-  investigation.
+comment: Collect values for the given registry path from all Windows systems in this investigation.
 system: true
 args:
 - name: regpath
@@ -48,3 +50,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

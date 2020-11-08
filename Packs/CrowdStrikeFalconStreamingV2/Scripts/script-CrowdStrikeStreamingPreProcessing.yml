@@ -2,8 +2,9 @@ commonfields:
   id: CrowdStrikeStreamingPreProcessing
   version: -1
 name: CrowdStrikeStreamingPreProcessing
-script: |-
+script: >-
   res = True
+
   for inc in demisto.incidents():
       host = ''
       if inc['labels']:
@@ -39,4 +40,5 @@ enabled: true
 scripttarget: 0
 runas: DBotRole
 tests:
-  - No test - this is a preprocessing script
+- No test - this is a preprocessing script
+fromversion: 5.0.0

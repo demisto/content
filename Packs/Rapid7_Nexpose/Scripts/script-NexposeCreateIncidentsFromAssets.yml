@@ -2,16 +2,21 @@ commonfields:
   id: NexposeCreateIncidentsFromAssets
   version: -1
 name: NexposeCreateIncidentsFromAssets
-script: |-
+script: >-
   SEVERITIES = ['Moderate','Severe','Critical']
 
+
   incident_type = demisto.args().get("incidentType", "Vulnerability")
+
   min_severity = demisto.args().get("minSeverity", "Moderate")
+
   asset_ids = argToList(demisto.args().get("assetID",""))
+
   if not isinstance(asset_ids, list):
       asset_ids = [asset_ids]
 
   severity_index = SEVERITIES.index(min_severity)
+
 
   if not asset_ids:
       demisto.results( {
@@ -22,6 +27,7 @@ script: |-
       sys.exit(0)
 
   incident_name = []
+
 
   for asset_id in asset_ids:
       resp = demisto.executeCommand("nexpose-get-asset", {"id" : asset_id })
@@ -102,4 +108,5 @@ dependson:
   must:
   - nexpose-get-asset
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

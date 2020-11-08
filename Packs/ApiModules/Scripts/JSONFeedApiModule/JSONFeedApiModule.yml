@@ -1,5 +1,4 @@
-comment: Common code that will be appended into each JSON Feed integration when it's
-  deployed
+comment: Common code that will be appended into each JSON Feed integration when it's deployed
 commonfields:
   id: JSONFeedApiModule
   version: -1
@@ -14,5 +13,5 @@ tags:
 timeout: 0s
 type: python
 dockerimage: demisto/jmespath:1.0.0.10854
-dependson: {
-  }
+dependson: {}
+fromversion: 5.0.0

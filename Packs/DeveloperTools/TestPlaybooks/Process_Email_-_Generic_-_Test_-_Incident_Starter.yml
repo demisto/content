@@ -1,12 +1,7 @@
 id: Process Email - Generic - Test - Incident Starter
 version: -1
 name: Process Email - Generic - Test - Incident Starter
-description: The reason for having a "starter" test and an "actual incident" test
-  is so that we can create a new incident which will have the right incident type
-  ("Phishing" incident type) from the very beginning. This is absolutely needed in
-  order to create the right incident fields for the test incident. If we create an
-  incident and CHANGE its type after creating it, we will not have the phishing incident
-  fields generated for us (fields like Email Headers, which we later set in the playbook).
+description: The reason for having a "starter" test and an "actual incident" test is so that we can create a new incident which will have the right incident type ("Phishing" incident type) from the very beginning. This is absolutely needed in order to create the right incident fields for the test incident. If we create an incident and CHANGE its type after creating it, we will not have the phishing incident fields generated for us (fields like Email Headers, which we later set in the playbook).
 starttaskid: "0"
 tasks:
   "0":
@@ -315,8 +310,7 @@ tasks:
       id: 95976e00-e8d6-4a95-8c55-491b547cbddf
       version: -1
       name: Begin investigating the incident
-      description: Start investigation of the incident, so that we can later set the
-        right playbook to run on it. This command has t be unhidden using server configuration.
+      description: Start investigation of the incident, so that we can later set the right playbook to run on it. This command has t be unhidden using server configuration.
       script: Builtin|||investigate
       type: regular
       iscommand: true
@@ -389,3 +383,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Phishing v2 Test - Attachment
+fromversion: 5.0.0

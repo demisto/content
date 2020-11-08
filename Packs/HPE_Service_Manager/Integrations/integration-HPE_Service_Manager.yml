@@ -28,18 +28,24 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: >
     var url = params.url + '/SM/9/rest';
 
+
     // handle '/' at the end of the url
+
     if (url[url.length - 1] === '/') {
         url = url.substring(0, url.length - 1);
     }
 
+
     var token = Base64.encode(params.username.identifier + ':' + params.username.password);
 
+
     var result;
+
     // The command input arg holds the command sent from the user.
+
     switch (command) {
         case 'test-module':
             listDevices();
@@ -62,7 +68,9 @@ script:
             break;
         default:
     }
+
     return result;
+
 
     function createIncident() {
         var newIncident = {
@@ -75,6 +83,13 @@ script:
                 Title: args.title,
             }
         };
+
+        if (args.customFields !== undefined){
+            fields = JSON.parse(args.customFields);
+            for (var field in fields) {
+                newIncident['Incident'][field] = fields[field]
+            }
+        }
 
         if (args.impact) {
             newIncident.Incident.Impact = args.impact;
@@ -142,7 +157,9 @@ script:
         };
     }
 
+
     // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
+
     function queryToObject(query) {
         if (!query) {
             return null;
@@ -159,6 +176,7 @@ script:
 
         return queryObj;
     }
+
 
     function listIncidents() {
         var incidents = doGet('/incidents', args.query);
@@ -189,6 +207,7 @@ script:
         };
     }
 
+
     function getIncidentById() {
         var incident = doGet('/incidents/' + args.incidentId);
         incident = JSON.parse(incident);
@@ -216,6 +235,7 @@ script:
             EntryContext: entryContext
         };
     }
+
 
     function listDevices() {
         var devices = doGet('/devices', args.query);
@@ -246,6 +266,7 @@ script:
         };
     }
 
+
     function getDeviceById() {
         var device = doGet('/devices/' + args.configurationItem);
         device = JSON.parse(device);
@@ -266,13 +287,16 @@ script:
         };
     }
 
+
     function doPost(queryPath, body) {
         return doRequest('POST', queryPath, body);
     }
 
+
     function doPut(queryPath, body) {
         return doRequest('PUT', queryPath, body);
     }
+
 
     function doRequest(method, queryPath, body) {
         var requestUrl = url + queryPath;
@@ -305,6 +329,7 @@ script:
 
         return res.Body;
     }
+
 
     function doGet(queryPath, queryParams) {
         var requestUrl = url + queryPath;
@@ -372,8 +397,9 @@ script:
     - name: status
       description: 'Example: "Categorize"'
     - name: subarea
-      description: "Example: system or application hangs, function or feature not working,  
-error message, job failed, hardware failure, etc."
+      description: "Example: system or application hangs, function or feature not working, error message, job failed, hardware failure, etc."
+    - name: customFields
+      description: Custom fields in JSON format e.g., {"buisnessUnit":"5"}. Field name is case sensitive.
     outputs:
     - contextPath: Ticket.ID
       description: The id of the ticket
@@ -507,8 +533,7 @@ error message, job failed, hardware failure, etc."
     description: 'Returns a list of devices, filtered according to query.'
     arguments:
     - name: query
-      description: 'OPTIONAL example (field1=value1&field2=value2)  Also see here:
-        https://docs.software.hpe.com/SM/9.50/Hybrid/Content/webservicesguide/rest_queries.htm'
+      description: 'OPTIONAL example (field1=value1&field2=value2)  Also see here: https://docs.software.hpe.com/SM/9.50/Hybrid/Content/webservicesguide/rest_queries.htm'
     outputs:
     - contextPath: HPSM.DeviceIDs
       description: "All the ids(configurationItems) of the devices"
@@ -545,3 +570,4 @@ error message, job failed, hardware failure, etc."
       description: Device status
     - contextPath: HPSM.Devices.UpdatedBy
       description: The last user that update the device
+fromversion: 5.0.0

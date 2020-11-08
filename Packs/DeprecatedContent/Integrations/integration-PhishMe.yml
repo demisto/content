@@ -32,33 +32,30 @@ configuration:
   name: insecure
   type: 8
   required: false
-- display: URL Threshold (None, Minor, Moderate or Major). Minimum severity to consider
-    the URL malicious
+- display: URL Threshold (None, Minor, Moderate or Major). Minimum severity to consider the URL malicious
   name: urlThreshold
   defaultvalue: Major
   type: 0
   required: false
-- display: File Threshold (None, Minor, Moderate or Major). Minimum severity to consider
-    the file malicious
+- display: File Threshold (None, Minor, Moderate or Major). Minimum severity to consider the file malicious
   name: fileThreshold
   defaultvalue: Major
   type: 0
   required: false
-- display: IP Threshold (None, Minor, Moderate or Major). Minimum severity to consider
-    the IP malicious
+- display: IP Threshold (None, Minor, Moderate or Major). Minimum severity to consider the IP malicious
   name: ipThreshold
   defaultvalue: Major
   type: 0
   required: false
-- display: Email Threshold (None, Minor, Moderate or Major). Minimum severity to consider
-    the email malicious
+- display: Email Threshold (None, Minor, Moderate or Major). Minimum severity to consider the email malicious
   name: emailThreshold
   defaultvalue: Major
   type: 0
   required: false
 script:
-  script: |
+  script: >
     var auth = 'Basic ' + Base64.encode(params.credentials.identifier + ':' + params.credentials.password);
+
 
     var sendRequest = function(method,api,urlargs) {
 
@@ -92,6 +89,7 @@ script:
         }
     };
 
+
     var addMD = function(threat) {
         var md = "";
         md += '### Threat ID: ' + threat.id + '\n';
@@ -120,7 +118,9 @@ script:
         return md;
     };
 
+
     // Returns {severityScore: 'The severity score found', md: 'The markdown for the threat', indicatorFound: 'set to true if indicator was found in threat'}
+
     var checkThreat = function(threat, threshold, indicator) {
         var severityLevel = 0;
         var md = '';
@@ -149,6 +149,7 @@ script:
         res.md = md;
         return res;
     }
+
 
     var searchUrl = function(url) {
         var tmpargs = {};
@@ -199,6 +200,7 @@ script:
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     };
 
+
     var extractedString = function(str,limit) {
         var tmpargs = {};
         tmpargs.extractedString = str;
@@ -236,6 +238,7 @@ script:
 
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     };
+
 
     var checkEmail = function(sender_name) {
         var tmpargs = {};
@@ -289,6 +292,7 @@ script:
 
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     };
+
 
     var checkMD5 = function(str) {
         var tmpargs = {};
@@ -354,6 +358,7 @@ script:
 
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     }
+
 
     var checkIP = function(ip) {
         var tmpargs = {};
@@ -427,6 +432,7 @@ script:
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     }
 
+
     var calcVerdict = function (dbotScore) {
         switch (dbotScore){
             case 0:
@@ -437,6 +443,7 @@ script:
                 return 'Bad';
         }
     }
+
 
     var calcScore = function (severityLevel) {
         switch (severityLevel){
@@ -454,9 +461,11 @@ script:
     }
 
 
+
     function addDays(theDate, days) {
         return theDate.getTime() - days*24*60*60*1000;
     }
+
 
     var updates = function(){
         var newDate = addDays(new Date(), 50);
@@ -468,6 +477,7 @@ script:
 
         return res;
     }
+
 
     switch (command) {
         // This is the call made when pressing the integration test button.
@@ -532,8 +542,7 @@ script:
     - name: file
       required: true
       default: true
-      description: Hash of the file to get the reputation of (MD5, SHA-1, or SHA-256).
-        You can pass CSV list to efficiently retrieve multiple responses.
+      description: Hash of the file to get the reputation of (MD5, SHA-1, or SHA-256). You can pass CSV list to efficiently retrieve multiple responses.
     outputs:
     - contextPath: File.MD5
       description: File MD5
@@ -645,4 +654,5 @@ script:
 hidden: false
 deprecated: true
 tests:
-  - No test - Replaced by Cofense Integration
+- No test - Replaced by Cofense Integration
+fromversion: 5.0.0

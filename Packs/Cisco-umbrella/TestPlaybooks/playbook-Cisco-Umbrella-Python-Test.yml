@@ -671,8 +671,7 @@ tasks:
       id: 7fd36bac-ec55-45f9-89ee-15791555acc8
       version: -1
       name: umbrella-domain-search
-      description: Regex search in the service, may take up to 10 sec to retrieve
-        results due to the nature of regex.
+      description: Regex search in the service, may take up to 10 sec to retrieve results due to the nature of regex.
       script: '|||umbrella-domain-search'
       type: regular
       iscommand: true
@@ -2035,9 +2034,7 @@ tasks:
       id: d5f44f6b-b554-4f20-8a33-98a11f3b2e1f
       version: -1
       name: domain
-      description: Get Domain Reputation info using Cisco Umbrella Investigate. Domain
-        reputation score is either true or false from the service and cannot be modified
-        using a threshold.
+      description: Get Domain Reputation info using Cisco Umbrella Investigate. Domain reputation score is either true or false from the service and cannot be modified using a threshold.
       script: Cisco Umbrella Investigate|||domain
       type: regular
       iscommand: true
@@ -2221,3 +2218,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

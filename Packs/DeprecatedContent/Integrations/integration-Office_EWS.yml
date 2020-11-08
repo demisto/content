@@ -78,12 +78,16 @@ configuration:
   type: 0
   required: false
 script:
-  script: |
+  script: >
     var server = params.server.replace(/[\/]+$/, '') + '/';
+
     var defaultPageSize = 100;
+
     var office365address = 'https://outlook.office365.com/EWS/Exchange.asmx/';
 
+
     // map of argument that can contain distinguished item as values
+
     var distinguishedArgs = {
         'folders-ids': { // view https://msdn.microsoft.com/en-us/library/office/aa580808(v=exchg.150).aspx
             template: '<t:DistinguishedFolderId Id="%id%">' +
@@ -104,6 +108,7 @@ script:
                                 'root', 'junkemail', 'searchfolders', 'voicemail']
         }
     }
+
 
     var commandsDictionary = {
         'ews-find-folders': {
@@ -530,12 +535,14 @@ script:
         }
     };
 
+
     function getDefaultTargetMailbox() {
         if (params.defaultTargetMailbox) {
             return params.defaultTargetMailbox;
         }
         return params.credentials.identifier + '@' + params.domain;
     }
+
 
     function setImpersonation(args) {
         args['impersonation'] = '';
@@ -547,6 +554,7 @@ script:
                     '</t:ExchangeImpersonation>', args);
         }
     }
+
 
     var mapObjFunction = function(mapFields) {
         var transformSingleObj= function(obj) {
@@ -567,6 +575,7 @@ script:
             return transformSingleObj(obj);
         }
     }
+
 
     var createContext = function(data, extraData) {
         var createContextSingle = function(obj) {
@@ -601,6 +610,7 @@ script:
         return createContextSingle(data);
     }
 
+
     var buildDisplay = function(currentCommand, translated) {
         var createDisplaySingle = function(obj) {
             var disp = {};
@@ -621,6 +631,7 @@ script:
         }
         return createDisplaySingle(translated);
     }
+
 
     var execute = function(command, args, returnRaw) {
         var currentCommand = commandsDictionary[command];
@@ -676,6 +687,7 @@ script:
         return createEntry(currentCommand, raw, hrTitle, ids);
     }
 
+
     function createEntry(currentCommand, raw, hrTitle, deletedContext){
         var entry = {
             Type: entryTypes.note,
@@ -725,6 +737,7 @@ script:
         return entry;
     }
 
+
     function buildBody(command, args) {
         var currentCommand = commandsDictionary[command];
         if (currentCommand.defaultArgs) {
@@ -758,6 +771,7 @@ script:
         return replaceInTemplates(currentCommand.template, args);
     }
 
+
     function sendRequest(tmpl, reqArgs, resStatusPath) {
         var readyBody = replaceInTemplates(tmpl, reqArgs);
         var httpParams = {
@@ -788,6 +802,7 @@ script:
 
         return raw;
     }
+
 
     function parseItemAttachment(rawItem, args) {
         var itemPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.ItemAttachment';
@@ -849,6 +864,7 @@ script:
         return entry;
     }
 
+
     function parseFileAttachment(raw, args) {
         var fileNamePath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Name';
         var fileContentPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Content';
@@ -860,21 +876,35 @@ script:
         return entry;
     }
 
+
     function getAttachment(attachArgs, isItem) {
         var attachmentTmpl = '<?xml version="1.0" encoding="utf-8"?>' +
     '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+
     '  <soap:Header>' +
+
     '<t:RequestServerVersion Version="%version%" />' +
+
     '%impersonation%'+
+
     ' </soap:Header>' +
+
     '  <soap:Body>' +
+
     '    <GetAttachment xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+
     '      <AttachmentShape/>' +
+
     '     <AttachmentIds>' +
+
     '        <t:AttachmentId Id="%attachment-id%"/>' +
+
     '      </AttachmentIds>' +
+
     '    </GetAttachment>' +
+
     '   </soap:Body>' +
+
     ' </soap:Envelope>';
         raw = sendRequest(attachmentTmpl, attachArgs, 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.-ResponseClass');
         var entry;
@@ -894,6 +924,7 @@ script:
         }
         return entry;
     }
+
 
     function fetchEmailsAsIncidents() {
         var lastRun = getLastRun();
@@ -915,36 +946,65 @@ script:
         //Will fetch emails according to time stamp
             var fetchTmpl = '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
     '    <soap:Header>' +
+
     '        <t:RequestServerVersion Version="%version%" />' +
+
     '%impersonation%'+
+
     '    </soap:Header>' +
+
     '    <soap:Body>' +
+
     '        <m:FindItem Traversal="Shallow">' +
+
     '            <m:ItemShape>' +
+
     '                <t:BaseShape>IdOnly</t:BaseShape>' +
+
     '            </m:ItemShape>' +
+
     '            <m:IndexedPageItemView MaxEntriesReturned="100" Offset="0" BasePoint="Beginning" />' +
+
     '            <m:Restriction>' +
+
     '                <t:And>' +
+
     '                    <t:IsGreaterThan>' +
+
     '                        <t:FieldURI FieldURI="item:DateTimeReceived" />' +
+
     '                        <t:FieldURIOrConstant>' +
+
     '                            <t:Constant Value="%last_time%"/>' +
+
     '                        </t:FieldURIOrConstant>' +
+
     '                    </t:IsGreaterThan>' +
+
     '                </t:And>' +
+
     '            </m:Restriction>' +
+
     '            <m:SortOrder>' +
+
     '                <t:FieldOrder Order="Ascending">' +
+
     '                    <t:FieldURI FieldURI="item:DateTimeReceived" />' +
+
     '                </t:FieldOrder>' +
+
     '            </m:SortOrder>' +
+
     '            <m:ParentFolderIds>' +
                 '%target-folder%'+
     '            </m:ParentFolderIds>' +
+
     '        </m:FindItem>' +
+
     '    </soap:Body>' +
+
     '</soap:Envelope>';
+
 
     var defaultTargetTargetFolderTmpl ='<t:DistinguishedFolderId Id="inbox">' +
                         '<t:Mailbox>' +
@@ -959,9 +1019,13 @@ script:
         if (lastRun.lastId) {
             lastItemOp = '                    <t:IsNotEqualTo>' +
     '                        <t:FieldURI FieldURI="item:ItemId" />' +
+
     '                        <t:FieldURIOrConstant>' +
+
     '                            <t:Constant Value="%last_item%"/>' +
+
     '                        </t:FieldURIOrConstant>' +
+
     '                    </t:IsNotEqualTo>';
             opArgs = {};
             opArgs.last_item = lastRun.lastId;
@@ -1113,6 +1177,7 @@ script:
         return JSON.stringify(incidents);
     }
 
+
     function searchMailboxes(args){
         if (!args['mailbox-search-scope']) {
             var mailboxes = execute('ews-get-searchable-mailboxes', {}, true);
@@ -1158,8 +1223,11 @@ script:
         return createEntry(currentCommand, lastRes, replaceInTemplates(currentCommand.tableTitle, args));
     }
 
+
     // test credentials with GetInboxRules operation
+
     // operation doc can be found at https://msdn.microsoft.com/en-us/library/office/ff709501(v=exchg.150).aspx
+
     function testModule() {
         var xml =
             '<?xml version="1.0" encoding="utf-8"?>' +
@@ -1192,15 +1260,20 @@ script:
         return 'ok';
     }
 
+
     if (!args.version) {
         args.version = params.defaultServerVersion;
     }
+
     if (!args['target-mailbox']) {
         args['target-mailbox'] = getDefaultTargetMailbox();
     }
+
     args['target-mailbox'] = args['target-mailbox'].replace(/(&)/g, '&amp;');
 
+
     setImpersonation(args);
+
 
     switch (command) {
         case 'test-module':
@@ -1230,8 +1303,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     outputs:
     - contextPath: EWS.Folders.ChildFolderCount
       description: Folder child folder count
@@ -1257,8 +1329,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     outputs:
     - contextPath: EWS.DeletedItems.ID
       description: ID of deleted items
@@ -1274,8 +1345,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     outputs:
     - contextPath: EWS.DeletedAttachments.ID
       description: ID of the deleted attachment
@@ -1291,8 +1361,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     - name: include-mime-content
       description: Include file content
     outputs:
@@ -1352,8 +1421,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     - name: max-entries-returned
       description: Stop querying after specified number is reached
     outputs:
@@ -1379,10 +1447,7 @@ script:
       description: Mail size
     - contextPath: EWS.SearchItems.Subject
       description: Mail subject
-    description: 'Find items in a mailbox. The user account which is used to interact
-      with the Exchange MUST have permissions to impersonate other users. Otherwise,
-      any operation on a mailbox that does not belong to that user will fail. Instructions
-      on how to configure exchange impersonation can be found here: https://msdn.microsoft.com/en-us/library/bb204095.aspx'
+    description: 'Find items in a mailbox. The user account which is used to interact with the Exchange MUST have permissions to impersonate other users. Otherwise, any operation on a mailbox that does not belong to that user will fail. Instructions on how to configure exchange impersonation can be found here: https://msdn.microsoft.com/en-us/library/bb204095.aspx'
   - name: ews-get-contacts
     deprecated: true
     arguments:
@@ -1394,8 +1459,7 @@ script:
     - name: target-mailbox
       description: The user email address
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     description: Retrieve contact items from the Contacts folder
   - name: ews-get-searchable-mailboxes
     deprecated: true
@@ -1419,11 +1483,9 @@ script:
       required: true
       description: Filter to search upon
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     - name: mailbox-search-scope
-      description: An array of mail boxes references id, or string semicolon separated
-        ids
+      description: An array of mail boxes references id, or string semicolon separated ids
       isArray: true
     outputs:
     - contextPath: EWS.Searchs.Search.Results.ItemID
@@ -1567,20 +1629,16 @@ script:
       description: The item ID (can be found in results from ews-search-mailbox command)
     - name: folder-id
       required: true
-      description: The folder id or distinguished id. Distinguished id is the folder
-        name reference (e.g. 'inbox', 'junkemail') while folder id is alphanumeric
-        (e.g.'AAMkAGY3OTQyMzMzLW'). All folder-ids are listed in ews-find-folders
-        command.
+      description: The folder id or distinguished id. Distinguished id is the folder name reference (e.g. 'inbox', 'junkemail') while folder id is alphanumeric (e.g.'AAMkAGY3OTQyMzMzLW'). All folder-ids are listed in ews-find-folders command.
     - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
-        This can also be set in the settings/integrations page
+      description: Exchange version (by default 2010, change to 2013 if using 2013). This can also be set in the settings/integrations page
     outputs:
     - contextPath: EWS.MovedItems.NewItemID
       description: The new item id
     - contextPath: EWS.MovedItems.item-id
       description: The old item id
-    description: Move one or more item to one destination folder. Note that after
-      an item is moved, a new id will be associated with it.
+    description: Move one or more item to one destination folder. Note that after an item is moved, a new id will be associated with it.
   isfetch: true
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

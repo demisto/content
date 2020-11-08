@@ -2,9 +2,11 @@ commonfields:
   id: AdSearch
   version: -1
 name: AdSearch
-script: |-
+script: >-
   dArgs = demisto.args()
+
   dApiArgs = {}
+
 
   if demisto.get(dArgs, 'filter'):
       dApiArgs['filter'] = dArgs['filter']
@@ -18,6 +20,7 @@ script: |-
       dApiArgs['time-limit'] = dArgs['timeLimit']
 
   resp = demisto.executeCommand('ad-search', demisto.args());
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -39,8 +42,7 @@ args:
 - name: filter
   required: true
   default: true
-  description: ' (mandatory) Query the AD in AD syntax. E.g. "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"
-    will find all user objects except andy'
+  description: ' (mandatory) Query the AD in AD syntax. E.g. "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))" will find all user objects except andy'
 - name: baseDn
   description: Root
 - name: attributes
@@ -55,3 +57,4 @@ dependson:
   must:
   - ad-search
 timeout: 0s
+fromversion: 5.0.0

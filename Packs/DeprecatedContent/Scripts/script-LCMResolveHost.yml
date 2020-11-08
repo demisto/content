@@ -2,9 +2,11 @@ commonfields:
   id: LCMResolveHost
   version: -1
 name: LCMResolveHost
-script: |
+script: >
   args = demisto.args()
+
   resp = demisto.executeCommand("lcm-resolve-host", args)
+
 
   if isError(resp[0]) or resp[0]['Contents'] != 'No result returned':
       demisto.results(resp)
@@ -29,3 +31,4 @@ dependson:
   - lcm-resolve-host
 timeout: 0s
 system: true
+fromversion: 5.0.0

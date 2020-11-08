@@ -79,8 +79,7 @@ tasks:
     scriptarguments:
       limit: {}
       query:
-        simple: SELECT * FROM system_tables ORDER BY table_schema, table_name LIMIT
-          5;
+        simple: SELECT * FROM system_tables ORDER BY table_schema, table_name LIMIT 5;
     separatecontext: false
     view: |-
       {
@@ -232,3 +231,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

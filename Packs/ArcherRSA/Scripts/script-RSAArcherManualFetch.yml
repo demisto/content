@@ -2,13 +2,15 @@ commonfields:
   id: RSAArcherManualFetch
   version: -1
 name: RSAArcherManualFetch
-script: |-
+script: >-
   fetchArgs = {"applicationId": demisto.args()["applicationId"],
            "incidentIds": demisto.args()["incidentIds"]}
 
   incidents = demisto.executeCommand("archer-manually-fetch-incident", fetchArgs)
 
+
   incidentIds = ""
+
   for incident in incidents:
       incidentData = incident['Contents']
       incidentArgs = {
@@ -32,10 +34,10 @@ args:
   description: 'ID of the application to get the incident from. For example: applicationId="75"'
 - name: incidentIds
   required: true
-  description: 'The Incident IDs to get details for, separated by commas. For example:
-    IncidentIds="12345,67891" '
+  description: 'The Incident IDs to get details for, separated by commas. For example: IncidentIds="12345,67891" '
 scripttarget: 0
 runonce: false
 dependson:
   must:
   - archer-manually-fetch-incident
+fromversion: 5.0.0
