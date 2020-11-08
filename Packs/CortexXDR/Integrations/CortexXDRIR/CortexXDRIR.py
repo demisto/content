@@ -2366,7 +2366,7 @@ def retrieve_file_details_command(client: Client, args):
     raw_result = []
     file_results = []
     endpoints_count = 0
-    retrived_files_count =0
+    retrived_files_count = 0
 
     for action_id in action_id_list:
         data = client.retrieve_file_details(action_id)
