@@ -108,11 +108,14 @@ tasks:
       PollingCommandArgName:
         simple: action_id
       PollingCommandName:
-        simple: xdr-retrieve-file-details
+        simple: xdr-action-status-get
       Timeout:
         simple: "10"
       dt:
-        simple: PaloAltoNetworksXDR.RetrievedFileDetails(!val.file_link).action_id
+        simple: PaloAltoNetworksXDR.GetActionStatus(val.status != "CANCELLED" || val.status
+          != "ABORTED" || val.status != "EXPIRED" || val.status != "COMPLETED_PARTIAL"
+          || val.status != "COMPLETED_SUCCESSFULLY" || val.status != "FAILED" || val.status
+          != "TIMEOUT")
     separatecontext: true
     loop:
       iscommand: false
@@ -177,10 +180,10 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: PaloAltoNetworksXDR.RetrievedFileDetails(!val.file_link)
+              simple: File
             iscontext: true
     view: |-
       {
@@ -298,17 +301,35 @@ inputs:
     Please enter at least one path ( windows, linux or mac)
   playbookInputQuery:
 outputs:
-- contextPath: PaloAltoNetworksXDR.RetrievedFileDetails
+- contextPath: File
   description: Retrieve file details command results.
-- contextPath: PaloAltoNetworksXDR.RetrievedFileDetails.endpoint_id
-  description: Endpoint ID.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RetrievedFileDetails.file_link
-  description: Link to the file retrieved by Retrieve File request.
-  type: string
-- contextPath: PaloAltoNetworksXDR.RetrievedFileDetails.action_id
-  description: Action ID of the Retrieve File request
-  type: string
+- contextPath: File.Name
+  description: The full file name (including file extension).
+  type: String
+- contextPath: File.EntryID
+  description: The ID for locating the file in the War Room.
+  type: String
+- contextPath: File.Size
+  description: The size of the file in bytes.
+  type: Number
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: String
+- contextPath: File.Extension
+  description: "The file extension, for example: 'xls'."
+  type: String
+- contextPath: File.Type
+  description: The file type, as determined by libmagic (same as displayed in file entries).
+  type: String
 tests:
 - Test XDR Playbook
 - Cortex XDR - IOC - Test

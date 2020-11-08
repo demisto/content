@@ -981,7 +981,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8915
+          "y": 8390
         }
       }
     note: false
@@ -1730,7 +1730,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "44"
+      - "48"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1745,153 +1745,6 @@ tasks:
         "position": {
           "x": 480,
           "y": 6990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "44":
-    id: "44"
-    taskid: f0cd211c-6d60-4ea3-8298-207826e55407
-    type: regular
-    task:
-      id: f0cd211c-6d60-4ea3-8298-207826e55407
-      version: -1
-      name: xdr-retrieve-files
-      description: Retrieve files from selected endpoints. You can retrieve up to
-        20 files, from no more than 10 endpoints. Please enter endpoint_ids and at
-        least one file path.
-      script: Cortex XDR - IR|||xdr-retrieve-files
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "45"
-    scriptarguments:
-      endpoint_ids:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          accessor: endpoint_id
-          transformers:
-          - operator: FirstArrayElement
-      linux_file_paths: {}
-      mac_file_paths: {}
-      windows_file_paths:
-        simple: C:\\Users\\demisto\\Desktop\\demisto.txt
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 7165
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "45":
-    id: "45"
-    taskid: 600969ef-3879-498b-89ed-724489809f9f
-    type: condition
-    task:
-      id: 600969ef-3879-498b-89ed-724489809f9f
-      version: -1
-      name: Verify Outputs
-      description: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "46"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.RetrievedFiles.action_id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 7340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "46":
-    id: "46"
-    taskid: 67109271-654e-4037-88e1-333c59ab85ab
-    type: regular
-    task:
-      id: 67109271-654e-4037-88e1-333c59ab85ab
-      version: -1
-      name: xdr-retrieve-file-details
-      description: View the file retrieved by the Retrieve File request according
-        to the action ID.
-      script: Cortex XDR - IR|||xdr-retrieve-file-details
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "47"
-    scriptarguments:
-      action_id:
-        simple: ${PaloAltoNetworksXDR.RetrievedFiles.action_id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 7515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "47":
-    id: "47"
-    taskid: 2e3eb797-a579-4570-826d-a1998068db73
-    type: condition
-    task:
-      id: 2e3eb797-a579-4570-826d-a1998068db73
-      version: -1
-      name: Verify Outputs
-      description: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "48"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.RetrievedFileDetails.endpoint_id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 7690
         }
       }
     note: false
@@ -1928,7 +1781,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 7865
+          "y": 7165
         }
       }
     note: false
@@ -1968,7 +1821,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8040
+          "y": 7340
         }
       }
     note: false
@@ -2004,7 +1857,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8215
+          "y": 7515
         }
       }
     note: false
@@ -2040,7 +1893,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8390
+          "y": 7690
         }
       }
     note: false
@@ -2076,7 +1929,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8565
+          "y": 7865
         }
       }
     note: false
@@ -2098,7 +1951,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "25"
+      - "60"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2112,7 +1965,66 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8740
+          "y": 8040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: e49fbb96-1ebf-4076-8435-19cca09eb886
+    type: playbook
+    task:
+      id: e49fbb96-1ebf-4076-8435-19cca09eb886
+      version: -1
+      name: Cortex XDR - Retrieve File Playbook
+      playbookName: Cortex XDR - Retrieve File Playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                iscontext: true
+              right:
+                value:
+                  simple: CONNECTED
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_type
+                iscontext: true
+              right:
+                value:
+                  simple: Workstation
+          accessor: endpoint_id
+      linux_file_paths: {}
+      mac_file_paths: {}
+      windows_file_paths:
+        simple: '"C:\\Users\\demisto\\Desktop\\demisto.txt"'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8215
         }
       }
     note: false
@@ -2125,7 +2037,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8930,
+        "height": 8405,
         "width": 922.5,
         "x": 50,
         "y": 50

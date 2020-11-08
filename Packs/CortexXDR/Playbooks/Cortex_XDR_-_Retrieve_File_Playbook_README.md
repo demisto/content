@@ -35,10 +35,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.RetrievedFileDetails | Retrieve file details command results. | unknown |
-| PaloAltoNetworksXDR.RetrievedFileDetails.endpoint_id | Endpoint ID. | string |
-| PaloAltoNetworksXDR.RetrievedFileDetails.file_link | Link to the file retrieved by Retrieve File request. | string |
-| PaloAltoNetworksXDR.RetrievedFileDetails.action_id | Action ID of the Retrieve File request | string |
+| File | Retrieve file details command results. | unknown |
+| File.Name | The full file name \(including file extension\). | String |
+| File.EntryID | The ID for locating the file in the War Room. | String |
+| File.Size | The size of the file in bytes. | Number |
+| File.MD5 | The MD5 hash of the file. | String |
+| File.SHA1 | The SHA1 hash of the file. | String |
+| File.SHA256 | The SHA1 hash of the file. | String |
+| File.SHA512 | The SHA512 hash of the file. | String |
+| File.Extension | The file extension, for example: 'xls'. | String |
+| File.Type | The file type, as determined by libmagic \(same as displayed in file entries\). | String |
 
 ## Playbook Image
 ---
