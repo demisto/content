@@ -549,7 +549,9 @@ def get_recent_commits_data(content_repo, index_folder_path, is_bucket_upload_fl
     head_commit = content_repo.head.commit.hexsha
     if force_previous_commit:
         try:
-            return head_commit, content_repo.commit(force_previous_commit).hexsha
+            previous_commit = content_repo.commit(force_previous_commit).hexsha
+            logging.info(f"Using force commit hash {previous_commit} to diff with.")
+            return head_commit, previous_commit
         except Exception as e:
             logging.critical(f'Force commit {force_previous_commit} does not exist in content repo. Additional '
                              f'info:\n {e}')
@@ -750,7 +752,9 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow):
     if is_bucket_upload_flow:
         return get_last_upload_commit_hash(content_repo, index_folder_path)
     else:
-        return content_repo.commit('origin/master').hexsha
+        master_head_commit = content_repo.commit('origin/master').hexsha
+        logging.info(f"Using origin/master head commit hash {master_head_commit} to diff with.")
+        return master_head_commit
 
 
 def get_last_upload_commit_hash(content_repo, index_folder_path):
@@ -778,7 +782,9 @@ def get_last_upload_commit_hash(content_repo, index_folder_path):
             sys.exit(1)
 
     try:
-        return content_repo.commit(last_upload_commit_hash).hexsha
+        last_upload_commit = content_repo.commit(last_upload_commit_hash).hexsha
+        logging.info(f"Using commit hash {last_upload_commit} from index.json to diff with.")
+        return last_upload_commit
     except Exception as e:
         logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
                          f'repo. Additional info:\n {e}')
