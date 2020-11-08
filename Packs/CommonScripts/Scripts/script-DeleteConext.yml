@@ -49,7 +49,11 @@ script: >
       // delete each field in context
       var errorsStr = "";
       for (var i = 0; i < fieldsToDelete.length; i++) {
-          var result = executeCommand('delContext', {key: fieldsToDelete[i]});
+          var key = fieldsToDelete[i];
+          if (isSubPlaybookKey) {
+              key = 'subplaybook-${currentPlaybookID}.' + key;
+          }
+          var result = executeCommand('delContext', {key: key});
           if(!result || result.type === entryTypes.error) {
               errorsStr = errorsStr + "\n" + result.Contents;
           }
