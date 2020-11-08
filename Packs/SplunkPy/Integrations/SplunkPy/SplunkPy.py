@@ -903,10 +903,12 @@ def splunk_realtime(service, query):
 
 def get_splunk_query(demisto_params):
     search_query = [demisto_params.get('fetchQuery', '')]
-    for field in demisto_params.get('extractFields', '').split(','):
-        field_trimmed = field.strip()
-        if field_trimmed:
-            search_query.append('{}={}'.format(field_trimmed, field_trimmed))
+    extract_fields = demisto_params.get('extractFields', '')
+    if extract_fields:
+        for field in extract_fields.split(','):
+            field_trimmed = field.strip()
+            if field_trimmed:
+                search_query.append('{}={}'.format(field_trimmed, field_trimmed))
     return ' | eval '.join(search_query)
 
 
