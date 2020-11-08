@@ -537,6 +537,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- c951568b-7af5-46e8-8cff-83b799c05a75
-fromversion: 6.0.0
+- No test
+fromversion: 5.0.0
 description: Use this playbook in order to conduct a file conversion using CloudConvert
