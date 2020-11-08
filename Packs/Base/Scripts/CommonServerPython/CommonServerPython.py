@@ -1379,7 +1379,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
-            def headerTransform(s): return s  # noqa
+            def headerTransform(s): return stringEscapeMD(s, True, True)  # noqa
         for header in headers:
             newHeaders.append(headerTransform(header))
         mdResult += '|'
@@ -1588,7 +1588,7 @@ def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
 
 
-MARKDOWN_CHARS = r"\`*_{}[]()#+-!"
+MARKDOWN_CHARS = r"\`*_{}[]()#+-!|"
 
 
 def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
@@ -3553,10 +3553,15 @@ class DebugLogger(object):
         """
         Utility function to log start of debug mode logging
         """
-        msg = "debug-mode started.\nhttp client print found: {}.\nEnv {}.".format(self.http_client_print is not None,
-                                                                                  os.environ)
+        msg = "debug-mode started.\n#### http client print found: {}.\n#### Env {}.".format(self.http_client_print is not None,
+                                                                                            os.environ)
         if hasattr(demisto, 'params'):
-            msg += "\nParams: {}.".format(demisto.params())
+            msg += "\n#### Params: {}.".format(json.dumps(demisto.params(), indent=2))
+        callingContext = demisto.callingContext.get('context', {})
+        msg += "\n#### Docker image: [{}]".format(callingContext.get('DockerImage'))
+        brand = callingContext.get('IntegrationBrand')
+        if brand:
+            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, callingContext.get('IntegrationInstance'))
         self.int_logger.write(msg)
 
 
