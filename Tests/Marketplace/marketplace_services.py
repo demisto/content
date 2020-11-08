@@ -175,6 +175,7 @@ class Pack(object):
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
         self._aggregated = False  # weather the pack's rn was aggregated or not.
+        self._aggregation_str = ""  # the aggregation string msg when the pack versions are aggregated
 
     @property
     def name(self):
