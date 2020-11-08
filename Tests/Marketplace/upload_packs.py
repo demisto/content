@@ -19,7 +19,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, init_big
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 
-def get_packs_names(target_packs, last_upload_commit_hash):
+def get_packs_names(target_packs, previous_commit_hash):
     """Detects and returns packs names to upload.
 
     In case that `Modified` is passed in target_packs input, checks the git difference between two commits,
@@ -29,7 +29,7 @@ def get_packs_names(target_packs, last_upload_commit_hash):
     Args:
         target_packs (str): csv packs names or `All` for all available packs in content
                             or `Modified` for only modified packs (currently not in use).
-        last_upload_commit_hash (str): last head commit hash that was uploaded to the bucket
+        previous_commit_hash (str): the previous commit to diff with.
 
     Returns:
         set: unique collection of packs names to upload.
@@ -45,7 +45,7 @@ def get_packs_names(target_packs, last_upload_commit_hash):
             logging.critical(f"Folder {PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}")
             sys.exit(1)
     elif target_packs.lower() == "modified":
-        cmd = f"git diff --name-only HEAD..{last_upload_commit_hash} | grep 'Packs/'"
+        cmd = f"git diff --name-only HEAD..{previous_commit_hash} | grep 'Packs/'"
         modified_packs_path = run_command(cmd).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
         logging.info(f"Number of modified packs is: {len(modified_packs)}")
@@ -559,14 +559,14 @@ def get_recent_commits_data(content_repo, index_folder_path, is_bucket_upload_fl
     return head_commit, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow)
 
 
-def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_commit_hash, storage_bucket):
+def check_if_index_is_updated(content_repo, current_commit_hash, previous_commit_hash, storage_bucket):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
     added/modified/deleted, all other steps are not performed.
 
     Args:
         content_repo (git.repo.base.Repo): content repo object.
         current_commit_hash (str): last commit hash of head.
-        last_upload_commit_hash (str): last head commit hash that was uploaded to the bucket
+        previous_commit_hash (str): the previous commit to diff with
         storage_bucket: public storage bucket.
 
     """
@@ -578,7 +578,7 @@ def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_com
             return
 
         try:
-            index_commit = content_repo.commit(last_upload_commit_hash)
+            index_commit = content_repo.commit(previous_commit_hash)
         except Exception as e:
             # not updated build will receive this exception because it is missing more updated commit
             logging.warning(f"Index is already updated. Additional info:\n {e}")
