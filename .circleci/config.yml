@@ -943,7 +943,7 @@ jobs:
             CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
             CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist-dev' -bb 'marketplace-ci-build' -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp 'wow/content/packs' -p "${PACKS_TO_UPLOAD}" -o true -c "${FORCE_PREVIOUS_COMMIT}"
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist-dev' -bb 'marketplace-ci-build' -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp 'wow/content/packs' -p "${PACKS_TO_UPLOAD}" -o true
             rm $GCS_PATH
       - *destroy_instances
       - *store_artifacts
