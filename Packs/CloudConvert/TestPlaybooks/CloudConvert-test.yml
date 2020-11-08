@@ -1,6 +1,5 @@
 id: CloudConvert-test
-version: 37
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: CloudConvert-test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -321,6 +321,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -592,6 +593,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "35"
@@ -633,6 +635,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -674,6 +677,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -1144,25 +1148,27 @@ inputs:
     simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
   required: false
   description: This is the url of the imported file
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: entry_id
   value: {}
   required: false
   description: This is the entry id of the imported file
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: output_format
   value:
     simple: jpg
   required: true
   description: |
     This is the desired output format
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: export_via
   value:
     simple: war_room_entry
   required: true
   description: |
     The method for exporting the resulted file, url or entry
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 sourceplaybookid: 27d078f8-e515-4cfc-83d7-30ab49a8b38e
+fromversion: 5.0.0
+description: Test Playbook for the CloudConvert integration
