@@ -758,7 +758,7 @@ class Pack(object):
         finally:
             return task_status, zip_pack_path
 
-    def detect_modified(self, content_repo, index_folder_path, current_commit_hash, last_upload_commit_hash):
+    def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
         """ Detects pack modified files.
 
         The diff is done between current commit and previous commit that was saved in metadata that was downloaded from
@@ -769,7 +769,7 @@ class Pack(object):
             content_repo (git.repo.base.Repo): content repo object.
             index_folder_path (str): full path to downloaded index folder.
             current_commit_hash (str): last commit hash of head.
-            last_upload_commit_hash (str): last head commit hash that was uploaded to the bucket
+            previous_commit_hash (str): the previous commit to diff with.
 
         Returns:
             bool: whether the operation succeeded.
@@ -789,7 +789,7 @@ class Pack(object):
             with open(pack_index_metadata_path, 'r') as metadata_file:
                 downloaded_metadata = json.load(metadata_file)
 
-            previous_commit_hash = downloaded_metadata.get('commit', last_upload_commit_hash)
+            previous_commit_hash = downloaded_metadata.get('commit', previous_commit_hash)
             # set 2 commits by hash value in order to check the modified files of the diff
             current_commit = content_repo.commit(current_commit_hash)
             previous_commit = content_repo.commit(previous_commit_hash)

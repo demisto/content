@@ -74,21 +74,19 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_bath_path: str) -> \
-        Tuple[str, Any, int]:
+def download_and_extract_index(storage_bucket: Any, extract_destination_path: str) -> Tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
 
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
-        storage_bath_path (str): the storage base path within the storage bucket
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
         str: downloaded index generation.
 
     """
-    index_storage_path = os.path.join(storage_bath_path, f"{GCPConfig.INDEX_NAME}.zip")
+    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -239,7 +237,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
 
 def upload_index_to_storage(index_folder_path: str, extract_destination_path: str, index_blob: Any,
                             build_number: str, private_packs: list, current_commit_hash: str,
-                            index_generation: str, is_private: bool = False):
+                            index_generation: int, is_private: bool = False):
     """
     Upload updated index zip to cloud storage.
 
