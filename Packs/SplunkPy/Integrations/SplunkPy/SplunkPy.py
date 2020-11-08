@@ -514,14 +514,18 @@ def fetch_incidents(service):
 
     # if no incidents found - repeat current fetch.
     if len(incidents) == 0:
+        demisto.debug("################# NOTHING FETCHED RE RUNNING FROM {}".format(last_run))
         demisto.setLastRun({'time': last_run, 'offset': 0})
 
     # if incident are found but brought less then the fetch limit - advance the fetch time.
     if len(incidents) < FETCH_LIMIT:
+        demisto.debug("################# FOUND INCIDENTS UPDATING TIME TO {}".format(now))
         demisto.setLastRun({'time': now, 'offset': 0})
 
     # if reached the fetch limit, repeat the current fetch with an offset.
     else:
+        demisto.debug("################# REACHED FETCH LIMIT RE RUNNING "
+                      "WITH: {} and OFFSET {}".format(last_run, search_offset + FETCH_LIMIT))
         demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
 
 
