@@ -57,32 +57,17 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 2. Search for Gmail.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| adminEmail | Email of user with admin privileges \(the Password refers to the Service Account private key\) | True |
-| gappsID | Immutable Google Apps Id | False |
-| query | Events query \(e.g. "from:example@demisto.com"\) | False |
-| queryUserKey | Events user key \(e.g. example@demisto.com\) | False |
-| isFetch | Fetch incidents | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| incidentType | Incident type | False |
-| fetch_time | First fetch timestamp, in days. | False |
-
-todo:
-compare
-3.  Click **Add instance** to create and configure a new integration instance.  
-    -   **Name**: a textual name for the integration instance.
-    -   **Email of user with admin capabilities** - Enter the email address of the user that you set admin capabilities for.
-    -   **Password (JSON):**  Paste the Service account JSON you generated in the Google console, which includes the JSON key. The JSON might be long, so you can expand the text box.
-    -   **Immutable Google Apps ID:** Only the Cxxxxxxxx, section is needed.
-    -   **Events query** - Use this to filter out the fetched messages.  
-        The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en).
-    -   **Events user key**\- Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. 
-        ![](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip0.png)
-        
-    *   **Incident type**
-    *   **Demisto engine**
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | adminEmail | Email of user with admin privileges \(the Password refers to the Service Account private key\) | True |
+    | gappsID | Immutable Google Apps Id -  Only the Cxxxxxxxx, section is needed| False |
+    | query | Events query \(e.g. "from:example@demisto.com"\) The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
+    | queryUserKey | Events user key \(e.g. example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
+    | isFetch | Fetch incidents | False |
+    | insecure | Trust any certificate \(not secure\) | False |
+    | proxy | Use system proxy settings | False |
+    | incidentType | Incident type | False |
+    | fetch_time | First fetch timestamp, in days. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -115,7 +100,6 @@ compare
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-TODO: go over the numbers and missing command
 - Delete a user: **gmail-delete-user**
 - Get tokens for a user: **gmail-get-tokens-for-user**
 - Get information for a Google user: **gmail-get-user**
