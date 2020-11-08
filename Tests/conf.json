@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+         {
+            "integrations": "GSuiteAdmin",
+            "playbookID": "GSuiteAdmin-Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
@@ -3226,7 +3231,8 @@
         "Test - CrowdStrike Falcon": "Issue 30068",
         "TestEmailRepPlaybook": "Issue 30070",
         "CounterCraft - Test": "Issue 30069",
-        "Test-BPA": "Issue 28406"
+        "Test-BPA": "Issue 28406",
+        "Indicators reputation-.json Test": "Issue 30116"
     },
     "skipped_integrations": {
         
@@ -3446,6 +3452,7 @@
         "AWS Sagemaker": "Issue 24926",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
+        "GSuiteAdmin": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Google Chronicle Backstory": "SDK",
         "Google Vision AI": "SDK",
