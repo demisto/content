@@ -41,9 +41,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 19. amp_get_policy
 20. amp_get_version
 21. amp_delete_computers_isolation
-22. amp_options_computers_isolation
-23. amp_put_computers_isolation
-24. amp_get_computers_isolation
+22. amp_put_computers_isolation
+23. amp_get_computers_isolation
 ### 1. amp_get_computers
 ---
 Returns a list of computers on which agents are deployed. You can use filters (arguments) to narrow the search.
@@ -541,28 +540,7 @@ There is no context output for this command.
 !amp_delete_computers_isolation connector_guid=12345abcde
 ```
 
-### 22. amp_options_computers_isolation
----
-Performs a feature availability request on a computer. Can also be used as a fine grained isolation status request.
-##### Base Command
-
-`amp_options_computers_isolation`
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| connector_guid | connector GUID. | Required | 
-
-##### Context Output
-
-There is no context output for this command.
-
-##### Command Example
-```
-!amp_options_computers_isolation connector_guid=12345abcde
-```
-
-### 23. amp_put_computers_isolation
+### 22. amp_put_computers_isolation
 ---
 Requests isolation for a Computer.  If a computer is already isolated a 409 conflict error status is returned.
 
@@ -585,7 +563,7 @@ There is no context output for this command.
 !amp_put_computers_isolation connector_guid=12345abcde
 ```
 
-### 24. amp_get_computers_isolation
+### 23. amp_get_computers_isolation
 ---
 Returns a fine grained isolation status for a computer.
 
