@@ -27,10 +27,6 @@ def get_phishing_map_labels(comma_values):
             labels_dict[splited[0].strip()] = splited[1].strip()
         else:
             labels_dict[v] = v
-    if len(set(labels_dict.values())) == 1:
-        mapped_value = list(labels_dict.values())[0]
-        error = ['Label mapping error: you need to map to at least two labels: {}.'.format(mapped_value)]
-        return_error('\n'.join(error))
     return {k: v for k, v in labels_dict.items()}
 
 
@@ -43,7 +39,7 @@ def build_query_in_reepect_to_phishing_labels(args):
     tag_field = args['tagField']
     tags_union = ' '.join(['"{}"'.format(label) for label in mapping_dict])
     mapping_query = '{}:({})'.format(tag_field, tags_union)
-    if mapping != ALL_LABELS and query not in args:
+    if mapping != ALL_LABELS and 'query' not in args:
         args['query'] = mapping_query
     else:
         args['query'] = '({}) and ({})'.format(args['query'], mapping_query)

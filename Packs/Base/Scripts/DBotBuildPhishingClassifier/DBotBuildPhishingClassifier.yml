@@ -120,7 +120,7 @@ commonfields:
 enabled: false
 name: DBotBuildPhishingClassifier
 script: '-'
-subtype: python2
+subtype: python3
 system: false
 tags:
 - ml

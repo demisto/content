@@ -77,8 +77,6 @@ class Tokenizer:
         self.spacy_reset_count = 500
 
     def handle_long_text(self, t, input_length):
-        if input_length == 1:
-            demisto.log("Input text length ({}) exceeds the legal maximum length for preprocessing".format(len(t)))
         return '', ''
 
     def map_indices_to_words(self, text):
