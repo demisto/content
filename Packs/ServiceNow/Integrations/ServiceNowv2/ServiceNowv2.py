@@ -777,10 +777,13 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = []  # type: ignore
-            sysparm_query_args = parse.parse_qsl(sys_param_query)
-            for arg in sysparm_query_args:
-                query_params['sysparm_query'].append(parse.urlencode([arg]))  # type: ignore
+            if '&' in sys_param_query:
+                query_params['sysparm_query'] = []  # type: ignore
+                sysparm_query_args = parse.parse_qsl(sys_param_query)
+                for arg in sysparm_query_args:
+                    query_params['sysparm_query'].append(parse.urlencode([arg]))  # type: ignore
+            else:
+                query_params['sysparm_query'] = sys_param_query
         if system_params:
             query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
