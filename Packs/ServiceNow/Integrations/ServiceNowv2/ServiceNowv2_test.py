@@ -665,7 +665,7 @@ def test_update_remote_data_sc_task(mocker):
     update_remote_system_command(client, args, params)
 
 
-def test_multiple_query_params(requests_mock):
+def test_multiple_ticket_query_params(requests_mock):
     """
     Given:
      - Query with multiple arguments
@@ -686,5 +686,30 @@ def test_multiple_query_params(requests_mock):
     'sysparm_query=assigned_to%3D123&sysparm_query=active%3Dtrue', json=RESPONSE_TICKET_ASSIGNED)
     args = {'limit': "50", 'query': query, 'ticket_type': ticket_type}
     human_readable, entry_context, result, bol = query_tickets_command(client, args)
+
+    assert result == RESPONSE_TICKET_ASSIGNED
+
+
+def test_multiple_table_query_params(requests_mock):
+    """
+    Given:
+     - Query with multiple arguments
+
+    When:
+     - Using servicenow-query-tickets command with multiple sysparm_query arguments.
+
+    Then:
+     - Verify the right request is called with '&' distinguishing different arguments.
+    """
+    url = 'https://test.service-now.com/api/now/v2/'
+    client = Client(url, 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+    query = "assigned_to=123&active=true"
+    table_name = "sc_task"
+    requests_mock.request('GET', f'{url}table/{table_name}?sysparm_limit=50&sysparm_offset=0&' \
+    'sysparm_query=assigned_to%3D123&sysparm_query=active%3Dtrue', json=RESPONSE_TICKET_ASSIGNED)
+    args = {'limit': "50", 'query': query, 'table_name': table_name}
+    human_readable, entry_context, result, bol = query_table_command(client, args)
 
     assert result == RESPONSE_TICKET_ASSIGNED
