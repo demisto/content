@@ -7,6 +7,7 @@ from ldap3 import Server, Connection, Tls, BASE
 from ldap3.utils.dn import parse_dn
 from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError
 from ssl import CERT_REQUIRED
+from typing import Tuple
 
 ''' OpenLDAP CLIENT '''
 
@@ -42,6 +43,7 @@ class LdapClient:
         self._member_identifier_attribute = kwargs.get('member_identifier_attribute', 'memberUid').strip()
         self._user_filter_class = kwargs.get('user_filter_class', 'posixAccount')
         self._user_identifier_attribute = kwargs.get('user_identifier_attribute', 'uid')
+        self._custom_attributes = kwargs.get('custom_attributes', '')
 
     @property
     def GROUPS_OBJECT_CLASS(self):
@@ -83,6 +85,14 @@ class LdapClient:
         """
         return self._user_identifier_attribute
 
+    @property
+    def CUSTOM_ATTRIBUTE(self):
+        """
+        rtype: ``str``
+        :return: User defined attributes.
+        """
+        return self._custom_attributes
+
     def _initialize_ldap_server(self):
         """
         Initializes ldap server object with given parameters. Supports both encrypted and non encrypted connection.
@@ -101,7 +111,7 @@ class LdapClient:
             return Server(host=self._host, port=self._port, connect_timeout=LdapClient.TIMEOUT)
 
     @staticmethod
-    def _parse_ldap_group_entries(ldap_group_entries, groups_identifier_attribute):
+    def _parse_ldap_group_entries(ldap_group_entries: List[dict], groups_identifier_attribute: str) -> List[dict]:
         """
             Returns parsed ldap groups entries.
         """
@@ -111,14 +121,14 @@ class LdapClient:
                 for ldap_group in ldap_group_entries]
 
     @staticmethod
-    def _parse_ldap_users_groups_entries(ldap_group_entries):
+    def _parse_ldap_users_groups_entries(ldap_group_entries: List[dict]) -> List[Optional[Any]]:
         """
             Returns parsed user's group entries.
         """
         return [ldap_group.get('dn') for ldap_group in ldap_group_entries]
 
     @staticmethod
-    def _build_entry_for_user(user_groups, user_data, mail_attribute, name_attribute):
+    def _build_entry_for_user(user_groups: str, user_data: dict, mail_attribute: str, name_attribute: str) -> dict:
         """
             Returns entry for specific ldap user.
         """
@@ -137,7 +147,7 @@ class LdapClient:
         }
 
     @staticmethod
-    def _is_valid_dn(dn, user_identifier_attribute):
+    def _is_valid_dn(dn: str, user_identifier_attribute: str) -> Tuple[bool, str]:
         """
             Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN.
         """
@@ -171,7 +181,24 @@ class LdapClient:
                 'Entries': LdapClient._parse_ldap_group_entries(ldap_group_entries, self.GROUPS_IDENTIFIER_ATTRIBUTE)
             }
 
-    def _fetch_specific_groups(self, specific_groups):
+    def _get_formatted_custom_attributes(self) -> str:
+        """
+        :return: custom attributes parsed to the form (att_name1=value1)(attname2=value2)
+        """
+        if not self.CUSTOM_ATTRIBUTE:
+            return ''
+        formatted_attributes = ''
+        for att in self.CUSTOM_ATTRIBUTE.split(','):
+            if len(att.split('=')) != 2:
+                raise Exception(f'User defined attributes must be of the form'
+                                f' \"attrA=valA,attrB=valB,...\", but got: {self.CUSTOM_ATTRIBUTE}')
+            formatted_attributes = formatted_attributes + f'({att})'
+        return formatted_attributes
+
+    def _create_search_filter(self, filter_prefix: str) -> str:
+        return filter_prefix + self._get_formatted_custom_attributes()
+
+    def _fetch_specific_groups(self, specific_groups: str) -> dict:
         """
             Fetches specific ldap groups under given base DN.
         """
@@ -196,7 +223,7 @@ class LdapClient:
                 'Entries': parsed_ldap_entries
             }
 
-    def get_ldap_groups(self, specific_group=None):
+    def get_ldap_groups(self, specific_group: str = '') -> dict:
         """
             Implements ldap groups command.
         """
@@ -211,7 +238,7 @@ class LdapClient:
 
         return searched_results
 
-    def authenticate_ldap_user(self, username, password):
+    def authenticate_ldap_user(self, username: str, password: str) -> str:
         """
             Performs simple bind operation on ldap server.
         """
@@ -223,7 +250,8 @@ class LdapClient:
         else:
             raise Exception("OpenLDAP authentication connection failed")
 
-    def get_user_data(self, username, pull_name, pull_mail, name_attribute, mail_attribute, search_user_by_dn=False):
+    def get_user_data(self, username: str, pull_name: bool, pull_mail: bool,
+                      name_attribute: str, mail_attribute: str, search_user_by_dn: bool = False) -> dict:
         """
             Returns data for given ldap user.
         """
@@ -236,12 +264,14 @@ class LdapClient:
                 attributes.append(mail_attribute)
 
             if search_user_by_dn:
-                search_filter = f'(objectClass={self.USER_OBJECT_CLASS})'
+                search_filter = f'(&(objectClass={self.USER_OBJECT_CLASS})' +\
+                                self._get_formatted_custom_attributes() + ')'
                 ldap_conn.search(search_base=username, search_filter=search_filter, size_limit=1,
                                  attributes=attributes, search_scope=BASE)
             else:
+                custom_attributes = self._get_formatted_custom_attributes()
                 search_filter = (f'(&(objectClass={self.USER_OBJECT_CLASS})'
-                                 f'({self.USER_IDENTIFIER_ATTRIBUTE}={username}))')
+                                 f'({self.USER_IDENTIFIER_ATTRIBUTE}={username}){custom_attributes})')
                 ldap_conn.search(search_base=self._base_dn, search_filter=search_filter, size_limit=1,
                                  attributes=attributes)
 
@@ -263,7 +293,7 @@ class LdapClient:
 
             return user_data
 
-    def get_user_groups(self, user_identifier):
+    def get_user_groups(self, user_identifier: str):
         """
             Returns user's group.
         """
@@ -277,8 +307,8 @@ class LdapClient:
                                                                         paged_size=self._page_size)
             return LdapClient._parse_ldap_users_groups_entries(ldap_group_entries)
 
-    def authenticate_and_roles(self, username, password, pull_name=True, pull_mail=True, mail_attribute='mail',
-                               name_attribute='name'):
+    def authenticate_and_roles(self, username: str, password: str, pull_name: bool = True, pull_mail: bool = True,
+                               mail_attribute: str = 'mail', name_attribute: str = 'name') -> dict:
         """
             Implements authenticate and roles command.
         """
@@ -301,6 +331,7 @@ class LdapClient:
             Basic test connection and validation of the Ldap integration.
         """
         build_number = get_demisto_version().get('buildNumber', LdapClient.DEV_BUILD_NUMBER)
+        self._get_formatted_custom_attributes()
 
         if build_number != LdapClient.DEV_BUILD_NUMBER \
                 and LdapClient.SUPPORTED_BUILD_NUMBER > int(build_number):
