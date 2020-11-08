@@ -91,20 +91,46 @@ DATA = [
         'header_1': 'a3',
         'header_2': 'b3',
         'header_3': 'c3'
-    },
+    }
 ]
 
-
-def test_tbl_to_md_only_data():
-    # sanity
-    table = tableToMarkdown('tableToMarkdown test', DATA)
-    expected_table = '''### tableToMarkdown test
+TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
+    (
+        DATA,
+        '''### tableToMarkdown test
 |header_1|header_2|header_3|
 |---|---|---|
 | a1 | b1 | c1 |
 | a2 | b2 | c2 |
 | a3 | b3 | c3 |
 '''
+    ),
+    (
+        [
+            {
+                'header_1|with_pipe': 'a1',
+                'header_2': 'b1',
+            },
+            {
+                'header_1|with_pipe': 'a2',
+                'header_2': 'b2',
+            }
+        ],
+        '''### tableToMarkdown test
+|header_1\\|with_pipe|header_2|
+|---|---|
+| a1 | b1 |
+| a2 | b2 |
+'''
+    )
+]
+
+
+@pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
+def test_tbl_to_md_only_data(data, expected_table):
+    # sanity
+    table = tableToMarkdown('tableToMarkdown test', data)
+
     assert table == expected_table
 
 
@@ -646,6 +672,9 @@ def test_logger_replace_strs(mocker):
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
 
 
+TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
+                   'AAAAdzc2gtcn\\n-----END OPENSSH PRIVATE KEY-----'
+
 TEST_SSH_KEY = '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
                'AAAAdzc2gtcn\n-----END OPENSSH PRIVATE KEY-----'
 
@@ -661,6 +690,7 @@ SENSITIVE_PARAM = {
             'password': 'cred_pass',
             'sortValues': None,
             'sshkey': TEST_SSH_KEY,
+            'sshkeyEsc': TEST_SSH_KEY_ESC,
             'sshkeyPass': 'ssh_key_secret_pass',
             'user': '',
             'vaultInstanceId': '',
@@ -678,8 +708,10 @@ def test_logger_replace_strs_credentials(mocker):
     mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
     ilog = IntegrationLogger()
     # log some secrets
-    ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh pass: ssh_key_secret_pass. ident: ident_pass:')
-    for s in ('cred_pass', TEST_SSH_KEY, 'ssh_key_secret_pass', 'ident_pass'):
+    ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh key: {}.'
+         'my ssh key: {}. my ssh pass: ssh_key_secret_pass. ident: ident_pass:'.format(TEST_SSH_KEY, TEST_SSH_KEY_ESC))
+
+    for s in ('cred_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC, 'ssh_key_secret_pass', 'ident_pass'):
         assert s not in ilog.messages[0]
 
 
@@ -691,7 +723,7 @@ def test_debug_logger_replace_strs(mocker):
     msg = debug_logger.int_logger.messages[0]
     assert 'debug-mode started' in msg
     assert 'Params:' in msg
-    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
+    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC):
         assert s not in msg
 
 
@@ -991,7 +1023,6 @@ class TestCommandResults:
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
-
 
     def test_readable_only_context(self):
         """
@@ -1429,6 +1460,84 @@ class TestCommandResults:
         assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
             {'Value': '8.8.8.8', 'Category': 'Integration Update'}
         ])
+
+    def test_single_indicator(self, mocker):
+        """
+        Given:
+            - a single indicator
+        When
+           - mocking the demisto.params()
+           - creating an Common.IP object
+           - creating a CommandResults objects using the indicator member
+       Then
+           - The CommandResults.to_context() returns single result of standard output IP and DBotScore
+       """
+        from CommonServerPython import CommandResults, Common, DBotScoreType
+        mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+
+        ip = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score
+        )
+
+        results = CommandResults(
+            indicator=ip
+        )
+
+        assert results.to_context()['EntryContext'] == {
+            'IP(val.Address && val.Address == obj.Address)': [
+                {
+                    'Address': '8.8.8.8'
+                }
+            ],
+            'DBotScore(val.Indicator && val.Indicator == '
+            'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                {
+                    'Indicator': '8.8.8.8',
+                    'Type': 'ip',
+                    'Vendor': 'Virus Total',
+                    'Score': 1
+                }
+            ]
+        }
+
+    def test_single_indicator_with_indicators(self, mocker):
+        """
+        Given:
+            - a single indicator and a list of indicators
+        When
+           - mocking the demisto.params()
+           - creating an Common.IP object
+           - creating a CommandResults objects using the indicator member AND indicators member
+       Then
+           - The CommandResults.__init__() should raise an ValueError with appropriate error
+       """
+        from CommonServerPython import CommandResults, Common, DBotScoreType
+        mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+
+        ip = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score
+        )
+
+        with pytest.raises(ValueError) as e:
+            CommandResults(
+                indicator=ip,
+                indicators=[ip]
+            )
+        assert e.value.args[0] == 'indicators is DEPRECATED, use only indicator'
 
 
 class TestBaseClient:
@@ -2145,7 +2254,9 @@ INDICATOR_VALUE_AND_TYPE = [
     ('112.126.94.107', 'IP'),
     ('a', None),
     ('*castaneda-thornton.com', 'DomainGlob'),
-    ('53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b', 'File')
+    (
+        '53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b',
+        'File')
 ]
 
 
@@ -2449,7 +2560,8 @@ def test_update_context_no_merge(mocker):
     conversations.extend([new_conversation])
 
     # Arrange
-    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
+    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS,
+                                                                     True)
     new_conversations = json.loads(context['conversations'])
 
     # Assert
@@ -2581,3 +2693,40 @@ def test_get_x_content_info_headers(mocker):
     headers = get_x_content_info_headers()
     assert headers['X-Content-LicenseID'] == test_license
     assert headers['X-Content-Name'] == test_brand
+
+
+def test_return_results_multiple_command_results(mocker):
+    """
+    Given:
+      - List of 2 CommandResult
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 2 times (with the list items)
+    """
+    from CommonServerPython import CommandResults, return_results
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = []
+    for i in range(2):
+        mock_output = {'MockContext': i}
+        mock_command_results.append(CommandResults(outputs_prefix='Mock', outputs=mock_output))
+    return_results(mock_command_results)
+    assert demisto_results_mock.call_count == 2
+
+
+def test_return_results_multiple_dict_results(mocker):
+    """
+    Given:
+      - List of 2 dictionaries
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 1 time (with the list as an argument)
+    """
+    from CommonServerPython import return_results
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [{'MockContext': 0}, {'MockContext': 1}]
+    return_results(mock_command_results)
+    args, kwargs = demisto_results_mock.call_args_list[0]
+    assert demisto_results_mock.call_count == 1
+    assert [{'MockContext': 0}, {'MockContext': 1}] in args
