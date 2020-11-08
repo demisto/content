@@ -66,17 +66,17 @@ Configure the Gmail Integration on Cortex XSOAR
 2.  Search for Gmail.
 3.  Click **Add instance** to create and configure a new integration instance.  
     -   **Name**: a textual name for the integration instance.
-    -   **Email of user with admin capabilities** - Enter the email address of the user that you set admin capabilities for.
-    -   **Password (JSON):**  Paste the Service account JSON you generated in the Google console, which includes the JSON key. The JSON might be long, so you can expand the text box.
-    -   **Immutable Google Apps ID:** Only the Cxxxxxxxx, section is needed.
+    -   **Email of user with admin capabilities** - Enter the email address of the user that you set admin capabilities for.
+    -   **Password (JSON):**  Paste the Service account JSON you generated in the Google console, which includes the JSON key. The JSON might be long, so you can expand the text box.
+    -   **Immutable Google Apps ID:** Only the Cxxxxxxxx, section is needed.
     -   **Events query** - Use this to filter out the fetched messages.  
         The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en).
-    -   **Events user key**\- Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. 
+    -   **Events user key**\- Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. 
         ![](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip0.png)
         
     *   **Incident type**
     *   **Demisto engine**
-4.  Click **Test** to validate the URLs and connection.
+4.  Click **Test** to validate the URLs and connection.
 
 Use Cases
 ---------
@@ -2152,6 +2152,10 @@ Sends an email using a Gmail account.
 ***
 Reply to a mail using Gmail.
 
+#### Limitations:
+
+The `subject` argument should be equal to the subject of the email we're replying to in order for the reply to be a part of the same conversation.
+
 #### Base Command
 
 `reply-mail`
@@ -2162,7 +2166,7 @@ Reply to a mail using Gmail.
 | to | Email addresses of the receiver. | Required | 
 | from | Email address of the sender. | Optional | 
 | body | The contents (body) of the email to be sent in plain text. | Optional | 
-| subject | Subject for the email to be sent. | Required | 
+| subject | Subject for the email to be sent. <br/> Should be the same as the subject of the email we're replying to in order for the reply to be a part of the same conversation. | Required | 
 | inReplyTo | A comma-separated list of Message IDs to reply to. | Required | 
 | references | A comma-separated list of Message IDs to refer to. | Optional | 
 | attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need be attached to the email. | Optional | 

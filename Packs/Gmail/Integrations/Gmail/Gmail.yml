@@ -1656,7 +1656,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subject for the email to be sent.
+      description: Subject of the email to be sent. Should be the same as the subject of the email we're replying to in order for the reply to be a part of the same conversation.
       isArray: false
       name: subject
       required: true
