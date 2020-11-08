@@ -41,7 +41,7 @@ if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
     echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
   else
-    CONTENT_PACKS_TO_INSTALL=$(paste -sd, $CONTENT_PACKS_TO_INSTALL_FILE)
+    CONTENT_PACKS_TO_INSTALL= $(paste -sd, $CONTENT_PACKS_TO_INSTALL_FILE)
     if [[ -z "$CONTENT_PACKS_TO_INSTALL" ]]; then
       echo "Did not get content packs to update in the bucket."
     else
@@ -57,12 +57,18 @@ else
     OVERRIDE_ALL_PACKS=true
     BUCKET_UPLOAD_FLOW=false
   elif [ -n "${BUCKET_UPLOAD}" ]; then
-    echo "Updating all content packs for upload packs to production..."
-    REMOVE_PBS=true
-    OVERRIDE_ALL_PACKS=false 
-    BUCKET_UPLOAD_FLOW=true
+      REMOVE_PBS=true
+      BUCKET_UPLOAD_FLOW=true
+    if [ -n "${FORCE_PACK_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
+      echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"
+      OVERRIDE_ALL_PACKS=true
+      PACKS_LIST="${PACKS_TO_UPLOAD}"
+    else
+      echo "Updating all content packs for upload packs to production..."
+      OVERRIDE_ALL_PACKS=false
+      PACKS_LIST="all"
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -pb 'marketplace-dist-private' -bu $BUCKET_UPLOAD_FLOW
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -pb 'marketplace-dist-private' -bu $BUCKET_UPLOAD_FLOW -p "$PACKS_LIST"
   echo "Finished updating content packs successfully."
 fi
 
