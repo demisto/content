@@ -2768,6 +2768,9 @@ class CommandResults:
     :type indicators_timeline: ``IndicatorsTimeline``
     :param indicators_timeline: must be an IndicatorsTimeline. used by the server to populate an indicator's timeline.
 
+    :type ignore_auto_extract: ``bool``
+    :param ignore_auto_extract: must be a boolean, default value is False. Used to prevent AutoExtract on output.
+
     :return: None
     :rtype: ``None``
     """
