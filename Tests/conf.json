@@ -3218,7 +3218,6 @@
         "AttackIQ - Test": "Issue 29774",
         "CyberTotal_TestPlaybook": "Issue 29776",
         "AWS-securityhub Test": "Issue 29796",
-        "Carbon Black Enterprise EDR Test": "Issue 29775",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
         "IAM - Test Playbook": "Issue 30013",
         "Trend Micro Apex - Test": "Issue 27280",
