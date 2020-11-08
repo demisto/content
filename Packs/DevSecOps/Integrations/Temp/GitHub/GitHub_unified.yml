@@ -1,0 +1,4220 @@
+category: Utilities
+commonfields:
+  id: GitHub Temp
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: API Token
+  name: token
+  required: false
+  type: 4
+- display: Credentials
+  name: credentials
+  required: false
+  type: 9
+- display: 'Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues'
+  name: user
+  required: false
+  type: 0
+- display: The name of the requested repository
+  name: repository
+  required: false
+  type: 0
+- defaultvalue: '3'
+  display: First fetch interval (in days)
+  name: fetch_time
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: GitHub app integration ID
+  name: integration_id
+  required: false
+  type: 0
+- display: GitHub app installation ID
+  name: installation_id
+  required: false
+  type: 0
+- display: Listen Port
+  hidden: false
+  name: longRunningPort
+  required: false
+  type: 0
+- display: Certificate (Required for HTTPS)
+  hidden: false
+  name: certificate
+  required: false
+  type: 0
+- display: Private Key (Required for HTTPS)
+  hidden: false
+  name: private_key
+  required: false
+  type: 0
+description: Integration to GitHub API
+detaileddescription: "To access the requested repository, you need to provide \n the\
+  \ username, repository name, and API key as parameters for the\n integration.\n\
+  \ \n To generate your personal access token, visit:\n https://github.com/settings/tokens\n\
+  \ \n The integration supports the following workflows:\n - Create an issue\n - Update\
+  \ an issue\n - Close an issue\n - List all issues\n - Search for specific issues\n\
+  \ - Get the download count for each release in a repository"
+display: GitHub Temp
+name: GitHub Temp
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The title of the issue.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: The contents of the issue.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: Labels to associate with this issue.
+      isArray: true
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: Logins for Users to assign to this issue.
+      isArray: true
+      name: assignees
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an issue in GitHub.
+    execution: false
+    name: GitHub-create-issue
+    outputs:
+    - contextPath: GitHub.Issue.ID
+      description: The ID of the created issue.
+      type: Number
+    - contextPath: GitHub.Issue.Repository
+      description: The repository of the created issue.
+      type: String
+    - contextPath: GitHub.Issue.Title
+      description: The title of the created issue.
+      type: String
+    - contextPath: GitHub.Issue.Body
+      description: The body of the created issue.
+      type: Unknown
+    - contextPath: GitHub.Issue.State
+      description: The state of the created issue.
+      type: String
+    - contextPath: GitHub.Issue.Labels
+      description: Labels applied to the issue.
+      type: String
+    - contextPath: GitHub.Issue.Assignees
+      description: Users assigned to this issue.
+      type: String
+    - contextPath: GitHub.Issue.Created_at
+      description: Date when the issue was created.
+      type: Date
+    - contextPath: GitHub.Issue.Updated_at
+      description: Date when the issue was last updated.
+      type: Date
+    - contextPath: GitHub.Issue.Closed_at
+      description: Date when the issue was closed.
+      type: Date
+    - contextPath: GitHub.Issue.Closed_by
+      description: User who closed the issue.
+      type: String
+  - arguments:
+    - default: false
+      description: The number of the issue to close.
+      isArray: false
+      name: ID
+      required: true
+      secret: false
+    deprecated: false
+    description: Closes an existing issue.
+    execution: false
+    name: GitHub-close-issue
+    outputs:
+    - contextPath: GitHub.Issue.ID
+      description: The ID of the closed issue.
+      type: Number
+    - contextPath: GitHub.Issue.Repository
+      description: The repository of the closed issue.
+      type: String
+    - contextPath: GitHub.Issue.Title
+      description: The title of the closed issue
+      type: String
+    - contextPath: GitHub.Issue.Body
+      description: The body of the closed issue.
+      type: Unknown
+    - contextPath: GitHub.Issue.State
+      description: The state of the closed issue.
+      type: String
+    - contextPath: GitHub.Issue.Labels
+      description: Labels applied to the issue.
+      type: String
+    - contextPath: GitHub.Issue.Assignees
+      description: Users assigned to the issue.
+      type: String
+    - contextPath: GitHub.Issue.Created_at
+      description: Date when the issue was created.
+      type: Date
+    - contextPath: GitHub.Issue.Updated_at
+      description: Date when the issue was last updated.
+      type: Date
+    - contextPath: GitHub.Issue.Closed_at
+      description: Date when the issue was closed.
+      type: Date
+    - contextPath: GitHub.Issue.Closed_by
+      description: User who closed the issue.
+      type: String
+  - arguments:
+    - default: false
+      description: The number of the issue to update.
+      isArray: false
+      name: ID
+      required: true
+      secret: false
+    - default: false
+      description: The title of the issue.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: The contents of the issue.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: State of the issue. Either open or closed.
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: 'Labels to apply to this issue. Pass one or more Labels to replace
+        the set of Labels on this Issue. Send an empty array ([]) to clear all Labels
+        from the Issue. '
+      isArray: true
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: Logins for Users to assign to this issue. Pass one or more user
+        logins to replace the set of assignees on this Issue. Send an empty array
+        ([]) to clear all assignees from the Issue.
+      isArray: true
+      name: assignees
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates the parameters of a specified issue.
+    execution: false
+    name: GitHub-update-issue
+    outputs:
+    - contextPath: GitHub.Issue.ID
+      description: The ID of the updated issue.
+      type: Number
+    - contextPath: GitHub.Issue.Repository
+      description: The repository of the updated issue.
+      type: String
+    - contextPath: GitHub.Issue.Title
+      description: The title of the updated issue.
+      type: String
+    - contextPath: GitHub.Issue.Body
+      description: The body of the updated issue.
+      type: Unknown
+    - contextPath: GitHub.Issue.State
+      description: The state of the updated issue.
+      type: String
+    - contextPath: GitHub.Issue.Labels
+      description: Labels applied to the issue.
+      type: String
+    - contextPath: GitHub.Issue.Assignees
+      description: Users assigned to the issue.
+      type: String
+    - contextPath: GitHub.Issue.Created_at
+      description: Date when the issue was created.
+      type: Date
+    - contextPath: GitHub.Issue.Updated_at
+      description: Date when the issue was last updated.
+      type: Date
+    - contextPath: GitHub.Issue.Closed_at
+      description: Date when the issue was closed.
+      type: Date
+    - contextPath: GitHub.Issue.Closed_by
+      description: User who closed the issue.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: open
+      description: The state of the issues to return. Can be 'open', 'closed' or 'all'.
+        Default is 'open'
+      isArray: false
+      name: state
+      predefined:
+      - open
+      - closed
+      - all
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of issues to return. Default is 50. Maximum is 200.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists all issues that the user has access to view.
+    execution: false
+    name: GitHub-list-all-issues
+    outputs:
+    - contextPath: GitHub.Issue.ID
+      description: The ID of the issue.
+      type: Number
+    - contextPath: GitHub.Issue.Repository
+      description: The repository of the issue.
+      type: String
+    - contextPath: GitHub.Issue.Title
+      description: The title of the issue.
+      type: String
+    - contextPath: GitHub.Issue.Body
+      description: The body of the issue.
+      type: Unknown
+    - contextPath: GitHub.Issue.State
+      description: The state of the issue.
+      type: String
+    - contextPath: GitHub.Issue.Labels
+      description: Labels applied to the issue.
+      type: String
+    - contextPath: GitHub.Issue.Assignees
+      description: Users assigned to the issue.
+      type: String
+    - contextPath: GitHub.Issue.Created_at
+      description: Date when the issue was created.
+      type: Date
+    - contextPath: GitHub.Issue.Updated_at
+      description: Date when the issue was last updated.
+      type: Date
+    - contextPath: GitHub.Issue.Closed_at
+      description: Date when the issue was closed.
+      type: Date
+    - contextPath: GitHub.Issue.Closed_by
+      description: User who closed the issue.
+      type: String
+  - arguments:
+    - default: false
+      description: The query line for the search. See the [GitHub documentation](https://help.github.com/en/articles/searching-issues-and-pull-requests)
+        for more information.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of issues to return. Default is 50. Maximum is 200.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for and returns issues that match a given query.
+    execution: false
+    name: GitHub-search-issues
+    outputs:
+    - contextPath: GitHub.Issue.ID
+      description: The ID of the issue.
+      type: Number
+    - contextPath: GitHub.Issue.Repository
+      description: The repository of the issue.
+      type: String
+    - contextPath: GitHub.Issue.Title
+      description: The title of the issue.
+      type: String
+    - contextPath: GitHub.Issue.Body
+      description: The body of the issue.
+      type: Unknown
+    - contextPath: GitHub.Issue.State
+      description: The state of the issue.
+      type: String
+    - contextPath: GitHub.Issue.Labels
+      description: Labels applied to the issue.
+      type: String
+    - contextPath: GitHub.Issue.Assignees
+      description: Users assigned to the issue.
+      type: String
+    - contextPath: GitHub.Issue.Created_at
+      description: Date when the issue was created.
+      type: Date
+    - contextPath: GitHub.Issue.Updated_at
+      description: Date when the issue was last updated.
+      type: Date
+    - contextPath: GitHub.Issue.Closed_at
+      description: Date when the issue was closed.
+      type: Date
+    - contextPath: GitHub.Issue.Closed_by
+      description: User who closed the issue.
+      type: String
+  - deprecated: false
+    description: Returns the total number of downloads for all releases for the specified
+      repository.
+    execution: false
+    name: GitHub-get-download-count
+    outputs:
+    - contextPath: GitHub.Release.ID
+      description: ID of the release.
+      type: Number
+    - contextPath: GitHub.Release.Download_count
+      description: Download count for the release.
+      type: Number
+    - contextPath: GitHub.Release.Name
+      description: Name of the release.
+      type: String
+    - contextPath: GitHub.Release.Body
+      description: Body of the release.
+      type: String
+    - contextPath: GitHub.Release.Created_at
+      description: Date when the release was created.
+      type: Date
+    - contextPath: GitHub.Release.Published_at
+      description: Date when the release was published.
+      type: Date
+  - arguments:
+    - default: true
+      defaultValue: 3 days
+      description: Time of inactivity after which a PR is considered stale
+      isArray: false
+      name: stale_time
+      required: true
+      secret: false
+    - default: false
+      description: The label used to identify PRs of interest
+      isArray: false
+      name: label
+      required: false
+      secret: false
+    deprecated: false
+    description: Get inactive pull requests
+    execution: false
+    name: GitHub-get-stale-prs
+    outputs:
+    - contextPath: GitHub.PR.URL
+      description: The html URL of the PR
+      type: String
+    - contextPath: GitHub.PR.Number
+      description: The GitHub pull request number
+      type: Number
+    - contextPath: GitHub.PR.RequestedReviewer
+      description: A list of the PR's requested reviewers
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The name of the branch to retrieve
+      isArray: false
+      name: branch_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a branch
+    execution: false
+    name: GitHub-get-branch
+    outputs:
+    - contextPath: GitHub.Branch.Name
+      description: The name of the branch
+      type: String
+    - contextPath: GitHub.Branch.CommitSHA
+      description: The SHA of the commit the branch references
+      type: String
+    - contextPath: GitHub.Branch.CommitNodeID
+      description: The Node ID of the commit the branch references
+      type: String
+    - contextPath: GitHub.Branch.CommitAuthorID
+      description: The GitHub ID number of the author of the commit the branch references
+      type: Number
+    - contextPath: GitHub.Branch.CommitAuthorLogin
+      description: The GitHub login of the author of the commit the branch references
+      type: String
+    - contextPath: GitHub.Branch.CommitParentSHA
+      description: The SHAs of parent commits
+      type: String
+    - contextPath: GitHub.Branch.Protected
+      description: Whether the branch is a protected one or not
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name for the new branch
+      isArray: false
+      name: branch_name
+      required: true
+      secret: false
+    - default: false
+      description: The SHA hash of the commit to reference. Try executing the 'GitHub-get-branch'
+        command to find a commit SHA hash to reference.
+      isArray: false
+      name: commit_sha
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new branch
+    execution: false
+    name: GitHub-create-branch
+  - arguments:
+    - default: false
+      description: The ID number by which the team is identified. Try executing the
+        'GitHub-list-teams' command to find team IDs to reference.
+      isArray: false
+      name: team_id
+      required: true
+      secret: false
+    - default: false
+      description: The login of the user whose membership you wish to check
+      isArray: false
+      name: user_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve a user's membership status with a team
+    execution: false
+    name: GitHub-get-team-membership
+    outputs:
+    - contextPath: GitHub.Team.Member.Role
+      description: The user's role on a team
+      type: String
+    - contextPath: GitHub.Team.Member.State
+      description: The user's state for a team
+      type: String
+    - contextPath: GitHub.Team.ID
+      description: The ID number of the team
+      type: Number
+    - contextPath: GitHub.Team.Member.Login
+      description: The login of the team member
+      type: String
+  - arguments:
+    - default: false
+      description: The number of the Pull Request for which you wish to request review
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    - default: false
+      description: A CSV list of GitHub users to request review from for a Pull Request
+      isArray: true
+      name: reviewers
+      required: true
+      secret: false
+    deprecated: false
+    description: Request reviews from GitHub users for a given Pull Request
+    execution: false
+    name: GitHub-request-review
+    outputs:
+    - contextPath: GitHub.PR.Number
+      description: The number of the Pull Request
+      type: Number
+    - contextPath: GitHub.PR.RequestedReviewer.Login
+      description: The login of the user requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.ID
+      description: The ID of the user requested for review
+      type: Number
+    - contextPath: GitHub.PR.RequestedReviewer.NodeID
+      description: The node ID of the user requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.Type
+      description: The type of the user requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.SiteAdmin
+      description: Whether the user requested for review is a site admin or not
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The number of the issue to comment on
+      isArray: false
+      name: issue_number
+      required: true
+      secret: false
+    - default: false
+      description: The contents of the comment
+      isArray: false
+      name: body
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a comment for a given issue
+    execution: false
+    name: GitHub-create-comment
+    outputs:
+    - contextPath: GitHub.Comment.IssueNumber
+      description: The number of the issue to which the comment belongs
+      type: Number
+    - contextPath: GitHub.Comment.ID
+      description: The ID of the comment
+      type: Number
+    - contextPath: GitHub.Comment.NodeID
+      description: The node ID of the comment
+      type: String
+    - contextPath: GitHub.Comment.Body
+      description: The body content of the comment
+      type: String
+    - contextPath: GitHub.Comment.User.Login
+      description: The login of the user who commented
+      type: String
+    - contextPath: GitHub.Comment.User.ID
+      description: The ID of the user who commented
+      type: Number
+    - contextPath: GitHub.Comment.User.NodeID
+      description: The node ID of the user who commented
+      type: String
+    - contextPath: GitHub.Comment.User.Type
+      description: The type of the user who commented
+      type: String
+    - contextPath: GitHub.Comment.User.SiteAdmin
+      description: Whether the user who commented is a site admin or not
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The number of the issue to list comments for
+      isArray: false
+      name: issue_number
+      required: true
+      secret: false
+    deprecated: false
+    description: List comments on an issue
+    execution: false
+    name: GitHub-list-issue-comments
+    outputs:
+    - contextPath: GitHub.Comment.IssueNumber
+      description: The number of the issue to which the comment belongs
+      type: Number
+    - contextPath: GitHub.Comment.ID
+      description: The ID of the comment
+      type: Number
+    - contextPath: GitHub.Comment.NodeID
+      description: The node ID of the comment
+      type: String
+    - contextPath: GitHub.Comment.Body
+      description: The body content of the comment
+      type: String
+    - contextPath: GitHub.Comment.User.Login
+      description: The login of the user who commented
+      type: String
+    - contextPath: GitHub.Comment.User.ID
+      description: The ID of the user who commented
+      type: Number
+    - contextPath: GitHub.Comment.User.NodeID
+      description: The node ID of the user who commented
+      type: String
+    - contextPath: GitHub.Comment.User.Type
+      description: The type of the user who commented
+      type: String
+    - contextPath: GitHub.Comment.User.SiteAdmin
+      description: Whether the user who commented is a site admin or not
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The number of the pull request.
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    deprecated: false
+    description: Lists the pull request files.
+    execution: false
+    name: GitHub-list-pr-files
+    outputs:
+    - contextPath: GitHub.PR.Number
+      description: The number of the pull request
+      type: Number
+    - contextPath: GitHub.PR.File.SHA
+      description: The SHA hash of the last commit involving the file.
+      type: String
+    - contextPath: GitHub.PR.File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: GitHub.PR.File.Status
+      description: The status of the file.
+      type: String
+    - contextPath: GitHub.PR.File.Additions
+      description: The number of additions to the file.
+      type: Number
+    - contextPath: GitHub.PR.File.Deletions
+      description: The number of deletions in the file.
+      type: Number
+    - contextPath: GitHub.PR.File.Changes
+      description: The number of changes made in the file.
+      type: Number
+  - arguments:
+    - default: false
+      description: The number of the pull request
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    deprecated: false
+    description: List reviews on a pull request
+    execution: false
+    name: GitHub-list-pr-reviews
+    outputs:
+    - contextPath: GitHub.PR.Number
+      description: The number of the pull request
+      type: Number
+    - contextPath: GitHub.PR.Review.ID
+      description: The ID of the review
+      type: Number
+    - contextPath: GitHub.PR.Review.NodeID
+      description: The node ID of the review
+      type: String
+    - contextPath: GitHub.PR.Review.Body
+      description: The content of the review
+      type: String
+    - contextPath: GitHub.PR.Review.CommitID
+      description: The ID of the commit for which the review is applicable
+      type: String
+    - contextPath: GitHub.PR.Review.State
+      description: The state of the review
+      type: String
+    - contextPath: GitHub.PR.Review.User.Login
+      description: The reviewer's user login
+      type: String
+    - contextPath: GitHub.PR.Review.User.ID
+      description: The reviewer's user ID
+      type: Number
+    - contextPath: GitHub.PR.Review.User.NodeID
+      description: The reviewer's user node ID
+      type: String
+    - contextPath: GitHub.PR.Review.User.Type
+      description: The reviewer user type
+      type: String
+    - contextPath: GitHub.PR.Review.User.SiteAdmin
+      description: Whether the reviewer is a site admin or not
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The SHA hash of the commit. Try executing the 'GitHub-get-branch'
+        command to find a commit SHA hash to reference.
+      isArray: false
+      name: commit_sha
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a commit
+    execution: false
+    name: GitHub-get-commit
+    outputs:
+    - contextPath: GitHub.Commit.SHA
+      description: The SHA hash of the commit
+      type: String
+    - contextPath: GitHub.Commit.Author.Date
+      description: The commit author date
+      type: String
+    - contextPath: GitHub.Commit.Author.Name
+      description: The name of the author
+      type: String
+    - contextPath: GitHub.Commit.Author.Email
+      description: The email of the author
+      type: String
+    - contextPath: GitHub.Commit.Committer.Date
+      description: The date the commiter committed
+      type: String
+    - contextPath: GitHub.Commit.Committer.Name
+      description: The name of the committer
+      type: String
+    - contextPath: GitHub.Commit.Committer.Email
+      description: The email of the committer
+      type: String
+    - contextPath: GitHub.Commit.Message
+      description: The message associated with the commit
+      type: String
+    - contextPath: GitHub.Commit.Parent
+      description: List of parent SHA hashes
+      type: Unknown
+    - contextPath: GitHub.Commit.TreeSHA
+      description: The SHA hash of the commit's tree
+      type: String
+    - contextPath: GitHub.Commit.Verification.Verified
+      description: Whether the commit was verified or not
+      type: Boolean
+    - contextPath: GitHub.Commit.Verification.Reason
+      description: The reason why the commit was or was not verified
+      type: String
+    - contextPath: GitHub.Commit.Verification.Signature
+      description: The commit verification signature
+      type: Unknown
+    - contextPath: GitHub.Commit.Verification.Payload
+      description: The commit verification payload
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The number of the issue to add labels to
+      isArray: false
+      name: issue_number
+      required: true
+      secret: false
+    - default: false
+      description: A CSV list of labels to add to an issue
+      isArray: true
+      name: labels
+      required: true
+      secret: false
+    deprecated: false
+    description: Add labels to an issue
+    execution: false
+    name: GitHub-add-label
+  - arguments:
+    - default: false
+      description: The number of the pull request to retrieve
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a pull request
+    execution: false
+    name: GitHub-get-pull-request
+    outputs:
+    - contextPath: GitHub.PR.ID
+      description: The ID number of the pull request
+      type: Number
+    - contextPath: GitHub.PR.NodeID
+      description: The node ID of the pull request
+      type: String
+    - contextPath: GitHub.PR.Number
+      description: The issue number of the pull request
+      type: Number
+    - contextPath: GitHub.PR.State
+      description: The state of the pull request
+      type: String
+    - contextPath: GitHub.PR.Locked
+      description: Whether the pull request is locked or not
+      type: Boolean
+    - contextPath: GitHub.PR.Title
+      description: The title of the pull request
+      type: String
+    - contextPath: GitHub.PR.User.Login
+      description: The login of the user who opened the pull request
+      type: String
+    - contextPath: GitHub.PR.User.ID
+      description: The ID of the user who opened the pull request
+      type: Number
+    - contextPath: GitHub.PR.User.NodeID
+      description: The node ID of the user who opened the pull request
+      type: String
+    - contextPath: GitHub.PR.User.Type
+      description: The type of the user who opened the pull request
+      type: String
+    - contextPath: GitHub.PR.User.SiteAdmin
+      description: Whether the user who opened the pull request is a site admin or
+        not
+      type: Boolean
+    - contextPath: GitHub.PR.Body
+      description: The body content of the pull request
+      type: String
+    - contextPath: GitHub.PR.Label.ID
+      description: The ID of the label
+      type: Number
+    - contextPath: GitHub.PR.Label.NodeID
+      description: The node ID of the label
+      type: String
+    - contextPath: GitHub.PR.Label.Name
+      description: The name of the label
+      type: String
+    - contextPath: GitHub.PR.Label.Description
+      description: The description of the label
+      type: String
+    - contextPath: GitHub.PR.Label.Color
+      description: The hex color value of the label
+      type: String
+    - contextPath: GitHub.PR.Label.Default
+      description: Whether the label is a default or not
+      type: Boolean
+    - contextPath: GitHub.PR.Milestone.ID
+      description: The ID of the milestone
+      type: Number
+    - contextPath: GitHub.PR.Milestone.NodeID
+      description: The node ID of the milestone
+      type: String
+    - contextPath: GitHub.PR.Milestone.Number
+      description: The number of the milestone
+      type: Number
+    - contextPath: GitHub.PR.Milestone.State
+      description: The state of the milestone
+      type: String
+    - contextPath: GitHub.PR.Milestone.Title
+      description: The title of the milestone
+      type: String
+    - contextPath: GitHub.PR.Milestone.Description
+      description: The description of the milestone
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.Login
+      description: The login of the milestone creator
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.ID
+      description: The ID the milestone creator
+      type: Number
+    - contextPath: GitHub.PR.Milestone.Creator.NodeID
+      description: The node ID of the milestone creator
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.Type
+      description: The type of the milestone creator
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.SiteAdmin
+      description: Whether the milestone creator is a site admin or not
+      type: Boolean
+    - contextPath: GitHub.PR.Milestone.OpenIssues
+      description: The number of open issues with this milestone
+      type: Number
+    - contextPath: GitHub.PR.Milestone.ClosedIssues
+      description: The number of closed issues with this milestone
+      type: Number
+    - contextPath: GitHub.PR.Milestone.CreatedAt
+      description: The date the milestone was created
+      type: String
+    - contextPath: GitHub.PR.Milestone.UpdatedAt
+      description: The date the milestone was updated
+      type: String
+    - contextPath: GitHub.PR.Milestone.ClosedAt
+      description: The date the milestone was closed
+      type: String
+    - contextPath: GitHub.PR.Milestone.DueOn
+      description: The due date for the milestone
+      type: String
+    - contextPath: GitHub.PR.ActiveLockReason
+      description: The reason the pull request is locked
+      type: String
+    - contextPath: GitHub.PR.CreatedAt
+      description: The date the pull request was created
+      type: String
+    - contextPath: GitHub.PR.UpdatedAt
+      description: The date the pull request was updated
+      type: String
+    - contextPath: GitHub.PR.ClosedAt
+      description: The date the pull request was closed
+      type: String
+    - contextPath: GitHub.PR.MergedAt
+      description: The date the pull request was merged
+      type: String
+    - contextPath: GitHub.PR.MergeCommitSHA
+      description: The SHA hash of the pull request's merge commit
+      type: String
+    - contextPath: GitHub.PR.Assignee.Login
+      description: The login of the user assigned to the pull request
+      type: String
+    - contextPath: GitHub.PR.Assignee.ID
+      description: The ID of the user assigned to the pull request
+      type: Number
+    - contextPath: GitHub.PR.Assignee.NodeID
+      description: The node ID of the user assigned to the pull request
+      type: String
+    - contextPath: GitHub.PR.Assignee.Type
+      description: The type of the user assigned to the pull request
+      type: String
+    - contextPath: GitHub.PR.Assignee.SiteAdmin
+      description: Whether the user assigned to the pull request is a site admin or
+        not
+      type: Boolean
+    - contextPath: GitHub.PR.RequestedReviewer.Login
+      description: The login of the user requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.ID
+      description: The ID of the user requested for review
+      type: Number
+    - contextPath: GitHub.PR.RequestedReviewer.NodeID
+      description: The node ID of the user requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.Type
+      description: The type of the user requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.SiteAdmin
+      description: Whether the user requested for review is a site admin or not
+      type: Boolean
+    - contextPath: GitHub.PR.RequestedTeam.ID
+      description: The ID of the team requested for review
+      type: Number
+    - contextPath: GitHub.PR.RequestedTeam.NodeID
+      description: The node ID of the team requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Name
+      description: The name of the team requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Slug
+      description: The slug of the team requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Description
+      description: The description of the team requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Privacy
+      description: The privacy setting of the team requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Permission
+      description: The permissions of the team requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Parent
+      description: The parent of the team requested for review
+      type: Unknown
+    - contextPath: GitHub.PR.Head.Label
+      description: The label of the branch that HEAD points to
+      type: String
+    - contextPath: GitHub.PR.Head.Ref
+      description: The reference of the branch that HEAD points to
+      type: String
+    - contextPath: GitHub.PR.Head.SHA
+      description: The SHA hash of the commit that HEAD points to
+      type: String
+    - contextPath: GitHub.PR.Head.User.Login
+      description: The login of the committer of the HEAD commit of the checked out
+        branch
+      type: String
+    - contextPath: GitHub.PR.Head.User.ID
+      description: The ID of the committer of the HEAD commit of the checked out branch
+      type: Number
+    - contextPath: GitHub.PR.Head.User.NodeID
+      description: The node ID of the committer of the HEAD commit of the checked
+        out branch
+      type: String
+    - contextPath: GitHub.PR.Head.User.Type
+      description: The type of the committer of the HEAD commit of the checked out
+        branch
+      type: String
+    - contextPath: GitHub.PR.Head.User.SiteAdmin
+      description: Whether the committer of the HEAD commit of the checked out branch
+        is a site admin or not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.ID
+      description: The ID of the repository of the checked out branch
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.NodeID
+      description: The node ID of the repository of the checked out branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Name
+      description: The name of the repository of the checked out branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.FullName
+      description: The full name of the repository of the checked out branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.Login
+      description: The user login of the owner of the repository of the checked out
+        branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.ID
+      description: The user ID of the owner of the repository of the checked out branch
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.Owner.NodeID
+      description: The user node ID of the owner of the repository of the checked
+        out branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.Type
+      description: The user type of the owner of the repository of the checked out
+        branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.SiteAdmin
+      description: Whether the owner of the repository of the checked out branch is
+        a site admin or not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Private
+      description: Whether the repository of the checked out branch is private or
+        not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Description
+      description: The description of the repository of the checked out branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Fork
+      description: Whether the repository of the checked out branch is a fork or not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Language
+      description: The language of the repository of the checked out branch
+      type: Unknown
+    - contextPath: GitHub.PR.Head.Repo.ForksCount
+      description: The number of forks of the repository of the checked out branch
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.StargazersCount
+      description: The number of stars of the repository of the checked out branch
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.WatchersCount
+      description: The number of entities watching the repository of the checked out
+        branch
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.Size
+      description: The size of the repository of the checked out branch
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.DefaultBranch
+      description: The default branch of the repository of the checked out branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.OpenIssuesCount
+      description: The open issues of the repository of the checked out branch
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.Topics
+      description: Topics listed for the repository of the checked out branch
+      type: Unknown
+    - contextPath: GitHub.PR.Head.Repo.HasIssues
+      description: Whether the repository of the checked out branch has issues or
+        not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasProjects
+      description: Whether the repository of the checked out branch has projects or
+        not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasWiki
+      description: Whether the repository of the checked out branch has a wiki or
+        not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasPages
+      description: Whether the repository of the checked out branch has pages or not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasDownloads
+      description: Whether the repository of the checked out branch has downloads
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Archived
+      description: Whether the repository of the checked out branch has been arvhived
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Disabled
+      description: Whether the repository of the checked out branch has been disabled
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.PushedAt
+      description: The date of the latest push to the repository of the checked out
+        branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.CreatedAt
+      description: The date of creation of the repository of the checked out branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.UpdatedAt
+      description: The date the repository of the checked out branch was last updated
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.AllowRebaseMerge
+      description: Whether the repository of the checked out branch permits rebase-style
+        merges or not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.AllowSquashMerge
+      description: Whether the repository of the checked out branch permits squash
+        merges or not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.AllowMergeCommit
+      description: Whether the repository of the checked out branch permits merge
+        commits or not
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.SubscribersCount
+      description: The number of entities subscribing to the repository of the checked
+        out branch
+      type: Number
+    - contextPath: GitHub.PR.Base.Label
+      description: The label of the base branch
+      type: String
+    - contextPath: GitHub.PR.Base.Ref
+      description: The reference of the base branch
+      type: String
+    - contextPath: GitHub.PR.Base.SHA
+      description: The SHA hash of the base branch
+      type: String
+    - contextPath: GitHub.PR.Base.User.Login
+      description: The login of the committer of the commit that the base branch points
+        to
+      type: String
+    - contextPath: GitHub.PR.Base.User.ID
+      description: The ID of the committer of the commit that the base branch points
+        to
+      type: Number
+    - contextPath: GitHub.PR.Base.User.NodeID
+      description: The node ID of the committer of the commit that the base branch
+        points to
+      type: String
+    - contextPath: GitHub.PR.Base.User.Type
+      description: The user type of the committer of the commit that the base branch
+        points to
+      type: String
+    - contextPath: GitHub.PR.Base.User.SiteAdmin
+      description: Whether the committer of the commit that the base branch points
+        to is a site admin or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.ID
+      description: The ID of the repository that the base branch belongs to
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.NodeID
+      description: The node ID of the repository that the base branch belongs to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Name
+      description: The name of the repository that the base branch belongs to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.FullName
+      description: The full name of the repository that the base branch belongs to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.Login
+      description: The user login of the owner of the repository that the base branch
+        belongs to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.ID
+      description: The user ID of the owner of the repository that the base branch
+        belongs to
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.Owner.NodeID
+      description: The user node ID of the owner of the repository that the base branch
+        belongs to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.Type
+      description: The user type of the owner of the repository that the base branch
+        belongs to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.SiteAdmin
+      description: Whether the owner of the repository that the base branch belongs
+        to is a site admin or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Private
+      description: Whether the repository that the base branch belongs to is private
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Description
+      description: The description of the repository that the base branch belongs
+        to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Fork
+      description: Whether the repository that the base branch belongs to is a fork
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Language
+      description: The language of the repository that the base branch belongs to
+      type: Unknown
+    - contextPath: GitHub.PR.Base.Repo.ForksCount
+      description: The number of times that the repository that the base branch belongs
+        to has been forked
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.StargazersCount
+      description: The number of times that the repository that the base branch belongs
+        to has been starred
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.WatchersCount
+      description: The number of entities watching the repository that the base branch
+        belongs to
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.Size
+      description: The size of the repository that the base branch belongs to
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.DefaultBranch
+      description: The default branch of the repository that the base branch belongs
+        to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.OpenIssuesCount
+      description: The number of open issues in the repository that the base branch
+        belongs to
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.Topics
+      description: Topics listed for the repository that the base branch belongs to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.HasIssues
+      description: Whether the repository that the base branch belongs to has issues
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasProjects
+      description: Whether the repository that the base branch belongs to has projects
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasWiki
+      description: Whether the repository that the base branch belongs to has a wiki
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasPages
+      description: Whether the repository that the base branch belongs to has pages
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasDownloads
+      description: Whether the repository that the base branch belongs to has downloads
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Archived
+      description: Whether the repository that the base branch belongs to is archived
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Disabled
+      description: Whether the repository that the base branch belongs to is disabled
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.PushedAt
+      description: The date that the repository that the base branch belongs to was
+        last pushed to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.CreatedAt
+      description: The date of creation of the repository that the base branch belongs
+        to
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.UpdatedAt
+      description: The date that the repository that the base branch belongs to was
+        last updated
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.AllowRebaseMerge
+      description: Whether the repository that the base branch belongs to allows rebase-style
+        merges or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.AllowSquashMerge
+      description: Whether the repository that the base branch belongs to allows squash
+        merges or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.AllowMergeCommit
+      description: Whether the repository that the base branch belongs to allows merge
+        commits or not
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.SubscribersCount
+      description: The number of entities that subscribe to the repository that the
+        base branch belongs to
+      type: Number
+    - contextPath: GitHub.PR.AuthorAssociation
+      description: The pull request author association
+      type: String
+    - contextPath: GitHub.PR.Draft
+      description: Whether the pull request is a draft or not
+      type: Boolean
+    - contextPath: GitHub.PR.Merged
+      description: Whether the pull request is merged or not
+      type: Boolean
+    - contextPath: GitHub.PR.Mergeable
+      description: Whether the pull request is mergeable or not
+      type: Boolean
+    - contextPath: GitHub.PR.Rebaseable
+      description: Whether the pull request is rebaseable or not
+      type: Boolean
+    - contextPath: GitHub.PR.MergeableState
+      description: The mergeable state of the pull request
+      type: String
+    - contextPath: GitHub.PR.MergedBy.Login
+      description: The login of the user who merged the pull request
+      type: String
+    - contextPath: GitHub.PR.MergedBy.ID
+      description: The ID of the user who merged the pull request
+      type: Number
+    - contextPath: GitHub.PR.MergedBy.NodeID
+      description: The node ID of the user who merged the pull request
+      type: String
+    - contextPath: GitHub.PR.MergedBy.Type
+      description: The type of the user who merged the pull request
+      type: String
+    - contextPath: GitHub.PR.MergedBy.SiteAdmin
+      description: Whether the user who merged the pull request is a site admin or
+        not
+      type: Boolean
+    - contextPath: GitHub.PR.Comments
+      description: The number of comments on the pull request
+      type: Number
+    - contextPath: GitHub.PR.ReviewComments
+      description: The number of review comments on the pull request
+      type: Number
+    - contextPath: GitHub.PR.MaintainerCanModify
+      description: Whether the maintainer can modify the pull request or not
+      type: Boolean
+    - contextPath: GitHub.PR.Commits
+      description: The number of commits in the pull request
+      type: Number
+    - contextPath: GitHub.PR.Additions
+      description: The number of additions in the pull request
+      type: Number
+    - contextPath: GitHub.PR.Deletions
+      description: The number of deletions in the pull request
+      type: Number
+    - contextPath: GitHub.PR.ChangedFiles
+      description: The number of changed files in the pull request
+      type: Number
+  - arguments:
+    - default: false
+      description: The name of the organization
+      isArray: false
+      name: organization
+      required: true
+      secret: false
+    deprecated: false
+    description: List the teams for an organization. Note that this API call is only
+      available to authenticated members of the organization.
+    execution: false
+    name: GitHub-list-teams
+    outputs:
+    - contextPath: GitHub.Team.ID
+      description: The ID of the team
+      type: Number
+    - contextPath: GitHub.Team.NodeID
+      description: The node ID of the team
+      type: String
+    - contextPath: GitHub.Team.Name
+      description: The name of the team
+      type: String
+    - contextPath: GitHub.Team.Slug
+      description: The slug of the team
+      type: String
+    - contextPath: GitHub.Team.Description
+      description: The description of the team
+      type: String
+    - contextPath: GitHub.Team.Privacy
+      description: The privacy setting of the team
+      type: String
+    - contextPath: GitHub.Team.Permission
+      description: The permissions of the team
+      type: String
+    - contextPath: GitHub.Team.Parent
+      description: The parent of the team
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The name of the branch to delete
+      isArray: false
+      name: branch_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a branch
+    execution: false
+    name: GitHub-delete-branch
+  - arguments:
+    - default: false
+      description: The issue number of the pull request.
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    deprecated: false
+    description: Lists all the review comments for a pull request.
+    execution: false
+    name: GitHub-list-pr-review-comments
+    outputs:
+    - contextPath: GitHub.PR.Number
+      description: The issue number of the pull request.
+      type: Number
+    - contextPath: GitHub.PR.ReviewComment.ID
+      description: The ID number of the pull request review comment.
+      type: Number
+    - contextPath: GitHub.PR.ReviewComment.NodeID
+      description: The Node ID of the pull request review comment.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.PullRequestReviewID
+      description: The ID of the pull request review.
+      type: Number
+    - contextPath: GitHub.PR.ReviewComment.DiffHunk
+      description: The diff hunk for which the review comment applies.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.Path
+      description: The file path of the proposed file changes for which the review
+        comment applies.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.Position
+      description: The position of the change for which the review comment applies.
+      type: Number
+    - contextPath: GitHub.PR.ReviewComment.OriginalPosition
+      description: The original position of the change for which the review comment
+        applies.
+      type: Number
+    - contextPath: GitHub.PR.ReviewComment.CommitID
+      description: The commit ID of the proposed change.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.OriginalCommitID
+      description: The commit ID of the commit before the proposed change.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.InReplyToID
+      description: The reply ID of the comment for which the review comment applies.
+      type: Number
+    - contextPath: GitHub.PR.ReviewComment.User.Login
+      description: The login of the user who created the review comment.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.User.ID
+      description: The ID of the user who created the review comment.
+      type: Number
+    - contextPath: GitHub.PR.ReviewComment.User.NodeID
+      description: The Node ID of the user who created the review comment.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.User.Type
+      description: The type of the user who created the review comment.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.User.SiteAdmin
+      description: Whether the user who created the review comment is a site administrator.
+        or not
+      type: Boolean
+    - contextPath: GitHub.PR.ReviewComment.Body
+      description: The body content of the review comment.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.CreatedAt
+      description: The time the review comment was created.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.UpdatedAt
+      description: The time the review comment was updated.
+      type: String
+    - contextPath: GitHub.PR.ReviewComment.AuthorAssociation
+      description: The association of the user who created the review comment.
+      type: String
+  - arguments:
+    - default: false
+      description: The new title of the pull request.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: The new body content of the pull request.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new state of the pull request. Can be "open", or "closed".
+      isArray: false
+      name: state
+      predefined:
+      - open
+      - closed
+      required: false
+      secret: false
+    - default: false
+      description: The name of the branch that you want your changes pulled, which
+        must be an existing branch in the current repository. You cannot update the
+        base branch in a pull request to point to another repository.
+      isArray: false
+      name: base
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether maintainers can modify the pull request.
+      isArray: false
+      name: maintainer_can_modify
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The issue number of the pull request for which to modify.
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates a pull request in a repository.
+    execution: false
+    name: GitHub-update-pull-request
+    outputs:
+    - contextPath: GitHub.PR.ID
+      description: The ID number of the pull request.
+      type: Number
+    - contextPath: GitHub.PR.NodeID
+      description: The Node ID of the pull request.
+      type: String
+    - contextPath: GitHub.PR.Number
+      description: The issue number of the pull request.
+      type: Number
+    - contextPath: GitHub.PR.State
+      description: The state of the pull request.
+      type: String
+    - contextPath: GitHub.PR.Locked
+      description: Whether the pull request is locked.
+      type: Boolean
+    - contextPath: GitHub.PR.Title
+      description: The title of the pull request.
+      type: String
+    - contextPath: GitHub.PR.User.Login
+      description: The login of the user who opened the pull request.
+      type: String
+    - contextPath: GitHub.PR.User.ID
+      description: The ID of the user who opened the pull request.
+      type: Number
+    - contextPath: GitHub.PR.User.NodeID
+      description: The Node ID of the user who opened the pull request.
+      type: String
+    - contextPath: GitHub.PR.User.Type
+      description: The type of the user who opened the pull request.
+      type: String
+    - contextPath: GitHub.PR.User.SiteAdmin
+      description: Whether the user who opened the pull request is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Body
+      description: The body content of the pull request.
+      type: String
+    - contextPath: GitHub.PR.Label.ID
+      description: The ID of the label.
+      type: Number
+    - contextPath: GitHub.PR.Label.NodeID
+      description: The Node ID of the label.
+      type: String
+    - contextPath: GitHub.PR.Label.Name
+      description: The name of the label.
+      type: String
+    - contextPath: GitHub.PR.Label.Description
+      description: The description of the label.
+      type: String
+    - contextPath: GitHub.PR.Label.Color
+      description: The hex color value of the label.
+      type: String
+    - contextPath: GitHub.PR.Label.Default
+      description: Whether the label is a default.
+      type: Boolean
+    - contextPath: GitHub.PR.Milestone.ID
+      description: The ID of the milestone.
+      type: Number
+    - contextPath: GitHub.PR.Milestone.NodeID
+      description: The Node ID of the milestone.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Number
+      description: The number of the milestone.
+      type: Number
+    - contextPath: GitHub.PR.Milestone.State
+      description: The state of the milestone.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Title
+      description: The title of the milestone.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Description
+      description: The description of the milestone.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.Login
+      description: The login of the milestone creator.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.ID
+      description: The ID the milestone creator.
+      type: Number
+    - contextPath: GitHub.PR.Milestone.Creator.NodeID
+      description: The Node ID of the milestone creator.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.Type
+      description: The type of the milestone creator.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.SiteAdmin
+      description: Whether the milestone creator is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Milestone.OpenIssues
+      description: The number of open issues with this milestone.
+      type: Number
+    - contextPath: GitHub.PR.Milestone.ClosedIssues
+      description: The number of closed issues with this milestone.
+      type: Number
+    - contextPath: GitHub.PR.Milestone.CreatedAt
+      description: The date the milestone was created.
+      type: String
+    - contextPath: GitHub.PR.Milestone.UpdatedAt
+      description: The date the milestone was updated.
+      type: String
+    - contextPath: GitHub.PR.Milestone.ClosedAt
+      description: The date the milestone was closed.
+      type: String
+    - contextPath: GitHub.PR.Milestone.DueOn
+      description: The due date for the milestone.
+      type: String
+    - contextPath: GitHub.PR.ActiveLockReason
+      description: The reason the pull request is locked.
+      type: String
+    - contextPath: GitHub.PR.CreatedAt
+      description: The date the pull request was created.
+      type: String
+    - contextPath: GitHub.PR.UpdatedAt
+      description: The date the pull request was updated.
+      type: String
+    - contextPath: GitHub.PR.ClosedAt
+      description: The date the pull request was closed.
+      type: String
+    - contextPath: GitHub.PR.MergedAt
+      description: The date the pull request was merged.
+      type: String
+    - contextPath: GitHub.PR.MergeCommitSHA
+      description: The SHA hash of the pull request's merge commit.
+      type: String
+    - contextPath: GitHub.PR.Assignee.Login
+      description: The login of the user assigned to the pull request.
+      type: String
+    - contextPath: GitHub.PR.Assignee.ID
+      description: The ID of the user assigned to the pull request.
+      type: Number
+    - contextPath: GitHub.PR.Assignee.NodeID
+      description: The Node ID of the user assigned to the pull request.
+      type: String
+    - contextPath: GitHub.PR.Assignee.Type
+      description: The type of the user assigned to the pull request.
+      type: String
+    - contextPath: GitHub.PR.Assignee.SiteAdmin
+      description: Whether the user assigned to the pull request is a site administrator.
+        not
+      type: Boolean
+    - contextPath: GitHub.PR.RequestedReviewer.Login
+      description: The login of the user requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.ID
+      description: The ID of the user requested for review.
+      type: Number
+    - contextPath: GitHub.PR.RequestedReviewer.NodeID
+      description: The Node ID of the user requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.Type
+      description: The type of the user requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.SiteAdmin
+      description: Whether the user requested for review is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.RequestedTeam.ID
+      description: The ID of the team requested for review.
+      type: Number
+    - contextPath: GitHub.PR.RequestedTeam.NodeID
+      description: The Node ID of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Name
+      description: The name of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Slug
+      description: The slug of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Description
+      description: The description of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Privacy
+      description: The privacy setting of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Permission
+      description: The permissions of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Parent
+      description: The parent of the team requested for review.
+      type: Unknown
+    - contextPath: GitHub.PR.Head.Label
+      description: The label of the branch for which the HEAD points.
+      type: String
+    - contextPath: GitHub.PR.Head.Ref
+      description: The reference of the branch for which the HEAD points.
+      type: String
+    - contextPath: GitHub.PR.Head.SHA
+      description: The SHA hash of the commit for which the HEAD points.
+      type: String
+    - contextPath: GitHub.PR.Head.User.Login
+      description: The committer login of the HEAD commit of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.User.ID
+      description: The committer ID of the HEAD commit of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.User.NodeID
+      description: The Node committer ID of the HEAD commit of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.User.Type
+      description: The committer type of the HEAD commit of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.User.SiteAdmin
+      description: Whether the committer of the HEAD commit of the checked out branch
+        is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.ID
+      description: The ID of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.NodeID
+      description: The Node ID of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Name
+      description: The name of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.FullName
+      description: The full name of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.Login
+      description: The user login of the owner of the repository of the checked out
+        branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.ID
+      description: The user ID of the owner of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.Owner.NodeID
+      description: The user node ID of the owner of the repository of the checked.
+        out branch
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.Type
+      description: The user type of the owner of the repository of the checked out
+        branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.SiteAdmin
+      description: Whether the owner of the repository of the checked out branch is
+        a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Private
+      description: Whether the repository of the checked out branch is private.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Description
+      description: The description of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Fork
+      description: Whether the repository of the checked out branch is a fork.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Language
+      description: The language of the repository of the checked out branch.
+      type: Unknown
+    - contextPath: GitHub.PR.Head.Repo.ForksCount
+      description: The number of forks of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.StargazersCount
+      description: The number of stars of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.WatchersCount
+      description: The number of entities watching the repository of the checked out
+        branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.Size
+      description: The size of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.DefaultBranch
+      description: The default branch of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.OpenIssuesCount
+      description: The open issues of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.Topics
+      description: Topics listed for the repository of the checked out branch.
+      type: Unknown
+    - contextPath: GitHub.PR.Head.Repo.HasIssues
+      description: Whether the repository of the checked out branch has issues.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasProjects
+      description: Whether the repository of the checked out branch has projects.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasWiki
+      description: Whether the repository of the checked out branch has a wiki.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasPages
+      description: Whether the repository of the checked out branch has pages.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasDownloads
+      description: Whether the repository of the checked out branch has downloads.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Archived
+      description: Whether the repository of the checked out branch has been archived.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Disabled
+      description: Whether the repository of the checked out branch has been disabled.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.PushedAt
+      description: The date of the latest push to the repository of the checked out
+        branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.CreatedAt
+      description: The date of creation of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.UpdatedAt
+      description: The date the repository of the checked out branch was last updated.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.AllowRebaseMerge
+      description: Whether the repository of the checked out branch permits rebase-style
+        merges.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.AllowSquashMerge
+      description: Whether the repository of the checked out branch permits squash
+        merges.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.AllowMergeCommit
+      description: Whether the repository of the checked out branch permits merge
+        commits.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.SubscribersCount
+      description: The number of entities subscribing to the repository of the checked
+        out branch.
+      type: Number
+    - contextPath: GitHub.PR.Base.Label
+      description: The label of the base branch.
+      type: String
+    - contextPath: GitHub.PR.Base.Ref
+      description: The reference of the base branch.
+      type: String
+    - contextPath: GitHub.PR.Base.SHA
+      description: The SHA hash of the base branch.
+      type: String
+    - contextPath: GitHub.PR.Base.User.Login
+      description: The committer login of the commit for which the base branch points.
+      type: String
+    - contextPath: GitHub.PR.Base.User.ID
+      description: The ID of the committer of the commit for which the base branch
+        points.
+      type: Number
+    - contextPath: GitHub.PR.Base.User.NodeID
+      description: The committer Node ID of the commit for which the base branch points.
+      type: String
+    - contextPath: GitHub.PR.Base.User.Type
+      description: The user committer type of the commit for which the base branch
+        points.
+      type: String
+    - contextPath: GitHub.PR.Base.User.SiteAdmin
+      description: Whether the committer of the commit for which the base branch points
+        is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.ID
+      description: The ID of the repository for which the base branch belongs.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.NodeID
+      description: The Node ID of the repository for which the base branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Name
+      description: The name of the repository for which the base branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.FullName
+      description: The full name of the repository for which the base branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.Login
+      description: The user login of the owner of the repository for which the base
+        branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.ID
+      description: The user ID of the owner of the repository for which the base branch
+        belongs.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.Owner.NodeID
+      description: The user node ID of the owner of the repository for which the base
+        branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.Type
+      description: The user type of the owner of the repository for which the base
+        branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.SiteAdmin
+      description: Whether the owner of the repository for which the base branch belongs
+        to is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Private
+      description: Whether the repository for which the base branch belongs is private.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Description
+      description: The description of the repository for which the base branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Fork
+      description: Whether the repository for which the base branch belongs to is
+        a fork.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Language
+      description: The language of the repository for which the base branch belongs.
+      type: Unknown
+    - contextPath: GitHub.PR.Base.Repo.ForksCount
+      description: The number of times that the repository for which the base branch
+        belongs has been forked.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.StargazersCount
+      description: The number of times that the repository for which the base branch
+        belongs has been starred.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.WatchersCount
+      description: The number of entities watching the repository for which the base
+        branch belongs.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.Size
+      description: The size of the repository for which the base branch belongs.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.DefaultBranch
+      description: The default branch of the repository for which the base branch
+        belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.OpenIssuesCount
+      description: The number of open issues in the repository for which the base
+        branch belongs.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.Topics
+      description: Topics listed for the repository for which the base branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.HasIssues
+      description: Whether the repository for which the base branch belongs has issues.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasProjects
+      description: Whether the repository for which the base branch belongs has projects.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasWiki
+      description: Whether the repository for which the base branch belongs has a
+        wiki.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasPages
+      description: Whether the repository for which the base branch belongs to has
+        pages.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasDownloads
+      description: Whether the repository for which the base branch belongs has downloads.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Archived
+      description: Whether the repository for which the base branch belongs is archived.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Disabled
+      description: Whether the repository for which the base branch belongs is disabled.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.PushedAt
+      description: The date that the repository for which the base branch belongs
+        to was last pushed.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.CreatedAt
+      description: The date of creation of the repository for which the base branch
+        belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.UpdatedAt
+      description: The date that the repository for which the base branch belongs
+        was last updated.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.AllowRebaseMerge
+      description: Whether the repository for which the base branch belongs allows
+        rebase-style merges.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.AllowSquashMerge
+      description: Whether the repository for which the base branch belongs allows
+        squash merges.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.AllowMergeCommit
+      description: Whether the repository for which the base branch belongs allows
+        merge commits.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.SubscribersCount
+      description: The number of entities for which subscribe to the repository that
+        the base branch belongs.
+      type: Number
+    - contextPath: GitHub.PR.AuthorAssociation
+      description: The pull request author association.
+      type: String
+    - contextPath: GitHub.PR.Draft
+      description: Whether the pull request is a draft.
+      type: Boolean
+    - contextPath: GitHub.PR.Merged
+      description: Whether the pull request is merged.
+      type: Boolean
+    - contextPath: GitHub.PR.Mergeable
+      description: Whether the pull request is mergeable.
+      type: Boolean
+    - contextPath: GitHub.PR.Rebaseable
+      description: Whether the pull request is rebaseable.
+      type: Boolean
+    - contextPath: GitHub.PR.MergeableState
+      description: The mergeable state of the pull request.
+      type: String
+    - contextPath: GitHub.PR.MergedBy.Login
+      description: The login of the user who merged the pull request.
+      type: String
+    - contextPath: GitHub.PR.MergedBy.ID
+      description: The ID of the user who merged the pull request.
+      type: Number
+    - contextPath: GitHub.PR.MergedBy.NodeID
+      description: The Node ID of the user who merged the pull request.
+      type: String
+    - contextPath: GitHub.PR.MergedBy.Type
+      description: The type of the user who merged the pull request.
+      type: String
+    - contextPath: GitHub.PR.MergedBy.SiteAdmin
+      description: Whether the user who merged the pull request is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Comments
+      description: The number of comments on the pull request.
+      type: Number
+    - contextPath: GitHub.PR.ReviewComments
+      description: The number of review comments on the pull request.
+      type: Number
+    - contextPath: GitHub.PR.MaintainerCanModify
+      description: Whether the maintainer can modify the pull request.
+      type: Boolean
+    - contextPath: GitHub.PR.Commits
+      description: The number of commits in the pull request.
+      type: Number
+    - contextPath: GitHub.PR.Additions
+      description: The number of additions in the pull request.
+      type: Number
+    - contextPath: GitHub.PR.Deletions
+      description: The number of deletions in the pull request.
+      type: Number
+    - contextPath: GitHub.PR.ChangedFiles
+      description: The number of changed files in the pull request.
+      type: Number
+  - arguments:
+    - default: false
+      description: The issue number of the pull request to check.
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Returns a merged pull request. If the pull request has been merged,
+      the API returns ''Status: 204 No Content''. If the pull request has not been
+      merged the API returns ''Status: 404 Not Found'''
+    execution: false
+    name: GitHub-is-pr-merged
+  - arguments:
+    - default: false
+      description: The title of the pull request.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: The name of the branch where the changes are made.
+      isArray: false
+      name: head
+      required: true
+      secret: false
+    - default: false
+      description: The name of the branch you want the changes pulled into, which
+        must be an existing branch on the current repository.
+      isArray: false
+      name: base
+      required: true
+      secret: false
+    - default: false
+      description: The contents of the pull request.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether maintainers can modify the pull request.
+      isArray: false
+      name: maintainer_can_modify
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether the pull request is a draft. For more information,
+        see https://help.github.com/en/articles/about-pull-requests#draft-pull-requests.
+      isArray: false
+      name: draft
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new pull request.
+    execution: false
+    name: GitHub-create-pull-request
+    outputs:
+    - contextPath: GitHub.PR.ID
+      description: The ID number of the pull request.
+      type: Number
+    - contextPath: GitHub.PR.NodeID
+      description: The Node ID of the pull request.
+      type: String
+    - contextPath: GitHub.PR.Number
+      description: The issue number of the pull request.
+      type: Number
+    - contextPath: GitHub.PR.State
+      description: The state of the pull request.
+      type: String
+    - contextPath: GitHub.PR.Locked
+      description: Whether the pull request is locked.
+      type: Boolean
+    - contextPath: GitHub.PR.Title
+      description: The title of the pull request.
+      type: String
+    - contextPath: GitHub.PR.User.Login
+      description: The login of the user who opened the pull request.
+      type: String
+    - contextPath: GitHub.PR.User.ID
+      description: The ID of the user who opened the pull request.
+      type: Number
+    - contextPath: GitHub.PR.User.NodeID
+      description: The Node ID of the user who opened the pull request.
+      type: String
+    - contextPath: GitHub.PR.User.Type
+      description: The user type who opened the pull request.
+      type: String
+    - contextPath: GitHub.PR.User.SiteAdmin
+      description: Whether the user who opened the pull request is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Body
+      description: The body content of the pull request.
+      type: String
+    - contextPath: GitHub.PR.Label.ID
+      description: The ID of the label.
+      type: Number
+    - contextPath: GitHub.PR.Label.NodeID
+      description: The Node ID of the label.
+      type: String
+    - contextPath: GitHub.PR.Label.Name
+      description: The name of the label.
+      type: String
+    - contextPath: GitHub.PR.Label.Description
+      description: The description of the label.
+      type: String
+    - contextPath: GitHub.PR.Label.Color
+      description: The hex color value of the label.
+      type: String
+    - contextPath: GitHub.PR.Label.Default
+      description: Whether the label is a default.
+      type: Boolean
+    - contextPath: GitHub.PR.Milestone.ID
+      description: The ID of the milestone.
+      type: Number
+    - contextPath: GitHub.PR.Milestone.NodeID
+      description: The Node ID of the milestone.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Number
+      description: The number of the milestone.
+      type: Number
+    - contextPath: GitHub.PR.Milestone.State
+      description: The state of the milestone.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Title
+      description: The title of the milestone.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Description
+      description: The description of the milestone.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.Login
+      description: The login of the milestone creator.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.ID
+      description: The ID the milestone creator.
+      type: Number
+    - contextPath: GitHub.PR.Milestone.Creator.NodeID
+      description: The Node ID of the milestone creator.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.Type
+      description: The type of the milestone creator.
+      type: String
+    - contextPath: GitHub.PR.Milestone.Creator.SiteAdmin
+      description: Whether the milestone creator is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Milestone.OpenIssues
+      description: The number of open issues with this milestone.
+      type: Number
+    - contextPath: GitHub.PR.Milestone.ClosedIssues
+      description: The number of closed issues with this milestone.
+      type: Number
+    - contextPath: GitHub.PR.Milestone.CreatedAt
+      description: The date the milestone was created.
+      type: String
+    - contextPath: GitHub.PR.Milestone.UpdatedAt
+      description: The date the milestone was updated.
+      type: String
+    - contextPath: GitHub.PR.Milestone.ClosedAt
+      description: The date the milestone was closed.
+      type: String
+    - contextPath: GitHub.PR.Milestone.DueOn
+      description: The due date for the milestone.
+      type: String
+    - contextPath: GitHub.PR.ActiveLockReason
+      description: The reason the pull request is locked.
+      type: String
+    - contextPath: GitHub.PR.CreatedAt
+      description: The date the pull request was created.
+      type: String
+    - contextPath: GitHub.PR.UpdatedAt
+      description: The date the pull request was updated.
+      type: String
+    - contextPath: GitHub.PR.ClosedAt
+      description: The date the pull request was closed.
+      type: String
+    - contextPath: GitHub.PR.MergedAt
+      description: The date the pull request was merged.
+      type: String
+    - contextPath: GitHub.PR.MergeCommitSHA
+      description: The SHA hash of the pull request's merge commit.
+      type: String
+    - contextPath: GitHub.PR.Assignee.Login
+      description: The login of the user assigned to the pull request.
+      type: String
+    - contextPath: GitHub.PR.Assignee.ID
+      description: The ID of the user assigned to the pull request.
+      type: Number
+    - contextPath: GitHub.PR.Assignee.NodeID
+      description: The Node ID of the user assigned to the pull request.
+      type: String
+    - contextPath: GitHub.PR.Assignee.Type
+      description: The type of the user assigned to the pull request.
+      type: String
+    - contextPath: GitHub.PR.Assignee.SiteAdmin
+      description: Whether the user assigned to the pull request is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.RequestedReviewer.Login
+      description: The login of the user requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.ID
+      description: The ID of the user requested for review.
+      type: Number
+    - contextPath: GitHub.PR.RequestedReviewer.NodeID
+      description: The Node ID of the user requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.Type
+      description: The type of the user requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.SiteAdmin
+      description: Whether the user requested for review is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.RequestedTeam.ID
+      description: The ID of the team requested for review.
+      type: Number
+    - contextPath: GitHub.PR.RequestedTeam.NodeID
+      description: The Node ID of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Name
+      description: The name of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Slug
+      description: The slug of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Description
+      description: The description of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Privacy
+      description: The privacy setting of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Permission
+      description: The permissions of the team requested for review.
+      type: String
+    - contextPath: GitHub.PR.RequestedTeam.Parent
+      description: The parent of the team requested for review.
+      type: Unknown
+    - contextPath: GitHub.PR.Head.Label
+      description: The label of the branch for which the HEAD points.
+      type: String
+    - contextPath: GitHub.PR.Head.Ref
+      description: The reference of the branch for which the HEAD points.
+      type: String
+    - contextPath: GitHub.PR.Head.SHA
+      description: The SHA hash of the commit for which the HEAD points.
+      type: String
+    - contextPath: GitHub.PR.Head.User.Login
+      description: The committer login of the HEAD commit of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.User.ID
+      description: The committer ID of the HEAD commit of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.User.NodeID
+      description: The Node ID of the committer of the HEAD commit of the checked
+        out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.User.Type
+      description: The committer type of the HEAD commit of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.User.SiteAdmin
+      description: Whether the committer of the HEAD commit of the checked out branch
+        is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.ID
+      description: The ID of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.NodeID
+      description: The Node ID of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Name
+      description: The name of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.FullName
+      description: The full name of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.Login
+      description: The user login of the owner of the repository of the checked out
+        branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.ID
+      description: The user ID of the owner of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.Owner.NodeID
+      description: The user Node ID of the owner of the repository of the checked
+        out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.Type
+      description: The user type of the owner of the repository of the checked out
+        branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Owner.SiteAdmin
+      description: Whether the owner of the repository of the checked out branch is
+        a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Private
+      description: Whether the repository of the checked out branch is private.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Description
+      description: The description of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.Fork
+      description: Whether the repository of the checked out branch is a fork.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Language
+      description: The language of the repository of the checked out branch.
+      type: Unknown
+    - contextPath: GitHub.PR.Head.Repo.ForksCount
+      description: The number of forks of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.StargazersCount
+      description: The number of stars of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.WatchersCount
+      description: The number of entities watching the repository of the checked out
+        branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.Size
+      description: The size of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.DefaultBranch
+      description: The default branch of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.OpenIssuesCount
+      description: The open issues of the repository of the checked out branch.
+      type: Number
+    - contextPath: GitHub.PR.Head.Repo.Topics
+      description: Topics listed for the repository of the checked out branch.
+      type: Unknown
+    - contextPath: GitHub.PR.Head.Repo.HasIssues
+      description: Whether the repository of the checked out branch has issues.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasProjects
+      description: Whether the repository of the checked out branch has projects.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasWiki
+      description: Whether the repository of the checked out branch has a wiki.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasPages
+      description: Whether the repository of the checked out branch has pages.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.HasDownloads
+      description: Whether the repository of the checked out branch has downloads.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Archived
+      description: Whether the repository of the checked out branch has been archived.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.Disabled
+      description: Whether the repository of the checked out branch has been disabled.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.PushedAt
+      description: The date of the latest push to the repository of the checked out.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.CreatedAt
+      description: The date of creation of the repository of the checked out branch.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.UpdatedAt
+      description: The date the repository of the checked out branch was last updated.
+      type: String
+    - contextPath: GitHub.PR.Head.Repo.AllowRebaseMerge
+      description: Whether the repository of the checked out branch permits rebase-style
+        merges.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.AllowSquashMerge
+      description: Whether the repository of the checked out branch permits squash
+        merges.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.AllowMergeCommit
+      description: Whether the repository of the checked out branch permits merge
+        commits.
+      type: Boolean
+    - contextPath: GitHub.PR.Head.Repo.SubscribersCount
+      description: The number of entities subscribing to the repository of the checked
+        out.
+      type: Number
+    - contextPath: GitHub.PR.Base.Label
+      description: The label of the base branch.
+      type: String
+    - contextPath: GitHub.PR.Base.Ref
+      description: The reference of the base branch.
+      type: String
+    - contextPath: GitHub.PR.Base.SHA
+      description: The SHA hash of the base branch.
+      type: String
+    - contextPath: GitHub.PR.Base.User.Login
+      description: The committer login of the commit for which the base branch points.
+      type: String
+    - contextPath: GitHub.PR.Base.User.ID
+      description: The ID of the committer of the commit for which the base branch
+        points. to
+      type: Number
+    - contextPath: GitHub.PR.Base.User.NodeID
+      description: The committer Node ID of the commit for which the base branch points.
+      type: String
+    - contextPath: GitHub.PR.Base.User.Type
+      description: The user type of the committer for which the commit base branch
+        points.
+      type: String
+    - contextPath: GitHub.PR.Base.User.SiteAdmin
+      description: Whether the committer of the commit for which the base branch points
+        to is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.ID
+      description: The ID of the repository for which the base branch belongs.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.NodeID
+      description: The Node ID of the repository for which the base branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Name
+      description: The name of the repository for which the base branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.FullName
+      description: The full name of the repository for which the base branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.Login
+      description: The user login of the owner of the repository for which the base
+        branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.ID
+      description: The user ID of the owner of the repository for which the base branch
+        belongs.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.Owner.NodeID
+      description: The user node ID of the owner of the repository for which the base
+        branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.Type
+      description: The user type of the owner of the repository for which the base
+        branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Owner.SiteAdmin
+      description: Whether the owner of the repository that the base branch belongs
+        to is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Private
+      description: Whether the repository for which the base branch belongs to is
+        private.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Description
+      description: The description of the repository for which the base branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.Fork
+      description: Whether the repository that the base branch belongs to is a fork.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Language
+      description: The language of the repository for which the base branch belongs.
+      type: Unknown
+    - contextPath: GitHub.PR.Base.Repo.ForksCount
+      description: The number of times that the repository for which the base branch
+        belongs has been forked.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.StargazersCount
+      description: The number of times that the repository that the base branch belongs
+        to has been starred.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.WatchersCount
+      description: The number of entities watching the repository for which the base
+        branch belongs.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.Size
+      description: The size of the repository for which the base branch belongs.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.DefaultBranch
+      description: The default branch of the repository for which the base branch
+        belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.OpenIssuesCount
+      description: The number of open issues in the repository for which the base
+        branch belongs.
+      type: Number
+    - contextPath: GitHub.PR.Base.Repo.Topics
+      description: Topics listed for the repository for which the base branch belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.HasIssues
+      description: Whether the repository for which the base branch belongs to has
+        issues.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasProjects
+      description: Whether the repository for which the base branch belongs to has
+        projects.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasWiki
+      description: Whether the repository for which the base branch belongs to has
+        a wiki.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasPages
+      description: Whether the repository for which the base branch belongs to has
+        pages.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.HasDownloads
+      description: Whether the repository for which the base branch belongs to has
+        downloads.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Archived
+      description: Whether the repository for which the base branch belongs to is
+        archived.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.Disabled
+      description: Whether the repository for which the base branch belongs to is
+        disabled.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.PushedAt
+      description: The date that the repository for which the base branch belongs
+        was last pushed.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.CreatedAt
+      description: The date of creation of the repository for which the base branch
+        belongs.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.UpdatedAt
+      description: The date that the repository for which the base branch belongs
+        was last updated.
+      type: String
+    - contextPath: GitHub.PR.Base.Repo.AllowRebaseMerge
+      description: Whether the repository for which the base branch belongs allows
+        rebase-style merges.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.AllowSquashMerge
+      description: Whether the repository for which the base branch belongs allows
+        squash merges.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.AllowMergeCommit
+      description: Whether the repository for which the base branch belongs allows
+        merge commits.
+      type: Boolean
+    - contextPath: GitHub.PR.Base.Repo.SubscribersCount
+      description: The number of entities that subscribe to the repository for which
+        the base branch belongs.
+      type: Number
+    - contextPath: GitHub.PR.AuthorAssociation
+      description: The pull request author association.
+      type: String
+    - contextPath: GitHub.PR.Draft
+      description: Whether the pull request is a draft.
+      type: Boolean
+    - contextPath: GitHub.PR.Merged
+      description: Whether the pull request is merged.
+      type: Boolean
+    - contextPath: GitHub.PR.Mergeable
+      description: Whether the pull request is mergeable.
+      type: Boolean
+    - contextPath: GitHub.PR.Rebaseable
+      description: Whether the pull request is rebaseable.
+      type: Boolean
+    - contextPath: GitHub.PR.MergeableState
+      description: The mergeable state of the pull request.
+      type: String
+    - contextPath: GitHub.PR.MergedBy.Login
+      description: The login of the user who merged the pull request.
+      type: String
+    - contextPath: GitHub.PR.MergedBy.ID
+      description: The ID of the user who merged the pull request.
+      type: Number
+    - contextPath: GitHub.PR.MergedBy.NodeID
+      description: The Node ID of the user who merged the pull request.
+      type: String
+    - contextPath: GitHub.PR.MergedBy.Type
+      description: The user type who merged the pull request.
+      type: String
+    - contextPath: GitHub.PR.MergedBy.SiteAdmin
+      description: Whether the user who merged the pull request is a site administrator.
+      type: Boolean
+    - contextPath: GitHub.PR.Comments
+      description: The number of comments on the pull request.
+      type: Number
+    - contextPath: GitHub.PR.ReviewComments
+      description: The number of review comments on the pull request.
+      type: Number
+    - contextPath: GitHub.PR.MaintainerCanModify
+      description: Whether the maintainer can modify the pull request.
+      type: Boolean
+    - contextPath: GitHub.PR.Commits
+      description: The number of commits in the pull request.
+      type: Number
+    - contextPath: GitHub.PR.Additions
+      description: The number of additions in the pull request.
+      type: Number
+    - contextPath: GitHub.PR.Deletions
+      description: The number of deletions in the pull request.
+      type: Number
+    - contextPath: GitHub.PR.ChangedFiles
+      description: The number of changed files in the pull request.
+      type: Number
+  - arguments:
+    - default: false
+      description: The repository owner.
+      isArray: false
+      name: owner
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the usage details of GitHub action workflows of private repositories,
+      by repository owner.
+    execution: false
+    name: Github-get-github-actions-usage
+    outputs:
+    - contextPath: GitHub.ActionsUsage.RepositoryName
+      description: The name of the private repository.
+      type: String
+    - contextPath: GitHub.ActionsUsage.WorkflowID
+      description: The workflow ID of the GitHub action.
+      type: Number
+    - contextPath: GitHub.ActionsUsage.WorkflowName
+      description: The display name of the GitHub action workflow.
+      type: String
+    - contextPath: GitHub.ActionsUsage.WorkflowUsage
+      description: GitHub action worflow usage on different OS.
+      type: Unknown
+  dockerimage: demisto/pyjwt3:1.0.0.10828
+  feed: false
+  isfetch: true
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: |-
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    from typing import Union, Any
+    from datetime import datetime
+    import urllib3
+    from tempfile import NamedTemporaryFile
+    from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
+    from gevent.pywsgi import WSGIServer
+    from flask import Flask, Response, request
+    from multiprocessing import Process
+    from typing import Any, Dict, cast
+
+    # Disable insecure warnings
+    urllib3.disable_warnings()
+
+    class Handler:
+        @staticmethod
+        def write(msg):
+            demisto.info(msg)
+
+
+    ''' GLOBALS/PARAMS '''
+
+    USER = demisto.params().get('user')
+    TOKEN = demisto.params().get('token', '')
+    PRIVATE_KEY = demisto.params().get('credentials', {})
+    PRIVATE_KEY = PRIVATE_KEY.get('credentials', {}).get('sshkey', '') if PRIVATE_KEY else PRIVATE_KEY
+    INTEGRATION_ID = demisto.params().get('integration_id')
+    INSTALLATION_ID = demisto.params().get('installation_id')
+    BASE_URL = 'https://api.github.com'
+    REPOSITORY = demisto.params().get('repository')
+    USE_SSL = not demisto.params().get('insecure', False)
+    FETCH_TIME = demisto.params().get('fetch_time', '3')
+
+    USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
+    ISSUE_SUFFIX = USER_SUFFIX + '/issues'
+    RELEASE_SUFFIX = USER_SUFFIX + '/releases'
+    PULLS_SUFFIX = USER_SUFFIX + '/pulls'
+
+    RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
+    ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
+                     'Assignees', 'Labels']
+
+    APP: Flask = Flask('Github-LRI')
+    XSOAR_LOGGER: Handler = Handler()
+
+    CERTIFICATE: str = demisto.params().get('certificate', '')
+    CERT_PRIVATE_KEY: str = demisto.params().get('private_key', '')
+
+    # Headers to be sent in requests
+    MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def create_jwt(private_key: bytes, integration_id: str):
+        """
+        Create a JWT token used for getting access token. It's needed for github bots.
+        POSTs https://api.github.com/app/installations/<installation_id>/access_tokens
+        :param private_key: bytes: github's private key
+        :param integration_id: str: ID of the github integration (bot)
+        """
+        now = int(time.time())
+        expiration = 60
+        payload = {"iat": now, "exp": now + expiration, "iss": integration_id}
+        jwt_token = jwt.encode(payload, private_key, algorithm='RS256')
+        return jwt_token.decode()
+
+
+    def get_installation_access_token(installation_id: str, jwt_token: str):
+        """
+        Get an access token for the given installation id.
+        POSTs https://api.github.com/app/installations/<installation_id>/access_tokens
+        :param installation_id: str: the id of the installation (where the bot was installed)
+        :param jwt_token: str token needed in the request for retrieving the access token
+        """
+        response = requests.post(
+            "{}/app/installations/{}/access_tokens".format(
+                BASE_URL, installation_id
+            ),
+            headers={
+                "Authorization": "Bearer {}".format(jwt_token),
+                "Accept": MEDIA_TYPE_INTEGRATION_PREVIEW,
+            },
+        )
+        if response.status_code == 201:
+            return response.json()['token']
+        elif response.status_code == 403:
+            return_error('403 Forbidden - The credentials are incorrect')
+        elif response.status_code == 404:
+            return_error('404 Not found - Installation wasn\'t found')
+        else:
+            return_error(f'Encountered an error: {response.text}')
+
+
+    def safe_get(obj_to_fetch_from: dict, what_to_fetch: str, default_val: Union[dict, list, str]) -> Any:
+        """Guarantees the default value in place of a Nonetype object when the value for a given key is explicitly None
+
+        Args:
+            obj_to_fetch_from (dict): The dictionary to fetch from
+            what_to_fetch (str): The key for the desired value
+            default_val: The default value to set instead of None
+
+        Returns:
+            The fetched value unless it is None in which case the default is returned instead
+        """
+        val = obj_to_fetch_from.get(what_to_fetch, default_val)
+        if val is None:
+            val = default_val
+        return val
+
+
+    def http_request(method, url_suffix, params=None, data=None):
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=json.dumps(data),
+            headers=HEADERS
+        )
+        if res.status_code >= 400:
+            try:
+                json_res = res.json()
+
+                if json_res.get('errors') is None:
+                    return_error('Error in API call to the GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+
+                else:
+                    error_code = json_res.get('errors')[0].get('code')
+                    if error_code == 'missing_field':
+                        return_error(
+                            'Error: the field: "{}" requires a value'.format(json_res.get('errors')[0].get('field')))
+
+                    elif error_code == 'invalid':
+                        field = json_res.get('errors')[0].get('field')
+                        if field == 'q':
+                            return_error('Error: invalid query - {}'.format(json_res.get('errors')[0].get('message')))
+
+                        else:
+                            return_error('Error: the field: "{}" has an invalid value'.format(field))
+
+                    elif error_code == 'missing':
+                        return_error('Error: {} does not exist'.format(json_res.get('errors')[0].get('resource')))
+
+                    elif error_code == 'already_exists':
+                        return_error('Error: the field {} must be unique'.format(json_res.get('errors')[0].get('field')))
+
+                    else:
+                        return_error(
+                            'Error in API call to the GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+
+            except ValueError:
+                return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+
+        try:
+            if res.status_code == 204:
+                return res
+            else:
+                return res.json()
+
+        except Exception as excep:
+            return_error('Error in HTTP request - {}'.format(str(excep)))
+
+
+    def data_formatting(title, body, labels, assignees, state):
+        """This method creates a dictionary to be used as "data" field in an http request."""
+        data = {}
+        if title is not None:
+            data['title'] = title
+
+        if body is not None:
+            data['body'] = body
+
+        if state is not None:
+            data['state'] = state
+
+        if labels is not None:
+            data['labels'] = labels.split(',')
+
+        if assignees is not None:
+            data['assignees'] = assignees.split(',')
+
+        return data
+
+
+    def context_create_issue(response, issue):
+        """ Create GitHub.Issue EntryContext and results to be printed in Demisto.
+
+        Args:
+            response (dict): The raw HTTP response to be inserted to the 'Contents' field.
+            issue (dict or list): A dictionary or a list of dictionaries formatted for Demisto results.
+        """
+        ec = {
+            'GitHub.Issue(val.Repository == obj.Repository && val.ID == obj.ID)': issue
+        }
+        return_outputs(tableToMarkdown("Issues:", issue, headers=ISSUE_HEADERS, removeNull=True), ec, response)
+
+
+    def list_create(issue, list_name, element_name):
+        """ Creates a list if parameters exist in issue.
+
+        Args:
+            issue(dict): an issue from GitHub.
+            list_name (str): the name of the list in the issue.
+            element_name (str): the field name of the element in the list.
+
+        Returns:
+            The created list or None if it does not exist.
+        """
+        if issue.get(list_name) is not None:
+            return [element.get(element_name) for element in issue.get(list_name)]
+
+        else:
+            None
+
+
+    def issue_format(issue):
+        """ Create a dictionary with selected fields representing an issue in Demisto.
+
+        Args:
+            issue (dict): An HTTP response representing an issue, formatted as a dictionary
+
+        Returns:
+            (dict). representing an issue in Demisto.
+        """
+        closed_by = None
+        if issue.get('closed_by') is not None and issue.get('state') == 'closed':
+            closed_by = issue.get('closed_by').get('login')
+
+        form = {
+            'ID': issue.get('number'),
+            'Repository': REPOSITORY,
+            'Title': issue.get('title'),
+            'Body': issue.get('body'),
+            'State': issue.get('state'),
+            'Labels': list_create(issue, 'labels', 'name'),
+            'Assignees': list_create(issue, 'assignees', 'login'),
+            'Created_at': issue.get('created_at'),
+            'Updated_at': issue.get('updated_at'),
+            'Closed_at': issue.get('closed_at'),
+            'Closed_by': closed_by
+        }
+        return form
+
+
+    def create_issue_table(issue_list, response, limit):
+        """ Get an HTTP response and a list containing several issues, sends each issue to be reformatted.
+
+        Args:
+            issue_list(list): derived from the HTTP response
+            response (dict):A raw HTTP response sent for 'Contents' field in context
+
+        Returns:
+            The issues are sent to Demisto as a list.
+        """
+        issue_list.reverse()
+        issue_table = []
+        issue_count = 0
+        for issue in issue_list:
+            issue_table.append(issue_format(issue))
+            issue_count = issue_count + 1
+            if issue_count == limit:
+                break
+
+        context_create_issue(response, issue_table)
+
+
+    def format_commit_outputs(commit: dict = {}) -> dict:
+        """Take GitHub API commit data and format to expected context outputs
+
+        Args:
+            commit (dict): commit data returned from GitHub API
+
+        Returns:
+            (dict): commit object formatted to expected context outputs
+        """
+        author = commit.get('author', {})
+        ec_author = {
+            'Date': author.get('date'),
+            'Name': author.get('name'),
+            'Email': author.get('email')
+        }
+        committer = commit.get('committer', {})
+        ec_committer = {
+            'Date': committer.get('date'),
+            'Name': committer.get('name'),
+            'Email': committer.get('email')
+        }
+        parents = commit.get('parents', [])
+        formatted_parents = [{'SHA': parent.get('sha')} for parent in parents]
+
+        verification = commit.get('verification', {})
+        ec_verification = {
+            'Verified': verification.get('verified'),
+            'Reason': verification.get('reason'),
+            'Signature': verification.get('signature'),
+            'Payload': verification.get('payload')
+        }
+
+        ec_object = {
+            'SHA': commit.get('sha'),
+            'Author': ec_author,
+            'Committer': ec_committer,
+            'Message': commit.get('message'),
+            'Parent': formatted_parents,
+            'TreeSHA': commit.get('tree', {}).get('sha'),
+            'Verification': ec_verification
+        }
+        return ec_object
+
+
+    def format_label_outputs(label: dict = {}) -> dict:
+        """Take GitHub API label data and format to expected context outputs
+
+        Args:
+            label (dict): label data returned from GitHub API
+
+        Returns:
+            (dict): label object formatted to expected context outputs
+        """
+        ec_object = {
+            'ID': label.get('id'),
+            'NodeID': label.get('node_id'),
+            'Name': label.get('name'),
+            'Description': label.get('description'),
+            'Color': label.get('Color'),
+            'Default': label.get('default')
+        }
+        return ec_object
+
+
+    def format_user_outputs(user: dict = {}) -> dict:
+        """Take GitHub API user data and format to expected context outputs
+
+        Args:
+            user (dict): user data returned from GitHub API
+
+        Returns:
+            (dict): user object formatted to expected context outputs
+        """
+        ec_user = {
+            'Login': user.get('login'),
+            'ID': user.get('id'),
+            'NodeID': user.get('node_id'),
+            'Type': user.get('type'),
+            'SiteAdmin': user.get('site_admin')
+        }
+        return ec_user
+
+
+    def format_pr_review_comment_outputs(review_comment: dict = {}) -> dict:
+        """Take GitHub API pr review comment data and format to expected context outputs
+
+        Args:
+            review_comment (dict): pre review comment data returned from GitHub API
+
+        Returns:
+            (dict): pr review comment object formatted to expected context outputs
+        """
+        ec_pr_review_comment = {
+            'ID': review_comment.get('id'),
+            'NodeID': review_comment.get('node_id'),
+            'PullRequestReviewID': review_comment.get('pull_request_review_id'),
+            'DiffHunk': review_comment.get('diff_hunk'),
+            'Path': review_comment.get('path'),
+            'Position': review_comment.get('position'),
+            'OriginalPosition': review_comment.get('original_position'),
+            'CommitID': review_comment.get('commit_id'),
+            'OriginalCommitID': review_comment.get('original_commit_id'),
+            'InReplyToID': review_comment.get('in_reply_to_id'),
+            'User': format_user_outputs(review_comment.get('user', {})),
+            'Body': review_comment.get('body'),
+            'CreatedAt': review_comment.get('created_at'),
+            'UpdatedAt': review_comment.get('updated_at'),
+            'AuthorAssociation': review_comment.get('author_association')
+        }
+        return ec_pr_review_comment
+
+
+    def format_team_outputs(team: dict = {}) -> dict:
+        """Take GitHub API team data and format to expected context outputs
+
+        Args:
+            team (dict): team data returned from GitHub API
+
+        Returns:
+            (dict): team object formatted to expected context outputs
+        """
+        ec_team = {
+            'ID': team.get('id'),
+            'NodeID': team.get('node_id'),
+            'Name': team.get('name'),
+            'Slug': team.get('slug'),
+            'Description': team.get('description'),
+            'Privacy': team.get('privacy'),
+            'Permission': team.get('permission'),
+            'Parent': team.get('parent')
+        }
+        return ec_team
+
+
+    def format_head_or_base_outputs(head_or_base: dict = {}) -> dict:
+        """Take GitHub API head or base branch data and format to expected context outputs
+
+        Args:
+            head_or_base (dict): head or base branch data returned from GitHub API
+
+        Returns:
+            (dict): head or base branch object formatted to expected context outputs
+        """
+        head_or_base_user = head_or_base.get('user', {})
+        ec_head_or_base_user = format_user_outputs(head_or_base_user)
+        head_or_base_repo = head_or_base.get('repo', {})
+
+        if head_or_base_repo:
+            head_or_base_repo_owner = head_or_base_repo.get('owner', {})
+        else:  # in case of a deleted fork
+            head_or_base_repo = {}
+            head_or_base_repo_owner = {
+                "Login": "Unknown"
+            }
+
+        ec_head_or_base_repo_owner = format_user_outputs(head_or_base_repo_owner)
+        ec_head_repo = {
+            'ID': head_or_base_repo.get('id'),
+            'NodeID': head_or_base_repo.get('node_id'),
+            'Name': head_or_base_repo.get('name'),
+            'FullName': head_or_base_repo.get('full_name'),
+            'Owner': ec_head_or_base_repo_owner,
+            'Private': head_or_base_repo.get('private'),
+            'Description': head_or_base_repo.get('description'),
+            'Fork': head_or_base_repo.get('fork'),
+            'Language': head_or_base_repo.get('language'),
+            'ForksCount': head_or_base_repo.get('forks_count'),
+            'StargazersCount': head_or_base_repo.get('stargazers_count'),
+            'WatchersCount': head_or_base_repo.get('watchers_count'),
+            'Size': head_or_base_repo.get('size'),
+            'DefaultBranch': head_or_base_repo.get('default_branch'),
+            'OpenIssuesCount': head_or_base_repo.get('open_issues_count'),
+            'Topics': head_or_base_repo.get('topics'),
+            'HasIssues': head_or_base_repo.get('has_issues'),
+            'HasProjects': head_or_base_repo.get('has_projects'),
+            'HasWiki': head_or_base_repo.get('has_wiki'),
+            'HasPages': head_or_base_repo.get('has_pages'),
+            'HasDownloads': head_or_base_repo.get('has_downloads'),
+            'Archived': head_or_base_repo.get('archived'),
+            'Disabled': head_or_base_repo.get('disabled'),
+            'PushedAt': head_or_base_repo.get('pushed_at'),
+            'CreatedAt': head_or_base_repo.get('created_at'),
+            'UpdatedAt': head_or_base_repo.get('updated_at'),
+            'AllowRebaseMerge': head_or_base_repo.get('allow_rebase_merge'),
+            'AllowSquashMerge': head_or_base_repo.get('allow_squash_merge'),
+            'AllowMergeCommit': head_or_base_repo.get('allow_merge_commit'),
+            'SucscribersCount': head_or_base_repo.get('subscribers_count')
+        }
+        ec_head_or_base = {
+            'Label': head_or_base.get('label'),
+            'Ref': head_or_base.get('ref'),
+            'SHA': head_or_base.get('sha'),
+            'User': ec_head_or_base_user,
+            'Repo': ec_head_repo,
+        }
+        return ec_head_or_base
+
+
+    def format_pr_outputs(pull_request: dict = {}) -> dict:
+        """Take GitHub API Pull Request data and format to expected context outputs
+
+        Args:
+            pull_request (dict): Pull Request data returned from GitHub API
+
+        Returns:
+            (dict): Pull Request object formatted to expected context outputs
+        """
+        user_data = safe_get(pull_request, 'user', {})
+        ec_user = format_user_outputs(user_data)
+
+        labels_data = safe_get(pull_request, 'labels', [])
+        ec_labels = [format_label_outputs(label) for label in labels_data]
+
+        milestone_data = safe_get(pull_request, 'milestone', {})
+        creator = safe_get(milestone_data, 'creator', {})
+        ec_creator = format_user_outputs(creator)
+        ec_milestone = {
+            'ID': milestone_data.get('id'),
+            'NodeID': milestone_data.get('node_id'),
+            'Number': milestone_data.get('number'),
+            'State': milestone_data.get('state'),
+            'Title': milestone_data.get('title'),
+            'Description': milestone_data.get('description'),
+            'OpenIssues': milestone_data.get('open_issues'),
+            'ClosedIssues': milestone_data.get('closed_issues'),
+            'CreatedAt': milestone_data.get('created_at'),
+            'UpdatedAt': milestone_data.get('updated_at'),
+            'ClosedAt': milestone_data.get('closed_at'),
+            'DueOn': milestone_data.get('due_on'),
+        }
+        if creator:
+            ec_milestone['Creator'] = ec_creator
+
+        assignees_data = safe_get(pull_request, 'assignees', [])
+        ec_assignee = [format_user_outputs(assignee) for assignee in assignees_data]
+
+        requested_reviewers_data = safe_get(pull_request, 'requested_reviewers', [])
+        ec_requested_reviewer = [format_user_outputs(requested_reviewer) for requested_reviewer in requested_reviewers_data]
+
+        requested_teams_data = safe_get(pull_request, 'requested_teams', [])
+        ec_requested_team = [format_team_outputs(requested_team) for requested_team in requested_teams_data]
+
+        head_data = safe_get(pull_request, 'head', {})
+        ec_head = format_head_or_base_outputs(head_data)
+
+        base_data = safe_get(pull_request, 'base', {})
+        ec_base = format_head_or_base_outputs(base_data)
+
+        merged_by_data = safe_get(pull_request, 'merged_by', {})
+        ec_merged_by = format_user_outputs(merged_by_data)
+
+        ec_object = {
+            'ID': pull_request.get('id'),
+            'NodeID': pull_request.get('node_id'),
+            'Number': pull_request.get('number'),
+            'State': pull_request.get('state'),
+            'Locked': pull_request.get('locked'),
+            'Body': pull_request.get('body'),
+            'ActiveLockReason': pull_request.get('active_lock_reason'),
+            'CreatedAt': pull_request.get('created_at'),
+            'UpdatedAt': pull_request.get('updated_at'),
+            'ClosedAt': pull_request.get('closed_at'),
+            'MergedAt': pull_request.get('merged_at'),
+            'MergeCommitSHA': pull_request.get('merge_commit_sha'),
+            'AuthorAssociation': pull_request.get('author_association'),
+            'Draft': pull_request.get('draft'),
+            'Merged': pull_request.get('merged'),
+            'Mergeable': pull_request.get('mergeable'),
+            'Rebaseable': pull_request.get('rebaseable'),
+            'MergeableState': pull_request.get('mergeable_state'),
+            'Comments': pull_request.get('comments'),
+            'ReviewComments': pull_request.get('review_comments'),
+            'MaintainerCanModify': pull_request.get('maintainer_can_modify'),
+            'Commits': pull_request.get('commits'),
+            'Additions': pull_request.get('additions'),
+            'Deletions': pull_request.get('deletions'),
+            'ChangedFiles': pull_request.get('changed_files')
+        }
+        if user_data:
+            ec_object['User'] = ec_user
+        if labels_data:
+            ec_object['Label'] = ec_labels
+        if assignees_data:
+            ec_object['Assignee'] = ec_assignee
+        if requested_reviewers_data:
+            ec_object['RequestedReviewer'] = ec_requested_reviewer
+        if requested_teams_data:
+            ec_object['RequestedTeam'] = ec_requested_team
+        if head_data:
+            ec_object['Head'] = ec_head
+        if base_data:
+            ec_object['Base'] = ec_base
+        if merged_by_data:
+            ec_object['MergedBy'] = ec_merged_by
+        if milestone_data:
+            ec_object['Milestone'] = ec_milestone
+        return ec_object
+
+
+    def format_comment_outputs(comment: dict, issue_number: Union[int, str]) -> dict:
+        """Take GitHub API Comment data and format to expected context outputs
+
+        Args:
+            comment (dict): Comment data returned from GitHub API
+            issue_number (int): The number of the issue to which the comment belongs
+
+        Returns:
+            (dict): Comment object formatted to expected context outputs
+        """
+        ec_object = {
+            'IssueNumber': int(issue_number) if isinstance(issue_number, str) else issue_number,
+            'ID': comment.get('id'),
+            'NodeID': comment.get('node_id'),
+            'Body': comment.get('body'),
+            'User': format_user_outputs(comment.get('user', {}))
+        }
+        return ec_object
+
+
+    def try_parse_integer(int_to_parse, err_msg):
+        try:
+            res = int(int_to_parse)
+        except (TypeError, ValueError):
+            raise DemistoException(err_msg)
+        return res
+
+
+    def get_params_port():
+        port_mapping: str = demisto.params().get('longRunningPort', '')
+        err_msg: str
+        port: int
+        if port_mapping:
+            err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
+            if ':' in port_mapping:
+                port = try_parse_integer(port_mapping.split(':')[1], err_msg)
+            else:
+                port = try_parse_integer(port_mapping, err_msg)
+        else:
+            raise ValueError('Please provide a Listen Port.')
+        return port
+
+
+    def validate_authentication(headers, app_secret, app_id=None):
+        request_app_id = headers.get('X-App-ID', '')
+        request_app_secret = headers.get('X-App-Secret', '')
+
+        if not request_app_secret:
+            return False
+        elif app_id is None and app_secret not in request_app_secret:
+            return False
+        elif app_secret in request_app_secret and app_id in request_app_id:
+            return True
+        return False
+
+
+    def create_incident(raw):
+
+        if raw.get('commits'):
+            customfields = {
+                "CommitDelivery": raw
+            }
+            incident = demisto.createIncidents([
+                {
+                    "name": f"New Git Commit with ID: {raw.get('after')} ",
+                    "type": "New Git Commit",
+                    "customFields": customfields
+                }
+            ])
+
+        elif raw.get('before') == "0000000000000000000000000000000000000000":
+            customfields = {
+                "BranchDelivery": raw
+            }
+            incident = demisto.createIncidents([
+                {
+                    "name": "New Git Branch ",
+                    "type": "New Git Branch",
+                    "customFields": customfields
+                }
+            ])
+
+        elif raw.get('pull_request') and raw.get('action') == "opened":
+            customfields = {
+                "PRDelivery": raw
+            }
+            incident = demisto.createIncidents([
+                {
+                    "name": f"New Git PR: {raw.get('number')} ",
+                    "type": "New Git PR",
+                    "customFields": customfields
+                }
+            ])
+
+        elif raw.get('pull_request') and raw.get('action') == "closed":
+            customfields = {
+                "PRDelivery": raw
+            }
+            incident = demisto.createIncidents([
+                {
+                    "name": f"Closed Git PR: {raw.get('number')}",
+                    "type": "Closed Git PR",
+                    "customFields": customfields
+                }
+            ])
+
+        elif raw.get('issue') and raw.get('action') == "opened":
+            customfields = {
+                "IssueDelivery": raw
+            }
+            incident = demisto.createIncidents([
+                {
+                    "name": f"New Git Issue: {raw.get('issue')['number']}",
+                    "type": "New Git Issue",
+                    "customFields": customfields
+                }
+            ])
+
+        elif raw.get('check_run') and raw.get('action') == "completed":
+            customfields = {
+                "TaskDelivery": raw
+            }
+            incident = demisto.createIncidents([
+                {
+                    "name": f"Git App Task: {raw.get('check_run')['app']['name']} ",
+                    "type": "Git App Task",
+                    "customFields": customfields
+                }
+            ])
+
+        else:
+            customfields = {
+                "GitDelivery": raw
+            }
+
+            incident = demisto.createIncidents([
+                {
+                    "name": "New Git Delivery",
+                    "type": "New Git Delivery",
+                    "customFields": customfields
+                }
+            ])
+        return incident
+
+
+    ''' ROUTE FUNCTIONS '''
+
+
+    @APP.route('/', methods=['GET'])
+    def void():
+
+        app_id = demisto.params().get('app_id')
+        app_secret = demisto.params().get('app_secret')
+
+        if app_secret:
+            headers = cast(Dict[Any, Any], request.headers)
+            if not validate_authentication(headers, app_secret=app_secret, app_id=app_id):
+                err_msg = 'Authentication failed. Make sure you are using the right credentials.'
+                demisto.error(err_msg)
+                return Response(err_msg, status=401)
+
+        response = {
+            "message": "Please use the right API Endpoint"
+        }
+        return Response(json.dumps(response), status=404, mimetype='application/json')
+
+
+    @APP.route('/github/webhook', methods=['POST'])
+    def route_incidents():
+        """
+        Main handler for creating new incidents
+        """
+        params = demisto.params()
+
+        app_id = params.get('app_id')
+        app_secret = params.get('app_secret')
+
+        if app_secret:
+            headers = cast(Dict[Any, Any], request.headers)
+            if not validate_authentication(headers, app_secret=app_secret, app_id=app_id):
+                err_msg = 'Authentication failed. Make sure you are using the right credentials.'
+                demisto.error(err_msg)
+                return Response(err_msg, status=401)
+
+        response = {
+            "message": create_incident(raw=request.json)
+        }
+
+        return Response(json.dumps(response), status=200, mimetype='application/json')
+
+
+    ''' COMMANDS '''
+
+
+    def test_module():
+        http_request(method='GET', url_suffix=ISSUE_SUFFIX, params={'state': 'all'})
+        demisto.results("ok")
+
+
+    def create_pull_request(create_vals: dict = {}) -> dict:
+        suffix = PULLS_SUFFIX
+        response = http_request('POST', url_suffix=suffix, data=create_vals)
+        return response
+
+
+    def create_pull_request_command():
+        args = demisto.args()
+        create_vals = {key: val for key, val in args.items()}
+        maintainer_can_modify = args.get('maintainer_can_modify')
+        if maintainer_can_modify:
+            create_vals['maintainer_can_modify'] = maintainer_can_modify == 'true'
+        draft = args.get('draft')
+        if draft:
+            create_vals['draft'] = draft == 'true'
+        response = create_pull_request(create_vals)
+
+        ec_object = format_pr_outputs(response)
+        ec = {
+            'GitHub.PR(val.Number === obj.Number)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Created Pull Request #{response.get("number")}', ec_object, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def is_pr_merged(pull_number: Union[int, str]):
+        suffix = PULLS_SUFFIX + f'/{pull_number}/merge'
+        response = http_request('GET', url_suffix=suffix)
+        return response
+
+
+    def is_pr_merged_command():
+        args = demisto.args()
+        pull_number = args.get('pull_number')
+
+        # raises 404 not found error if the pr was not merged
+        is_pr_merged(pull_number)
+        demisto.results(f'Pull Request #{pull_number} was Merged')
+
+
+    def update_pull_request(pull_number: Union[int, str], update_vals: dict = {}) -> dict:
+        suffix = PULLS_SUFFIX + f'/{pull_number}'
+        response = http_request('PATCH', url_suffix=suffix, data=update_vals)
+        return response
+
+
+    def update_pull_request_command():
+        args = demisto.args()
+        pull_number = args.get('pull_number')
+        update_vals = {key: val for key, val in args.items() if key != 'pull_number'}
+        if not update_vals:
+            return_error('You must provide a value for at least one of the command\'s arguments "title", "body", "state",'
+                         ' "base" or "maintainer_can_modify" that you would like to update the pull request with')
+        maintainer_can_modify = update_vals.get('maintainer_can_modify')
+        if maintainer_can_modify:
+            update_vals['maintainer_can_modify'] = maintainer_can_modify == 'true'
+        response = update_pull_request(pull_number, update_vals)
+
+        ec_object = format_pr_outputs(response)
+        ec = {
+            'GitHub.PR(val.Number === obj.Number)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Updated Pull Request #{pull_number}', ec_object, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def list_teams(organization: str) -> list:
+        suffix = f'/orgs/{organization}/teams'
+        response = http_request('GET', url_suffix=suffix)
+        return response
+
+
+    def list_teams_command():
+        args = demisto.args()
+        organization = args.get('organization')
+        response = list_teams(organization)
+
+        ec_object = [format_team_outputs(team) for team in response]
+        ec = {
+            'GitHub.Team(val.ID === obj.ID)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Teams for Organization "{organization}"', ec_object, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def get_pull_request(pull_number: Union[int, str]):
+        suffix = PULLS_SUFFIX + f'/{pull_number}'
+        response = http_request('GET', url_suffix=suffix)
+        return response
+
+
+    def get_pull_request_command():
+        args = demisto.args()
+        pull_number = args.get('pull_number')
+        response = get_pull_request(pull_number)
+
+        ec_object = format_pr_outputs(response)
+        ec = {
+            'GitHub.PR(val.Number === obj.Number)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Pull Request #{pull_number}', ec_object, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def add_label(issue_number: Union[int, str], labels: list):
+        suffix = ISSUE_SUFFIX + f'/{issue_number}/labels'
+        response = http_request('POST', url_suffix=suffix, data={'labels': labels})
+        return response
+
+
+    def add_label_command():
+        args = demisto.args()
+        issue_number = args.get('issue_number')
+        labels = argToList(args.get('labels'))
+        add_label(issue_number, labels)
+        labels_for_msg = [f'"{label}"' for label in labels]
+        msg = f'{" and ".join(labels_for_msg)} Successfully Added to Issue #{issue_number}'
+        msg = 'Labels ' + msg if 'and' in msg else 'Label ' + msg
+        demisto.results(msg)
+
+
+    def get_commit(commit_sha: str) -> dict:
+        suffix = USER_SUFFIX + f'/git/commits/{commit_sha}'
+        response = http_request('GET', url_suffix=suffix)
+        return response
+
+
+    def get_commit_command():
+        args = demisto.args()
+        commit_sha = args.get('commit_sha')
+        response = get_commit(commit_sha)
+
+        ec_object = format_commit_outputs(response)
+        ec = {
+            'GitHub.Commit(val.SHA === obj.SHA)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Commit *{commit_sha[:10]}*', ec_object, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def list_pr_reviews(pull_number: Union[int, str]) -> list:
+        suffix = PULLS_SUFFIX + f'/{pull_number}/reviews'
+        response = http_request('GET', url_suffix=suffix)
+        return response
+
+
+    def list_pr_reviews_command():
+        args = demisto.args()
+        pull_number = args.get('pull_number')
+        response = list_pr_reviews(pull_number)
+
+        formatted_pr_reviews = [
+            {
+                'ID': pr_review.get('id'),
+                'NodeID': pr_review.get('node_id'),
+                'Body': pr_review.get('body'),
+                'CommitID': pr_review.get('commit_id'),
+                'State': pr_review.get('state'),
+                'User': format_user_outputs(pr_review.get('user', {}))
+            }
+            for pr_review in response
+        ]
+        ec_object = {
+            'Number': pull_number,
+            'Review': formatted_pr_reviews
+        }
+        ec = {
+            'GitHub.PR(val.Number === obj.Number)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Pull Request Reviews for #{pull_number}', formatted_pr_reviews, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def list_pr_files(pull_number: Union[int, str]) -> list:
+        suffix = PULLS_SUFFIX + f'/{pull_number}/files'
+        response = http_request('GET', url_suffix=suffix)
+        return response
+
+
+    def list_pr_files_command():
+        args = demisto.args()
+        pull_number = args.get('pull_number')
+        response = list_pr_files(pull_number)
+
+        formatted_pr_files = [
+            {
+                'SHA': pr_file.get('sha'),
+                'Name': pr_file.get('filename'),
+                'Status': pr_file.get('status'),
+                'Additions': pr_file.get('additions'),
+                'Deletions': pr_file.get('deletions'),
+                'Changes': pr_file.get('changes')
+            }
+            for pr_file in response
+        ]
+        ec_object = {
+            'Number': pull_number,
+            'File': formatted_pr_files
+        }
+        ec = {
+            'GitHub.PR(val.Number === obj.Number)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Pull Request Files for #{pull_number}', formatted_pr_files, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def list_pr_review_comments(pull_number: Union[int, str]) -> list:
+        suffix = PULLS_SUFFIX + f'/{pull_number}/comments'
+        response = http_request('GET', url_suffix=suffix)
+        return response
+
+
+    def list_pr_review_comments_command():
+        args = demisto.args()
+        pull_number = args.get('pull_number')
+        response = list_pr_review_comments(pull_number)
+
+        formatted_pr_review_comments = [format_pr_review_comment_outputs(review_comment) for review_comment in response]
+        ec_object = {
+            'Number': pull_number,
+            'ReviewComment': formatted_pr_review_comments
+        }
+        ec = {
+            'GitHub.PR(val.Number === obj.Number)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Pull Request Review Comments for #{pull_number}', formatted_pr_review_comments,
+                                         removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def list_issue_comments(issue_number: Union[int, str]) -> list:
+        suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
+        response = http_request('GET', url_suffix=suffix)
+        return response
+
+
+    def list_issue_comments_command():
+        args = demisto.args()
+        issue_number = args.get('issue_number')
+        response = list_issue_comments(issue_number)
+
+        ec_object = [format_comment_outputs(comment, issue_number) for comment in response]
+        ec = {
+            'GitHub.Comment(val.IssueNumber === obj.IssueNumber && val.ID === obj.ID)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Comments for Issue #{issue_number}', ec_object, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def create_comment(issue_number: Union[int, str], msg: str) -> dict:
+        suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
+        response = http_request('POST', url_suffix=suffix, data={'body': msg})
+        return response
+
+
+    def create_comment_command():
+        args = demisto.args()
+        issue_number = args.get('issue_number')
+        body = args.get('body')
+        response = create_comment(issue_number, body)
+
+        ec_object = format_comment_outputs(response, issue_number)
+        ec = {
+            'GitHub.Comment(val.IssueNumber === obj.IssueNumber && val.ID === obj.ID)': ec_object
+        }
+        human_readable = tableToMarkdown('Created Comment', ec_object, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def request_review(pull_number: Union[int, str], reviewers: list) -> dict:
+        """Make an API call to GitHub to request reviews from a list of users for a given PR
+
+        Args:
+            pull_number (int): The number of the PR for which the review request(s) is/are being made
+            reviewers (list): The list of GitHub usernames from which you wish to request a review
+
+        Returns:
+            dict: API response
+
+        Raises:
+            Exception: An exception will be raised if one or more of the requested reviewers is not
+                a collaborator of the repo and therefore the API call returns a 'Status: 422 Unprocessable Entity'
+        """
+        suffix = PULLS_SUFFIX + f'/{pull_number}/requested_reviewers'
+        response = http_request('POST', url_suffix=suffix, data={'reviewers': reviewers})
+        return response
+
+
+    def request_review_command():
+        args = demisto.args()
+        pull_number = args.get('pull_number')
+        reviewers = argToList(args.get('reviewers'))
+        response = request_review(pull_number, reviewers)
+
+        requested_reviewers = response.get('requested_reviewers', [])
+        formatted_requested_reviewers = [format_user_outputs(reviewer) for reviewer in requested_reviewers]
+        ec_object = {
+            'Number': response.get('number'),
+            'RequestedReviewer': formatted_requested_reviewers
+        }
+        ec = {
+            'GitHub.PR(val.Number === obj.Number)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Requested Reviewers for #{response.get("number")}',
+                                         formatted_requested_reviewers, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
+        suffix = f'/teams/{team_id}/memberships/{user_name}'
+        response = http_request('GET', url_suffix=suffix)
+        return response
+
+
+    def get_team_membership_command():
+        args = demisto.args()
+        team_id = args.get('team_id')
+        try:
+            team_id = int(team_id)
+        except ValueError as e:
+            return_error('"team_id" command argument must be an integer value.', e)
+        user_name = args.get('user_name')
+        response = get_team_membership(team_id, user_name)
+
+        ec_object = {
+            'ID': team_id,
+            'Member': {
+                'Login': user_name,
+                'Role': response.get('role'),
+                'State': response.get('state')
+            }
+        }
+        ec = {
+            'GitHub.Team': ec_object
+        }
+        human_readable = tableToMarkdown(f'Team Membership of {user_name}', ec_object, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def get_branch(branch: str) -> dict:
+        suffix = USER_SUFFIX + f'/branches/{branch}'
+        response = http_request('GET', url_suffix=suffix)
+        return response
+
+
+    def get_branch_command():
+        args = demisto.args()
+        branch_name = args.get('branch_name')
+        response = get_branch(branch_name)
+
+        commit = response.get('commit', {})
+        author = commit.get('author', {})
+        parents = commit.get('parents', [])
+        ec_object = {
+            'Name': response.get('name'),
+            'CommitSHA': commit.get('sha'),
+            'CommitNodeID': commit.get('node_id'),
+            'CommitAuthorID': author.get('id'),
+            'CommitAuthorLogin': author.get('login'),
+            'CommitParentSHA': [parent.get('sha') for parent in parents],
+            'Protected': response.get('protected')
+        }
+        ec = {
+            'GitHub.Branch(val.Name === obj.Name && val.CommitSHA === obj.CommitSHA)': ec_object
+        }
+        human_readable = tableToMarkdown(f'Branch "{branch_name}"', ec_object, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+    def create_branch(name: str, sha: str) -> dict:
+        suffix = USER_SUFFIX + '/git/refs'
+        data = {
+            'ref': f'refs/heads/{name}',
+            'sha': sha
+        }
+        response = http_request('POST', url_suffix=suffix, data=data)
+        return response
+
+
+    def create_branch_command():
+        args = demisto.args()
+        branch_name = args.get('branch_name')
+        commit_sha = args.get('commit_sha')
+        create_branch(branch_name, commit_sha)
+        msg = f'Branch "{branch_name}" Created Successfully'
+        demisto.results(msg)
+
+
+    def delete_branch(name: str):
+        suffix = USER_SUFFIX + f'/git/refs/heads/{name}'
+        http_request('DELETE', url_suffix=suffix)
+
+
+    def delete_branch_command():
+        args = demisto.args()
+        branch_name = args.get('branch_name')
+        delete_branch(branch_name)
+        msg = f'Branch "{branch_name}" Deleted Successfully'
+        demisto.results(msg)
+
+
+    def get_stale_prs(stale_time: str, label: str) -> list:
+        time_range_start, _ = parse_date_range(stale_time)
+        # regex for removing the digits from the end of the isoformat timestamp that don't conform to API expectations
+        timestamp_regex = re.compile(r'\.\d{6}$')
+        timestamp, _ = timestamp_regex.subn('', time_range_start.isoformat())
+        query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
+        if label:
+            query += f' label:{label}'
+        matching_issues = search_issue(query).get('items', [])
+        relevant_prs = [get_pull_request(issue.get('number')) for issue in matching_issues]
+        return relevant_prs
+
+
+    def get_stale_prs_command():
+        args = demisto.args()
+        stale_time = args.get('stale_time', '3 days')
+        label = args.get('label')
+        results = get_stale_prs(stale_time, label)
+        if results:
+            formatted_results = []
+            for pr in results:
+                requested_reviewers = [
+                    requested_reviewer.get('login') for requested_reviewer in pr.get('requested_reviewers', [])
+                ]
+                formatted_pr = {
+                    'URL': f'<{pr.get("html_url")}>',
+                    'Number': pr.get('number'),
+                    'RequestedReviewer': requested_reviewers
+                }
+                formatted_results.append(formatted_pr)
+            ec = {
+                'GitHub.PR(val.Number === obj.Number)': formatted_results
+            }
+            human_readable = tableToMarkdown('Stale PRs', formatted_results, removeNull=True)
+            return_outputs(readable_output=human_readable, outputs=ec, raw_response=results)
+        else:
+            demisto.results('No stale external PRs found')
+
+
+    def create_issue(title, body, labels, assignees):
+        data = data_formatting(title=title,
+                               body=body,
+                               labels=labels,
+                               assignees=assignees,
+                               state=None)
+
+        response = http_request(method='POST',
+                                url_suffix=ISSUE_SUFFIX,
+                                data=data)
+        return response
+
+
+    def create_command():
+        args = demisto.args()
+        response = create_issue(args.get('title'), args.get('body'),
+                                args.get('labels'), args.get('assignees'))
+        issue = issue_format(response)
+        context_create_issue(response, issue)
+
+
+    def close_issue(id):
+        response = http_request(method='PATCH',
+                                url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
+                                data={'state': 'closed'})
+        return response
+
+
+    def close_command():
+        id = demisto.args().get('ID')
+        response = close_issue(id)
+        issue = issue_format(response)
+        context_create_issue(response, issue)
+
+
+    def update_issue(id, title, body, state, labels, assign):
+        data = data_formatting(title=title,
+                               body=body,
+                               labels=labels,
+                               assignees=assign,
+                               state=state)
+
+        response = http_request(method='PATCH',
+                                url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
+                                data=data)
+        return response
+
+
+    def update_command():
+        args = demisto.args()
+        response = update_issue(args.get('ID'), args.get('title'), args.get('body'), args.get('state'),
+                                args.get('labels'), args.get('assignees'))
+        issue = issue_format(response)
+        context_create_issue(response, issue)
+
+
+    def list_all_issue(state):
+        params = {'state': state}
+        response = http_request(method='GET',
+                                url_suffix=ISSUE_SUFFIX,
+                                params=params)
+        return response
+
+
+    def list_all_command():
+        state = demisto.args().get('state')
+        limit = int(demisto.args().get('limit'))
+        if limit > 200:
+            limit = 200
+
+        response = list_all_issue(state)
+        create_issue_table(response, response, limit)
+
+
+    def search_issue(query):
+        response = http_request(method='GET',
+                                url_suffix='/search/issues',
+                                params={'q': query})
+        return response
+
+
+    def search_command():
+        q = demisto.args().get('query')
+        limit = int(demisto.args().get('limit'))
+        if limit > 200:
+            limit = 200
+
+        response = search_issue(q)
+        create_issue_table(response['items'], response, limit)
+
+
+    def get_download_count():
+        response = http_request(method='GET',
+                                url_suffix=RELEASE_SUFFIX)
+
+        count_per_release = []
+        for release in response:
+            total_download_count = 0
+            for asset in release.get('assets', []):
+                total_download_count = total_download_count + asset['download_count']
+
+            release_info = {
+                'ID': release.get('id'),
+                'Download_count': total_download_count,
+                'Name': release.get('name'),
+                'Body': release.get('body'),
+                'Created_at': release.get('created_at'),
+                'Published_at': release.get('published_at')
+            }
+            count_per_release.append(release_info)
+
+        ec = {
+            'GitHub.Release( val.ID == obj.ID )': count_per_release
+        }
+        return_outputs(tableToMarkdown('Releases:', count_per_release, headers=RELEASE_HEADERS, removeNull=True), ec,
+                       response)
+
+
+    def list_owner_repositories(owner_name, repo_type):
+        """ List organization repositories.
+
+        Args:
+            owner_name (str): repositories owner.
+            repo_type (str): repository type, possible values: all, public, private, forks, sources, member, internal.
+
+        Returns:
+            list: organization repositories names.
+        """
+        url_suffix = f"/orgs/{owner_name}/repos"
+        params = {'type': repo_type}
+        repos_info = http_request(method="GET", url_suffix=url_suffix, params=params)
+
+        return [r.get('name') for r in repos_info]
+
+
+    def list_repository_workflows(owner_name, repository_name):
+        """ Lists the workflows in a repository.
+
+        Args:
+            owner_name (str): repositories owner.
+            repository_name (str): repository name.
+
+        Returns:
+            list: list of dictionaries of workflow data.
+        """
+        url_suffix = f"/repos/{owner_name}/{repository_name}/actions/workflows"
+        repository_workflows = http_request(method="GET", url_suffix=url_suffix)
+
+        return [w for w in repository_workflows.get('workflows') if w.get('state') == "active"]
+
+
+    def get_workflow_usage(owner_name, repository_name, workflow_id):
+        """ Gets the number of billable minutes used by a specific workflow during the current billing cycle.
+
+        Args:
+            owner_name (str): repositories owner.
+            repository_name (str): repository name.
+            workflow_id (str): workflow id.
+
+        Returns:
+            dict: milliseconds usage on ubuntu, macos and windows os.
+        """
+        url_suffix = f"/repos/{owner_name}/{repository_name}/actions/workflows/{workflow_id}/timing"
+        workflow_usage = http_request(method="GET", url_suffix=url_suffix).get('billable', {})
+
+        return workflow_usage
+
+
+    def get_github_actions_usage():
+        """ List github actions workflows usage of private repositories.
+
+        """
+        command_args = demisto.args()
+        owner_name = command_args.get('owner', '')
+        usage_result = []
+
+        private_repositories = list_owner_repositories(owner_name=owner_name, repo_type="private")
+
+        for repository_name in private_repositories:
+            repository_workflows = list_repository_workflows(owner_name=owner_name, repository_name=repository_name)
+
+            for workflow in repository_workflows:
+                workflow_id = workflow.get('id', '')
+                workflow_name = workflow.get('name', '')
+                workflow_usage = get_workflow_usage(owner_name=owner_name, repository_name=repository_name,
+                                                    workflow_id=workflow_id)
+
+                if workflow_usage:
+                    usage_result.append({
+                        'WorkflowName': workflow_name,
+                        'WorkflowID': workflow_id,
+                        'RepositoryName': repository_name,
+                        'WorkflowUsage': workflow_usage,
+                    })
+
+        ec = {
+            'GitHub.ActionsUsage': usage_result
+        }
+        human_readable = tableToMarkdown('Github Actions Usage', usage_result,
+                                         headerTransform=string_to_table_header)
+
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=usage_result)
+
+
+    def fetch_incidents_command():
+        last_run = demisto.getLastRun()
+        if last_run and 'start_time' in last_run:
+            start_time = datetime.strptime(last_run.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
+
+        else:
+            start_time = datetime.now() - timedelta(days=int(FETCH_TIME))
+
+        last_time = start_time
+        issue_list = http_request(method='GET',
+                                  url_suffix=ISSUE_SUFFIX,
+                                  params={'state': 'all'})
+
+        incidents = []
+        for issue in issue_list:
+            updated_at_str = issue.get('created_at')
+            updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
+            if updated_at > start_time:
+                inc = {
+                    'name': issue.get('url'),
+                    'occurred': updated_at_str,
+                    'rawJSON': json.dumps(issue)
+                }
+                incidents.append(inc)
+                if updated_at > last_time:
+                    last_time = updated_at
+
+        demisto.setLastRun({'start_time': datetime.strftime(last_time, '%Y-%m-%dT%H:%M:%SZ')})
+        demisto.incidents(incidents)
+
+
+    def run_long_running(is_test=False):
+        certificate: str = CERTIFICATE
+        private_key: str = CERT_PRIVATE_KEY
+
+        certificate_path = str()
+        private_key_path = str()
+
+        try:
+            port = get_params_port()
+            ssl_args = dict()
+
+            if (certificate and not private_key) or (private_key and not certificate):
+                raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
+
+            if certificate and private_key:
+                certificate_file = NamedTemporaryFile(delete=False)
+                certificate_path = certificate_file.name
+                certificate_file.write(bytes(certificate, 'utf-8'))
+                certificate_file.close()
+
+                private_key_file = NamedTemporaryFile(delete=False)
+                private_key_path = private_key_file.name
+                private_key_file.write(bytes(private_key, 'utf-8'))
+                private_key_file.close()
+
+                context = SSLContext(PROTOCOL_TLSv1_2)
+                context.load_cert_chain(certificate_path, private_key_path)
+                ssl_args['ssl_context'] = context
+                demisto.debug('Starting HTTPS Server')
+            else:
+                demisto.debug('Starting HTTP Server')
+
+            server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=XSOAR_LOGGER)
+            if is_test:
+                server_process = Process(target=server.serve_forever)
+                server_process.start()
+                time.sleep(5)
+                server_process.terminate()
+            else:
+                server.serve_forever()
+        except SSLError as e:
+            ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
+            demisto.error(ssl_err_message)
+            raise ValueError(ssl_err_message)
+        except Exception as e:
+            demisto.error(f'An error occurred in long running loop: {str(e)}')
+            raise ValueError(str(e))
+        finally:
+            if certificate_path:
+                os.unlink(certificate_path)
+            if private_key_path:
+                os.unlink(private_key_path)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    COMMANDS = {
+        'test-module': test_module,
+        'long-running-execution': run_long_running,
+        'fetch-incidents': fetch_incidents_command,
+        'GitHub-create-issue': create_command,
+        'GitHub-close-issue': close_command,
+        'GitHub-update-issue': update_command,
+        'GitHub-list-all-issues': list_all_command,
+        'GitHub-search-issues': search_command,
+        'GitHub-get-download-count': get_download_count,
+        'GitHub-get-stale-prs': get_stale_prs_command,
+        'GitHub-get-branch': get_branch_command,
+        'GitHub-create-branch': create_branch_command,
+        'GitHub-get-team-membership': get_team_membership_command,
+        'GitHub-request-review': request_review_command,
+        'GitHub-create-comment': create_comment_command,
+        'GitHub-list-issue-comments': list_issue_comments_command,
+        'GitHub-list-pr-files': list_pr_files_command,
+        'GitHub-list-pr-reviews': list_pr_reviews_command,
+        'GitHub-get-commit': get_commit_command,
+        'GitHub-add-label': add_label_command,
+        'GitHub-get-pull-request': get_pull_request_command,
+        'GitHub-list-teams': list_teams_command,
+        'GitHub-delete-branch': delete_branch_command,
+        'GitHub-list-pr-review-comments': list_pr_review_comments_command,
+        'GitHub-update-pull-request': update_pull_request_command,
+        'GitHub-is-pr-merged': is_pr_merged_command,
+        'GitHub-create-pull-request': create_pull_request_command,
+        'Github-get-github-actions-usage': get_github_actions_usage,
+    }
+
+    '''EXECUTION'''
+
+    if TOKEN == '' and PRIVATE_KEY != '':
+        try:
+            import jwt
+        except Exception:
+            return_error("You need to update the docket image so that the jwt package could be used")
+
+        generated_jwt_token = create_jwt(PRIVATE_KEY, INTEGRATION_ID)
+        TOKEN = get_installation_access_token(INSTALLATION_ID, generated_jwt_token)
+
+    if TOKEN == '' and PRIVATE_KEY == '':
+        return_error("Insert api token or private key")
+
+    HEADERS = {
+        'Authorization': "Bearer " + TOKEN
+    }
+
+
+    def main():
+        handle_proxy()
+        params = demisto.params()
+
+        credentials = params.get('credentials') if params.get('credentials') else {}
+        username: str = credentials.get('identifier', '')
+        password: str = credentials.get('password', '')
+        if (username and not password) or (password and not username):
+            err_msg: str = 'If using credentials, both username and password should be provided.'
+            demisto.debug(err_msg)
+            raise DemistoException(err_msg)
+
+        cmd = demisto.command()
+        LOG(f'command is {cmd}')
+        try:
+            if cmd in COMMANDS.keys():
+                COMMANDS[cmd]()
+        except Exception as e:
+            return_error(str(e))
+
+
+    # python2 uses __builtin__ python3 uses builtins
+    if __name__ == '__builtin__' or __name__ == 'builtins':
+        main()
+  subtype: python3
+  type: python
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAETlJREFUeAHtm2lwVNeVgLvf61X7voCEJbEJUWY1xtjJmDgTbBKInQXsil0VklScxBN7yuMax5NZzCT5kcRMqpypmRg7rnFldUE8cWIc7AARBBuG1TJGFEIsAoHMJiS1pF5fd893HnrN60WtltCPmcq71NPdzzn3bPfcexubzUoWBywOWBywOGBxwOKAxQGLAxYHLA5YHLA4YOKA3VSeaFFhomPu3Lku8rJIJDJN07SqUCCQH43H7V6vN+Byua46HI5u2i9FOzrCJ222CGNjE0VozcudAzcjYKWurs6dn58/MxIKfTIcifx1TIvOidts1fF4XDWTYLfb43y9iqp0Kqq60+t0vsnEtiNHjgQZFzWPtcqTy4EJCbihocHjdTgW+IPBv9Ei2mostRih5kQZgrYpdntQcag78jye//CHQjvPnz8vgs4NQE5YrEEGB8YrYGXevHkVvn7f34XDoW/EYrGiXAVrIDRyu41/il1zuly/LC4p/s4HH3xwlj7Lmg0GTVI+HgEr8+bMa+kf6vtJOBz+SDw2OQaHNdtUh+N4UUH+N4+dOLGLdWmTtDYLDBxI2iuzcERpaWlZMuDr/00kFJ6fozfOAu5Gl6gJnqAiommfrqmt6bh27doJmiZHe26g+Yst5STglvktLb5r/a8RITeZOCXuVDzAeLyAabouRImkdRgI2RONRO+bMnXKe729vafMA63yxDkwpoBvv/328quXrvwaC7vVQEMkPOxyOt8hYNLYg720y1FJPnMyrDBVAWJ6kKWqPQ6ns40J+cDIl4mxeMxD0PZXTdOb3rx06VKvGdgEykLPzSjgBFD+35uSyvxUCpWGWxo2BAOBJ83BlNPlfK37/Pm1S5cuLcWl3hMMBB+LRiJLRaIIPco3zPgAVTkeeSkX8CFXu8JR6TjR88a8wsI32traPmyY1vCvoVDwnwz4jLG5XM43XR7P506ePBlKJWiMumPKlCmuqVOnlgcCgVLO4G68TsTpdPrwEDiG3lBXV5dE7OYkijCuM/mMGTPcBgBoFE+WGjfYGSP3AnpizETP/Q7g6Ebodrvj7e3tYQNmrnlWAbfMbFnaP9jXGo1GxUr1JALweLzPdJ3r+oHRtm7dOs/ed/Y+HI2GbV63+5i3qOhiMBgcVlUV8/bmDWqDFcPDw7MZX1lRUfGL/fv3J6yzcdq01YFg6PeGgAUm0bWtML/o4c7Tnb8ycIyVL168OI+LlFXI8xG+hcArZY6DXBTODy09fDurqqqe3blzZ7+g4URQifAbYd6ZPXv2XKHN8Dqjolu2bJl3YGDgSQYUyqC8vLzdBw8e/IN5wpIlS+r9fv9j4BYFl8ueTYx5zzwml/LChQs/HwqFFstYaO8H949efPFFUZackyPLSGXQP/AUmp8QrjGWm6khoyz5K6+8IlbxsrktpXyW+iFpO336dFKX4nQO2UNhG7xItEuE7g/6n0YAv+MyZDjRMUphxYoV+Zyl/43o/msCxwxLplDPk0AOBain+l1pu/POO5vwPpux9Lkw7yhCWXPgwAGdOLmVQyH1LYeLnJjZcvAC+cD5FnIrUhTFhiBle0kSMPxpQAmewTBEMIJOYopxCxgjWQuuNdAucK52d3f/BDiTI2Ci5jl9vdc+lcosoTYcDtZJPhlJC2lTMuGIadr84HDwE+B4fQw89gsXLjwtwhVGSIL5EhuEJacqjQ7K8Eg90Nra2kvZhgBWw7yFMoexixD0Ksb9mE/SV7HMBikgxE6yF6UsibpoYoA5RSP40hiOYOnS4coJQaalunBpyyWFDDjg8+NtblhBLrMZM6oFB4YDnwVoXgY4MQxs3IgywNGb3HluNRQJaXA5iRadi8HhhxiUVcBiiVeuXPnbEUaKcCMej2cLd98/RxinEWIMwcqFzK1yH06/Tjtu+RRKEaAuwtekLgQxzj5r1qwvky+SOnN3kyUELG3/n1ISUw3C16xZo+57d89KFmk06bls2KpDbZtaN3XDue5zSX0TrSxfvvzXb23duiocDK0xYxPcsWj0ox+//ePlO/bvSOzZqXiwxM8xtljaRXgI6mXof3z9+vWpVvOueW5RUdFW9mrZJ+9CiHsKCwvfFhC33XabCDxgKAxKEp49e7a+33Z0dPjNMEYrCx2Z+ri79xYXF+s+my1AMwd8EkPgkvVtgblh87ZgwGJtcv9fRi40Co4QAZxsl9ddlzHQlGcUcE9PT7UWi0tQlJwkwnW7N+7du/dacsfEaxI0YDH/Hg6FH8B8nGZI0Zitpqu3S+jYY243l7HQuwxFZNE+ApoNGYRrnqKXmSdbQzkC7MClllFvYu/1IfQFDKiUQQKXvgb21CfENbNPvyqhuA5g5A841aamJl3BjHbmJSLokTZd4KWlpQ9Sr5E2BH2abJOUEa4T4a4DR5HU8TQHybZL2UjgcXV2dj6IIi6F1mnUIyjmkUWLFv3q8OHD7YyLGmPNeUYBX758uT4Wj0oUmpwUux/CWpMbb77G0ea9ocGhC1FNazBDQ0lhq65oGQX86KOPOnft2tVkCJgFdxCtnmHxOtMQTBXMMKxCB437Du7evfsKDJ2Ni94glgpjbUNDQ6eY9xH24icQakLRmD+dMd8TmORHCgoKWhmrwxK89N+NRa030+3z+aYaNJnbwfk09TnSBq27yHQBI1AvtKxnTqXggZ4X6EsSMDRVg3ejzDVgQ89K2u9H8T5PgChCTksZBRwNhSrZZdOOUDgFX4mtRI4Tk5qWt7b6T9XVX0IFG8yAZYfggqXa3GYunzhxws0Cdfc5IoDz5Lq7IkiaefXq1c30J6aIIAcHB9toeBjmSCRkBEHi3onrNNmrRXpiSborpV1c/aDApy8toBKLp0+sPikZQjA30hYy2pmTdKalPSj0CB6En7q9CG79yRWlhUxN5SujSeVrRvB/D54v8emewowzSbuNjpiiSOifllhirDfamyb4tIHjbHj2OmEZ4QbD4UyBno4BzVdhSEJJEWBCADC+ECa0mD/apD4jE3kCB/f3CxTjH2FwlzEGmKew+m/D2G9XVla2Y50J65YxzNP4hinK/uwfKcuxcVITEXQ/9H0da11VU1PzCHSdEQQI2Ma67lm5cqWu6KlIE8wxd9hj9htqb+qI25QCFltAU5+p+aaLn3ziCReE6vtPKjDFpqRpszEGYQmdCaFiAYlFIvwgTLgoVkEqB74hmIzwsHQHe9mfGftnYoKHENR0mQiMrqNHj4rL1FNzc3M57tSoirW146J3Gw0jVjgFVy+nEKP5pnPw9L300ku/JwjU10u88Cou37gBrELxakHiS0WU0YLZrwfQzdSx2H+soL+/vzGt4yYbultbq2BMRlfs8rjSiDbQEYEHEUS/1IWZlJtWr16tW3xtbe0J4oXVBDb3Y33HjTlj5cCRhevuWcZST5RT54LPhmW9zVv248ZH9Ps4OH8gfZOc7Fu2bDGUVOjSY40RHC6EndHrZhSwJz//Q54ObqjpCBR4qHB19rFJJtzGhcYd8VisJBNcGHguU7u0SbSMhbUbzERJms6ePXsHXfbNmzcHuBIl5jq4n/5RlWQ02Lm2w+g0L4jLTAgiFzh4m5xMnaNdYhx4E7JjfXIdmyYvwZ0YZCaEy/puxa58aG7Ty0g4FtHWcoVYldY3wQYi6DzuG9bFrltOMhTOo2NZH8x5WxYoE1m0C/f5LwsWLJghRxf2zAIu6yVwGtUKkxEmagnzA7Yixxh6MvIqMWOcBeA68ECiHApn4jHpYw12jq9Cg3wOlHkabQbWYWIHvG56ykj09u3bB1RVOZxYpWleJBpt4Sc7T/FokNjvTN3jKsrBP8+d94WQpq1InSi4HarayZXpmdQ+c726uvoPWLHugmXBWM/d3A+/jmL8c1lZ2WMogNynN5jmZFqWqVs/wugXGgKPvXkmXms5F//NojR4lFEvFQwgxAZG0ch1nOyjupUJXGia2dfX99H58+fPoXw/bUlnaWOikTOmcMeOHSuFDuaIl/qMwJGEspzjzvyyXkn5k+ZejH5+K/VGJBy5H7PgbYdkt8vTHResNm8wFHiyOL9wiD1uIwzwcSMjfQl1kuHZklzms5cXepzOz/gDQxt4CE6ngz3MrirbxNVmg8Wie/Eo/0BQ81NokWBKjhAtLFo+sWr9M2DQljGApH9kmfY4SiVHqXv4OIbH64H9OnvcIMHU15m/jc9uYu6YCmPgRhGPUF7CZ4fWOiz3deDI+uSXqAn+CXyZQ1MCNopbRiD1Ks1X6M6jTw9KKUdRuq0kkUFaymjBMgo3/RYP+z0GBlVR3+GacpPqVHsQszIU8H+H3z7/TLWpDxB1NuJqK7CmjBu9wGvgl5gyprGx8Ra/z3cfnPvxoN//n9zLZ9ZcLlVwO7KgMRMvTm9whPgG1noYK7nGov0wIMwnEWeEugRjPr5L9O8TgFhEbKRN2n0wPyF4YP0X4zpoGwKGME4UUF6PHPK6JLBH5sg7c7q5In8zbEHHJ0+LPwXuWeDIsUrok5c6Wf8AtJ/h65N5wDROBkK70NZPn3ipQb4S5nmEBqEP4R6Bphdoz5jSLWdkGLc9H06rn/bzcDT6LVRLcTiUgcqamg0Ou2PrhZ7uZ7Hu5khEu1eLDt2rBtVTuNNjBcUFv7x48eImiEpoo4EV7V8Wj2jfDAeCc6Lx2Ez01YGKGt1JuSiV2+l8C8t8j/vfpL7RKhxx/puz4G6eDVdgHXfw1cMoL7RwrNcZdBQmtfILlQPHjx+3lZSUnGS//j7j0GM1jkt/34C9b9++Y/J8iKt/BG/QDAwHMK7Sf4x1yGPGc8wrpM3G1eheY56RoyBnsc7vX9ch/RnrsPQdOnRoH8ecB/EIX8AipyMkJ7j7+PYRL7zF8+XHaC8Hh66E5K+B+ySfj+3mTbzeveC9E7jlgJOryqPgegV6zxi4U3PDQFPb9TqLrLlw/sIWftC+WJyFU1GPVNZWf4VFz+q92vu9eDQqV3L6vSu/1BgoKilZCfPSFizA2Dtuudxz8d1ojDkZsV1vFILgeHdpYcGn2zs7xVVOKEGXfe3atbqH2rRpk1hrNrSj4hA4dDL9+g3ZqAPH2SFw2X4UHkbGTRvrUXOdl1XAQvPMpqbPDvsDL/CyU4nfkZ/TvDx9xoz1ly9efGjQN/xALKrVsvwY1rHvuR9t+CJMTbi61DXXT61/NRIJP8jiUrsSdX7UM5Tv9Xz3VFfXDxONVmHCHBgzPH9h48YTrX/6UzF75QJcqhvRNOLaWmtqa7cTvhxzez3/k19Y8Mei4qJtzz///PlslJSVltzF5ZNEgBkTR7OQ2+X67ZT6uvX8eiHjuS7jRKtxVA6MKWDcSHx2c/PBgD9Yh/+fTnRSEo1qtw4ODJzTgsEuzPUsAr/EHuZj/814FjOwFxeVsD9qy4y6ketu2a4EVZdje1V11VPsKZP+oGHg+kvLxxSwMISfxIRa5ra8E/IHyjUO2LzDzCS/l81jkRYKLSQw+AT/+Ww2j+/bsjGwpLjkvlQB6xscgYbD6dhG4PPU+++/35UNhtU3Pg6MGkWngpFHfm5enuk63dUdCoe+yNViYzQcuZv9Vz8AO2PxdyVwyBbMxHnfNeCObP4Rjl/dCPd3FVVVzxFlpt+eGROsfEIcyFnAAp2fm8q58IezmpoOB8PaV4mmb4vHYzWc+r3EmmPe8KAJbOHyvwu551aUy7z1tbu8np9xFfgbtgJrz52QCLNPGpeABdSIhW5DKPu5avtUOBhchcuei2m2Z0fF8ceunOHo+IGiOE+7nK4/llaU/lasNvWntGPBsfpz58CYx6SxQMnzHL+saClwOC4fam8/l238woUzKoNB5/Rqt/v4zrY2/Zkv23irz+KAxQGLAxYHLA5YHLA4YHHA4oDFAYsDFgcsDlgcsDgwHg78L308KT2dErwKAAAAAElFTkSuQmCC
+fromversion: 5.0.0
