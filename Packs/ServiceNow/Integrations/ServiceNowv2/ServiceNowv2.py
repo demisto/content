@@ -1,7 +1,7 @@
 import os
 import shutil
-import urllib
 import dateparser
+from urllib import parse
 from typing import List, Tuple, Dict, Callable, Any, Union, Optional
 
 from CommonServerPython import *
@@ -774,12 +774,13 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
+
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = []
-            sysparm_query_args = urllib.parse.parse_qsl(sys_param_query)
+            query_params['sysparm_query'] = []  # type: ignore
+            sysparm_query_args = parse.parse_qsl(sys_param_query)
             for arg in sysparm_query_args:
-                query_params['sysparm_query'].append(urllib.parse.urlencode([arg]))
+                query_params['sysparm_query'].append(parse.urlencode([arg]))  # type: ignore
         if system_params:
             query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
