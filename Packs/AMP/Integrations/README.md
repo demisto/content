@@ -1,6 +1,3 @@
-                  ## Overview
----
-
 Uses CISCO AMP Endpoint
 This integration was integrated and tested with API version v1 of AMP
 
