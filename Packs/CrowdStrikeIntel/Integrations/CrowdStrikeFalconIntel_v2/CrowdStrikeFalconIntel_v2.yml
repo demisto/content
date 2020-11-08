@@ -6,6 +6,11 @@ display: CrowdStrike Falcon Intel v2
 category: Data Enrichment & Threat Intelligence
 description: CrowdStrike Threat intelligence service integration helps organizations defend themselves against adversary activity by investigating incidents, and accelerating alert triage and response.
 configuration:
+- defaultvalue: https://api.crowdstrike.com/
+  display: Server URL (e.g., https://example.net)
+  name: server_url
+  required: true
+  type: 0
 - display: Client ID
   displaypassword: Client Secret
   name: credentials
