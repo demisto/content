@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 import demistomock as demisto
-from GSuiteAdmin import DemistoException, MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES
+from GSuiteAdmin import MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES
 
 with open('test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
@@ -86,33 +86,10 @@ def test_test_function(mocker, gsuite_client):
     Then:
     - Ensure 'ok' should be return.
     """
-    from GSuiteAdmin import test_module, GSuiteClient, service_account
+    from GSuiteAdmin import test_module, GSuiteClient
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
-    mocker.patch.object(service_account.Credentials, 'refresh')
-    gsuite_client.credentials.token = True
+    mocker.patch.object(GSuiteClient, 'http_request')
     assert test_module(gsuite_client) == 'ok'
-
-
-def test_test_function_error(mocker, gsuite_client):
-    """
-    Scenario: Call to test-module should return 'ok' if API call succeeds.
-
-    Given:
-    - gsuite_client object
-
-    When:
-    - Calling test function.
-
-    Then:
-    - Ensure 'ok' should be return.
-    """
-    from GSuiteAdmin import test_module, service_account
-    mocker.patch.object(GSuiteClient, 'set_authorized_http')
-    mocker.patch.object(service_account.Credentials, 'refresh')
-    gsuite_client.credentials.token = None
-
-    with pytest.raises(DemistoException, match=MESSAGES['TEST_FAILED_ERROR']):
-        test_module(gsuite_client)
 
 
 @patch(MOCKER_HTTP_METHOD)
