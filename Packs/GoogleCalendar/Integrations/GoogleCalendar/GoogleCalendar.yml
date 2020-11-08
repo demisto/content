@@ -22,7 +22,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Identifier of the calendar. If you want to access the primary calendar
+      description: Identifier of the calendar. To access the primary calendar
         of the currently logged in user, use the "primary" keyword.
       isArray: false
       name: calendar_id
@@ -40,15 +40,15 @@ script:
         The role assigned to the scope.
 
         Available Options:
-        none - Provides no access.
+        "none" - Provides no access.
 
-        freeBusyReader - Provides read access to free/busy information.
+        "freeBusyReader" - Provides read access to free/busy information.
 
-        reader - Provides read access to the calendar. Private events will appear to users with reader access, but event details will be hidden.
+        "reader" - Provides read access to the calendar. Private events will appear to users with reader access, but event details will be hidden.
 
-        writer - Provides read and write access to the calendar. Private events will appear to users with writer access, and event details will be visible.
+        "writer" - Provides read and write access to the calendar. Private events will appear to users with write access, and event details will be visible.
 
-        owner - Provides ownership of the calendar. This role has all of the permissions of the writer role with the additional ability to see and manipulate ACLs.
+        "owner" - Provides ownership of the calendar. This role has all of the permissions of the writer role with the additional ability to see and manipulate ACLs.
       isArray: false
       name: role
       predefined:
@@ -65,15 +65,15 @@ script:
         The type of the scope.
 
         Available Options:
-        default - The public scope. This is the default value.
+        "default" - The public scope. This is the default value.
 
-        user - Limits the scope to a single user.
+        "user" - Limits the scope to a single user.
 
-        group - Limits the scope to a group.
+        "group" - Limits the scope to a group.
 
-        domain - Limits the scope to a domain.
+        "domain" - Limits the scope to a domain.
 
-        Note: The permissions granted to the "default", or public, scope apply to any user, authenticated or not.
+        Note: The permissions granted to the "default", or public scope, apply to any user, authenticated or not.
       isArray: false
       name: scope_type
       predefined:
@@ -93,8 +93,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Use the optional send_notifications flag to choose whether to send
-        notifications about the calendar sharing change or not.
+      description: Whether to send notifications about the calendar sharing change. Default is "true".
       isArray: false
       name: send_notifications
       predefined:
@@ -148,8 +147,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Maximum number of entries returned on one result page. By default
-        the value is 100 entries. The page size can never be larger than 250 entries.
+      description: Maximum number of entries returned on a result page. Default is 100. The page size cannot be greater than 250 entries.
       isArray: false
       name: max_results
       required: false
@@ -164,8 +162,8 @@ script:
       default: false
       defaultValue: 'false'
       description: Whether to include deleted ACLs in the result. Deleted ACLs are
-        represented by role equal to "none". Deleted ACLs will always be included
-        if syncToken is provided.
+        represented by the role "none". Deleted ACLs will always be included
+        if syncToken is provided. Default is "false".
       isArray: false
       name: show_deleted
       predefined:
@@ -175,7 +173,7 @@ script:
       secret: false
     - default: false
       description: |
-        Token obtained from the nextSyncToken field returned on the last page of results from the previous list request. It makes the result of this list request contain only entries that have changed since then. All entries deleted since the previous list request will always be in the result set and it is not allowed to set showDeleted to False.
+        Token obtained from the nextSyncToken field returned on the last page of results from the previous list request. The result of this list request contains only entries that have changed since then. All entries deleted since the previous list request will always be in the result set and it is not allowed to set showDeleted to false.
         If the syncToken expires, the server will respond with a 410 GONE response code and the client should clear its storage and perform a full synchronization without any syncToken.
       isArray: false
       name: sync_token
