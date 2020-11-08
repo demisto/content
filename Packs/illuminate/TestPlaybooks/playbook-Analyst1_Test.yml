@@ -1,0 +1,730 @@
+id: Analyst1 Integration Test
+version: -1
+name: Analyst1 Integration Test
+description: Analyst1 Integration testplaybook
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 99d17fdc-e2cd-405f-8dcd-c1283198acbc
+    type: start
+    task:
+      id: 99d17fdc-e2cd-405f-8dcd-c1283198acbc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7feada3a-589c-47a7-8597-45b7baed9efc
+    type: regular
+    task:
+      id: 7feada3a-589c-47a7-8597-45b7baed9efc
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 94d880d2-b26d-4ac2-8bf2-a73d795377c2
+    type: regular
+    task:
+      id: 94d880d2-b26d-4ac2-8bf2-a73d795377c2
+      version: -1
+      name: domain
+      script: Analyst1|||domain
+      type: regular
+      iscommand: true
+      brand: Analyst1
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: abc.com
+      long: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c2af8198-d5ca-4c98-8f88-f7be31d6012d
+    type: condition
+    task:
+      id: c2af8198-d5ca-4c98-8f88-f7be31d6012d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Analyst1.Domain.ID
+            iscontext: true
+          right:
+            value:
+              simple: "2043650"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 9427ed8f-67ef-4cc0-8657-bb40a75eda6b
+    type: regular
+    task:
+      id: 9427ed8f-67ef-4cc0-8657-bb40a75eda6b
+      version: -1
+      name: email
+      script: Analyst1|||email
+      type: regular
+      iscommand: true
+      brand: Analyst1
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      email:
+        simple: 001toxic@gmail.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 5a8f4147-b082-4aeb-88db-b77c14023c6a
+    type: condition
+    task:
+      id: 5a8f4147-b082-4aeb-88db-b77c14023c6a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Analyst1.Email.ID
+            iscontext: true
+          right:
+            value:
+              simple: "1637756"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1adef7ee-d248-45cf-8bd9-aabb9b573eb2
+    type: regular
+    task:
+      id: 1adef7ee-d248-45cf-8bd9-aabb9b573eb2
+      version: -1
+      name: ip
+      script: Analyst1|||ip
+      type: regular
+      iscommand: true
+      brand: Analyst1
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ip:
+        simple: 0.154.17.105
+      long: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 1c4413f3-bbb3-4d40-8f95-760ec5ded96a
+    type: condition
+    task:
+      id: 1c4413f3-bbb3-4d40-8f95-760ec5ded96a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Analyst1.Ip.ID
+            iscontext: true
+          right:
+            value:
+              simple: "51469"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 58aceeaf-2628-4eba-833e-69c54ddd97cd
+    type: regular
+    task:
+      id: 58aceeaf-2628-4eba-833e-69c54ddd97cd
+      version: -1
+      name: file
+      description: Queries the Analyst1 REST API and enriches the given file with
+        Analyst1 indicator data.
+      script: Analyst1|||file
+      type: regular
+      iscommand: true
+      brand: Analyst1
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      file:
+        simple: "00000000000000000000000000000000"
+      long: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 400dba72-583a-44ba-8f3e-1d842dae1674
+    type: condition
+    task:
+      id: 400dba72-583a-44ba-8f3e-1d842dae1674
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Analyst1.File.ID
+            iscontext: true
+          right:
+            value:
+              simple: "1527155"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 77190d09-6936-4179-8769-840ee551799c
+    type: regular
+    task:
+      id: 77190d09-6936-4179-8769-840ee551799c
+      version: -1
+      name: analyst1-enrich-string
+      script: '|||analyst1-enrich-string'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      string:
+        simple: ??
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6af13c9a-f337-43fa-807f-083c25f43aab
+    type: condition
+    task:
+      id: 6af13c9a-f337-43fa-807f-083c25f43aab
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Analyst1.String.ID
+            iscontext: true
+          right:
+            value:
+              simple: "90548"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 0c433982-8194-4c33-8d14-980e4efe6e0b
+    type: regular
+    task:
+      id: 0c433982-8194-4c33-8d14-980e4efe6e0b
+      version: -1
+      name: analyst1-enrich-ipv6
+      script: '|||analyst1-enrich-ipv6'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      ip:
+        simple: '16::'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 5d033663-e4cd-4865-8f81-7b88dd3fd5a6
+    type: condition
+    task:
+      id: 5d033663-e4cd-4865-8f81-7b88dd3fd5a6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Analyst1.Ipv6.ID
+            iscontext: true
+          right:
+            value:
+              simple: "2623838"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 9dead863-6d75-4caa-8939-1a42eba5cbc6
+    type: regular
+    task:
+      id: 9dead863-6d75-4caa-8939-1a42eba5cbc6
+      version: -1
+      name: analyst1-enrich-mutex
+      script: '|||analyst1-enrich-mutex'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      mutex:
+        simple: ??
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 43fa7d06-092a-413e-814a-2b3c76ebdc93
+    type: condition
+    task:
+      id: 43fa7d06-092a-413e-814a-2b3c76ebdc93
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Analyst1.Mutex.ID
+            iscontext: true
+          right:
+            value:
+              simple: "95267"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: d08547f7-726e-4cff-859e-39b03fe20ff6
+    type: regular
+    task:
+      id: d08547f7-726e-4cff-859e-39b03fe20ff6
+      version: -1
+      name: analyst1-enrich-http-request
+      script: '|||analyst1-enrich-http-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      http-request:
+        simple: /~
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 60ad71b3-dac0-434f-8d6e-5c34f929f4ee
+    type: condition
+    task:
+      id: 60ad71b3-dac0-434f-8d6e-5c34f929f4ee
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Analyst1.Httprequest.ID
+            iscontext: true
+          right:
+            value:
+              simple: "2885382"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 50c33870-00a8-49dd-8823-104c0c9909cb
+    type: regular
+    task:
+      id: 50c33870-00a8-49dd-8823-104c0c9909cb
+      version: -1
+      name: url
+      script: Analyst1|||url
+      type: regular
+      iscommand: true
+      brand: Analyst1
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      url:
+        simple: 104.218.120.128/check.aspx
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: bce55c05-94ed-48e7-87aa-6743133a6235
+    type: condition
+    task:
+      id: bce55c05-94ed-48e7-87aa-6743133a6235
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Analyst1.Url.ID
+            iscontext: true
+          right:
+            value:
+              simple: "2699554"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: a5ccd8c3-ee49-4146-86c1-7bed4bce1f0e
+    type: title
+    task:
+      id: a5ccd8c3-ee49-4146-86c1-7bed4bce1f0e
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4015,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

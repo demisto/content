@@ -1,21 +1,27 @@
 from __future__ import print_function
-import copy
-import time
-import re
-from subprocess import Popen, PIPE
-from pprint import pformat
-import uuid
-import ast
-import urllib.parse
-import urllib3
-import requests.exceptions
-from demisto_client.demisto_api.rest import ApiException
-import demisto_client
-import json
-from Tests.tools import update_server_configuration
 
-from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
+import ast
+import copy
+import json
+import re
+import time
+from typing import Optional, Tuple
+import urllib.parse
+import uuid
+from pprint import pformat
+from subprocess import PIPE, Popen
+
+import demisto_client
+import requests.exceptions
+import urllib3
+from demisto_client.demisto_api import DefaultApi
+from demisto_client.demisto_api.rest import ApiException
+from demisto_client.demisto_api.models.incident import Incident
 from demisto_sdk.commands.common.constants import PB_Status
+from demisto_sdk.commands.common.tools import (LOG_COLORS, print_color,
+                                               print_error, print_warning)
+
+from Tests.tools import update_server_configuration
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -623,18 +629,18 @@ def __enable_integrations_instances(client, module_instances):
             res = demisto_client.generic_request_func(self=client, method='PUT',
                                                       path='/settings/integration',
                                                       body=module_instance)
+            if res[1] != 200:
+                print_error('Enabling instance failed with status code ' + str(res[1]) + '\n' + pformat(res))
         except ApiException as conn_err:
             print_error(
                 'Failed to enable integration instance, error trying to communicate with demisto '
                 'server: {} '.format(conn_err.body)
             )
 
-        if res[1] != 200:
-            print_error('Enabling instance failed with status code ' + str(res[1]) + '\n' + pformat(res))
-
 
 # create incident with given name & playbook, and then fetch & return the incident
-def __create_incident_with_playbook(client, name, playbook_id, integrations, prints_manager, thread_index=0):
+def __create_incident_with_playbook(client: DefaultApi, name, playbook_id, integrations, prints_manager,
+                                    thread_index=0) -> Tuple[Optional[Incident], int]:
     # create incident
     create_incident_request = demisto_client.demisto_api.CreateIncidentRequest()
     create_incident_request.create_investigation = True
@@ -659,7 +665,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
                         'the id of the real playbook you were trying to use,' \
                         'or schema problems in the TestPlaybook.'.format(str(integration_names), playbook_id)
         prints_manager.add_print_job(error_message, print_error, thread_index)
-        return False, -1
+        return None, -1
 
     # get incident
     search_filter = demisto_client.demisto_api.SearchIncidentsData()
@@ -670,33 +676,27 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
 
     incident_search_responses = []
 
-    try:
-        incidents = client.search_incidents(filter=search_filter)
-        incident_search_responses.append(incidents)
-    except ApiException as err:
-        prints_manager.add_print_job(err.body, print, thread_index)
-        incidents = {'total': 0}
-
+    found_incidents = 0
     # poll the incidents queue for a max time of 300 seconds
     timeout = time.time() + 300
-    while incidents['total'] < 1:
+    while found_incidents < 1:
         try:
             incidents = client.search_incidents(filter=search_filter)
+            found_incidents = incidents.total
             incident_search_responses.append(incidents)
         except ApiException as err:
             prints_manager.add_print_job(err.body, print, thread_index)
         if time.time() > timeout:
-            error_message = 'Got timeout for searching incident with id {}, ' \
-                            'got {} incidents in the search'.format(inc_id, incidents['total'])
+            error_message = 'Got timeout for searching incident with id {}'.format(inc_id)
             prints_manager.add_print_job(error_message, print_error, thread_index)
             prints_manager.add_print_job(
                 'Incident search responses: {}'.format(str(incident_search_responses)), print, thread_index
             )
-            return False, -1
+            return None, -1
 
         time.sleep(10)
 
-    return incidents['data'][0], inc_id
+    return incidents.data[0], inc_id
 
 
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
@@ -719,10 +719,10 @@ def __get_investigation_playbook_state(client, inv_id, prints_manager, thread_in
 
 
 # return True if delete-incident succeeded, False otherwise
-def __delete_incident(client, incident, prints_manager, thread_index=0):
+def __delete_incident(client: DefaultApi, incident: Incident, prints_manager, thread_index=0):
     try:
         body = {
-            'ids': [incident['id']],
+            'ids': [incident.id],
             'filter': {},
             'all': False
         }
@@ -778,24 +778,30 @@ def __print_investigation_error(client, playbook_id, investigation_id, prints_ma
         res = demisto_client.generic_request_func(self=client, method='POST',
                                                   path='/investigation/' + urllib.parse.quote(
                                                       investigation_id), body=empty_json)
+        if res and int(res[1]) == 200:
+            resp_json = ast.literal_eval(res[0])
+            entries = resp_json['entries']
+            prints_manager.add_print_job('Playbook {} has failed:'.format(playbook_id), print_color, thread_index,
+                                         message_color=color)
+            for entry in entries:
+                if entry['type'] == ENTRY_TYPE_ERROR and entry['parentContent']:
+                    prints_manager.add_print_job('- Task ID: {}'.format(entry['taskId']), print_color, thread_index,
+                                                 message_color=color)
+                    # Checks for passwords and replaces them with "******"
+                    parent_content = re.sub(
+                        r' (P|p)assword="[^";]*"', ' password=******', entry['parentContent'])
+                    prints_manager.add_print_job('  Command: {}'.format(parent_content), print_color,
+                                                 thread_index, message_color=color)
+                    body_contents_str = '  Body:\n{}\n'.format(entry['contents'])
+                    prints_manager.add_print_job(body_contents_str, print_color,
+                                                 thread_index, message_color=color)
+        else:
+            prints_manager.add_print_job(f'Failed getting entries for investigation: {investigation_id}. Res: {res}',
+                                         print_error, thread_index)
     except ApiException as conn_err:
         error_message = 'Failed to print investigation error, error trying to communicate with demisto ' \
                         'server: {} '.format(conn_err.body)
         prints_manager.add_print_job(error_message, print_error, thread_index)
-    if res and int(res[1]) == 200:
-        resp_json = ast.literal_eval(res[0])
-        entries = resp_json['entries']
-        prints_manager.add_print_job('Playbook {} has failed:'.format(playbook_id), print_color, thread_index,
-                                     message_color=color)
-        for entry in entries:
-            if entry['type'] == ENTRY_TYPE_ERROR and entry['parentContent']:
-                prints_manager.add_print_job('- Task ID: {}'.format(entry['taskId']), print_color, thread_index,
-                                             message_color=color)
-                prints_manager.add_print_job('  Command: {}'.format(entry['parentContent']), print_color,
-                                             thread_index, message_color=color)
-                body_contents_str = '  Body:\n{}\n'.format(entry['contents'])
-                prints_manager.add_print_job(body_contents_str, print_color,
-                                             thread_index, message_color=color)
 
 
 # Configure integrations to work with mock
@@ -818,8 +824,8 @@ def configure_proxy_unsecure(integration_params):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return playbook status
-def test_integration(client, server_url, integrations, playbook_id, prints_manager, options=None, is_mock_run=False,
-                     thread_index=0):
+def check_integration(client, server_url, integrations, playbook_id, prints_manager, options=None, is_mock_run=False,
+                      thread_index=0):
     options = options if options is not None else {}
     # create integrations instances
     module_instances = []
@@ -865,7 +871,7 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
     if not incident:
         return False, -1
 
-    investigation_id = incident['investigationId']
+    investigation_id = incident.investigation_id
     if investigation_id is None or len(investigation_id) == 0:
         incident_id_not_found_msg = 'Failed to get investigation id of incident:' + incident
         prints_manager.add_print_job(incident_id_not_found_msg, print_error, thread_index)  # disable-secrets-detection
