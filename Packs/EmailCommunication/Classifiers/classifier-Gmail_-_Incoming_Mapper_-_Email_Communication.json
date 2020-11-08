@@ -160,7 +160,7 @@
       "filters": [
        [
         {
-         "ignoreCase": false,
+         "ignoreCase": true,
          "left": {
           "isContext": true,
           "value": {
