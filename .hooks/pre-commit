@@ -16,7 +16,8 @@ if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
     DO_DEACTIVATE=1
 fi
 
-demisto-sdk validate -g --skip-pack-release-notes
+# --staged flag runs only on files about to commit
+demisto-sdk validate -g --skip-pack-release-notes --staged
 RES=$?
 
 demisto-sdk secrets --ignore-entropy
