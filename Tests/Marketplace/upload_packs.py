@@ -19,7 +19,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, init_big
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 
-def get_packs_names(target_packs, last_upload_commit_hash):
+def get_packs_names(target_packs, previous_commit_hash):
     """Detects and returns packs names to upload.
 
     In case that `Modified` is passed in target_packs input, checks the git difference between two commits,
@@ -29,7 +29,7 @@ def get_packs_names(target_packs, last_upload_commit_hash):
     Args:
         target_packs (str): csv packs names or `All` for all available packs in content
                             or `Modified` for only modified packs (currently not in use).
-        last_upload_commit_hash (str): last head commit hash that was uploaded to the bucket
+        previous_commit_hash (str): the previous commit to diff with.
 
     Returns:
         set: unique collection of packs names to upload.
@@ -45,7 +45,7 @@ def get_packs_names(target_packs, last_upload_commit_hash):
             logging.critical(f"Folder {PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}")
             sys.exit(1)
     elif target_packs.lower() == "modified":
-        cmd = f"git diff --name-only HEAD..{last_upload_commit_hash} | grep 'Packs/'"
+        cmd = f"git diff --name-only HEAD..{previous_commit_hash} | grep 'Packs/'"
         modified_packs_path = run_command(cmd).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
         logging.info(f"Number of modified packs is: {len(modified_packs)}")
@@ -451,7 +451,7 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated RN"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated Pack Versions"]
     if include_pack_status:
         table_fields.append("Status")
     table = prettytable.PrettyTable()
@@ -459,7 +459,8 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack.aggregated]
+        row = [index, pack.name, pack.display_name, pack.latest_version,
+               pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"]
         if include_pack_status:
             row.append(pack_status_message)
         table.add_row(row)
@@ -548,7 +549,9 @@ def get_recent_commits_data(content_repo, index_folder_path, is_bucket_upload_fl
     head_commit = content_repo.head.commit.hexsha
     if force_previous_commit:
         try:
-            return head_commit, content_repo.commit(force_previous_commit).hexsha
+            previous_commit = content_repo.commit(force_previous_commit).hexsha
+            logging.info(f"Using force commit hash {previous_commit} to diff with.")
+            return head_commit, previous_commit
         except Exception as e:
             logging.critical(f'Force commit {force_previous_commit} does not exist in content repo. Additional '
                              f'info:\n {e}')
@@ -556,14 +559,14 @@ def get_recent_commits_data(content_repo, index_folder_path, is_bucket_upload_fl
     return head_commit, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow)
 
 
-def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_commit_hash, storage_bucket):
+def check_if_index_is_updated(content_repo, current_commit_hash, previous_commit_hash, storage_bucket):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
     added/modified/deleted, all other steps are not performed.
 
     Args:
         content_repo (git.repo.base.Repo): content repo object.
         current_commit_hash (str): last commit hash of head.
-        last_upload_commit_hash (str): last head commit hash that was uploaded to the bucket
+        previous_commit_hash (str): the previous commit to diff with
         storage_bucket: public storage bucket.
 
     """
@@ -575,7 +578,7 @@ def check_if_index_is_updated(content_repo, current_commit_hash, last_upload_com
             return
 
         try:
-            index_commit = content_repo.commit(last_upload_commit_hash)
+            index_commit = content_repo.commit(previous_commit_hash)
         except Exception as e:
             # not updated build will receive this exception because it is missing more updated commit
             logging.warning(f"Index is already updated. Additional info:\n {e}")
@@ -747,9 +750,11 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow):
 
     """
     if is_bucket_upload_flow:
-        return get_last_upload_commit_hash(index_folder_path)
+        return get_last_upload_commit_hash(content_repo, index_folder_path)
     else:
-        return content_repo.commit('origin/master').hexsha
+        master_head_commit = content_repo.commit('origin/master').hexsha
+        logging.info(f"Using origin/master head commit hash {master_head_commit} to diff with.")
+        return master_head_commit
 
 
 def get_last_upload_commit_hash(content_repo, index_folder_path):
@@ -777,7 +782,9 @@ def get_last_upload_commit_hash(content_repo, index_folder_path):
             sys.exit(1)
 
     try:
-        return content_repo.commit(last_upload_commit_hash).hexsha
+        last_upload_commit = content_repo.commit(last_upload_commit_hash).hexsha
+        logging.info(f"Using commit hash {last_upload_commit} from index.json to diff with.")
+        return last_upload_commit
     except Exception as e:
         logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
                          f'repo. Additional info:\n {e}')
@@ -785,8 +792,8 @@ def get_last_upload_commit_hash(content_repo, index_folder_path):
 
 
 def get_packs_summary(packs_list):
-    """
-    Returns the packs list divided into 3 lists by their status
+    """ Returns the packs list divided into 3 lists by their status
+
     Args:
         packs_list (list): The full packs list
 
@@ -812,15 +819,32 @@ def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, suc
         successful_packs: The list of all successful packs
 
     """
-    with open(os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), "w") as f:
-        packs_results = dict()
-        if failed_packs:
-            failed_packs_dict = {"failed_packs": {pack.name: pack.status for pack in failed_packs}}
-            packs_results.update(failed_packs_dict)
-        if successful_packs:
-            successful_packs_dict = {"successful_packs": {pack.name: pack.status for pack in successful_packs}}
-            packs_results.update(successful_packs_dict)
-        if packs_results:
+    packs_results = dict()
+
+    if failed_packs:
+        failed_packs_dict = {
+            "failed_packs": {
+                pack.name: {
+                    "status": PackStatus[pack.status].value,
+                    "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
+                } for pack in successful_packs
+            }
+        }
+        packs_results.update(failed_packs_dict)
+
+    if successful_packs:
+        successful_packs_dict = {
+            "successful_packs": {
+                pack.name: {
+                    "status": PackStatus[pack.status].value,
+                    "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
+                } for pack in successful_packs
+            }
+        }
+        packs_results.update(successful_packs_dict)
+
+    if packs_results:
+        with open(os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), "w") as f:
             f.write(json.dumps(packs_results, indent=4))
 
 
@@ -857,17 +881,17 @@ def main():
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    current_commit_hash, last_upload_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
-                                                                           is_bucket_upload_flow, force_previous_commit)
+    current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
+                                                                        is_bucket_upload_flow, force_previous_commit)
 
     # detect packs to upload
-    pack_names = get_packs_names(target_packs, last_upload_commit_hash)
+    pack_names = get_packs_names(target_packs, previous_commit_hash)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     if not option.override_all_packs:
-        check_if_index_is_updated(content_repo, current_commit_hash, last_upload_commit_hash, storage_bucket)
+        check_if_index_is_updated(content_repo, current_commit_hash, previous_commit_hash, storage_bucket)
 
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)
@@ -952,7 +976,7 @@ def main():
             continue
 
         task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                              last_upload_commit_hash)
+                                                              previous_commit_hash)
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
