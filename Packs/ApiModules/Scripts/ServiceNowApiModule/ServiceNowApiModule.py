@@ -22,6 +22,7 @@ class ServiceNowClient(BaseClient):
             - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
         """
+        self.auth = None
         self.use_oauth = use_oauth
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
@@ -29,10 +30,11 @@ class ServiceNowClient(BaseClient):
         else:
             self.username = credentials.get('identifier')
             self.password = credentials.get('password')
-            self._auth = (self.username, self.password)
+            self.auth = (self.username, self.password)
 
         self.base_url = url
-        super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers)  # type: ignore[misc]
+        super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
+        # : ignore[misc]
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
                      files=None, return_empty_response=False, auth=None):
@@ -63,7 +65,7 @@ class ServiceNowClient(BaseClient):
                         err_msg = f'Unauthorized request: \n{str(res)}'
                     raise DemistoException(err_msg)
                 else:
-                    raise res
+                    raise Exception(res)
 
         except Exception as e:
             if 'SSL Certificate Verification Failed' in e.args[0]:
