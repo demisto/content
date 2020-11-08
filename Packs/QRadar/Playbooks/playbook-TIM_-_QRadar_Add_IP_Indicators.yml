@@ -79,7 +79,6 @@ tasks:
                     right:
                       value:
                         simple: active
-                accessor: brand
             iscontext: true
     view: |-
       {
