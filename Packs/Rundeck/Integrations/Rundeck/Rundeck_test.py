@@ -23,9 +23,10 @@ from Rundeck import (
 
 from CommonServerPython import DemistoException
 from datetime import datetime
+import demistomock as demisto
 
 
-def test_filter_results_when_response_is_dict():
+def test_filter_results_when_response_is_dict(mocker):
     """
     Given:
         - response as dict
@@ -34,6 +35,8 @@ def test_filter_results_when_response_is_dict():
     Then
         - filter out all selected fields and signs
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     results_to_filter = {"key1": "val1", "key2": "val2", "key_3": "val3"}
 
     result = filter_results(results_to_filter, "key1", "_")
@@ -41,7 +44,7 @@ def test_filter_results_when_response_is_dict():
     assert "key3" in result.keys()
 
 
-def test_filter_results_when_response_is_list():
+def test_filter_results_when_response_is_list(mocker):
     """
     Given:
         - response as list
@@ -50,6 +53,7 @@ def test_filter_results_when_response_is_list():
     Then
         - filter out all selected fields and signs
     """
+    mocker.patch.object(demisto, 'info')
     results_to_filter = [{"key1": "val1", "key2": "val2"}, {"key_3": "val3"}]
 
     result = filter_results(results_to_filter, "key1", "_")
@@ -58,7 +62,7 @@ def test_filter_results_when_response_is_list():
     assert "key3" in result[1].keys()
 
 
-def test_attribute_pairs_to_dict():
+def test_attribute_pairs_to_dict(mocker):
     """
     Given:
         - string convert to a dict
@@ -67,11 +71,13 @@ def test_attribute_pairs_to_dict():
     Then
         - a string is converted to dict
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     result = attribute_pairs_to_dict("key1=val1,key2=val2")
     assert result == {"key1": "val1", "key2": "val2"}
 
 
-def test_convert_str_to_int():
+def test_convert_str_to_int(mocker):
     """
     Given:
         - string convert to a int
@@ -80,11 +86,13 @@ def test_convert_str_to_int():
     Then
         - the passed string is converted to int
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     result = convert_str_to_int("5", "argument")
     assert result == 5
 
 
-def test_convert_str_to_int_with_bad_input():
+def test_convert_str_to_int_with_bad_input(mocker):
     """
     Given:
         - string convert to a int that can't be converted to int
@@ -93,6 +101,8 @@ def test_convert_str_to_int_with_bad_input():
     Then
         - DemistoExeption is raised
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     try:
         convert_str_to_int("\\", "argument")
     except DemistoException:
@@ -111,6 +121,8 @@ def test_project_list_command(mocker):
     Then
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = [
         {
             "url": "https://test/api/35/project/Demisto",
@@ -144,6 +156,8 @@ def test_jobs_list_command(mocker):
     Then
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = [
         {
             "href": "123",
@@ -155,7 +169,7 @@ def test_jobs_list_command(mocker):
             "group": None,
             "description": "just a sample job",
             "project": "Demisto",
-            "name": "Arseny's Job",
+            "name": "Test Job",
         },
         {"another": "job"},
     ]
@@ -176,7 +190,7 @@ def test_jobs_list_command(mocker):
             "group": None,
             "description": "just a sample job",
             "project": "Demisto",
-            "name": "Arseny's Job",
+            "name": "Test Job",
         }
     ]
     assert result.outputs_key_field == "id"
@@ -185,7 +199,7 @@ def test_jobs_list_command(mocker):
         result.readable_output
         == "### Jobs List:\n|Id|Schedule Enabled|Scheduled|Enabled|Group|Description"
         "|Project|Name|\n|---|---|---|---|---|---|---|---|\n| 123 | true | false |"
-        " true |  | just a sample job | Demisto | Arseny's Job |\n"
+        " true |  | just a sample job | Demisto | Test Job |\n"
     )
 
 
@@ -198,6 +212,8 @@ def test_execute_job_command(mocker):
     Then
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = {
         "id": 194,
         "status": "running",
@@ -208,7 +224,7 @@ def test_execute_job_command(mocker):
         "job": {
             "id": "123",
             "averageDuration": 463,
-            "name": "Arseny's Job",
+            "name": "Test Job",
             "group": "",
             "project": "Demisto",
             "description": "just a sample job",
@@ -234,7 +250,7 @@ def test_execute_job_command(mocker):
         == "### Execute Job:\n|Id|Status|Project|Execution Type|User|Datestarted|Job"
         "|Description|Argstring|\n|---|---|---|---|---|---|---|---|---|\n| 194 | "
         "running | Demisto | user | Galb | unixtime: 123<br>date: 123 | id: 123<br>"
-        "averageDuration: 463<br>name: Arseny's Job<br>group: <br>project: Demisto"
+        "averageDuration: 463<br>name: Test Job<br>group: <br>project: Demisto"
         '<br>description: just a sample job<br>options: {"foo": "0"} | 123 | -foo'
         " 0 |\n"
     )
@@ -249,6 +265,8 @@ def test_job_retry_command(mocker):
     Then
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = {
         "id": 194,
         "status": "running",
@@ -259,7 +277,7 @@ def test_job_retry_command(mocker):
         "job": {
             "id": "123",
             "averageDuration": 463,
-            "name": "Arseny's Job",
+            "name": "Test Job",
             "group": "",
             "project": "Demisto",
             "description": "just a sample job",
@@ -285,7 +303,7 @@ def test_job_retry_command(mocker):
         == "### Execute Job:\n|Id|Status|Project|Execution Type|User|Datestarted|Job"
         "|Description|Argstring|\n|---|---|---|---|---|---|---|---|---|\n| 194 | "
         "running | Demisto | user | Galb | unixtime: 123<br>date: 123 | id: 123<br>"
-        "averageDuration: 463<br>name: Arseny's Job<br>group: <br>project: Demisto"
+        "averageDuration: 463<br>name: Test Job<br>group: <br>project: Demisto"
         '<br>description: just a sample job<br>options: {"foo": "0"} | 123 | -foo'
         " 0 |\n"
     )
@@ -300,6 +318,8 @@ def test_job_executions_query_command(mocker):
     Then
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = {
         "paging": {"total": 2},
         "executions": [
@@ -316,7 +336,7 @@ def test_job_executions_query_command(mocker):
                 "job": {
                     "id": "123",
                     "averageDuration": 463,
-                    "name": "Arseny's Job",
+                    "name": "Test Job",
                     "group": "",
                     "project": "Demisto",
                     "description": "just a sample job",
@@ -344,7 +364,7 @@ def test_job_executions_query_command(mocker):
                 "job": {
                     "id": "123",
                     "averageDuration": 463,
-                    "name": "Arseny's Job",
+                    "name": "Test Job",
                     "group": "",
                     "project": "Demisto",
                     "description": "just a sample job",
@@ -378,6 +398,8 @@ def test_job_execution_output_command(mocker):
     Then
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value_test = {
         "id": "69",
         "offset": "3732",
@@ -403,7 +425,7 @@ def test_job_execution_output_command(mocker):
                 "type": "stepbegin",
                 "absolute_time": "123",
                 "log": "",
-            }
+            }, {"another": 1}
         ],
     }
     client = Client(
@@ -413,21 +435,21 @@ def test_job_execution_output_command(mocker):
         project_name="Demisto",
     )
     mocker.patch.object(client, "job_execution_output", return_value=return_value_test)
-    result = job_execution_output_command(client, {"execution_id": "69"})
+    result = job_execution_output_command(client, {"execution_id": "69", "max_results": 1})
     assert result.outputs == return_value_test
     assert result.outputs_key_field == "id"
     assert result.outputs_prefix == "Rundeck.ExecutionsOutput"
     assert (
         result.readable_output
         == "### Job Execution Output:\n|Id|Offset|Completed|Exec Completed|Has Failed"
-           " Nodes|Exec State|Last Modified|Exec Duration|Percent Loaded|Total Size|Retry"
-           " Backoff|Cluster Exec|Compacted|Entries|\n|---|---|---|---|---|---|---|---|---"
-           "|---|---|---|---|---|\n| 69 | 3732 | true | true | true | failed | 123 | 237 | 1"
-           "2 | 3738 | 0 | false | false | {'node': 'localhost', 'step': '1', 'stepctx': '1', "
-           "'user': 'admin', 'time': '10:54:52', 'level': 'NORMAL', 'type': 'stepbegin', 'absolu"
-           "te_time': '123', 'log': ''} |\n### Job Execution Entries View:\n|Log|Node|Step|Stepct"
-           "x|User|Time|Level|Type|Absolute Time|Log|\n|---|---|---|---|---|---|---|---|---|---|\n|"
-           "  | localhost | 1 | 1 | admin | 10:54:52 | NORMAL | stepbegin |  |  |\n"
+           " Nodes|Exec State|Last Modified|Exec Duration|Percent Loaded|Total Size|Retr"
+           "y Backoff|Cluster Exec|Compacted|Entries|\n|---|---|---|---|---|---|---|---|-"
+           "--|---|---|---|---|---|\n| 69 | 3732 | true | true | true | failed | 123 | 237"
+           " | 12 | 3738 | 0 | false | false | {'node': 'localhost', 'step': '1', 'stepctx':"
+           " '1', 'user': 'admin', 'time': '10:54:52', 'level': 'NORMAL', 'type': 'stepbegin',"
+           " 'absolute_time': '123', 'log': ''},<br>{'another': 1} |\n### Job Execution Entries "
+           "View:\n|Log|Node|Step|Stepctx|User|Time|Level|Type|Absolute Time|Log|\n|---|---|---|-"
+           "--|---|---|---|---|---|---|\n|  | localhost | 1 | 1 | admin | 10:54:52 | NORMAL | stepbegin |  |  |\n"
     )
 
 
@@ -440,6 +462,8 @@ def test_job_execution_abort_command(mocker):
     Then
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = {
         "abort": {"status": "failed", "reason": "Job is not running"},
         "execution": {
@@ -481,6 +505,8 @@ def test_adhoc_command_run_command(mocker):
     Then:
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = {
         "message": "Immediate execution scheduled (196)",
         "execution": {"id": 196, "href": "123", "permalink": "123"},
@@ -515,6 +541,8 @@ def test_adhoc_script_run_command(mocker):
     Then:
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = {
         "message": "Immediate execution scheduled (196)",
         "execution": {"id": 196, "href": "123", "permalink": "123"},
@@ -550,6 +578,8 @@ def test_adhoc_script_run_from_url_command(mocker):
     Then:
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = {
         "message": "Immediate execution scheduled (196)",
         "execution": {"id": 196, "href": "123", "permalink": "123"},
@@ -585,11 +615,13 @@ def test_webhooks_list_command(mocker):
     Then:
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = [
         {
             "id": 1,
             "uuid": "123",
-            "name": "Arseny's hook",
+            "name": "Test hook",
             "project": "Demisto",
             "enabled": True,
             "user": "admin",
@@ -598,7 +630,7 @@ def test_webhooks_list_command(mocker):
             "authToken": "123",
             "eventPlugin": "webhook-run-job",
             "config": {"jobId": "123", "argString": "123"},
-        }
+        }, {"another": 1}
     ]
     client = Client(
         base_url="base_url",
@@ -607,16 +639,16 @@ def test_webhooks_list_command(mocker):
         project_name="Demisto",
     )
     mocker.patch.object(client, "get_webhooks_list", return_value=return_value)
-    result = webhooks_list_command(client, {})
-    assert result.outputs == return_value
+    result = webhooks_list_command(client, {"max_results": 1})
+    assert result.outputs == [return_value[0]]
     assert result.outputs_key_field == "id"
     assert result.outputs_prefix == "Rundeck.Webhooks"
     assert (
         result.readable_output
-        == "### Webhooks List:\n|Id|Uuid|Name|Project|Enabled|User|Creator|Roles|"
-        "Auth Token|Event Plugin|Config|\n|---|---|---|---|---|---|---|---|---|"
-        "---|---|\n| 1 | 123 | Arseny's hook | Demisto | true | admin | admin |"
-        " 123 | 123 | webhook-run-job | jobId: 123<br>argString: 123 |\n"
+        == "### Webhooks List:\n|Id|Uuid|Name|Project|Enabled|User|Creator|Roles|Auth Token"
+           "|Event Plugin|Config|\n|---|---|---|---|---|---|---|---|---|---|---|\n| 1 | 123 "
+           "| Test hook | Demisto | true | admin | admin | 123 | 123 | webhook-run-job | jobId:"
+           " 123<br>argString: 123 |\n|  |  |  |  |  |  |  |  |  |  |  |\n"
     )
 
 
@@ -629,6 +661,8 @@ def test_webhook_event_send(mocker):
     Then:
         - CommonResults object returns with the api response.
     """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     return_value = {"jobId": "123", "executionId": "199"}
     client = Client(
         base_url="base_url",
