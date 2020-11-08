@@ -220,7 +220,7 @@ def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, deta
                                                           })
     if is_error(res):
         return_error(get_error(res))
-    return res
+    return res[0]
 
 
 def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter):
@@ -390,9 +390,8 @@ def main():
         target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
     else:
         target_recall = 0
-    [threshold_metrics_entry, per_class_entry] = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall,
+    threshold_metrics_entry = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall,
                                                                          detailed=True)
-    demisto.results(per_class_entry)
     # show results for the threshold found - last result so it will appear first
     confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
                                                res=threshold_metrics_entry, context_field='DBotPhishingClassifier')
