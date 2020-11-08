@@ -527,7 +527,7 @@ script:
       defaultValue: 'false'
       description: Whether or not to retrieve additional information about the entity.
       isArray: false
-      name: expend
+      name: expend_entity_information
       predefined:
       - 'false'
       - 'true'

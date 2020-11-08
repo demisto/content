@@ -97,6 +97,10 @@ def format_date(date):
     return dateparser.parse(date).strftime(DATE_FORMAT)
 
 
+def str_to_bool(string_var):
+    return True if string_var == 'true' else False
+
+
 def incident_data_to_demisto_format(inc_data):
     properties = inc_data.get('properties', {})
 
@@ -405,9 +409,9 @@ def incident_add_comment_command(client, args):
 
 def get_entity_by_id_command(client, args):
     entity_id = args.get('entity_id')
-    expend = args.get('expend')
+    expend_entity_information = str_to_bool(args.get('expend_entity_information'))
 
-    if expend == 'false':
+    if not expend_entity_information:
         url_suffix = f'entities/{entity_id}'
 
         result = client.http_request('GET', url_suffix, is_get_entity_cmd=True)
