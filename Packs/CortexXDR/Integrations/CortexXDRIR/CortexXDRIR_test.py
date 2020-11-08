@@ -82,7 +82,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
         - the first successful incident is being created
         - the second incident is saved for the next run
     """
-    from PaloAltoNetworks_XDR import fetch_incidents, Client, sort_all_list_incident_fields
+    from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
     modified_raw_incident = raw_incident['reply']['incident'].copy()
@@ -95,7 +95,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
 
-    mocker.patch('PaloAltoNetworks_XDR.get_incident_extra_data_command', side_effect=return_extra_data_result)
+    mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=return_extra_data_result)
 
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
 
@@ -914,7 +914,7 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
         - an "API rate limit" error is thrown so that the server will stop the sync loop and will resume from the last
         incident.
     """
-    from PaloAltoNetworks_XDR import get_remote_data_command, Client
+    from CortexXDRIR import get_remote_data_command, Client
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -924,7 +924,7 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
     }
 
     mocker.patch.object(demisto, 'results')
-    mocker.patch('PaloAltoNetworks_XDR.get_incident_extra_data_command', side_effect=Exception("Rate limit exceeded"))
+    mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=Exception("Rate limit exceeded"))
     with pytest.raises(SystemExit):
         _ = get_remote_data_command(client, args)
 
@@ -1214,42 +1214,32 @@ def test_retrieve_files_command(requests_mock):
     assert retrieve_expected_result == context
 
 
-# def test_retrieve_file_details_command(requests_mock):
-#     """
-#     Given:
-#         - action_id
-#     When
-#         - View the file retrieved by the Retrieve File request according to the action ID.
-#     Then
-#         - returns markdown, context data and raw response.
-#     """
-#     from CortexXDRIR import retrieve_file_details_command, Client
-#
-#     data = load_test_data('./test_data/retrieve_file_details.json')
-#
-#     output = data.get('reply').get('data')
-#     result = []
-#     for item in output:
-#         result.append({
-#             "action_id": 1788,
-#             "endpoint_id": item,
-#             "file_link": output.get(item)
-#         })
-#     retrieve_expected_result = {
-#         'PaloAltoNetworksXDR.RetrievedFileDetails(val.endpoint_id == obj.endpoint_id)': result
-#     }
-#     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
-#
-#     client = Client(
-#         base_url=f'{XDR_URL}/public_api/v1', headers={}
-#     )
-#     args = {
-#         'action_id': '1788'
-#     }
-#
-#     _, context, _ = retrieve_file_details_command(client, args)
-#
-#     assert retrieve_expected_result == context
+def test_retrieve_file_details_command(requests_mock):
+    """
+    Given:
+        - action_id
+    When
+        - View the file retrieved by the Retrieve File request according to the action ID.
+    Then
+        - returns markdown, context data and raw response.
+    """
+    from CortexXDRIR import retrieve_file_details_command, Client
+
+    data = load_test_data('./test_data/retrieve_file_details.json')
+    data1 = "test_file"
+    retrieve_expected_hr = '### Action id : 1788 \nRetrieved 1 files from 1 endpoints.'
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
+    requests_mock.post(f'{XDR_URL}', json=data1)
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'action_id': '1788'
+    }
+    results, file_result = retrieve_file_details_command(client, args)
+    assert results['HumanReadable'] == retrieve_expected_hr
+    assert file_result[0]['File'] == 'endpoint_test_1'
 
 
 def test_get_scripts_command(requests_mock):

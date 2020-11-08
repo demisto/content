@@ -2423,17 +2423,16 @@ def retrieve_file_details_command(client: Client, args):
                 file = client.get_file(file_link=val)
 
                 file_results.append(fileResult(filename=f'{key}_{retrived_files_count}',
-                                               data=file, file_type=entryTypes['infoFile']))
+                                               data=file))
             result.append(obj)
 
     return_entry = {
         'Type': entryTypes['note'],
-        'HumanReadable': f'### Action id : {action_id} \n'
-                         f'Retrieved {retrived_files_count} files from {endpoints_count} endpoints.',
+        'HumanReadable': f'### Action id : {action_id} \nRetrieved {retrived_files_count} files from '
+                         f'{endpoints_count} endpoints.',
         'Contents': raw_result
     }
-    demisto.results(return_entry)
-    demisto.results(file_results)
+    return return_entry, file_results
 
 
 def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -2671,7 +2670,9 @@ def main():
             return_outputs(*retrieve_files_command(client, args))
 
         elif demisto.command() == 'xdr-retrieve-file-details':
-            retrieve_file_details_command(client, args)
+            return_entry, file_results = retrieve_file_details_command(client, args)
+            demisto.results(return_entry)
+            demisto.results(file_results)
 
         elif demisto.command() == 'xdr-get-scripts':
             return_outputs(*get_scripts_command(client, args))
