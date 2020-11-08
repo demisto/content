@@ -17,7 +17,7 @@ post_data=$(cat <<-EOF
   "parameters": {
     "bucket_upload": "true",
     "force_pack_upload": "true",
-    "packs_to_upload": "${_packs}"
+    "packs_to_upload": "${_packs}",
     "force_previous_commit": "${_force_previous_commit}"
   }
 }
