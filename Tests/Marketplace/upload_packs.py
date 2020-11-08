@@ -622,7 +622,6 @@ def option_handler():
                         type=str2bool, default=False, required=True)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
-    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
                         required=False)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
