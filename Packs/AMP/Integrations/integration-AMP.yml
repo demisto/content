@@ -23,11 +23,15 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var username = params.credentials.identifier;
+
     var password = params.credentials.password;
+
     var server = params.server;
+
     var insecure = params.insecure;
+
 
     var fixArgs = function(command, args) {
         var newArgs = {};
@@ -42,6 +46,7 @@ script:
         }
         return newArgs;
     };
+
 
     var sendRequest = function(method, url, queryName, body) {
         var res = http(
@@ -63,6 +68,7 @@ script:
         }
         return res.Body;
     }
+
 
     var methodDict = {
         'amp_delete_computers_isolation': 'DELETE',
@@ -90,6 +96,7 @@ script:
         'amp_get_version': 'GET',
     }
 
+
     var urlDict = {
         'amp_delete_computers_isolation':'/v1/computers',
         'amp_put_computers_isolation':'/v1/computers',
@@ -115,6 +122,7 @@ script:
         'amp_get_policy': '/v1/policies',
         'amp_get_version': '/v1/version',
     }
+
 
     var getURL = function(command, args) {
         var base = urlDict[command];
@@ -169,6 +177,7 @@ script:
         return base
     }
 
+
     var bracketsArgs = [
         'group_guid',
         'hostname',
@@ -187,12 +196,14 @@ script:
         return arg;
     }
 
+
     var encodeBody = function(args) {
         if (args) {
             return JSON.stringify(args);
         }
         return undefined;
     }
+
 
     function exeCommand(command, cmdArgs) {
         var method = methodDict[command];
@@ -213,13 +224,17 @@ script:
         return res;
     }
 
+
     // Fixing commands names
+
     if (command === 'amp_get_computer_trajectory'){
       command = 'amp_get_computer_trajctory';
     }
+
     else if (command === 'amp_get_computer_activity'){
       command = 'amp_get_computer_actvity';
     }
+
     switch (command) {
         case 'test-module':
             exeCommand('amp_get_version', args);
@@ -242,8 +257,7 @@ script:
       description: Filter results by external IP address.
     - name: group_guid
       description: Filter results by group GUID.
-    description: Returns a list of computers on which agents are deployed. You can
-      use filters (arguments) to narrow the search.
+    description: Returns a list of computers on which agents are deployed. You can use filters (arguments) to narrow the search.
   - name: amp_get_computer_by_connector
     arguments:
     - name: connector_guid
@@ -264,6 +278,7 @@ script:
     description: Returns a list of all activities associated with a particular computer.
       This is analogous to the Device Trajectory on the FireAMP Console. Use the Q
       argument to search for an IP address, SHA256 hash, or URL.
+    description: Returns a list of all activities associated with a particular computer. This is analogous to the Device Trajectory on the FireAMP Console. Use the Q argument to search for an IP address, SHA256 hash, or URL.
   - name: amp_get_computer_trajctory
     deprecated: true
     arguments:
@@ -278,6 +293,7 @@ script:
     description: Returns a list of all activities associated with a particular computer.
       This is analogous to the Device Trajectory on the FireAMP Console. Use the Q
       argument to search for an IP address, SHA256 hash, or URL.
+    description: Returns a list of all activities associated with a particular computer. This is analogous to the Device Trajectory on the FireAMP Console. Use the Q argument to search for an IP address, SHA256 hash, or URL.
   - name: amp_move_computer
     arguments:
     - name: connector_guid
@@ -303,6 +319,7 @@ script:
       for any events or activities associated with a file or network operation, and
       returns computers that match the specified criteria. You can then query the
       /computers/{connector-guid}/trajectory endpoint for specific details.
+    description: This endpoint enables you to search all computers across your organization for any events or activities associated with a file or network operation, and returns computers that match the specified criteria. You can then query the /computers/{connector-guid}/trajectory endpoint for specific details.
   - name: amp_get_computer_actvity
     deprecated: true
     arguments:
@@ -318,6 +335,7 @@ script:
       for any events or activities associated with a file or network operation, and
       returns computers that match the specified criteria. You can then query the
       /computers/{connector-guid}/trajectory endpoint for specific details.
+    description: This endpoint enables you to search all computers across your organization for any events or activities associated with a file or network operation, and returns computers that match the specified criteria. You can then query the /computers/{connector-guid}/trajectory endpoint for specific details.
   - name: amp_get_events
     arguments:
     - name: limit
@@ -338,10 +356,10 @@ script:
       description: The start date for the query, in ISO8601 format.
     description: A general query interface for events. This is analogous to the Events
       view on the FireAMP Console.
+    description: A general query interface for events. This is analogous to the Events view on the FireAMP Console.
   - name: amp_get_event_types
     arguments: []
-    description: Events are identified and filtered by a unique ID. This endpoint
-      provides a human readable name and short description of each event (by ID).
+    description: Events are identified and filtered by a unique ID. This endpoint provides a human readable name and short description of each event (by ID).
   - name: amp_get_application_blocking
     arguments:
     - name: limit
@@ -350,8 +368,7 @@ script:
       description: The offset.
     - name: name
       description: Name of the file.
-    description: Returns a list of application blocking file lists. You can filter
-      this list by name
+    description: Returns a list of application blocking file lists. You can filter this list by name
   - name: amp_get_file_list_by_guid
     arguments:
     - name: file_list_guid
@@ -361,6 +378,7 @@ script:
     description: Returns a particular file list for application blocking or simple
       custom detection. You need to specify the file_list_guid argument to retrieve
       information about a particular file_list.
+    description: Returns a particular file list for application blocking or simple custom detection. You need to specify the file_list_guid argument to retrieve information about a particular file_list.
   - name: amp_get_simple_custom_detections
     arguments:
     - name: limit
@@ -369,8 +387,7 @@ script:
       description: The offset.
     - name: name
       description: Name of the detection.
-    description: Returns a list of simple custom detection file lists. You can filter
-      this list by detection name.
+    description: Returns a list of simple custom detection file lists. You can filter this list by detection name.
   - name: amp_get_file_list_files
     arguments:
     - name: limit
@@ -383,6 +400,7 @@ script:
       description: Retrieves information about a particular file_list.
     description: Returns a list of items for a particular file_list. You need to specify
       the file_list_guid argument to retrieve these items.
+    description: Returns a list of items for a particular file_list. You need to specify the file_list_guid argument to retrieve these items.
   - name: amp_get_file_list_files_by_sha
     arguments:
     - name: file_list_guid
@@ -424,6 +442,7 @@ script:
       description: name of the group
     description: Returns basic information about groups in your organization. You
       can map group names to GUIDs for filtering on the events endpoint.
+    description: Returns basic information about groups in your organization. You can map group names to GUIDs for filtering on the events endpoint.
   - name: amp_get_group
     arguments:
     - name: group_guid
@@ -456,8 +475,7 @@ script:
       description: The policy name.
     - name: product
       description: The policy product.
-    description: Returns a list of policies. You can filter this list by name and
-      product.
+    description: Returns a list of policies. You can filter this list by name and product.
   - name: amp_get_policy
     arguments:
     - name: policy_guid
