@@ -26,9 +26,8 @@ configuration:
   type: 8
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -40,8 +39,8 @@ configuration:
 - defaultvalue: '-59'
   display: File Threshold
   name: file_threshold
-  type: 0
   required: false
+  type: 0
 description: Manage Endpoints using Cylance protect
 display: Cylance Protect v2
 name: Cylance Protect v2
@@ -63,8 +62,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Allows a caller to request a page with a list of Console device resources that
-      belongings to a tenant, sorted by registration (created) date in descending
+    description: Allows a caller to request a page with a list of Console device resources
+      that belongings to a tenant, sorted by registration (created) date in descending
       order (most recent device registered listed first).
     execution: false
     name: cylance-protect-get-devices
@@ -217,9 +216,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the threat score is less than or equal to the threshold, then file
-        will be considered malicious. If the threshold is not specified, the default file
-        threshold that was configured in the instance settings will be used.
+      description: If the threat score is less than or equal to the threshold, then
+        file will be considered malicious. If the threshold is not specified, the
+        default file threshold that was configured in the instance settings will be
+        used.
       isArray: false
       name: threshold
       required: false
@@ -256,8 +256,8 @@ script:
       type: string
     - contextPath: File.FileStatus
       description: The current status of the file on the device. This can be one of
-        the following:Default (0), Quarantined (1), Whitelisted (2), Suspicious (3), FileRemoved
-        (4), Corrupt (5).
+        the following:Default (0), Quarantined (1), Whitelisted (2), Suspicious (3),
+        FileRemoved (4), Corrupt (5).
       type: number
     - contextPath: File.Name
       description: The name of the threat.
@@ -288,9 +288,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: The page size. If not specified, the default is 10. Maximum is 200.
+      description: The page size. If not specified, the default is 10. Maximum is
+        200.
       isArray: false
-      name: pageItems
+      name: pageSize
       required: false
       secret: false
     deprecated: false
@@ -358,7 +359,7 @@ script:
       description: The page size parameter is optional. When the value is not specified,
         the default is 10. Max is 200.
       isArray: false
-      name: pageItems
+      name: pageSize
       required: false
       secret: false
     deprecated: false
@@ -526,8 +527,8 @@ script:
       description: The threat sub-classification for the threat.
       type: string
     - contextPath: File.UniqueToCylance
-      description: Whether the threat was identified by Cylance, and not by other anti-virus
-        sources.
+      description: Whether the threat was identified by Cylance, and not by other
+        anti-virus sources.
       type: boolean
     - contextPath: DBotScore.Indicator
       description: The tested indicator.
@@ -548,6 +549,20 @@ script:
       name: sha256
       required: true
       secret: false
+    - default: false
+      description: The page number parameter is optional. When the value is not specified,
+        the default is 1.
+      isArray: false
+      name: pageNumber
+      required: false
+      secret: false
+    - default: false
+      description: The page size parameter is optional. When the value is not specified,
+        the default is 10. Max is 200.
+      isArray: false
+      name: pageSize
+      required: false
+      secret: false
     deprecated: false
     description: Allows a caller to request  a list of devices on a specific threat.
     execution: false
@@ -563,8 +578,9 @@ script:
       description: The agent version installed on the device.
       type: string
     - contextPath: CylanceProtect.Threat.Devices.FileStatus
-      description: Current quarantine status of the file on the device. Default (0), Quarantined
-        (1), Whitelisted (2), Suspicious (3), FileRemoved (4), Corrupt (5).
+      description: Current quarantine status of the file on the device. Default (0),
+        Quarantined (1), Whitelisted (2), Suspicious (3), FileRemoved (4), Corrupt
+        (5).
       type: number
     - contextPath: Endpoint.IPAddress
       description: The list of IP addresses for the device.
@@ -576,7 +592,8 @@ script:
       description: The device name for the device.
       type: string
     - contextPath: CylanceProtect.Threat.Devices.PolicyID
-      description: The unique identifier of the policy assigned to the device. If no policy is assigned, will be null.
+      description: The unique identifier of the policy assigned to the device. If
+        no policy is assigned, will be null.
       type: string
     - contextPath: CylanceProtect.Threat.Devices.State
       description: The state of the device. Can be "Offline" or "Online".
@@ -609,15 +626,16 @@ script:
     name: cylance-protect-get-indicators-report
   - arguments:
     - default: false
-      description: The page size. If not specified, the default is 10. Maximum is 200.
+      description: The page size. If not specified, the default is 10. Maximum is
+        200.
       isArray: false
-      name: page_size
+      name: pageSize
       required: false
       secret: false
     - default: false
       description: The page number. If not specified, the default is 1.
       isArray: false
-      name: page
+      name: pageNumber
       required: false
       secret: false
     deprecated: false
@@ -680,7 +698,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The requested status update for the convicted threat. Can be "Quarantine" or "Waive".
+      description: The requested status update for the convicted threat. Can be "Quarantine"
+        or "Waive".
       isArray: false
       name: event
       predefined:
@@ -695,13 +714,15 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates the status of a convicted threat. Can be "Quarantine" or "Waive".
+    description: Updates the status of a convicted threat. Can be "Quarantine" or
+      "Waive".
     execution: true
     name: cylance-protect-update-device-threats
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of the list for which to retrieve the ashes. Can be "GlobalQuarantine" or "GlobalSafe".
+      description: The type of the list for which to retrieve the ashes. Can be "GlobalQuarantine"
+        or "GlobalSafe".
       isArray: false
       name: listTypeId
       predefined:
@@ -712,13 +733,14 @@ script:
     - default: false
       description: The page number. If not specified, the default is 1.
       isArray: false
-      name: page
+      name: pageNumber
       required: false
       secret: false
     - default: false
-      description: The page size. If not specified, the default is 10. Maximum is 200.
+      description: The page size. If not specified, the default is 10. Maximum is
+        200.
       isArray: false
-      name: page_size
+      name: pageSize
       required: false
       secret: false
     deprecated: false
@@ -745,7 +767,8 @@ script:
       description: The Cylance score assigned to the threat.
       type: number
     - contextPath: File.ListType
-      description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
+      description: The list type to which the threat belongs. Can be "GlobalQuarantine"
+        or "GlobalSafe".
       type: string
     - contextPath: File.MD5
       description: The MD5 hash of the threat.
@@ -842,7 +865,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
+      description: The list type to which the threat belongs. Can be "GlobalQuarantine"
+        or "GlobalSafe".
       isArray: false
       name: listType
       predefined:
@@ -861,7 +885,8 @@ script:
       default: false
       defaultValue: None
       description: This field is required only if the list_type value is Global Safe.
-        Can be "Admin Tool", "Commercial Software", "Drivers", "Internal Application", "Operating System", "Security Software", or "None". Default is "None".
+        Can be "Admin Tool", "Commercial Software", "Drivers", "Internal Application",
+        "Operating System", "Security Software", or "None". Default is "None".
       isArray: false
       name: category
       predefined:
@@ -875,8 +900,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds a convicted threat for a particular tenant to either the Global Quarantine list or the Global
-      Safe list.
+    description: Adds a convicted threat for a particular tenant to either the Global
+      Quarantine list or the Global Safe list.
     execution: false
     name: cylance-protect-add-hash-to-list
     outputs:
@@ -884,11 +909,13 @@ script:
       description: The SHA256 hash for the threat.
       type: string
     - contextPath: File.Cylance.ListType
-      description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
+      description: The list type to which the threat belongs. Can be "GlobalQuarantine"
+        or "GlobalSafe".
       type: string
     - contextPath: File.Cylance.Category
       description: This field is required only if the list_type value is Global Safe.
-        Can be "Admin Tool", "Commercial Software", "Drivers", "Internal Application", "Operating System", "Security Software", or "None".
+        Can be "Admin Tool", "Commercial Software", "Drivers", "Internal Application",
+        "Operating System", "Security Software", or "None".
       type: string
   - arguments:
     - default: false
@@ -899,7 +926,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
+      description: The list type to which the threat belongs. Can be "GlobalQuarantine"
+        or "GlobalSafe".
       isArray: false
       name: listType
       predefined:
@@ -908,8 +936,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes a convicted threat for a particular tenant from either the Global Quarantine list or the
-      Global Safe list.
+    description: Removes a convicted threat for a particular tenant from either the
+      Global Quarantine list or the Global Safe list.
     execution: true
     name: cylance-protect-delete-hash-from-lists
     outputs:
@@ -917,7 +945,8 @@ script:
       description: SHA256 hash of the file.
       type: string
     - contextPath: File.Cylance.ListType
-      description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
+      description: The list type to which the threat belongs. Can be "GlobalQuarantine"
+        or "GlobalSafe".
       type: string
   - arguments:
     - default: false
@@ -940,16 +969,26 @@ script:
     - contextPath: Cylance.Policy.Timestamp
       description: The date and time (in UTC) that the policy was created.
       type: string
-  - name: cylance-protect-delete-devices
-    arguments:
-    - name: deviceIds
-      required: true
+  - arguments:
+    - default: false
       description: The unique identifiers for the devices to be deleted. The maximum
         number of Device IDs per request is 20.
       isArray: true
-    - name: batch_size
-      description: The number of devices to delete per batch. The default is 20, which is also the maximum number of devices that can be deleted per request.
-      defaultValue: "20"
+      name: deviceIds
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: The number of devices to delete per batch. The default is 20, which
+        is also the maximum number of devices that can be deleted per request.
+      isArray: false
+      name: batch_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete one or more devices from an organization.
+    execution: true
+    name: cylance-protect-delete-devices
     outputs:
     - contextPath: Cylance.Device.Id
       description: The unique identifier of the deletion request.
@@ -960,14 +999,15 @@ script:
     - contextPath: Cylance.Device.Deleted
       description: A boolean to check if the device was deleted.
       type: boolean
-    description: Delete one or more devices from an organization.
-    execution: true
-  dockerimage: demisto/cylance_protect_v2:latest
-  dockerimage45: demisto/cylance_protect_v2
+  dockerimage: demisto/pyjwt:1.0.0.12779
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - Cylance Protect v2 Test
+fromversion: 5.0.0

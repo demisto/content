@@ -1,6 +1,6 @@
 id: Domain Enrichment - Generic v2
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Domain Enrichment - Generic v2
 description: |-
   Enrich domains using one or more integrations.
@@ -101,8 +101,7 @@ tasks:
       id: 3ab86896-10aa-45be-83cf-7dcca9b6aa92
       version: -1
       name: Is VirusTotal Private API enabled?
-      description: Checks if there is an active instance of the Virus Total Private API integration enabled.
-        enabled.
+      description: Checks if there is an active instance of the Virus Total Private API integration enabled. enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -195,8 +194,7 @@ tasks:
       id: 369e9301-a4f9-415f-8c45-902304453296
       version: -1
       name: Get domain category
-      description: Gets the category of the domain as found in Cisco Umbrella Investigation
-        records.
+      description: Gets the category of the domain as found in Cisco Umbrella Investigation records.
       script: '|||umbrella-domain-categorization'
       type: regular
       iscommand: true
@@ -230,8 +228,7 @@ tasks:
       id: 29cca13b-1b82-4db3-8463-2a4f537546d0
       version: -1
       name: Is Cisco Umbrella Investigate enabled?
-      description: Checks if there is an active instance of the Cisco Umbrella Investigate integration enabled.
-        enabled.
+      description: Checks if there is an active instance of the Cisco Umbrella Investigate integration enabled. enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -316,4 +313,4 @@ outputs:
   description: Indicator, Score, Type, and Vendor.
   type: unknown
 tests:
-  - Domain Enrichment - Generic v2 - Test
+- Domain Enrichment - Generic v2 - Test

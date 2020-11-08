@@ -620,8 +620,7 @@ tasks:
       id: 481a6db0-6043-4b15-881c-e3cf19912dba
       version: -1
       name: Try changing severity to 'low' with IncreaseIncidentSeverity
-      description: Optionally increases the incident severity to the new value, but
-        only if greater than the existing value.
+      description: Optionally increases the incident severity to the new value, but only if greater than the existing value.
       scriptName: IncreaseIncidentSeverity
       type: regular
       iscommand: false
@@ -1267,8 +1266,7 @@ tasks:
       id: 1161c794-d4de-4d01-8cfb-e14ebb32ff78
       version: -1
       name: Try changing severity to 'high' with IncreaseIncidentSeverity
-      description: Optionally increases the incident severity to the new value, but
-        only if greater than the existing value.
+      description: Optionally increases the incident severity to the new value, but only if greater than the existing value.
       scriptName: IncreaseIncidentSeverity
       type: regular
       iscommand: false
@@ -1443,3 +1441,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

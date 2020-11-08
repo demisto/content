@@ -69,8 +69,7 @@ tasks:
       id: d6d9c4de-72df-4038-8aa4-0a994a4695f2
       version: -1
       name: Domain Squatting - Single Domain
-      description: Check if an email address's domain is trying to squat other domain
-        using Levenshtein distance algorithm
+      description: Check if an email address's domain is trying to squat other domain using Levenshtein distance algorithm
       scriptName: EmailDomainSquattingReputation
       type: regular
       iscommand: false
@@ -203,8 +202,7 @@ tasks:
       id: 0f54289b-b383-4cbe-8b94-123538351abd
       version: -1
       name: Domain Squatting - Array with empty
-      description: Check if an email address's domain is trying to squat other domain
-        using Levenshtein distance algorithm
+      description: Check if an email address's domain is trying to squat other domain using Levenshtein distance algorithm
       scriptName: EmailDomainSquattingReputation
       type: regular
       iscommand: false
@@ -315,3 +313,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

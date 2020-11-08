@@ -1,4 +1,6 @@
+import base64
 import json
+import pytest
 
 from EWSO365 import (
     find_folders,
@@ -6,6 +8,9 @@ from EWSO365 import (
     GetSearchableMailboxes,
     ExpandGroup,
     get_expanded_group,
+    add_additional_headers,
+    handle_transient_files,
+    handle_html,
 )
 
 with open("test_data/commands_outputs.json", "r") as f:
@@ -149,3 +154,107 @@ class TestNormalCommands:
         )
         actual_ec = res[1]
         assert expected == actual_ec
+
+
+HEADERS_PACKAGE = [
+    ('', {}),
+    ('header=value', {'header': 'value'}),
+    ('header1=value1, header2=value2', {'header1': 'value1', 'header2': 'value2'}),
+    # Can not register the same header more then once.
+    ('header3=value3, header3=other_value', {'header3': 'value3'})
+]
+
+
+@pytest.mark.parametrize('input_headers, expected_output', HEADERS_PACKAGE)
+def test_additional_headers(input_headers, expected_output):
+    """Check the registration of custom headers to the Message object.
+
+    Given:
+        - Custom headers and their values (as a string)
+    When:
+        - Adding custom headers to the Message object before sending it
+    Then:
+        - Register new headers to the Message object
+
+    """
+    assert add_additional_headers(input_headers) == expected_output
+
+
+TRANSIENT_PACKAGE = [
+    ('', '', '', []),
+    (
+        'file1, file2', 'content1, content2', 'cid1',
+        [
+            {
+                'name': 'file1',
+                'data': bytes('content1', 'utf-8'),
+                'cid': 'cid1'
+            },
+            {
+                'name': 'file2',
+                'data': bytes('content2', 'utf-8'),
+                'cid': ''
+            },
+        ]
+    ),
+    (
+        'file1, file2', 'content1, content2', ',cid2',
+        [
+            {
+                'name': 'file1',
+                'data': bytes('content1', 'utf-8'),
+                'cid': ''
+            },
+            {
+                'name': 'file2',
+                'data': bytes('content2', 'utf-8'),
+                'cid': 'cid2'
+            },
+        ]
+    )
+]
+
+
+@pytest.mark.parametrize('transient_files, transient_files_contents, transient_files_cids, expected_output',
+                         TRANSIENT_PACKAGE)
+def test_handle_transient_files(transient_files, transient_files_contents, transient_files_cids, expected_output):
+    """Check the parsing of transient files
+
+    Given:
+        - Files names (as a string)
+        - Files contents (as a string)
+        - Files cids (as a string)
+    When:
+        - Parsing the data for transient files creation
+    Then:
+        - Create the dictionary for files creation
+
+    """
+    assert handle_transient_files(transient_files, transient_files_contents, transient_files_cids) == expected_output
+
+
+HTML_PACKAGE = [
+    ('<html><body>some text</body></html>', ('<html><body>some text</body></html>', [])),
+    ('<html><body>some text <img src="data:image/abcd;base64,abcd"></body></html>',
+     ('<html><body>some text <img src="cid:image0@abcd1234.abcd1234"></body></html>',
+      [{'data': base64.b64decode('abcd'), 'name': 'image0', 'cid': 'image0@abcd1234.abcd1234'}]
+      )
+     )
+]
+
+
+@pytest.mark.parametrize('html_input, expected_output', HTML_PACKAGE)
+def test_handle_html(mocker, html_input, expected_output):
+    """Check the parsing of the html_body
+
+    Given:
+        - String that represents the HTML body
+    When:
+        - Parsing the HTML string to incorporate the inline images
+    Then:
+        - Clean the HTML string and add the relevant references to image files
+
+    """
+    import EWSO365 as ewso365
+    mocker.patch.object(ewso365, 'random_word_generator', return_value='abcd1234')
+    assert handle_html(html_input) == expected_output

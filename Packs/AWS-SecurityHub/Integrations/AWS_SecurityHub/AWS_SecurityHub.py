@@ -527,9 +527,9 @@ def aws_session(config,
         kwargs.update({'Policy': rolePolicy})
     elif AWS_ROLE_POLICY is not None:
         kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and AWS_ACCESS_KEY_ID is None:
+    if kwargs and not AWS_ACCESS_KEY_ID:
 
-        if AWS_ACCESS_KEY_ID is None:
+        if not AWS_ACCESS_KEY_ID:
             sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
@@ -810,7 +810,7 @@ def fetch_incidents(client):
     if last_run is None:
         first_fetch_timestamp = demisto.params().get('first_fetch_timestamp', '15 days').strip()
         date_from = parse(f'{first_fetch_timestamp} UTC')
-        last_run = date_from.isoformat()
+        last_run = date_from.isoformat()  # type: ignore
 
     now = datetime.now(timezone.utc)
 
@@ -865,8 +865,7 @@ def fetch_incidents(client):
 def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results('ok')
-        exit(0)
+        return 'ok', {}, {}
 
 
 def main():  # pragma: no cover
@@ -893,7 +892,7 @@ def main():  # pragma: no cover
 
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
-            test_function(client)
+            human_readable, outputs, response = test_function(client)
         elif command == 'aws-securityhub-get-findings':
             human_readable, outputs, response = get_findings_command(client, args)
         elif command == 'aws-securityhub-get-master-account':
@@ -910,17 +909,15 @@ def main():  # pragma: no cover
             human_readable, outputs, response = batch_update_findings_command(client, args)
         elif command == 'fetch-incidents':
             fetch_incidents(client)
-            sys.exit(0)
+            return
         return_outputs(human_readable, outputs, response)
 
     except ResponseParserError as e:
         return_error('Could not connect to the AWS endpoint. Please check that the region is valid. {error}'.format(
-            error=type(e)))
-        LOG(e)
+            error=type(e)), error=e)
     except Exception as e:
-        LOG(e)
         return_error('Error has occurred in the AWS securityhub Integration: {code} {message}'.format(
-            code=type(e), message=e))
+            code=type(e), message=e), error=e)
 
 
 if __name__ in ['__builtin__', 'builtins', '__main__']:  # pragma: no cover

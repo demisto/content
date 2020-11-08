@@ -2,16 +2,22 @@ commonfields:
   id: AddEvidence
   version: -1
 name: AddEvidence
-fromversion: 2.5.0
-script: |-
+fromversion: 5.0.0
+script: >-
   if (!args.entryIDs) {
       throw 'Missing argument values for command AddEvidenceJS are : entryIDs';
   }
+
   var entryIDs = args.entryIDs;
+
   var entryTags = args.tags;
+
   var desc = (args.description) ? args.description : args.desc ? args.desc : 'Evidence added by DBot';
+
   entryIDs = (Array.isArray(entryIDs)) ? entryIDs : [entryIDs];
+
   entryTags = (Array.isArray(entryTags)) ? entryTags.join(',') : entryTags;
+
 
   for (var i=0;i<entryIDs.length;i++) {
       var entryID = entryIDs[i];
@@ -36,6 +42,7 @@ script: |-
       }
 
   }
+
 
   return "Entry ID " + entryIDs + " added to evidence";
 type: javascript

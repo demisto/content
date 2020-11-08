@@ -27,6 +27,7 @@ Use the Bambenek Consulting feed integration to fetch indicators from the feed.
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
     * __Fetch Interval__: Interval of the fetches.
     * __Reliability__: Reliability of the feed.  
+    * __Traffic Light Protocol color__: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp 
     * __Skip Exclusion List__: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system. 
@@ -34,3 +35,22 @@ Use the Bambenek Consulting feed integration to fetch indicators from the feed.
     reputation.
     * __Request Timeout__: Timeout of the polling request in seconds.
 4. Click __Test__ to validate the URLs, token, and connection.
+
+## Troubleshooting  
+---
+Bambenek Consulting has two license types: Commercial and Non-Commercial, each of which have specific feeds available.
+
+List of commercial feeds:
+* DGA Domain Feed
+* High-Confidence DGA Domain Feed
+* C2 All Indicator Feed
+* High-Confidence C2 All Indicator Feed
+* Sinkhole Feed
+
+List of non-commercial feeds:
+* C2 IP Feed
+* High-Confidence C2 IP Feed
+* C2 Domain Feed
+* High-Confidence C2 Domain Feed
+
+For more information visit [Bambenek Consulting Feeds](https://osint.bambenekconsulting.com/feeds/)

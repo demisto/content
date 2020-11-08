@@ -68,8 +68,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: RF monitoring for wireless intrusion detection and policy enforcement.
-  Visit https://www.bastille.net for details.
+description: RF monitoring for wireless intrusion detection and policy enforcement. Visit https://www.bastille.net for details.
 display: Bastille Networks
 name: Bastille Networks
 script:
@@ -340,7 +339,7 @@ script:
     description: Command to remove tag from an existing device
     execution: false
     name: bastille-remove-device-tag
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
   longRunning: false
@@ -349,3 +348,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0

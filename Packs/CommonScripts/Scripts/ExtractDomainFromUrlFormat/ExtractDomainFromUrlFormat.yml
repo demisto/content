@@ -20,3 +20,4 @@ subtype: python3
 tests:
 - ExtractDomainFromEmailTest
 - ExtractDomainFromUrlAndEmail-Test
+fromversion: 5.0.0

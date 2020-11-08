@@ -27,7 +27,7 @@ PARSED_CUSTOM_HIT = {
         'value': '5.5.5.5'
     },
     'type': 'IP',
-    'fields': {'tags': ['tag1', 'tag2']}
+    'fields': {'tags': ['tag1', 'tag2'], 'trafficlightprotocol': 'AMBER'}
 }
 
 PARSED_INSIGHT_HIT = {
@@ -133,7 +133,7 @@ PARSED_INSIGHT_HIT = {
     "expiration": "0001-01-01T00:00:00Z",
     "expirationStatus": "active",
     "expirationSource": None,
-    'fields': {'tags': ['tag1', 'tag2']}
+    'fields': {'tags': ['tag1', 'tag2'], 'trafficlightprotocol': 'AMBER'}
 }
 
 FEED_IOC_KEYS = (
@@ -161,12 +161,12 @@ FEED_IOC_KEYS = (
 
 def test_hit_to_indicator():
     import FeedElasticsearch as esf
-    ioc = esf.hit_to_indicator(MockHit(CUSTOM_HIT), CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None, ['tag1', 'tag2'])
+    ioc = esf.hit_to_indicator(MockHit(CUSTOM_HIT), CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None, ['tag1', 'tag2'], 'AMBER')
     assert ioc == PARSED_CUSTOM_HIT
 
     no_type_hit = dict(CUSTOM_HIT)
     no_type_hit[CUSTOM_TYPE_KEY] = ''
-    ioc = esf.hit_to_indicator(MockHit(no_type_hit), CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, 'IP', ['tag1', 'tag2'])
+    ioc = esf.hit_to_indicator(MockHit(no_type_hit), CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, 'IP', ['tag1', 'tag2'], 'AMBER')
     assert ioc['type'] == 'IP'
     assert ioc[CUSTOM_TYPE_KEY] == ''
 
@@ -174,7 +174,7 @@ def test_hit_to_indicator():
 def test_extract_indicators_from_insight_hit(mocker):
     import FeedElasticsearch as esf
     mocker.patch.object(esf, 'hit_to_indicator', return_value=dict(PARSED_INSIGHT_HIT))
-    ioc_lst, ioc_enrch_lst = esf.extract_indicators_from_insight_hit(PARSED_INSIGHT_HIT, ['tag1', 'tag2'])
+    ioc_lst, ioc_enrch_lst = esf.extract_indicators_from_insight_hit(PARSED_INSIGHT_HIT, ['tag1', 'tag2'], 'AMBER')
     # moduleToFeedMap with isEnrichment: False should not be added to ioc_lst
     assert len(ioc_lst) == 1
     assert len(ioc_enrch_lst[0]) == 2
@@ -190,14 +190,14 @@ def test_extract_indicators_from_generic_hit(mocker):
     import FeedElasticsearch as esf
     mocker.patch.object(esf, 'hit_to_indicator', return_value=PARSED_CUSTOM_HIT)
     ioc_lst = esf.extract_indicators_from_generic_hit(CUSTOM_HIT, CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None,
-                                                      ['tag1', 'tag2'])
+                                                      ['tag1', 'tag2'], 'AMBER')
     assert ioc_lst == [PARSED_CUSTOM_HIT]
 
 
 def test_create_enrichment_batches_one_indicator(mocker):
     import FeedElasticsearch as esf
     mocker.patch.object(esf, 'hit_to_indicator', return_value=PARSED_INSIGHT_HIT)
-    _, ioc_enrch_lst = esf.extract_indicators_from_insight_hit(PARSED_INSIGHT_HIT, ['tag1', 'tag2'])
+    _, ioc_enrch_lst = esf.extract_indicators_from_insight_hit(PARSED_INSIGHT_HIT, ['tag1', 'tag2'], 'AMBER')
     ioc_enrch_lst_of_lsts = esf.create_enrichment_batches(ioc_enrch_lst)
     assert len(ioc_enrch_lst_of_lsts) == 2
     assert ioc_enrch_lst_of_lsts[0][0] == ioc_enrch_lst[0][0]

@@ -40,8 +40,7 @@ tasks:
       id: c185447e-549c-476e-8477-98c461dadd16
       version: -1
       name: Search Endpoints By Hash - CrowdStrike
-      description: Hunt for endpoint activity involving hash and domain IOCs, using
-        Crowdstrike Falcon Host
+      description: Hunt for endpoint activity involving hash and domain IOCs, using Crowdstrike Falcon Host
       playbookName: Search Endpoints By Hash - CrowdStrike
       type: playbook
       iscommand: false
@@ -88,8 +87,7 @@ tasks:
       id: d3865a5d-6516-4d22-8134-a4cfca96bd3c
       version: -1
       name: Search Endpoints By Hash - Carbon Black Protection
-      description: Hunt for endpoint activity involving hash IOCs, using Carbon Black
-        Protection.
+      description: Hunt for endpoint activity involving hash IOCs, using Carbon Black Protection.
       playbookName: Search Endpoints By Hash - Carbon Black Protection
       type: playbook
       iscommand: false
@@ -270,8 +268,7 @@ tasks:
       - "12"
     scriptarguments:
       Hash:
-        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f];
-          }).reduce(function(a, b){ return a.concat(b); }, [])}
+        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f]; }).reduce(function(a, b){ return a.concat(b); }, [])}
     separatecontext: true
     loop:
       iscommand: false
@@ -440,6 +437,6 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
-fromversion: 4.5.0
+fromversion: 5.0.0
 tests:
 - No tests

@@ -2,17 +2,24 @@ commonfields:
   id: OSQueryBasicQuery
   version: -1
 name: OSQueryBasicQuery
-script: |-
+script: >-
   import json
 
+
   ## ssh command to run, json format, param = query to execute
+
   COMMAND = 'osqueryi --json "{0}"'
 
+
   systems = argToList(demisto.args()['system'])
+
   query = demisto.get(demisto.args(), 'query')
 
+
   res = []
+
   error_res = []
+
 
   if query and systems:
       for system in systems:
@@ -45,3 +52,4 @@ dependson:
   must:
   - RemoteExec
 timeout: 0s
+fromversion: 5.0.0

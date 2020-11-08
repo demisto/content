@@ -3,6 +3,7 @@ Given a CSV file in the War Room by entry ID, searches based on column and value
 If the column is not present, simply parse the CSV into a list of lists or list of dicts (if header row supplied).
 """
 from CommonServerPython import *
+import csv
 
 
 def search_dicts(k, v, data):
@@ -30,7 +31,8 @@ def search_lists(k, v, data):
 
     k = int(k)
     for row in data:
-        if row[k] == v:
+        row_values = list(row.values())
+        if row_values[k] == v:
             match.append(row)
 
     if len(match) == 1:
@@ -63,37 +65,27 @@ def main():
                 file_name))
 
     csv_data: list = []
-    with open(file_path) as f:
-        lines = f.read().splitlines()
-
+    with open(file_path, mode='r') as csv_file:
         if header_row:
-            headers = lines[0]
-            headers = headers.split(",")
-            lines = lines[1:]
-
-            for line in lines:
-                d = {}
-                row = line.split(",")
-                for i, h in enumerate(headers):
-                    d[h] = row[i]
-                csv_data.append(d)
+            csv_reader = csv.DictReader(csv_file)
+            for line in csv_reader:
+                csv_data.append(line)
         elif add_row:
-            if len(lines[0].split(",")) != len(add_row.split(",")):
-                return_error(
-                    "Added row via add_header_row has invalid length.")
-
-            headers = add_row.split(",")
-            for line in lines:
-                d = {}
-                row = line.split(",")
-                for i, h in enumerate(headers):
-                    d[h] = row[i]
-                csv_data.append(d)
+            headers = add_row.split(',')
+            csv_reader = csv.DictReader(csv_file, fieldnames=headers)
+            for line in csv_reader:
+                csv_data.append(line)
+                if len(line) != len(add_row.split(",")):
+                    return_error(
+                        "Added row via add_header_row has invalid length.")
 
         else:
-            for line in lines:
-                row = line.split(",")
-                csv_data.append(row)
+            csv_reader = csv.DictReader(csv_file, fieldnames=[])
+            for line in csv_reader:
+                line_values = list(line.values())
+
+                if line_values:
+                    csv_data.append(line_values[0])
 
     # If we're searching the CSV
     if search_column:

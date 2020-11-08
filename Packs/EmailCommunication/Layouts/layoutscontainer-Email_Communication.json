@@ -41,7 +41,7 @@
         "index": 1,
         "listId": "edsrfgt5ii-14389630-e872-11ea-97bd-cbe6e9d030a2",
         "name": "Send Reply",
-        "scriptId": "c5c0d8b8-050e-4457-9463-df5dcb37c2d5",
+        "scriptId": "SendEmailReply",
         "sectionItemType": "button",
         "startCol": 0
        }
@@ -118,7 +118,18 @@
       "minW": 2,
       "moved": false,
       "name": "Email thread",
-      "query": null,
+      "query": {
+       "categories": [
+
+       ],
+       "fromTime": "0001-01-01T00:00:00Z",
+       "pageSize": 0,
+       "tags": [
+        "email-thread"
+       ],
+       "tagsAndOperator": false,
+       "usersAndOperator": false
+      },
       "queryType": "warRoomFilter",
       "static": false,
       "type": "invTimeline",
@@ -209,6 +220,37 @@
       "w": 1,
       "x": 2,
       "y": 3
+     },
+     {
+      "h": 2,
+      "i": "edsrfgt5ii-a7076560-eac8-11ea-862d-9d68001b5e4b",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Mail Attachments",
+      "query": {
+       "categories": [
+        "attachments"
+       ],
+       "lastId": "",
+       "pageSize": 100,
+       "tags": [
+
+       ],
+       "users": [
+
+       ]
+      },
+      "queryType": "warRoomFilter",
+      "static": false,
+      "type": "invTimeline",
+      "w": 3,
+      "x": 0,
+      "y": 7
      }
     ],
     "type": "custom"
@@ -331,7 +373,7 @@
       "type": "childInv",
       "w": 1,
       "x": 2,
-      "y": 4
+      "y": 6
      },
      {
       "displayType": "ROW",
@@ -356,7 +398,7 @@
       "type": "team",
       "w": 1,
       "x": 2,
-      "y": 6
+      "y": 8
      },
      {
       "displayType": "ROW",
@@ -493,6 +535,37 @@
       "w": 1,
       "x": 1,
       "y": 2
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-da7ac860-eac8-11ea-862d-9d68001b5e4b",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Mail Attachments",
+      "query": {
+       "categories": [
+        "attachments"
+       ],
+       "lastId": "",
+       "pageSize": 100,
+       "tags": [
+
+       ],
+       "users": [
+
+       ]
+      },
+      "queryType": "warRoomFilter",
+      "static": false,
+      "type": "invTimeline",
+      "w": 1,
+      "x": 2,
+      "y": 4
      }
     ],
     "type": "custom"
@@ -525,7 +598,7 @@
   ]
  },
  "group": "incident",
- "id": "d404e0aa-f465-4cec-874d-601143a12fc0",
+ "id": "Email Communication",
  "mobile": {
   "sections": [
    {

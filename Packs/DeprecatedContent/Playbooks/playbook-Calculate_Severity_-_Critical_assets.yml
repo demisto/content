@@ -1,12 +1,10 @@
 id: calculate_severity_-_critical_assets
 version: -1
 name: Calculate Severity - Critical assets
-fromversion: 4.0.0
-description: "DEPRECATED. Use Calculate Severity - Critical Assets v2 playbook instead. Determines if a critical assest is associated with the invesigation.
-  The playbook returns a severity level of \"Critical\" if a critical asset is associated
-  with the investigation.\n\nThis playbook verifies if a user account or an endpoint
-  is part of a critical list or a critical AD group. "
+fromversion: 5.0.0
+description: Deprecated. Use Calculate Severity - Critical Assets v2 playbook instead. Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of \"Critical\" if a critical asset is associated with the investigation.\n\nThis playbook verifies if a user account or an endpoint is part of a critical list or a critical AD group.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -170,8 +168,7 @@ tasks:
       id: 0b05b0cc-13d4-4486-8d8f-81c37b9a3d9f
       version: -1
       name: Set severity to "Critical"
-      description: Set the severity level to "Critical" (asset is par of a critical
-        list).
+      description: Set the severity level to "Critical" (asset is par of a critical list).
       scriptName: Set
       type: regular
       iscommand: false
@@ -278,10 +275,8 @@ tasks:
     task:
       id: 731ac547-3975-48b5-85d0-e26a89643dc3
       version: -1
-      name: Is there an user account AD group that is part of the "CriticalGroups"
-        list.
-      description: Check if an user account AD group in context is part of the "CriticalGroups"
-        group.
+      name: Is there an user account AD group that is part of the "CriticalGroups" list.
+      description: Check if an user account AD group in context is part of the "CriticalGroups" group.
       type: condition
       iscommand: false
       brand: ""
@@ -323,8 +318,7 @@ tasks:
       id: 0cd3dad7-aab6-43cb-88d6-f8dd1f56c681
       version: -1
       name: Is there an endpoint AD group that is part of the "CriticalGroups" list.
-      description: Check if an Endpoint AD group in context is part of the "CriticalGroups"
-        group.
+      description: Check if an Endpoint AD group in context is part of the "CriticalGroups" group.
       type: condition
       iscommand: false
       brand: ""
@@ -478,4 +472,4 @@ outputs:
   description: The output severity
   type: string
 tests:
-  - No test - Deprecated playbook
+- No test - Deprecated playbook

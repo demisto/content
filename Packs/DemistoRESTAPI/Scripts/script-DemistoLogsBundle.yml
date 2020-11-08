@@ -2,7 +2,7 @@ commonfields:
   id: DemistoLogsBundle
   version: -1
 name: DemistoLogsBundle
-script: |
+script: >
   return executeCommand('demisto-api-download', {uri: '/log/bundle'});
 type: javascript
 tags:
@@ -14,3 +14,4 @@ runonce: false
 dependson:
   must:
   - demisto-api-download
+fromversion: 5.0.0

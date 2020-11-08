@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the CrowdStrike Falcon Sandbox integration to submit and analyze files and URLs.</p>
-<p>Supported File Types</p>
 <p>The maximum file upload size is 100 MB.</p>
+<p>Supported File Types:</p>
 <ul>
 <li>PE (.exe, .scr, .pif, .dll, .com, .cpl, and so on)</li>
 <li>Microsoft Word (.doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub)</li>
@@ -52,7 +52,7 @@
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Server URL (e.g., <a href="https://216.3.128.82/">https://216.3.128.82</a>)</strong></li>
+<li><strong>Server URL (e.g., https://216.3.128.82)</strong></li>
 <li><strong>API Key</strong></li>
 <li><strong>Secret Key (applicable only for v1)</strong></li>
 <li><strong>API Version (v1,v2)</strong></li>
@@ -1869,6 +1869,10 @@
 <td style="width: 170px;">environmentID</td>
 <td style="width: 472px;">The ID of the environment to submit the URL to.</td>
 <td style="width: 98px;">Required</td>
+</tr>
+<td style="width: 170px;">dontThrowErrorOnFileDetonation</td>
+<td style="width: 472px;">Determine if the command will throw an error on an unsupported file error. Default is false.</td>
+<td style="width: 98px;"></td>
 </tr>
 </tbody>
 </table>

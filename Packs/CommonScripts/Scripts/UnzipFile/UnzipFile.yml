@@ -24,6 +24,17 @@ args:
   name: lastZipFileInWarroom
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 7z
+  description: Tool to extract zip
+  isArray: false
+  name: zipTool
+  predefined:
+  - 7z
+  - zipfile
+  required: false
+  secret: false
 comment: Unzip a file using fileName or entryID to specify a file. Unzipped files
   will be loaded to the War Room and names will be put into the context.
 commonfields:
@@ -43,9 +54,9 @@ tags:
 - file
 timeout: '0'
 type: python
-dockerimage: demisto/unzip:1.0.0.10233
-dockerimage45: demisto/7zip
+dockerimage: demisto/unzip:1.0.0.12410
 runonce: false
 tests:
 - ZipFile-Test
 - UnzipFile-Test
+fromversion: 5.0.0

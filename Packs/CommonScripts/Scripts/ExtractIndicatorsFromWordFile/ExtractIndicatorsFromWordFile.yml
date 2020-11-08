@@ -1,7 +1,6 @@
 args:
 - default: false
-  description: The entry ID of the word document to be parsed for indicators. The
-    document can be either in DOC or DOCX format.
+  description: The entry ID of the word document to be parsed for indicators. The document can be either in DOC or DOCX format.
   isArray: false
   name: entryID
   required: true
@@ -28,4 +27,4 @@ subtype: python2
 dockerimage: demisto/office-utils:1.0.0.91
 runas: DBotWeakRole
 runonce: false
-fromversion: 4.1.0
+fromversion: 5.0.0

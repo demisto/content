@@ -29,8 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'A threat intelligence platform that collects and interprets intelligence data
- from open sources and manages indicator scoring, types, and attributes.'
+description: 'A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.'
 display: ThreatQ v2
 name: ThreatQ v2
 script:
@@ -454,8 +453,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of indicator, such as email address, IP address, Registry key,
-        binary string, and so on.
+      description: The type of indicator, such as email address, IP address, Registry key, binary string, and so on.
       isArray: false
       name: type
       predefined:
@@ -495,8 +493,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The status of the indicator. Can be: "Active", "Expired", "Indirect",
-        "Review", or "Whitelisted".'
+      description: 'The status of the indicator. Can be: "Active", "Expired", "Indirect", "Review", or "Whitelisted".'
       isArray: false
       name: status
       predefined:
@@ -520,15 +517,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Attributes names list, separated by commas. The i-th element in the attributes names list
-        corresponds to the i-th element in the attributes values list.
+      description: Attributes names list, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
       isArray: true
       name: attributes_names
       required: false
       secret: false
     - default: false
-      description: Attributes values list, separated by commas. The i-th element in the attributes values list
-        corresponds to the i-th element in the attributes names list.
+      description: Attributes values list, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
       isArray: true
       name: attributes_values
       required: false
@@ -615,7 +610,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description:  'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
       isArray: false
       name: obj_type
       predefined:
@@ -700,15 +695,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of attributes names, separated by commas. The i-th element in the attributes names list
-        corresponds to the i-th element in the attributes values list.
+      description: List of attributes names, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
       isArray: true
       name: attributes_names
       required: false
       secret: false
     - default: false
-      description: List of attributes values, separated by commas. The i-th element in the attributes values list
-        corresponds to the i-th element in the attributes names list.
+      description: List of attributes values, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
       isArray: true
       name: attributes_values
       required: false
@@ -786,15 +779,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of attributes names, separated by commas. The i-th element in the attributes names list
-        corresponds to the i-th element in the attributes values list.
+      description: List of attributes names, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
       isArray: true
       name: attributes_names
       required: false
       secret: false
     - default: false
-      description: List of attributes values, separated by commas. The i-th element in the attributes values list
-        corresponds to the i-th element in the attributes names list.
+      description: List of attributes values, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
       isArray: true
       name: attributes_values
       required: false
@@ -998,8 +989,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The new status of the indicator. Can be: "Active", "Expired",
-        "Indirect", "Review", or "Whitelisted".'
+      description: 'The new status of the indicator. Can be: "Active", "Expired", "Indirect", "Review", or "Whitelisted".'
       isArray: false
       name: status
       predefined:
@@ -1400,8 +1390,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Searches for an object by object type and ID. Generic
-      and DBotScore contexts also may be generated.
+    description: Searches for an object by object type and ID. Generic and DBotScore contexts also may be generated.
     execution: false
     name: threatq-search-by-id
     outputs:
@@ -1945,8 +1934,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The manual indicator score. Can be: "Generated Score" or "1", "2", "3", "4", "5",
-        "6", "7", "8", "9" or "10".'
+      description: 'The manual indicator score. Can be: "Generated Score" or "1", "2", "3", "4", "5", "6", "7", "8", "9" or "10".'
       isArray: false
       name: score
       predefined:
@@ -1965,8 +1953,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Modifies an indicator's score in ThreatQ. The final indicator score is the highest of
-      the manual and generated scores.
+    description: Modifies an indicator's score in ThreatQ. The final indicator score is the highest of the manual and generated scores.
     execution: false
     name: threatq-update-score
     outputs:
@@ -2183,6 +2170,7 @@ script:
       description: The last update date of the adversary.
       type: date
   - name: threatq-advanced-search
+    deprecated: true
     arguments:
     - name: query
       required: true
@@ -2192,15 +2180,12 @@ script:
       defaultValue: "10"
     - name: indicator_type
       required: true
-      description: "The indicator type for which to search. Can be either the name or the ID. Possible values:
-        Binary String, CIDR Block, CVE, Email Address, Email Attachment, Email Subject, File Mapping, File Path,
-        Filename, FQDN, Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password,
-        Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject,
-        URL, URL Path, User-agent, Username, X-Mailer"
+      description: "The indicator type for which to search. Can be either the name or the ID. Possible values: Binary String, CIDR Block, CVE, Email Address, Email Attachment, Email Subject, File Mapping, File Path, Filename, FQDN, Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password, Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject, URL, URL Path, User-agent, Username, X-Mailer"
     description: Runs an advanced indicator search.
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.11789
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
+fromversion: 5.0.0

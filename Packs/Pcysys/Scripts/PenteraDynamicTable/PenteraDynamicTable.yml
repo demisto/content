@@ -5,7 +5,7 @@ name: PenteraDynamicTable
 script: ''
 type: python
 tags:
-  - dynamic-section
+- dynamic-section
 enabled: true
 scripttarget: 0
 subtype: python3
@@ -13,3 +13,4 @@ runonce: false
 dockerimage: demisto/python3:3.8.2.6981
 runas: DBotWeakRole
 comment: Renders a Markdown Table from penteraoperationdetails field in Pentera Insight incidents
+fromversion: 5.0.0

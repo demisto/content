@@ -2,12 +2,16 @@ commonfields:
   id: NessusListScans
   version: -1
 name: NessusListScans
-script: |
+script: >
   from time import ctime
+
   res = []
 
+
   dArgs = demisto.args()
+
   resScanList = demisto.executeCommand("scans-list", dArgs)
+
   try:
       for entry in resScanList:
           if isError(entry):
@@ -35,7 +39,7 @@ type: python
 subtype: python2
 tags:
 - nessus
-comment: Display the list of folders and scans from Nessus.
+comment: Deprecated. Display the list of folders and scans from Nessus.
 system: true
 scripttarget: 0
 args: []
@@ -44,3 +48,4 @@ dependson:
   - Nessus|||scans-list
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0

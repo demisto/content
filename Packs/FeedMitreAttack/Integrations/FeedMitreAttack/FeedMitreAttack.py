@@ -1,12 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Optional
 import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
-from taxii2client import Server, Collection, ApiRoot
+from taxii2client.v20 import Server, Collection, ApiRoot
 
 ''' CONSTANT VARIABLES '''
 
@@ -32,7 +31,9 @@ mitre_field_mapping = {
     "mitreplatforms": {"name": "x_mitre_platforms", "type": "dict"},
     "mitresystemrequirements": {"name": "x_mitre_system_requirements", "type": "list"},
     "mitreversion": {"name": "x_mitre_version", "type": "str"},
-    "mitretype": {"name": "type", "type": "str"}
+    "mitretype": {"name": "type", "type": "str"},
+    "mitrecreated": {"name": "created", "type": "str"},
+    "mitremodified": {"name": "modified", "type": "str"}
 }
 
 # Disable insecure warnings
@@ -41,7 +42,8 @@ requests.packages.urllib3.disable_warnings()
 
 class Client:
 
-    def __init__(self, url, proxies, verify, include_apt, reputation, tags: list = None):
+    def __init__(self, url, proxies, verify, include_apt, reputation, tags: list = None,
+                 tlp_color: Optional[str] = None):
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
@@ -49,6 +51,7 @@ class Client:
         self.indicatorType = "MITRE ATT&CK"
         self.reputation = 0
         self.tags = [] if tags is None else tags
+        self.tlp_color = tlp_color
         if reputation == 'Good':
             self.reputation = 0
         elif reputation == 'Suspicious':
@@ -203,13 +206,20 @@ class Client:
                                     pass
 
                         else:
-                            indicators.append({
+                            indicator_obj = {
                                 "value": value,
                                 "score": self.reputation,
                                 "type": "MITRE ATT&CK",
                                 "rawJSON": mitre_item_json,
-                                "fields": {"tags": self.tags}
-                            })
+                                "fields": {
+                                    "tags": self.tags,
+                                }
+                            }
+
+                            if self.tlp_color:
+                                indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+
+                            indicators.append(indicator_obj)
                             indicator_values_list.add(value)
                             counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
@@ -221,13 +231,20 @@ class Client:
                                         if x.get('external_id') and x.get('source_name') != "mitre-attack"]
                             for x in ext_refs:
                                 if x not in external_refs:
-                                    indicators.append({
+                                    indicator_obj = {
                                         "value": x,
                                         "score": self.reputation,
                                         "type": "MITRE ATT&CK",
                                         "rawJSON": mitre_item_json,
-                                        "fields": {"tags": self.tags}
-                                    })
+                                        "fields": {
+                                            "tags": self.tags,
+                                        }
+                                    }
+
+                                    if self.tlp_color:
+                                        indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+
+                                    indicators.append(indicator_obj)
                                     external_refs.add(x)
 
         # Finally, map all the fields from the indicator
@@ -239,10 +256,18 @@ class Client:
                     # Try and map the field
                     value_type = value['type']
                     value_name = value['name']
+
                     if value_type == "list":
                         indicator['fields'][field] = "\n".join(indicator['rawJSON'][value_name])
                     else:
-                        indicator['fields'][field] = indicator['rawJSON'][value_name]
+                        if value_name in ['created', 'modified']:
+                            indicator['fields'][field] = handle_multiple_dates_in_one_field(
+                                value_name, indicator['rawJSON'][value_name]
+                            )
+
+                        else:
+                            indicator['fields'][field] = indicator['rawJSON'][value_name]
+
                 except KeyError:
                     # If the field does not exist in the indicator
                     # then move on
@@ -250,6 +275,25 @@ class Client:
                 except Exception as err:
                     demisto.error(f"Error when mapping Mitre Fields - {err}")
         return indicators
+
+
+def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
+    """Parses datetime fields to handle one value or more
+
+    Args:
+        field_name (str): The field name that holds the data (created/modified).
+        field_value (str): Raw value returned from feed.
+
+    Returns:
+        str. One datetime value (min/max) according to the field name.
+    """
+    dates_as_string = field_value.splitlines()
+    dates_as_datetime = [datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ') for date in dates_as_string]
+
+    if field_name == 'created':
+        return f"{min(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
+    else:
+        return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
 def test_module(client):
@@ -408,11 +452,12 @@ def main():
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
     tags = argToList(params.get('feedTags', []))
+    tlp_color = params.get('tlp_color')
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(url, proxies, verify_certificate, include_apt, reputation, tags)
+        client = Client(url, proxies, verify_certificate, include_apt, reputation, tags, tlp_color)
         client.initialise()
         commands = {
             'mitre-get-indicators': get_indicators_command,

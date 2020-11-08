@@ -2,7 +2,7 @@ commonfields:
   id: VectraClassifier
   version: -1
 name: VectraClassifier
-script: |-
+script: >-
   vectra_type_dict = {
       'C2Communication' :
           ['External Remote Access',
@@ -50,14 +50,21 @@ script: |-
           'Staged Transfer - Hop 2']
   }
 
+
   TYPE_VNAME_LABEL = 'Label/type_vname'
+
   CLASSIFIER_DESCRIPTION_LABAL = 'Label/Classifier/Description'
+
   CONTEXT_SEPARATOR = '|'
+
 
   ctx = demisto.context()
 
+
   type_name = demisto.get(ctx, TYPE_VNAME_LABEL)
+
   incident_type = ''
+
 
   if type_name:
       # Set context for future use
@@ -78,7 +85,7 @@ subtype: python2
 tags:
 - Vectra
 - Classifier
-comment: Classifying Vectra incidents
+comment: Deprecated. Classifying Vectra incidents
 system: true
 scripttarget: 0
 dependson:
@@ -86,3 +93,4 @@ dependson:
   - vec-health
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0

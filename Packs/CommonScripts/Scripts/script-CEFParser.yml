@@ -2,13 +2,18 @@ commonfields:
   id: CEFParser
   version: -1
 name: CEFParser
-script: |-
+script: >-
   // Consts
+
   var mandatoryLabels = ['cefVersion', 'vendor', 'product', 'version', 'signatureID', 'name', 'severity'];
 
+
   // first, split the lines for multiple CEF rows
+
   var rows = args.data.split('\nCEF:');
+
   var data = [];
+
 
   for (var i=0; i<rows.length; i++) {
       var o = {};
@@ -68,13 +73,12 @@ script: |-
       }
       data.push(o);
   }
+
   return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: tableToMarkdown('CEF Events', data), EntryContext: {CEFEvent: data}};
 type: javascript
 tags:
 - Utility
-comment: Parse CEF data into the context. Please notice that outputs will display
-  only the 7 mandatory fields even if the CEF event includes many other custom or
-  extended fields.
+comment: Parse CEF data into the context. Please notice that outputs will display only the 7 mandatory fields even if the CEF event includes many other custom or extended fields.
 enabled: true
 args:
 - name: data
@@ -97,3 +101,4 @@ outputs:
 - contextPath: CEFEvent.severity
   description: The alert severity
 scripttarget: 0
+fromversion: 5.0.0

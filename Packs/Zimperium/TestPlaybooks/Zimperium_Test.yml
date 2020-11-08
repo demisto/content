@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "0"
+    taskid: b578eaee-3ea3-dead-beef-b95038d6c1b4
     type: start
     task:
-      id: "0"
+      id: b578eaee-3ea3-dead-beef-b95038d6c1b4
       version: -1
       name: ""
       description: ""
@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: "2"
+    taskid: b578eaee-3ea3-4dd4-beef-b95038d6c1b4
     type: regular
     task:
-      id: "2"
+      id: b578eaee-3ea3-4dd4-beef-b95038d6c1b4
       version: -1
       name: zimperium-events-search
       description: ""
@@ -248,10 +248,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: "12"
+    taskid: b578eaee-3ea3-dead-8a45-b95038d6c1b4
     type: title
     task:
-      id: "12"
+      id: b578eaee-3ea3-dead-8a45-b95038d6c1b4
       version: -1
       name: Test Done
       description: ""

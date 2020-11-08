@@ -3,7 +3,7 @@ version: -1
 name: Search Endpoints By Hash - TIE - Test
 description: A test playbook for Search Endpoints By Hash - TIE
 starttaskid: "0"
-fromversion: 3.5.0
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"

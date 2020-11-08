@@ -131,8 +131,7 @@ tasks:
       id: 296177a0-65b0-48de-8b08-a1f9038523e0
       version: -1
       name: safebreach-rerun-insight
-      description: Reruns a specific SafeBreach Insight related simulations in your
-        environment.
+      description: Reruns a specific SafeBreach Insight related simulations in your environment.
       script: SafeBreach v2|||safebreach-rerun-insight
       type: regular
       iscommand: true
@@ -360,3 +359,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -174,8 +174,7 @@ tasks:
       id: 5d7452dc-3ddc-4fc0-8faa-622dce882e97
       version: -1
       name: Get incidents command
-      description: Get EIR incidents from PhishLabs-IOC EIR service (dafault limit
-        50 incidents)
+      description: Get EIR incidents from PhishLabs-IOC EIR service (dafault limit 50 incidents)
       script: '|||phishlabs-ioc-eir-get-incidents'
       type: regular
       iscommand: true
@@ -386,3 +385,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

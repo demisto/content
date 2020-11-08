@@ -20,6 +20,7 @@ For more information, visit: `securonix/etnants/<tenantname>/securonix_home/resp
 | password | Password | True |
 | isFetch | Fetch incidents | False |
 | incident_status | Incidents to fetch | False |
+| default_severity | Set the default incident severity | False |
 | incidentType | Incident type | False |
 | fetch_time | First fetch time range (`<number> <time unit>`, e.g., 1 hour, 30 minutes) | False |
 | max_fetch | The maximum number of incidents to fetch each time. Maximum is 50. | False |

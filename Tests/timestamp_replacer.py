@@ -17,7 +17,7 @@ def record_concurrently(replaying: bool = False):
     '''
     A decorator to return a decorator that just executes the function it decorates normally if 'replaying' is true,
     (AKA mitmdump is executing in server-replay mode or reading in a mock file and cleaning it and saving the cleaned
-    mock to a new file), otherwise pass the 'concurrant' decorater so that when mitmdump is executing in recording
+    mock to a new file), otherwise pass the 'concurrent' decorator so that when mitmdump is executing in recording
     mode, that requests will be processed concurrently and not be blocking which can cause proxy errors during
     recording if multiple requests are made in a short timespan.
 

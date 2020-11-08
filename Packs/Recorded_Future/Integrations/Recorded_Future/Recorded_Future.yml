@@ -4,8 +4,7 @@ commonfields:
 name: Recorded Future
 display: Recorded Future
 category: Data Enrichment & Threat Intelligence
-description: Unique threat intel technology that automatically serves up relevant
-  insights in real time.
+description: Unique threat intel technology that automatically serves up relevant insights in real time.
 configuration:
 - display: Server URL (e.g., https://api.recordedfuture.com)
   name: server
@@ -22,8 +21,7 @@ configuration:
   defaultvalue: "5"
   type: 0
   required: false
-- display: File Threshold. Minimum risk score from Recorded Future to consider the
-    file malicious.
+- display: File Threshold. Minimum risk score from Recorded Future to consider the file malicious.
   name: file_threshold
   defaultvalue: "65"
   type: 0
@@ -33,20 +31,17 @@ configuration:
   defaultvalue: "65"
   type: 0
   required: false
-- display: Domain Threshold. Minimum risk score from Recorded Future to consider the
-    domain malicious.
+- display: Domain Threshold. Minimum risk score from Recorded Future to consider the domain malicious.
   name: domain_threshold
   defaultvalue: "65"
   type: 0
   required: false
-- display: URL Threshold. Minimum risk score from Recorded Future to consider the
-    URL malicious.
+- display: URL Threshold. Minimum risk score from Recorded Future to consider the URL malicious.
   name: url_threshold
   defaultvalue: "65"
   type: 0
   required: false
-- display: Vulnerability Threshold. Minimum risk score from Recorded Future to consider
-    the vulnerability critical.
+- display: Vulnerability Threshold. Minimum risk score from Recorded Future to consider the vulnerability critical.
   name: cve_threshold
   defaultvalue: "65"
   type: 0
@@ -63,14 +58,12 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- display: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts
-    will be fetched
+- display: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched
   name: rule_names
   defaultvalue: Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers
   type: 12
   required: false
-- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
-    1 year)
+- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: triggered
   defaultvalue: 24 hours
   type: 0
@@ -95,8 +88,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
@@ -123,8 +115,7 @@ script:
     - contextPath: Domain.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
-    description: Returns threat intelligence information for a domain or DNS in Recorded
-      Future.
+    description: Returns threat intelligence information for a domain or DNS in Recorded Future.
   - name: ip
     arguments:
     - name: ip
@@ -136,8 +127,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
@@ -156,8 +146,7 @@ script:
       description: For malicious IP addresses, the vendor that made the decision
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the
-        decision
+      description: For malicious IP addresses, the reason that the vendor made the decision
       type: string
     - contextPath: IP.Address
       description: IP address
@@ -171,22 +160,19 @@ script:
     - contextPath: IP.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
-    description: Returns threat intelligence information for an IP address in Recorded
-      Future.
+    description: Returns threat intelligence information for an IP address in Recorded Future.
   - name: file
     arguments:
     - name: file
       required: true
       default: true
-      description: File hash to check the reputation of (MD5, SHA-1, SHA-256, SHA-512,
-        CRC-32, CTPH)
+      description: File hash to check the reputation of (MD5, SHA-1, SHA-256, SHA-512, CRC-32, CTPH)
     - name: detailed
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     outputs:
     - contextPath: File.SHA256
@@ -245,13 +231,10 @@ script:
       - ip
       - file
       - url
-      description: The type of entity to fetch context for. (Should be provided with
-        its value in entityValue argument)
+      description: The type of entity to fetch context for. (Should be provided with its value in entityValue argument)
     - name: entityValue
       required: true
-      description: 'The value of the entity to fetch context for. (Should be provided
-        with its type in entityType argument, Hash types supported: MD5, SHA-1, SHA-256,
-        SHA-512, CRC-32, CTPH)'
+      description: 'The value of the entity to fetch context for. (Should be provided with its type in entityType argument, Hash types supported: MD5, SHA-1, SHA-256, SHA-512, CRC-32, CTPH)'
     - name: resultEntityType
       auto: PREDEFINED
       predefined:
@@ -262,8 +245,7 @@ script:
       - Attacker
       - Malware
       - URL
-      description: CSV list of related entity types to return in the result (e.g.,
-        Hash,IP,Domain)
+      description: CSV list of related entity types to return in the result (e.g., Hash,IP,Domain)
       defaultValue: All
     outputs:
     - contextPath: File.SHA256
@@ -509,8 +491,7 @@ script:
     - contextPath: URL.RecordedFuture.RelatedEntities.URL.Data
       description: URL related entity name (URL)
       type: string
-    description: Returns threat intelligence context for an indicator in Recorded
-      Future.
+    description: Returns threat intelligence context for an indicator in Recorded Future.
   - name: url
     arguments:
     - name: url
@@ -522,8 +503,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
@@ -558,8 +538,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
       description: Number of results to return
@@ -641,8 +620,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
       description: Number of results to return
@@ -691,8 +669,7 @@ script:
       description: For malicious IP addresses, the vendor that made the decision
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the
-        decision
+      description: For malicious IP addresses, the reason that the vendor made the decision
       type: string
     - contextPath: IP.Address
       description: IP address
@@ -714,8 +691,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
       description: Number of results to return
@@ -780,8 +756,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
       description: Limit number of results returned
@@ -855,8 +830,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, fetches evidence details. Evidence is a record that is
-        generated if any of the risk rules in Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     - name: orderby
       auto: PREDEFINED
@@ -896,8 +870,7 @@ script:
   - name: recorded-future-get-domain-risklist
     arguments:
     - name: list
-      description: Specify a domain list by a risk rule name, which can be retrieved
-        by the get-domain-riskrules command.
+      description: Specify a domain list by a risk rule name, which can be retrieved by the get-domain-riskrules command.
     outputs:
     - contextPath: InfoFile.Name
       description: File name
@@ -921,8 +894,7 @@ script:
   - name: recorded-future-get-url-risklist
     arguments:
     - name: list
-      description: Specify a URL list by a risk rule name, which can be retrieved
-        from the get-url-riskrules command.
+      description: Specify a URL list by a risk rule name, which can be retrieved from the get-url-riskrules command.
     outputs:
     - contextPath: InfoFile.Name
       description: File name
@@ -946,8 +918,7 @@ script:
   - name: recorded-future-get-ip-risklist
     arguments:
     - name: list
-      description: Specify an IP list by a risk rule name, which can be retrieved
-        from the get-ip-riskrules command.
+      description: Specify an IP list by a risk rule name, which can be retrieved from the get-ip-riskrules command.
     outputs:
     - contextPath: InfoFile.Name
       description: File name
@@ -971,8 +942,7 @@ script:
   - name: recorded-future-get-vulnerability-risklist
     arguments:
     - name: list
-      description: Specify a vulnerability list by a risk rule name, which can be
-        retrieved from the get-vulnerability-riskrules command.
+      description: Specify a vulnerability list by a risk rule name, which can be retrieved from the get-vulnerability-riskrules command.
     outputs:
     - contextPath: InfoFile.Name
       description: File name
@@ -996,8 +966,7 @@ script:
   - name: recorded-future-get-hash-risklist
     arguments:
     - name: list
-      description: Specify a hash list by a riskrule name, which can be retrieved
-        from the get-hash-riskrules command.
+      description: Specify a hash list by a riskrule name, which can be retrieved from the get-hash-riskrules command.
     outputs:
     - contextPath: InfoFile.Name
       description: File name
@@ -1174,4 +1143,5 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - Recorded Future Test
+- Recorded Future Test
+fromversion: 5.0.0

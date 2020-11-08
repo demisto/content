@@ -189,8 +189,7 @@ tasks:
       id: bad94136-3f5d-49d7-800d-e21389ae1baa
       version: -1
       name: Get File Sample From Path - Carbon Black Enterprise Response
-      description: Returns a file sample to the war-room from a path on an endpoint
-        using Carbon Black Enterprise Response
+      description: Returns a file sample to the war-room from a path on an endpoint using Carbon Black Enterprise Response
       playbookName: Get File Sample From Path - Carbon Black Enterprise Response
       type: playbook
       iscommand: false
@@ -256,6 +255,6 @@ outputs:
 - contextPath: File
   description: The file to sample.
   type: unknown
-fromversion: 3.5.0
+fromversion: 5.0.0
 tests:
 - No Test

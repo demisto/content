@@ -27,11 +27,15 @@ class RFTest(unittest.TestCase):
         m.register_uri('POST',
                        'https://api.recordedfuture.com/v2/soar/enrichment',
                        text=json.dumps(IP_REP))
-        resp = lookup_command(self.client, '1.2.3.4', 'ip')
-        self.assertIsInstance(resp, CommandResults)
+        resp = lookup_command(self.client, '1.2.3.4,8.8.8.8', 'ip')
+        self.assertIsInstance(resp[0], CommandResults)
         self.assertEqual('1.2.3.4',
-                         resp.to_context()['Contents']['data']
+                         resp[0].to_context()['Contents']['data']
                          ['results'][0]['entity']['name'])
+        self.assertIsInstance(resp[1], CommandResults)
+        self.assertEqual('8.8.8.8',
+                         resp[1].to_context()['Contents']['data']
+                         ['results'][1]['entity']['name'])
 
     def test_intelligence(self, m) -> None:
         m.register_uri('GET',

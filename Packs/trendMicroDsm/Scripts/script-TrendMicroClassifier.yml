@@ -2,7 +2,7 @@ commonfields:
   id: TrendMicroClassifier
   version: -1
 name: TrendMicroClassifier
-script: |-
+script: >-
   trendmicro_type_dict = {
       'Malware' :
           ['Anti-Malware Alert'],
@@ -106,15 +106,23 @@ script: |-
       }
 
   CLASSIFIER_LABEL = 'Label/alertType'
+
   CLASSIFIER_DESCRIPTION_LABAL = 'Label/Classifier/Description'
+
   CLASSIFIER_HOSTNAME = 'Label/Classifier/Hostname'
+
   CONTEXT_SEPARATOR = '|'
+
   LABEL_SPLIT = ' - '
+
 
   ctx = demisto.context()
 
+
   type_name = demisto.get(ctx, CLASSIFIER_LABEL)
+
   incident_type = ''
+
 
   if type_name:
       type_name = type_name.split(LABEL_SPLIT)
@@ -147,3 +155,4 @@ dependson:
   must:
   - trendmicro-alert-status
 timeout: 0s
+fromversion: 5.0.0

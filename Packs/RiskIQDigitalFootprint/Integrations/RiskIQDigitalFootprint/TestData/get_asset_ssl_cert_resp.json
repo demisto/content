@@ -1,0 +1,189 @@
+{
+    "name": "393d40623205b0afd4bc110291306888656e7bf4",
+    "type": "SSL_CERT",
+    "firstSeen": 1589304272929,
+    "lastSeen": 1591634717876,
+    "uuid": "d02ea1d1-7129-094a-50b0-3b285798d28d",
+    "label": "393d40623205b0afd4bc110291306888656e7bf4",
+    "description": "stamp2.login.dummyonline.com: dummy IT TLS CA 1",
+    "asset": {
+        "sha1": "393d40623205b0afd4bc110291306888656e7bf4",
+        "serialNumber": "6100195e6c1b57bc799e2d5d23000000195e6c",
+        "subjectAlternativeNames": [
+            "login.dummyonline-int.com",
+            "login.dummyonline-p.com",
+            "login.dummyonline.com",
+            "login2.dummyonline-int.com",
+            "login2.dummyonline.com",
+            "loginex.dummyonline-int.com",
+            "loginex.dummyonline.com",
+            "stamp2.login.dummyonline-int.com",
+            "stamp2.login.dummyonline.com"
+        ],
+        "issuerAlternativeNames": [
+            "login.dummyonline-int.com",
+            "login.dummyonline-p.com",
+            "login.dummyonline.com"
+        ],
+        "firstSeen": 1589304272929,
+        "lastSeen": 1591599614894,
+        "count": 31019,
+        "keySize": 2048,
+        "version": 3,
+        "certificateAuthority": false,
+        "selfSigned": false,
+        "signatureAlgorithm": "SHA256withRSA",
+        "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+        "notBefore": 1589228115000,
+        "notAfter": 1652300115000,
+        "publicKeyAlgorithm": "RSA",
+        "id": "393d40623205b0afd4bc110291306888656e7bf4",
+        "issuer": {
+            "country": "US",
+            "unit": "dummy IT",
+            "organization": "dummy Corporation",
+            "common name": "dummy IT TLS CA 1",
+            "state": "Washington",
+            "locale": "Dummy street"
+        },
+        "subject": {
+            "common name": "stamp2.login.dummyonline.com",
+            "country": "US",
+            "unit": "dummy IT",
+            "organization": "dummy Corporation",
+            "state": "Washington",
+            "locale": "Dummy street"
+        },
+        "nameServers": [
+      {
+        "value": "dummy.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy1.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy2.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy3.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      }
+    ]
+    },
+    "discoveryRun": {
+    "discoveryRunID": 1915892,
+    "workspaceID": 2946,
+    "runType": "MANUAL",
+    "userID": 3287,
+    "runDate": 1588288766000,
+    "assetType": null,
+    "fullName": "2020-04-30 4:19 PM PDT - Manual"
+  },
+    "data": {
+        "hostPairs": {
+            "content": [],
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 2,
+            "number": 0
+        },
+        "attributes": {
+            "content": [],
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 2,
+            "number": 0
+        },
+        "webComponents": {
+            "content": [],
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 2,
+            "number": 0
+        },
+        "sslCerts": {
+            "content": [
+                {
+                    "firstSeen": 1589304272929,
+                    "lastSeen": 1591685944569,
+                    "count": 34106,
+                    "id": "393d40623205b0afd4bc110291306888656e7bf4",
+                    "sha1": "393d40623205b0afd4bc110291306888656e7bf4",
+                    "version": 3,
+                    "serialNumber": "2163180916825397708934050871055278985287655020",
+                    "signatureAlgorithm": "SHA256withRSA",
+                    "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+                    "issuer": {
+                        "country": "US",
+                        "unit": "dummy IT",
+                        "organization": "dummy Corporation",
+                        "common name": "dummy IT TLS CA 1",
+                        "state": "Washington",
+                        "locale": "Dummy street"
+                    },
+                    "issuerAlternativeNames": [],
+                    "notBefore": 1589228115000,
+                    "notAfter": 1652300115000,
+                    "subject": {
+                        "common name": "stamp2.login.dummyonline.com"
+                    },
+                    "subjectAlternativeNames": [
+                        "login.dummyonline-int.com",
+                        "login.dummyonline-p.com",
+                        "login.dummyonline.com",
+                        "login2.dummyonline-int.com",
+                        "login2.dummyonline.com",
+                        "loginex.dummyonline-int.com",
+                        "loginex.dummyonline.com",
+                        "stamp2.login.dummyonline-int.com",
+                        "stamp2.login.dummyonline.com"
+                    ],
+                    "publicKeyAlgorithm": "RSA",
+                    "certificateAuthority": false,
+                    "selfSigned": false
+                }
+            ],
+            "totalElements": 1,
+            "totalPages": 1,
+            "last": true,
+            "numberOfElements": 1,
+            "first": true,
+            "size": 20,
+            "number": 0
+        },
+        "cookies": {
+            "content": [],
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 2,
+            "number": 0
+        }
+    }
+}

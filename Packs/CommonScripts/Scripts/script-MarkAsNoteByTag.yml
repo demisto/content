@@ -2,8 +2,9 @@ commonfields:
   id: MarkAsNoteByTag
   version: -1
 name: MarkAsNoteByTag
-script: |
+script: >
   entries = demisto.executeCommand('getEntries', {})
+
   if isError(entries[0]):
       demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to retrieve entries'})
   else:
@@ -35,3 +36,4 @@ args:
   description: Entries with the given tag will be marked as notes
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

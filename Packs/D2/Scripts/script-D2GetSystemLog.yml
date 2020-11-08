@@ -2,10 +2,11 @@ commonfields:
   id: D2GetSystemLog
   version: -1
 name: D2GetSystemLog
-script: |-
+script: >-
   function copyLogUnix() {
     pack_file('/var/log/' + args.logName, args.logName);
   }
+
   function copyLogWindows() {
     var fileName = 'c:\\' + args.logName + '.log';
     var output = execute('wevtutil epl ' + args.logName + ' ' + fileName);
@@ -16,6 +17,7 @@ script: |-
     pack_file(fileName, args.logName);
     del(fileName);
   }
+
   try {
     if (env.OS === 'windows') {
       copyLogWindows();
@@ -29,8 +31,7 @@ type: javascript
 tags:
 - agent
 - endpoint
-comment: Copy a log file. Works on Windows and Unix (differently - take a peek at
-  the script itself to see how).
+comment: Copy a log file. Works on Windows and Unix (differently - take a peek at the script itself to see how).
 system: true
 args:
 - name: logName
@@ -39,3 +40,4 @@ args:
 scripttarget: 1
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

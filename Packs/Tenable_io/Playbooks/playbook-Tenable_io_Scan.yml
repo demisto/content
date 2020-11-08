@@ -2,7 +2,7 @@ id: Tenable.io Scan
 version: -1
 name: Tenable.io Scan
 description: "Run a Tenable.io scan"
-fromversion: 4.0.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -36,8 +36,7 @@ tasks:
       id: 31641027-ac88-46a3-8324-1c70cb265545
       version: -1
       name: tenable-io-launch-scan
-      description: Lauch a scan with existing or custom targets. (You can specify
-        custom targets in the arguements of this command.)
+      description: Lauch a scan with existing or custom targets. (You can specify custom targets in the arguements of this command.)
       script: '|||tenable-io-launch-scan'
       type: regular
       iscommand: true
@@ -192,4 +191,4 @@ inputs:
   description: Alternative targets list to the scan's configured targets
 outputs: []
 tests:
-  - Tenable.io Scan Test
+- Tenable.io Scan Test

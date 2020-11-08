@@ -214,7 +214,7 @@ def alert_to_context(alert):
     """
     Transform a single alert to context struct
     """
-    return {
+    ec = {
         'ID': alert.get('id'),
         'Status': alert.get('status'),
         'AlertTime': convert_unix_to_date(alert.get('alertTime')),
@@ -236,6 +236,10 @@ def alert_to_context(alert):
             'AccountID': demisto.get(alert, 'resource.accountId')
         }
     }
+    if alert.get('alertRules'):
+        ec['AlertRules'] = [alert_rule.get('name') for alert_rule in alert.get('alertRules')]
+
+    return ec
 
 
 def search_alerts():
@@ -297,17 +301,7 @@ def get_alert_details():
         'ContentsFormat': formats['json'],
         'Contents': response,
         'EntryContext': context,
-        'HumanReadable': tableToMarkdown('Alert', [alert],
-                                         ['ID', 'Status', 'FirstSeen', 'LastSeen', 'AlertTime', 'PolicyID',
-                                          'PolicyName', 'PolicyType', 'PolicySystemDefault', 'PolicyLabels',
-                                          'PolicyDescription', 'PolicySeverity', 'PolicyRecommendation',
-                                          'PolicyDeleted', 'PolicyRemediable', 'PolicyLastModifiedOn',
-                                          'PolicyLastModifiedBy', 'RiskScore', 'RiskRating',
-                                          'ResourceName', 'ResourceRRN', 'ResourceID', 'ResourceAccount',
-                                          'ResourceAccountID', 'ResourceType',
-                                          'ResourceRegionID', 'ResourceApiName', 'ResourceUrl', 'ResourceData',
-                                          'ResourceAccessKeyAge', 'ResourceInactiveSinceTs', 'ResourceCloudType'
-                                          ])
+        'HumanReadable': tableToMarkdown('Alert', alert, removeNull=True)
     })
 
 

@@ -1,0 +1,32 @@
+{
+ "id": "indicator_riskiqassetbrands",
+ "version": -1,
+ "modified": "2020-07-08T19:48:15.778019426+05:30",
+ "name": "RiskIQAsset Brands",
+ "ownerOnly": false,
+ "placeholder": "Name(s) of the brand(s) applied to the asset.",
+ "description": "Name(s) of the brand(s) applied to the asset.",
+ "cliName": "riskiqassetbrands",
+ "type": "tagsSelect",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "RiskIQAsset"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

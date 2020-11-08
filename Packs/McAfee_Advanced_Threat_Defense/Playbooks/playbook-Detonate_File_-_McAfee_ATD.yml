@@ -1,7 +1,7 @@
 id: ATD - Detonate File
 version: -1
 name: ATD - Detonate File
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: |-
   Detonates a File using the McAfee Advanced Threat Defense sandbox.
   Advanced Threat Defense supports the following File Types:
@@ -508,8 +508,7 @@ tasks:
       id: 6e299488-408a-4b9d-82d0-cb053caf322e
       version: -1
       name: Mcafee ATD Upload File
-      description: upload a file/web URL for dynamic analysis by using the provided
-        Analyzer Profile. Only single file/web URL can be submitted at a time.
+      description: upload a file/web URL for dynamic analysis by using the provided Analyzer Profile. Only single file/web URL can be submitted at a time.
       script: '|||atd-file-upload'
       type: regular
       iscommand: true
