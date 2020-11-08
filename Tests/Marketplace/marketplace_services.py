@@ -696,16 +696,19 @@ class Pack(object):
             return task_status
 
     def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
-
-        shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
-        os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
-        current_working_dir = os.getcwd()
-        os.chdir(extract_destination_path)
-        output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
-        subprocess.call('chmod +x ./encryptor', shell=True)
-        full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
-        subprocess.call(full_command, shell=True)
-        os.chdir(current_working_dir)
+        try:
+            shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
+            os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
+            current_working_dir = os.getcwd()
+            os.chdir(extract_destination_path)
+            output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+            subprocess.call('chmod +x ./encryptor', shell=True)
+            full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "' \
+                           f'{encryption_key}"'
+            subprocess.call(full_command, shell=True)
+            os.chdir(current_working_dir)
+        except subprocess.CalledProcessError as error:
+            print(f"Error while trying to encrypt pack. {error}")
 
     def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
         """ Zips pack folder.
@@ -727,7 +730,6 @@ class Pack(object):
 
             if encryption_key:
                 self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
-                zip_pack_path = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             task_status = True
             logging.success(f"Finished zipping {self._pack_name} pack.")
         except Exception:
@@ -787,7 +789,7 @@ class Pack(object):
             return task_status, pack_was_modified
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
-                          private_content=False):
+                          private_content=False, pack_artifacts_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
@@ -799,6 +801,7 @@ class Pack(object):
             storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
             override_pack (bool): whether to override existing pack.
             private_content (bool): Is being used in a private content build.
+            pack_artifacts_path (str): Path to where we are saving pack artifacts.
 
         Returns:
             bool: whether the operation succeeded.
@@ -819,16 +822,16 @@ class Pack(object):
             pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
             blob = storage_bucket.blob(pack_full_path)
             blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
             if private_content:
-                try:
-                    shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content'
-                                               f'-private/content/artifacts/packs/{self._pack_name}.zip')
-                except FileExistsError:
-                    shutil.copy(zip_pack_path,
-                                f'/artifacts/packs/{self._pack_name}.zip')
+                #  In some cases the path given is actually a zip.
+                if pack_artifacts_path.endswith('content_packs.zip'):
+                    _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
+                else:
+                    _pack_artifacts_path = pack_artifacts_path
+                print(f"Copying {zip_pack_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
+                shutil.copy(zip_pack_path, f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")

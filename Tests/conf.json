@@ -401,6 +401,25 @@
         },
         {
             "integrations": "HelloWorld",
+            "playbookID": "Sanity Test - Playbook with integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "HelloWorld",
+            "playbookID": "Sanity Test - Playbook with mocked integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Sanity Test - Playbook with no integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Gmail",
+            "playbookID": "Sanity Test - Playbook with Unmockable Integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0",
             "timeout": 400
@@ -1818,9 +1837,9 @@
             "timeout": 500
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
+            "integrations": "iDefense_v2",
+            "playbookID": "iDefense_v2_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AbuseIPDB",
