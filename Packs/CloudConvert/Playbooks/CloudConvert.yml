@@ -1,5 +1,6 @@
-id: CloudConvert
-version: -1
+id: 27d078f8-e515-4cfc-83d7-30ab49a8b38e
+version: 97
+vcShouldKeepItemLegacyProdMachine: false
 name: CloudConvert
 starttaskid: "0"
 tasks:
@@ -13,10 +14,9 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -35,7 +35,6 @@ tasks:
     taskid: a5ee5a2e-e411-4d26-8112-0a14b913434d
     type: regular
     task:
-      description: ''
       id: a5ee5a2e-e411-4d26-8112-0a14b913434d
       version: -1
       name: CloudConvert-import
@@ -135,48 +134,11 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: f92eb9a0-6a4c-40f4-8c73-178e1b0a594d
-    type: regular
-    task:
-      id: f92eb9a0-6a4c-40f4-8c73-178e1b0a594d
-      version: -1
-      name: deletecontext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 30
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
     taskid: 35be5e52-a197-4fb3-8a9f-dd4ed4776171
     type: regular
     task:
-      description: ''
       id: 35be5e52-a197-4fb3-8a9f-dd4ed4776171
       version: -1
       name: CloudConvert-convert
@@ -288,7 +250,6 @@ tasks:
     taskid: 6eb6e3f4-a431-48ce-85be-a5faa5d26239
     type: regular
     task:
-      description: ''
       id: 6eb6e3f4-a431-48ce-85be-a5faa5d26239
       version: -1
       name: CloudConvert-export
@@ -399,7 +360,6 @@ tasks:
     taskid: bf200b39-bbd2-4239-8aa7-b982669cfaa2
     type: condition
     task:
-      description: ''
       id: bf200b39-bbd2-4239-8aa7-b982669cfaa2
       version: -1
       name: Is the export is to war room entry
@@ -517,26 +477,22 @@ inputs:
   value: {}
   required: false
   description: This is the url of the imported file
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: entry_id
   value: {}
   required: false
   description: This is the entry id of the imported file
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: output_format
   value: {}
   required: true
   description: |
     This is the desired output format
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: export_via
   value: {}
   required: true
   description: |
     The method for exporting the resulted file, url or war_room_entry
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
-tests:
-- No test
-fromversion: 5.0.0
-description: Use this playbook in order to conduct a file conversion using CloudConvert

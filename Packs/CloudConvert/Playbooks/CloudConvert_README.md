@@ -9,8 +9,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Integrations
 * CloudConvert
 
-### Scripts
-* DeleteContext
 
 ### Commands
 * CloudConvert-export

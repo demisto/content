@@ -1,5 +1,6 @@
 id: CloudConvert-test
-version: -1
+version: 37
+vcShouldKeepItemLegacyProdMachine: false
 name: CloudConvert-test
 starttaskid: "0"
 tasks:
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -321,13 +321,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3380
+          "x": 440,
+          "y": 3700
         }
       }
     note: false
@@ -593,7 +592,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "35"
@@ -615,7 +613,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2520
+          "y": 2680
         }
       }
     note: false
@@ -635,7 +633,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -657,7 +654,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3010
+          "y": 3340
         }
       }
     note: false
@@ -677,7 +674,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -699,7 +695,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1960
+          "y": 2100
         }
       }
     note: false
@@ -744,7 +740,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2330
+          "y": 2540
         }
       }
     note: false
@@ -803,7 +799,7 @@ tasks:
       brand: ""
     nexttasks:
       Successful Operation:
-      - "23"
+      - "38"
     separatecontext: false
     conditions:
     - label: Successful Operation
@@ -844,7 +840,7 @@ tasks:
       brand: ""
     nexttasks:
       Successful Operation:
-      - "24"
+      - "39"
     separatecontext: false
     conditions:
     - label: Successful Operation
@@ -877,7 +873,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2135
+          "y": 2250
         }
       }
     note: false
@@ -898,7 +894,7 @@ tasks:
       brand: ""
     nexttasks:
       Successful Operation:
-      - "37"
+      - "40"
     separatecontext: false
     conditions:
     - label: Successful Operation
@@ -931,7 +927,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2715
+          "y": 2835
         }
       }
     note: false
@@ -972,7 +968,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3160
+          "y": 3500
         }
       }
     note: false
@@ -1017,7 +1013,112 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2860
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: cfde079f-8957-48ac-83d8-b8826296c9d9
+    type: regular
+    task:
+      id: cfde079f-8957-48ac-83d8-b8826296c9d9
+      version: -1
+      name: deletecontext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 329bda61-7ccc-46dc-847a-381829e19639
+    type: regular
+    task:
+      id: 329bda61-7ccc-46dc-847a-381829e19639
+      version: -1
+      name: deletecontext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: a83f30fe-f81e-4d1e-85e7-5d019141aa2a
+    type: regular
+    task:
+      id: a83f30fe-f81e-4d1e-85e7-5d019141aa2a
+      version: -1
+      name: deletecontext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3040
         }
       }
     note: false
@@ -1030,9 +1131,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3675,
-        "width": 380,
-        "x": 450,
+        "height": 3995,
+        "width": 390,
+        "x": 440,
         "y": -230
       }
     }
@@ -1043,27 +1144,25 @@ inputs:
     simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
   required: false
   description: This is the url of the imported file
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: entry_id
   value: {}
   required: false
   description: This is the entry id of the imported file
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: output_format
   value:
     simple: jpg
   required: true
   description: |
     This is the desired output format
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: export_via
   value:
     simple: war_room_entry
   required: true
   description: |
     The method for exporting the resulted file, url or entry
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 sourceplaybookid: 27d078f8-e515-4cfc-83d7-30ab49a8b38e
-fromversion: 6.0.0
-description: Use this playbook in order to conduct a file conversion using CloudConvert
