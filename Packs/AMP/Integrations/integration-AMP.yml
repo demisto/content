@@ -140,7 +140,10 @@ script:
                 base += '/' + args['connector_guid'] + '/isolation';
                 delete args['connector_guid'];
                 break;
-
+            case 'amp_move_computer':
+                base += '/' + args['connector_guid'];
+                delete args['connector_guid'];
+                break;
             case 'amp_get_computer_by_connector':
                 base += '/' + args['connector_guid'];
                 delete args['connector_guid'];
@@ -275,9 +278,6 @@ script:
       required: true
       default: true
       description: The connector GUID.
-    description: Returns a list of all activities associated with a particular computer.
-      This is analogous to the Device Trajectory on the FireAMP Console. Use the Q
-      argument to search for an IP address, SHA256 hash, or URL.
     description: Returns a list of all activities associated with a particular computer. This is analogous to the Device Trajectory on the FireAMP Console. Use the Q argument to search for an IP address, SHA256 hash, or URL.
   - name: amp_get_computer_trajctory
     deprecated: true
@@ -290,9 +290,6 @@ script:
       required: true
       default: true
       description: The connector GUID.
-    description: Returns a list of all activities associated with a particular computer.
-      This is analogous to the Device Trajectory on the FireAMP Console. Use the Q
-      argument to search for an IP address, SHA256 hash, or URL.
     description: Returns a list of all activities associated with a particular computer. This is analogous to the Device Trajectory on the FireAMP Console. Use the Q argument to search for an IP address, SHA256 hash, or URL.
   - name: amp_move_computer
     arguments:
@@ -315,10 +312,6 @@ script:
       description: Maximum number of results to return.
     - name: offset
       description: offset
-    description: This endpoint enables you to search all computers across your organization
-      for any events or activities associated with a file or network operation, and
-      returns computers that match the specified criteria. You can then query the
-      /computers/{connector-guid}/trajectory endpoint for specific details.
     description: This endpoint enables you to search all computers across your organization for any events or activities associated with a file or network operation, and returns computers that match the specified criteria. You can then query the /computers/{connector-guid}/trajectory endpoint for specific details.
   - name: amp_get_computer_actvity
     deprecated: true
@@ -331,10 +324,6 @@ script:
       description: Maximum number of results to return.
     - name: offset
       description: offset
-    description: This endpoint enables you to search all computers across your organization
-      for any events or activities associated with a file or network operation, and
-      returns computers that match the specified criteria. You can then query the
-      /computers/{connector-guid}/trajectory endpoint for specific details.
     description: This endpoint enables you to search all computers across your organization for any events or activities associated with a file or network operation, and returns computers that match the specified criteria. You can then query the /computers/{connector-guid}/trajectory endpoint for specific details.
   - name: amp_get_events
     arguments:
@@ -354,8 +343,6 @@ script:
       description: The offset.
     - name: start_date
       description: The start date for the query, in ISO8601 format.
-    description: A general query interface for events. This is analogous to the Events
-      view on the FireAMP Console.
     description: A general query interface for events. This is analogous to the Events view on the FireAMP Console.
   - name: amp_get_event_types
     arguments: []
@@ -375,9 +362,6 @@ script:
       required: true
       default: true
       description: Retrieves information about a particular file_list.
-    description: Returns a particular file list for application blocking or simple
-      custom detection. You need to specify the file_list_guid argument to retrieve
-      information about a particular file_list.
     description: Returns a particular file list for application blocking or simple custom detection. You need to specify the file_list_guid argument to retrieve information about a particular file_list.
   - name: amp_get_simple_custom_detections
     arguments:
@@ -398,8 +382,6 @@ script:
       required: true
       default: true
       description: Retrieves information about a particular file_list.
-    description: Returns a list of items for a particular file_list. You need to specify
-      the file_list_guid argument to retrieve these items.
     description: Returns a list of items for a particular file_list. You need to specify the file_list_guid argument to retrieve these items.
   - name: amp_get_file_list_files_by_sha
     arguments:
@@ -440,8 +422,6 @@ script:
       description: amount of results
     - name: name
       description: name of the group
-    description: Returns basic information about groups in your organization. You
-      can map group names to GUIDs for filtering on the events endpoint.
     description: Returns basic information about groups in your organization. You can map group names to GUIDs for filtering on the events endpoint.
   - name: amp_get_group
     arguments:
