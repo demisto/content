@@ -11,7 +11,7 @@ configuration:
 - display: API Key
   name: APIKey
   required: true
-  type: 0
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
