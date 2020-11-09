@@ -637,13 +637,12 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     return test_skipped_integration, integrations, is_nightly_integration
 
 
-def extract_filtered_tests(prints_manager):
+def extract_filtered_tests():
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
         filtered_tests = [line.strip('\n') for line in filtered_tests]
-        is_filter_configured = bool(filtered_tests)
 
-    return filtered_tests, is_filter_configured
+    return filtered_tests
 
 
 def load_conf_files(conf_path, secret_conf_path):
@@ -865,7 +864,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filtered_tests, is_filter_configured = extract_filtered_tests(prints_manager)
+    filtered_tests = extract_filtered_tests()
 
     if not tests or len(tests) == 0:
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)

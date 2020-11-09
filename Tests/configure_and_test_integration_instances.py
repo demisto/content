@@ -1000,13 +1000,13 @@ def restart_server_legacy(server):
 def get_tests(server_numeric_version, prints_manager, build):
     tests = build.tests
     if Build.run_environment == Running.CIRCLECI_RUN:
-        filtered_tests, filter_configured = extract_filtered_tests(prints_manager)
+        filtered_tests = extract_filtered_tests()
         if build.is_nightly:
             # skip test button testing
             skipped_instance_test_message = 'Not running instance tests in nightly flow'
             prints_manager.add_print_job(skipped_instance_test_message, print_warning, 0)
             tests_for_iteration = []
-        elif filter_configured and filtered_tests:
+        elif filtered_tests:
             tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
         else:
             tests_for_iteration = tests
