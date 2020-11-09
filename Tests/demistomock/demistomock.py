@@ -958,7 +958,7 @@ def createIndicators(indicators_batch):
     return ""
 
 
-def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value=''):
+def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None):
     """Searches for indicators according to given query
 
     Args:
@@ -968,6 +968,7 @@ def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value='
       page (int): Response paging (Default value = 0)
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
+      searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
 
     Returns:
       dict: Object contains the search results
@@ -995,3 +996,13 @@ def getLicenseID():
 
     """
     return ''
+
+
+def mapObject(obj, mapper, mapper_type):
+    """Mapping an object using chosen mapper
+
+    Returns:
+      dict: the obj after mapping
+
+    """
+    return {}

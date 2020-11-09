@@ -11,6 +11,20 @@ You can make filters with comlex and combination conditions for the context data
 
 
 ---
+## Inputs
+
+| **Argument Name** | **Description** |
+| --- | --- |
+| value | The value to filter/transform. |
+| operator | The operation name to filter/transform. |
+| filter | The filter. |
+| ctx_demisto | Enable to access the context data |
+| ctx_inputs | Enable to access the input parameters to sub playbooks and use `${inputs.}` |
+| ctx_lists | Enable to access the `list` data and use `${list.}` |
+| ctx_incident | Enable to access the incident context and use `${incident.}` |
+
+
+---
 ## Filter Syntax for `expressions`, `conditions` and `transformers`
 
     primitive-expression ::= <operator> : <value>
