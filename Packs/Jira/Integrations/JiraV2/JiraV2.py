@@ -404,7 +404,7 @@ def get_issue_fields(issue_creating=False, **issue_args):
     if issue_args.get('reporter'):
         if not issue['fields'].get('reporter'):
             issue['fields']['reporter'] = {}
-        issue['fields']['reporter']['name'] = issue_args['reporter']
+        issue['fields']['reporter']['accountId'] = issue_args['reporter']
 
     return issue
 
