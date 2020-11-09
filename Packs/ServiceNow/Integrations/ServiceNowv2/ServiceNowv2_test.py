@@ -5,7 +5,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
-    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, handle_ampersands_in_query
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
@@ -665,7 +665,13 @@ def test_update_remote_data_sc_task(mocker):
     update_remote_system_command(client, args, params)
 
 
-def test_handle_ampersands_in_query():
+@pytest.mark.parametrize('query, expected', [
+    ("id=5&status=pi", ["id=5", "status=pi"]),
+    ("id=5&status=pi&name=bobby", ["id=5", "status=pi", "name=bobby"]),
+    ("&status=pi", ["status=pi"]),
+    ("status=pi&", ["status=pi"]),
+])
+def test_build_query_for_request_params(query, expected):
     """
     Given:
      - Query with multiple arguments
@@ -676,9 +682,8 @@ def test_handle_ampersands_in_query():
     Then:
      - Verify the query was split to a list of sub queries according to the &.
     """
-    query = "id=5&status=pi&name=bobby"
-    sub_queries = handle_ampersands_in_query(query)
-    assert ["id=5", "status=pi", "name=bobby"] == sub_queries
+    sub_queries = build_query_for_request_params(query)
+    assert sub_queries == expected
 
 
 @pytest.mark.parametrize('command, args', [

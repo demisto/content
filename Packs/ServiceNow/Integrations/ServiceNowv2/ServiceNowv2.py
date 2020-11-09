@@ -422,7 +422,7 @@ def split_fields(fields: str = '') -> dict:
     return dic_fields
 
 
-def handle_ampersands_in_query(query):
+def build_query_for_request_params(query):
     """Split query that contains '&' to a list of queries.
 
     Args:
@@ -797,7 +797,7 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = handle_ampersands_in_query(sys_param_query)
+            query_params['sysparm_query'] = build_query_for_request_params(sys_param_query)
         if system_params:
             query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
