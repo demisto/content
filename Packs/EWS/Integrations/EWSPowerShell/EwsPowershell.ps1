@@ -1150,8 +1150,6 @@ function Main {
     $proxy = ConvertTo-Boolean $integration_params.proxy
     $insecure = ConvertTo-Boolean $integration_params.insecure
 	
-    $Demisto.Debug("Command being called is $Command")
-
 	try {
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $proxy) 
@@ -1159,9 +1157,11 @@ function Main {
         $oauth2_client.RefreshTokenIfExpired()
         # Creating Compliance and search client
         $cs_client = [SecurityAndComplianceClient]::new($integration_params.compliance_and_search_uri, $integration_params.upn, $oauth2_client.access_token, $insecure, $proxy)
+        # Executing command
+        $Demisto.Debug("Command being called is $Command")
         switch ($command) {
             "test-module" {
-				throw "This button isn't functional - Please test integration using !ews-test-auth command"
+				throw "This button isn't functional - Please test integration using !$global:COMMAND_PREFIX-test-auth command"
 			}
             "$global:COMMAND_PREFIX-start-auth" {
                 ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
