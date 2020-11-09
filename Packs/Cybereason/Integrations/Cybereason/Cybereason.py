@@ -1443,10 +1443,9 @@ def main():
         elif demisto.command() == 'cybereason-query-user':
             query_user_command()
 
-    except Exception as e:
-        LOG(e.message)
-        LOG.print_log()
-        return_error(e.message)
+    except Exception:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(traceback.format_exc())
     finally:
         logout()
         if auth and auth == 'CERT':
