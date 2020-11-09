@@ -196,15 +196,6 @@ def test_panorama_get_interfaces(patched_requests_mocker):
     assert len(r['response']['result']['ifnet']['entry']) == 5
 
 
-def test_panorama_get_routes(patched_requests_mocker):
-    """
-    Given the Route XML from <show><routing><route>, expects 3 routes to be returned
-    """
-    from Panorama import panorama_get_routes
-    r = panorama_get_routes()
-    assert len(r['response']['result']['entry']) == 4
-
-
 def test_panorama_route_lookup(patched_requests_mocker):
     """
     Test the route lookup
