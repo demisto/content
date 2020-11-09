@@ -499,9 +499,9 @@ class TestChangelogCreation:
             }
         }
         branch_latest_version = '2.0.1'
-        Pack.assert_production_bucket_version_matches_release_notes_version(dummy_pack,
-                                                                            changelog,
-                                                                            branch_latest_version)
+        Pack.assert_upload_bucket_version_matches_release_notes_version(dummy_pack,
+                                                                        changelog,
+                                                                        branch_latest_version)
 
     def test_assert_production_bucket_version_matches_release_notes_version_negative(self, dummy_pack):
         """
@@ -526,9 +526,9 @@ class TestChangelogCreation:
         }
         branch_latest_version = '1.9.9'
         with pytest.raises(AssertionError) as excinfo:
-            Pack.assert_production_bucket_version_matches_release_notes_version(dummy_pack,
-                                                                                changelog,
-                                                                                branch_latest_version)
+            Pack.assert_upload_bucket_version_matches_release_notes_version(dummy_pack,
+                                                                            changelog,
+                                                                            branch_latest_version)
             assert 'Version mismatch detected between production bucket and current branch' in str(excinfo.value)
             assert 'Production bucket version: 2.0.0' in str(excinfo.value)
             assert f'current branch version: {branch_latest_version}' in str(excinfo.value)

@@ -771,7 +771,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, suc
                 pack.name: {
                     "status": PackStatus[pack.status].value,
                     "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
-                } for pack in successful_packs
+                } for pack in failed_packs
             }
         }
         packs_results.update(failed_packs_dict)
@@ -833,7 +833,8 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     if not option.override_all_packs:
-        check_if_index_is_updated(content_repo, current_commit_hash, previous_commit_hash, storage_bucket)
+        check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
+                                  storage_bucket)
 
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)
