@@ -1144,7 +1144,8 @@ function Main {
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-	$command = $Demisto.GetCommand()
+    
+    $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
     $proxy = ConvertTo-Boolean $integration_params.proxy
@@ -1206,9 +1207,9 @@ function Main {
 				($human_readable, $entry_context, $raw_response) = GetSearchActionCommand $cs_client $command_arguments
 			}
         }
-
+        # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
-
+        # Return results to Demisto Server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
     }
     catch {
