@@ -306,7 +306,7 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
+    filtered_tests, is_filter_configured = extract_filtered_tests(prints_manager)
 
     if not tests or len(tests) == 0:
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
