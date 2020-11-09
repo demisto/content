@@ -65,7 +65,7 @@ tasks:
           root: AttackerIPs
           transformers:
           - operator: uniq
-F      ipRanges:
+      ipRanges:
         simple: ${inputs.InternalIPRanges}
     reputationcalc: 1
     separatecontext: false
