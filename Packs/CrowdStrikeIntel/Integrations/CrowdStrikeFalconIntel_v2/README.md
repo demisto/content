@@ -8,7 +8,7 @@ This integration was integrated and tested with version xx of CrowdStrike Falcon
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The Server URL to which you want to connect to | True |
+| Server URL | The server URL to which you want to connect | True |
 | credentials | Client ID | True |
 | threshold | Indicator Threshold. Minimum malicious confidence from Falcon Intel to consider the indicator malicious.\(low, medium, high\) | False |
 | proxy | Use system proxy settings | False |
