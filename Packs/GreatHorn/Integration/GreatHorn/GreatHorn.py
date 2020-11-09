@@ -115,17 +115,17 @@ def gh_search_message_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
             policy_names = []
             policy_actions = []
+            if event.get("flag") is not None:
+                for policy_id in event.get("flag", []):
+                    policy = client.get_policy(policy_id).get("policy", {})
+                    actions = []
+                    for action in policy.get("actions"):
+                        actions.append(action.get("type"))
+                    policy_names.append(policy.get("name"))
+                    policy_actions.extend(actions)
 
-            for policy_id in event.get("flag", []):
-                policy = client.get_policy(policy_id).get("policy", {})
-                actions = []
-                for action in policy.get("actions"):
-                    actions.append(action.get("type"))
-                policy_names.append(policy.get("name"))
-                policy_actions.extend(actions)
-
-            e['Policy Hits'] = policy_names
-            e['Policy Actions'] = policy_actions
+                e['Policy Hits'] = policy_names
+                e['Policy Actions'] = policy_actions
             if len(event.get('files', [])) > 0:
                 e['Has Attachments'] = True
             else:
