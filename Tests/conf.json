@@ -1196,6 +1196,11 @@
             "timeout": 700
         },
         {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Detonate Remote File From URL -McAfee-ATD - Test",
+            "timeout": 700
+        },
+        {
             "playbookID": "stripChars - Test"
         },
         {
