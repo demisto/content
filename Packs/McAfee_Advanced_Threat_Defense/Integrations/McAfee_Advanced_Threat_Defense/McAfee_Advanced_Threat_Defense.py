@@ -494,7 +494,6 @@ def handling_errors_with_file_upload_command(args):
             returns error if one of the given arguments does not fit the command's structure
 
     """
-
     # in case submitType is not one of : 0,1,2,3
     if args['submitType'] not in VALID_SUBMIT_TYPE:
         return_error('This is not a valid submitType. Should be one of : 0, 1, 2, 3')
