@@ -87,7 +87,7 @@ def viper_download(client, args):
     file_hash = args.get('file_hash')
     if len(file_hash) == 64:
         sample_info = client.sample_information(file_hash)
-        sample = sample_download(file_hash)
+        sample = client.sample_download(file_hash)
 
         if sample.status_code == 200:
             filename = sample_info['data']['name']
