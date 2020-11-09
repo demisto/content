@@ -22,7 +22,7 @@ class ViperClient(BaseClient):
         )
 
     def test_module(self):
-        return self._http_request(method='GET', url_suffix=f'/')
+        return self._http_request(method='GET', url_suffix='/')
 
     def sample_download(self, file_hash):
         '''Download Sample from Viper'''
@@ -42,7 +42,7 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test
     """
-    result = client.test_module()
+    client.test_module()
     return 'ok'
 
 
@@ -114,7 +114,7 @@ def viper_search(client, args):
     file_hash = args.get('file_hash')
     if len(file_hash) == 64:
         sample_info = client.sample_information(file_hash)
-        #sample = sample_search(file_hash)
+        # sample = sample_search(file_hash)
 
         if sample_info['data']:
             filename = sample_info['data']['name']
