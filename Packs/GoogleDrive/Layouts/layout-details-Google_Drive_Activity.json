@@ -5,7 +5,7 @@
   "TypeName": "",
   "id": "Google Drive Activity",
   "kind": "details",
-  "modified": "2020-09-19T15:58:42.38852905+05:30",
+  "modified": "2020-11-09T20:05:14.164004893+05:30",
   "name": "",
   "system": false,
   "tabs": [
@@ -544,31 +544,6 @@
     "type": "custom"
    },
    {
-    "id": "warRoom",
-    "name": "War Room",
-    "type": "warRoom"
-   },
-   {
-    "id": "workPlan",
-    "name": "Work Plan",
-    "type": "workPlan"
-   },
-   {
-    "id": "evidenceBoard",
-    "name": "Evidence Board",
-    "type": "evidenceBoard"
-   },
-   {
-    "id": "relatedIncidents",
-    "name": "Related Incidents",
-    "type": "relatedIncidents"
-   },
-   {
-    "id": "canvas",
-    "name": "Canvas",
-    "type": "canvas"
-   },
-   {
     "hidden": false,
     "id": "uqn4viwki6",
     "name": "Google Drive Activity Details",
@@ -652,6 +627,31 @@
      }
     ],
     "type": "custom"
+   },
+   {
+    "id": "warRoom",
+    "name": "War Room",
+    "type": "warRoom"
+   },
+   {
+    "id": "workPlan",
+    "name": "Work Plan",
+    "type": "workPlan"
+   },
+   {
+    "id": "evidenceBoard",
+    "name": "Evidence Board",
+    "type": "evidenceBoard"
+   },
+   {
+    "id": "relatedIncidents",
+    "name": "Related Incidents",
+    "type": "relatedIncidents"
+   },
+   {
+    "id": "canvas",
+    "name": "Canvas",
+    "type": "canvas"
    }
   ],
   "typeId": "Google Drive Activity",
