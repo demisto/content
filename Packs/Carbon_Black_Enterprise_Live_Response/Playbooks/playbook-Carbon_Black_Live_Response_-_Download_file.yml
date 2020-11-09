@@ -1,0 +1,268 @@
+id: Carbon Black Live Response - Download file
+version: -1
+name: Carbon Black Live Response - Download file
+description: Download file from a sensor.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 454cb983-995e-4158-81fc-934935e70f48
+    type: start
+    task:
+      id: 454cb983-995e-4158-81fc-934935e70f48
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3b8cf07f-3e41-46b6-8c6c-08cf1a29f358
+    type: playbook
+    task:
+      id: 3b8cf07f-3e41-46b6-8c6c-08cf1a29f358
+      version: -1
+      name: Carbon Black Live Response - Create active session
+      playbookName: Carbon Black Live Response - Create active session
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      sensor:
+        simple: ${inputs.SensorId}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1f3c1f38-3290-494d-84f1-c0b95159c895
+    type: regular
+    task:
+      id: 1f3c1f38-3290-494d-84f1-c0b95159c895
+      version: -1
+      name: Start downloading file
+      description: Retrieve a file from a path on the endpoint.
+      script: carbonblackliveresponse|||cb-get-file-from-endpoint
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      download:
+        simple: "false"
+      path:
+        simple: ${inputs.Path}
+      sensor: {}
+      session:
+        simple: ${CbLiveResponse.Sessions.CbSessionID}
+      wait-timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ed45db66-cd6b-462d-85b2-ea17969402c0
+    type: playbook
+    task:
+      id: ed45db66-cd6b-462d-85b2-ea17969402c0
+      version: -1
+      name: Carbon Black Live Response - Wait until command complete
+      playbookName: Carbon Black Live Response - Wait until command complete
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      CommnadId:
+        simple: ${CbLiveResponse.Commands.CbCommandID}
+      SessionId:
+        simple: ${CbLiveResponse.Sessions.CbSessionID}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 198ca6cf-f1d1-44eb-82d2-2130cd30aa3e
+    type: regular
+    task:
+      id: 198ca6cf-f1d1-44eb-82d2-2130cd30aa3e
+      version: -1
+      name: Download file
+      description: Download a file from Cb server in a given session. Use cb-get-file-from-endpoint
+        instead.
+      script: carbonblackliveresponse|||cb-file-get
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file-id:
+        simple: ${CbLiveResponse.Commands.FileID}
+      session:
+        simple: ${CbLiveResponse.Sessions.CbSessionID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4c36006b-6a49-480d-8fc7-ec00bbc422cc
+    type: title
+    task:
+      id: 4c36006b-6a49-480d-8fc7-ec00bbc422cc
+      version: -1
+      name: File downloaded successfully
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f1f386ea-a764-40b2-853d-f39aeef99fd8
+    type: regular
+    task:
+      id: f1f386ea-a764-40b2-853d-f39aeef99fd8
+      version: -1
+      name: Close session
+      description: Close the given session
+      script: carbonblackliveresponse|||cb-session-close
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      session:
+        simple: ${CbLiveResponse.Sessions.CbSessionID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SensorId
+  value:
+    simple: "24"
+  required: true
+  description: Sensor ID.
+  playbookInputQuery:
+- key: Path
+  value:
+    simple: c:\\Users\\artifcats.zip
+  required: true
+  description: File Path to download.
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+tests:
+- No test

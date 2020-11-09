@@ -1294,12 +1294,16 @@ script:
 
         command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         let commandEntry = commandEntries['get file'](command);
-
-        if (command.status !== 'complete') {
-            return commandEntry;
+        let fileEntry = {}
+        if (args.download == 'true') {
+          if (command.status !== 'complete') {
+              return commandEntry;
+          }
+          //download the file from Cb server and add file entry to the war room
+          fileEntry = downloadFileEntry(args['session'], command['file_id']);
         }
-        //download the file from Cb server and add file entry to the war room
-        let fileEntry = downloadFileEntry(args['session'], command['file_id']);
+
+
         return [commandEntry, fileEntry];
     }
 
@@ -1847,7 +1851,7 @@ script:
       description: Whether the file was deleted or not
     description: Delete a given file in the session from Cb server.
   - name: cb-file-get
-    deprecated: true
+    deprecated: false
     arguments:
     - name: session
       required: true
@@ -1855,7 +1859,7 @@ script:
     - name: file-id
       required: true
       description: File ID
-    description: Download a file from Cb server in a given session. Use cb-get-file-from-endpoint instead.
+    description: Download a file from Cb server in a given session.
   - name: cb-file-info
     arguments:
     - name: session
@@ -2629,6 +2633,13 @@ script:
     - name: wait-timeout
       description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
+    - name: download
+      description: Whether to download the file or download the file or upload it to CarbonBlack server (use false for large files).
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2662,7 +2673,10 @@ script:
       description: File MD5.
     - contextPath: CbLiveResponse.File.Extension
       description: File extension.
-    description: Retrieve a file from a path on the endpoint.
+    description: |
+      Retrieve a file from a path on the endpoint).
+      For large files disable download using disable='false', Verify command completion using !cb-command-info,
+      After command completion download file using command !cb-file-get.
   - name: cb-push-file-to-endpoint
     arguments:
     - name: session

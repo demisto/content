@@ -1,0 +1,148 @@
+id: Carbon Black Live Response - Wait until command complete
+version: -1
+name: Carbon Black Live Response - Wait until command complete
+description: Polling command status until finished with an error or complete.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a4591001-e5c1-4cfe-8f02-e94c36ba859e
+    type: start
+    task:
+      id: a4591001-e5c1-4cfe-8f02-e94c36ba859e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: afe96387-f73d-42cd-86a8-fbd0e906b072
+    type: playbook
+    task:
+      id: afe96387-f73d-42cd-86a8-fbd0e906b072
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: session
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.SessionId
+          transformers:
+          - operator: Stringify
+      Ids:
+        simple: ${inputs.CommnadId}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: command
+      PollingCommandName:
+        simple: cb-command-info
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CbLiveResponse.Commands(val.Status != 'complete' || val.Status !=
+          'error' || val.Status != 'Complete' || val.Status != 'Error' || val.Status
+          != 'COMPLETE' || val.Status != 'ERROR').CbCommandID
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b0a2eb37-ba60-49f5-8154-265689385e6a
+    type: title
+    task:
+      id: b0a2eb37-ba60-49f5-8154-265689385e6a
+      version: -1
+      name: Command completed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 445,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: CommnadId
+  value: {}
+  required: true
+  description: Command Id to poll until completed.
+  playbookInputQuery:
+- key: SessionId
+  value: {}
+  required: true
+  description: Session ID in which command executed.
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+tests:
+- No test
