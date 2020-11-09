@@ -180,7 +180,7 @@ def main():
     myDomainsrequest = str(baseurl) + "domains?customerKey=" + str(APIKey)
     # print(myDomainsrequest)
     try:
-        if demisto.command() == 'OpenDNSblockDomain':
+        if demisto.command() == 'open-dns-block-domain':
             OpenDNSblockDomain(myDomainsrequest, myEventsrequest, domain)
         elif demisto.command() == 'OpenDNSgetBlackList':
             OpenDNSgetBlackList(myDomainsrequest)
