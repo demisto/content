@@ -42,7 +42,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      description: import file
     nexttasks:
       '#none#':
       - "14"
@@ -1111,6 +1110,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
     scriptarguments:
       all:
         simple: "yes"
@@ -1172,4 +1174,4 @@ inputs:
 outputs: []
 sourceplaybookid: 27d078f8-e515-4cfc-83d7-30ab49a8b38e
 fromversion: 5.0.0
-description: Test Playbook for the CloudConvert integration
+description: Use this playbook to convert files using Cloud Convert
