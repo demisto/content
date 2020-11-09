@@ -34,6 +34,12 @@ echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target pa
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH"
 echo "Finished copying successfully."
 
+echo "copying and removing"
+gsutil -m rm -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH"
+gsutil -m cp -r "gs://marketplace-dist/content/packs" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH"
+echo "finished copying and removing"
+exit 1
+
 echo "Updating modified content packs in the bucket ..."
 
 if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
