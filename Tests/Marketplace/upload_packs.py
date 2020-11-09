@@ -799,9 +799,9 @@ def main():
     if private_bucket_name:  # Add private packs to the index
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs, _, _ = update_index_with_priced_packs(private_storage_bucket,
-                                                       extract_destination_path,
-                                                       index_folder_path, pack_names,
-                                                       is_private_build=False)
+                                                             extract_destination_path,
+                                                             index_folder_path, pack_names,
+                                                             is_private_build=False)
     else:  # skipping private packs
         logging.debug("Skipping index update of priced packs")
         private_packs = []
