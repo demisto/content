@@ -160,7 +160,7 @@ def run_test(tests_settings: SettingsTester, demisto_user: str, demisto_pass: st
 def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_test_timeout: int,
                               skipped_tests_conf: set,
                               nightly_integrations: list, skipped_integrations_conf: set,
-                              skipped_integration: set, run_all_tests: bool, is_filter_configured: bool,
+                              skipped_integration: set, is_filter_configured: bool,
                               filtered_tests: list, skipped_tests: set, secret_params: dict,
                               failed_playbooks: list, playbook_skipped_integration: set,
                               succeed_playbooks: list, slack: str, circle_ci: str, build_number: str,
@@ -179,7 +179,6 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     :param nightly_integrations: List of integrations which should only be tested on a nightly build.
     :param skipped_integrations_conf: Collection of integrations which are skiped.
     :param skipped_integration: Set of skipped integrations. Currently not used in private.
-    :param run_all_tests: Boolean. True if 'Run all tests' is present in the test filter.
     :param is_filter_configured: Boolean indicating if there are items in the test filter.
     :param filtered_tests: List of tests excluded from testing.
     :param skipped_tests: List of skipped tests.
@@ -225,10 +224,9 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     if playbook_id in filtered_tests:
         playbook_skipped_integration.update(test_skipped_integration)
 
-    if not run_all_tests:
-        # Skip filtered test
-        if is_filter_configured and playbook_id not in filtered_tests:
-            return
+    # Skip tests that are missing from filtered list
+    if is_filter_configured and playbook_id not in filtered_tests:
+        return
 
     # Skip bad test
     if playbook_id in skipped_tests_conf:
@@ -338,7 +336,7 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
                 executed_in_current_round, prints_manager, t, thread_index)
             run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_tests_conf,
                                       nightly_integrations, skipped_integrations_conf,
-                                      skipped_integration, run_all_tests, is_filter_configured,
+                                      skipped_integration, is_filter_configured,
                                       filtered_tests, skipped_tests, secret_params,
                                       failed_playbooks, playbook_skipped_integration,
                                       succeed_playbooks, slack, circle_ci, build_number, server,
