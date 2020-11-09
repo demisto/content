@@ -867,9 +867,10 @@ class Pack(object):
     def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack, latest_version,
                                    successful_packs_dict):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
-        The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version.
-        In case that zip pack artifact already exist at constructed path, or the pack exists in the
-        successful_packs_dict from Prepare content step in Create Instances job, the copy will be skipped.
+        The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
+        the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
+        In case that zip pack artifact already exist at constructed path above (the path in the production bucket,
+        the copy will be skipped.
         If flag override_pack is set to True, pack will forced to copy.
 
         Args:
@@ -880,8 +881,9 @@ class Pack(object):
             successful_packs_dict (dict): the list of all packs were uploaded in prepare content step
 
         Returns:
-            bool: whether the operation succeeded.
-            bool: True in case of pack existence at targeted path and copy was skipped, otherwise returned False.
+            bool: Status - whether the operation succeeded.
+            bool: Skipped pack - true in case of pack existence at the targeted path and the copy process was skipped,
+             otherwise returned False.
 
         """
         task_status = True
@@ -898,7 +900,9 @@ class Pack(object):
         prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
         existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
         # We check that the pack version was bumped by comparing the pack version in build bucket and production bucket
-        if (existing_prod_version_files or self._pack_name not in successful_packs_dict) and not override_pack:
+        successful_packs_list = [*successful_packs_dict]
+        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_list
+        if (existing_prod_version_files or pack_not_uploaded_in_prepare_content) and not override_pack:
             logging.warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
@@ -914,11 +918,15 @@ class Pack(object):
         self.public_storage_path = copied_blob.public_url
         task_status = task_status and copied_blob.exists()
 
-        if self._pack_name in successful_packs_dict:
-            self._aggregated = successful_packs_dict[self._pack_name].get('aggregated')
+        pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
+        if pack_uploaded_in_prepare_content:
+            agg_str = successful_packs_dict[self._pack_name].get('aggregated')
+            if agg_str:
+                self._aggregated = True
+                self._aggregation_str = agg_str
 
         if not task_status:
-            logging.error(f"Failed in uploading {self._pack_name} pack to gcs.")
+            logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
         else:
             logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
@@ -934,9 +942,14 @@ class Pack(object):
 
         """
         logging.info(f"Found Changelog for: {self._pack_name}")
-        with open(changelog_index_path, "r") as changelog_file:
-            changelog = json.load(changelog_file)
-
+        if os.path.exists(changelog_index_path):
+            try:
+                with open(changelog_index_path, "r") as changelog_file:
+                    changelog = json.load(changelog_file)
+            except json.JSONDecodeError:
+                changelog = {}
+        else:
+            changelog = {}
         # get the latest rn version in the changelog.json file
         changelog_rn_versions = [LooseVersion(ver) for ver in changelog]
         # no need to check if changelog_rn_versions isn't empty because changelog file exists
@@ -992,11 +1005,11 @@ class Pack(object):
 
         return release_notes_lines, latest_release_notes
 
-    def assert_production_bucket_version_matches_release_notes_version(self,
-                                                                       changelog: dict,
-                                                                       latest_release_notes: str) -> None:
+    def assert_upload_bucket_version_matches_release_notes_version(self,
+                                                                   changelog: dict,
+                                                                   latest_release_notes: str) -> None:
         """
-        Sometimes there is a the current bucket is not merged from master there could be another version in production
+        Sometimes there is a the current bucket is not merged from master there could be another version in the upload
         bucket, that does not exist in the current branch.
         This case can cause unpredicted behavior and we want to fail the build.
         This method validates that this is not the case in the current build, and if it does - fails it with an
@@ -1007,8 +1020,8 @@ class Pack(object):
         """
         changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))
         assert LooseVersion(latest_release_notes) >= LooseVersion(changelog_latest_release_notes), \
-            f'{self._pack_name}: Version mismatch detected between production bucket and current branch\n' \
-            f'Production bucket version: {changelog_latest_release_notes}\n' \
+            f'{self._pack_name}: Version mismatch detected between upload bucket and current branch\n' \
+            f'Upload bucket version: {changelog_latest_release_notes}\n' \
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
@@ -1037,7 +1050,7 @@ class Pack(object):
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version
                     )
-                    self.assert_production_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
+                    self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
