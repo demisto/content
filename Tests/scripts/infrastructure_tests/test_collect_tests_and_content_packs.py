@@ -876,7 +876,7 @@ class TestExtractMatchingObjectFromIdSet:
         mocker.patch.object(Tests.scripts.utils.content_packs_util, 'get_pack_metadata',
                             return_value={PACK_METADATA_SUPPORT: 'xsoar'})
         create_temp_dir_with_metadata(tmp_path, 'pack_a', {PACK_METADATA_SUPPORT: 'xsoar'})
-        mocker.patch.object(Tests.scripts.utils.content_packs_util, 'PACKS_DIR', tmp_path/PACKS_DIR)
+        mocker.patch.object(Tests.scripts.utils.content_packs_util, 'PACKS_DIR', tmp_path / PACKS_DIR)
 
         # mark as modified
         TestUtils.mock_get_modified_files(mocker,
