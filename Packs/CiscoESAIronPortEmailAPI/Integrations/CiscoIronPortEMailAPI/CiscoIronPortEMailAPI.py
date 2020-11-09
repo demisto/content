@@ -34,7 +34,7 @@ def ironportQuarantineReleaseEmail(mid):
     # print(response.status_code)
 
     if str(response.status_code) == "200":
-        message = response.json()['data']['totalCount']
+        # message = response.json()['data']['totalCount']
         if int(response.json()['data']['totalCount']) == 1:
             message = "The Email is Released Successfully!"
         else:
