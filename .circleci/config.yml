@@ -978,6 +978,7 @@ jobs:
 
             python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb $GCS_MARKET_TESTING_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -o true -pbp "$SOURCE_TESTING_PATH"
             rm $GCS_PATH
+          when: on_success
       - *destroy_instances
       - *store_artifacts
 
