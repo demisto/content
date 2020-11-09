@@ -1,10 +1,10 @@
-import json
+#import json
 import traceback
 from base64 import b64encode
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+#from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
-import dateparser
+#import dateparser
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
@@ -38,7 +38,7 @@ def ironportQuarantineReleaseEmail(mid):
     # print(response.status_code)
 
     if str(response.status_code) == "200":
-        message = response.json()['data']['totalCount']
+        #message = response.json()['data']['totalCount']
         if int(response.json()['data']['totalCount']) == 1:
             message = "The Email is Released Successfully!"
         else:
