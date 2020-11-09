@@ -192,7 +192,7 @@ class Tokenizer:
             if len(t) < self.max_text_length:
                 tokenized_text, original_words_to_tokens = self.handle_tokenizaion_method(t)
             else:
-                tokenized_text, original_words_to_tokens = self.handle_long_text(t, input_length=len(text))
+                tokenized_text, original_words_to_tokens = self.handle_long_text()
             text_result = create_text_result(original_text, tokenized_text, original_words_to_tokens,
                                              hash_seed=self.hash_seed)
             result.append(text_result)
