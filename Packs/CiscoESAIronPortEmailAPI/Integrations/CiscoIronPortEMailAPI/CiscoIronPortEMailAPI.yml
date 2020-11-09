@@ -3,7 +3,7 @@ commonfields:
   id: Cisco IronPort EMail API
   version: -1
 configuration:
-- display: 'Base Url like : https://10.2.10.221:6443'
+- display: 'Base Url like : https://ddd.ddd.ddd.ddd:dddd'
   name: baseurl
   required: true
   type: 0
