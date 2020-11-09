@@ -46,6 +46,7 @@ if [ ! -n "{$BUCKET_UPLOAD" ]; then
 else
   echo "Copying master files at: gs://$GCS_MARKET_TESTING_BUCKET/$SOURCE_TESTING_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
   gsutil -m cp -r "gs://$GCS_MARKET_TESTING_BUCKET/$SOURCE_TESTING_PATH" "gs://$PACKS_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
+fi
 echo "Finished copying successfully."
 
 if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
