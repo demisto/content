@@ -422,6 +422,26 @@ def split_fields(fields: str = '') -> dict:
     return dic_fields
 
 
+def handle_ampersands_in_query(query):
+    """Split query that contains '&' to a list of queries.
+
+    Args:
+        query: query (Example: "id=5&status=1")
+
+    Returns:
+        List of sub queries. (Example: ["id=5", "status=1"])
+    """
+
+    if '&' in query:
+        query_params = []  # type: ignore
+        query_args = parse.parse_qsl(query)
+        for arg in query_args:
+            query_params.append(parse.urlencode([arg]))  # type: ignore
+        return query_params
+    else:
+        return query
+
+
 class Client(BaseClient):
     """
     Client to use in the ServiceNow integration. Overrides BaseClient.
@@ -760,6 +780,10 @@ class Client(BaseClient):
         body = {'label': tag_id, 'table': ticket_type, 'table_key': ticket_id, 'title': title}
         return self.send_request('/table/label_entry', 'POST', body=body)
 
+
+
+
+
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
               system_params: dict = {}) -> dict:
         """Query records by sending a GET request.
@@ -777,13 +801,7 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            if '&' in sys_param_query:
-                query_params['sysparm_query'] = []  # type: ignore
-                sysparm_query_args = parse.parse_qsl(sys_param_query)
-                for arg in sysparm_query_args:
-                    query_params['sysparm_query'].append(parse.urlencode([arg]))  # type: ignore
-            else:
-                query_params['sysparm_query'] = sys_param_query
+            query_params['sysparm_query'] = handle_ampersands_in_query(sys_param_query)
         if system_params:
             query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)

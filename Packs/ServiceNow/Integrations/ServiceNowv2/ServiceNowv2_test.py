@@ -5,7 +5,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
-    get_mapping_fields_command, get_remote_data_command, update_remote_system_command
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, handle_ampersands_in_query
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
@@ -665,13 +665,34 @@ def test_update_remote_data_sc_task(mocker):
     update_remote_system_command(client, args, params)
 
 
-def test_multiple_ticket_query_params(requests_mock):
+def test_handle_ampersands_in_query():
+    """
+    Given:
+     - Query with multiple arguments
+
+    When:
+     - Running Cilent.query function
+
+    Then:
+     - Verify the query was split to a list of sub queries according to the &.
+    """
+    query = "id=5&status=pi&name=bobby"
+    sub_queries = handle_ampersands_in_query(query)
+    assert ["id=5", "status=pi", "name=bobby"] == sub_queries
+
+
+@pytest.mark.parametrize('command, args', [
+    (query_tickets_command, {'limit': "50", 'query': "assigned_to=123&active=true", 'ticket_type': "sc_task"}),
+    (query_table_command, {'limit': "50", 'query': "assigned_to=123&active=true", 'table_name': "sc_task"})
+])
+def test_multiple_query_params(requests_mock, command, args):
     """
     Given:
      - Query with multiple arguments
 
     When:
      - Using servicenow-query-tickets command with multiple sysparm_query arguments.
+     - Using servicenow-query-table command with multiple sysparm_query arguments.
 
     Then:
      - Verify the right request is called with '&' distinguishing different arguments.
@@ -680,38 +701,9 @@ def test_multiple_ticket_query_params(requests_mock):
     client = Client(url, 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
                     'incident_name')
-    query = "assigned_to=123&active=true"
-    ticket_type = "sc_task"
-    requests_mock.request('GET', f'{url}table/{ticket_type}?sysparm_limit=50&sysparm_offset=0&'
+    requests_mock.request('GET', f'{url}table/sc_task?sysparm_limit=50&sysparm_offset=0&'
                                  'sysparm_query=assigned_to%3D123&sysparm_query=active%3Dtrue',
                           json=RESPONSE_TICKET_ASSIGNED)
-    args = {'limit': "50", 'query': query, 'ticket_type': ticket_type}
-    human_readable, entry_context, result, bol = query_tickets_command(client, args)
-
-    assert result == RESPONSE_TICKET_ASSIGNED
-
-
-def test_multiple_table_query_params(requests_mock):
-    """
-    Given:
-     - Query with multiple arguments
-
-    When:
-     - Using servicenow-query-tickets command with multiple sysparm_query arguments.
-
-    Then:
-     - Verify the right request is called with '&' distinguishing different arguments.
-    """
-    url = 'https://test.service-now.com/api/now/v2/'
-    client = Client(url, 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
-    query = "assigned_to=123&active=true"
-    table_name = "sc_task"
-    requests_mock.request('GET', f'{url}table/{table_name}?sysparm_limit=50&sysparm_offset=0&'
-                                 'sysparm_query=assigned_to%3D123&sysparm_query=active%3Dtrue',
-                          json=RESPONSE_TICKET_ASSIGNED)
-    args = {'limit': "50", 'query': query, 'table_name': table_name}
-    human_readable, entry_context, result, bol = query_table_command(client, args)
+    human_readable, entry_context, result, bol = command(client, args)
 
     assert result == RESPONSE_TICKET_ASSIGNED
