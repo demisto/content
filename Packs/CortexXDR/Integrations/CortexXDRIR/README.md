@@ -156,11 +156,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 19. xdr-get-scripts
 20. xdr-get-script-metadata
 21. xdr-get-script-code
-22. xdr-run-script
-23. xdr-get-script-execution-status
-24. xdr-insert-simple-indicators
-25. xdr-action-status-get
-26. xdr-delete-endpoints
+22. xdr-insert-simple-indicators
+23. xdr-action-status-get
+24. xdr-delete-endpoints
 
 ### 1. xdr-get-incidents
 ---
@@ -1977,120 +1975,7 @@ def run(file_path):
 >    return True
 
 
-### 22. xdr-run-script
-***
-Initiate a new endpoint script execution action using a script from the script library.
-
-
-#### Base Command
-
-`xdr-run-script`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| script_uid | GUID, unique identifier of the script, returned by the “get scripts” API per script. | Required | 
-| endpoint_ids | List of endpoint IDs. | Required | 
-| parameters | Please enter comma separated parameters at the following way : “ param1_name=param1_value, param2_name=param2_value “. You can find which parameters required for the script, by running "xdr-get-script-metadata" command. | Optional | 
-| timeout | Integer, represents the timeout in seconds for this execution. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksXDR.runScript.actionId | unknown | Action ID of the action initiated. ID will be used as a reference to track in the action center. | 
-
-
-#### Command Example
-```!xdr-run-script script_uid=43973479d389f2ac7e99b6db88eaee40 endpoint_ids=23a86310665d413a958926fce5b794b3 timeout=30 parameters="path=C:\,number_of_levels=3"```
-
-#### Context Example
-```
-{
-    "PaloAltoNetworksXDR": {
-        "runScript": {
-            "actionId": 2057
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Run Script Command
->|Action Id|
->|---|
->| 2057 |
-
-
-### 23. xdr-get-script-execution-status
-***
-Retrieve the status of a script execution action.
-
-
-#### Base Command
-
-`xdr-get-script-execution-status`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| action_id | Integer, identifier of the action, can be found in Cortex XDR console ResponseAction CenterAction ID field, or as return value after running - "xdr-run-script" command. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksXDR.scriptExecutionStatus | unknown | Action ID of the action initiated. ID will be used as a reference to track in the action center. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.general_status | unknown | general status of the action, considering the status of all the endpoints. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.error_message | unknown | Error message regarding permissions for running APIs or the action doesn’t exist. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_timeout | unknown | number of endpoints in “timeout” status. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_pending_abort | unknown | Number of endpoints in “pending abort” status. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_pending | unknown | Number of endpoints in pending status. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_in_progress | unknown | Nnumber of endpoints in “in progress” status. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_failed | unknown | Number of endpoints in “failed” status. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_expired | unknown | Number of endpoints in “expired” status. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_completed_successfully | unknown | Number of endpoints in “completed successfully” status. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_canceled | unknown | Number of endpoints in “canceled” status. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.endpoints_aborted | unknown | Number of endpoints in “aborted” status. | 
-| PaloAltoNetworksXDR.scriptExecutionStatus.action_id | unknown | Action ID of script execution. | 
-
-
-#### Command Example
-```!xdr-get-script-execution-status action_id=1777```
-
-#### Context Example
-```
-{
-    "PaloAltoNetworksXDR": {
-        "scriptExecutionStatus": {
-            "action_id": "1777",
-            "endpoints_aborted": 0,
-            "endpoints_canceled": 0,
-            "endpoints_completed_successfully": 1,
-            "endpoints_expired": 0,
-            "endpoints_failed": 0,
-            "endpoints_in_progress": 0,
-            "endpoints_pending": 0,
-            "endpoints_pending_abort": 0,
-            "endpoints_timeout": 0,
-            "general_status": "COMPLETED_SUCCESSFULLY"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Execution Status
->|action_id|endpoints_aborted|endpoints_canceled|endpoints_completed_successfully|endpoints_expired|endpoints_failed|endpoints_in_progress|endpoints_pending|endpoints_pending_abort|endpoints_timeout|general_status|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 1777 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | COMPLETED_SUCCESSFULLY |
-
-
-### 24. xdr-insert-simple-indicators
+### 22. xdr-insert-simple-indicators
 ***
 Upload IOCs as JSON objects that you retrieved from external threat intelligence sources.
 
@@ -2132,7 +2017,7 @@ There is no context output for this command.
 
 >IOCs successfully uploaded
 
-### 25. xdr-action-status-get
+### 23. xdr-action-status-get
 ***
 Retrieve the status of the requested actions according to the action ID.
 
@@ -2181,7 +2066,7 @@ Retrieve the status of the requested actions according to the action ID.
 >| aeec6a2cc92e46fab3b6f621722e9916 | COMPLETED_SUCCESSFULLY |
 
 
-### 26. xdr-delete-endpoints
+### 24. xdr-delete-endpoints
 ***
 Delete selected endpoints in the Cortex XDR app. You can delete up to 1000 endpoints.
 
