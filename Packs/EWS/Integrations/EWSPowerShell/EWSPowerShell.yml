@@ -28,20 +28,20 @@ script:
   - deprecated: false
     description: Start login.
     execution: false
-    name: ews-start-auth
+    name: o365-sc-start-auth
   - deprecated: false
     description: Complete login.
     execution: false
-    name: ews-complete-auth
+    name: o365-sc-complete-auth
   - deprecated: false
     description: Test login.
     execution: false
-    name: ews-test
+    name: o365-sc-test
   - deprecated: false
     description: Print integration context.
-    hidden: true
+    hidden: false
     execution: false
-    name: ews-integration-context
+    name: o365-sc-integration-context
   - arguments:
     - default: false
       description: The name of the compliance search.

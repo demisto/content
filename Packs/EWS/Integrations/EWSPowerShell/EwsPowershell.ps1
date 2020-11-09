@@ -10,7 +10,7 @@ $global:COMPLAIANCE_SEARCH_ACTIONS_ENTRY_CONTEXT = "$global:INTEGRATION_ENTRY_CO
 
 #### HELPER FUNCTIONS ####
 
-function UpdateIntegrationContext([OAuth2Client]$client){
+function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
     $integration_context = @{
         "DeviceCode" = $client.device_code
         "DeviceCodeExpiresIn" = $client.device_code_expires_in
@@ -24,13 +24,13 @@ function UpdateIntegrationContext([OAuth2Client]$client){
     $Demisto.setIntegrationContext($integration_context)
     <#
         .SYNOPSIS
-        Update integration context from OAuth2Client client
+        Update integration context from OAuth2DeviceCodeClient client
 
         .EXAMPLE
         UpdateIntegrationContext $client
 
         .PARAMETER search_name
-        OAuth2Client client.
+        OAuth2DeviceCodeClient client.
     #>
 }
 
@@ -70,14 +70,14 @@ function CreateNewSession([string]$uri, [string]$upn, [string]$bearer_token) {
 }
 
 function ParseSuccessResults([string]$success_results) {
-    $search_results = New-Object System.Collections.Generic.List[System.Object]
+    $parsed_success_results = New-Object System.Collections.Generic.List[System.Object]
     if ($success_results) {
         $lines = $success_results.Split([Environment]::NewLine)
         foreach ($line in $lines)
         {
             if ($line -match 'Location: (\S+), Item count: (\d+), Total size: (\d+)')
             {
-                $search_results.Add(@{
+                $parsed_success_results.Add(@{
                     "Location" = $matches[1]
                     "Items count" = $matches[2]
                     "Size" = $matches[3]
@@ -86,18 +86,31 @@ function ParseSuccessResults([string]$success_results) {
         }
     }
 
-    return $search_results
+    return $parsed_success_results
+    <#
+        .SYNOPSIS
+        Parse string return in Search PSObject property "SuccessResults" 
+        
+        .PARAMETER success_results
+        SuccessResults raw string.
+
+        .EXAMPLE
+        ParseSuccessResults $success_results
+
+        .OUTPUTS
+        List of psobject SuccessResults object.
+    #>
 }
 
 function ParseResults([string]$results) {
-    $parsed_search_actions = New-Object System.Collections.Generic.List[System.Object]
+    $parsed_results = New-Object System.Collections.Generic.List[System.Object]
     if ($results) {
         $lines = $results.Split("Location")
         foreach ($line in $lines)
         {
             if ($line -match ': (\S+); Sender: ([\S ]+); Type: (\S+); Size: (\d+); Received Time: ([\S\d ]+);')
             {
-                $parsed_search_actions.Add(@{
+                $parsed_results.Add(@{
                     "Location" = $matches[1]
                     "Subject" = $matches[2]
                     "Type" = $matches[3]
@@ -108,7 +121,20 @@ function ParseResults([string]$results) {
         }
     }
 
-    return $parsed_search_actions
+    return $parsed_results
+    <#
+        .SYNOPSIS
+        Parse string return in SearchAction PSObject property "Results" 
+        
+        .PARAMETER success_results
+        SuccessResults raw string.
+
+        .EXAMPLE
+        ParseSuccessResults $results
+
+        .OUTPUTS
+        List of psobject Results object.
+    #>
 }
 
 function ParseSearchToEntryContext([psobject]$search) {
@@ -147,6 +173,23 @@ function ParseSearchToEntryContext([psobject]$search) {
         "SuccessResults" = ParseSuccessResults $search.SuccessResults
         "TenantId" = $search.TenantId
     }
+    <#
+        .SYNOPSIS
+        Parse Search raw response PSObject to Entry Context.
+        
+        .PARAMETER search
+        search raw psobject.
+
+        .EXAMPLE
+        ParseSearchToEntryContext $search
+
+        .OUTPUTS
+        Search entry context.
+
+        .Notes
+        1. Microsoft internal properties: OneDriveLocationExclusion, OneDriveLocation.
+        2. SuccessResults property return as string which should be parsed.
+    #>
 }
 
 function ParseSearchActionsToEntryContext([psobject]$search_action) {
@@ -171,8 +214,6 @@ function ParseSearchActionsToEntryContext([psobject]$search_action) {
         "JobRunId" = $search_action.JobRunId
         "JobStartTime" = $search_action.JobStartTime
         "LastModifiedTime" = $search_action.LastModifiedTime
-        "OneDriveLocation" = $search_action.OneDriveLocation
-        "OneDriveLocationExclusion" = $search_action.OneDriveLocationExclusion
         "PublicFolderLocation" = $search_action.PublicFolderLocation
         "PublicFolderLocationExclusion" = $search_action.PublicFolderLocationExclusion
         "Retry" = $search_action.Retry
@@ -186,11 +227,28 @@ function ParseSearchActionsToEntryContext([psobject]$search_action) {
         "TenantId" = $search_action.TenantId
         "Results" = ParseResults $search_action.Results
     }
+    <#
+        .SYNOPSIS
+        Parse SearchAction raw response PSObject to Entry Context.
+        
+        .PARAMETER search
+        SearchAction raw psobject.
+
+        .EXAMPLE
+        ParseSearchActionsToEntryContext $search_action
+
+        .OUTPUTS
+        SearchAction entry context.
+
+        .Notes
+        1. Microsoft internal properties: OneDriveLocationExclusion, OneDriveLocation.
+        2. Results property return as string which should be parsed.
+    #>
 }
 
 #### OAUTH2.0 CLIENT - DEVICE CODE FLOW #####
 
-class OAuth2Client {
+class OAuth2DeviceCodeClient {
     [string]$application_id = "a0c73c16-a7e3-4564-9a95-2bdf47383716"
     [string]$application_scope = "offline_access%20https%3A//outlook.office365.com/.default"
     [string]$device_code
@@ -200,10 +258,11 @@ class OAuth2Client {
     [string]$refresh_token
     [int]$access_token_expires_in
     [int]$access_token_creation_time
-    [bool]$verify_certificate = $true
-    [bool]$use_system_proxy = $false
+    [bool]$insecure
+    [bool]$proxy
 
-    OAuth2Client([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token, [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time) {
+    OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
+                            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -211,47 +270,70 @@ class OAuth2Client {
         $this.refresh_token = $refresh_token
         $this.access_token_expires_in = $access_token_expires_in
         $this.access_token_creation_time = $access_token_creation_time
-
+        $this.insecure = $insecure
+        $this.proxy = $proxy
         <#
             .SYNOPSIS
-            OAuth2Client manage state of OAuth2.0 device-code flow described in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code.
+            OAuth2DeviceCodeClient manage state of OAuth2.0 device-code flow described in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code.
 
-            .DESCRIPTION 
-            OAuth2Client states are:
+            .DESCRIPTION
+            Its not recomende to create an object using the constructor, Use static method CreateClientFromIntegrationContext() instead.
+            OAuth2DeviceCodeClient states are:
                 1. Getting device-code (Will be used in stage 2) and user-code (Will be used by the user to authorize permissions) from Microsoft application.
                 2. Getting access-token and refresh-token - after use authorize (Using stage 1 - device code)
                 3. Refresh access-token if access-token is expired.
             
-            .EXAMPLE
-            [OAuth2Client]::CreateClientFromIntegrationContext()
+            .PARAMETER device_code
+            A long string used to verify the session between the client and the authorization server.
+            The client uses this parameter to request the access token from the authorization server.
+
+            .PARAMETER device_code_expires_in
+            The number of seconds before the device_code and user_code expire. (15 minutes)
+
+            .PARAMETER access_token
+            Opaque string, Issued for the scopes that were requested.
+
+            .PARAMETER refresh_token
+            Opaque string, Issued if the original scope parameter included offline_access. (Valid for 90 days)
+            
+            .PARAMETER access_token_expires_in
+            Number of seconds before the included access token is valid for. (Usally - 60 minutes)
+
+            .PARAMETER access_token_creation_time
+            Unix time of access token creation (Used for knowing when to refresh the token).
+
+            .PARAMETER access_token_expires_in
+            Number of seconds before the included access token is valid for. (Usally - 60 minutes)
+
+            .PARAMETER insecure 
+            Wheter to trust any TLS/SSL Certificate) or not.
+            
+            .PARAMETER proxy 
+            Wheter to user system proxy configuration or not.
 
             .NOTES
-            1. Expiration time:
-                - device-code - 15 minutes.
-                - access-token - If not changed by the user will be 60 minutes.
-                - refresh-token - 90 days.
-            2. Application id - a0c73c16-a7e3-4564-9a95-2bdf47383716 , This is well-known application publicly managed by Microsoft and will not work in on-premise enviorment.
+            1. Application id - a0c73c16-a7e3-4564-9a95-2bdf47383716 , This is well-known application publicly managed by Microsoft and will not work in on-premise enviorment.
 
             .LINK
             https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code
         #>
     }
 
-    static [OAuth2Client]CreateClientFromIntegrationContext(){
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
         $ic = $global:INTEGRATION_CONTEXT
-        $client = [OAuth2Client]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken, $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime)
+        $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
+                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
         
         return $client
-
         <#
             .DESCRIPTION
             Static method which create object (factory method) from populated values in integration context.
 
             .EXAMPLE
-            [OAuth2Client]::CreateClientFromIntegrationContext()
+            [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext()
             
             .OUTPUTS
-            OAuth2Client initialized object.
+            OAuth2DeviceCodeClient initialized object.
         #>
     }
 
@@ -270,8 +352,8 @@ class OAuth2Client {
             "Method" = "Post"
             "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
             "Body" = "client_id=$($this.application_id)&scope=$($this.application_scope)"
-            "NoProxy" = !$this.use_system_proxy
-            "SkipCertificateCheck" = !$this.verify_certificate
+            "NoProxy" = !$this.proxy
+            "SkipCertificateCheck" = !$this.insecure
         }
         $response = Invoke-WebRequest @params
         $response_body = ConvertFrom-Json $response.Content
@@ -305,8 +387,8 @@ class OAuth2Client {
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
                 "Body" = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&code=$($this.device_code)&client_id=$($this.application_id)"
-                "NoProxy" = !$this.use_system_proxy
-                "SkipCertificateCheck" = !$this.verify_certificate
+                "NoProxy" = !$this.proxy
+                "SkipCertificateCheck" = !$this.insecure
             }
             $response = Invoke-WebRequest @params
             $response_body = ConvertFrom-Json $response.Content
@@ -355,8 +437,8 @@ class OAuth2Client {
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
                 "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
-                "NoProxy" = !$this.use_system_proxy
-                "SkipCertificateCheck" = !$this.verify_certificate
+                "NoProxy" = !$this.proxy
+                "SkipCertificateCheck" = !$this.insecure
             }
             $response = Invoke-WebRequest @params
             $response_body = ConvertFrom-Json $response.Content
@@ -446,6 +528,13 @@ class OAuth2Client {
         if ($this.access_token -and $this.IsAccessTokenExpired()) {
             $this.RefreshTokenRequest()
         }
+        <#
+            .SYNOPSIS
+            Refresh access token if expired, with offset of 30 seconds.
+
+            .EXAMPLE
+            $client.RefreshTokenIfExpired()
+        #>
     }
 }
 
@@ -456,12 +545,15 @@ class ComplianceAndSearchClient {
 	[ValidateNotNullOrEmpty()][string]$upn
     [string]$bearer_token
     [psobject]$session
+    [bool]$insecure
+    [bool]$proxy
     
-    ComplianceAndSearchClient([string]$uri, [string]$upn, [string]$bearer_token) {
+    ComplianceAndSearchClient([string]$uri, [string]$upn, [string]$bearer_token, [bool]$insecure, [bool]$proxy) {
         $this.uri = $uri
         $this.upn = $upn
         $this.bearer_token = $bearer_token
-
+        $this.insecure = $insecure
+        $this.proxy = $proxy
         <#
             .SYNOPSIS
             ComplianceAndSearchClient connect to Security & Compliance Center using powershell session (OAuth2.0) and allow interact with it.
@@ -474,6 +566,12 @@ class ComplianceAndSearchClient {
             
             .PARAMETER bearer_token
             Valid bearer token value.
+
+            .PARAMETER insecure 
+            Wheter to trust any TLS/SSL Certificate) or not.
+            
+            .EXAMPLE proxy
+            Wheter to user system proxy configuration or not.
             
             .EXAMPLE
             $cs_client = [ComplianceAndSearchClient]::new("outlook.com", "user@microsoft.com", "dfhsdkjhkjhvkdvbihsgiu")
@@ -736,17 +834,17 @@ class ComplianceAndSearchClient {
 
 #### COMMAND FUNCTIONS ####
 
-function StartAuthCommand ([Oauth2Client]$client) {
+function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $raw_response = $client.AuthorizationRequest()
 	$human_readable = "## Authorize instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
-2. Run the following command **!ews-complete-auth** in the War Room."
+2. Run the following command **!$global:COMMAND_PREFIX-complete-auth** in the War Room."
     $entry_context = @{}
     
     return $human_readable, $entry_context, $raw_response
 }
 
-function CompleteAuthCommand ([Oauth2Client]$client) {
+function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $raw_response = $client.AccessTokenRequest()
     $human_readable = "Your account **successfully** authorized!"
     $entry_context = @{}
@@ -754,7 +852,7 @@ function CompleteAuthCommand ([Oauth2Client]$client) {
     return $human_readable, $entry_context, $raw_response
 }
 
-function TestAuthCommand ([Oauth2Client]$oclient, [ComplianceAndSearchClient]$cs_client) {
+function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [ComplianceAndSearchClient]$cs_client) {
     $raw_response = $oclient.RefreshTokenRequest()
     $human_readable = "**Test ok!**"
     $entry_context = @{}
@@ -939,19 +1037,18 @@ function Main {
 	$command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
-
-	$Demisto.Debug("Command being called is $Command")
-
+    $proxy = ConvertTo-Boolean $integration_params.proxy
+    $insecure = ConvertTo-Boolean $integration_params.insecure
+	
+    $Demisto.Debug("Command being called is $Command")
 
 	try {
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2Client]::CreateClientFromIntegrationContext()
-        $oauth2_client.use_system_proxy = $integration_params.proxy
-        $oauth2_client.verify_certificate = $integration_params.insecure
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $proxy) 
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()
         # Creating Compliance and search client
-        $cs_client = [ComplianceAndSearchClient]::new($integration_params.compliance_and_search_uri, $integration_params.upn, $oauth2_client.access_token)
+        $cs_client = [ComplianceAndSearchClient]::new($integration_params.compliance_and_search_uri, $integration_params.upn, $oauth2_client.access_token, $insecure, $proxy)
         switch ($command) {
             "test-module" {
 				throw "This button isn't functional - Please test integration using !ews-test-auth command"
