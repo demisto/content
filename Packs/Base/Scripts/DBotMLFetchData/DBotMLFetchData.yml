@@ -139,7 +139,7 @@ args:
   - 'True'
   - 'False'
   required: false
-  secret: true
+  secret: false
 comment: Deprecated. Collect telemetry data from the environment.
 commonfields:
   id: DBotMLFetchData
