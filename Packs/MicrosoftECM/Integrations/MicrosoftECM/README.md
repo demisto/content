@@ -28,7 +28,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ms-ecm-user-last-log-on
 ***
-Gets the last user that logged on to a given computer name
+Gets the last user that logged on to a given device name
 
 
 #### Base Command
@@ -45,11 +45,10 @@ Gets the last user that logged on to a given computer name
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftECM.LastLogOnUser.CreationDate | date | The date the computer was created | 
-| MicrosoftECM.LastLogOnUser.IP | string | The IP of the computer | 
-| MicrosoftECM.LastLogOnUser.LastLogonTimestamp | date | The date of the last login to the computer | 
-| MicrosoftECM.LastLogOnUser.LastLogonUserName | string | The name of the last user who logged in  to the computer | 
-| MicrosoftECM.LastLogOnUser.Name | string | The name of the computer | 
+| MicrosoftECM.LastLogOnUser.IPAddresses | string | The IPAddresses of the device | 
+| MicrosoftECM.LastLogOnUser.LastLogonTimestamp | date | The date of the last login to the device | 
+| MicrosoftECM.LastLogOnUser.LastLogonUserName | string | The name of the last user who logged in  to the device | 
+| MicrosoftECM.LastLogOnUser.Name | string | The name of the device | 
 
 
 #### Command Example
@@ -60,11 +59,13 @@ Gets the last user that logged on to a given computer name
 {
     "MicrosoftECM": {
         "LastLogOnUser": {
-            "CreationDate": "2019-12-07T10:07:51Z",
-            "IP": "172.1.1.1 fe80::81c5:1670:9363:a40b ",
-            "LastLogonTimestamp": "2020-41-23T04:09:37Z",
-            "LastLogonUserName": null,
-            "Name": "EC2AMAZ-2AKQ815"
+            "DeviceName": "EC2AMAZ-2AKQ815",
+            "IPAddresses": [
+                "172.31.32.170",
+                "fe80::81c5:1670:9363:a40b"
+            ],
+            "LastLogonTimestamp": "2020-11-02T05:34:01Z",
+            "LastLogonUserName": null
         }
     }
 }
@@ -72,10 +73,10 @@ Gets the last user that logged on to a given computer name
 
 #### Human Readable Output
 
->### Last log gon user on EC2AMAZ-2AKQ815
->| CreationDate | IP | Name | LastLogonTimestamp | LastLogonUserName
->| --- | --- | --- | --- | ---
->| 2019\-12\-07T10:07:51Z | 172.1.1.1 fe80::81c5:1670:9363:a40b  | EC2AMAZ\-2AKQ815 | 2020\-41\-23T04:09:37Z | 
+>### Last log on user on EC2AMAZ-2AKQ815
+>| LastLogonTimestamp | IPAddresses | DeviceName | LastLogonUserName
+>| --- | --- | --- | ---
+>| 2020\-11\-02T05:34:01Z | \["172.31.32.170","fe80::81c5:1670:9363:a40b"\] | EC2AMAZ\-2AKQ815 | 
 
 
 ### ms-ecm-user-get-primary
@@ -211,7 +212,7 @@ Gets a Configuration Manager collection
 
 ### ms-ecm-device-list
 ***
-Gets a Configuration Manager device
+Lists a Configuration Manager device
 
 
 #### Base Command
@@ -223,8 +224,7 @@ Gets a Configuration Manager device
 | --- | --- | --- |
 | collection_id | Specifies an ID for a device collection (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
 | collection_name | Specifies the name of a device collection (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
-| device_name | Specifies the name of the device (can be retrived via `!ms-ecm-device-list`) | Optional | 
-| resource_id | Specifies the resource ID of a device (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
+| limit | Specifies the maximum number of devices to be returned, default value is 100. | Optional | 
 
 
 #### Context Output
@@ -232,55 +232,20 @@ Gets a Configuration Manager device
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftECM.Devices.Name | string | The name of the device | 
-| MicrosoftECM.Devices.ClientVersion | string | Version of the installed client software | 
-| MicrosoftECM.Devices.CurrentLogonUser | string | The current logged on user | 
-| MicrosoftECM.Devices.DeviceCategory | string | Category of the device | 
-| MicrosoftECM.Devices.DeviceOS.DeviceOSBuild | string | Device operating system | 
-| MicrosoftECM.Devices.DeviceOSBuild | string | Device operating system build | 
-| MicrosoftECM.Devices.Domain | string | Domain to which the device belongs | 
-| MicrosoftECM.Devices.IsActive | boolean | true if there has been a recent heartbeat from the client. | 
-| MicrosoftECM.Devices.LastActiveTime | date | Comes from Client Health. Represents the last reported time the client was active. | 
-| MicrosoftECM.Devices.LastHardwareScan | date | Timestamp from the last hardware inventory scan | 
-| MicrosoftECM.Devices.LastInstallationError | date | Last reported error code from the installation on this client. | 
-| MicrosoftECM.Devices.LastLogonUser | string | Last logged on user | 
-| MicrosoftECM.Devices.LastMPServerName | string | Management Point server name where the client performed its last policy request. | 
-| MicrosoftECM.Devices.MACAddress | string | The MAC address of the device | 
-| MicrosoftECM.Devices.PrimaryUser | string | Users who have user-device-affinity with this device | 
 | MicrosoftECM.Devices.ResourceID | number | Unique Configuration Manager-supplied ID for the resource. | 
-| MicrosoftECM.Devices.SiteCode | string | Site code of the site that created the collection. | 
-| MicrosoftECM.Devices.Status | string | Current status | 
 
 
 #### Command Example
-```!ms-ecm-device-list```
+```!ms-ecm-device-list collection_name="All Systems" limit=1```
 
 #### Context Example
 ```json
 {
     "MicrosoftECM": {
-        "Devices": [
-            {
-                "ClientVersion": "5.00.8790.1007",
-                "CurrentLogonUser": null,
-                "DeviceAccessState": null,
-                "DeviceCategory": null,
-                "DeviceOS": "Microsoft Windows NT Advanced Server 10.0",
-                "DeviceOSBuild": "10.0.14393.3025",
-                "Domain": "DEMISTO",
-                "IsActive": "True",
-                "LastActiveTime": "2020-26-29T13:09:53Z",
-                "LastHardwareScan": "2020-31-27T14:09:34Z",
-                "LastInstallationError": null,
-                "LastLogonUser": null,
-                "LastMPServerName": "EC2AMAZ-PHPTDJV.DEMISTO.LOCAL",
-                "MACAddress": "06:0D:64:90:63:4A",
-                "Name": "EC2AMAZ-2AKQ815",
-                "PrimaryUser": "demisto\\sccmadmin",
-                "ResourceID": 16777220,
-                "SiteCode": "ISR",
-                "Status": null
-            }
-        ]
+        "DevicesList": {
+            "Name": "EC2AMAZ-2AKQ815",
+            "ResourceID": 16777220
+        }
     }
 }
 ```
@@ -288,9 +253,9 @@ Gets a Configuration Manager device
 #### Human Readable Output
 
 >### Devices List
->| Name | ClientVersion | CurrentLogonUser | DeviceAccessState | DeviceCategory | DeviceOS | DeviceOSBuild | Domain | IsActive | LastActiveTime | LastHardwareScan | LastInstallationError | LastLogonUser | LastMPServerName | MACAddress | PrimaryUser | ResourceID | SiteCode | Status
->| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| EC2AMAZ\-2AKQ815 | 5.00.8790.1007 |  |  |  | Microsoft Windows NT Advanced Server 10.0 | 10.0.14393.3025 | DEMISTO | True | 2020\-26\-29T13:09:53Z | 2020\-31\-27T14:09:34Z |  |  | EC2AMAZ\-PHPTDJV.DEMISTO.LOCAL | 06:0D:64:90:63:4A | demisto\\sccmadmin | 16777220 | ISR | 
+>| Name | ResourceID
+>| --- | ---
+>| EC2AMAZ\-2AKQ815 | 16777220
 
 
 ### ms-ecm-script-list
@@ -448,26 +413,54 @@ Invokes a script in Configuration Manager
 | collection_id | Specifies the collection ID (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
 | collection_name | Specifies the collection name (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
 | device_name | Specifies a device name in Configuration Manager | Optional | 
+| poll_results | Whether to poll for the script invocation results or not | Optional | 
+| timeout | The timeout in seconds to poll for invocation results. Default is 30 seconds. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftECM.ScriptsInvocation.OperationID | number | The unique Id of the script operation | 
-| MicrosoftECM.ScriptsInvocation.ReturnValue | number | The Return value of the script operation, 0 upon success | 
+| MicrosoftECM.ScriptsInvocationResults.OperationId | number | The script invocation operation ID | 
+| MicrosoftECM.ScriptsInvocationResults.CollectionId | string | The collection ID of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.CollectionName | string | The collection Name of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.DeviceName | string | The name of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.ResourceId | number | The resource ID of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.LastUpdateTime | date | The last time the Invocation result object was updated | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptExecutionState | string | The state of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptExitCode | number | The exit code of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptGuid | string | The unique identifier of the script  | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptLastModifiedDate | date | The date of the script's last modification | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptName | string | The name of the script | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptOutput | string | The output of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptOutputHash | string | The hash of the output of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptVersion | number | The version of the script when it was invoked | 
+| MicrosoftECM.ScriptsInvocationResults.TaskID | string | The unique identifier of the invocation | 
 
 
 #### Command Example
-```!ms-ecm-script-invoke script_guid=394EDB29-5D89-4B9B-9745-A1F6DC8214E2 collection_name="All Systems"```
+```!ms-ecm-script-invoke script_guid=394EDB29-5D89-4B9B-9745-A1F6DC8214E2 collection_name="All Systems" poll_results=true```
 
 #### Context Example
 ```json
 {
     "MicrosoftECM": {
-        "ScriptsInvocation": {
-            "OperationID": 16777274,
-            "ReturnValue": "0"
+        "ScriptsInvocationResults": {
+            "CollectionId": "SMS00001",
+            "CollectionName": "All Systems",
+            "DeviceName": "EC2AMAZ-TB8VCPN",
+            "LastUpdateTime": "2020-11-09T14:22:01Z",
+            "OperationId": 16777629,
+            "ResourceId": 16777222,
+            "ScriptExecutionState": "Succeeded",
+            "ScriptExitCode": "0",
+            "ScriptGuid": "394EDB29-5D89-4B9B-9745-A1F6DC8214E2",
+            "ScriptLastModifiedDate": "2020-09-24T14:29:14Z",
+            "ScriptName": "Itay",
+            "ScriptOutput": "{\"PSVersion\":{\"Major\":5,\"Minor\":1,\"Build\":14393,\"Revision\":2608,\"MajorRevision\":0,\"MinorRevision\":2608},\"PSEdition\":\"Desktop\",\"PSCompatibleVersions\":[{\"Major\":1,\"Minor\":0,\"Build\":-1,\"Revision\":-1,\"MajorRevision\":-1,\"MinorRevision\":-1},{\"Major\":2,\"Minor\":0,\"Build\":-1,\"Revision\":-1,\"MajorRevision\":-1,\"MinorRevision\":-1},{\"Major\":3,\"Minor\":0,\"Build\":-1,\"Revision\":-1,\"MajorRevision\":-1,\"MinorRevision\":-1},{\"Major\":4,\"Minor\":0,\"Build\":-1,\"Revision\":-1,\"MajorRevision\":-1,\"MinorRevision\":-1},{\"Major\":5,\"Minor\":0,\"Build\":-1,\"Revision\":-1,\"MajorRevision\":-1,\"MinorRevision\":-1},{\"Major\":5,\"Minor\":1,\"Build\":14393,\"Revision\":2608,\"MajorRevision\":0,\"MinorRevision\":2608}],\"BuildVersion\":{\"Major\":10,\"Minor\":0,\"Build\":14393,\"Revision\":2608,\"MajorRevision\":0,\"MinorRevision\":2608},\"CLRVersion\":{\"Major\":4,\"Minor\":0,\"Build\":30319,\"Revision\":42000,\"MajorRevision\":0,\"MinorRevision\":-23536},\"WSManStackVersion\":{\"Major\":3,\"Minor\":0,\"Build\":-1,\"Revision\":-1,\"MajorRevision\":-1,\"MinorRevision\":-1},\"PSRemotingProtocolVersion\":{\"Major\":2,\"Minor\":3,\"Build\":-1,\"Revision\":-1,\"MajorRevision\":-1,\"MinorRevision\":-1},\"SerializationVersion\":{\"Major\":1,\"Minor\":1,\"Build\":0,\"Revision\":1,\"MajorRevision\":0,\"MinorRevision\":1}}",
+            "ScriptOutputHash": "ADC6BF52B8EA29483BAB196925A0D52A2703A7386E289BBF6AA70E108399DA0F",
+            "ScriptVersion": "1",
+            "TaskID": "{89519B0A-BD07-4212-AB1A-ACDFA249D0DC}"
         }
     }
 }
@@ -475,10 +468,12 @@ Invokes a script in Configuration Manager
 
 #### Human Readable Output
 
->### Script Invocation Result
->| OperationID | ReturnValue
->| --- | ---
->| 16777274 | 0
+>### Script Invocation Results
+>| ScriptName | ResourceId | ScriptExecutionState | DeviceName | CollectionName | OperationId | ScriptLastModifiedDate | TaskID | ScriptOutputHash | ScriptVersion | LastUpdateTime | ScriptExitCode | ScriptOutput | CollectionId | ScriptGuid
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| Itay | 16777220 | Succeeded | EC2AMAZ\-2AKQ815 | All Systems | 16777629 | 2020\-09\-24T14:29:14Z | \{89519B0A\-BD07\-4212\-AB1A\-ACDFA249D0DC\} | 7E59C0C20E04A920734651297E46C7E7C0284E41B69B4E4DC3888D1767BA807D | 1 | 2020\-11\-09T14:22:01Z | 0 | \{"PSVersion":\{"Major":5,"Minor":1,"Build":14393,"Revision":2969,"MajorRevision":0,"MinorRevision":2969\},"PSEdition":"Desktop","PSCompatibleVersions":\[\{"Major":1,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":2,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":3,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":4,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":5,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":5,"Minor":1,"Build":14393,"Revision":2969,"MajorRevision":0,"MinorRevision":2969\}\],"BuildVersion":\{"Major":10,"Minor":0,"Build":14393,"Revision":2969,"MajorRevision":0,"MinorRevision":2969\},"CLRVersion":\{"Major":4,"Minor":0,"Build":30319,"Revision":42000,"MajorRevision":0,"MinorRevision":\-23536\},"WSManStackVersion":\{"Major":3,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},"PSRemotingProtocolVersion":\{"Major":2,"Minor":3,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},"SerializationVersion":\{"Major":1,"Minor":1,"Build":0,"Revision":1,"MajorRevision":0,"MinorRevision":1\}\} | SMS00001 | 394EDB29\-5D89\-4B9B\-9745\-A1F6DC8214E2
+>| Itay | 16777221 | Succeeded | EC2AMAZ\-PHPTDJV | All Systems | 16777629 | 2020\-09\-24T14:29:14Z | \{89519B0A\-BD07\-4212\-AB1A\-ACDFA249D0DC\} | EF8CDB402162E39E41C92FB87B8C54F8D3E5E8805ABC58E5BE6E31DBE94378CB | 1 | 2020\-11\-09T14:22:06Z | 0 | \{"PSVersion":\{"Major":5,"Minor":1,"Build":14393,"Revision":2828,"MajorRevision":0,"MinorRevision":2828\},"PSEdition":"Desktop","PSCompatibleVersions":\[\{"Major":1,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":2,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":3,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":4,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":5,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":5,"Minor":1,"Build":14393,"Revision":2828,"MajorRevision":0,"MinorRevision":2828\}\],"BuildVersion":\{"Major":10,"Minor":0,"Build":14393,"Revision":2828,"MajorRevision":0,"MinorRevision":2828\},"CLRVersion":\{"Major":4,"Minor":0,"Build":30319,"Revision":42000,"MajorRevision":0,"MinorRevision":\-23536\},"WSManStackVersion":\{"Major":3,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},"PSRemotingProtocolVersion":\{"Major":2,"Minor":3,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},"SerializationVersion":\{"Major":1,"Minor":1,"Build":0,"Revision":1,"MajorRevision":0,"MinorRevision":1\}\} | SMS00001 | 394EDB29\-5D89\-4B9B\-9745\-A1F6DC8214E2
+>| Itay | 16777222 | Succeeded | EC2AMAZ\-TB8VCPN | All Systems | 16777629 | 2020\-09\-24T14:29:14Z | \{89519B0A\-BD07\-4212\-AB1A\-ACDFA249D0DC\} | ADC6BF52B8EA29483BAB196925A0D52A2703A7386E289BBF6AA70E108399DA0F | 1 | 2020\-11\-09T14:22:01Z | 0 | \{"PSVersion":\{"Major":5,"Minor":1,"Build":14393,"Revision":2608,"MajorRevision":0,"MinorRevision":2608\},"PSEdition":"Desktop","PSCompatibleVersions":\[\{"Major":1,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":2,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":3,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":4,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":5,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},\{"Major":5,"Minor":1,"Build":14393,"Revision":2608,"MajorRevision":0,"MinorRevision":2608\}\],"BuildVersion":\{"Major":10,"Minor":0,"Build":14393,"Revision":2608,"MajorRevision":0,"MinorRevision":2608\},"CLRVersion":\{"Major":4,"Minor":0,"Build":30319,"Revision":42000,"MajorRevision":0,"MinorRevision":\-23536\},"WSManStackVersion":\{"Major":3,"Minor":0,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},"PSRemotingProtocolVersion":\{"Major":2,"Minor":3,"Build":\-1,"Revision":\-1,"MajorRevision":\-1,"MinorRevision":\-1\},"SerializationVersion":\{"Major":1,"Minor":1,"Build":0,"Revision":1,"MajorRevision":0,"MinorRevision":1\}\} | SMS00001 | 394EDB29\-5D89\-4B9B\-9745\-A1F6DC8214E2
 
 
 ### ms-ecm-script-approve
@@ -915,26 +910,54 @@ Starts a service on a device or collection (Implemented by creating and invoking
 | device_name | The device name to start the service in. (can be retrived via `!ms-ecm-device-list`) | Optional | 
 | collection_id | The ID of the collection to start the service in. (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
 | collection_name | The name of the collection to start the service in. (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
+| poll_results | Whether to poll for the script invocation results or not | Optional | 
+| timeout | The timeout in seconds to poll for invocation results. Default is 30 seconds. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftECM.ScriptsInvocation.OperationID | number | The script execution operation ID | 
-| MicrosoftECM.ScriptsInvocation.ReturnValue | number | The script execution return value | 
+| MicrosoftECM.ScriptsInvocationResults.OperationId | number | The script invocation operation ID | 
+| MicrosoftECM.ScriptsInvocationResults.CollectionId | string | The collection ID of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.CollectionName | string | The collection Name of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.DeviceName | string | The name of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.ResourceId | number | The resource ID of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.LastUpdateTime | date | The last time the Invocation result object was updated | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptExecutionState | string | The state of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptExitCode | number | The exit code of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptGuid | string | The unique identifier of the script  | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptLastModifiedDate | date | The date of the script's last modification | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptName | string | The name of the script | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptOutput | string | The output of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptOutputHash | string | The hash of the output of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptVersion | number | The version of the script when it was invoked | 
+| MicrosoftECM.ScriptsInvocationResults.TaskID | string | The unique identifier of the invocation | 
 
 
 #### Command Example
-```!ms-ecm-service-start service_name=dnscache collection_name="All Systems"```
+```!ms-ecm-service-start service_name=dnscache collection_name="All Systems" poll_results=true timeout=15```
 
 #### Context Example
 ```json
 {
     "MicrosoftECM": {
-        "ScriptsInvocation": {
-            "OperationID": 16777276,
-            "ReturnValue": "0"
+        "ScriptsInvocationResults": {
+            "CollectionId": "SMS00001",
+            "CollectionName": "All Systems",
+            "DeviceName": "EC2AMAZ-TB8VCPN",
+            "LastUpdateTime": "2020-11-09T14:24:26Z",
+            "OperationId": 16777631,
+            "ResourceId": 16777222,
+            "ScriptExecutionState": "Succeeded",
+            "ScriptExitCode": "0",
+            "ScriptGuid": "337980EE-3C5E-4CB9-9A1D-5361E3BFD6CA",
+            "ScriptLastModifiedDate": "2020-11-09T14:24:16Z",
+            "ScriptName": "XSOAR StartService",
+            "ScriptOutput": "{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"DNS Client\",\"DependentServices\":[{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":false,\"DisplayName\":\"Network Connectivity Assistant\",\"DependentServices\":\"\",\"MachineName\":\".\",\"ServiceName\":\"NcaSvc\",\"ServicesDependedOn\":\"NSI dnscache iphlpsvc BFE\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":1,\"ServiceType\":32,\"StartType\":3,\"Site\":null,\"Container\":null}],\"MachineName\":\".\",\"ServiceName\":\"dnscache\",\"ServicesDependedOn\":[{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"Network Store Interface Service\",\"DependentServices\":\"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"nsi\",\"ServicesDependedOn\":\"rpcss nsiproxy\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":32,\"StartType\":2,\"Site\":null,\"Container\":null},{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"NetIO Legacy TDI Support Driver\",\"DependentServices\":\"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"Tdx\",\"ServicesDependedOn\":\"tcpip\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":1,\"StartType\":1,\"Site\":null,\"Container\":null}],\"ServiceHandle\":{\"IsInvalid\":false,\"IsClosed\":false},\"Status\":4,\"ServiceType\":32,\"StartType\":2,\"Site\":null,\"Container\":null,\"Name\":\"dnscache\",\"RequiredServices\":[{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"Network Store Interface Service\",\"DependentServices\":\"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"nsi\",\"ServicesDependedOn\":\"rpcss nsiproxy\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":32,\"StartType\":2,\"Site\":null,\"Container\":null},{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"NetIO Legacy TDI Support Driver\",\"DependentServices\":\"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"Tdx\",\"ServicesDependedOn\":\"tcpip\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":1,\"StartType\":1,\"Site\":null,\"Container\":null}]}",
+            "ScriptOutputHash": "340EEE6517060B2B3A357561E719D9588DB65929CFD6091AF87A20D1AAED2BAF",
+            "ScriptVersion": "1",
+            "TaskID": "{093AA570-8AC2-473C-8890-15A2EE9BE236}"
         }
     }
 }
@@ -942,10 +965,12 @@ Starts a service on a device or collection (Implemented by creating and invoking
 
 #### Human Readable Output
 
->### StartService script Invocation Result
->| OperationID | ReturnValue
->| --- | ---
->| 16777276 | 0
+>### Script Invocation Results
+>| ScriptName | ResourceId | ScriptExecutionState | DeviceName | CollectionName | OperationId | ScriptLastModifiedDate | TaskID | ScriptOutputHash | ScriptVersion | LastUpdateTime | ScriptExitCode | ScriptOutput | CollectionId | ScriptGuid
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| XSOAR StartService | 16777220 | Succeeded | EC2AMAZ\-2AKQ815 | All Systems | 16777631 | 2020\-11\-09T14:24:16Z | \{093AA570\-8AC2\-473C\-8890\-15A2EE9BE236\} | BD83747944C526E57E066BD863A2D6BBB4B5E81BFFC7310878F16C1505393E9C | 1 | 2020\-11\-09T14:24:26Z | 0 | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | SMS00001 | 337980EE\-3C5E\-4CB9\-9A1D\-5361E3BFD6CA
+>| XSOAR StartService | 16777221 | Succeeded | EC2AMAZ\-PHPTDJV | All Systems | 16777631 | 2020\-11\-09T14:24:16Z | \{093AA570\-8AC2\-473C\-8890\-15A2EE9BE236\} | B03DDFEA2112E2743EFF47D0A450E762A864ECD55CF6D01AD6BF1A01E19BC78B | 1 | 2020\-11\-09T14:24:26Z | 0 | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SMS\_SITE\_VSS\_WRITER SMS\_SITE\_SQL\_BACKUP SMS\_SITE\_COMPONENT\_MANAGER SMS\_SITE\_BACKUP SMS\_EXECUTIVE SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SMS\_SITE\_VSS\_WRITER SMS\_SITE\_SQL\_BACKUP SMS\_SITE\_COMPONENT\_MANAGER SMS\_SITE\_BACKUP SMS\_EXECUTIVE SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | SMS00001 | 337980EE\-3C5E\-4CB9\-9A1D\-5361E3BFD6CA
+>| XSOAR StartService | 16777222 | Succeeded | EC2AMAZ\-TB8VCPN | All Systems | 16777631 | 2020\-11\-09T14:24:16Z | \{093AA570\-8AC2\-473C\-8890\-15A2EE9BE236\} | 340EEE6517060B2B3A357561E719D9588DB65929CFD6091AF87A20D1AAED2BAF | 1 | 2020\-11\-09T14:24:26Z | 0 | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | SMS00001 | 337980EE\-3C5E\-4CB9\-9A1D\-5361E3BFD6CA
 
 
 ### ms-ecm-service-restart
@@ -964,26 +989,54 @@ Restarts a service on a device or collection (Implemented by creating and invoki
 | device_name | The device name to start the service in. (can be retrived via `!ms-ecm-device-list`) | Optional | 
 | collection_id | The ID of the collection to start the service in. (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
 | collection_name | The name of the collection to start the service in. (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
+| poll_results | Whether to poll for the script invocation results or not | Optional | 
+| timeout | The timeout in seconds to poll for invocation results. Default is 30 seconds. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftECM.ScriptsInvocation.OperationID | number | The script execution operation ID | 
-| MicrosoftECM.ScriptsInvocation.ReturnValue | number | The script execution return value | 
+| MicrosoftECM.ScriptsInvocationResults.OperationId | number | The script invocation operation ID | 
+| MicrosoftECM.ScriptsInvocationResults.CollectionId | string | The collection ID of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.CollectionName | string | The collection Name of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.DeviceName | string | The name of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.ResourceId | number | The resource ID of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.LastUpdateTime | date | The last time the Invocation result object was updated | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptExecutionState | string | The state of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptExitCode | number | The exit code of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptGuid | string | The unique identifier of the script  | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptLastModifiedDate | date | The date of the script's last modification | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptName | string | The name of the script | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptOutput | string | The output of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptOutputHash | string | The hash of the output of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptVersion | number | The version of the script when it was invoked | 
+| MicrosoftECM.ScriptsInvocationResults.TaskID | string | The unique identifier of the invocation | 
 
 
 #### Command Example
-```!ms-ecm-service-restart service_name=dnscache collection_name="All Systems"```
+```!ms-ecm-service-restart service_name=dnscache collection_name="All Systems" poll_results=true timeout=15```
 
 #### Context Example
 ```json
 {
     "MicrosoftECM": {
-        "ScriptsInvocation": {
-            "OperationID": 16777275,
-            "ReturnValue": "0"
+        "ScriptsInvocationResults": {
+            "CollectionId": "SMS00001",
+            "CollectionName": "All Systems",
+            "DeviceName": "EC2AMAZ-TB8VCPN",
+            "LastUpdateTime": "2020-11-09T14:23:51Z",
+            "OperationId": 16777630,
+            "ResourceId": 16777222,
+            "ScriptExecutionState": "Succeeded",
+            "ScriptExitCode": "0",
+            "ScriptGuid": "397F9151-1195-4C03-8F4D-26892387F714",
+            "ScriptLastModifiedDate": "2020-11-09T14:23:40Z",
+            "ScriptName": "XSOAR RestartService",
+            "ScriptOutput": "{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"DNS Client\",\"DependentServices\":[{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":false,\"DisplayName\":\"Network Connectivity Assistant\",\"DependentServices\":\"\",\"MachineName\":\".\",\"ServiceName\":\"NcaSvc\",\"ServicesDependedOn\":\"NSI dnscache iphlpsvc BFE\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":1,\"ServiceType\":32,\"StartType\":3,\"Site\":null,\"Container\":null}],\"MachineName\":\".\",\"ServiceName\":\"dnscache\",\"ServicesDependedOn\":[{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"Network Store Interface Service\",\"DependentServices\":\"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"nsi\",\"ServicesDependedOn\":\"rpcss nsiproxy\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":32,\"StartType\":2,\"Site\":null,\"Container\":null},{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"NetIO Legacy TDI Support Driver\",\"DependentServices\":\"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"Tdx\",\"ServicesDependedOn\":\"tcpip\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":1,\"StartType\":1,\"Site\":null,\"Container\":null}],\"ServiceHandle\":{\"IsInvalid\":false,\"IsClosed\":false},\"Status\":4,\"ServiceType\":32,\"StartType\":2,\"Site\":null,\"Container\":null,\"Name\":\"dnscache\",\"RequiredServices\":[{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"Network Store Interface Service\",\"DependentServices\":\"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"nsi\",\"ServicesDependedOn\":\"rpcss nsiproxy\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":32,\"StartType\":2,\"Site\":null,\"Container\":null},{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"NetIO Legacy TDI Support Driver\",\"DependentServices\":\"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"Tdx\",\"ServicesDependedOn\":\"tcpip\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":1,\"StartType\":1,\"Site\":null,\"Container\":null}]}",
+            "ScriptOutputHash": "340EEE6517060B2B3A357561E719D9588DB65929CFD6091AF87A20D1AAED2BAF",
+            "ScriptVersion": "1",
+            "TaskID": "{C328DDE5-2A34-4180-A0D3-75CBA541B36E}"
         }
     }
 }
@@ -991,10 +1044,12 @@ Restarts a service on a device or collection (Implemented by creating and invoki
 
 #### Human Readable Output
 
->### RestartService script Invocation Result
->| OperationID | ReturnValue
->| --- | ---
->| 16777275 | 0
+>### Script Invocation Results
+>| ScriptName | ResourceId | ScriptExecutionState | DeviceName | CollectionName | OperationId | ScriptLastModifiedDate | TaskID | ScriptOutputHash | ScriptVersion | LastUpdateTime | ScriptExitCode | ScriptOutput | CollectionId | ScriptGuid
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| XSOAR RestartService | 16777220 | Succeeded | EC2AMAZ\-2AKQ815 | All Systems | 16777630 | 2020\-11\-09T14:23:40Z | \{C328DDE5\-2A34\-4180\-A0D3\-75CBA541B36E\} | BD83747944C526E57E066BD863A2D6BBB4B5E81BFFC7310878F16C1505393E9C | 1 | 2020\-11\-09T14:23:56Z | 0 | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | SMS00001 | 397F9151\-1195\-4C03\-8F4D\-26892387F714
+>| XSOAR RestartService | 16777221 | Succeeded | EC2AMAZ\-PHPTDJV | All Systems | 16777630 | 2020\-11\-09T14:23:40Z | \{C328DDE5\-2A34\-4180\-A0D3\-75CBA541B36E\} | B03DDFEA2112E2743EFF47D0A450E762A864ECD55CF6D01AD6BF1A01E19BC78B | 1 | 2020\-11\-09T14:23:51Z | 0 | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SMS\_SITE\_VSS\_WRITER SMS\_SITE\_SQL\_BACKUP SMS\_SITE\_COMPONENT\_MANAGER SMS\_SITE\_BACKUP SMS\_EXECUTIVE SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SMS\_SITE\_VSS\_WRITER SMS\_SITE\_SQL\_BACKUP SMS\_SITE\_COMPONENT\_MANAGER SMS\_SITE\_BACKUP SMS\_EXECUTIVE SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | SMS00001 | 397F9151\-1195\-4C03\-8F4D\-26892387F714
+>| XSOAR RestartService | 16777222 | Succeeded | EC2AMAZ\-TB8VCPN | All Systems | 16777630 | 2020\-11\-09T14:23:40Z | \{C328DDE5\-2A34\-4180\-A0D3\-75CBA541B36E\} | 340EEE6517060B2B3A357561E719D9588DB65929CFD6091AF87A20D1AAED2BAF | 1 | 2020\-11\-09T14:23:51Z | 0 | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | SMS00001 | 397F9151\-1195\-4C03\-8F4D\-26892387F714
 
 
 ### ms-ecm-service-stop
@@ -1013,26 +1068,54 @@ Stops a service on a device or collection (Implemented by creating and invoking 
 | device_name | The device name to start the service in. (can be retrived via `!ms-ecm-device-list`) | Optional | 
 | collection_id | The ID of the collection to start the service in. (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
 | collection_name | The name of the collection to start the service in. (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
+| poll_results | Whether to poll for the script invocation results or not | Optional | 
+| timeout | The timeout in seconds to poll for invocation results. Default is 30 seconds. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftECM.ScriptsInvocation.OperationID | number | The script execution operation ID | 
-| MicrosoftECM.ScriptsInvocation.ReturnValue | number | The script execution return value | 
+| MicrosoftECM.ScriptsInvocationResults.OperationId | number | The script invocation operation ID | 
+| MicrosoftECM.ScriptsInvocationResults.CollectionId | string | The collection ID of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.CollectionName | string | The collection Name of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.DeviceName | string | The name of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.ResourceId | number | The resource ID of the device on which the script was invoked on | 
+| MicrosoftECM.ScriptsInvocationResults.LastUpdateTime | date | The last time the Invocation result object was updated | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptExecutionState | string | The state of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptExitCode | number | The exit code of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptGuid | string | The unique identifier of the script  | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptLastModifiedDate | date | The date of the script's last modification | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptName | string | The name of the script | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptOutput | string | The output of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptOutputHash | string | The hash of the output of the script invocation | 
+| MicrosoftECM.ScriptsInvocationResults.ScriptVersion | number | The version of the script when it was invoked | 
+| MicrosoftECM.ScriptsInvocationResults.TaskID | string | The unique identifier of the invocation | 
 
 
 #### Command Example
-```!ms-ecm-service-stop service_name=dnscache collection_name="All Systems"```
+```!ms-ecm-service-stop service_name=dnscache collection_name="All Systems" poll_results=true timeout=15```
 
 #### Context Example
 ```json
 {
     "MicrosoftECM": {
-        "ScriptsInvocation": {
-            "OperationID": 16777277,
-            "ReturnValue": "0"
+        "ScriptsInvocationResults": {
+            "CollectionId": "SMS00001",
+            "CollectionName": "All Systems",
+            "DeviceName": "EC2AMAZ-TB8VCPN",
+            "LastUpdateTime": "2020-11-09T14:25:06Z",
+            "OperationId": 16777632,
+            "ResourceId": 16777222,
+            "ScriptExecutionState": "Succeeded",
+            "ScriptExitCode": "0",
+            "ScriptGuid": "41E11903-E655-4AC0-B942-7A46FD168870",
+            "ScriptLastModifiedDate": "2020-11-09T14:24:52Z",
+            "ScriptName": "XSOAR StopService",
+            "ScriptOutput": "{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":false,\"DisplayName\":\"DNS Client\",\"DependentServices\":[{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":false,\"DisplayName\":\"Network Connectivity Assistant\",\"DependentServices\":\"\",\"MachineName\":\".\",\"ServiceName\":\"NcaSvc\",\"ServicesDependedOn\":\"NSI dnscache iphlpsvc BFE\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":1,\"ServiceType\":32,\"StartType\":3,\"Site\":null,\"Container\":null}],\"MachineName\":\".\",\"ServiceName\":\"dnscache\",\"ServicesDependedOn\":[{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"Network Store Interface Service\",\"DependentServices\":\"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"nsi\",\"ServicesDependedOn\":\"rpcss nsiproxy\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":32,\"StartType\":2,\"Site\":null,\"Container\":null},{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"NetIO Legacy TDI Support Driver\",\"DependentServices\":\"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"Tdx\",\"ServicesDependedOn\":\"tcpip\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":1,\"StartType\":1,\"Site\":null,\"Container\":null}],\"ServiceHandle\":{\"IsInvalid\":false,\"IsClosed\":false},\"Status\":1,\"ServiceType\":32,\"StartType\":2,\"Site\":null,\"Container\":null,\"Name\":\"dnscache\",\"RequiredServices\":[{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"Network Store Interface Service\",\"DependentServices\":\"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"nsi\",\"ServicesDependedOn\":\"rpcss nsiproxy\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":32,\"StartType\":2,\"Site\":null,\"Container\":null},{\"CanPauseAndContinue\":false,\"CanShutdown\":false,\"CanStop\":true,\"DisplayName\":\"NetIO Legacy TDI Support Driver\",\"DependentServices\":\"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp\",\"MachineName\":\".\",\"ServiceName\":\"Tdx\",\"ServicesDependedOn\":\"tcpip\",\"ServiceHandle\":\"SafeServiceHandle\",\"Status\":4,\"ServiceType\":1,\"StartType\":1,\"Site\":null,\"Container\":null}]}",
+            "ScriptOutputHash": "D27B022F6B8C8B584A79BB2D471EA173AE45588AAE28225563A38FC93B4EF2C6",
+            "ScriptVersion": "1",
+            "TaskID": "{A7AAAC3A-3C0C-4AB6-8B41-A9668353F1F7}"
         }
     }
 }
@@ -1040,15 +1123,16 @@ Stops a service on a device or collection (Implemented by creating and invoking 
 
 #### Human Readable Output
 
->### StopService script Invocation Result
->| OperationID | ReturnValue
->| --- | ---
->| 16777277 | 0
+>### Script Invocation Results
+>| ScriptName | ResourceId | ScriptExecutionState | DeviceName | CollectionName | OperationId | ScriptLastModifiedDate | TaskID | ScriptOutputHash | ScriptVersion | LastUpdateTime | ScriptExitCode | ScriptOutput | CollectionId | ScriptGuid
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| XSOAR StopService | 16777220 | Succeeded | EC2AMAZ\-2AKQ815 | All Systems | 16777632 | 2020\-11\-09T14:24:52Z | \{A7AAAC3A\-3C0C\-4AB6\-8B41\-A9668353F1F7\} | FC945DDB2710DA5E73E6A8F359EE556A85A59671018831092493AD0EA013DE99 | 1 | 2020\-11\-09T14:25:06Z | 0 | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":1,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | SMS00001 | 41E11903\-E655\-4AC0\-B942\-7A46FD168870
+>| XSOAR StopService | 16777222 | Succeeded | EC2AMAZ\-TB8VCPN | All Systems | 16777632 | 2020\-11\-09T14:24:52Z | \{A7AAAC3A\-3C0C\-4AB6\-8B41\-A9668353F1F7\} | D27B022F6B8C8B584A79BB2D471EA173AE45588AAE28225563A38FC93B4EF2C6 | 1 | 2020\-11\-09T14:25:06Z | 0 | \{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"DNS Client","DependentServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":false,"DisplayName":"Network Connectivity Assistant","DependentServices":"","MachineName":".","ServiceName":"NcaSvc","ServicesDependedOn":"NSI dnscache iphlpsvc BFE","ServiceHandle":"SafeServiceHandle","Status":1,"ServiceType":32,"StartType":3,"Site":null,"Container":null\}\],"MachineName":".","ServiceName":"dnscache","ServicesDependedOn":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\],"ServiceHandle":\{"IsInvalid":false,"IsClosed":false\},"Status":1,"ServiceType":32,"StartType":2,"Site":null,"Container":null,"Name":"dnscache","RequiredServices":\[\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"Network Store Interface Service","DependentServices":"AppVClient netprofm NlaSvc Netman NcaSvc SessionEnv Netlogon Dfs Browser LanmanWorkstation iphlpsvc IKEEXT Dnscache WinHttpAutoProxySvc Dhcp","MachineName":".","ServiceName":"nsi","ServicesDependedOn":"rpcss nsiproxy","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":32,"StartType":2,"Site":null,"Container":null\},\{"CanPauseAndContinue":false,"CanShutdown":false,"CanStop":true,"DisplayName":"NetIO Legacy TDI Support Driver","DependentServices":"NetBT NcaSvc iphlpsvc Dnscache WinHttpAutoProxySvc AppVClient netprofm NlaSvc Dhcp","MachineName":".","ServiceName":"Tdx","ServicesDependedOn":"tcpip","ServiceHandle":"SafeServiceHandle","Status":4,"ServiceType":1,"StartType":1,"Site":null,"Container":null\}\]\} | SMS00001 | 41E11903\-E655\-4AC0\-B942\-7A46FD168870
 
 
 ### ms-ecm-script-invocation-results
 ***
-Gets a script invocation results
+ 
 
 
 #### Base Command
@@ -1059,13 +1143,14 @@ Gets a script invocation results
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | operation_id | The script invocation operation ID | Required | 
+| timeout | The timeout in seconds to poll for invocation results. Default is 30 seconds. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftECM.ScriptsInvocationResults.ClientOperationId | number | The script invocation operation ID | 
+| MicrosoftECM.ScriptsInvocationResults.OperationId | number | The script invocation operation ID | 
 | MicrosoftECM.ScriptsInvocationResults.CollectionId | string | The collection ID of the device on which the script was invoked on | 
 | MicrosoftECM.ScriptsInvocationResults.CollectionName | string | The collection Name of the device on which the script was invoked on | 
 | MicrosoftECM.ScriptsInvocationResults.DeviceName | string | The name of the device on which the script was invoked on | 
@@ -1090,16 +1175,16 @@ Gets a script invocation results
 {
     "MicrosoftECM": {
         "ScriptsInvocationResults": {
-            "ClientOperationId": 16777267,
             "CollectionId": "SMS00001",
             "CollectionName": "All Systems",
             "DeviceName": "EC2AMAZ-2AKQ815",
-            "LastUpdateTime": "2020-57-29T10:09:15Z",
+            "LastUpdateTime": "2020-09-29T10:57:15Z",
+            "OperationId": 16777267,
             "ResourceId": 16777220,
-            "ScriptExecutionState": null,
+            "ScriptExecutionState": "Failed",
             "ScriptExitCode": "-2147467259",
             "ScriptGuid": "2E0D961D-1C89-477D-B1A7-3FFEDC0AF2FA",
-            "ScriptLastModifiedDate": "2020-36-24T14:09:32Z",
+            "ScriptLastModifiedDate": "2020-09-24T14:36:32Z",
             "ScriptName": "Fail",
             "ScriptOutput": "",
             "ScriptOutputHash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
@@ -1113,7 +1198,261 @@ Gets a script invocation results
 #### Human Readable Output
 
 >### Script Invocation Results
->| ClientOperationId | CollectionId | CollectionName | DeviceName | ResourceId | LastUpdateTime | ScriptExecutionState | ScriptExitCode | ScriptGuid | ScriptLastModifiedDate | ScriptName | ScriptOutput | ScriptOutputHash | ScriptVersion | TaskID
+>| ScriptName | ResourceId | ScriptExecutionState | DeviceName | CollectionName | OperationId | ScriptLastModifiedDate | TaskID | ScriptOutputHash | ScriptVersion | LastUpdateTime | ScriptExitCode | ScriptOutput | CollectionId | ScriptGuid
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| 16777267 | SMS00001 | All Systems | EC2AMAZ\-2AKQ815 | 16777220 | 2020\-57\-29T10:09:15Z |  | \-2147467259 | 2E0D961D\-1C89\-477D\-B1A7\-3FFEDC0AF2FA | 2020\-36\-24T14:09:32Z | Fail |  | E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855 | 1 | \{FC58140A\-B688\-4D2E\-8FEE\-F7AED348FABF\}
+>| Fail | 16777220 | Failed | EC2AMAZ\-2AKQ815 | All Systems | 16777267 | 2020\-09\-24T14:36:32Z | \{FC58140A\-B688\-4D2E\-8FEE\-F7AED348FABF\} | E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855 | 1 | 2020\-09\-29T10:57:15Z | \-2147467259 |  | SMS00001 | 2E0D961D\-1C89\-477D\-B1A7\-3FFEDC0AF2FA
+
+### ms-ecm-device-get-collection-member
+***
+Gets a Configuration Manager device By querying the SMS_CM_RES_COLL_SMS00001 class. You can use the `ms-ecm-device-get-resource` or `ms-ecm-device-get-collection-member` commands to change the query class. Depending upon your role-based access in the site, you may need to use one of these other commands.
+
+
+#### Base Command
+
+`ms-ecm-device-get-collection-member`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_names | A comma separated list of device names, i.e `name1,name2,etc.` | Optional | 
+| resource_ids | A comma separated list of resource ids, i.e `ID1,ID2,etc.` | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftECM.DeviceCollectionMember.Name | string | The name of the device | 
+| MicrosoftECM.DeviceCollectionMember.ClientVersion | string | Version of the installed client software. | 
+| MicrosoftECM.DeviceCollectionMember.DeviceOS | string | Device operating system. | 
+| MicrosoftECM.DeviceCollectionMember.ResourceID | number | Unique Configuration Manager-supplied ID for the resource. | 
+| MicrosoftECM.DeviceCollectionMember.IsActive | boolean | true if there has been a recent heartbeat from the client. | 
+| MicrosoftECM.DeviceCollectionMember.LastActiveTime | date | Comes from Client Health. Represents the last reported time the client was active. | 
+| MicrosoftECM.DeviceCollectionMember.LastClientCheckTime | date | Comes from Client Health. Represents the last reported health evaluation time. | 
+| MicrosoftECM.DeviceCollectionMember.LastDDR | date | Last heartbeat timestamp from client DDR discovery. | 
+| MicrosoftECM.DeviceCollectionMember.LastHardwareScan | date | Timestamp from the last hardware inventory scan. | 
+| MicrosoftECM.DeviceCollectionMember.LastPolicyRequest | date | Timestamp of the last policy request for this client. | 
+| MicrosoftECM.DeviceCollectionMember. Domain | string | Domain to which the resource belongs. | 
+| MicrosoftECM.DeviceCollectionMember.PrimaryUser | string | The primary user of the device | 
+| MicrosoftECM.DeviceCollectionMember.Status | string | Current status of the device. | 
+| MicrosoftECM.DeviceCollectionMember.MACAddress | string | The MAC Address of the device. | 
+| MicrosoftECM.DeviceCollectionMember.IsVirtualMachine | boolean | true if the client is a virtual machine. | 
+| MicrosoftECM.DeviceCollectionMember.IsDecommissioned | boolean | true if the collection member is decommissioned. | 
+| MicrosoftECM.DeviceCollectionMember.IsClient | boolean | true, if the client is a Configuration Manager client. | 
+| MicrosoftECM.DeviceCollectionMember.IsBlocked | boolean | true if a system is blocked. Block/unblock is a manual action in the Admin Console UI that the administrator can invoke. By blocking a client, client communication with the server will be cut off. | 
+| MicrosoftECM.DeviceCollectionMember.ExchangeServer | string | Name of the Exchange server for Exchange Active Sync \(EAS\). | 
+| MicrosoftECM.DeviceCollectionMember.DeviceThreatLevel | string | The threat level of the device | 
+| MicrosoftECM.DeviceCollectionMember.CurrentLogonUser | string | Current logged on user | 
+| MicrosoftECM.DeviceCollectionMember.LastLogonUser | string | The last user who logged in to the device | 
+| MicrosoftECM.DeviceCollectionMember.DeviceOSBuild | string | The OS build number of the device | 
+| MicrosoftECM.DeviceCollectionMember.ADLastLogonTime | date | Last logon timestamp of the computer \(discovered from Active Directory\). | 
+| MicrosoftECM.DeviceCollectionMember.SiteCode | string | Site code of the site that created the collection. | 
+
+
+#### Command Example
+```!ms-ecm-device-get-collection-member device_names=EC2AMAZ-2AKQ815```
+
+#### Context Example
+```json
+{
+    "MicrosoftECM": {
+        "DeviceCollectionMember": {
+            "ADLastLogonTime": "2020-11-02T05:34:01",
+            "ClientVersion": "5.00.8790.1007",
+            "CurrentLogonUser": null,
+            "DeviceName": "EC2AMAZ-2AKQ815",
+            "DeviceOS": "Microsoft Windows NT Advanced Server 10.0",
+            "DeviceOSBuild": "10.0.14393.3025",
+            "DeviceThreatLevel": null,
+            "Domain": "DEMISTO",
+            "ExchangeServer": null,
+            "IsActive": true,
+            "IsBlocked": false,
+            "IsClient": true,
+            "IsDecommissioned": false,
+            "IsVirtualMachine": false,
+            "LastActiveTime": "2020-11-09T13:45:43Z",
+            "LastClientCheckTime": "2020-11-07T16:42:39Z",
+            "LastDDR": "2020-11-08T18:30:48Z",
+            "LastHardwareScan": "2020-11-08T12:02:36Z",
+            "LastLogonUser": null,
+            "LastPolicyRequest": "2020-11-09T13:45:43Z",
+            "PrimaryUser": "demisto\\sccmadmin",
+            "ResourceID": 16777220,
+            "SiteCode": "ISR",
+            "Status": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Devices As Collection Member
+>| LastDDR | Domain | ResourceID | DeviceName | ExchangeServer | DeviceOSBuild | Status | LastHardwareScan | IsDecommissioned | SiteCode | PrimaryUser | IsBlocked | LastPolicyRequest | DeviceOS | ClientVersion | LastLogonUser | LastClientCheckTime | IsActive | CurrentLogonUser | IsClient | ADLastLogonTime | LastActiveTime | IsVirtualMachine | DeviceThreatLevel
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| 2020\-11\-08T18:30:48Z | DEMISTO | 16777220 | EC2AMAZ\-2AKQ815 |  | 10.0.14393.3025 |  | 2020\-11\-08T12:02:36Z | False | ISR | demisto\\sccmadmin | False | 2020\-11\-09T13:45:43Z | Microsoft Windows NT Advanced Server 10.0 | 5.00.8790.1007 |  | 2020\-11\-07T16:42:39Z | True |  | True | 11/2/2020 5:34:01 AM | 2020\-11\-09T13:45:43Z | False | 
+
+### ms-ecm-device-get-resource
+***
+Gets a Configuration Manager device By querying the SMS_R_System class. You can use the `ms-ecm-device-get-resource` or `ms-ecm-device-get-collection-member` commands to change the query class. Depending upon your role-based access in the site, you may need to use one of these other commands.
+
+
+#### Base Command
+
+`ms-ecm-device-get-resource`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_names | A comma separated list of device names, i.e `name1,name2,etc.` | Optional | 
+| resource_ids | A comma separated list of resource ids, i.e `ID1,ID2,etc.` | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftECM.DeviceResource.Name | string | The name of the device | 
+| MicrosoftECM.DeviceResource.AgentName | string | List of the names of discovery agents that found the resource. | 
+| MicrosoftECM.DeviceResource.ResourceId | number | Configuration Manager-supplied ID that uniquely identifies a Configuration Manager client resource | 
+| MicrosoftECM.DeviceResource.ADSiteName | string | The Active Directory site name that is assigned to the client. | 
+| MicrosoftECM.DeviceResource.AgentSite | string | List of sites from which the discovery agents run. | 
+| MicrosoftECM.DeviceResource.AgentTime | date | List of discovery dates and times. | 
+| MicrosoftECM.DeviceResource.CPUType | string | The CPU type, for example, StrongARM. Currently, only device clients report this value. | 
+| MicrosoftECM.DeviceResource.DistinguishedName | string | The distinguished name of the account. | 
+| MicrosoftECM.DeviceResource.FullDomainName | string | The full name of the device's domain | 
+| MicrosoftECM.DeviceResource.IPAddresses | string | List of the IP addresses that are associated with the resource. More than one address is listed if the resource has multiple network cards installed. | 
+| MicrosoftECM.DeviceResource.NetbiosName | string | Name used by the NetBIOS protocol. | 
+| MicrosoftECM.DeviceResource.UserAccountControl | number | User account control value retrieved from Active Directory. | 
+| MicrosoftECM.DeviceResource.LastLogonUserName | date | Name of the last logged-on user at the time the discovery agent ran. | 
+| MicrosoftECM.DeviceResource.LastLogonUserDomain | string | Domain used by the last logged-on user at the time the discovery agent ran. | 
+| MicrosoftECM.DeviceResource.LastLogonTimestamp | date | The date of the last user logon. | 
+| MicrosoftECM.DeviceResource.OperatingSystemNameandVersion | string | Free-form string that describes the operating system. | 
+| MicrosoftECM.DeviceResource.VirtualMachineHostName | string | Virtual machine host name. | 
+| MicrosoftECM.DeviceResource.VirtualMachineType | string | The type of the virtual machine | 
+| MicrosoftECM.DeviceResource.DNSForestGuid | string | A unique identifier for the DNS forest | 
+| MicrosoftECM.DeviceResource.HardwareID | string | An ID that uniquely describes the hardware on which the client is installed. This ID remains unchanged through re-imaging or through successive installations of the operating system or client. This differs from the Configuration Manager unique ID, which might change under these circumstances. | 
+
+
+#### Command Example
+```!ms-ecm-device-get-resource device_names=EC2AMAZ-2AKQ815```
+
+#### Context Example
+```json
+{
+    "MicrosoftECM": {
+        "DeviceResource": {
+            "ADSiteName": "Default-First-Site-Name",
+            "AgentName": [
+                "SMS_AD_SYSTEM_DISCOVERY_AGENT",
+                "MP_ClientRegistration",
+                "Heartbeat Discovery"
+            ],
+            "AgentSite": [
+                "ISR",
+                "ISR",
+                "ISR"
+            ],
+            "AgentTime": [
+                "2020-11-05T00:00:01Z",
+                "2019-07-07T10:12:48Z",
+                "2020-11-09T13:30:48Z"
+            ],
+            "CPUType": "Intel64 Family 6 Model 85 Stepping 4",
+            "DNSForestGuid": "E8AA1F36-33BE-41F2-ADCB-E40376F5B168",
+            "DeviceName": "EC2AMAZ-2AKQ815",
+            "DistinguishedName": "CN=EC2AMAZ-2AKQ815,CN=Computers,DC=demisto,DC=local",
+            "FullDomainName": "DEMISTO.LOCAL",
+            "HardwareID": "2:387B42C549C5E7D718B68BC65959FA9041F7F2D0",
+            "IPAddresses": [
+                "172.31.32.170",
+                "fe80::81c5:1670:9363:a40b"
+            ],
+            "LastLogonTimestamp": "2020-11-02T05:34:01Z",
+            "LastLogonUserDomain": null,
+            "LastLogonUserName": null,
+            "NetbiosName": "EC2AMAZ-2AKQ815",
+            "OperatingSystemNameandVersion": "Microsoft Windows NT Advanced Server 10.0",
+            "ResourceId": 16777220,
+            "UserAccountControl": 4096,
+            "VirtualMachineHostName": "",
+            "VirtualMachineType": 0
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Devices As Resource
+>| AgentTime | IPAddresses | ResourceId | UserAccountControl | AgentSite | DistinguishedName | VirtualMachineHostName | FullDomainName | ADSiteName | NetbiosName | LastLogonTimestamp | DeviceName | VirtualMachineType | CPUType | AgentName | LastLogonUserName | DNSForestGuid | OperatingSystemNameandVersion | LastLogonUserDomain | HardwareID
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| \["2020\-11\-05T00:00:01Z","2019\-07\-07T10:12:48Z","2020\-11\-09T13:30:48Z"\] | \["172.31.32.170","fe80::81c5:1670:9363:a40b"\] | 16777220 | 4096 | \["ISR","ISR","ISR"\] | CN=EC2AMAZ\-2AKQ815,CN=Computers,DC=demisto,DC=local |  | DEMISTO.LOCAL | Default\-First\-Site\-Name | EC2AMAZ\-2AKQ815 | 2020\-11\-02T05:34:01Z | EC2AMAZ\-2AKQ815 | 0 | Intel64 Family 6 Model 85 Stepping 4 | \["SMS\_AD\_SYSTEM\_DISCOVERY\_AGENT","MP\_ClientRegistration","Heartbeat Discovery"\] |  | E8AA1F36\-33BE\-41F2\-ADCB\-E40376F5B168 | Microsoft Windows NT Advanced Server 10.0 |  | 2:387B42C549C5E7D718B68BC65959FA9041F7F2D0
+
+### ms-ecm-get-user-device-affinity
+***
+Get the relationships between a device and its primary users.
+
+
+#### Base Command
+
+`ms-ecm-get-user-device-affinity`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_names | A comma separated list of usernames with the form of "Domain\username" i.e "Domain\user1,Domain\user2",etc.." | Optional | 
+| resource_ids | A comma separated list of device resource ids, i.e `ID1,ID2,etc.` | Optional | 
+| device_names | A comma separated list of device names, i.e `name1,name2,etc.` | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftECM.UserDeviceAffinity.DeviceName | string | The name of the device. | 
+| MicrosoftECM.UserDeviceAffinity.UniqueUserName | string | User name in domain\\user format. | 
+| MicrosoftECM.UserDeviceAffinity.ResourceID | number | The resource ID of the device. | 
+| MicrosoftECM.UserDeviceAffinity.IsActive | boolean | TRUE if the relationship is active. | 
+| MicrosoftECM.UserDeviceAffinity.CreationTime | date | The time when the relationship was created. | 
+| MicrosoftECM.UserDeviceAffinity.RelationshipResourceID | number | The unique identifier for this relationship. | 
+
+
+#### Command Example
+```!ms-ecm-get-user-device-affinity device_names=EC2AMAZ-2AKQ815```
+
+#### Context Example
+```json
+{
+    "MicrosoftECM": {
+        "UserDeviceAffinity": [
+            {
+                "CreationTime": "2020-09-07T14:52:57Z",
+                "DeviceName": "EC2AMAZ-2AKQ815",
+                "IsActive": true,
+                "RelationshipResourceID": 25165825,
+                "ResourceID": 16777220,
+                "UserName": "demisto\\sccmadmin"
+            },
+            {
+                "CreationTime": "2020-11-05T17:44:33Z",
+                "DeviceName": "EC2AMAZ-2AKQ815",
+                "IsActive": true,
+                "RelationshipResourceID": 25165830,
+                "ResourceID": 16777220,
+                "UserName": "demisto\\administrator"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User Device Affinity
+>| CreationTime | DeviceName | UserName | ResourceID | IsActive | RelationshipResourceID
+>| --- | --- | --- | --- | --- | ---
+>| 2020\-09\-07T14:52:57Z | EC2AMAZ\-2AKQ815 | demisto\\sccmadmin | 16777220 | True | 25165825
+>| 2020\-11\-05T17:44:33Z | EC2AMAZ\-2AKQ815 | demisto\\administrator | 16777220 | True | 25165830
 

@@ -73,7 +73,7 @@ Function ArgToInteger()
 		[AllowEmptyString()] [string]$arg,
 		[Parameter()] [Int32]$defaultValue
 	)
-	if ($null -eq $arg)
+	if ($null -eq $arg -Or "" -eq $arg)
 	{
 		return $defaultValue
 	}
@@ -508,45 +508,6 @@ Function GetLastLogOnUser()
 	}
 }
 
-Function GetPrimaryUser()
-{
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
-	param(
-		[Parameter()] [string]$DeviceName
-	)
-	$userDeviceAffinity = Invoke-Command $global:Session -ArgumentList $deviceName, $global:siteCode -ErrorAction Stop -ScriptBlock {
-		param($deviceName, $siteCode)
-		Set-Location $env:SMS_ADMIN_UI_PATH\..\
-		Import-Module .\ConfigurationManager.psd1
-		Set-Location "$( $SiteCode ):"
-		$device = Get-CMDevice -Name $deviceName -Fast
-		if (!$device)
-		{
-			throw "Could not find a computer with the name $computerName"
-		}
-		Get-CMUserDeviceAffinity -DeviceName $deviceName
-	}
-	if ($userDeviceAffinity)
-	{
-		$output = [PSCustomObject]@{
-			'MicrosoftECM.PrimaryUsers' = $userDeviceAffinity | ForEach-Object {
-				[PSCustomObject]@{
-					MachineName = $_.ResourceName
-					UserName = $_.UniqueUserName
-				}
-			}
-		}
-		$MDOutput = $output."MicrosoftECM.PrimaryUsers" | TableToMarkdown -Name "Primary users on $deviceName"
-		ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $userDeviceAffinity | Out-Null
-	}
-	else
-	{
-		$MDOutput = "### Primary users on $computerName`nNo results found."
-		ReturnOutputs $MDOutput | Out-Null
-	}
-}
-
 Function GetCollectionList()
 {
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
@@ -594,7 +555,6 @@ Function GetDeviceList()
 		[Parameter()] [Int32]$limit
 	)
 	AssertNoMoreThenExpectedParametersGiven "Can only use one of the following parameters: collection_id, collection_name" 1 $CollectionID $CollectionName
-	
 	$parameters = @{
 		collection_id = $CollectionID
 		collection_name = $CollectionName
@@ -1010,7 +970,6 @@ Function StartService()
 		[Parameter()] [string]$DeviceName,
 		[Parameter()] [bool]$ShouldPollResults,
 		[Parameter()] [Int32]$timeoutSeconds
-	
 	)
 	$scriptText = "Get-Service $serviceName -ErrorAction Stop | Start-Service -PassThru -ErrorAction Stop"
 	$scriptName = "XSOAR StartService"
@@ -1057,6 +1016,7 @@ Function GetDeviceAsCollectionMember()
 {
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseUsingScopeModifierInNewRunspaces", "")]
 	param(
 		[Parameter()] [string]$deviceNames,
 		[Parameter()] [string]$resourceIDs
@@ -1079,7 +1039,7 @@ Function GetDeviceAsCollectionMember()
 					Set-Location $env:SMS_ADMIN_UI_PATH\..\
 					Import-Module .\ConfigurationManager.psd1
 					Set-Location "$( $args[1] ):"
-					Get-CMDevice -Name $args[0] -CollectionMember | Select Name, ClientVersion, DeviceOS, ResourceID, IsActive, LastActiveTime, LastClientCheckTime, LastDDR, LastHardwareScan, LastPolicyRequest, Domain, PrimaryUser, Status, MACAddress, IsVirtualMachine, IsDecommissioned, IsClient, IsBlocked, ExchangeServer, DeviceThreatLevel, CurrentLogonUser, LastLogonUser, DeviceOSBuild, ADLastLogonTime, SiteCode
+					Get-CMDevice -Name $args[0] -CollectionMember | Select-Object Name, ClientVersion, DeviceOS, ResourceID, IsActive, LastActiveTime, LastClientCheckTime, LastDDR, LastHardwareScan, LastPolicyRequest, Domain, PrimaryUser, Status, MACAddress, IsVirtualMachine, IsDecommissioned, IsClient, IsBlocked, ExchangeServer, DeviceThreatLevel, CurrentLogonUser, LastLogonUser, DeviceOSBuild, ADLastLogonTime, SiteCode
 				}
 			}
 		}
@@ -1091,7 +1051,7 @@ Function GetDeviceAsCollectionMember()
 					Set-Location $env:SMS_ADMIN_UI_PATH\..\
 					Import-Module .\ConfigurationManager.psd1
 					Set-Location "$( $args[1] ):"
-					Get-CMDevice -ResourceId $args[0] -CollectionMember | Select Name, ClientVersion, DeviceOS, ResourceID, IsActive, LastActiveTime, LastClientCheckTime, LastDDR, LastHardwareScan, LastPolicyRequest, Domain, PrimaryUser, Status, MACAddress, IsVirtualMachine, IsDecommissioned, IsClient, IsBlocked, ExchangeServer, DeviceThreatLevel, CurrentLogonUser, LastLogonUser, DeviceOSBuild, ADLastLogonTime, SiteCode
+					Get-CMDevice -ResourceId $args[0] -CollectionMember | Select-Object Name, ClientVersion, DeviceOS, ResourceID, IsActive, LastActiveTime, LastClientCheckTime, LastDDR, LastHardwareScan, LastPolicyRequest, Domain, PrimaryUser, Status, MACAddress, IsVirtualMachine, IsDecommissioned, IsClient, IsBlocked, ExchangeServer, DeviceThreatLevel, CurrentLogonUser, LastLogonUser, DeviceOSBuild, ADLastLogonTime, SiteCode
 				}
 			}
 		}
@@ -1143,6 +1103,8 @@ Function GetDeviceAsResource()
 {
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseUsingScopeModifierInNewRunspaces", "")]
 	param(
 		[Parameter()] [string]$deviceNames,
 		[Parameter()] [string]$resourceIDs
@@ -1166,7 +1128,7 @@ Function GetDeviceAsResource()
 					Import-Module .\ConfigurationManager.psd1
 					Set-Location "$( $args[1] ):"
 					$CMPSSuppressFastNotUsedCheck = $true
-					Get-CMDevice -Name $args[0] -Resource | Select Name, AgentName, ResourceId, ADSiteName, AgentSite, AgentTime, CPUType, DistinguishedName, FullDomainName, IPAddresses, NetbiosName, UserAccountControl, LastLogonUserName, LastLogonUserDomain, LastLogonTimestamp, OperatingSystemNameandVersion, VirtualMachineHostName, VirtualMachineType, DNSForestGuid, HardwareID
+					Get-CMDevice -Name $args[0] -Resource | Select-Object Name, AgentName, ResourceId, ADSiteName, AgentSite, AgentTime, CPUType, DistinguishedName, FullDomainName, IPAddresses, NetbiosName, UserAccountControl, LastLogonUserName, LastLogonUserDomain, LastLogonTimestamp, OperatingSystemNameandVersion, VirtualMachineHostName, VirtualMachineType, DNSForestGuid, HardwareID
 				}
 			}
 		}
@@ -1179,14 +1141,13 @@ Function GetDeviceAsResource()
 					Import-Module .\ConfigurationManager.psd1
 					Set-Location "$( $args[1] ):"
 					$CMPSSuppressFastNotUsedCheck = $true
-					Get-CMDevice -ResourceId $args[0] -Resource | Select Name, AgentName, ResourceId, ADSiteName, AgentSite, AgentTime, CPUType, DistinguishedName, FullDomainName, IPAddresses, NetbiosName, UserAccountControl, LastLogonUserName, LastLogonUserDomain, LastLogonTimestamp, OperatingSystemNameandVersion, VirtualMachineHostName, VirtualMachineType, DNSForestGuid, HardwareID
+					Get-CMDevice -ResourceId $args[0] -Resource | Select-Object Name, AgentName, ResourceId, ADSiteName, AgentSite, AgentTime, CPUType, DistinguishedName, FullDomainName, IPAddresses, NetbiosName, UserAccountControl, LastLogonUserName, LastLogonUserDomain, LastLogonTimestamp, OperatingSystemNameandVersion, VirtualMachineHostName, VirtualMachineType, DNSForestGuid, HardwareID
 				}
 			}
 		}
 		$devices = Receive-Job -Job $jobs -Wait -AutoRemoveJob
 		$devices
 	}
-	
 	if ($devices)
 	{
 		$output = $devices | ForEach-Object {
@@ -1196,7 +1157,7 @@ Function GetDeviceAsResource()
 				ResourceId = $_.ResourceId
 				ADSiteName = $_.ADSiteName
 				AgentSite = $_.AgentSite
-				AgentTime = $_.AgentTime | Foreach-Object {ParseDateTimeObjectToIso $_}
+				AgentTime = $_.AgentTime | Foreach-Object { ParseDateTimeObjectToIso $_ }
 				CPUType = $_.CPUType
 				DistinguishedName = $_.DistinguishedName
 				FullDomainName = $_.FullDomainName
@@ -1224,16 +1185,19 @@ Function GetDeviceAsResource()
 	}
 }
 
-Function GetUserDeviceAffinity(){
+Function GetUserDeviceAffinity()
+{
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseUsingScopeModifierInNewRunspaces", "")]
 	param(
 		[Parameter()] [string]$deviceNames,
 		[Parameter()] [string]$resourceIDs,
 		[Parameter()] [string]$userNames
 	)
 	AssertNoMoreThenExpectedParametersGiven "Can only use one of the following parameters: device_names, resource_ids, user_names" 1 $deviceNames $resourceIDs $userNames
-	if (!$deviceNames -And !$resourceIDs -And !$userNames){
+	if (!$deviceNames -And !$resourceIDs -And !$userNames)
+	{
 		throw "Please use one of the following parameters: device_names, resource_ids, user_names"
 	}
 	$deviceNamesList = ArgToList $deviceNames
@@ -1242,36 +1206,39 @@ Function GetUserDeviceAffinity(){
 	$result = Invoke-Command $global:Session -ArgumentList $deviceNamesList, $resourceIDsList, $userNamesList, $global:siteCode -ErrorAction Stop -ScriptBlock {
 		param($deviceNamesList, $resourceIDsList, $userNamesList, $siteCode)
 		$jobs = @()
-		if ($deviceNamesList){
+		if ($deviceNamesList)
+		{
 			ForEach ($deviceName in $deviceNamesList)
 			{
 				$jobs += start-job -ArgumentList $deviceName, $SiteCode -scriptblock {
 					Set-Location $env:SMS_ADMIN_UI_PATH\..\
 					Import-Module .\ConfigurationManager.psd1
 					Set-Location "$( $args[1] ):"
-					Get-CMUserDeviceAffinity -DeviceName $args[0] | Select ResourceName, UniqueUserName, ResourceID, IsActive, CreationTime, RelationshipResourceID
+					Get-CMUserDeviceAffinity -DeviceName $args[0] | Select-Object ResourceName, UniqueUserName, ResourceID, IsActive, CreationTime, RelationshipResourceID
 				}
 			}
 		}
-		if ($resourceIDsList){
+		if ($resourceIDsList)
+		{
 			ForEach ($resourceID in $resourceIDsList)
 			{
 				$jobs += start-job -ArgumentList $resourceID, $SiteCode -scriptblock {
 					Set-Location $env:SMS_ADMIN_UI_PATH\..\
 					Import-Module .\ConfigurationManager.psd1
 					Set-Location "$( $args[1] ):"
-					Get-CMUserDeviceAffinity -DeviceId $args[0] | Select ResourceName, UniqueUserName, ResourceID, IsActive, CreationTime, RelationshipResourceID
+					Get-CMUserDeviceAffinity -DeviceId $args[0] | Select-Object ResourceName, UniqueUserName, ResourceID, IsActive, CreationTime, RelationshipResourceID
 				}
 			}
 		}
-		if ($userNamesList){
+		if ($userNamesList)
+		{
 			ForEach ($userName in $userNamesList)
 			{
 				$jobs += start-job -ArgumentList $userName, $SiteCode -scriptblock {
 					Set-Location $env:SMS_ADMIN_UI_PATH\..\
 					Import-Module .\ConfigurationManager.psd1
 					Set-Location "$( $args[1] ):"
-					Get-CMUserDeviceAffinity -UserName $args[0] | Select ResourceName, UniqueUserName, ResourceID, IsActive, CreationTime, RelationshipResourceID
+					Get-CMUserDeviceAffinity -UserName $args[0] | Select-Object ResourceName, UniqueUserName, ResourceID, IsActive, CreationTime, RelationshipResourceID
 				}
 			}
 		}
@@ -1348,10 +1315,6 @@ function Main
 				$deviceName = $demisto.Args()['device_name']
 				GetLastLogOnUser $deviceName | Out-Null
 			}
-			"ms-ecm-user-get-primary" {
-				$deviceName = $demisto.Args()['device_name']
-				GetPrimaryUser $deviceName | Out-Null
-			}
 			"ms-ecm-get-installed-softwares" {
 				$deviceName = $demisto.Args()['device_name']
 				ListInstalledSoftwares $deviceName | Out-Null
@@ -1365,7 +1328,7 @@ function Main
 			"ms-ecm-device-list" {
 				$CollectionID = $demisto.Args()['collection_id']
 				$CollectionName = $demisto.Args()['collection_name']
-				$limit = ArgToInteger $demisto.Args()['limit'] 100
+				$limit = (ArgToInteger $demisto.Args()['limit'] 100) - 1
 				GetDeviceList $CollectionID $CollectionName $limit
 			}
 			"ms-ecm-script-list" {

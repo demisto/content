@@ -44,19 +44,6 @@ script:
       description: The name of the device
       type: string
     description: Gets the last user that logged on to a given device name
-  - name: ms-ecm-user-get-primary
-    arguments:
-    - name: device_name
-      required: true
-      description: Specifies the name of a device.
-    outputs:
-    - contextPath: MicrosoftECM.PrimaryUsers.MachineName
-      description: The name of the device
-      type: string
-    - contextPath: MicrosoftECM.PrimaryUsers.UserName
-      description: The name of the primary user
-      type: string
-    description: Get the primary user of a given device name
   - name: ms-ecm-collection-list
     arguments:
     - name: collection_type
