@@ -808,7 +808,7 @@ function ListSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwarg
     $raw_response = $client.ListSearch()
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
-    $human_readable = TableToMarkdown $md_columns "Compliance and search - Searcc configurations"
+    $human_readable = TableToMarkdown $md_columns "Compliance and search - Search configurations"
     # Entry context
     $search_entry_context = New-Object System.Collections.Generic.List[System.Object]
     foreach ($search in $raw_response) { 
