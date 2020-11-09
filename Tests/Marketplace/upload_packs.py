@@ -456,13 +456,14 @@ def get_content_git_client(content_repo_path: str):
 
 
 def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket_upload_flow: bool,
-                            force_previous_commit: str):
+                            force_previous_commit: str, is_private_build: bool = False):
     """ Returns recent commits hashes (of head and remote master)
 
     Args:
         content_repo (git.repo.base.Repo): content repo object.
         index_folder_path (str): the path to the local index folder
         is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
+        is_private_build (bool): indicates whether its a run of private build or not
         force_previous_commit (str): if exists, this should be the commit to diff with
 
     Returns:
@@ -479,7 +480,7 @@ def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket
             logging.critical(f'Force commit {force_previous_commit} does not exist in content repo. Additional '
                              f'info:\n {e}')
             sys.exit(1)
-    return head_commit, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow)
+    return head_commit, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build)
 
 
 def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current_commit_hash: str,
@@ -673,7 +674,7 @@ def handle_github_response(response: json) -> dict:
     return res_dict
 
 
-def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow):
+def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build):
     """ If running in bucket upload workflow we want to get the commit in the index which is the index
     We've last uploaded to production bucket. Otherwise, we are in a commit workflow and the diff should be from the
     head of origin/master
@@ -682,6 +683,7 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow):
         content_repo (git.repo.base.Repo): content repo object.
         index_folder_path (str): the path to the local index folder
         is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
+        is_private_build (bool): indicates whether its a run of private build or not
 
     Returns:
         str: previous commit depending on the flow the script is running
@@ -689,10 +691,14 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow):
     """
     if is_bucket_upload_flow:
         return get_last_upload_commit_hash(content_repo, index_folder_path)
+    elif is_private_build:
+        previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
+        logging.info(f"Using previous origin/master head commit hash {previous_master_head_commit} to diff with.")
+        return previous_master_head_commit
     else:
-        master_head_commit = content_repo.commit('origin/master').hexsha
-        logging.info(f"Using origin/master head commit hash {master_head_commit} to diff with.")
-        return master_head_commit
+        previous_master_head_commit = content_repo.commit('origin/master').hexsha
+        logging.info(f"Using origin/master head commit hash {previous_master_head_commit} to diff with.")
+        return previous_master_head_commit
 
 
 def get_last_upload_commit_hash(content_repo, index_folder_path):
@@ -827,8 +833,7 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     if not option.override_all_packs:
-        check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
-                                  storage_bucket)
+        check_if_index_is_updated(content_repo, current_commit_hash, previous_commit_hash, storage_bucket)
 
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)
