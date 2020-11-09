@@ -771,7 +771,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, suc
                 pack.name: {
                     "status": PackStatus[pack.status].value,
                     "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
-                } for pack in successful_packs
+                } for pack in failed_packs
             }
         }
         packs_results.update(failed_packs_dict)

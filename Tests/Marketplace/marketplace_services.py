@@ -992,11 +992,11 @@ class Pack(object):
 
         return release_notes_lines, latest_release_notes
 
-    def assert_production_bucket_version_matches_release_notes_version(self,
-                                                                       changelog: dict,
-                                                                       latest_release_notes: str) -> None:
+    def assert_upload_bucket_version_matches_release_notes_version(self,
+                                                                   changelog: dict,
+                                                                   latest_release_notes: str) -> None:
         """
-        Sometimes there is a the current bucket is not merged from master there could be another version in production
+        Sometimes there is a the current bucket is not merged from master there could be another version in the upload
         bucket, that does not exist in the current branch.
         This case can cause unpredicted behavior and we want to fail the build.
         This method validates that this is not the case in the current build, and if it does - fails it with an
@@ -1007,8 +1007,8 @@ class Pack(object):
         """
         changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))
         assert LooseVersion(latest_release_notes) >= LooseVersion(changelog_latest_release_notes), \
-            f'{self._pack_name}: Version mismatch detected between production bucket and current branch\n' \
-            f'Production bucket version: {changelog_latest_release_notes}\n' \
+            f'{self._pack_name}: Version mismatch detected between upload bucket and current branch\n' \
+            f'Upload bucket version: {changelog_latest_release_notes}\n' \
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
@@ -1037,7 +1037,7 @@ class Pack(object):
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version
                     )
-                    self.assert_production_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
+                    self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
