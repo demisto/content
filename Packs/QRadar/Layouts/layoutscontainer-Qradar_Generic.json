@@ -1045,7 +1045,7 @@
       "minW": 1,
       "moved": false,
       "name": "Assets",
-      "query": "QradarPrintAssets",
+      "query": "QRadarPrintAssets",
       "queryType": "script",
       "static": false,
       "type": "dynamic",
