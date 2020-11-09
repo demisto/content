@@ -645,10 +645,12 @@ class MsGraphClient:
         """
         target_modified_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
         suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
+        # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
+        # API response, (looks like a bug in graph API).
         params = {
             "$filter": f"receivedDateTime gt {target_modified_time}",
             "$orderby": "receivedDateTime asc",
-            "$select": "*",
+            "select": "*",
             "$top": self._emails_fetch_limit
         }
 
@@ -733,6 +735,9 @@ class MsGraphClient:
                 attachment_id = attachment.get('id', '')
                 attachment_content = self._get_attachment_mime(message_id, attachment_id)
                 attachment_name = f'{attachment_name}.eml'
+            else:
+                # skip attachments that are not of the previous types (type referenceAttachment)
+                continue
             # upload the item/file attachment to War Room
             upload_file(attachment_name, attachment_content, attachment_results)
 
@@ -794,10 +799,10 @@ class MsGraphClient:
     @staticmethod
     def _get_next_run_time(fetched_emails, start_time):
         """
-        Returns modified time of last email if exist, else utc time that was passed as start_time.
+        Returns received time of last email if exist, else utc time that was passed as start_time.
 
         The elements in fetched emails are ordered by modified time in ascending order,
-        meaning the last element has the latest modified time.
+        meaning the last element has the latest received time.
 
         :type fetched_emails: ``list``
         :param fetched_emails: List of fetched emails
@@ -808,7 +813,7 @@ class MsGraphClient:
         :return: Returns str date of format Y-m-dTH:M:SZ
         :rtype: `str`
         """
-        next_run_time = fetched_emails[-1].get('lastModifiedDateTime') if fetched_emails else start_time
+        next_run_time = fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
 
         return next_run_time
 
