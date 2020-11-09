@@ -1,0 +1,14 @@
+{
+    "name": "Cisco ESA (IronPort) API Integration",
+    "description": "Cisco ESA Mail Gateway (IronPort) API\nUsed to search IronPort mail traffic, search Spam and Quarantines, Release emails from both Spam and Quarantines\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "OsamaShenoda",
+    "url": "",
+    "email": "",
+    "created": "2020-11-09T12:07:59Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
