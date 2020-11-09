@@ -689,6 +689,78 @@ class SecurityAndComplianceClient {
             https://docs.microsoft.com/en-us/powershell/module/exchange/new-compliancesearch?view=exchange-ps
         #>
 	}
+
+    [psobject]SetSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
+                        [string[]]$exchange_location_exclusion, [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
+		try{
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            Import-PSSession -Session $this.session -CommandName New-ComplianceSearch
+            $parameters = @{
+                "Case" = $case
+                "ContentMatchQuery" = $kql
+                "Description" = $description
+                "AllowNotFoundExchangeLocationsEnabled" = $allow_not_found_exchange_locations
+                "ExchangeLocation" = $exchange_location
+                "ExchangeLocationExclusion" = $exchange_location_exclusion
+                "PublicFolderLocation" = $public_folder_location
+                "SharePointLocation" = $share_point_location
+                "SharePointLocationExclusion" = $share_point_location_exclusion
+            }
+            $response = New-ComplianceSearch -Name $search_name @parameters
+            
+            return $response
+        }
+        finally {
+            # Close session to remote
+            $this.CloseSession()
+        }
+        <#
+            .SYNOPSIS
+            Create compliance searches in the Security & Compliance Center.
+
+            .PARAMETER search_name
+            The name of the compliance search.
+            
+            .PARAMETER case
+            Name of a Core eDiscovery case to associate the new compliance search with.
+            
+            .PARAMETER kql
+            Text search string or a query that's formatted by using the Keyword Query Language (KQL).
+
+            .PARAMETER description
+            Optional description for the compliance search.
+
+            .PARAMETER allow_not_found_exchange_locations
+            Whether to include mailboxes other than regular user mailboxes in the compliance search.
+
+            .PARAMETER exchange_location
+            Mailboxes to include.
+
+            .PARAMETER exchange_location_exclusion
+            Mailboxes to exclude when you use the value "All" for the exchange_location parameter.
+
+            .PARAMETER public_folder_location
+            Whether to include all public folders in the search.
+
+            .PARAMETER share_point_location
+            SharePoint Online sites to include. You identify the site by its URL value, or you can use the value All to include all sites.
+
+            .PARAMETER share_point_location_exclusion
+            SharePoint Online sites to exclude when you use the value All for the SharePointLocation parameter. You identify the site by its URL value.
+
+            .EXAMPLE
+            $client.NewSearch("new-search")
+            $client.NewSearch("new-search", "new-search-description")
+            
+            .OUTPUTS
+            psobject - Raw response.
+            
+            .LINK
+            https://docs.microsoft.com/en-us/powershell/module/exchange/new-compliancesearch?view=exchange-ps
+        #>
+	}
 	
 	RemoveSearch([string]$search_name) {
         try{
@@ -842,7 +914,7 @@ class SecurityAndComplianceClient {
 
 function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $raw_response = $client.AuthorizationRequest()
-	$human_readable = "## Authorize instructions
+	$human_readable = "## Security And Compliance - Authorize instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
 2. Run the following command **!$global:COMMAND_PREFIX-complete-auth** in the War Room."
     $entry_context = @{}
@@ -893,7 +965,29 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
                                       $exchange_location, $exchange_location_exclusion, $public_folder_location, $share_point_location, $share_point_location_exclusion)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
-	$human_readable = TableToMarkdown $md_columns  "Compliance and search - New search '$($kwargs.search_name)' created"
+	$human_readable = TableToMarkdown $md_columns  "Security And Compliance - New search '$($kwargs.search_name)' created"
+    # Entry context
+    $entry_context = @{
+        $global:COMPLAIANCE_SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext $raw_response
+    }
+
+	return $human_readable, $entry_context, $raw_response
+}
+
+function SetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    # Command arguemnts parsing
+    $allow_not_found_exchange_locations = ConvertTo-Boolean $kwargs.allow_not_found_exchange_locations
+    $exchange_location = ArgToList $kwargs.exchange_location
+    $exchange_location_exclusion = ArgToList $kwargs.exchange_location_exclusion
+    $public_folder_location = ArgToList $kwargs.public_folder_location
+    $share_point_location = ArgToList $kwargs.exchange_location
+    $share_point_location_exclusion = ArgToList $kwargs.exchange_location_exclusion
+    # Raw response
+    $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
+                                      $exchange_location, $exchange_location_exclusion, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+    # Human readable
+    $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
+	$human_readable = TableToMarkdown $md_columns  "Security And Compliance - New search '$($kwargs.search_name)' created"
     # Entry context
     $entry_context = @{
         $global:COMPLAIANCE_SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext $raw_response
@@ -908,7 +1002,7 @@ function RemoveSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$k
     # Raw response
     $raw_response = @{}
     # Human readable
-    $human_readable = "Compliance and search - Search **$($kwargs.search_name)** removed!"
+    $human_readable = "Security And Compliance - Search **$($kwargs.search_name)** removed!"
     # Entry context
     $entry_context = @{}
 
@@ -920,7 +1014,7 @@ function ListSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
     $raw_response = $client.ListSearch()
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
-    $human_readable = TableToMarkdown $md_columns "Compliance and search - Search configurations"
+    $human_readable = TableToMarkdown $md_columns "Security And Compliance - Search configurations"
     # Entry context
     $search_entry_context = New-Object System.Collections.Generic.List[System.Object]
     foreach ($search in $raw_response) { 
@@ -941,7 +1035,7 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $raw_response = $client.GetSearch($kwargs.search_name)
     # Human readable - Basic info
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
-	$human_readable = TableToMarkdown $md_columns  "Compliance and search - '$($kwargs.search_name)' search"
+	$human_readable = TableToMarkdown $md_columns  "Security And Compliance - '$($kwargs.search_name)' search"
     # Human readable - Statistics
     if ($raw_response.SuccessResults -and $statistics) {
         $human_readable += TableToMarkdown $(ParseSuccessResults $raw_response.SuccessResults) "Search statistics"
@@ -960,7 +1054,7 @@ function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kw
     # Raw response
     $raw_response = @{}
     # Human readable
-    $human_readable = "Compliance and search - search **$($kwargs.search_name)** started !"
+    $human_readable = "Security And Compliance - search **$($kwargs.search_name)** started !"
     # Entry context
     $entry_context = @{}
 
@@ -973,7 +1067,7 @@ function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
     # Raw response
     $raw_response = @{}
     # Human readable
-    $human_readable = "Compliance and search - search **$($kwargs.search_name)** stopped !"
+    $human_readable = "Security And Compliance - search **$($kwargs.search_name)** stopped !"
     # Entry context
     $entry_context = @{}
 
@@ -986,7 +1080,7 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
-    $human_readable = TableToMarkdown $md_columns "Search action - '$($raw_response.Name)' created"
+    $human_readable = TableToMarkdown $md_columns "Security And Compliance - search action '$($raw_response.Name)' created"
     # Entry context
     $entry_context = @{ 
         $global:COMPLAIANCE_SEARCH_ACTIONS_ENTRY_CONTEXT = ParseSearchActionsToEntryContext $raw_response
@@ -1003,7 +1097,7 @@ function RemoveSearchActionCommand([SecurityAndComplianceClient]$client, [hashta
     # Raw response
     $raw_response = @{}
     # Human readable
-    $human_readable = "Search action **$($kwargs.search_action_id)** removed !"
+    $human_readable = "Security And Compliance - search action **$($kwargs.search_action_id)** removed!"
     # Entry context
     $entry_context = @{}
 
@@ -1015,7 +1109,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     $raw_response = $client.GetSearchAction($kwargs.search_action_id)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, JobEndTime, Status
-	$human_readable = TableToMarkdown $md_columns "Search action - '$($kwargs.search_action_id)'"
+	$human_readable = TableToMarkdown $md_columns "Security And Compliance - search action '$($kwargs.search_action_id)'"
     # Entry context
     $entry_context = @{ 
         $global:COMPLAIANCE_SEARCH_ACTIONS_ENTRY_CONTEXT = ParseSearchActionsToEntryContext $raw_response
@@ -1028,7 +1122,7 @@ function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtab
     $raw_response = $client.ListSearchActions()
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, JobEndTime, Status
-    $human_readable = TableToMarkdown $md_columns "Search actions"
+    $human_readable = TableToMarkdown $md_columns "Security And Compliance - search actions"
     # Entry context
     $search_actions_ec = New-Object System.Collections.Generic.List[System.Object]
     foreach ($search in $raw_response) { 
