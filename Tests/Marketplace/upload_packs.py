@@ -258,7 +258,6 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
             'packs': private_packs,
             'commit': current_commit_hash
         }
-        logging.info(f"Index is this: {index}")
         json.dump(index, index_file, indent=4)
 
     index_zip_name = os.path.basename(index_folder_path)
@@ -799,7 +798,7 @@ def main():
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
     if private_bucket_name:  # Add private packs to the index
         private_storage_bucket = storage_client.bucket(private_bucket_name)
-        private_packs = update_index_with_priced_packs(private_storage_bucket,
+        private_packs, _, _ = update_index_with_priced_packs(private_storage_bucket,
                                                        extract_destination_path,
                                                        index_folder_path, pack_names,
                                                        is_private_build=False)
