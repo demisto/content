@@ -5,7 +5,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def create_email_html(email_html, entry_id_list):
+def create_email_html(email_html='', entry_id_list=[]):
     for entry_id in entry_id_list:
         email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")', f'src=entry/download/{entry_id[1]} ', email_html)
     return email_html
@@ -56,7 +56,6 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, at
         html_body: The email HTML body.
     Returns:
         str. Email reply.
-
     """
     single_reply = f"""
     From: {email_from}
@@ -87,11 +86,10 @@ email_html_image = custom_fields.get('emailhtmlimage')
 attachments = incident.get('attachment', {})
 files = demisto.context().get('File', [])
 
-if email_html_image is None:
+
+if 'src="cid' in email_html_image:
     entry_id_list = get_entry_id_list(attachments, files)
     html_body = create_email_html(email_html, entry_id_list)
-    while 'src="cid' in html_body:
-        html_body = create_email_html(email_html, entry_id_list)
     email_reply = set_email_reply(email_from, email_to, email_cc, email_subject, html_body, attachments)
     demisto.executeCommand("setIncident", {'customFields': {"emailhtmlimage": email_reply}})
     demisto.results({
@@ -99,9 +97,10 @@ if email_html_image is None:
         'Type': entryTypes['note'],
         'Contents': email_reply
     })
-
 else:
+    email_reply = set_email_reply(email_from, email_to, email_cc, email_subject, email_html, attachments)
     demisto.results({
-        'ContentsFormat': formats['html'],
-        'Type': entryTypes['note'],
-        'Contents': email_html_image})
+    'ContentsFormat': formats['html'],
+    'Type': entryTypes['note'],
+    'Contents': email_reply
+    })
