@@ -382,12 +382,20 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     reports = []
 
     for file_hash in argToList(args.get('file')):
-        report = client.file_report(file_hash)
+        try:
+            report = client.file_report(file_hash)
+        except Exception as err:
+            if 'Error in API call [404] - Not Found' in str(err):
+                markdown += f'File: {file_hash} not found\n'
+                continue
+            else:
+                raise Exception(err)
+
         hash_type = report['type']
 
         scores = {'high': 3, 'medium': 2, 'low': 1}
 
-        file_context = build_dbot_entry(args.get('file'), indicator_type=report['type'],
+        file_context = build_dbot_entry(file_hash, indicator_type=report['type'],
                                         vendor='XFE', score=scores.get(report['risk'], 0))
 
         if outputPaths['file'] in file_context:
