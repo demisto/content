@@ -542,13 +542,15 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
         sys.exit(1)
 
 
-def print_packs_summary(successful_packs: list, skipped_packs: list, failed_packs: list):
+def print_packs_summary(successful_packs: list, skipped_packs: list, failed_packs: list,
+                        fail_build: bool = True):
     """Prints summary of packs uploaded to gcs.
 
     Args:
         successful_packs (list): list of packs that were successfully uploaded.
         skipped_packs (list): list of packs that were skipped during upload.
         failed_packs (list): list of packs that were failed during upload.
+        fail_build (bool): indicates whether to fail the build upon failing pack to upload or not
 
     """
     logging.info(
@@ -571,7 +573,9 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
         failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
         logging.critical(f"Number of failed packs: {len(failed_packs)}")
         logging.critical(f"Failed packs:\n{failed_packs_table}")
-        sys.exit(1)
+        if fail_build:
+            # We don't want the bucket upload flow to fail in Prepare Content step if a pack has failed to upload.
+            sys.exit(1)
 
     # for external pull requests -  when there is no failed packs, add the build summary to the pull request
     branch_name = os.environ.get('CIRCLE_BRANCH')
@@ -972,7 +976,7 @@ def main():
                                                       failed_packs)
 
     # summary of packs status
-    print_packs_summary(successful_packs, skipped_packs, failed_packs)
+    print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
 
 
 if __name__ == '__main__':
