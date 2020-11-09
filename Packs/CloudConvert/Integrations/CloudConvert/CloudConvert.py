@@ -30,7 +30,7 @@ class Client(BaseClient):
             url_suffix='import/url',
             headers=self._headers,
             data=arguments,
-            timeout=60,
+            timeout=100,
             ok_codes=(422, 200, 201, 500, 401)
         )
 
@@ -46,7 +46,7 @@ class Client(BaseClient):
         response_get_form = self._http_request(
             method='POST',
             url_suffix='import/upload',
-            timeout=60,
+            timeout=100,
             headers=self._headers
         )
         form = response_get_form.get('data').get('result').get('form')
@@ -70,7 +70,7 @@ class Client(BaseClient):
                 files=file_dict,
                 empty_valid_codes=[201, 204],
                 return_empty_response=True,
-                timeout=60,
+                timeout=100,
                 data=params
             )
 
@@ -94,7 +94,7 @@ class Client(BaseClient):
             url_suffix='convert',
             headers=self._headers,
             data=arguments,
-            timeout=60,
+            timeout=100,
             ok_codes=(422, 200, 201, 500)
         )
 
@@ -113,7 +113,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix=f'/tasks/{task_id}',
             headers=self._headers,
-            timeout=60,
+            timeout=100,
             ok_codes=(422, 200, 201, 500)
         )
 
@@ -135,7 +135,7 @@ class Client(BaseClient):
             url_suffix='/export/url',
             headers=self._headers,
             data=arguments,
-            timeout=60,
+            timeout=100,
             ok_codes=(422, 200, 201, 500)
         )
 
@@ -149,7 +149,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix=None,
             full_url=url,
-            timeout=60,
+            timeout=100,
             headers={'Content-Type': 'application/json'},
             resp_type='text'
         )
