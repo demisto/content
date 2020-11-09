@@ -1858,6 +1858,15 @@ script:
       isArray: true
       name: action_id
       required: true
+    - auto: PREDEFINED
+      default: true
+      defaultValue: "true"
+      description: Choose whether you want to attach retrieved files to War room or
+        not. Default value - true.
+      name: attach_files
+      predefined:
+      - "true"
+      - "false"
     description: View the file retrieved by the Retrieve File request according to
       the action ID. Before running this command, you can use -
       xdr-action-status-get command, in order to check if this action completed successfully.
@@ -1991,9 +2000,9 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - Test XDR Playbook
-fromversion: 5.0.0
 defaultclassifier: Cortex XDR - IR
 defaultmapperin: Cortex XDR - IR-mapper
 defaultmapperout: Cortex XDR - IR-out-mapper

@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 from datetime import timezone
 import secrets
 import string
@@ -2398,6 +2399,7 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
 
 def retrieve_file_details_command(client: Client, args):
     action_id_list = argToList(args.get('action_id', ''))
+    attach_files = args.get('attach_files', 'true')
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
     result = []
@@ -2422,8 +2424,8 @@ def retrieve_file_details_command(client: Client, args):
 
                 file = client.get_file(file_link=val)
 
-                file_results.append(fileResult(filename=f'{key}_{retrived_files_count}',
-                                               data=file))
+                file_results.append(fileResult(filename=f'{key}_{retrived_files_count}.zip',
+                                               data=file.content))
             result.append(obj)
 
     return_entry = {
@@ -2432,6 +2434,8 @@ def retrieve_file_details_command(client: Client, args):
                          f'{endpoints_count} endpoints.',
         'Contents': raw_result
     }
+    if not attach_files:
+        file_results = None
     return return_entry, file_results
 
 
@@ -2672,7 +2676,8 @@ def main():
         elif demisto.command() == 'xdr-retrieve-file-details':
             return_entry, file_results = retrieve_file_details_command(client, args)
             demisto.results(return_entry)
-            demisto.results(file_results)
+            if file_results:
+                demisto.results(file_results)
 
         elif demisto.command() == 'xdr-get-scripts':
             return_outputs(*get_scripts_command(client, args))
