@@ -182,7 +182,7 @@ def patched_requests_mocker(requests_mock):
     test_route_path = "{}{}{}{}".format(base_url, "?type=op&key=", integration_params['key'],
                                         "&cmd=<test><routing><fib-lookup><ip>10.20.20.20</ip>"
                                         + "<virtual-router>default</virtual-router>"
-                                        + f"</fib-lookup></routing></test>")
+                                        + "</fib-lookup></routing></test>")
     requests_mock.get(test_route_path, text=mock_test_routing, status_code=200)
     return requests_mock
 
@@ -228,7 +228,7 @@ def test_panorama_route_lookup_bad(patched_requests_mocker, mocker):
     test_route_path = "{}{}{}{}".format(base_url, "?type=op&key=", integration_params['key'],
                                         "&cmd=<test><routing><fib-lookup><ip>8.8.8.8</ip>"
                                         + "<virtual-router>default</virtual-router>"
-                                        + f"</fib-lookup></routing></test>")
+                                        + "</fib-lookup></routing></test>")
     patched_requests_mocker.get(test_route_path, text=mock_test_routing_noresult, status_code=200)
 
     with pytest.raises(DemistoException):
