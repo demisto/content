@@ -8,6 +8,11 @@
             "fromversion": "5.0.0"
         },
         {
+              "integrations": "GoogleCalendar",
+              "playbookID": "GoogleCalendar-Test",
+              "fromversion": "5.0.0"
+         },
+        {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
         },
@@ -1188,6 +1193,11 @@
         {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
+            "timeout": 700
+        },
+        {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Detonate Remote File From URL -McAfee-ATD - Test",
             "timeout": 700
         },
         {
@@ -3244,7 +3254,6 @@
         "IntSights": "Issue 26742",
         "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
-        "McAfee Advanced Threat Defense": "Issue 16909",
         "CrowdStrike Falcon X": "Issue 26209",
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
@@ -3330,8 +3339,7 @@
         "SNDBOX": "Issue 28826",
         "illuminate": "Will be replaced by analyst1 - Issue 9401",
         "Workday": "License expired Issue: 29590, 29595",
-        "QuestKace": "License expired Issue: 29594",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
@@ -3462,6 +3470,7 @@
         "GooglePubSub": "googleclient sdk has time based challenge exchange",
         "Google Resource Manager": "googleclient sdk has time based challenge exchange",
         "Google Cloud Storage": "SDK",
+        "GoogleCalendar": "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
