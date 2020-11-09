@@ -61,7 +61,7 @@ Gets the last user that logged on to a given device name
         "LastLogOnUser": {
             "DeviceName": "EC2AMAZ-2AKQ815",
             "IPAddresses": [
-                "172.31.32.170",
+                "2.2.2.2",
                 "fe80::81c5:1670:9363:a40b"
             ],
             "LastLogonTimestamp": "2020-11-02T05:34:01Z",
@@ -76,7 +76,7 @@ Gets the last user that logged on to a given device name
 >### Last log on user on EC2AMAZ-2AKQ815
 >| LastLogonTimestamp | IPAddresses | DeviceName | LastLogonUserName
 >| --- | --- | --- | ---
->| 2020\-11\-02T05:34:01Z | \["172.31.32.170","fe80::81c5:1670:9363:a40b"\] | EC2AMAZ\-2AKQ815 | 
+>| 2020\-11\-02T05:34:01Z | \["2.2.2.2","fe80::81c5:1670:9363:a40b"\] | EC2AMAZ\-2AKQ815 | 
 
 
 ### ms-ecm-user-get-primary
@@ -1366,7 +1366,7 @@ Gets a Configuration Manager device By querying the SMS_R_System class. You can 
             "FullDomainName": "DEMISTO.LOCAL",
             "HardwareID": "2:387B42C549C5E7D718B68BC65959FA9041F7F2D0",
             "IPAddresses": [
-                "172.31.32.170",
+                "2.2.2.2",
                 "fe80::81c5:1670:9363:a40b"
             ],
             "LastLogonTimestamp": "2020-11-02T05:34:01Z",
@@ -1388,7 +1388,7 @@ Gets a Configuration Manager device By querying the SMS_R_System class. You can 
 >### Devices As Resource
 >| AgentTime | IPAddresses | ResourceId | UserAccountControl | AgentSite | DistinguishedName | VirtualMachineHostName | FullDomainName | ADSiteName | NetbiosName | LastLogonTimestamp | DeviceName | VirtualMachineType | CPUType | AgentName | LastLogonUserName | DNSForestGuid | OperatingSystemNameandVersion | LastLogonUserDomain | HardwareID
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| \["2020\-11\-05T00:00:01Z","2019\-07\-07T10:12:48Z","2020\-11\-09T13:30:48Z"\] | \["172.31.32.170","fe80::81c5:1670:9363:a40b"\] | 16777220 | 4096 | \["ISR","ISR","ISR"\] | CN=EC2AMAZ\-2AKQ815,CN=Computers,DC=demisto,DC=local |  | DEMISTO.LOCAL | Default\-First\-Site\-Name | EC2AMAZ\-2AKQ815 | 2020\-11\-02T05:34:01Z | EC2AMAZ\-2AKQ815 | 0 | Intel64 Family 6 Model 85 Stepping 4 | \["SMS\_AD\_SYSTEM\_DISCOVERY\_AGENT","MP\_ClientRegistration","Heartbeat Discovery"\] |  | E8AA1F36\-33BE\-41F2\-ADCB\-E40376F5B168 | Microsoft Windows NT Advanced Server 10.0 |  | 2:387B42C549C5E7D718B68BC65959FA9041F7F2D0
+>| \["2020\-11\-05T00:00:01Z","2019\-07\-07T10:12:48Z","2020\-11\-09T13:30:48Z"\] | \["2.2.2.2","fe80::81c5:1670:9363:a40b"\] | 16777220 | 4096 | \["ISR","ISR","ISR"\] | CN=EC2AMAZ\-2AKQ815,CN=Computers,DC=demisto,DC=local |  | DEMISTO.LOCAL | Default\-First\-Site\-Name | EC2AMAZ\-2AKQ815 | 2020\-11\-02T05:34:01Z | EC2AMAZ\-2AKQ815 | 0 | Intel64 Family 6 Model 85 Stepping 4 | \["SMS\_AD\_SYSTEM\_DISCOVERY\_AGENT","MP\_ClientRegistration","Heartbeat Discovery"\] |  | E8AA1F36\-33BE\-41F2\-ADCB\-E40376F5B168 | Microsoft Windows NT Advanced Server 10.0 |  | 2:387B42C549C5E7D718B68BC65959FA9041F7F2D0
 
 ### ms-ecm-get-user-device-affinity
 ***

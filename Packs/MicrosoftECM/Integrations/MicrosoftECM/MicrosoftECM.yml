@@ -5,7 +5,8 @@ name: Microsoft Endpoint Configuration Manager
 display: Microsoft Endpoint Configuration Manager
 category: IT Services
 description: The configuration manager provides the overall Configuration Management
-  (CM) infrastructure and environment to the product development team (formerly known as SCCM).
+  (CM) infrastructure and environment to the product development team (formerly known
+  as SCCM).
 configuration:
 - display: ECM Server URL (e.g., 192.168.64.128)
   name: ComputerName
@@ -40,7 +41,7 @@ script:
     - contextPath: MicrosoftECM.LastLogOnUser.LastLogonUserName
       description: The name of the last user who logged in  to the device
       type: string
-    - contextPath: MicrosoftECM.LastLogOnUser.Name
+    - contextPath: MicrosoftECM.LastLogOnUser.DeviceName
       description: The name of the device
       type: string
     description: Gets the last user that logged on to a given device name
@@ -131,13 +132,13 @@ script:
       description: Specifies the name of a device collection (can be retrived via
         `!ms-ecm-collection-list collection_type="Device"`)
     - name: limit
-      description: Specifies the maximum number of devices to be returned, default value is 100.
-      defaultvalue: '100'
+      description: Specifies the maximum number of devices to be returned, default
+        value is 100.
     outputs:
-    - contextPath: MicrosoftECM.Devices.Name
+    - contextPath: MicrosoftECM.DevicesList.Name
       description: The name of the device
       type: string
-    - contextPath: MicrosoftECM.Devices.ResourceID
+    - contextPath: MicrosoftECM.DevicesList.ResourceID
       description: Unique Configuration Manager-supplied ID for the resource.
       type: number
     description: Lists a Configuration Manager device
@@ -255,12 +256,12 @@ script:
       description: Whether to poll for the script invocation results or not
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: timeout
       required: false
-      description: The timeout in seconds to poll for invocation results. Default is 30 seconds.
-      defaultvalue: '30'
+      description: The timeout in seconds to poll for invocation results. Default
+        is 30 seconds.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
@@ -712,12 +713,12 @@ script:
       description: Whether to poll for the script invocation results or not
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: timeout
       required: false
-      description: The timeout in seconds to poll for invocation results. Default is 30 seconds.
-      defaultvalue: '30'
+      description: The timeout in seconds to poll for invocation results. Default
+        is 30 seconds.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
@@ -785,12 +786,12 @@ script:
       description: Whether to poll for the script invocation results or not
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: timeout
       required: false
-      description: The timeout in seconds to poll for invocation results. Default is 30 seconds.
-      defaultvalue: '30'
+      description: The timeout in seconds to poll for invocation results. Default
+        is 30 seconds.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
@@ -858,12 +859,12 @@ script:
       description: Whether to poll for the script invocation results or not
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: timeout
       required: false
-      description: The timeout in seconds to poll for invocation results. Default is 30 seconds.
-      defaultvalue: '30'
+      description: The timeout in seconds to poll for invocation results. Default
+        is 30 seconds.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
@@ -915,14 +916,15 @@ script:
     description: Stops a service on a device or collection (Implemented by creating
       and invoking a script named `XSOAR StopService`)
   - name: ms-ecm-script-invocation-results
+    description: Gets a script invocation results
     arguments:
     - name: operation_id
       required: true
       description: The script invocation operation ID
     - name: timeout
       required: false
-      description: The timeout in seconds to poll for invocation results. Default is 30 seconds.
-      defaultvalue: '30'
+      description: The timeout in seconds to poll for invocation results. Default
+        is 30 seconds.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
@@ -1012,7 +1014,7 @@ script:
     - contextPath: MicrosoftECM.DeviceCollectionMember.LastPolicyRequest
       description: Timestamp of the last policy request for this client.
       type: date
-    - contextPath: MicrosoftECM.DeviceCollectionMember. Domain
+    - contextPath: MicrosoftECM.DeviceCollectionMember.Domain
       description: Domain to which the resource belongs.
       type: string
     - contextPath: MicrosoftECM.DeviceCollectionMember.PrimaryUser
@@ -1141,7 +1143,10 @@ script:
         installations of the operating system or client. This differs from the Configuration
         Manager unique ID, which might change under these circumstances.
       type: string
-    description: Gets a Configuration Manager device By querying the SMS_R_System class. You can use the `ms-ecm-device-get-resource` or `ms-ecm-device-get-collection-member` commands to change the query class. Depending upon your role-based access in the site, you may need to use one of these other commands.
+    description: Gets a Configuration Manager device By querying the SMS_R_System
+      class. You can use the `ms-ecm-device-get-resource` or `ms-ecm-device-get-collection-member`
+      commands to change the query class. Depending upon your role-based access in
+      the site, you may need to use one of these other commands.
   - name: ms-ecm-get-user-device-affinity
     arguments:
     - name: user_names
@@ -1157,7 +1162,7 @@ script:
     - contextPath: MicrosoftECM.UserDeviceAffinity.DeviceName
       description: The name of the device.
       type: string
-    - contextPath: MicrosoftECM.UserDeviceAffinity.UniqueUserName
+    - contextPath: MicrosoftECM.UserDeviceAffinity.UserName
       description: User name in domain\user format.
       type: string
     - contextPath: MicrosoftECM.UserDeviceAffinity.ResourceID
@@ -1176,4 +1181,3 @@ script:
   dockerimage: demisto/powershell-ubuntu:7.0.3.12001
   runonce: false
 fromversion: 5.5.0
-
