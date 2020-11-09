@@ -5,12 +5,12 @@ import demistomock as demisto
 ARGS = {
     'input': 'http://testforurls.onion/,http://testforurls2.onion/'}
 EXPECTED_RESULTS = [{'Type': 1, 'ContentsFormat': 'json', 'Contents': 2, 'EntryContext': {
-    'DBotScore': {'Indicator': 'http://testforurls.onion/', 'Type': 'Onion URL', 'Score': 2,
-                  'Vendor': 'Onion URL'}}}, {'Type': 1, 'ContentsFormat': 'json', 'Contents': 2,
-                                             'EntryContext': {'DBotScore': {
+    'OnionURL(val.Indicator && val.Indicator == obj.Indicator)': {'Indicator': 'http://testforurls.onion/', 'Type': 'Onion URL', 'Score': 2,
+                  'Vendor': 'DBot'}}}, {'Type': 1, 'ContentsFormat': 'json', 'Contents': 2,
+                                             'EntryContext': {'OnionURL(val.Indicator && val.Indicator == obj.Indicator)': {
                                                  'Indicator': 'http://testforurls2.onion/',
                                                  'Type': 'Onion URL', 'Score': 2,
-                                                 'Vendor': 'Onion URL'}}}]
+                                                 'Vendor': 'DBot'}}}]
 
 
 def test_main(mocker):
