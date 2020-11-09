@@ -150,15 +150,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 13. xdr-get-audit-management-logs
 14. xdr-get-audit-agent-reports
 15. xdr-get-policy
-16. xdr-get-endpoint-violations
+16. xdr-get-endpoint-device-control-violations
 17. xdr-retrieve-files
 18. xdr-retrieve-file-details
 19. xdr-get-scripts
 20. xdr-get-script-metadata
 21. xdr-get-script-code
-22. xdr-insert-simple-indicators
-23. xdr-action-status-get
-24. xdr-delete-endpoints
+22. xdr-action-status-get
+23. xdr-delete-endpoints
 
 ### 1. xdr-get-incidents
 ---
@@ -1436,127 +1435,6 @@ Get the policy name for a specific endpoint.
 
 The policy name of endpoint f8a2f58846b542579c12090652e79f3d is Windows Default.
 
-### 16. xdr-get-endpoint-violations
-***
-Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
-
-
-#### Base Command
-
-`xdr-get-endpoint-violations`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| endpoint_ids | Comma separated list of endpoint IDs. | Optional | 
-| type | Type of violation | Optional | 
-| timestamp_gte | Timestamp of the violation - GTE | Optional | 
-| timestamp_lte | Timestamp of the violation - LTE | Optional | 
-| ip_list | Comma separated list of IP addresses | Optional | 
-| vendor | Name of vendor | Optional | 
-| vendor_id | Vendor ID | Optional | 
-| product | Name of product | Optional | 
-| product_id | Product ID | Optional | 
-| serial | Serial Number | Optional | 
-| hostname | Hostname | Optional | 
-| violation_id_list | Comma separated list of violation IDs | Optional | 
-| username | Username | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksXDR.EndpointViolations | unknown | Number of total results of this filter without paging, Number of alerts actually returned as result \(integer\),  A list of violations \(list\). | 
-| PaloAltoNetworksXDR.EndpointViolations.total_count | unknown | Number of total results of this filter without paging. | 
-| PaloAltoNetworksXDR.EndpointViolations.result_count | unknown | Number of alerts actually returned as result \(integer\). | 
-| PaloAltoNetworksXDR.EndpointViolations.violations | unknown | A list of violations \(list\). | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.os_type | unknown | Type of the operation system | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.hostname | unknown | Hostname | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.username | unknown | Username | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.ip | unknown | IP address  | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.timestamp | unknown | Timestamp of the violation | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.violation_id | unknown | Violation ID | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.type | unknown | Type of violation | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.vendor_id | unknown | Vendor ID | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.vendor | unknown | Name of vendor | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.product_id | unknown | Product ID | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.product | unknown | Name of product | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.serial | unknown | Serial Number | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.endpoint_id | unknown | Endpoint ID | 
-
-
-#### Command Example
-```!xdr-get-endpoint-violations violation_id_list=100,90,80```
-
-#### Context Example
-```
-{
-    "PaloAltoNetworksXDR": {
-        "EndpointViolations": {
-            "result_count": 3,
-            "total_count": 3,
-            "violations": [
-                {
-                    "endpoint_id": "eca20ea25d4e4cfdad3a317997322693",
-                    "hostname": "$HOSTNAME",
-                    "ip": "$IP",
-                    "os_type": "AGENT_OS_WINDOWS",
-                    "product": "Cruzer Blade",
-                    "product_id": "0x5567",
-                    "serial": "4C530010060624106156",
-                    "timestamp": 1586813964000,
-                    "type": "Disk Drive",
-                    "username": "st3.local\assaflevi",
-                    "vendor": "SanDisk Corp.",
-                    "vendor_id": "0x0781",
-                    "violation_id": 100
-                },
-                {
-                    "endpoint_id": "e4b83018ae2c411899d847930e68d398",
-                    "hostname": "$HOSTNAME",
-                    "ip": "$IP",
-                    "os_type": "AGENT_OS_WINDOWS",
-                    "product": "Cruzer Blade",
-                    "product_id": "0x5567",
-                    "serial": "4C530010060624106156",
-                    "timestamp": 1586813953000,
-                    "type": "Disk Drive",
-                    "username": "st3.local\assaflevi",
-                    "vendor": "SanDisk Corp.",
-                    "vendor_id": "0x0781",
-                    "violation_id": 90
-                },
-                {
-                    "endpoint_id": "bef78d0ddbcc4ae488190bab0dcb31cd",
-                    "hostname": "$HOSTNAME",
-                    "ip": "$IP",
-                    "os_type": "AGENT_OS_WINDOWS",
-                    "product": "Cruzer Blade",
-                    "product_id": "0x5567",
-                    "serial": "4C530010060624106156",
-                    "timestamp": 1586813942000,
-                    "type": "Disk Drive",
-                    "username": "st3.local\assaflevi",
-                    "vendor": "SanDisk Corp.",
-                    "vendor_id": "0x0781",
-                    "violation_id": 80
-                }
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Endpoint Violation
->|timestamp|username|ip|type|violation_id|vendor|product|serial|
->|---|---|---|---|---|---|---|---|
->| 1586813964000 | st3.localssaflevi | $IP | Disk Drive | 100 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
->| 1586813953000 | st3.localssaflevi | $IP | Disk Drive | 90 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
->| 1586813942000 | st3.localssaflevi | $IP | Disk Drive | 80 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
-
 
 ### 17. xdr-retrieve-files
 ***
@@ -1603,217 +1481,6 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 >|Action Id|
 >|---|
 >| 2056 |
-
-
-### 18. xdr-retrieve-file-details
-***
-View the file retrieved by the Retrieve File request according to the action ID.
-
-
-#### Base Command
-
-`xdr-retrieve-file-details`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| action_id | String the represents the Action ID of the Retrieve File request. Action ID it is an output of Retrieve File request. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksXDR.retrievedFileDetails | unknown | Data — Link to the file retrieved by Retrieve File request. | 
-| PaloAltoNetworksXDR.retrievedFileDetails.endpoint_id | string | Endpoint ID. | 
-| PaloAltoNetworksXDR.retrievedFileDetails.file_link | string | Link to the file retrieved by Retrieve File request. | 
-| PaloAltoNetworksXDR.retrievedFileDetails.action_id | string | Action ID of the Retrieve File request | 
-
-
-#### Command Example
-```!xdr-retrieve-file-details action_id=1763```
-
-#### Context Example
-```
-{
-    "PaloAltoNetworksXDR": {
-        "retrievedFileDetails": {
-            "action_id": 1763,
-            "endpoint_id": "aeec6a2cc92e46fab3b6f621722e9916",
-            "file_link": "https://demisto-dev.xdr.us.paloaltonetworks.com/api/webapp/download/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsY2Fhc19pZCI6IjM3NjY5OTIyMyIsImV4cCI6MTYwMzI2NjgwNSwiZGF0YSI6eyJmaWxlX3BhdGgiOiJjb21wbGV0ZWRfdXBsb2Fkcy9hZWVjNmEyY2M5MmU0NmZhYjNiNmY2MjE3MjJlOTkxNi9zYW06M2FhYzg2ZmZjNDA3MTYxYjFmMWFhM2Y3ODIyNzgyOTFlZmIzN2ZjZWIxMDNjYzI0NmNkMjgwMDQ3YTM2MTk2OCIsImZpbGVfbmFtZSI6InJlcG9ydF9kYXRhX2MwNmMzODUwYmRjODRiYTU4ZDNjNDVjNmI2ZDBjZGUwLnppcCIsImJ1Y2tldF9uYW1lIjoieGRyLXVzLTM3NjY5OTIyMy1hZ2VudC11cGxvYWRzIn19.QZCq-D-8v9pCYLtRiMpaD3UY1tAyiak_xLQGLea1xUA"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Retrieve file Details
->|action_id|endpoint_id|file_link|
->|---|---|---|
->| 1763 | aeec6a2cc92e46fab3b6f621722e9916 | https://demisto-dev.xdr.us.paloaltonetworks.com/api/webapp/download/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsY2Fhc19pZCI6IjM3NjY5OTIyMyIsImV4cCI6MTYwMzI2NjgwNSwiZGF0YSI6eyJmaWxlX3BhdGgiOiJjb21wbGV0ZWRfdXBsb2Fkcy9hZWVjNmEyY2M5MmU0NmZhYjNiNmY2MjE3MjJlOTkxNi9zYW06M2FhYzg2ZmZjNDA3MTYxYjFmMWFhM2Y3ODIyNzgyOTFlZmIzN2ZjZWIxMDNjYzI0NmNkMjgwMDQ3YTM2MTk2OCIsImZpbGVfbmFtZSI6InJlcG9ydF9kYXRhX2MwNmMzODUwYmRjODRiYTU4ZDNjNDVjNmI2ZDBjZGUwLnppcCIsImJ1Y2tldF9uYW1lIjoieGRyLXVzLTM3NjY5OTIyMy1hZ2VudC11cGxvYWRzIn19.QZCq-D-8v9pCYLtRiMpaD3UY1tAyiak_xLQGLea1xUA |
-
-
-### 19. xdr-get-scripts
-***
-Get a list of scripts available in the scripts library.
-
-
-#### Base Command
-
-`xdr-get-scripts`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| script_name | String of the script name, or comma separated list of strings | Optional | 
-| description | String of the script description, or comma separated list of strings | Optional | 
-| created_by | String of the user name of who created the script or comma separated list of strings | Optional | 
-| windows_supported | Whether the script can be executed on Windows operating system. | Optional | 
-| linux_supported | Whether the script can be executed on Linux operating system. | Optional | 
-| macos_supported | Whether the script can be executed on Mac operating system. | Optional | 
-| is_high_risk | Whether the script has a high-risk outcome. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksXDR.Scripts | unknown | An array of scripts containing the following information: name,  description, modification_date, created_by, windows_supported, linux_supported, macos_supported, is_high_risk. | 
-| PaloAltoNetworksXDR.Scripts.script_id | unknown | Script ID | 
-| PaloAltoNetworksXDR.Scripts.name | string | Name of the script | 
-| PaloAltoNetworksXDR.Scripts.description | string | Description of the script | 
-| PaloAltoNetworksXDR.Scripts.modification_date | unknown | Timestamp of when the script was last modified. | 
-| PaloAltoNetworksXDR.Scripts.created_by | string | name of the user who created the script. | 
-| PaloAltoNetworksXDR.Scripts.windows_supported | unknown | Whether the script can be executed on Windows OS. | 
-| PaloAltoNetworksXDR.Scripts.linux_supported | unknown | Whether the script can be executed on Linux OS. | 
-| PaloAltoNetworksXDR.Scripts.macos_supported | unknown | Whether the script can be executed on macOS. | 
-| PaloAltoNetworksXDR.Scripts.is_high_risk | unknown | Whether the script has a high-risk outcome. | 
-| PaloAltoNetworksXDR.Scripts.script_uid | unknown | GUID, global ID of the script, used to identify the script when executing. | 
-
-
-#### Command Example
-```!xdr-get-scripts created_by="Palo Alto Networks" is_high_risk=true```
-
-#### Context Example
-```
-{
-    "PaloAltoNetworksXDR": {
-        "Scripts": [
-            {
-                "created_by": "Palo Alto Networks",
-                "description": "Kill processes by name",
-                "is_high_risk": true,
-                "linux_supported": true,
-                "macos_supported": true,
-                "modification_date": 1587466892269,
-                "name": "process_kill_name",
-                "script_id": 8,
-                "script_uid": "fd0a544a99a9421222b4f57a11839481",
-                "windows_supported": true
-            },
-            {
-                "created_by": "Palo Alto Networks",
-                "description": "Kill all processes with a RAM usage higher than specified",
-                "is_high_risk": true,
-                "linux_supported": true,
-                "macos_supported": true,
-                "modification_date": 1587466892260,
-                "name": "process_kill_mem",
-                "script_id": 7,
-                "script_uid": "87d4547df6d4882a3c006ec58c3b8bf4",
-                "windows_supported": true
-            },
-            {
-                "created_by": "Palo Alto Networks",
-                "description": "Delete a file by path",
-                "is_high_risk": true,
-                "linux_supported": true,
-                "macos_supported": true,
-                "modification_date": 1587466891981,
-                "name": "delete_file",
-                "script_id": 1,
-                "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d",
-                "windows_supported": true
-            },
-            {
-                "created_by": "Palo Alto Networks",
-                "description": "Set registry value",
-                "is_high_risk": true,
-                "linux_supported": false,
-                "macos_supported": false,
-                "modification_date": 1599385307669,
-                "name": "registry_set",
-                "script_id": 11,
-                "script_uid": "896392a13b2ef0ae75b3f2396125037d",
-                "windows_supported": true
-            },
-            {
-                "created_by": "Palo Alto Networks",
-                "description": "Get registry value data and its type",
-                "is_high_risk": true,
-                "linux_supported": false,
-                "macos_supported": false,
-                "modification_date": 1587466892337,
-                "name": "registry_get",
-                "script_id": 10,
-                "script_uid": "699fa2e98ab1eb5677489dce54125769",
-                "windows_supported": true
-            },
-            {
-                "created_by": "Palo Alto Networks",
-                "description": "Delete registry value or delete registry key with all its values",
-                "is_high_risk": true,
-                "linux_supported": false,
-                "macos_supported": false,
-                "modification_date": 1587466892277,
-                "name": "registry_delete",
-                "script_id": 9,
-                "script_uid": "ad36488a20cdbdd1604ec4bec9da5c41",
-                "windows_supported": true
-            },
-            {
-                "created_by": "Palo Alto Networks",
-                "description": "Execute list of shell commands",
-                "is_high_risk": true,
-                "linux_supported": true,
-                "macos_supported": true,
-                "modification_date": 1587466892157,
-                "name": "execute_commands",
-                "script_id": 2,
-                "script_uid": "a6f7683c8e217d85bd3c398f0d3fb6bf",
-                "windows_supported": true
-            },
-            {
-                "created_by": "Palo Alto Networks",
-                "description": "Kill all processes with a CPU usage higher than specified",
-                "is_high_risk": true,
-                "linux_supported": true,
-                "macos_supported": true,
-                "modification_date": 1587466892247,
-                "name": "process_kill_cpu",
-                "script_id": 6,
-                "script_uid": "3d928a24f61cd3c1116544900c424098",
-                "windows_supported": true
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Scripts
->|name|description|script_uid|modification_date|created_by|windows_supported|linux_supported|macos_supported|is_high_risk|
->|---|---|---|---|---|---|---|---|---|
->| process_kill_name | Kill processes by name | fd0a544a99a9421222b4f57a11839481 | 1587466892269 | Palo Alto Networks | true | true | true | true |
->| process_kill_mem | Kill all processes with a RAM usage higher than specified | 87d4547df6d4882a3c006ec58c3b8bf4 | 1587466892260 | Palo Alto Networks | true | true | true | true |
->| delete_file | Delete a file by path | 548023b6e4a01ec51a495ba6e5d2a15d | 1587466891981 | Palo Alto Networks | true | true | true | true |
->| registry_set | Set registry value | 896392a13b2ef0ae75b3f2396125037d | 1599385307669 | Palo Alto Networks | true | false | false | true |
->| registry_get | Get registry value data and its type | 699fa2e98ab1eb5677489dce54125769 | 1587466892337 | Palo Alto Networks | true | false | false | true |
->| registry_delete | Delete registry value or delete registry key with all its values | ad36488a20cdbdd1604ec4bec9da5c41 | 1587466892277 | Palo Alto Networks | true | false | false | true |
->| execute_commands | Execute list of shell commands | a6f7683c8e217d85bd3c398f0d3fb6bf | 1587466892157 | Palo Alto Networks | true | true | true | true |
->| process_kill_cpu | Kill all processes with a CPU usage higher than specified | 3d928a24f61cd3c1116544900c424098 | 1587466892247 | Palo Alto Networks | true | true | true | true |
 
 
 ### 20. xdr-get-script-metadata
@@ -1975,7 +1642,7 @@ def run(file_path):
 >    return True
 
 
-### 22. xdr-insert-simple-indicators
+### 21. xdr-insert-simple-indicators
 ***
 Upload IOCs as JSON objects that you retrieved from external threat intelligence sources.
 
@@ -2017,7 +1684,7 @@ There is no context output for this command.
 
 >IOCs successfully uploaded
 
-### 23. xdr-action-status-get
+### 22. xdr-action-status-get
 ***
 Retrieve the status of the requested actions according to the action ID.
 
