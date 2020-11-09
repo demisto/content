@@ -258,6 +258,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
             'packs': private_packs,
             'commit': current_commit_hash
         }
+        logging.info(f"Index is this: {index}")
         json.dump(index, index_file, indent=4)
 
     index_zip_name = os.path.basename(index_folder_path)
