@@ -6,10 +6,10 @@ ARGS = {
     'input': 'http://testforurls.onion/,http://testforurls2.onion/'}
 EXPECTED_RESULTS = [
     {'Type': 1, 'ContentsFormat': 'json', 'Contents': 2,
-     'EntryContext': {'OnionURL(val.Indicator && val.Indicator == obj.Indicator)': {
+     'EntryContext': {'DBotScore': {
          'Indicator': 'http://testforurls.onion/', 'Type': 'Onion URL', 'Score': 2, 'Vendor': 'DBot'}}},
     {'Type': 1, 'ContentsFormat': 'json', 'Contents': 2,
-     'EntryContext': {'OnionURL(val.Indicator && val.Indicator == obj.Indicator)': {
+     'EntryContext': {'DBotScore': {
          'Indicator': 'http://testforurls2.onion/', 'Type': 'Onion URL', 'Score': 2, 'Vendor': 'DBot'}}}]
 
 

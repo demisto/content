@@ -12,7 +12,7 @@ def main():
             'ContentsFormat': formats['json'],
             'Contents': 2,
             'EntryContext': {
-                'OnionURL(val.Indicator && val.Indicator == obj.Indicator)': {
+                'DBotScore': {
                     'Indicator': url,
                     'Type': 'Onion URL',
                     'Score': 2,  # suspicious
