@@ -1,8 +1,7 @@
-from typing import Tuple, Dict, Any
 from collections import defaultdict
-import demistomock as demisto
+from typing import Tuple, Dict
+
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -391,7 +390,6 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
             else:
                 raise
 
-
         hash_type = report['type']
 
         scores = {'high': 3, 'medium': 2, 'low': 1}
@@ -494,11 +492,11 @@ def main():
 
     try:
         if command == 'test-module':
-            demisto.results(test_module(client))
+            return_results(test_module(client))
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
-            return_error('Command not found.')
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {e}')
 
