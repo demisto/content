@@ -208,7 +208,7 @@ def output_model_evaluation(model_name, y_test, y_pred, res, context_field, huma
         }
     }
     demisto.results(result_entry)
-    return confusion_matrix_at_thresh
+    return confusion_matrix_at_thresh, metrics_df
 
 
 def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=False):
@@ -392,8 +392,10 @@ def main():
         target_recall = 0
     threshold_metrics_entry = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
     # show results for the threshold found - last result so it will appear first
-    confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
-                                               res=threshold_metrics_entry, context_field='DBotPhishingClassifier')
+    confusion_matrix, metrics_json = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
+                                                             res=threshold_metrics_entry,
+                                                             context_field='DBotPhishingClassifier')
+    actual_min_accuracy = min(v for k, v in metrics_json['Precision'].items() if k != 'All')
     if store_model:
         y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
         y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
@@ -402,7 +404,7 @@ def main():
                                confusion_matrix=confusion_matrix, threshold=threshold, tokenizer=tokenizer_script,
                                y_test_true=y_test,
                                y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
-                               target_accuracy=target_accuracy)
+                               target_accuracy=actual_min_accuracy)
         demisto.results("Done training on {} samples model stored successfully".format(len(y)))
     else:
         demisto.results('Skip storing model')
