@@ -931,8 +931,9 @@ def main():
     upload_core_packs_config(storage_bucket, build_number, index_folder_path)
 
     # finished iteration over content packs
-    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                            current_commit_hash, index_generation)
+    upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
+                            index_blob=index_blob, build_number=build_number, private_packs=private_packs,
+                            current_commit_hash=current_commit_hash, index_generation=index_generation)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
