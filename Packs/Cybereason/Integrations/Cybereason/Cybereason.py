@@ -427,9 +427,10 @@ def query_connections(machine, ip):
         path = [{}]
 
     json_body = build_query(CONNECTION_FIELDS, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
+    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    response.raise_for_status()
 
-    return response
+    return response.json()
 
 
 def query_malops_command():
