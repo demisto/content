@@ -125,6 +125,8 @@ def test_empty_behavior_response(mocker):
 
     mocker.patch.object(vt, 'check_file_behaviour',
                         return_value={"sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"})
+    mocker.patch.object(demisto, 'args',
+                        return_value={'resource': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'})
     mocker.patch.object(demisto, 'results')
 
     vt.check_file_behaviour_command()
@@ -148,6 +150,8 @@ def test_empty_hash_communication_response(mocker):
 
     mocker.patch.object(vt, 'check_file_behaviour',
                         return_value={"sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"})
+    mocker.patch.object(demisto, 'args',
+                        return_value={'hash': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'})
     mocker.patch.object(demisto, 'results')
 
     vt.hash_communication_command()
