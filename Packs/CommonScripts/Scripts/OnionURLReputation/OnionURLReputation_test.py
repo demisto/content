@@ -4,13 +4,13 @@ import demistomock as demisto
 # the onion urls used in the unittests are not a valid ones so they would not be caught as an Onion URL in XSOAR.
 ARGS = {
     'input': 'http://testforurls.onion/,http://testforurls2.onion/'}
-EXPECTED_RESULTS = [{'Type': 1, 'ContentsFormat': 'json', 'Contents': 2, 'EntryContext': {
-    'OnionURL(val.Indicator && val.Indicator == obj.Indicator)': {'Indicator': 'http://testforurls.onion/', 'Type': 'Onion URL', 'Score': 2,
-                  'Vendor': 'DBot'}}}, {'Type': 1, 'ContentsFormat': 'json', 'Contents': 2,
-                                             'EntryContext': {'OnionURL(val.Indicator && val.Indicator == obj.Indicator)': {
-                                                 'Indicator': 'http://testforurls2.onion/',
-                                                 'Type': 'Onion URL', 'Score': 2,
-                                                 'Vendor': 'DBot'}}}]
+EXPECTED_RESULTS = [
+    {'Type': 1, 'ContentsFormat': 'json', 'Contents': 2,
+     'EntryContext': {'OnionURL(val.Indicator && val.Indicator == obj.Indicator)': {
+         'Indicator': 'http://testforurls.onion/', 'Type': 'Onion URL', 'Score': 2, 'Vendor': 'DBot'}}},
+    {'Type': 1, 'ContentsFormat': 'json', 'Contents': 2,
+     'EntryContext': {'OnionURL(val.Indicator && val.Indicator == obj.Indicator)': {
+         'Indicator': 'http://testforurls2.onion/', 'Type': 'Onion URL', 'Score': 2, 'Vendor': 'DBot'}}}]
 
 
 def test_main(mocker):
