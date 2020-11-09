@@ -2403,7 +2403,6 @@ def retrieve_file_details_command(client: Client, args):
     attach_files = args.get('attach_files', 'true')
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
-    result = []
     raw_result = []
     file_results = []
     endpoints_count = 0
@@ -2413,21 +2412,14 @@ def retrieve_file_details_command(client: Client, args):
         data = client.retrieve_file_details(action_id)
         raw_result.append(data)
 
-        for key, val in data.items():
-            obj = {
-                'action_id': action_id,
-                'endpoint_id': key
-            }
+        for endpoint, link in data.items():
             endpoints_count += 1
-            if val:
+            if link:
                 retrived_files_count += 1
-                obj['file_link'] = val
+                file = client.get_file(file_link=link)
 
-                file = client.get_file(file_link=val)
-
-                file_results.append(fileResult(filename=f'{key}_{retrived_files_count}.zip',
+                file_results.append(fileResult(filename=f'{endpoint}_{retrived_files_count}.zip',
                                                data=file))
-            result.append(obj)
 
     return_entry = f'Action id : {action_id} \nRetrieved {retrived_files_count} files from {endpoints_count} endpoints.'
     if attach_files == 'false':
