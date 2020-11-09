@@ -3,12 +3,14 @@ from CommonServerPython import *
 
 import json
 import urllib3
-import dateparser
+
+# import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict, List  # , Tuple, Optional, Union, cast
 
 import logging
-from argus_cli.utils import formatting  # Common helper for creating nice outputs
+
+# from argus_cli.utils import formatting
 from argus_cli.settings import settings
 
 from argus_api.api.currentuser.v1.user import get_current_user
@@ -107,7 +109,7 @@ def parse_first_fetch(first_fetch: Any) -> Any:
 
 def build_tags_from_list(lst: list) -> List[Dict]:
     if not lst:
-        return None
+        return []
     tags = []
     for i in range(0, len(lst), 2):
         tags.append({"key": lst[i], "value": lst[i + 1]})
@@ -115,12 +117,12 @@ def build_tags_from_list(lst: list) -> List[Dict]:
 
 
 def str_to_list(string: str) -> list:
-    return string.strip().split(",") if string else None
+    return string.strip().split(",") if string else []
 
 
 def str_to_dict(string: str) -> dict:
     if not string:
-        return None
+        return {}
     lst = str_to_list(string)
     return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
 
@@ -130,9 +132,11 @@ def pretty_print_case_metadata(
 ) -> str:  # TODO improve: markdownify
     data = result["data"]
     string = title if title else f"# #{data['id']}: {data['subject']}\n"
-    string += f"_Priority: {data['priority']}, status: {data['status']}, last updated: {data['lastUpdatedTime']}_\n"
-    string += (
-        f"Reported by {data['publishedByUser']['name']} at {data['publishedTime']}\n\n"
+    string += "_Priority: {}, status: {}, last updated: {}_\n".format(
+        data["priority"], data["status"], data["lastUpdatedTime"]
+    )
+    string += "Reported by {} at {}\n\n".format(
+        data["publishedByUser"]["name"], data["publishedTime"]
     )
     string += data["description"]  # TODO DisplayHTML playbook# ?
     return string
@@ -160,6 +164,15 @@ def pretty_print_comments(comments: list, title: str = None) -> str:
     return string
 
 
+def pretty_print_events(result: dict, title: str = None) -> str:
+    string = title if title else ""
+    string += "_Count: {}, showing {} events, from {} to {}_\n".format(
+        result["count"], result["size"], result["offset"], result["limit"]
+    )
+    string += tableToMarkdown("Events", result["data"])
+    return string
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -167,8 +180,8 @@ def test_module_command() -> str:
     response = get_current_user()
     if response["responseCode"] == 200:
         return "ok"
-    return_error(
-        "Unable to communicate with Argus API", response["responseCode"], response
+    return (
+        f"Unable to communicate with Argus API {response['responseCode']}, {response}"
     )
 
 
@@ -258,7 +271,9 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
     )
 
     return CommandResults(
-        readable_output=pretty_print_comment(result['data'], f"# #{case_id}: Added comment\n"),
+        readable_output=pretty_print_comment(
+            result["data"], f"# #{case_id}: Added comment\n"
+        ),
         outputs_prefix="Argus.Comment",
         outputs=result,
         raw_response=result,
@@ -415,7 +430,7 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=pretty_print_comment(
-            result['data'], f"# #{case_id}: Deleted comment\n"
+            result["data"], f"# #{case_id}: Deleted comment\n"
         ),
         outputs_prefix="Argus.Comment",
         outputs=result,
@@ -423,7 +438,7 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def download_attachment_command(args: Dict[str, Any]) -> fileResult:
+def download_attachment_command(args: Dict[str, Any]) -> Any:
     case_id = args.get("case_id", None)
     attachment_id = args.get("attachment_id", None)
     if not case_id:
@@ -451,7 +466,7 @@ def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=pretty_print_comment(
-            result['data'], f"# #{case_id}: Updated comment\n"
+            result["data"], f"# #{case_id}: Updated comment\n"
         ),
         outputs_prefix="Argus.Comment",
         outputs=result,
@@ -560,7 +575,9 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
     )
 
     return CommandResults(
-        readable_output=pretty_print_comments(result['data'], f"# #{case_id}: Comments\n"),
+        readable_output=pretty_print_comments(
+            result["data"], f"# #{case_id}: Comments\n"
+        ),
         outputs_prefix="Argus.Comments",
         outputs=result,
         raw_response=result,
@@ -679,12 +696,11 @@ def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
     result = get_events_for_case(
         caseID=case_id, limit=args.get("limit", None), offset=args.get("offset", None)
     )
-    readable_output = f"# #{case_id}: Associated Events\n"
-    readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
-    readable_output += tableToMarkdown("Events", result["data"])
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=pretty_print_events(
+            dict(result), f"# #{case_id}: Associated Events\n"
+        ),
         outputs_prefix="Argus.Events",
         outputs=result,
         raw_response=result,
@@ -732,12 +748,9 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
         includeFlags=str_to_list(args.get("include_flags", None)),
         excludeFlags=str_to_list(args.get("exclude_flags", None)),
     )
-    readable_output = f"# List Events\n"
-    readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
-    readable_output += tableToMarkdown("Events", result["data"])
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=pretty_print_events(dict(result), "# Find events\n"),
         outputs_prefix="Argus.Events",
         outputs=result,
         raw_response=result,
@@ -754,12 +767,9 @@ def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
         limit=args.get("limit", None),
         offset=args.get("offset", None),
     )
-    readable_output = f"# List Events\n"
-    readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
-    readable_output += tableToMarkdown("Events", result["data"])
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=pretty_print_events(dict(result), "# List Events\n"),
         outputs_prefix="Argus.Events",
         outputs=result,
         raw_response=result,
@@ -782,7 +792,7 @@ def get_payload_command(args: Dict[str, Any]) -> CommandResults:
     result = get_payload(
         type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id
     )
-    readable_output = f"# Event payload\n"
+    readable_output = "# Event payload\n"
     readable_output += f"Event: {event_id}, type: {result['data']['type']}\n"
     readable_output += result["data"]["payload"]
 
@@ -794,7 +804,7 @@ def get_payload_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_pcap_command(args: Dict[str, Any]) -> fileResult:
+def get_pcap_command(args: Dict[str, Any]) -> Any:
     event_type = args.get("type", None)
     timestamp = args.get("timestamp", None)
     customer_id = args.get("customer_id", None)
@@ -852,12 +862,9 @@ def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
         includeFlags=str_to_list(args.get("include_flags", None)),
         excludeFlags=str_to_list(args.get("exclude_flags", None)),
     )
-    readable_output = f"# Find NIDS Events\n"
-    readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
-    readable_output += tableToMarkdown("Events", result["data"])
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=pretty_print_events(dict(result), "# Find NIDS Events\n"),
         outputs_prefix="Argus.NIDS",
         outputs=result,
         raw_response=result,
@@ -874,12 +881,9 @@ def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
         limit=args.get("limit", None),
         offset=args.get("offset", None),
     )
-    readable_output = f"# List NIDS Events\n"
-    readable_output += f"_Count: {result['count']}, showing {result['size']} events, from {result['offset']} to {result['limit']}_\n"
-    readable_output += tableToMarkdown("Events", result["data"])
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=pretty_print_events(dict(result), "# List NIDS Events\n"),
         outputs_prefix="Argus.NIDS",
         outputs=result,
         raw_response=result,
@@ -943,10 +947,9 @@ def fetch_observations_for_i_p_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def main() -> None:
-    # TODO test argus-cli
     logging.getLogger("argus_cli").setLevel("WARNING")
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
+    # verify_certificate = not demisto.params().get("insecure", False)  TODO
+    # proxy = demisto.params().get("proxy", False)  TODO
 
     first_fetch_period = parse_first_fetch(
         demisto.params().get("first_fetch_period", "-1 day")

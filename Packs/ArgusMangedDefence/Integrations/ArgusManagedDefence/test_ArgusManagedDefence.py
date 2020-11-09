@@ -1,7 +1,3 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 BASE_URL = "https://api.mnemonic.no"
 CASE_ID = 1337
 COMMENT_ID = "some-long-hash"
@@ -40,7 +36,7 @@ def test_fetch_incidents(requests_mock):
     from ArgusManagedDefence import fetch_incidents
     from argus_json import argus_case_data
 
-    method_url = f"/cases/v2/case/search"
+    method_url = "/cases/v2/case/search"
 
     requests_mock.post(
         f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_SEARCH_RESULT
@@ -98,7 +94,7 @@ def test_advanced_case_search_command(requests_mock):
     from ArgusManagedDefence import advanced_case_search_command
     from argus_json import argus_case_data
 
-    method_url = f"/cases/v2/case/search"
+    method_url = "/cases/v2/case/search"
 
     requests_mock.post(
         f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_SEARCH_RESULT
@@ -124,7 +120,7 @@ def test_create_case_command(requests_mock):
     from ArgusManagedDefence import create_case_command
     from argus_json import argus_case_data
 
-    method_url = f"/cases/v2/case"
+    method_url = "/cases/v2/case"
 
     requests_mock.post(
         f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA
@@ -324,7 +320,7 @@ def test_find_aggregated_events_command(requests_mock):
     from ArgusManagedDefence import find_aggregated_events_command
     from argus_json import argus_event_data
 
-    method_url = f"/events/v1/aggregated/search"
+    method_url = "/events/v1/aggregated/search"
 
     requests_mock.post(
         f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE
@@ -337,7 +333,7 @@ def test_list_aggregated_events_command(requests_mock):
     from ArgusManagedDefence import list_aggregated_events_command
     from argus_json import argus_event_data
 
-    method_url = f"/events/v1/aggregated"
+    method_url = "/events/v1/aggregated"
 
     requests_mock.get(
         f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE
@@ -392,7 +388,6 @@ def test_get_payload_command(requests_mock):
 
 def test_get_pcap_command(requests_mock):
     from ArgusManagedDefence import get_pcap_command
-    from argus_json import argus_event_data
 
     with open("argus_json/argus_case_data.py", "rb") as file:
         content = file.read()
@@ -419,7 +414,7 @@ def test_search_records_command(requests_mock):
     from argus_json import argus_event_data
 
     query = "mnemonic.no"
-    method_url = f"/pdns/v3/search"
+    method_url = "/pdns/v3/search"
 
     requests_mock.post(
         f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_PDNS
@@ -460,7 +455,7 @@ def test_find_nids_events(requests_mock):
     from ArgusManagedDefence import find_nids_events_command
     from argus_json import argus_event_data
 
-    method_url = f"/events/v1/nids/search"
+    method_url = "/events/v1/nids/search"
 
     requests_mock.post(
         f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_NIDS_EVENT
@@ -473,7 +468,7 @@ def test_list_nids_events(requests_mock):
     from ArgusManagedDefence import list_nids_events_command
     from argus_json import argus_event_data
 
-    method_url = f"/events/v1/nids"
+    method_url = "/events/v1/nids"
 
     requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_NIDS_EVENT)
     result = list_nids_events_command({})
