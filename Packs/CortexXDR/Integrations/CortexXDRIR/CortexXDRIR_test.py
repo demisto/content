@@ -1227,7 +1227,7 @@ def test_retrieve_file_details_command(requests_mock):
 
     data = load_test_data('./test_data/retrieve_file_details.json')
     data1 = "test_file"
-    retrieve_expected_hr = '### Action id : 1788 \nRetrieved 1 files from 1 endpoints.'
+    retrieve_expected_hr = 'Action id : 1788 \nRetrieved 1 files from 1 endpoints.'
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
     requests_mock.post(f'{XDR_URL}', json=data1)
@@ -1238,8 +1238,8 @@ def test_retrieve_file_details_command(requests_mock):
         'action_id': '1788'
     }
     results, file_result = retrieve_file_details_command(client, args)
-    assert results['HumanReadable'] == retrieve_expected_hr
-    assert file_result[0]['File'] == 'endpoint_test_1'
+    assert results == retrieve_expected_hr
+    assert file_result[0]['File'] == 'endpoint_test_1.zip'
 
 
 def test_get_scripts_command(requests_mock):

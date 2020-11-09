@@ -1152,7 +1152,8 @@ class Client(BaseClient):
             method='POST',
             url_suffix=str(),
             full_url=file_link,
-            timeout=self.timeout
+            timeout=self.timeout,
+            resp_type='content'
         )
         return reply
 
@@ -2425,16 +2426,11 @@ def retrieve_file_details_command(client: Client, args):
                 file = client.get_file(file_link=val)
 
                 file_results.append(fileResult(filename=f'{key}_{retrived_files_count}.zip',
-                                               data=file.content))
+                                               data=file))
             result.append(obj)
 
-    return_entry = {
-        'Type': entryTypes['note'],
-        'HumanReadable': f'### Action id : {action_id} \nRetrieved {retrived_files_count} files from '
-                         f'{endpoints_count} endpoints.',
-        'Contents': raw_result
-    }
-    if not attach_files:
+    return_entry = f'Action id : {action_id} \nRetrieved {retrived_files_count} files from {endpoints_count} endpoints.'
+    if attach_files == 'false':
         file_results = None
     return return_entry, file_results
 
@@ -2567,6 +2563,7 @@ def main():
         "x-xdr-timestamp": timestamp,
         "x-xdr-nonce": nonce,
         "x-xdr-auth-id": str(api_key_id),
+        # "Authorization": api_key
         "Authorization": api_key_hash
     }
 
