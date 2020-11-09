@@ -538,7 +538,7 @@ class OAuth2DeviceCodeClient {
     }
 }
 
-#### Security And Compliance client - OAUTH2 #####
+#### Security And Compliance client - OAUTH2 ####
 
 class SecurityAndComplianceClient {
 	[ValidateNotNullOrEmpty()][string]$uri
