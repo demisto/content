@@ -4874,7 +4874,7 @@ def panorama_route_lookup(dest_ip: str, virtual_router=None):
         'type': 'op',
         'key': API_KEY,
         'cmd': f"<test><routing><fib-lookup><ip>{dest_ip}</ip><virtual-router>{virtual_router}</virtual-router>"
-               + f"</fib-lookup></routing></test>"
+               + "</fib-lookup></routing></test>"
     }
 
     r = http_request(
