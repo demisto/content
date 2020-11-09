@@ -83,7 +83,7 @@ def test_get_incident_command(requests_mock):
         json=full_incidents_response
     )
     args = {
-        'respond_tenant_id': 'Tenant 1',
+        'tenant_id': 'Tenant 1',
         'incident_id': 6
     }
     incident = get_incident_command(client, args)
@@ -481,3 +481,27 @@ def test_get_remote_data_command(requests_mock):
         }]
     # print(json.dumps(expected_result, sort_keys=True, indent=2, separators=(',', ': ')))
     assert res == expected_result
+
+
+def test_get_escalations_no_new(requests_mock, mocker):
+    from RespondAnalyst import get_escalations_command, RestClient
+    escalation_query_response = {'data': {'newEscalations': []}}
+    requests_mock.post(
+        f'{BASE_URL}/graphql?tenantId=dev1',
+        json=escalation_query_response
+    )
+    args = {'tenant_id': 'Tenant 1', 'incident_id': '1'}
+    rest_client = RestClient(
+        base_url='https://localhost:6078',
+        auth=('un', 'pw'),
+        verify=False
+    )
+    requests_mock.get(
+        f'{BASE_URL}/session/tenantIdMapping',
+        json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
+    )
+    escalations_spy = mocker.spy(rest_client, 'construct_and_send_new_escalations_query')
+    res = get_escalations_command(rest_client, args)
+    assert res == [{'Type': 1, 'Contents': 'No new escalations', 'ContentsFormat': 'text'}]
+    assert escalations_spy.call_count == 1
+

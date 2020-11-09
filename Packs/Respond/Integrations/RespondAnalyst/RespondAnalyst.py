@@ -252,7 +252,7 @@ class RestClient(BaseClient):
 
     def construct_and_send_new_escalations_query(self, tenant_id, incident_id):
         data = {"query": "query {"
-                         "newEscalations(consumer: \"XSOAR" + str(tenant_id) + str(incident_id) + "\") { "
+                         "newEscalations(consumer: \"XSOAR" + tenant_id + "\", patterns: [{type: INCIDENT_ID, value: \"" + incident_id + "\"}]) { "
                                                                                  "    timeGenerated "
                                                                                  "    sourceType "
                                                                                  "    incident { "
@@ -707,7 +707,7 @@ def close_incident_command(rest_client, args):
         raise Exception('error closing incident and/or updating feedback: ' + str(err))
 
 def get_incident_command(rest_client, args):
-    external_tenant_id = args.get('respond_tenant_id')
+    external_tenant_id = args.get('tenant_id')
     formatted_incident = get_formatted_incident(rest_client, args)
     new_incident = {
         'name': external_tenant_id + ': ' + formatted_incident['incidentId'],
@@ -738,14 +738,12 @@ def get_escalations_command(rest_client, args):
             all_escalations = rest_client.construct_and_send_new_escalations_query(
                 respond_tenant_id, args['incident_id'])
             for escalation in all_escalations:
-                if escalation['incident']['id'] == args['incident_id']:
-                    valid_entry = {
-                        'Type': EntryType.NOTE,
-                        'Contents': escalation,
-                        'ContentsFormat': EntryFormat.JSON
-                    }
-                    entries.append(valid_entry)
-                    demisto.debug(f'found escalation for incident {args["incident_id"]} on {args["tenant_id"]}')
+                valid_entry = {
+                    'Type': EntryType.NOTE,
+                    'Contents': escalation,
+                    'ContentsFormat': EntryFormat.JSON
+                }
+                entries.append(valid_entry)
             if len(all_escalations) == 0:
                 more_data = False
     except Exception as e:
