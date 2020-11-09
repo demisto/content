@@ -30,6 +30,7 @@ class Client(BaseClient):
             url_suffix='import/url',
             headers=self._headers,
             data=arguments,
+            timeout=25,
             ok_codes=(422, 200, 201, 500, 401)
         )
 
@@ -68,6 +69,7 @@ class Client(BaseClient):
                 files=file_dict,
                 empty_valid_codes=[201, 204],
                 return_empty_response=True,
+                timeout=25,
                 data=params
             )
 
@@ -91,6 +93,7 @@ class Client(BaseClient):
             url_suffix='convert',
             headers=self._headers,
             data=arguments,
+            timeout=25,
             ok_codes=(422, 200, 201, 500)
         )
 
@@ -109,6 +112,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix=f'/tasks/{task_id}',
             headers=self._headers,
+            timeout=25,
             ok_codes=(422, 200, 201, 500)
         )
 
@@ -130,6 +134,7 @@ class Client(BaseClient):
             url_suffix='/export/url',
             headers=self._headers,
             data=arguments,
+            timeout=25,
             ok_codes=(422, 200, 201, 500)
         )
 
@@ -143,22 +148,10 @@ class Client(BaseClient):
             method='GET',
             url_suffix=None,
             full_url=url,
+            timeout=25,
             headers={'Content-Type': 'application/json'},
             resp_type='text'
         )
-
-    def check_remaining_minutes(self) -> bool:
-        """
-        Check if the user has remaining conversion minutes
-        Each user has 25 conversion minutes per day, unless more is purchased
-        :return: True if the user has remaining minutes, False otherwise
-        """
-        response = self._http_request(
-            method='GET',
-            url_suffix='/users/me',
-            headers=self._headers
-        )
-        return response.get('data', {}).get('credits') != 0
 
 
 @logger
