@@ -2431,7 +2431,7 @@ def retrieve_file_details_command(client: Client, args):
 
     return_entry = f'Action id : {action_id} \nRetrieved {retrived_files_count} files from {endpoints_count} endpoints.'
     if attach_files == 'false':
-        file_results = None
+        file_results = []
     return return_entry, file_results
 
 
@@ -2563,8 +2563,8 @@ def main():
         "x-xdr-timestamp": timestamp,
         "x-xdr-nonce": nonce,
         "x-xdr-auth-id": str(api_key_id),
-        # "Authorization": api_key
-        "Authorization": api_key_hash
+        "Authorization": api_key
+        # "Authorization": api_key_hash
     }
 
     client = Client(
