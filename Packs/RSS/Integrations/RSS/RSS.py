@@ -20,16 +20,17 @@ def fetch_incidents(url):
     for entry in reversed(feed.entries):
 
         date_parsed = email.utils.parsedate(entry.published)
-        dt = datetime.fromtimestamp(mktime(date_parsed))
+        if date_parsed:
+            dt = datetime.fromtimestamp(mktime(date_parsed))
 
-        if dt > last_fetch:
-            incident = {
-                'name': entry.title,
-                'occured': dt.isoformat(),
-                'rawJSON': json.dumps(entry)
-            }
+            if dt > last_fetch:
+                incident = {
+                    'name': entry.title,
+                    'occured': dt.isoformat(),
+                    'rawJSON': json.dumps(entry)
+                }
 
-            incidents.append(incident)
+                incidents.append(incident)
 
     dtnow = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
     demisto.setLastRun({'last_fetch': dtnow})
