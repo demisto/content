@@ -4861,7 +4861,7 @@ class IAMUserProfile:
 
         entry_context = {
             'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
-            'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName && '
+            'IAM.Vendor(val.instanceName && val.instanceName == obj.instanceName && '
             'val.email && val.email == obj.email)': outputs
         }
 
