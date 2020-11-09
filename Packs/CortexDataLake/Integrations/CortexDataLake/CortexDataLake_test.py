@@ -117,6 +117,16 @@ def test_prepare_fetch_incidents_query():
                                                               fetch_limit)
 
 
+MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [(1582017903000000, '2020-02-18T09:25:03.001Z'),
+                                                               (1582027208002000, '2020-02-18T12:00:08.003Z')]
+
+
+@pytest.mark.parametrize('epoch_time, expected_response', MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES)
+def test_epoch_to_milliseconds_timestamp(epoch_time, expected_response):
+    from CortexDataLake import epoch_to_milliseconds_timestamp
+    assert epoch_to_milliseconds_timestamp(epoch_time) == expected_response
+
+
 def test_get_table_name():
     from CortexDataLake import get_table_name
     query = 'SELECT pcap FROM `firewall.threat` WHERE is_packet_capture = true  AND severity = "Critical" LIMIT 10'

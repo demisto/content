@@ -192,6 +192,20 @@ def human_readable_time_from_epoch_time(epoch_time: int, utc_time: bool = False)
     return result
 
 
+def epoch_to_milliseconds_timestamp(epoch_time: int):
+    """
+    Create human readable time in the format of '1970-01-01T02:00:00.000Z'
+    Add 1 millisecond so we would not get duplicate incidents.
+    Args:
+        epoch_time: Epoch time as it is in the raw_content
+    Returns:
+        human readable time in the format of '1970-01-01T02:00:00.000Z'
+    """
+    epoch_time = int(epoch_time / 1000 + 1) / 1000
+    epoch_time_str = datetime.fromtimestamp(epoch_time).isoformat(timespec='milliseconds') + "Z"
+    return epoch_time_str
+
+
 def common_context_transformer(row_content):
     """
         This function retrieves data from a row of raw data into context path locations
@@ -908,7 +922,6 @@ def query_url_logs_command(args: dict, client: Client) -> Tuple[str, dict, List[
 
 
 def query_file_data_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
-
     query_table_name: str = 'file_data'
     context_transformer_function = files_context_transformer
     table_context_path: str = 'CDL.Logging.File'
@@ -978,9 +991,8 @@ def fetch_incidents(client: Client,
     incidents = [convert_log_to_incident(record, fetch_table) for record in records]
     max_fetched_event_timestamp = max(records, key=lambda record: record.get('time_generated', 0)).get('time_generated',
                                                                                                        0)
-    # Adding one second to prevent fetch from creating duplicate incidents.
-    max_fetched_event_timestamp += 1000000
-    next_run = {'lastRun': human_readable_time_from_epoch_time(max_fetched_event_timestamp)}
+
+    next_run = {'lastRun': epoch_to_milliseconds_timestamp(max_fetched_event_timestamp)}
     return next_run, incidents
 
 
