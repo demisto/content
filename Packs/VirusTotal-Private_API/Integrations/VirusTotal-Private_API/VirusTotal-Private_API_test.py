@@ -131,7 +131,7 @@ def test_empty_behavior_response(mocker):
     results = vt.check_file_behaviour_command()
 
     assert results['HumanReadable'] == 'No data were found for hash ' \
-                                  'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+                                       'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
 
 
 def test_empty_hash_communication_response(mocker):
