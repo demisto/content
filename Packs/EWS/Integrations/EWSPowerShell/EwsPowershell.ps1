@@ -23,7 +23,7 @@ function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
 
     $Demisto.setIntegrationContext($integration_context)
     <#
-        .SYNOPSIS
+        .DESCRIPTION
         Update integration context from OAuth2DeviceCodeClient client
 
         .EXAMPLE
@@ -46,7 +46,7 @@ function CreateNewSession([string]$uri, [string]$upn, [string]$bearer_token) {
 
 	return $session
     <#
-        .SYNOPSIS
+        .DESCRIPTION
         Creates new pssession using Oauth2.0 method.
         
         .PARAMETER uri
@@ -88,7 +88,7 @@ function ParseSuccessResults([string]$success_results) {
 
     return $parsed_success_results
     <#
-        .SYNOPSIS
+        .DESCRIPTION
         Parse string return in Search PSObject property "SuccessResults" 
         
         .PARAMETER success_results
@@ -123,7 +123,7 @@ function ParseResults([string]$results) {
 
     return $parsed_results
     <#
-        .SYNOPSIS
+        .DESCRIPTION
         Parse string return in SearchAction PSObject property "Results" 
         
         .PARAMETER success_results
@@ -174,7 +174,7 @@ function ParseSearchToEntryContext([psobject]$search) {
         "TenantId" = $search.TenantId
     }
     <#
-        .SYNOPSIS
+        .DESCRIPTION
         Parse Search raw response PSObject to Entry Context.
         
         .PARAMETER search
@@ -228,7 +228,7 @@ function ParseSearchActionsToEntryContext([psobject]$search_action) {
         "Results" = ParseResults $search_action.Results
     }
     <#
-        .SYNOPSIS
+        .DESCRIPTION
         Parse SearchAction raw response PSObject to Entry Context.
         
         .PARAMETER search
@@ -273,7 +273,7 @@ class OAuth2DeviceCodeClient {
         $this.insecure = $insecure
         $this.proxy = $proxy
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             OAuth2DeviceCodeClient manage state of OAuth2.0 device-code flow described in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code.
 
             .DESCRIPTION
@@ -365,7 +365,7 @@ class OAuth2DeviceCodeClient {
         return $response_body
 
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             Reset values populated in instance context and getting new device-code and user-code.
 
             .EXAMPLE
@@ -415,7 +415,7 @@ class OAuth2DeviceCodeClient {
         return $response_body
 
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             Getting access-token and refresh-token from Microsoft application based on the device-code we go from AuthorizationRequest() method.
 
             .EXAMPLE
@@ -463,7 +463,7 @@ class OAuth2DeviceCodeClient {
         return $response_body
 
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             Getting new access-token and refresh-token from Microsoft application based on the refresh-token we got from AccessTokenRequest() method.
 
             .EXAMPLE
@@ -487,7 +487,7 @@ class OAuth2DeviceCodeClient {
         return $current_time -gt $valid_until
 
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             Check if device-code expired.
 
             .EXAMPLE
@@ -510,7 +510,7 @@ class OAuth2DeviceCodeClient {
 
         return $current_time -gt $valid_until
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             Check if access-token expired.
 
             .EXAMPLE
@@ -529,7 +529,7 @@ class OAuth2DeviceCodeClient {
             $this.RefreshTokenRequest()
         }
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             Refresh access token if expired, with offset of 30 seconds.
 
             .EXAMPLE
@@ -555,7 +555,7 @@ class SecurityAndComplianceClient {
         $this.insecure = $insecure
         $this.proxy = $proxy
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             SecurityAndComplianceClient connect to Security & Compliance Center using powershell session (OAuth2.0) and allow interact with it.
 
             .PARAMETER uri
@@ -589,7 +589,7 @@ class SecurityAndComplianceClient {
     CreateSession() {
         $this.session = CreateNewSession $this.uri $this.upn $this.bearer_token
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             This method is for internal use. It creates session to Security & Compliance Center.
 
             .EXAMPLE
@@ -606,7 +606,7 @@ class SecurityAndComplianceClient {
             Remove-PSSession $this.session
         }
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             This method is for internal use. It creates session to Security & Compliance Center.
 
             .EXAMPLE
@@ -645,7 +645,7 @@ class SecurityAndComplianceClient {
             $this.CloseSession()
         }
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             Create compliance searches in the Security & Compliance Center.
 
             .PARAMETER search_name
@@ -717,7 +717,7 @@ class SecurityAndComplianceClient {
             $this.CloseSession()
         }
         <#
-            .SYNOPSIS
+            .DESCRIPTION
             Create compliance searches in the Security & Compliance Center.
 
             .PARAMETER search_name
