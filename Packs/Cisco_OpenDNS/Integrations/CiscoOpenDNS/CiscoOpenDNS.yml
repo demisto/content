@@ -40,8 +40,8 @@ script:
       name: domain
       required: true
     description: Open DNS  Block Domain
-    name: OpenDNSblockDomain
-  - arguments: []
+    name: open-dns-block-domain  
+    - arguments: []
     description: Gel List of all Blaclist Items
     name: OpenDNSgetBlackList
   - arguments:
