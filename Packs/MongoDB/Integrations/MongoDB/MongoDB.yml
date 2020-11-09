@@ -82,6 +82,13 @@ script:
       name: sort
       required: false
       secret: false
+    - default: false
+      description: A comma-seperated list of fields to return. If not specified, will
+        return all fields to context.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
     deprecated: false
     description: Searches for items by the specified JSON query.
     execution: false
@@ -209,7 +216,7 @@ script:
     description: Drops a collection from the database.
     execution: true
     name: mongodb-drop-collection
-  dockerimage: demisto/pymongo:1.0.0.10664
+  dockerimage: demisto/pymongo:1.0.0.12410
   feed: false
   isfetch: false
   longRunning: false
