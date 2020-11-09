@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from GoogleCalendar import DemistoException, MESSAGES, OUTPUT_PREFIX, GSuiteClient
+from GoogleCalendar import MESSAGES, OUTPUT_PREFIX, GSuiteClient
 
 with open('test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
@@ -86,7 +86,7 @@ def test_test_module(mocker, gsuite_client):
     Then:
     - Ensure 'ok' should be return.
     """
-    from GoogleCalendar import test_module, service_account
+    from GoogleCalendar import test_module
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
     mocker.patch.object(GSuiteClient, 'http_request')
     assert test_module(gsuite_client) == 'ok'
