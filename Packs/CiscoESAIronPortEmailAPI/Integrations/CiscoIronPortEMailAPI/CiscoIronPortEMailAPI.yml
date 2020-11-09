@@ -73,11 +73,15 @@ script:
     description: Release Email from Spam
     name: ironportSpamReleaseEmail
   - arguments:
-    - name: periodInDays
+    - description: periodInDays
+      name: periodInDays
       required: true
-    - name: senderPattern
-    - name: recipientPattern
-    - name: subjectPattern
+    - description: senderPattern
+      name: senderPattern
+    - description: recipientPattern
+      name: recipientPattern
+    - description: subjectPattern
+      name: subjectPattern
     - defaultValue: "50"
       description: limit of output
       name: limit
