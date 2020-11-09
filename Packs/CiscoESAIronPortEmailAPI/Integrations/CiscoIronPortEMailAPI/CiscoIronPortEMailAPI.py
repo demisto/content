@@ -106,7 +106,8 @@ def ironPortSearchQuarantines(periodInDays, senderPattern, recipientPattern, sub
 
     # print("senderSearchPart :", searchPart)
     # print("Serach Period start :",start , " END :",end)
-    url = urlBase + "/esa/api/v2.0/quarantine/messages?quarantineType=pvo&quarantines=Outbreak,Virus,File+Analysis,Unclassified,Policy" + \
+    url = urlBase + \
+    "/esa/api/v2.0/quarantine/messages?quarantineType=pvo&quarantines=Outbreak,Virus,File+Analysis,Unclassified,Policy" + \
         searchOptions + searchPeriod + searchPart
     # print("URL : ",url)
 
