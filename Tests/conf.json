@@ -2,6 +2,16 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+         {
+            "integrations": "GSuiteAdmin",
+            "playbookID": "GSuiteAdmin-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+              "integrations": "GoogleCalendar",
+              "playbookID": "GoogleCalendar-Test",
+              "fromversion": "5.0.0"
+         },
         {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
@@ -397,6 +407,25 @@
         {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "HelloWorld",
+            "playbookID": "Sanity Test - Playbook with integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "HelloWorld",
+            "playbookID": "Sanity Test - Playbook with mocked integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Sanity Test - Playbook with no integration",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Gmail",
+            "playbookID": "Sanity Test - Playbook with Unmockable Integration",
             "fromversion": "5.0.0"
         },
         {
@@ -1197,16 +1226,6 @@
             "playbookID": "Mail Sender (New) Test",
             "instance_names": [
                 "Mail_Sender_(New)_STARTTLS"
-            ]
-        },
-        {
-            "integrations": [
-                "Mail Sender (New)",
-                "Gmail"
-            ],
-            "playbookID": "Mail Sender (New) Test",
-            "instance_names": [
-                "Mail_Sender_(New)_SSL/TLS"
             ]
         },
         {
@@ -3186,7 +3205,6 @@
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
-        "Mail Sender (New) Test": "Issue 25602",
         "Luminate-TestPlaybook": "Issue 27016",
         "AutoFocus V2 test": "Issue 26464",
         "Fidelis Elevate Network": "Issue 26453",
@@ -3210,7 +3228,6 @@
         "AttackIQ - Test": "Issue 29774",
         "CyberTotal_TestPlaybook": "Issue 29776",
         "AWS-securityhub Test": "Issue 29796",
-        "Carbon Black Enterprise EDR Test": "Issue 29775",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
         "IAM - Test Playbook": "Issue 30013",
         "Trend Micro Apex - Test": "Issue 27280",
@@ -3219,7 +3236,8 @@
         "Test - CrowdStrike Falcon": "Issue 30068",
         "TestEmailRepPlaybook": "Issue 30070",
         "CounterCraft - Test": "Issue 30069",
-        "Test-BPA": "Issue 28406"
+        "Test-BPA": "Issue 28406",
+        "Indicators reputation-.json Test": "Issue 30116"
     },
     "skipped_integrations": {
         
@@ -3439,6 +3457,7 @@
         "AWS Sagemaker": "Issue 24926",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
+        "GSuiteAdmin": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Google Chronicle Backstory": "SDK",
         "Google Vision AI": "SDK",
@@ -3448,6 +3467,7 @@
         "GooglePubSub": "googleclient sdk has time based challenge exchange",
         "Google Resource Manager": "googleclient sdk has time based challenge exchange",
         "Google Cloud Storage": "SDK",
+        "GoogleCalendar": "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
