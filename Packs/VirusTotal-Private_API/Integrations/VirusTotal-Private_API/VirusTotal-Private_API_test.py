@@ -1,6 +1,7 @@
 import importlib
 import json
 import demistomock as demisto
+
 queued_response = {u'response_code': -2,
                    u'resource': u'YES_THIS_IS_A_UID',
                    u'scan_id': u'YES_THIS_IS_A_UID',
@@ -107,3 +108,50 @@ def test_create_url_report_output():
     assert md == expected_md
     assert ec_url == expected_ec_url
     assert ec_dbot == expected_ec_dbot
+
+
+def test_empty_behavior_response(mocker):
+    """
+
+    Given:
+        File hash which will return an empty report from the API
+    When:
+        Running vt-private-check-file-behaviour command
+    Then:
+        Return indicative response to the war room
+
+    """
+    vt = importlib.import_module("VirusTotal-Private_API")
+
+    mocker.patch.object(vt, 'check_file_behaviour',
+                        return_value={"sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"})
+    mocker.patch.object(demisto, 'results')
+
+    vt.check_file_behaviour_command()
+
+    results = demisto.results.callargs[0][0]
+    assert results == 'No data were found for hash e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+
+
+def test_empty_hash_communication_response(mocker):
+    """
+
+    Given:
+        File hash which will return an empty report from the API
+    When:
+        Running vt-private-hash-communication command
+    Then:
+        Return indicative response to the war room
+
+    """
+    vt = importlib.import_module("VirusTotal-Private_API")
+
+    mocker.patch.object(vt, 'check_file_behaviour',
+                        return_value={"sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"})
+    mocker.patch.object(demisto, 'results')
+
+    vt.hash_communication_command()
+
+    results = demisto.results.callargs[0][0]
+    assert results == 'No communication results were found for hash ' \
+                      'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
