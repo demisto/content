@@ -903,6 +903,8 @@ def get_indicators(**kwargs):
         demisto.results('No indicators found from ThreatStream')
         sys.exit()
     iocs_context = parse_indicators_list(iocs_list)
+
+    # handle the issue that the API does not return more than 1000 indicators.
     if limit > 1000:
         while len(iocs_context) < limit:
             offset += len(iocs_list)
