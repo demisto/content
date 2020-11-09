@@ -606,7 +606,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "30"
     scriptarguments:
       issueIdOrKey:
         simple: ${Ticket.Id}
@@ -724,7 +724,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3695
         }
       }
     note: false
@@ -747,7 +747,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "29"
     scriptarguments:
       assignee: {}
       description:
@@ -774,6 +774,70 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: e1e2b6d0-673c-454b-8ea3-e3f5cca629f4
+    type: regular
+    task:
+      id: e1e2b6d0-673c-454b-8ea3-e3f5cca629f4
+      version: -1
+      name: delete-issue
+      script: '|||jira-delete-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      issueIdOrKey:
+        simple: ${Ticket.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 7766730b-97fc-482f-8373-3463c8d76d58
+    type: regular
+    task:
+      id: 7766730b-97fc-482f-8373-3463c8d76d58
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 3170
         }
       }
@@ -787,7 +851,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3360,
+        "height": 3710,
         "width": 380,
         "x": 50,
         "y": 50
