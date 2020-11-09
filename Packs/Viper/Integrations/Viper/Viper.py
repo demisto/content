@@ -166,7 +166,7 @@ def main():
             demisto.results(result)
 
         elif demisto.command() == 'viper-download':
-            viper_download(client, demisto.args())
+            return_results(viper_download(client, demisto.args())
 
         elif demisto.command() == 'viper-search':
            return_results(viper_search(client, demisto.args()))
