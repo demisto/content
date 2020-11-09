@@ -770,10 +770,6 @@ jobs:
                 name: Upload Packs To Marketplace Storage
                 command: |
                   # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
-                  if [[ $CIRCLE_BRANCH != master ]]; then
-                    echo "Skipping packs uploading on non master branch"
-                    exit 0
-                  fi
 
                   EXTRACT_FOLDER=$(mktemp -d)
                   PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
@@ -781,7 +777,7 @@ jobs:
                   ID_SET=$CIRCLE_ARTIFACTS/id_set.json
                   GCS_PATH=$(mktemp)
                   echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
+                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -o
                   rm $GCS_PATH
                 when: on_success
             - run:
