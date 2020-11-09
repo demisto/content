@@ -1,5 +1,5 @@
 import urllib3
-from typing import Dict, Any, List, Union
+from typing import Dict, Any, List
 
 from CommonServerPython import *
 
@@ -65,7 +65,7 @@ def test_module(client: Client):
     return 'ok', None, None
 
 
-def cve_latest_command(client: Client, limit) -> List[CommandResults]:
+def cve_latest_command(client: Client, limit) -> CommandResults:
     """Returns the 30 latest updated CVEs.
     Args:
          limit int: The amount of CVEs to display
@@ -73,32 +73,21 @@ def cve_latest_command(client: Client, limit) -> List[CommandResults]:
          Latest 30 CVE details containing ID, CVSS, modified date, published date and description.
     """
     res = client.cve_latest(limit)
-    command_results: List[CommandResults] = []
-    for cve_details in res:
-        data = cve_to_context(cve_details)
-        indicator = generate_indicator(data)
-        readable_output = tableToMarkdown('Latest CVEs', data)
-        command_results.append(
-            CommandResults(
-                outputs_prefix='CVE',
-                outputs_key_field='ID',
-                outputs=data,
-                readable_output=readable_output,
-                raw_response=res,
-                indicator=indicator
-            )
-        )
+    data = [cve_to_context(cve_details) for cve_details in res]
+    indicators = generate_indicators(data)
+    command_results = CommandResults(
+        outputs_prefix='CVE',
+        outputs_key_field='ID',
+        outputs=data,
+        raw_response=res,
+        indicators=indicators
+    )
 
-    if not res:
-        command_results.append(
-            CommandResults(
-                readable_output='No results found'
-            )
-        )
+    command_results.readable_output = tableToMarkdown('Latest CVEs', data) if res else 'No results found.'
     return command_results
 
 
-def cve_command(client: Client, args: dict) -> Union[List[CommandResults], CommandResults]:
+def cve_command(client: Client, args: dict) -> CommandResults:
     """Search for cve with the given ID and returns the cve data if found.
     Args:
            client: Integration client
@@ -108,48 +97,47 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
     """
     cve_id = args.get('cve_id', '')
     cve_ids = argToList(cve_id)
-    command_results: List[CommandResults] = []
-    response = None
+    data = []
+    res = []
 
     for _id in cve_ids:
         if not valid_cve_id_format(_id):
             raise DemistoException(f'"{_id}" is not a valid cve ID')
         response = client.cve(_id)
-        data = cve_to_context(response)
-        indicator = generate_indicator(data)
-        command_results.append(
-            CommandResults(
-                outputs_prefix='CVE',
-                outputs_key_field='ID',
-                outputs=data,
-                raw_response=response,
-                indicator=indicator
-            )
-        )
-    if not response:
-        return CommandResults(
-            readable_output='No results found'
-        )
+        res.append(response)
+        data.append(cve_to_context(response))
+    indicators = generate_indicators(data)
+    command_results = CommandResults(
+        outputs_prefix='CVE',
+        outputs_key_field='ID',
+        outputs=data,
+        raw_response=res,
+        indicators=indicators
+    )
+
+    command_results.readable_output = tableToMarkdown('CVE Search results', data) if res else 'No results found.'
     return command_results
 
 
-def generate_indicator(data: dict) -> Common.CVE:
+def generate_indicators(data: list) -> list:
     """
-    Generating a single cve indicator with dbot score from cve data.
+    Generating a list of cve indicators with dbot score from cve data.
     Args:
         data: The cve data
 
     Returns:
-        A CVE indicator with dbotScore
+        A list of CVE indicators with dbotScore
     """
-    cve_object = Common.CVE(
-        id=data.get('ID'),
-        cvss=data.get('CVSS'),
-        published=data.get('Published'),
-        modified=data.get('Modified'),
-        description=data.get('Description')
-    )
-    return cve_object
+    indicators = []
+    for cve in data:
+        cve_object = Common.CVE(id=cve.get('ID'),
+                                cvss=cve.get('CVSS'),
+                                published=cve.get('Published'),
+                                modified=cve.get('Modified'),
+                                description=cve.get('Description')
+                                )
+        indicators.append(cve_object)
+    return indicators
 
 
 def valid_cve_id_format(cve_id: str) -> bool:

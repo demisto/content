@@ -42,6 +42,12 @@ parameters:
   packs_to_upload:
     type: string
     default: ""
+  bucket_upload:
+    type: string
+    default: ""
+  force_previous_commit:
+    type: string
+    default: ""
 
 references:
   environment: &environment
@@ -65,6 +71,8 @@ references:
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
       FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
       PACKS_TO_UPLOAD_PARAMETER: << pipeline.parameters.packs_to_upload >>
+      BUCKET_UPLOAD_PARAMETER: << pipeline.parameters.bucket_upload >>
+      FORCE_PREVIOUS_COMMIT_PARAMETER: << pipeline.parameters.force_previous_commit >>
 
   container_config: &container_config
     docker:
@@ -125,6 +133,14 @@ references:
         then
             echo "export PACKS_TO_UPLOAD=$PACKS_TO_UPLOAD_PARAMETER" >> $BASH_ENV
         fi
+        if [ -n "${BUCKET_UPLOAD_PARAMETER}" ];
+        then
+            echo "export BUCKET_UPLOAD=$BUCKET_UPLOAD_PARAMETER" >> $BASH_ENV
+        fi
+        if [ -n "${FORCE_PREVIOUS_COMMIT_PARAMETER}" ];
+        then
+            echo "export FORCE_PREVIOUS_COMMIT=$FORCE_PREVIOUS_COMMIT_PARAMETER" >> $BASH_ENV
+        fi
 
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
@@ -132,6 +148,7 @@ references:
         mkdir -p $CIRCLE_ARTIFACTS/logs
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
+        chmod +x ./Tests/Marketplace/*
         if [ ! -e "venv" ]; then
           echo "installing venv"
           NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
@@ -152,7 +169,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD="
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^FORCE_PREVIOUS_COMMIT="
         python --version
         python3 --version
         demisto-sdk --version
@@ -187,6 +204,9 @@ references:
             elif [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
               then
                 export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
+            elif [ -n "${BUCKET_UPLOAD}" ] ;
+              then
+                export IFRA_ENV_TYPE="Bucket-Upload" # disable-secrets-detection
             else
               export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
             fi
@@ -396,6 +416,69 @@ references:
     - Demisto SDK Nightly - Run against Cortex XSOAR:
         context: sdk_nightly_env
 
+  bucket_upload_jobs: &bucket_upload_jobs
+    - Setup Environment:
+        context: bucket_upload_env
+    - Run Unit Testing And Lint:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
+    - Run Validations:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
+    - Create Instances:
+        context: bucket_upload_env
+        requires:
+          - Run Unit Testing And Lint
+          - Run Validations
+    - Install Packs in Demisto 6_0:
+        context: bucket_upload_env
+        requires:
+          - Create Instances
+    - Install Packs in Demisto Marketplace - Master:
+        context: bucket_upload_env
+        requires:
+          - Create Instances
+    - Upload Packs To Marketplace:
+        context: bucket_upload_env
+        requires:
+          - Install Packs in Demisto 6_0
+          - Install Packs in Demisto Marketplace - Master
+
+  check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
+    when:
+      condition:
+        or:
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
+      steps:
+        - run:
+            name: Check User Permissions to Upload Pack
+            command: |
+              CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
+              LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
+              LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
+              if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
+                  echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
+                  exit 1
+              else
+                  echo "User '${CIRCLE_USERNAME}' is allowed to force pack uploads."
+              fi
+
+  wait_until_server_ready: &wait_until_server_ready
+    run:
+      name: Wait until server ready
+      shell: /bin/bash
+      when: always
+      command: |
+        if ./Tests/scripts/is_ami.sh ;
+          then
+            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
+        else
+            python3 ./Tests/scripts/wait_until_server_ready.py "master"
+        fi
+
 jobs:
   Setup Environment:
     <<: *container_config
@@ -435,9 +518,14 @@ jobs:
                 name: Slack Notifier
                 shell: /bin/bash
                 command: |
-                  ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+                  if [ -n "${BUCKET_UPLOAD}" ]; then
+                    ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+                  else
+                    ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+                  fi
                 when: always
             - *store_artifacts
+
   Run Validations:
     <<: *container_config
     resource_class: medium
@@ -515,6 +603,15 @@ jobs:
                     echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CIRCLE_BRANCH.\n Merge it in order to merge the current branch into content repo."
                     exit 1
                   fi
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
+          when: always
+
   Create Instances:
     <<: *container_config
     resource_class: medium
@@ -573,6 +670,15 @@ jobs:
             - *create_instance
             - *store_artifacts
       - *persist_to_workspace
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
+          when: always
+
   Server 5_0:
     <<: *container_config
     resource_class: medium
@@ -767,24 +873,6 @@ jobs:
                   cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                   exit $RETVAL
             - run:
-                name: Upload Packs To Marketplace Storage
-                command: |
-                  # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
-                  if [[ $CIRCLE_BRANCH != master ]]; then
-                    echo "Skipping packs uploading on non master branch"
-                    exit 0
-                  fi
-
-                  EXTRACT_FOLDER=$(mktemp -d)
-                  PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-                  PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-                  ID_SET=$CIRCLE_ARTIFACTS/id_set.json
-                  GCS_PATH=$(mktemp)
-                  echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
-                  rm $GCS_PATH
-                when: on_success
-            - run:
                 name: Slack Notifier
                 shell: /bin/bash
                 command: |
@@ -792,6 +880,7 @@ jobs:
                 when: always
             - *destroy_instances
             - *store_artifacts
+
   Server Master:
     <<: *container_config
     resource_class: medium
@@ -861,7 +950,8 @@ jobs:
             - *comment_on_contrib_pr
             - *destroy_instances
             - *store_artifacts
-  Force Pack Upload:
+  
+  Force Upload Packs To Marketplace:
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -870,30 +960,55 @@ jobs:
       - *add_ssh_keys
       - *prepare_environment
       - run:
-          name: Check User Permissions to Force Upload Pack
-          command: |
-            CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
-            LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-            LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
-            if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
-                echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
-                exit 1
-            else
-                echo "User '${CIRCLE_USERNAME}' is allowed to force pack uploads."
-            fi
-
-      - run:
-          name: Upload Packs To Marketplace Storage
+          name: Force Upload Packs To Marketplace Storage
           command: |
             EXTRACT_FOLDER=$(mktemp -d)
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-            ID_SET=$CIRCLE_ARTIFACTS/id_set.json
             GCS_PATH=$(mktemp)
+            CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+            CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist' -bb 'marketplace-ci-build' -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -o true
             rm $GCS_PATH
-          when: on_success
+      - *destroy_instances
+      - *store_artifacts
+
+  Upload Packs To Marketplace:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - *check_user_permissions_to_upload_packs
+      - when:
+          condition:
+            equal:
+              - master
+              - << pipeline.git.branch >>
+          steps:
+            - run:
+                name: Upload Packs To Marketplace Storage
+                command: |
+                  EXTRACT_FOLDER=$(mktemp -d)
+                  PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+                  PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+                  GCS_PATH=$(mktemp)
+                  CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+                  CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
+                  echo $GCS_MARKET_KEY > $GCS_PATH
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb 'marketplace-dist' -bb 'marketplace-ci-build' -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -o false
+                  rm $GCS_PATH 
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
+          when: always
       - *destroy_instances
       - *store_artifacts
 
@@ -1020,14 +1135,86 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' ./env_results.json
           when: always
 
+  Install Packs in Demisto 6_0:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - *wait_until_server_ready
+      - run:
+          name: Install Packs
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto 6.0"')
+            echo "Demisto 6.0 filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
+                exit 0
+            fi
+            echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
+            source $BASH_ENV
+            ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
+            exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
+          when: always
+      - *persist_to_workspace
+
+  Install Packs in Demisto Marketplace - Master:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - *wait_until_server_ready
+      - run:
+          name: Install Packs
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+            echo "Demisto Marketplace filter=$TEMP"
+            if [[ "$TEMP" == "false" ]];
+              then
+                echo "Skipping - instance was not setup"
+                exit 0
+            fi
+            echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+            source $BASH_ENV
+            ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
+            exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
+          when: always
+
 workflows:
   version: 2
   commit:
     when:
       not:
         or:
-        - << pipeline.parameters.force_pack_upload >>
-        - << pipeline.parameters.demisto_sdk_nightly >>
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
+          - << pipeline.parameters.demisto_sdk_nightly >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -1071,16 +1258,18 @@ workflows:
   force_pack_upload:
     when: << pipeline.parameters.force_pack_upload >>
     jobs:
-      - Setup Environment
-      - Run Validations:
-          requires:
-            - Setup Environment
+      - Setup Environment:
+          context: bucket_upload_env
       - Create Instances:
+          context: bucket_upload_env
           filters:
             branches:
               only:
                 - master
-      - Force Pack Upload:
+          requires:
+            - Setup Environment
+      - Force Upload Packs To Marketplace:
+          context: bucket_upload_env
           filters:
             branches:
               only:
@@ -1150,3 +1339,21 @@ workflows:
     when: << pipeline.parameters.demisto_sdk_nightly>>
     jobs:
       *sdk_nightly_jobs
+
+  bucket_upload:
+    triggers:
+      - schedule:
+          # should trigger every day at 9 PM UTC (00:00 AM Israel Time)
+          cron: "0 21 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      *bucket_upload_jobs
+
+  bucket_upload_trigger:
+    # will initiate when using the trigger script.
+    when: << pipeline.parameters.bucket_upload>>
+    jobs:
+      *bucket_upload_jobs

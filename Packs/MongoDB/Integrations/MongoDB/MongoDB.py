@@ -1,7 +1,7 @@
 from CommonServerPython import *
 
 from json import JSONDecodeError
-from typing import List, Union, Tuple, Any, Optional
+from typing import List, Union, Tuple, Any
 
 from bson.objectid import ObjectId
 from pymongo import MongoClient
@@ -60,13 +60,9 @@ class Client:
         entries = self.datetime_to_str(entries)
         return entries
 
-    def query(self, collection: str, query: dict, limit: int = 50, sort_str: str = '', fields: Optional[str] = None)\
-            -> List[dict]:
+    def query(self, collection: str, query: dict, limit: int = 50, sort_str: str = '') -> List[dict]:
         collection_obj = self.get_collection(collection)
-        if fields:
-            entries = collection_obj.find(query, {field: 1 for field in argToList(fields)}).limit(limit)
-        else:
-            entries = collection_obj.find(query).limit(limit)
+        entries = collection_obj.find(query).limit(limit)
         if sort_str:
             entries = entries.sort(format_sort(sort_str))
         entries = self.datetime_to_str(entries)
@@ -259,13 +255,12 @@ def get_entry_by_id_command(
         return 'MongoDB: No results found', {}, raw_response
 
 
-def search_query(client: Client, collection: str, query: str, limit: str, sort: str = '', fields: str = None,
-                 **kwargs)\
+def search_query(client: Client, collection: str, query: str, limit: str, sort: str = '', **kwargs)\
         -> Tuple[str, dict, list]:
     # test if query is a valid json
     try:
         query_json = validate_json_objects(json.loads(query))
-        raw_response = client.query(collection, query_json, int(limit), sort, fields)  # type: ignore
+        raw_response = client.query(collection, query_json, int(limit), sort)  # type: ignore
     except JSONDecodeError:
         raise DemistoException('The `query` argument is not a valid json.')
     if raw_response:

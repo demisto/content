@@ -11,3 +11,4 @@ google-cloud-bigquery==1.26.1
 prettytable==0.7.2
 circleci==1.2.2
 boto3==1.16.10
+mock-open==1.4.0

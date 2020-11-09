@@ -646,5 +646,4 @@ script:
   subtype: python2
 tests:
 - Test Playbook McAfee ATD
-- Detonate Remote File From URL -McAfee-ATD - Test
 fromversion: 5.0.0
