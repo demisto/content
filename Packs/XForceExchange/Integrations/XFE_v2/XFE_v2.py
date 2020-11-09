@@ -389,7 +389,8 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                 markdown += f'File: {file_hash} not found\n'
                 continue
             else:
-                raise Exception(err)
+                raise
+
 
         hash_type = report['type']
 
