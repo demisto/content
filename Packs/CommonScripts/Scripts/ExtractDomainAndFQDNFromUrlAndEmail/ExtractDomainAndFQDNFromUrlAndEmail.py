@@ -115,7 +115,7 @@ def main():
             "Contents": [extract_fqdn_or_domain(item, is_fqdn=True), extract_fqdn_or_domain(item, is_domain=True)]
         }
         if input_entry.get("Contents") == ['', '']:
-            continue
+            entries_list.append([])
         else:
             entries_list.append(input_entry)
     if entries_list:

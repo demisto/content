@@ -2,7 +2,7 @@ id: Indicators reputation-.json Test
 fromversion: 5.5.0
 version: -1
 name: Indicators-reputation-Test
-description: Test our repution*.json regexes in misc folder
+description: Test our repution*.json regexes in misc folder Domain_Email_bug
 starttaskid: "0"
 tasks:
   "0":
