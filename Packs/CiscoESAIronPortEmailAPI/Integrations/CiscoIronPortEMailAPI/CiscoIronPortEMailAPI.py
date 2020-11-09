@@ -243,7 +243,7 @@ def ironPortSearch(periodInDays, senderPattern, recipientPattern, subjectPattern
         searchPart += ""
 
     # print("senderSearchPart :", searchPart)
-    #print("Serach Period start :",start , " END :",end)
+    # print("Serach Period start :",start , " END :",end)
     url = urlBase + "/esa/api/v2.0/message-tracking/messages?" + searchOptions + searchPeriod + searchPart
     # print("URL : ",url)
 
@@ -349,7 +349,7 @@ def main():
             ironPortSearch(period, senderPattern, recipientPattern, subjectPattern, limit)
 
     except Exception as e:
-        LOG.print_log()
+        LOG.print_log(e)
 #
 
 
