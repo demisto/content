@@ -843,7 +843,6 @@ class Pack(object):
             pack_full_path = os.path.join(version_pack_path, f"{self._pack_name}.zip")
             blob = storage_bucket.blob(pack_full_path)
             blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
             if private_content:

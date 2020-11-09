@@ -46,6 +46,7 @@ MARKET_PLACE_CONFIGURATION = {
     'marketplace.initial.sync.delay': '0',
     'content.pack.ignore.missing.warnings.contentpack': 'true'
 }
+ID_SET_PATH = './Tests/id_set.json'
 
 
 class Running(IntEnum):
@@ -204,7 +205,15 @@ def options_handler():
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
-
+    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.',
+                        default='/home/runner/work/content-private/content-private/content/artifacts/packs')
+    parser.add_argument('--content_root', help='Path to the content root.',
+                        default='/home/runner/work/content-private/content-private/content')
+    parser.add_argument('--id_set_path', help='Path to the ID set.')
+    parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
+                        default='./Tests/filter_file.txt')
+    parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
+                        default='./Tests/content_packs_to_install.txt')
     options = parser.parse_args()
 
     return options
@@ -1035,8 +1044,8 @@ def install_packs(build, prints_manager, pack_ids=None):
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
-            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, prints_manager,
-                                                                      build.is_private)
+            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client,
+                                                                      prints_manager)
             if not flag:
                 raise Exception('Failed to search and install packs.')
         except Exception as exc:
@@ -1187,7 +1196,7 @@ def test_files(content_path):
 def get_test_playbooks_in_dir(path):
     playbooks = filter(lambda x: x.is_file(), os.scandir(path))
     for playbook in playbooks:
-        yield os.path.join(path, playbook), playbook
+        yield playbook.path, playbook
 
 
 def test_pack_metadata():

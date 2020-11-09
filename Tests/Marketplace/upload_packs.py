@@ -98,6 +98,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         os.mkdir(extract_destination_path)
 
     if not index_blob.exists():
+        logging.error("The blob does not exist.")
         os.mkdir(index_folder_path)
         logging.error(f"{storage_bucket.name} index blob does not exists")
         return index_folder_path, index_blob, index_generation
@@ -398,8 +399,9 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
         Markdown table: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
-        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status",
+                    "Pack Bucket URL"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
 
     table = ['|', '|']
 
@@ -410,8 +412,9 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
     for index, pack in enumerate(packs_input_list):
         pack_status_message = PackStatus[pack.status].value if include_pack_status else ''
 
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
-            else [index, pack.name, pack.display_name, pack.latest_version]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message,
+               pack.bucket_url] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
 
         row_hr = '|'
         for _value in row:
