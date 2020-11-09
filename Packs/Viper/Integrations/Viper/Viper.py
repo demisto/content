@@ -169,7 +169,7 @@ def main():
             viper_download(client, demisto.args())
 
         elif demisto.command() == 'viper-search':
-            viper_search(client, demisto.args())
+           return_results(viper_search(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:
