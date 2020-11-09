@@ -68,7 +68,7 @@ script:
       description: The description of the CVE.
       type: String
     description: Returns CVE information by CVE ID.
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
   longRunning: false
