@@ -5,7 +5,6 @@ from CommonServerPython import *
 import urllib.parse
 import urllib3
 from typing import List, Dict, Any, Tuple, Union, Callable
-from google.auth.transport.requests import Request
 
 # Disable insecure warnings
 urllib3.disable_warnings()
