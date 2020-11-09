@@ -316,19 +316,21 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
 def main():
     options = options_handler()
     if options.nightly:
+        print('nightly in slack notifier py')
         env_results_file_name = options.env_results_file_name
         slack_notifier(options.url,
                        options.slack,
                        options.test_type,
                        env_results_file_name=env_results_file_name)
     elif options.bucket_upload:
+        print('bucket upload in slack notifier py')
         job_name = options.job_name
         circle_artifacts_path = options.circle_artifacts
         slack_notifier(options.url, options.slack, options.test_type,
                        packs_results_file=os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE),
                        job_name=job_name)
-    elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
-                               SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
+    elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
+        print('else in slack notifier py')
         slack_notifier(options.url, options.slack, options.test_type)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
