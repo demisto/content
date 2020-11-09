@@ -2555,8 +2555,7 @@ def main():
         "x-xdr-timestamp": timestamp,
         "x-xdr-nonce": nonce,
         "x-xdr-auth-id": str(api_key_id),
-        "Authorization": api_key
-        # "Authorization": api_key_hash
+        "Authorization": api_key_hash
     }
 
     client = Client(
