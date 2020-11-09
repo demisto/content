@@ -1,0 +1,236 @@
+category: IT Services
+commonfields:
+  id: GoogleCalendar
+  version: -1
+configuration:
+- display: User's Service Account JSON
+  name: user_service_account_json
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Google Calendar is a time-management and scheduling calendar service developed by Google. This integration helps you to perform various tasks on the access control list (ACL).
+display: Google Calendar
+name: GoogleCalendar
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Identifier of the calendar. To access the primary calendar
+        of the currently logged in user, use the "primary" keyword.
+      isArray: false
+      name: calendar_id
+      required: true
+      secret: false
+    - default: false
+      description: The user's primary email address.
+      isArray: false
+      name: user_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The role assigned to the scope.
+
+        Available Options:
+        "none" - Provides no access.
+
+        "freeBusyReader" - Provides read access to free/busy information.
+
+        "reader" - Provides read access to the calendar. Private events will appear to users with reader access, but event details will be hidden.
+
+        "writer" - Provides read and write access to the calendar. Private events will appear to users with write access, and event details will be visible.
+
+        "owner" - Provides ownership of the calendar. This role has all of the permissions of the writer role with the additional ability to see and manipulate ACLs.
+      isArray: false
+      name: role
+      predefined:
+      - none
+      - freeBusyReader
+      - reader
+      - writer
+      - owner
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The type of the scope.
+
+        Available Options:
+        "default" - The public scope. This is the default value.
+
+        "user" - Limits the scope to a single user.
+
+        "group" - Limits the scope to a group.
+
+        "domain" - Limits the scope to a domain.
+
+        Note: The permissions granted to the "default", or public scope, apply to any user, authenticated or not.
+      isArray: false
+      name: scope_type
+      predefined:
+      - default
+      - user
+      - group
+      - domain
+      required: true
+      secret: false
+    - default: false
+      description: The email address of a user or group, or the name of a domain,
+        depending on the scope type. Omitted for type "default".
+      isArray: false
+      name: scope_value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to send notifications about the calendar sharing change. Default is "true".
+      isArray: false
+      name: send_notifications
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an access control rule.
+    execution: false
+    name: google-calendar-acl-add
+    outputs:
+    - contextPath: GoogleCalendar.Acl.calendarId
+      description: Calendar identifier.
+      type: String
+    - contextPath: GoogleCalendar.Acl.userId
+      description: User’s email address.
+      type: String
+    - contextPath: GoogleCalendar.Acl.id
+      description: Identifier of the ACL rule.
+      type: String
+    - contextPath: GoogleCalendar.Acl.kind
+      description: Type of the resource.
+      type: String
+    - contextPath: GoogleCalendar.Acl.etag
+      description: ETag of the resource.
+      type: String
+    - contextPath: GoogleCalendar.Acl.scopeType
+      description: The type of the scope.
+      type: String
+    - contextPath: GoogleCalendar.Acl.scopeValue
+      description: The email address of a user or group, or the name of a domain,
+        depending on the scope type.
+      type: String
+    - contextPath: GoogleCalendar.Acl.role
+      description: The role assigned to the scope.
+      type: String
+  - arguments:
+    - default: false
+      description: Calendar identifier. If you want to access the primary calendar
+        of the currently logged in user, use the "primary" keyword.
+      isArray: false
+      name: calendar_id
+      required: true
+      secret: false
+    - default: false
+      description: The user's primary email address.
+      isArray: false
+      name: user_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of entries returned on a result page. Default is 100. The page size cannot be greater than 250 entries.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: Token specifying which result page to return.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to include deleted ACLs in the result. Deleted ACLs are
+        represented by the role "none". Deleted ACLs will always be included
+        if syncToken is provided. Default is "false".
+      isArray: false
+      name: show_deleted
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: |
+        Token obtained from the nextSyncToken field returned on the last page of results from the previous list request. The result of this list request contains only entries that have changed since then. All entries deleted since the previous list request will always be in the result set and it is not allowed to set showDeleted to false.
+        If the syncToken expires, the server will respond with a 410 GONE response code and the client should clear its storage and perform a full synchronization without any syncToken.
+      isArray: false
+      name: sync_token
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the rules in the access control list for the calendar.
+    execution: false
+    name: google-calendar-acl-list
+    outputs:
+    - contextPath: GoogleCalendar.Acl.calendarId
+      description: Calendar identifier.
+      type: String
+    - contextPath: GoogleCalendar.Acl.userId
+      description: User’s email address.
+      type: String
+    - contextPath: GoogleCalendar.Acl.id
+      description: Identifier of the ACL rule.
+      type: String
+    - contextPath: GoogleCalendar.Acl.kind
+      description: Type of the resource.
+      type: String
+    - contextPath: GoogleCalendar.Acl.etag
+      description: ETag of the resource.
+      type: String
+    - contextPath: GoogleCalendar.Acl.scopeType
+      description: The type of the scope.
+      type: String
+    - contextPath: GoogleCalendar.Acl.scopeValue
+      description: The email address of a user or group, or the name of a domain,
+        depending on the scope type.
+      type: String
+    - contextPath: GoogleCalendar.Acl.role
+      description: The role assigned to the scope.
+      type: String
+    - contextPath: GoogleCalendar.PageToken.Acl.calendarId
+      description: Calendar identifier.
+      type: String
+    - contextPath: GoogleCalendar.PageToken.Acl.userId
+      description: User’s email address.
+      type: String
+    - contextPath: GoogleCalendar.PageToken.Acl.nextPageToken
+      description: Token used to access the next page of this result.
+      type: String
+    - contextPath: GoogleCalendar.PageToken.Acl.nextSyncToken
+      description: Token used at a later point in time to retrieve only the entries
+        that have changed since this result was returned.
+      type: String
+  dockerimage: demisto/googleapi-python3:1.0.0.12698
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- GoogleCalendar-Test
+fromversion: 5.0.0
