@@ -195,7 +195,7 @@ script:
     - name: assignee
       description: The name of the assignee.
     - name: reporter
-      description: The reporter's account Id.
+      description: The account ID of the reporter.
     - name: parentIssueKey
       description: The parent issue key (if you create a sub-task).
     - name: parentIssueId
