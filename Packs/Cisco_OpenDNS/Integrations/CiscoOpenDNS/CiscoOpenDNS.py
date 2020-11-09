@@ -148,11 +148,12 @@ def OpenDNSdeleteDomain(myDomainsrequest, myEventsrequest, domain):
     # r3_txt=r3.json()
     #print("Response  ", r3_txt)
     r_code = r3.status_code
-    print("delRequest status ", r_code)
+    #print("delRequest status ", r_code)
     if int(r_code) == 204:
-        print(domain + " Domain was removed from blacklist")
+        message = domain + " Domain was removed from blacklist"
     else:
-        print(domain + " Not in the blacklist or Error")
+        message = domain + " Not in the blacklist or Error"
+    demisto.results(message)
 
 
 def test_module(myDomainsrequest):
