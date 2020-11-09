@@ -5312,11 +5312,11 @@ script:
       required: true
     description: Manages XML file content on Windows hosts
     name: win_xml
-  dockerimage: demisto/ansible-runner
+  dockerimage: demisto/ansible-runner:1.0.0.12761
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

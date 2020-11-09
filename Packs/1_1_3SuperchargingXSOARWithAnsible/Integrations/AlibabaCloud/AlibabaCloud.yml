@@ -349,11 +349,11 @@ script:
       type: string
     - contextPath: AlibabaCloud.instances.vpc_id
       description: The ID of the VPC the instance is in.
-  dockerimage: demisto/ansible-runner
+  dockerimage:
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
