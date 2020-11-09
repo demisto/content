@@ -639,6 +639,7 @@ def extract_data_from_incidents(incidents, input_label_field=None):
         y.append({'field_name': label,
                   'rank': '#{}'.format(i + 1)})
     custom_fields = [col for col in incidents_df.columns if col not in LABEL_FIELDS_BLACKLIST]
+    custom_fields_dict = {col: float(incidents_df[col].nunique() / n_incidents) for col in custom_fields}
     subject_field_exists = EMAIL_SUBJECT_FIELD in incidents_df.columns
     body_field_exists = EMAIL_BODY_FIELD in incidents_df.columns
     html_field_exists = EMAIL_HTML_FIELD in incidents_df.columns
@@ -683,7 +684,7 @@ def extract_data_from_incidents(incidents, input_label_field=None):
                  'n_missing_headers_field': n_missing_headers_field,
                  'n_missing_attachments_field': n_missing_attachments_field,
                  'n_short_text_fields': len(short_text_indices),
-                 'custom_fields': custom_fields
+                 'custom_fields': custom_fields_dict
                  },
             }
 
