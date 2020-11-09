@@ -4848,30 +4848,6 @@ def panorama_override_vulnerability(threatid: str, vulnerability_profile: str, d
     )
 
 
-def panorama_get_routes(virtual_router=None):
-    """
-    Retrieve the routing table from the given device
-    """
-    if virtual_router:
-        params = {
-            'type': 'op',
-            'key': API_KEY,
-            'cmd': "<show><routing><route><virtual-router>{}</virtual-router></route></routing></show>".format(
-                virtual_router)
-        }
-    else:
-        params = {
-            'type': 'op',
-            'key': API_KEY,
-            'cmd': "<show><routing><route></route></routing></show>"
-        }
-
-    return http_request(
-        URL,
-        'GET',
-        params=params)
-
-
 def panorama_get_interfaces():
     """
     Retrieve the routing table from the given device
@@ -4927,7 +4903,7 @@ def panorama_route_lookup_command():
     r = panorama_route_lookup(dest_ip, vr)
 
     r["dest_ip"] = dest_ip
-    markdown = tableToMarkdown('Route Lookup Results', r, headers=["dest_ip", "interface"])
+    markdown = tableToMarkdown('Route Lookup Results', r)
     results = CommandResults(
         readable_output=markdown,
         outputs_prefix='Panorama.RouteLookup',
@@ -4966,7 +4942,7 @@ def panorama_zone_lookup_command():
     if r:
         # add the given dest_ip as another item int the object for simplicity
         r["dest_ip"] = dest_ip
-        markdown = tableToMarkdown('Zone Lookup Results', r, headers=["dest_ip", "zone", "interface"])
+        markdown = tableToMarkdown('Zone Lookup Results', r)
         results = CommandResults(
             readable_output=markdown,
             outputs_prefix='Panorama.ZoneLookup',

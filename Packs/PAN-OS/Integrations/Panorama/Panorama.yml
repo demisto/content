@@ -4440,7 +4440,7 @@ script:
       description: 'Forwarding Virtual Router'
       type: String
     - contextPath: Panorama.ZoneLookup.dyn-addr
-      description: ''
+      description: 'Outgoing interface dynamic addresses'
       type: String
     - contextPath: Panorama.ZoneLookup.addr6.member
       description: 'Outgoing interface IPv6 addresses'
@@ -4452,7 +4452,7 @@ script:
       description: 'Outgoing interface IP'
       type: String
     - contextPath: Panorama.ZoneLookup.id
-      description: ''
+      description: 'Outgoing interface ID'
       type: String
     - contextPath: Panorama.ZoneLookup.addr.member
       description: 'Outgoing interface IPv4 addresses'
