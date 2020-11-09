@@ -22,16 +22,30 @@ echo "$GCS_MARKET_KEY" > "$KF"
 gcloud auth activate-service-account --key-file="$KF" > auth.out 2>&1
 echo "Auth loaded successfully."
 
-GCS_MARKET_BUCKET="marketplace-dist"
+# ====== BUILD CONFIGURATION ======
+
 GCS_BUILD_BUCKET="marketplace-ci-build"
-SOURCE_PATH="content/packs"
 BUILD_BUCKET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM"
 TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
-echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
-gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
+# ====== PRODUCTION CONFIGURATION ======
+
+GCS_MARKET_BUCKET="marketplace-dist"
+SOURCE_PATH="content/packs"
+
+# ====== TESTING CONFIGURATION ======
+
+GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
+SOURCE_TESTING_PATH="wow/content/packs"
+
+if [ ! -n "{$BUCKET_UPLOAD" ]; then
+  echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
+  gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
+else
+  echo "Copying master files at: gs://$GCS_MARKET_TESTING_BUCKET/$SOURCE_TESTING_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
+  gsutil -m cp -r "gs://$GCS_MARKET_TESTING_BUCKET/$SOURCE_TESTING_PATH" "gs://$PACKS_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
 echo "Finished copying successfully."
 
 if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
