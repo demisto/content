@@ -73,13 +73,13 @@ script:
       name: allow_not_found_exchange_locations
       required: false
       auto: PREDEFINED
-      defaultvalue: true
+      defaultValue: true
       predefined:
         - true
         - false
     - default: false
       defaultValue: "All"
-      description: Mailboxes to include. (Comma seprated)
+      description: Mailboxes to include, or you can use the value "All to include all. (Comma seprated)
       isArray: true
       name: exchange_location
       required: false
@@ -91,19 +91,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Whether to include all public folders in the search.
-      isArray: false
+      defaultValue: "All"
+      description: Public folders to include, or you can use the value "All to include all. (Comma seprated)
+      isArray: true
       name: public_folder_location
       required: false
       secret: false
-      auto: PREDEFINED
-      defaultvalue: true
-      predefined:
-        - true
-        - false
     - default: false
       defaultValue: "All"
-      description: SharePoint Online sites to include. You identify the site by its URL value, or you can use the value All to include all sites. (Comma seprated)
+      description: SharePoint Online sites to include. You identify the site by its URL value, or you can use the value "All to include all sites. (Comma seprated)
       isArray: true
       name: share_point_location
       required: false
@@ -147,7 +143,7 @@ script:
       required: false
       secret: false
       auto: PREDEFINED
-      defaultvalue: false
+      defaultValue: false
       predefined:
         - true
         - false

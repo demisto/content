@@ -538,9 +538,9 @@ class OAuth2DeviceCodeClient {
     }
 }
 
-#### COMPLAIANCE AND SEARCH CLIENT - DEVICE FLOW FUNCTIONS #####
+#### Security And Compliance client - OAUTH2 #####
 
-class ComplianceAndSearchClient {
+class SecurityAndComplianceClient {
 	[ValidateNotNullOrEmpty()][string]$uri
 	[ValidateNotNullOrEmpty()][string]$upn
     [string]$bearer_token
@@ -548,7 +548,7 @@ class ComplianceAndSearchClient {
     [bool]$insecure
     [bool]$proxy
     
-    ComplianceAndSearchClient([string]$uri, [string]$upn, [string]$bearer_token, [bool]$insecure, [bool]$proxy) {
+    SecurityAndComplianceClient([string]$uri, [string]$upn, [string]$bearer_token, [bool]$insecure, [bool]$proxy) {
         $this.uri = $uri
         $this.upn = $upn
         $this.bearer_token = $bearer_token
@@ -556,7 +556,7 @@ class ComplianceAndSearchClient {
         $this.proxy = $proxy
         <#
             .SYNOPSIS
-            ComplianceAndSearchClient connect to Security & Compliance Center using powershell session (OAuth2.0) and allow interact with it.
+            SecurityAndComplianceClient connect to Security & Compliance Center using powershell session (OAuth2.0) and allow interact with it.
 
             .PARAMETER uri
             Security & Compliance Center uri.
@@ -574,7 +574,7 @@ class ComplianceAndSearchClient {
             Wheter to user system proxy configuration or not.
             
             .EXAMPLE
-            $cs_client = [ComplianceAndSearchClient]::new("outlook.com", "user@microsoft.com", "dfhsdkjhkjhvkdvbihsgiu")
+            $cs_client = [SecurityAndComplianceClient]::new("outlook.com", "user@microsoft.com", "dfhsdkjhkjhvkdvbihsgiu")
 
             .NOTES
             1. Linux issues compatability - 
@@ -619,17 +619,24 @@ class ComplianceAndSearchClient {
     }
 
     [psobject]NewSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
-                        [string[]]$exchange_location_exclusion, [bool]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
+                        [string[]]$exchange_location_exclusion, [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
 		try{
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
             Import-PSSession -Session $this.session -CommandName New-ComplianceSearch
             $parameters = @{
-                "Description" = $description
+                "Case" = $case
                 "ContentMatchQuery" = $kql
+                "Description" = $description
+                "AllowNotFoundExchangeLocationsEnabled" = $allow_not_found_exchange_locations
+                "ExchangeLocation" = $exchange_location
+                "ExchangeLocationExclusion" = $exchange_location_exclusion
+                "PublicFolderLocation" = $public_folder_location
+                "SharePointLocation" = $share_point_location
+                "SharePointLocationExclusion" = $share_point_location_exclusion
             }
-            $response = New-ComplianceSearch -Name $search_name -ExchangeLocation $exchange_location @parameters
+            $response = New-ComplianceSearch -Name $search_name @parameters
             
             return $response
         }
@@ -637,7 +644,6 @@ class ComplianceAndSearchClient {
             # Close session to remote
             $this.CloseSession()
         }
-
         <#
             .SYNOPSIS
             Create compliance searches in the Security & Compliance Center.
@@ -852,7 +858,7 @@ function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
     return $human_readable, $entry_context, $raw_response
 }
 
-function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [ComplianceAndSearchClient]$cs_client) {
+function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
     $raw_response = $oclient.RefreshTokenRequest()
     $human_readable = "**Test ok!**"
     $entry_context = @{}
@@ -874,9 +880,17 @@ function IntegrationContextCommand () {
     return $human_readable, $entry_context, $raw_response
 }
 
-function NewSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs) {
+function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    # Command arguemnts parsing
+    $allow_not_found_exchange_locations = ConvertTo-Boolean $kwargs.allow_not_found_exchange_locations
+    $exchange_location = ArgToList $kwargs.exchange_location
+    $exchange_location_exclusion = ArgToList $kwargs.exchange_location_exclusion
+    $public_folder_location = ArgToList $kwargs.public_folder_location
+    $share_point_location = ArgToList $kwargs.exchange_location
+    $share_point_location_exclusion = ArgToList $kwargs.exchange_location_exclusion
     # Raw response
-    $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.description, $kwargs.exchange_location, $kwargs.kql)
+    $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
+                                      $exchange_location, $exchange_location_exclusion, $public_folder_location, $share_point_location, $share_point_location_exclusion)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
 	$human_readable = TableToMarkdown $md_columns  "Compliance and search - New search '$($kwargs.search_name)' created"
@@ -888,7 +902,7 @@ function NewSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs
 	return $human_readable, $entry_context, $raw_response
 }
 
-function RemoveSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs) {
+function RemoveSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
 	# Remove operation doesn't return any output
 	$client.RemoveSearch($kwargs.search_name)
     # Raw response
@@ -901,7 +915,7 @@ function RemoveSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwa
 	return $human_readable, $entry_context, $raw_response
 }
 
-function ListSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs) {
+function ListSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.ListSearch()
     # Human readable
@@ -920,14 +934,16 @@ function ListSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwarg
 	return $human_readable, $entry_context, $raw_response
 }
 
-function GetSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs) {
+function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    # Command arguemnts parsing
+    $statistics = ConvertTo-Boolean $kwargs.statistics
     # Raw response
     $raw_response = $client.GetSearch($kwargs.search_name)
     # Human readable - Basic info
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
 	$human_readable = TableToMarkdown $md_columns  "Compliance and search - '$($kwargs.search_name)' search"
     # Human readable - Statistics
-    if ($raw_response.SuccessResults -and $kwargs.statistics -ne "false") {
+    if ($raw_response.SuccessResults -and $statistics) {
         $human_readable += TableToMarkdown $(ParseSuccessResults $raw_response.SuccessResults) "Search statistics"
     }
     # Entry context
@@ -938,7 +954,7 @@ function GetSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs
 	return $human_readable, $entry_context, $raw_response
 }
 
-function StartSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs) {
+function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Start operation doesn't return any output
     $client.StartSearch($kwargs.search_name)
     # Raw response
@@ -951,7 +967,7 @@ function StartSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwar
 	return $human_readable, $entry_context, $raw_response
 }
 
-function StopSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs) {
+function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Stop operation doesn't return any output
     $client.StopSearch($kwargs.search_name)
     # Raw response
@@ -965,7 +981,7 @@ function StopSearchCommand([ComplianceAndSearchClient]$client, [hashtable]$kwarg
 }
 
 
-function NewSearchActionCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs) {
+function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type)
     # Human readable
@@ -981,7 +997,7 @@ function NewSearchActionCommand([ComplianceAndSearchClient]$client, [hashtable]$
 
 
 
-function RemoveSearchActionCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs) {
+function RemoveSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Remove operation doesn't return any output
     $client.RemoveSearchAction($kwargs.search_action_id)
     # Raw response
@@ -994,7 +1010,7 @@ function RemoveSearchActionCommand([ComplianceAndSearchClient]$client, [hashtabl
 	return $human_readable, $entry_context, $raw_response
 }
 
-function GetSearchActionCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs) {
+function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.GetSearchAction($kwargs.search_action_id)
     # Human readable
@@ -1007,7 +1023,7 @@ function GetSearchActionCommand([ComplianceAndSearchClient]$client, [hashtable]$
 
 	return $human_readable, $entry_context, $raw_response
 }
-function ListSearchActionsCommand([ComplianceAndSearchClient]$client, [hashtable]$kwargs) {
+function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.ListSearchActions()
     # Human readable
@@ -1048,7 +1064,7 @@ function Main {
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()
         # Creating Compliance and search client
-        $cs_client = [ComplianceAndSearchClient]::new($integration_params.compliance_and_search_uri, $integration_params.upn, $oauth2_client.access_token, $insecure, $proxy)
+        $cs_client = [SecurityAndComplianceClient]::new($integration_params.compliance_and_search_uri, $integration_params.upn, $oauth2_client.access_token, $insecure, $proxy)
         switch ($command) {
             "test-module" {
 				throw "This button isn't functional - Please test integration using !ews-test-auth command"
