@@ -39,7 +39,7 @@ def build_query_in_reepect_to_phishing_labels(args):
     tag_field = args['tagField']
     tags_union = ' '.join(['"{}"'.format(label) for label in mapping_dict])
     mapping_query = '{}:({})'.format(tag_field, tags_union)
-    if mapping != ALL_LABELS and 'query' not in args:
+    if 'query' not in args:
         args['query'] = mapping_query
     else:
         args['query'] = '({}) and ({})'.format(query, mapping_query)
@@ -58,7 +58,6 @@ def main():
     fields_to_populate = [x for x in fields_to_populate if x is not None]
     get_incidents_by_query_args['populateFileds'] = ','.join(fields_to_populate)
     get_incidents_by_query_args = build_query_in_reepect_to_phishing_labels(get_incidents_by_query_args)
-    demisto.results(get_incidents_by_query_args.get('query', None))
     res = demisto.executeCommand("GetIncidentsByQuery", get_incidents_by_query_args)
     if is_error(res):
         return_error(get_error(res))
