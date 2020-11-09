@@ -696,8 +696,8 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, 
         logging.info(f"Using previous origin/master head commit hash {previous_master_head_commit} to diff with.")
         return previous_master_head_commit
     else:
-        previous_master_head_commit = content_repo.commit('origin/master').hexsha
-        logging.info(f"Using origin/master head commit hash {previous_master_head_commit} to diff with.")
+        previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
+        logging.info(f"Using previous origin/master head commit hash {previous_master_head_commit} to diff with.")
         return previous_master_head_commit
 
 
