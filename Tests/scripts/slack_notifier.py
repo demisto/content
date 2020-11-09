@@ -324,14 +324,11 @@ def main():
     circle_artifacts_path = options.circle_artifacts
     job_name = options.job_name
     if nightly:
-        print('nightly in slack notifier py')
         slack_notifier(url, slack, test_type, env_results_file_name)
     elif bucket_upload:
-        print('bucket upload in slack notifier py')
         slack_notifier(url, slack, test_type,
                        packs_results_file=os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), job_name=job_name)
     elif test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
-        print('else in slack notifier py')
         slack_notifier(url, slack, test_type)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
