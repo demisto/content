@@ -646,8 +646,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-- No tests
 defaultmapperin: Illusive Networks-mapper
 defaultclassifier: Illusive Networks
 fromversion: 5.0.0

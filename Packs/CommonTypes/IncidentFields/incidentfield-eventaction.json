@@ -1,0 +1,43 @@
+{
+ "id": "incident_eventaction",
+ "version": -1,
+ "modified": "2020-09-29T12:45:24.182324577Z",
+ "name": "Event Action",
+ "ownerOnly": false,
+ "description": "Action taken on user accounts - Create, Update, Deactivate, Reactivate",
+ "cliName": "eventaction",
+ "type": "singleSelect",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [
+  "",
+  "Create",
+  "Update",
+  "Deactivate",
+  "Reactivate"
+ ],
+ "useAsKpi": true,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "IAM - New Hire",
+  "IAM - Terminate User",
+  "IAM - Update User",
+  "User Profile",
+  "IAM - Sync User",
+  "IAM - Rehire User"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

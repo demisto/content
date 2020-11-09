@@ -386,7 +386,7 @@
                                 "index": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "name": "Assign to Me",
-                                "scriptId": "06af8e6e-d0e5-4f5c-899a-3823b99662b5",
+                                "scriptId": "AssignToMeButton",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -414,7 +414,7 @@
                                 "id": "1e97e9d0-a1bb-11ea-8efe-d92f013a0581",
                                 "index": 2,
                                 "name": "Link Incidents",
-                                "scriptId": "2b9e3e5a-d49e-4ab9-8389-68b2274c760a",
+                                "scriptId": "LinkIncidentsButton",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -427,7 +427,7 @@
                                 "id": "67c36b80-de7d-11ea-82d9-bd6173dcd42e",
                                 "index": 3,
                                 "name": "Generate Summary Report",
-                                "scriptId": "acb34501-dbf5-4edc-80ab-d9515ec204ce",
+                                "scriptId": "GenerateSummaryReportButton",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
@@ -691,8 +691,10 @@
             }
         ]
     },
-    "fromVersion": "5.0.0",
+    "fromVersion": "5.5.0",
     "toVersion": "5.9.9",
     "typeId": "Case",
-    "version": -1
+    "version": -1,
+    "description": ""
+
 }

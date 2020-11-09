@@ -287,7 +287,7 @@ script:
     execution: false
     name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
-  dockerimage: demisto/elasticsearch:1.0.0.11003
+  dockerimage: demisto/elasticsearch:1.0.0.12410
   feed: false
   isfetch: true
   longRunning: false

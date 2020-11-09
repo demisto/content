@@ -15,6 +15,7 @@ UNITTESTS_TYPE = 'unittests'
 TEST_PLAYBOOK_TYPE = 'test_playbooks'
 SDK_UNITTESTS_TYPE = 'sdk_unittests'
 SDK_FAILED_STEPS_TYPE = 'sdk_faild_steps'
+SDK_RUN_AGAINST_FAILED_STEPS_TYPE = 'sdk_run_against_failed_steps'
 
 
 def get_faild_steps_list():
@@ -115,10 +116,10 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
     return content_team_attachment
 
 
-def get_attachments_for_all_steps(build_url):
+def get_attachments_for_all_steps(build_url, title='SDK Nightly Build'):
     steps_fields = get_entities_fields(entity_title="Failed Steps")
     color = 'good' if not steps_fields else 'danger'
-    title = 'SDK Nightly Build - Success' if not steps_fields else 'SDK Nightly Build - Failure'
+    title = f'{title} - Success' if not steps_fields else '{title} - Failure'
 
     container_build_url = build_url + '#queue-placeholder/containers/0'
     content_team_attachment = [{
@@ -233,6 +234,10 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         elif test_type == SDK_FAILED_STEPS_TYPE:
             print_color('Starting Slack notifications about SDK nightly build - test playbook', LOG_COLORS.GREEN)
             content_team_attachments = get_attachments_for_all_steps(build_url)
+        elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
+            content_team_attachments = get_attachments_for_all_steps(
+                build_url, title='Demisto SDK Nightly - Run Against Cortex XSOAR'
+            )
         else:
             raise NotImplementedError('The test_type parameter must be only \'test_playbooks\' or \'unittests\'')
         print('Content team attachments:\n', content_team_attachments)
@@ -254,7 +259,7 @@ def main():
                        options.slack,
                        options.test_type,
                        env_results_file_name=options.env_results_file_name)
-    elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE):
+    elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(options.url, options.slack, options.test_type)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)

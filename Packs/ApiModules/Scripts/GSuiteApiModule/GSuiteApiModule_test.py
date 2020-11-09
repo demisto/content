@@ -140,7 +140,7 @@ def test_get_http_client(mocker):
 
     mocker.patch(PROXY_METHOD_NAME, return_value={'https': 'http url'})
 
-    http = GSuiteClient.get_http_client(proxy=True, verify=True, timeout=60)
+    http = GSuiteClient.get_http_client(proxy=True, verify=False, timeout=60)
     assert isinstance(http, httplib2.Http)
     assert http.disable_ssl_certificate_validation is True
     assert http.timeout == 60

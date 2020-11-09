@@ -165,6 +165,7 @@ def get_dbot_context(indicator, threshold):
     indicator_score = DBOT_SCORE[indicator.get('meta', {}).get('severity', 'low')]
     # the indicator will be considered as malicious in case it's score is greater or equal to threshold
     dbot_context['Score'] = 3 if indicator_score >= DBOT_SCORE[threshold] else indicator_score
+    dbot_context['Vendor'] = 'ThreatStream'
 
     return dbot_context
 

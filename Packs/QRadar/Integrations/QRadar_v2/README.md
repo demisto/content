@@ -1,11 +1,11 @@
-Fetch offenses as incidents and search QRadar
-This integration was integrated and tested with version 7.3.2 of QRadar
+Fetch offenses as incidents and search QRadar.
+This integration was integrated and tested with version 7.3.2 of QRadar.
 
 
-## Configure QRadar_v2 on Cortex XSOAR
+## Configure QRadar v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for QRadar_v2.
+2. Search for QRadar v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |

@@ -1,0 +1,4 @@
+!aws-dynamodb-list-tables
+!aws-dynamodb-describe-table
+!aws-dynamodb-list-backups
+!aws-dynamodb-describe-backup
