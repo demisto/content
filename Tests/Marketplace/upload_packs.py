@@ -833,7 +833,8 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     if not option.override_all_packs:
-        check_if_index_is_updated(content_repo, current_commit_hash, previous_commit_hash, storage_bucket)
+        check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
+                                  storage_bucket)
 
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)
