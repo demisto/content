@@ -519,10 +519,8 @@ jobs:
                 shell: /bin/bash
                 command: |
                   if [ -n "${BUCKET_UPLOAD}" ]; then
-                    echo "if"
                     ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
                   else
-                    echo "else"
                     ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
                   fi
                 when: always
