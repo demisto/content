@@ -788,15 +788,12 @@ def get_escalations_command(rest_client, args):
             all_escalations = rest_client.construct_and_send_new_escalations_query(
                 internal_tenant_id, args['incident_id'])
             for escalation in all_escalations:
-                if escalation['incident']['id'] == args['incident_id']:
-                    valid_entry = {
-                        'Type': EntryType.NOTE,
-                        'Contents': escalation,
-                        'ContentsFormat': EntryFormat.JSON
-                    }
-                    entries.append(valid_entry)
-                    demisto.debug(
-                        f'found escalation for incident {args["incident_id"]} on {args["respond_tenant_id"]}')
+                valid_entry = {
+                    'Type': EntryType.NOTE,
+                    'Contents': escalation,
+                    'ContentsFormat': EntryFormat.JSON
+                }
+                entries.append(valid_entry)
             if len(all_escalations) == 0:
                 more_data = False
     except Exception as e:
