@@ -100,6 +100,6 @@ if 'src="cid' in email_html_image:
 else:
     email_reply = set_email_reply(email_from, email_to, email_cc, email_subject, email_html, attachments)
     demisto.results({
-    'ContentsFormat': formats['html'],
-    'Type': entryTypes['note'],
-    'Contents': email_reply})
+        'ContentsFormat': formats['html'],
+        'Type': entryTypes['note'],
+        'Contents': email_reply})
