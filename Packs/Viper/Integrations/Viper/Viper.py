@@ -7,7 +7,6 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
 class ViperClient(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -54,33 +53,13 @@ def sample_download(file_hash):
     url = f'{base_url}/malware/{file_hash}/download/'
     authorization = f'Token {api_key}'
     try:
-        sample = requests.get(url, verify=verify_certificate, headers={
-                              'Authorization': authorization, 'Accept': 'application/json'})
+        sample = requests.get(url, verify=verify_certificate, headers={'Authorization': authorization, 'Accept': 'application/json'})
 
     except Exception as e:
         # demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
     return sample
-
-
-def sample_search(file_hash):
-    api_key = demisto.params().get('apikey')
-    viper_project = demisto.params().get('viper_project')
-    base_url = urljoin(demisto.params()['url'], f'/api/v3/project/{viper_project}')
-    verify_certificate = not demisto.params().get('insecure', False)
-    url = f'{base_url}/malware/{file_hash}/'
-    authorization = f'Token {api_key}'
-    try:
-        sample = requests.get(url, verify=verify_certificate, headers={
-                              'Authorization': authorization, 'Accept': 'application/json'})
-
-    except Exception as e:
-        # demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
-
-    return sample
-
 
 def viper_download(client, args):
 
@@ -96,14 +75,11 @@ def viper_download(client, args):
             file_type = sample_info['data']['type']
             size = sample_info['data']['size']
 
-            table_object = [{"File Name": filename, "File Hash": file_hash,
-                             "ViperID": viper_id, "MIME": mime, "File Type": file_type, "Size": size}]
-            context_object = {'Viper': {"Name": filename, "SHA256": file_hash,
-                                        "ViperID": viper_id, "MIME": mime, "Type": file_type, "Size": size}}
-            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
-                             'Contents': table_object, "EntryContext": context_object})
+            table_object = [{"File Name": filename, "File Hash": file_hash,"ViperID": viper_id, "MIME": mime, "File Type": file_type, "Size": size}]
+            context_object = {'Viper': {"Name": filename, "SHA256": file_hash,"ViperID": viper_id, "MIME": mime, "Type": file_type, "Size": size}}
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],'Contents': table_object, "EntryContext": context_object})
             demisto.results(fileResult(filename, sample.content))
-
+			
         else:
             return_error('No valid sample found')
     else:
@@ -114,7 +90,6 @@ def viper_search(client, args):
     file_hash = args.get('file_hash')
     if len(file_hash) == 64:
         sample_info = client.sample_information(file_hash)
-        # sample = sample_search(file_hash)
 
         if sample_info['data']:
             filename = sample_info['data']['name']
@@ -123,12 +98,9 @@ def viper_search(client, args):
             file_type = sample_info['data']['type']
             size = sample_info['data']['size']
 
-            table_object = [{"File Name": filename, "File Hash": file_hash,
-                             "ViperID": viper_id, "MIME": mime, "File Type": file_type, "Size": size}]
-            context_object = {'Viper': {"Name": filename, "SHA256": file_hash,
-                                        "ViperID": viper_id, "MIME": mime, "Type": file_type, "Size": size}}
-            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],
-                             'Contents': table_object, "EntryContext": context_object})
+            table_object = [{"File Name": filename, "File Hash": file_hash,"ViperID": viper_id, "MIME": mime, "File Type": file_type, "Size": size}]
+            context_object = {'Viper': {"Name": filename, "SHA256": file_hash,"ViperID": viper_id, "MIME": mime, "Type": file_type, "Size": size}}
+            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],'Contents': table_object, "EntryContext": context_object})
         else:
             return_error('No valid sample found')
     else:
@@ -175,7 +147,6 @@ def main():
     except Exception as e:
         # demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
