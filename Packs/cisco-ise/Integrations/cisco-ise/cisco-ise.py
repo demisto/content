@@ -261,7 +261,7 @@ def reauthenticate_endpoint(mac_address, psn_address):
     Reauthenticates an endpoint
     """
     api_endpoint = "/admin/API/mnt/CoA/Reauth/{}/{}/1".format(psn_address, mac_address)
-    response = http_request('GET', api_endpoint, is_admin_api=True)
+    response = http_request('GET', api_endpoint)
     return response
 
 
@@ -270,7 +270,7 @@ def get_psn_for_mac(mac_address):
     Retrieves psn for an endpoint
     """
     api_endpoint = "/admin/API/mnt/AuthStatus/MACAddress/{}/86400/0/0".format(mac_address)
-    response = http_request('GET', api_endpoint, is_admin_api=True)
+    response = http_request('GET', api_endpoint)
     if response:
         return response
     else:
