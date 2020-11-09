@@ -1014,7 +1014,7 @@ tasks:
       - "37"
     scriptarguments:
       md5:
-        simple: 5af84a3db5883627bfdff909e210634e
+        simple: 0e4e3c2d84a9bc726a50b3c91346fbb1
       sha256: {}
     separatecontext: false
     view: |-
@@ -1056,7 +1056,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3.xlsx
+              simple: afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc.xls
     view: |-
       {
         "position": {
@@ -1402,10 +1402,10 @@ tasks:
       version: -1
       name: File with no report found
       description: Retrieve results for a file hash using WildFire
-      script: '|||file'
+      script: WildFire-v2|||file
       type: regular
       iscommand: true
-      brand: ""
+      brand: WildFire-v2
     nexttasks:
       '#none#':
       - "48"
