@@ -105,7 +105,7 @@ def viper_download(client, args):
             demisto.results(fileResult(filename, sample.content))
 
         else:
-            return_error('No valid sample found')
+            raise DemistoException('No valid sample found')
     else:
         return_error('Hash length is invalid.')
 
