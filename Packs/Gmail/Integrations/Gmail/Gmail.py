@@ -1955,8 +1955,6 @@ def fetch_incidents():
             incidents.append(incident)
 
     demisto.info('extract {} incidents'.format(len(incidents)))
-    if params.get('isFetch'):
-        return None
     demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z'})
     return incidents
 
@@ -2002,10 +2000,7 @@ def main():
     LOG('GMAIL: command is %s' % (command,))
     try:
         if command == 'test-module':
-            if demisto.params().get('isFetch', False):
-                fetch_incidents()
-            else:
-                list_users(ADMIN_EMAIL.split('@')[1])
+            list_users(ADMIN_EMAIL.split('@')[1])
             demisto.results('ok')
             sys.exit(0)
 
