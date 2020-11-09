@@ -1,0 +1,246 @@
+category: Messaging
+commonfields:
+  id: EwsPowershell
+  version: -1
+configuration:
+- display: UPN
+  name: upn
+  required: true
+  type: 0
+- defaultvalue: https://ps.outlook.com
+  display: Search and Compliance URI
+  name: compliance_and_search_uri
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: EWS Powershell integration use Oauth2.0 and enable executing commands in Microsoft Echange Online and Microsoft Search and Compliance.
+display: EWS Powershell
+name: EwsPowershell
+script:
+  commands:
+  - deprecated: false
+    description: Start login.
+    execution: false
+    name: ews-start-auth
+  - deprecated: false
+    description: Complete login.
+    execution: false
+    name: ews-complete-auth
+  - deprecated: false
+    description: Test login.
+    execution: false
+    name: ews-test
+  - deprecated: false
+    description: Print integration context.
+    hidden: true
+    execution: false
+    name: ews-integration-context
+  - arguments:
+    - default: false
+      description: The name of the compliance search.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    - default: false
+      description: Name of a Core eDiscovery case to associate the new compliance search with.
+      isArray: false
+      name: case
+      required: false
+      secret: false
+    - default: false
+      description: Text search string or a query that's formatted by using the Keyword Query Language (KQL).
+      isArray: false
+      name: kql
+      required: false
+      secret: false
+    - default: false
+      description: Optional description for the compliance search.
+      isArray: false
+      name: description 
+      required: false
+      secret: false
+    - default: false
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search. 
+      isArray: false
+      name: allow_not_found_exchange_locations
+      required: false
+      auto: PREDEFINED
+      defaultvalue: true
+      predefined:
+        - true
+        - false
+    - default: false
+      defaultValue: "All"
+      description: Mailboxes to include. (Comma seprated)
+      isArray: true
+      name: exchange_location
+      required: false
+      secret: false
+    - default: false
+      description: Mailboxes to exclude when you use the value "All" for the exchange_location parameter. (Comma seprated)
+      isArray: true
+      name: exchange_location_exclusion
+      required: false
+      secret: false
+    - default: false
+      description: Whether to include all public folders in the search.
+      isArray: false
+      name: public_folder_location
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultvalue: true
+      predefined:
+        - true
+        - false
+    - default: false
+      defaultValue: "All"
+      description: SharePoint Online sites to include. You identify the site by its URL value, or you can use the value All to include all sites. (Comma seprated)
+      isArray: true
+      name: share_point_location
+      required: false
+      secret: false
+    - default: false
+      description: SharePoint Online sites to exclude when you use the value All for the SharePointLocation parameter. You identify the site by its URL value. (Comma seprated)
+      isArray: true
+      name: share_point_location_exclusion
+      required: false
+      secret: false
+    deprecated: false
+    description: Create compliance searches in the Security & Compliance Center.
+    execution: false
+    name: o365-sc-new-search
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove compliance search configuration.
+    execution: false
+    name: o365-sc-remove-search
+  - deprecated: false
+    description: List compliance search configurations.
+    execution: false
+    name: o365-sc-list-search
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    - default: false
+      description: Show search statistics.
+      isArray: false
+      name: statistics
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultvalue: false
+      predefined:
+        - true
+        - false
+    deprecated: false
+    description: Get compliance search configuration.
+    execution: false
+    name: o365-sc-get-search
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Start compliance search configuration.
+    execution: false
+    name: o365-sc-start-search
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove compliance search configuration.
+    execution: false
+    name: o365-sc-stop-search
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    - default: false
+      description: Search action to perform.
+      isArray: false
+      name: action
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: "Preview"
+      predefined:
+        - Preview
+        - Purge
+    - default: false
+      description: Purge type (Hard-Unrecoverable/Soft-Recoverable).
+      isArray: false
+      name: purge_type
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: "SoftDelete"
+      predefined:
+        - SoftDelete
+        - HardDelete
+    deprecated: false
+    description: New compliance search action.
+    execution: false
+    name: o365-sc-new-search-action
+  - arguments:
+    - default: false
+      description: Search ID.
+      isArray: false
+      name: search_action_id
+      required: true
+      secret: false
+    deprecated: false
+    description: New compliance search action.
+    execution: false
+    name: o365-sc-remove-search-action
+  - deprecated: false
+    description: Get compliance search configuration.
+    execution: false
+    name: o365-sc-list-search-actions
+  - arguments:
+    - default: false
+      description: Search name.
+      isArray: false
+      name: search_action_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get compliance search configuration.
+    execution: false
+    name: o365-sc-get-search-action
+  dockerimage: demisto/powershell-ubuntu:7.0.3.12001
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: powershell
+fromversion: 5.5.0
