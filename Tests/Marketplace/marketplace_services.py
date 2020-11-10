@@ -19,7 +19,6 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
-from demisto_sdk.commands.common.tools import get_json
 from typing import Tuple
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
