@@ -319,7 +319,9 @@ def main():
     user_profile = None
     params = demisto.params()
     api_version = params.get('api_version', '')
-    base_url = urljoin(params['url'].strip('/'), '/api/now/') + api_version
+    base_url = urljoin(params['url'].strip('/'), '/api/now/')
+    if api_version:
+        base_url += api_version
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper-in')
