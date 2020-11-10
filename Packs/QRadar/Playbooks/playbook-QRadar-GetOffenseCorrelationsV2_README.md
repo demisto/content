@@ -66,4 +66,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![QRadar - Get offense correlations v2](https://raw.githubusercontent.com/demisto/content/c106072b5482ce51dd1e75778884c23068617f91/Packs/QRadar/doc_files/QRadar_-_Get_offense_correlations_v2.png)
+![QRadar - Get offense correlations v2](https://raw.githubusercontent.com/demisto/content/7417184a2a92d69f7b06e32a41595395fd0f9bc9/Packs/QRadar/doc_files/QRadar_-_Get_offense_correlations_v2.png)
