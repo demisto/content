@@ -1,5 +1,6 @@
 import json
 import traceback
+from typing import Dict
 
 import ansible_runner
 import demistomock as demisto  # noqa: F401
@@ -82,7 +83,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
     if args.get('concurrency'):
         fork_count = int(args.get('concurrency'))
 
-    inventory = {}
+    inventory: Dict[dict, list] = {}
     inventory['all'] = {}
     inventory['all']['hosts'] = {}
 
@@ -108,7 +109,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
     for each_host_event in r.events:
         # Troubleshooting
         # demisto.log("%s: %s\n" % (each_host_event['event'], each_host_event))
-        if each_host_event['event'] in ("runner_on_ok", "runner_on_unreachable", "runner_on_failed"):
+        if each_host_event['event'] in ["runner_on_ok", "runner_on_unreachable", "runner_on_failed"]:
 
             # parse results
 
@@ -149,7 +150,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
                 msg = "Host %s failed running command\nError Details: %s" % (host, result)
                 return_error(msg)
     # This is integration is not host based and always runs against localhost
-    results = results['localhost']
+    results = results[0]
 
     return CommandResults(
         readable_output=readable_output,
