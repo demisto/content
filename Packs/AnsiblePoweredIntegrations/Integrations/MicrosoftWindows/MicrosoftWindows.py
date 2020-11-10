@@ -81,9 +81,9 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
     fork_count = 1   # default to executing against 1 host at a time
 
     if args.get('concurrency'):
-        fork_count = int(args.get('concurrency'))
+        fork_count = args.get('concurrency')
 
-    inventory: Dict[dict, list] = {}
+    inventory: Dict[dict, list, str] = {}
     inventory['all'] = {}
     inventory['all']['hosts'] = {}
 
