@@ -86,7 +86,7 @@ script:
       description: limit of output
       name: limit
     description: Genral search , can combine multiple parameters
-    name: ironPortSearch
+    name: iron-port-search
   dockerimage: demisto/python3:3.8.6.12176
   runonce: false
   script: ''
