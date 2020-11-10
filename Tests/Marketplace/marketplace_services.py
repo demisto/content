@@ -19,6 +19,7 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
+from demisto_sdk.commands.common.tools import get_json
 from typing import Tuple
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
@@ -867,9 +868,10 @@ class Pack(object):
     def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack, latest_version,
                                    successful_packs_dict):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
-        The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version.
-        In case that zip pack artifact already exist at constructed path, or the pack exists in the
-        successful_packs_dict from Prepare content step in Create Instances job, the copy will be skipped.
+        The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
+        the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
+        In case that zip pack artifact already exist at constructed path above (the path in the production bucket,
+        the copy will be skipped.
         If flag override_pack is set to True, pack will forced to copy.
 
         Args:
@@ -880,8 +882,9 @@ class Pack(object):
             successful_packs_dict (dict): the list of all packs were uploaded in prepare content step
 
         Returns:
-            bool: whether the operation succeeded.
-            bool: True in case of pack existence at targeted path and copy was skipped, otherwise returned False.
+            bool: Status - whether the operation succeeded.
+            bool: Skipped pack - true in case of pack existence at the targeted path and the copy process was skipped,
+             otherwise returned False.
 
         """
         task_status = True
@@ -918,7 +921,7 @@ class Pack(object):
             self._aggregated = successful_packs_dict[self._pack_name].get('aggregated')
 
         if not task_status:
-            logging.error(f"Failed in uploading {self._pack_name} pack to gcs.")
+            logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
         else:
             logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
@@ -934,8 +937,7 @@ class Pack(object):
 
         """
         logging.info(f"Found Changelog for: {self._pack_name}")
-        with open(changelog_index_path, "r") as changelog_file:
-            changelog = json.load(changelog_file)
+        changelog = get_json(changelog_index_path)
 
         # get the latest rn version in the changelog.json file
         changelog_rn_versions = [LooseVersion(ver) for ver in changelog]

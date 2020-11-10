@@ -47,19 +47,19 @@ class TestHelperFunctions:
         tempdir = mkdtemp()
         file = os.path.join(tempdir, PACKS_RESULTS_FILE)
 
-        # assert path not exist
+        # Case 1: assert file does not exist
         successful, failed = get_successful_and_failed_packs(file)
         assert successful == {}
         assert failed == {}
 
-        # assert empty file
+        # Case 2: assert empty file
         with open(file, "w") as f:
             f.write('')
         successful, failed = get_successful_and_failed_packs(file)
         assert successful == {}
         assert failed == {}
 
-        # assert valid file
+        # Case 3: assert valid file
         with open(file, "w") as f:
             f.write(json.dumps({
                 "failed_packs": {"TestPack2": {"status": "status2", "aggregated": False}},
