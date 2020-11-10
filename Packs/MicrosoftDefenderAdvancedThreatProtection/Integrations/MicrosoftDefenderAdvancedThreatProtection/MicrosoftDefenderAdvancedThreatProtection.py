@@ -310,7 +310,7 @@ class MsClient:
         json_data = {
             'Query': query
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, timeout=60)
 
     def create_alert(self, machine_id, severity, title, description, event_time, report_id, rec_action, category):
         """Creates new Alert on top of Event.
