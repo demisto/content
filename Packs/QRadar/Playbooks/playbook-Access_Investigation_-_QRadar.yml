@@ -52,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -490
+          "y": -510
         }
       }
   "2":
@@ -191,8 +191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 720
+          "x": 50,
+          "y": 710
         }
       }
   "7":
@@ -340,14 +340,14 @@ tasks:
     task:
       id: 975ea04b-4f88-4d4b-87f2-e84069981424
       version: -1
-      name: Is Qradar v1 enabled?
+      name: Is QRadar v1 enabled?
       description: ''
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+      - "2"
       "yes":
       - "11"
     separatecontext: false
@@ -380,8 +380,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -710,
-          "y": -340
+          "x": -210,
+          "y": -360
         }
       }
     note: false
@@ -396,14 +396,14 @@ tasks:
     task:
       id: aac3592e-525f-41ad-8ca7-97b3ac752554
       version: -1
-      name: Is Qradar v2 enabled?
+      name: Is QRadar v2 enabled?
       description: ''
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+      - "2"
       "yes":
       - "10"
     separatecontext: false
@@ -436,8 +436,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": -340
+          "x": 310,
+          "y": -360
         }
       }
     note: false
@@ -480,7 +480,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 460,
           "y": -140
         }
       }
@@ -517,8 +517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": -140
+          "x": -360,
+          "y": -160
         }
       }
     note: false
@@ -531,9 +531,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1425,
-        "width": 1350,
-        "x": -920,
+        "height": 1415,
+        "width": 1200,
+        "x": -360,
         "y": -640
       }
     }
