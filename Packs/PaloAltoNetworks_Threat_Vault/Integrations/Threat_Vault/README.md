@@ -203,7 +203,7 @@ Checks the reputation of an antivirus in Threat Vault.
 ### threatvault-dns-signature-get-by-id
 ***
 Gets the DNS signature.
-
+For more information about getting the IDs, see: https://docs.paloaltonetworks.com/pan-os/10-0/pan-os-admin/threat-prevention/learn-more-about-and-assess-threats/learn-more-about-threat-signatures.html
 
 #### Base Command
 
@@ -247,7 +247,7 @@ Gets the DNS signature.
 ### threatvault-antispyware-signature-get-by-id
 ***
 Gets the antispyware signature.
-
+For more information about getting the IDs, see: https://docs.paloaltonetworks.com/pan-os/10-0/pan-os-admin/threat-prevention/learn-more-about-and-assess-threats/learn-more-about-threat-signatures.html
 
 #### Base Command
 

@@ -10,9 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": ["Learn More About Threat Signatures from PAN-OS firewall logs."],
-    "keywords": [],
+    "tags": [""],
+    "useCases": ["Learn more about threat signatures from PAN-OS firewall threat logs."],
+    "keywords": ["logs", "antispyware", "antivirus", "pan-os"],
     "dependencies": {
         "CommonScripts": {
             "mandatory": true,
