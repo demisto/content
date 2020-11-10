@@ -315,7 +315,7 @@ def main():
             mesId = demisto.args().get('mid')
             ironportQuarantineReleaseEmail(mesId)
 
-        elif demisto.command() == 'ironportSpamReleaseEmail':
+        elif demisto.command() == 'iron-port-spam-release-Email':
             mesId = demisto.args().get('mid')
             ironportSpamReleaseEmail(mesId)
 
