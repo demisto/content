@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 def main():
     args = demisto.args()
     query = args.get("query")
+    account = args.get("account_name", '')
 
     page_number = 0
     number_of_failed = 0
@@ -28,10 +29,15 @@ def main():
             break
 
     for incident in total_incidents:
+        if account:
+            uri = f'acc_{account}/investigation/{str(incident["id"])}/workplan/tasks'
+        else:
+            uri = f'investigation/{str(incident["id"])}/workplan/tasks'
+
         tasks = demisto.executeCommand(
             "demisto-api-post",
             {
-                "uri": f'investigation/{str(incident["id"])}/workplan/tasks',
+                "uri": uri,
                 "body": {
                     "states": ["Error"],
                     "types": ["regular", "condition", "collection"]
