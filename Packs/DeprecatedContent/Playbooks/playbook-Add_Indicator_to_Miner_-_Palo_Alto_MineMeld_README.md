@@ -1,4 +1,4 @@
-Adds indicators to the relevant Miner using MineMeld.
+DEPRECATED. Adds indicators to the relevant Miner using MineMeld.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

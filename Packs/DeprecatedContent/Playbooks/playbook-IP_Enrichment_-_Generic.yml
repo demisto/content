@@ -1,9 +1,9 @@
 id: ip_enrichment_generic
 version: -1
 name: IP Enrichment - Generic
-fromversion: 3.6.0
+fromversion: 5.0.0
 description: |-
-  Enrich IP using one or more integrations.
+  Deprecated. Enrich IP using one or more integrations.
 
   IP enrichment includes:
   * Resolve IP to Hostname (DNS)
@@ -12,6 +12,7 @@ description: |-
   * IP reputation
   * For internal addresses, get host information
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -106,8 +107,7 @@ tasks:
       id: 74889e4f-d5ea-46d2-8cfb-aac15c10a52f
       version: -1
       name: Check IP reputation
-      description: Get the IP reputation from every integration that supports the
-        `!ip` command.
+      description: Get the IP reputation from every integration that supports the `!ip` command.
       scriptName: IPReputation
       type: regular
       iscommand: false
@@ -254,10 +254,7 @@ tasks:
       id: dfe5b434-e54a-4290-841e-073030e2af53
       version: -1
       name: Determine whether the IP address is internal or external
-      description: "Checks if the IP address is in the internal IP address ranges.\nAdds
-        \ \"yes\" to the \"InRange\" attribute of the IP address  if it is internal.
-        \nAdds \"no\"  to the \"InRange\" attribute of the IP address  if it is external.
-        \n"
+      description: "Checks if the IP address is in the internal IP address ranges.\nAdds  \"yes\" to the \"InRange\" attribute of the IP address  if it is internal. \nAdds \"no\"  to the \"InRange\" attribute of the IP address  if it is external. \n"
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -497,8 +494,7 @@ tasks:
       id: 2d6d9c62-3d21-423f-80f7-51f57ff3c881
       version: -1
       name: Is Virus Total Private API enabled?
-      description: Checks if there is an active instance of the Virus Total Private
-        API enabled.
+      description: Checks if there is an active instance of the Virus Total Private API enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -633,4 +629,4 @@ outputs:
   description: Endpoint domain name
   type: string
 tests:
-  - No test - deprecated. use V2.1 instead.
+- No test - deprecated. use V2.1 instead.

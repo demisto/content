@@ -93,4 +93,4 @@ This playbook does not use any integrations.
 | Polygon.Analysis.Process | unknown | The information about processes started during the analysis | 
 
 ## Playbook Image
-![Polygon Detonate File](https://github.com/demisto/content/blob/c81536f5842604b7e7f0be024721bdf07447992a/docs/images/playbooks/Detonate_File_-_Group-IB_TDS_Polygon.png)
+![Polygon Detonate File](https://github.com/demisto/content/raw/c81536f5842604b7e7f0be024721bdf07447992a/docs/images/playbooks/Detonate_File_-_Group-IB_TDS_Polygon.png)

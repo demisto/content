@@ -869,6 +869,7 @@ tasks:
     nexttasks:
       '#none#':
       - "25"
+      - "54"
     scriptarguments:
       group_id:
         simple: ${TC.Campaign.ID}
@@ -912,7 +913,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -860,
+          "x": -1070,
           "y": 1955
         }
       }
@@ -1871,6 +1872,40 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "54":
+    id: "54"
+    taskid: 9e0c933e-5f52-47fb-826b-6365e7b911f6
+    type: regular
+    task:
+      id: 9e0c933e-5f52-47fb-826b-6365e7b911f6
+      version: -1
+      name: tc-download-report
+      script: tc-download-report
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      group_id:
+        simple: ${TC.Campaign.ID}
+      group_type:
+        simple: campaigns
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": 1955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+
 view: |-
   {
     "linkLabelsPosition": {},

@@ -2,8 +2,9 @@ commonfields:
   id: FileReputation
   version: -1
 name: FileReputation
-script: |-
+script: >-
   results = demisto.executeCommand('file', {'file': demisto.get(demisto.args(),'file')})
+
 
   for item in results:
       if isError(item):
@@ -23,3 +24,4 @@ args:
   description: File hash to look up - supports MD5, SHA1 and SHA256
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

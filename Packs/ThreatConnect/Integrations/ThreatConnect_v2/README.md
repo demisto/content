@@ -15,8 +15,7 @@ Threat intelligence platform.
 | rating | Rating threshold for Malicious Indicators | False |
 | confidence | Confidence threshold for Malicious Indicators | False |
 | freshness | Indicator Reputation Freshness \(in days\) | False |
-| proxyIp | ProxyIP  \(or http://\<ip\>) | False |
-| proxyPort | ProxyPort | False |
+| proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -106,7 +105,7 @@ Searches for an indicator of type URL.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The URL for which to search. For example, "www.demisto.com". | Required | 
+| url | The URL for which to search. For example, `www.demisto.com`. | Required | 
 | owners | A comma-separated list of a client's organizations, sources, or communities to which a client’s API user has been granted permission. For example, "owner1", "owner2", or "owner3". | Optional | 
 | ratingThreshold | A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical". | Optional | 
 | confidenceThreshold | A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed". | Optional | 

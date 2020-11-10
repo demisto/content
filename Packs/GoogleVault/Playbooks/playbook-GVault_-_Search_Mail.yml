@@ -1,6 +1,6 @@
 id: Google-Vault-Search-Mail
 version: -1
-fromversion: 4.0.0
+fromversion: 5.0.0
 name: Google Vault - Search Mail
 description: This is a playbook for performing Google Vault search in Mail accounts and display the results.
 starttaskid: "0"
@@ -36,8 +36,7 @@ tasks:
       id: e3690834-b9f7-4574-8106-e70ec6cec8c6
       version: -1
       name: 'Create Mail Export '
-      description: Creates a Google Vault export in order to perform search actions
-        on emails.
+      description: Creates a Google Vault export in order to perform search actions on emails.
       script: '|||gvault-create-export-mail'
       type: regular
       iscommand: true
@@ -126,8 +125,7 @@ tasks:
         complex:
           root: inputs.pollTimeout
       dt:
-        simple: GoogleVault.Matter.Export(val.Status != 'COMPLETED')=val.MatterID
-          + '#' + val.ExportID
+        simple: GoogleVault.Matter.Export(val.Status != 'COMPLETED')=val.MatterID + '#' + val.ExportID
     separatecontext: true
     loop:
       iscommand: false
@@ -366,10 +364,7 @@ tasks:
       - "5"
     scriptarguments:
       message:
-        simple: 'Polling time out: Your search is taking a bit more time. To see your
-          results please run playbook ''Google Vault - Display Results'' with a grater
-          ''PollIntarval'' and ''PollTimeout'' using this ExportID: ${GoogleVault.Matter.Export.ExportID}
-          and MatterID: ${GoogleVault.Matter.Export.MatterID}'
+        simple: 'Polling time out: Your search is taking a bit more time. To see your results please run playbook ''Google Vault - Display Results'' with a grater ''PollIntarval'' and ''PollTimeout'' using this ExportID: ${GoogleVault.Matter.Export.ExportID} and MatterID: ${GoogleVault.Matter.Export.MatterID}'
     separatecontext: false
     view: |-
       {
@@ -419,8 +414,7 @@ inputs:
 - key: ou
   value: {}
   required: false
-  description: The organizational unit (specify only if the search method is set to
-    Organizational Unit)
+  description: The organizational unit (specify only if the search method is set to Organizational Unit)
 - key: includeDrafts
   value:
     simple: "true"
@@ -471,8 +465,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: If set to true the export file created will be downloaded into the
-    War Room
+  description: If set to true the export file created will be downloaded into the War Room
 outputs:
 - contextPath: GoogleVault.Matter.Export.MatterID
   description: Matter ID
@@ -523,4 +516,4 @@ outputs:
   description: Matter object
   type: unknown
 tests:
-  - Google_Vault-Search_And_Display_Results_test
+- Google_Vault-Search_And_Display_Results_test

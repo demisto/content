@@ -282,7 +282,7 @@ tasks:
           root: Email
           accessor: ID
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -828,8 +828,7 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:multi attachment test via playbook
-          newer_than:1d
+        simple: from:shai@demistodev.com subject:multi attachment test via playbook newer_than:1d
       subject: {}
       to: {}
       user-id:
@@ -942,8 +941,7 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:multi attachment test via playbook
-          newer_than:1d
+        simple: from:shai@demistodev.com subject:multi attachment test via playbook newer_than:1d
       subject: {}
       to: {}
       user-id:
@@ -1092,8 +1090,7 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:multi attachment test via playbook
-          newer_than:1d
+        simple: from:shai@demistodev.com subject:multi attachment test via playbook newer_than:1d
       subject: {}
       to: {}
       user-id:
@@ -1411,3 +1408,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

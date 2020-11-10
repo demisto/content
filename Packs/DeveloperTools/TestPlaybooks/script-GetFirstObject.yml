@@ -2,8 +2,9 @@ commonfields:
   id: GetFirstObject
   version: -1
 name: GetFirstObject
-script: |
+script: >
   value = demisto.args()['value']
+
   if isinstance(value, list) or isinstance(value, tuple):
       demisto.results(value[0])
   else:
@@ -25,3 +26,4 @@ args:
   description: List or single object
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

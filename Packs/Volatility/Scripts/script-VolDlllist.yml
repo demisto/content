@@ -2,9 +2,11 @@ commonfields:
   id: VolDlllist
   version: -1
 name: VolDlllist
-script: |-
+script: >-
   var cmdline = 'dlllist -p ' + args.pid;
+
   var out = executeCommand('Volatility', {memdump:args.memdump, profile:args.profile, system: args.system, cmd:cmdline});
+
   return out;
 type: javascript
 tags:
@@ -29,3 +31,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

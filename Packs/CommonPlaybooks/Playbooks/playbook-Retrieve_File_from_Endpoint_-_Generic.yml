@@ -1,7 +1,7 @@
 id: Retrieve File from Endpoint - Generic
 version: -1
 name: Retrieve File from Endpoint - Generic
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: |-
   This playbook retrieves a file sample from an endpoint using the following playbooks:
   - Get File Sample From Path - Generic
@@ -199,4 +199,4 @@ inputs:
     Default is no.
 outputs: []
 tests:
-  - No test
+- No test

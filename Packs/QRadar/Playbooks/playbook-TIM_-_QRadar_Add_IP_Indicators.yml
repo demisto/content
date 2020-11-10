@@ -332,7 +332,7 @@ tasks:
     task:
       id: 51cc5048-684f-48ac-87b0-fd221cda659e
       version: -1
-      name: Add IPs to QRadar black list IP reference set
+      name: Add IPs to QRadar white list IP reference set
       description: Add or update a value in a reference set.
       script: '|||qradar-update-reference-set-value'
       type: regular

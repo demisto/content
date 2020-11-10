@@ -34,8 +34,7 @@ tasks:
       id: tenable-sc-scan
       version: -1
       name: Launch Scan - Tenable.sc
-      description: Launches an existing Tenable.sc scan by scan ID and waits for the
-        scan to finish by polling its status in pre-defined intervals.
+      description: Launches an existing Tenable.sc scan by scan ID and waits for the scan to finish by polling its status in pre-defined intervals.
       playbookName: Launch Scan - Tenable.sc
       type: playbook
       iscommand: false
@@ -73,3 +72,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -483,8 +483,7 @@ tasks:
       id: 8a564967-696c-45a1-8878-ccc7ad76095a
       version: -1
       name: Get Indicator by ID
-      description: Return filtered indicators from ThreatStream. If query is defined,
-        it overides all othe arguments that were passed to the command.
+      description: Return filtered indicators from ThreatStream. If query is defined, it overides all othe arguments that were passed to the command.
       script: Anomali ThreatStream v2|||threatstream-get-indicators
       type: regular
       iscommand: true
@@ -639,8 +638,7 @@ tasks:
       id: 1cf2edbb-8111-40fc-8846-334725252316
       version: -1
       name: Get Indicator By Model Actor
-      description: Returns a list of indecators associated with the specified model
-        and model's id.
+      description: Returns a list of indecators associated with the specified model and model's id.
       script: Anomali ThreatStream v2|||threatstream-get-indicators-by-model
       type: regular
       iscommand: true
@@ -798,8 +796,7 @@ tasks:
       id: b9be25a2-478c-48ce-8aed-ea8d7d75ba47
       version: -1
       name: Get Indicator By Model Campaing
-      description: Returns a list of indecators associated with the specified model
-        and model's id.
+      description: Returns a list of indecators associated with the specified model and model's id.
       script: Anomali ThreatStream v2|||threatstream-get-indicators-by-model
       type: regular
       iscommand: true
@@ -839,3 +836,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

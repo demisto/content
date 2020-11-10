@@ -1,0 +1,119 @@
+id: Zimperium Incident Enrichment
+version: -1
+name: Zimperium Incident Enrichment
+description: Enriches Zimperium incidents.
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 46b2e5b0-6f4b-4756-8dbf-291520152be4
+    type: start
+    task:
+      id: 46b2e5b0-6f4b-4756-8dbf-291520152be4
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: df4f2e79-a148-4be4-8e20-a6f1f7508b74
+    type: regular
+    task:
+      id: df4f2e79-a148-4be4-8e20-a6f1f7508b74
+      version: -1
+      name: Get device details by zimperium ID
+      description: Retrieve details for a single device.
+      script: '|||zimperium-device-get-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      device_id: {}
+      zdid:
+        complex:
+          root: incident
+          accessor: labels.zdid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: cef0f8eb-e0ec-4e4c-89df-b068136369b5
+    type: regular
+    task:
+      id: cef0f8eb-e0ec-4e4c-89df-b068136369b5
+      version: -1
+      name: Get user details by email
+      description: Search users.
+      script: '|||zimperium-users-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      email:
+        complex:
+          root: incident
+          accessor: Labels.userEmail
+      page: {}
+      query: {}
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+ -  No tests

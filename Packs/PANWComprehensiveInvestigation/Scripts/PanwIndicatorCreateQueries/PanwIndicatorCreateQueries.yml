@@ -31,12 +31,10 @@ outputs:
   description: The query for the specified IP address indicators. This query is relevant for the Cortex Analytics table "tms.analytics", which is the agent IP.
   type: String
 - contextPath: Query.IP.CortexTrafficIP
-  description: The query for the specified IP address indicators. This query is relevant for the Cortex Traffic table "panw.traffic", and includes both source
-    and destination.
+  description: The query for the specified IP address indicators. This query is relevant for the Cortex Traffic table "panw.traffic", and includes both source and destination.
   type: String
 - contextPath: Query.IP.CortexThreatIP
-  description: The query for the specified IP address indicators. This query is relevant for the Cortex Threat table "panw.threat", and includes both source
-    and destination.
+  description: The query for the specified IP address indicators. This query is relevant for the Cortex Threat table "panw.threat", and includes both source and destination.
   type: String
 - contextPath: Query.IP.AutofocusSessionsIP
   description: The query (in JSON format) for the specified IP address indicators. This query is relevant for AutoFocus, includes both source and destination.
@@ -78,3 +76,4 @@ tests:
 - No test
 subtype: python3
 dockerimage: demisto/python3:3.7.4.1900
+fromversion: 5.0.0

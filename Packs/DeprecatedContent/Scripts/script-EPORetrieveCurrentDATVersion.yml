@@ -2,9 +2,11 @@ commonfields:
   id: EPORetrieveCurrentDATVersion
   version: -1
 name: EPORetrieveCurrentDATVersion
-script: |
+script: >
   res = []
+
   repos = demisto.get(demisto.args(), 'repos')
+
   if not repos:
       res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Received empty repository list!"})
   else:
@@ -37,7 +39,7 @@ type: python
 subtype: python2
 tags:
 - epo
-comment: Retrieve DAT version currently installed in the given ePO server
+comment: Deprecated. Retrieve DAT version currently installed in the given ePO server
 system: true
 deprecated: true
 args:
@@ -50,3 +52,4 @@ dependson:
   must:
   - epo-command
 timeout: 0s
+fromversion: 5.0.0

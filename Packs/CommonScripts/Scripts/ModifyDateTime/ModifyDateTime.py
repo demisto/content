@@ -1,0 +1,34 @@
+
+import demistomock as demisto
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+import dateparser
+from typing import Optional
+
+
+def apply_variation(original_datetime: Optional[datetime] = None, variation: str = None) -> Optional[datetime]:
+    try:
+        new_time = dateparser.parse(variation, settings={'RELATIVE_BASE': original_datetime})
+    except Exception as err:
+        return_error(f"Error adding variation to the date / time - {err}")
+    return new_time
+
+
+def main():
+    args = demisto.args()
+    value = args.get('value')
+    try:
+        original_datetime = dateparser.parse(value)
+    except Exception as err:
+        return_error(f"Error with input date / time - {err}")
+
+    variation = args.get('variation')
+    new_time = apply_variation(original_datetime, variation)
+    if isinstance(new_time, datetime):
+        demisto.results(new_time.isoformat())
+    else:
+        return_error('Invalid variation specified')
+
+
+if __name__ in ('__main__', 'builtin', 'builtins'):
+    main()

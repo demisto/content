@@ -2,13 +2,15 @@ commonfields:
   id: CopyFileD2
   version: -1
 name: CopyFileD2
-script: |-
+script: >-
   var e = executeCommand( 'getEntry', { 'id' : args.entryid } );
+
   if ( e.length === 0 )
       return "Entry " + args.entryid + " not found.";
   if ( e.length>1 )
       return "More than one entry with that ID found. Assertion error.";
   e = e[0];
+
   if ( e.File ) {
       var fileName = fileNameFromEntry( args.entryid );
       var rep = executeCommand( 'D2Drop', { destpath : args.destpath , files : fileName, using : args.system, force: args.force } );
@@ -44,4 +46,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - No test - D2 test are not supported yet in content tests
+- No test - D2 test are not supported yet in content tests
+fromversion: 5.0.0

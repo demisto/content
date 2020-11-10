@@ -1,16 +1,16 @@
 <!-- HTML_DOC -->
-<p>This integration uses Carbon Black Enterprise Protection’s searchable file catalog and application control capabilities, such as finding and blocking files by their hash.</p>
+<p>This integration uses VMware Carbon Black App Control’s (formerly known as Carbon Black Enterprise Protection) searchable file catalog and application control capabilities, such as finding and blocking files by their hash.</p>
 <div class="row top-padded">
 <div class="five wide break-word column integration-command-name"> </div>
 </div>
 <h3>To set up the integration on Demisto:</h3>
 <ol>
 <li>Go to ‘Settings &gt; Integrations &gt; Servers &amp; Services’</li>
-<li>Locate the Carbon Black Enterprise Protection integration by searching for ‘Carbon Black Enterprise Protection’ using the search box on the top of the page.</li>
-<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following Carbon Black Enterprise Protection and Demisto-specific settings:                               <br> <strong>Name</strong>: A textual name for the integration instance.</li>
+<li>Locate the VMware Carbon Black App Control v2 integration by searching for ‘VMware Carbon Black App Control v2’ using the search box on the top of the page.</li>
+<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following VMware Carbon Black App Control and Demisto-specific settings:                               <br> <strong>Name</strong>: A textual name for the integration instance.</li>
 </ol>
-<p class="wysiwyg-indent4"><strong>Server URL</strong>: The hostname or IP address of the Carbon Black Enterprise Protection application. Make sure the URL is reachable with respect to IP address and port.</p>
-<p class="wysiwyg-indent4"><strong>API Token: </strong>The API Token provided for Carbon Black Enterprise Protection. <strong> </strong></p>
+<p class="wysiwyg-indent4"><strong>Server URL</strong>: The hostname or IP address of the VMware Carbon Black App Control application. Make sure the URL is reachable with respect to IP address and port.</p>
+<p class="wysiwyg-indent4"><strong>API Token: </strong>The API Token provided for VMware Carbon Black App Control. <strong> </strong></p>
 <p class="wysiwyg-indent4"><strong>Incident type:</strong> Choose the type of incident for Demisto handling from the drop-down list.</p>
 <p class="wysiwyg-indent4"><strong>Do not validate server certificate</strong>: Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate)</p>
 <p class="wysiwyg-indent4"><strong>Use system proxy settings</strong>: Select whether to communicate via the system proxy server or not.</p>

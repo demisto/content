@@ -2,14 +2,20 @@ commonfields:
   id: UnPackFile
   version: -1
 name: UnPackFile
-script: |-
+script: >-
   from pyunpack import Archive
+
   import os
+
   from os.path import isfile
+
   from os.path import isdir
 
+
   filePath = None
+
   fileEntryID = ''
+
   if demisto.args().has_key('fileName') or demisto.args().has_key('lastPackedFileInWarroom'):
       entries = demisto.executeCommand('getEntries', {})
       for entry in entries:
@@ -54,6 +60,7 @@ script: |-
       sys.exit(0)
 
   res = demisto.executeCommand('getFilePath', {'id': fileEntryID})
+
   if res[0]['Type'] == entryTypes['error']:
       demisto.results({
           'Type': entryTypes['error'],
@@ -64,14 +71,22 @@ script: |-
 
   filePath = res[0]['Contents']['path']
 
+
   filenames = []
+
   # remembering which files and dirs we currently have so we add them later as newly extracted files.
+
   excludedFiles = [f for f in os.listdir('.') if isfile(f)]
+
   excludedDirs = [d for d in os.listdir('.') if isdir(d)]
 
+
   # extracting the archive file
+
   Archive(filePath).extractall_patool('.', None)
+
   # recursing over the file system top down
+
   for root, directories, files in os.walk('.'):
       # removing the previously existing dirs from the search
       directories[:] = [d for d in directories if d not in excludedDirs]
@@ -119,11 +134,11 @@ args:
 - name: entryID
   description: entry id of the attached packed file in the warroom
 - name: lastPackedFileInWarroom
-  description: Set to package file extension to look for the last of its kind in the
-    war room
+  description: Set to package file extension to look for the last of its kind in the war room
 outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from package
 scripttarget: 0
 runonce: false
 dockerimage: demisto/unrar:1.4
+fromversion: 5.0.0

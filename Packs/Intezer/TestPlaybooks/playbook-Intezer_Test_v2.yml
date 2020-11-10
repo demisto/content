@@ -544,8 +544,7 @@ tasks:
       id: 3c374330-d84f-4b1e-85c3-ec1415bce2a8
       version: -1
       name: Intezer - Analyze by hash
-      description: Analyze the given file hash on Intezer Analyze and enrich the file
-        reputation. Supports SHA256, SHA1, and MD5.
+      description: Analyze the given file hash on Intezer Analyze and enrich the file reputation. Supports SHA256, SHA1, and MD5.
       playbookName: Intezer - Analyze by hash
       type: playbook
       iscommand: false
@@ -839,6 +838,7 @@ inputs:
     simple: fcb42f8e4ccb55ee2920da64c7834575875012d89ff260ee318db5054e6e1019
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 sourceplaybookid: Intezer Testing v2
+fromversion: 5.0.0

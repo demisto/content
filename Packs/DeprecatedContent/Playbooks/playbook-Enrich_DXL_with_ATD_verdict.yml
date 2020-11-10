@@ -1,11 +1,12 @@
 id: Enrich DXL with ATD verdict
 version: -1
 name: Enrich DXL with ATD verdict
-fromversion: ""
+fromversion: "5.0.0"
 description: |-
-  Example of using McAfee ATD and pushing any malicious verdicts over DXL.
+  Deprecated. Use "Enrich DXL with ATD verdict v2" playbook instead. Example of using McAfee ATD and pushing any malicious verdicts over DXL.
   Detonates a file in ATD and if malicious - push its MD5, SHA1 and SHA256 hashes to McAfee DXL.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"

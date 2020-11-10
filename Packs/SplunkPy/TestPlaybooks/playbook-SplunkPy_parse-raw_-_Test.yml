@@ -1,0 +1,279 @@
+id: SplunkPy parse-raw - Test
+version: -1
+name: SplunkPy parse-raw - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ae6b0615-1535-4450-8f32-c040486d66a1
+    type: start
+    task:
+      id: ae6b0615-1535-4450-8f32-c040486d66a1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 03c17911-8288-42ce-8660-48224c73eb8a
+    type: regular
+    task:
+      id: 03c17911-8288-42ce-8660-48224c73eb8a
+      version: -1
+      name: splunk-parse-raw (json)
+      description: Parses the raw part of the event.
+      script: 'splunk-parse-raw'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      raw:
+        simple: '{"Test": "success"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 0114d619-ab24-4b43-86ee-c887147efa97
+    type: condition
+    task:
+      id: 0114d619-ab24-4b43-86ee-c887147efa97
+      version: -1
+      name: verify json outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Splunk.Raw.Parsed.Test}
+            iscontext: true
+          right:
+            value:
+              simple: success
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f4887d8d-2088-4d88-87d3-ce33ffbb1219
+    type: regular
+    task:
+      id: f4887d8d-2088-4d88-87d3-ce33ffbb1219
+      version: -1
+      name: delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7581b805-fa78-421c-8af8-061a72104530
+    type: regular
+    task:
+      id: 7581b805-fa78-421c-8af8-061a72104530
+      version: -1
+      name: splunk-parse-raw (standard)
+      description: Parses the raw part of the event.
+      script: 'splunk-parse-raw'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      raw:
+        simple: '"Test="success"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 744b6668-810e-4ea9-8e63-38711f32465d
+    type: condition
+    task:
+      id: 744b6668-810e-4ea9-8e63-38711f32465d
+      version: -1
+      name: verify standard outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Splunk.Raw.Parsed.Test}
+            iscontext: true
+          right:
+            value:
+              simple: success
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 4902ecea-b788-43d2-8ca4-2ffc581889f0
+    type: title
+    task:
+      id: 4902ecea-b788-43d2-8ca4-2ffc581889f0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 884a1fc4-b889-4fca-8407-4243f1d61c83
+    type: regular
+    task:
+      id: 884a1fc4-b889-4fca-8407-4243f1d61c83
+      version: -1
+      name: error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1170,
+        "width": 830,
+        "x": 0,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

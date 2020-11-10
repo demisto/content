@@ -2,7 +2,8 @@ commonfields:
   id: FetchFileD2
   version: -1
 name: FetchFileD2
-script: return executeCommand('D2GetFile', args);
+script: >-
+  return executeCommand('D2GetFile', args);
 type: javascript
 tags: []
 comment: Get a File from using a D2 agent
@@ -15,3 +16,4 @@ args:
   required: true
   description: Local filepath on the endpoint
 scripttarget: 0
+fromversion: 5.0.0

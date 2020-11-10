@@ -1,0 +1,28 @@
+{
+    "totalSize": 2,
+    "done": true,
+    "records": [
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__SYSTemplate__c",
+                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__SYSTemplate__c/a3k2x000000Tc8TAAS"
+            },
+            "Id": "a3k2x000000Tc8TAAS",
+            "Name": "Chatter Incident Template",
+            "BMCServiceDesk__templateFor__c": "Incident",
+            "BMCServiceDesk__description__c": null,
+            "BMCServiceDesk__HasRecurrence__c": false
+        },
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__SYSTemplate__c",
+                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__SYSTemplate__c/a3k2x000000Tc8UAAS"
+            },
+            "Id": "a3k2x000000Tc8UAAS",
+            "Name": "Sep: Employee Separation ticket",
+            "BMCServiceDesk__templateFor__c": "Incident",
+            "BMCServiceDesk__description__c": "Use when an Employee is leaving the organization.",
+            "BMCServiceDesk__HasRecurrence__c": false
+        }
+    ]
+}

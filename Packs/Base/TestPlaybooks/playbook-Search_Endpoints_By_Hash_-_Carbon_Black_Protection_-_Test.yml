@@ -2,7 +2,7 @@ id: search_endpoints_by_hash_-_carbon_black_protection_-_test
 version: -1
 name: Search Endpoints By Hash - Carbon Black Protection - Test
 description: A test playbook for Carbon Black Protection Rapid IOC Hunting
-fromversion: 3.5.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -35,8 +35,7 @@ tasks:
       id: 92cb999f-47bc-45e0-8e81-a87f161555ad
       version: -1
       name: Search Endpoints By Hash - Carbon Black Protection
-      description: Hunt for endpoint activity involving hash and domain IOCs, using
-        Carbon black Protection (Bit9).
+      description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon black Protection (Bit9).
       playbookName: Search Endpoints By Hash - Carbon Black Protection
       playbookId: search_endpoints_by_hash_-_carbon_black_protection
       type: playbook

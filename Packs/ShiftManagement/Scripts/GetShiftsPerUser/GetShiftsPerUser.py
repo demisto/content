@@ -42,7 +42,7 @@ def main():
         if contents and len(contents.get("Contents")) == 1:
             user_id = contents.get("Contents")[0].get("id")
         else:
-            return_error(f'Failed to get users: User object is empty')
+            return_error('Failed to get users: User object is empty')
 
     get_roles_response: List = demisto.executeCommand('getRoles', {})
     if is_error(get_roles_response):
@@ -95,15 +95,12 @@ def main():
         } for shift in shifts_of_user_readable
     ]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': tableToMarkdown(
-            name=f'{user.get("name", user_id)}\'s Shifts',
-            t=shifts_table,
-            headers=HEADERS
-        )
-    })
+    widget = TextWidget(text=tableToMarkdown(
+        name=f'{user.get("name", user_id)}\'s Shifts',
+        t=shifts_table,
+        headers=HEADERS
+    ))
+    return_results(widget)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

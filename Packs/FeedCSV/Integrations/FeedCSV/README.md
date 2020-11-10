@@ -17,6 +17,7 @@ Fetch indicators from a CSV feed. The integration allows a great amount of user 
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
     * __Fetch Interval__: Interval of the fetches.
     * __Reliability__: Reliability of the feed. 
+    * __Traffic Light Protocol Color__: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp
     * __Username + Password__ - Credentials to access feeds that require basic authentication. 
 These fields also support the use of API key headers. To use API key headers, specify the header name and value in the following format:
 `_header:<header_name>` in the **Username** field and the header value in the **Password** field.

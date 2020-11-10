@@ -5,5 +5,12 @@
       "MISCELLANEOUS_OR_UNKNOWN"
     ],
     "urlClassificationsWithSecurityAlert": []
+  },
+  {
+    "url": "111.222.33.44",
+    "urlClassifications": [
+      "MISCELLANEOUS_OR_UNKNOWN"
+    ],
+    "urlClassificationsWithSecurityAlert": []
   }
 ]

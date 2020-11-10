@@ -1,0 +1,225 @@
+id: hashIncidentFields-test
+version: 8
+name: hashIncidentFields-test
+description: test playbook for hashIncidentFields
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d3768e6d-0c99-4c2b-8cde-aeac8d0909e0
+    type: start
+    task:
+      id: d3768e6d-0c99-4c2b-8cde-aeac8d0909e0
+      version: -1
+      name: ""
+      description: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 60ef8591-e7e8-4e50-825a-d9e828eb9060
+    type: regular
+    task:
+      id: 60ef8591-e7e8-4e50-825a-d9e828eb9060
+      version: -1
+      name: CreateIncidents
+      description: Create incidents for test
+      scriptName: CreateIncidentsForEvaluateMLModllAtProduction
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      numberOfIncidents:
+        simple: "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a3aa0160-3377-46e6-884b-54f2b7f5dd20
+    type: regular
+    task:
+      id: a3aa0160-3377-46e6-884b-54f2b7f5dd20
+      version: -1
+      name: HashIncidentsFields
+      description: Get incidents and hash some fields
+      scriptName: HashIncidentsFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      NonEmptyFields: {}
+      contextKeys:
+        simple: simpleValue, listValue
+      fieldsToHash: {}
+      fromDate: {}
+      incidentTypes: {}
+      includeContext:
+        simple: "true"
+      limit: {}
+      outputFormat:
+        simple: json
+      populateFields: {}
+      query:
+        simple: ${IncidentsQuery}
+      timeField: {}
+      toDate: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: eae6f267-4ea2-42e2-8042-16abba6d65b3
+    type: title
+    task:
+      id: eae6f267-4ea2-42e2-8042-16abba6d65b3
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6572dfe9-3b62-4ceb-84d3-b71c0ecefe74
+    type: condition
+    task:
+      id: 6572dfe9-3b62-4ceb-84d3-b71c0ecefe74
+      version: -1
+      name: File created ?
+      description: Check if the file was created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HashIncidentsFields.Filename
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 14d6754f-03f7-4ec6-8c62-3c7f27c82e8f
+    type: regular
+    task:
+      id: 14d6754f-03f7-4ec6-8c62-3c7f27c82e8f
+      version: -1
+      name: Clean Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_3_yes": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

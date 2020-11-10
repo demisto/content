@@ -1,6 +1,6 @@
 id: playbook8
 version: -1
-fromversion: 2.5.0
+fromversion: 5.0.0
 name: Lost / Stolen Device Playbook
 description: |-
   This manual playbook handles an incident for a lost or stolen device. It guides the analyst through various steps to validate the type of device and its contents, and the required steps for response and remediation. Initial incident details should be the name of the reporting person or ID of the SIEM alert/incident, and description of the lost device.
@@ -69,9 +69,7 @@ tasks:
       id: 1dd39fd1-72fd-4e8c-8a40-92297b9d499a
       version: -1
       name: Notify and involve appropriate personnel
-      description: Depending on regulatory, compliance, and legal requirements, or your company
-        procedure, you may need to involve the legal department, PR department, upper
-        management, the employee's immediate supervisor, and/or other personnel.
+      description: Depending on regulatory, compliance, and legal requirements, or your company procedure, you may need to involve the legal department, PR department, upper management, the employee's immediate supervisor, and/or other personnel.
       iscommand: false
       brand: ""
     nexttasks:
@@ -630,9 +628,7 @@ tasks:
       id: 1a83ba02-3043-423b-8f6e-b91e3ed5de09
       version: -1
       name: Disable compromised AD user account(s)
-      description: Block access to the compromised user account in AD pending investigation
-        and cleanup, after which the account will be reinstated by an Active Directory
-        administrator with the required permissions.
+      description: Block access to the compromised user account in AD pending investigation and cleanup, after which the account will be reinstated by an Active Directory administrator with the required permissions.
       type: regular
       iscommand: false
       brand: ""
@@ -715,9 +711,7 @@ tasks:
       id: 343dc3dd-5001-49de-8034-abf4a9e4c849
       version: -1
       name: Change account passwords for any cloud-based solutions used by the organization
-      description: Some accounts do not reside on systems managed by employees but
-        the Incident Response staff must be able to revoke, lock, or rotate credentials
-        to cloud accounts containing organizational information assets.
+      description: Some accounts do not reside on systems managed by employees but the Incident Response staff must be able to revoke, lock, or rotate credentials to cloud accounts containing organizational information assets.
       iscommand: false
       brand: ""
     nexttasks:
@@ -775,9 +769,7 @@ tasks:
       id: bd9b46ea-07eb-46ee-8308-46888a11640b
       version: -1
       name: Lock / Rotate any other compromised accounts, keys and credentials
-      description: If the machine contained any authentication keys, accounts to internal
-        company resources and information systems, these should be locked and revoked,
-        and reinstated later with new passwords.
+      description: If the machine contained any authentication keys, accounts to internal company resources and information systems, these should be locked and revoked, and reinstated later with new passwords.
       type: regular
       iscommand: false
       brand: ""
@@ -917,8 +909,7 @@ tasks:
       id: f926807b-f376-4b87-8719-d07f790e6b94
       version: -1
       name: Periodically check if tracking software became active and sent results
-      description: If the thief wiped the device or kept it isolated and unable to
-        communicate, the tracking software may not be able to report.
+      description: If the thief wiped the device or kept it isolated and unable to communicate, the tracking software may not be able to report.
       iscommand: false
       brand: ""
     nexttasks:
@@ -974,9 +965,7 @@ tasks:
       id: 41d383ca-bb97-4a56-8431-913c7a84571a
       version: -1
       name: Did the device contain any unique critical business data?
-      description: Check with owner and backup records if there is any indication
-        that the device contained crucial data and no copies of that data can be recovered
-        from other company servers or backups.
+      description: Check with owner and backup records if there is any indication that the device contained crucial data and no copies of that data can be recovered from other company servers or backups.
       iscommand: false
       brand: ""
     nexttasks:
@@ -1061,8 +1050,7 @@ tasks:
       id: 186926f8-d32d-4eb2-8c5b-fe51e56c13e6
       version: -1
       name: Remotely wipe the device
-      description: If the device was unencrypted, the risk of confidential data leaking
-        is too great and we should wipe immediately.
+      description: If the device was unencrypted, the risk of confidential data leaking is too great and we should wipe immediately.
       iscommand: false
       brand: ""
     nexttasks:
@@ -1089,9 +1077,7 @@ tasks:
       id: b17974fa-4c9c-44ab-8fe2-2a61b89fcc31
       version: -1
       name: Escalate the decision to management
-      description: The decision needs to be made whether the data on the device is
-        important enough to defer wiping in the off chance that we can retrieve the
-        device.
+      description: The decision needs to be made whether the data on the device is important enough to defer wiping in the off chance that we can retrieve the device.
       iscommand: false
       brand: ""
     nexttasks:
@@ -1282,8 +1268,7 @@ tasks:
       id: bb6645c4-0c69-4448-809f-b429273b2543
       version: -1
       name: Insert device's MAC address to network security watchlists
-      description: If the thief attempts to use the device to access the network, we
-        want to block it and get an immediate critical alert to the SOC.
+      description: If the thief attempts to use the device to access the network, we want to block it and get an immediate critical alert to the SOC.
       iscommand: false
       brand: ""
     nexttasks:
@@ -1309,8 +1294,7 @@ tasks:
     task:
       id: b37ade68-25c6-45a4-85e7-249c77347bbc
       version: -1
-      name: Is the organization using an enterprise WiFi solution with individual
-        auth?
+      name: Is the organization using an enterprise WiFi solution with individual auth?
       iscommand: false
       brand: ""
       description: ''
@@ -1340,9 +1324,7 @@ tasks:
       id: 4893a678-7b19-4231-8fb0-0c7bf54d93b5
       version: -1
       name: Send a memo to users of the affected WiFi network(s) with new password
-      description: Must be in a way that the thief will not see - a medium where the
-        compromised account used on the device had already been locked, SMS after
-        the compromised SIM had been locked, etc.
+      description: Must be in a way that the thief will not see - a medium where the compromised account used on the device had already been locked, SMS after the compromised SIM had been locked, etc.
       iscommand: false
       brand: ""
     nexttasks:
@@ -1368,8 +1350,7 @@ tasks:
     task:
       id: b0ce366b-64a7-40bd-8fef-1f08371b084f
       version: -1
-      name: Change the WiFi passwords for all networks accessible from the compromised
-        device
+      name: Change the WiFi passwords for all networks accessible from the compromised device
       iscommand: false
       brand: ""
       description: ''
@@ -1450,8 +1431,7 @@ tasks:
     task:
       id: efc412a5-a348-4072-8e8f-959e3aa3a482
       version: -1
-      name: Check with owner if they were using a common password shared with other
-        users
+      name: Check with owner if they were using a common password shared with other users
       description: |-
         If, to their knowledge, other employees or accounts are using the same password (e.g. a password common across the organization), those accounts may be in danger of compromise. This is true even if these accounts were never accessed from the stolen device.
 

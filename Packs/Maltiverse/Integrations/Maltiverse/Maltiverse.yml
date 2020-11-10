@@ -35,17 +35,14 @@ script:
       secret: false
     - default: true
       defaultValue: '5'
-      description: If the number of positives is higher than the threshold, the IP
-        address will be considered malicious. If the threshold is not specified, the
-        default IP threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results.
-        It is advised that you do not set to "true" in playbooks. The default value is "false".
+      description: Whether to return all results. Note that there can be thousands of results. It is advised that you do not set to "true" in playbooks. The default value is "false".
       isArray: false
       name: fullResponse
       required: false
@@ -65,8 +62,7 @@ script:
       description: Describes the reason why the IP address is in the blacklist.
       type: Unknown
     - contextPath: IP.PositiveDetections
-      description: The number of sources that positively reported the indicator as
-        blacklist.
+      description: The number of sources that positively reported the indicator as blacklist.
       type: Number
     - contextPath: DBotScore.Score
       description: The DBot score.
@@ -84,8 +80,7 @@ script:
       description: The checked IP address.
       type: String
     - contextPath: Maltiverse.IP.Classification
-      description: Qualitative maliciousness classification for an IoC. Possible values
-        are malicious, suspicious, neutral, and whitelisted.
+      description: Qualitative maliciousness classification for an IoC. Possible values are malicious, suspicious, neutral, and whitelisted.
       type: Unknown
     - contextPath: Maltiverse.IP.Blacklist.FirstSeen
       description: First time that the IoC was seen.
@@ -117,17 +112,14 @@ script:
       secret: false
     - default: true
       defaultValue: '5'
-      description: If the number of positives is higher than the threshold, the domain
-        will be considered malicious. If the threshold is not specified, the default
-        domain threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
       secret: false
     - default: true
       defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results.
-        It is advised that you do not set to "true" in playbooks. The default value is "false".
+      description: Whether to return all results. Note that there can be thousands of results. It is advised that you do not set to "true" in playbooks. The default value is "false".
       isArray: false
       name: fullResponse
       required: false
@@ -168,8 +160,7 @@ script:
       description: The domain name.
       type: String
     - contextPath: Maltiverse.Domain.Classification
-      description: Qualitative maliciousness classification for an IoC. Possible value
-        are malicious, suspicious, neutral, and whitelist.
+      description: Qualitative maliciousness classification for an IoC. Possible value are malicious, suspicious, neutral, and whitelist.
       type: String
     - contextPath: Maltiverse.Domain.Blacklist.Firstseen
       description: First time that the IoC was seen.
@@ -199,8 +190,7 @@ script:
       description: Stores an IP that was resolved by the domain.
       type: String
     - contextPath: Maltiverse.Domain.ResolvedIP.Timestamp
-      description: Stores a timestamp when an IP address has been resolved by the
-        domain.
+      description: Stores a timestamp when an IP address has been resolved by the domain.
       type: Date
     - contextPath: Domain.ThreatTypes
       description: A list with the description of the elements in the blacklist.
@@ -217,17 +207,14 @@ script:
       secret: false
     - default: true
       defaultValue: '5'
-      description: If the number of positives is higher than the threshold, the URL
-        address will be considered malicious. If the threshold is not specified, the
-        default URL threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is higher than the threshold, the URL address will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
       secret: false
     - default: true
       defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results.
-        It is advised that you do not set to "true" in playbooks. The default value is "false".
+      description: Whether to return all results. Note that there can be thousands of results. It is advised that you do not set to "true" in playbooks. The default value is "false".
       isArray: false
       name: fullResponse
       required: false
@@ -247,8 +234,7 @@ script:
       description: The vendor that sends the indicator for reputation check.
       type: String
     - contextPath: URL.PositiveDetections
-      description: The number of sources that positively reported the indicator as
-        blacklist.
+      description: The number of sources that positively reported the indicator as blacklist.
       type: Number
     - contextPath: DBotScore.Score
       description: The DBot score
@@ -266,8 +252,7 @@ script:
       description: The checked URL.
       type: String
     - contextPath: Maltiverse.URL.Classification
-      description: Qualitative maliciousness classification for an IoC. Possible values
-        are malicious, suspicious, neutral, and whitelist.
+      description: Qualitative maliciousness classification for an IoC. Possible values are malicious, suspicious, neutral, and whitelist.
       type: String
     - contextPath: Maltiverse.URL.Blacklist.FirstSeen
       description: First time that the IoC was seen.
@@ -294,8 +279,7 @@ script:
       description: Stores the hostname to which the URL belongs.
       type: String
     - contextPath: Maltiverse.URL.Domain
-      description: Stores the domain to which the hostname belongs. Hostname and domain
-        can match on level 2 hostnames
+      description: Stores the domain to which the hostname belongs. Hostname and domain can match on level 2 hostnames
       type: String
     - contextPath: Maltiverse.URL.TLD
       description: Top-level domain of the hostname.
@@ -315,18 +299,14 @@ script:
       secret: false
     - default: true
       defaultValue: '5'
-      description: If the number of positives AV detection is higher than the threshold,
-        the file will be considered malicious. If the threshold is not specified,
-        the default file threshold, as configured in the instance settings, will be
-        used.
+      description: If the number of positives AV detection is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
       secret: false
     - default: true
       defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results.
-        It is advised that you do not set to "true" in playbooks. The default value is "false".
+      description: Whether to return all results. Note that there can be thousands of results. It is advised that you do not set to "true" in playbooks. The default value is "false".
       isArray: false
       name: fullResponse
       required: false
@@ -373,8 +353,7 @@ script:
       description: The indicator that was tested.
       type: String
     - contextPath: Maltiverse.File.Score
-      description: Qualitative scoring of the maliciousness of the file. Values from
-        0 to 100.
+      description: Qualitative scoring of the maliciousness of the file. Values from 0 to 100.
       type: Number
     - contextPath: Maltiverse.File.Tags
       description: Attribute to label an IOC.
@@ -386,15 +365,13 @@ script:
       description: For malicious files, describes the reason for the file to be malicious.
       type: String
     - contextPath: Maltiverse.File.PositiveDetections
-      description: The number of sources that positively reported the indicator as
-        blacklist.
+      description: The number of sources that positively reported the indicator as blacklist.
       type: Number
     - contextPath: Maltiverse.File.Name
       description: The file name.
       type: String
     - contextPath: Maltiverse.File.Classification
-      description: Qualitative maliciousness classification for an IoC. Possible values
-        are malicious, suspicious, neutral, and whitelist.
+      description: Qualitative maliciousness classification for an IoC. Possible values are malicious, suspicious, neutral, and whitelist.
       type: String
     - contextPath: Maltiverse.File.Blacklist.FirstSeen
       description: First time that the IoC was seen.
@@ -443,3 +420,4 @@ script:
   type: python
 tests:
 - Maltiverse Test
+fromversion: 5.0.0

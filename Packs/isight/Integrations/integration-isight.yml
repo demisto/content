@@ -33,18 +33,26 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: >2
 
     var baseUrl = 'https://api.isightpartners.com'; // iSight base url
+
     var publicKey = params.publicKey;
+
     var privateKey = params.privateKey;
+
     var acceptVersion = params.version;
+
     var insecure = params.insecure;
+
     var proxy = params.proxy;
+
 
     var VENDOR_NAME = 'FireEye iSIGHT';
 
+
     // we use this to map record-type to dbot-score
+
     var intelligenceTypeToScore = {
         'overview': 1,
         'vulnerability': 2,
@@ -52,12 +60,16 @@ script:
         'threat': 3
     };
 
+
     // we use this to determine the order of reputation sevirity of the types
+
     var intelligenceTypeOrder = ['overview', 'vulnerability', 'malware', 'threat'];
+
 
     var epoch2DateStr = function(epochStr) {
         return new Date(parseInt(epochStr) * 1000).toString();
     }
+
 
     var createTableEntry = function (name, contents, table, context) {
         return {
@@ -73,6 +85,7 @@ script:
             EntryContext: context
         };
     }
+
 
     var getHeaders = function(query) {
         var timestamp = new Date().toUTCString();
@@ -92,6 +105,7 @@ script:
             'Date': [timestamp]
         }
     }
+
 
     var sendRequest = function(query) {
         var headers = getHeaders(query);
@@ -123,11 +137,13 @@ script:
         return body;
     };
 
+
     var basicSearch = function(key, value) {
         var basicSearchQuery = '/search/basic?' + key + '=' + encodeURIComponent(value);
         var res = sendRequest(basicSearchQuery);
         return res.message;
     }
+
 
     var createContextReportsAndScore = function(records) {
         var dbotScore = 0;
@@ -160,6 +176,7 @@ script:
             highetsRecordType: highetsRecordType
         }
     }
+
 
     var basicSearchIP = function(ip) {
         var records = basicSearch('ip', ip);
@@ -197,6 +214,7 @@ script:
         return createTableEntry("Results:", records, records, context);
     }
 
+
     var basicSearchDomain = function(domain) {
         var records = basicSearch('domain', domain);
 
@@ -232,6 +250,7 @@ script:
 
         return createTableEntry("Results:", records, records, context);
     }
+
 
     var basicSearchfile = function(key, value) {
         var records = basicSearch(key, value);
@@ -272,6 +291,7 @@ script:
         return createTableEntry("Results:", records, records, context);
     }
 
+
     var getReport = function(reportID) {
         var reportQuery = '/report/'+ encodeURIComponent(reportID);
 
@@ -308,6 +328,7 @@ script:
         return createTableEntry("Report - " + reportID, res, table, context);
     }
 
+
     var submitFile = function(entryID, description, type) {
         var query = '/submit/data';
         var requestUrl = baseUrl + query;
@@ -338,6 +359,7 @@ script:
                 throw '\nSubmit File Failed.\nUrl: ' + requestUrl + '\nStatus code: ' + statusCode + '.\nResult: ' + JSON.stringify(res, null, 2);
         }
     }
+
 
     switch (command) {
         case 'test-module':
@@ -437,8 +459,7 @@ script:
       description: Report publish date
     - contextPath: Report.intelligenceType
       description: Report intelligence type (overview, vulnerability, malware, threat)
-    description: basic search file report by md5/sha1. NOTE - specify only one of
-      md5/sha1 arguments
+    description: basic search file report by md5/sha1. NOTE - specify only one of md5/sha1 arguments
   - name: isight-get-report
     arguments:
     - name: reportID
@@ -485,4 +506,5 @@ script:
       - other
     description: Submission of malware and other files for community sharing
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

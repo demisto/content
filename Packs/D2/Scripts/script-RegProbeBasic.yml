@@ -2,13 +2,19 @@ commonfields:
   id: RegProbeBasic
   version: -1
 name: RegProbeBasic
-script: |-
+script: >-
   keys = [ r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
+
   r"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Run",
+
   r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Active Setup\Installed Components",
+
   r"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components",
+
   r"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
+
   r"HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce" ]
+
   def Reg2Markdown(baseKey,regResp):
       res, mdRows  = [], ''
       if isError(regResp[0]):
@@ -25,6 +31,7 @@ script: |-
                   mdRows += '\n|' + str(baseKey) + '|' + str(sk) + '|' + str( subkeys[sk] ) + '|'
       return ( res, mdRows )
   res = []
+
   if 'system' in demisto.args():
       system = demisto.args()['system']
   elif 'using' in demisto.args():
@@ -33,8 +40,11 @@ script: |-
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'You must provide "system" or "using" as arguments.'} )
       sys.exit(0)
   mdTable = '### Results for short registry probe of system *' + system + '*'
+
   mdTable += '\n|Key|SubKey|Value|'
+
   mdTable += '\n|-----|------|-----|'
+
   for k in keys:
       regPath = NormalizeRegistryPath( k )
       cmdResp = demisto.executeCommand( 'D2RegQuery', { 'using' : system, 'regpath' : regPath } )
@@ -42,13 +52,13 @@ script: |-
       mdTable += moreRows
       res += moreEntries
   res.append ( { 'Type' : entryTypes['note'], 'ContentsFormat' : formats['markdown'], 'Contents' : mdTable } )
+
   demisto.results(res)
 type: python
 subtype: python2
 tags:
 - registry
-comment: 'Perform a short probe of the specified system''s registry - retrieve and
-  display the values of a list of interesting keys '
+comment: 'Perform a short probe of the specified system''s registry - retrieve and display the values of a list of interesting keys '
 system: true
 args:
 - name: system
@@ -58,3 +68,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

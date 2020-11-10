@@ -2,11 +2,15 @@ commonfields:
   id: SendEmailOnSLABreach
   version: -1
 name: SendEmailOnSLABreach
-script: |-
+script: >-
   """
+
   This script is used to send an email about a breached SLA. The script, by default, sends the email to the assignee of the
+
   incident. The email is sent using the send-email command, using all enabled integrations that support the command.
+
   """
+
 
   def get_owner_email():
       owner_username = demisto.incidents()[0].get("owner")
@@ -55,8 +59,11 @@ script: |-
       return body
 
   email_to = get_owner_email()
+
   email_subject = get_subject()
+
   email_body = get_body()
+
 
   if email_to:
       send_email(email_to, email_subject, email_body)
@@ -73,4 +80,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted.
+- No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted.
+fromversion: 5.0.0

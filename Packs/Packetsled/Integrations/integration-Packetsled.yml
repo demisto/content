@@ -113,15 +113,23 @@ configuration:
   type: 9
   required: true
 script:
-  script: |
+  script: >
     import requests
+
     import re
+
     import socket, struct
+
     import json
+
     import datetime, time
+
     import urllib
+
     from urlparse import urljoin
+
     requests.packages.urllib3.disable_warnings()
+
 
     def humanReadable(title, arr):
         if len(arr) > 0:
@@ -143,9 +151,13 @@ script:
             return i
 
     proto_map = {"tcp":10001,"udp":10002,"dns":10003,"dhcp":10004,"arp":10005,"finger":10006,"ncp":10007,"rpc":10008,"telnet":10009,"rlogin":10010,"citrix":10011,"dhcpv6":10012,"icmp":20001,"ntp":20003,"snmp":20004,"bgp":20005,"ripv1":20006,"ripv2":20007,"ipmi":20008,"ssh":30001,"ssl":30002,"openvpn":30003,"teredo":40001,"tunnel":40002,"ciscovpn_tcp":40003,"ciscovpn_udp":40004,"syslog":50001,"dce-rpc":60001,"xmpp":60002,"amqp":60003,"emp":60004,"dce-rpc-lsa":60005,"ident":70001,"radius":70002,"socks":70003,"kerberos":70004,"ntlm":70005,"login":80001,"rdp":80002,"vnc":80003,"pcanywhere":80004,"ftp":90001,"netbios":90002,"smb":90003,"ftp-data":90004,"irc-dcc-data":90005,"rsync":90006,"tftp":90007,"dropbox":90008,"bittorrent":100001,"gnutella":100002,"dnp3":110001,"modbus":110002,"gtpv1":120001,"gps":120002,"wiu":120003,"http":130001,"smtp":140001,"imap":140002,"pop3":140004,"mapi":140005,"mysql":150001,"irc":160001,"sip":170001}
+
     proto_inv_map = {v: k for k, v in proto_map.iteritems()}
+
     family_map = {'network_services':1,'network_management':2,'encrypted':3,'tunnel':4,'logging':5,'application_service':6,'authentication':7,'remote_access':8,'file_transfer':9,'p2p':10,'scada':11,'mobile':12,'web':13,'mail':14,'database':15,'chat':16,'voice':17}
+
     family_inv_map = {v: k for k, v in family_map.iteritems()}
+
 
     def format_flow(flow):
         if 'src_ip' in flow:
@@ -287,8 +299,11 @@ script:
         return search
 
     apiserver = demisto.params()['ApiServer']
+
     username = demisto.params()['credentials']['identifier']
+
     password = demisto.params()['credentials']['password']
+
 
     response = requests.post(urljoin(apiserver, '/api/login'),
         data = {
@@ -900,11 +915,9 @@ script:
     - name: port
       description: The port number
     - name: start_time
-      description: The beginning of the time range to query. Either an ISO time string
-        or seconds since the epoch.
+      description: The beginning of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: stop_time
-      description: The end of the time range to query. Either an ISO time string or
-        seconds since the epoch.
+      description: The end of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: envid
       description: The environment id of the probe to search
     - name: probe
@@ -1086,11 +1099,9 @@ script:
     - name: port
       description: The port number
     - name: start_time
-      description: The beginning of the time range to query. Either an ISO time string
-        or seconds since the epoch.
+      description: The beginning of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: stop_time
-      description: The end of the time range to query. Either an ISO time string or
-        seconds since the epoch.
+      description: The end of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: envid
       description: The environment id of the probe to search
     - name: probe
@@ -1174,11 +1185,9 @@ script:
     - name: port
       description: The port number
     - name: start_time
-      description: The beginning of the time range to query. Either an ISO time string
-        or seconds since the epoch.
+      description: The beginning of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: stop_time
-      description: The end of the time range to query. Either an ISO time string or
-        seconds since the epoch.
+      description: The end of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: limitbytes
       description: The upper bound on the number of bytes to return from the query
     - name: limitpkts
@@ -1209,4 +1218,5 @@ script:
     description: Get all of the events for a given uid
   isfetch: true
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

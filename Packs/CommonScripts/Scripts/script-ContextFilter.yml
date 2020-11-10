@@ -2,21 +2,27 @@ commonfields:
   id: ContextFilter
   version: -1
 name: ContextFilter
-script: |
+script: >
   if (!args.data) {
       return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Data is empty, filter not applied'};
   }
+
 
   if (['upper', 'lower', 'split', 'substr', 'trim', 'regex', 'replace'].indexOf(args.filterType) >= 0 && typeof args.data !== 'string') {
       return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Data is not a string, cannot convert'};
   }
 
+
   if (['join', 'index'].indexOf(args.filterType) >= 0 && !Array.isArray(args.data)) {
       return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Data is not a array, cannot convert'};
   }
+
   var ec = {};
+
   var md = '';
+
   // Supported types are upper, lower, join, split, index, substr, trim, regex, replace, jq
+
   switch (args.filterType) {
       case 'upper':
           ec[args.out] = args.data.toUpperCase();
@@ -93,16 +99,16 @@ script: |
           md = 'Replaced match from data to ' + args.out;
           break
   }
+
   if (md !== '') {
       return {Type: entryTypes.note, Contents: ec, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
   }
+
   return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Unknown filter type - ' + args.filterType};
 type: javascript
 tags:
 - Utility
-comment: Filter context keys by applying one of the various available manipulations
-  and storing in a new context key. Please notice that the resulting context key will
-  not be available automatically as an option but you can still specify it.
+comment: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
 system: true
 enabled: true
 args:
@@ -113,20 +119,15 @@ args:
   isArray: true
 - name: filterType
   required: true
-  description: The type of filter to apply. Available filters are upper, lower, join,
-    split, index, substr, trim, regex, replace
+  description: The type of filter to apply. Available filters are upper, lower, join, split, index, substr, trim, regex, replace
 - name: filter
-  description: The data for the filter. join - the join string between elements (optional,
-    default is ','). split - the string on which to split (optional, default is ',').
-    index - the index of the array to return (optional, default 0). substr - the from
-    (inclusive) and length (optional, default is to end of string). regex - the regular
-    expression to match. replace - a regular expression to replace and with what.
+  description: The data for the filter. join - the join string between elements (optional, default is ','). split - the string on which to split (optional, default is ','). index - the index of the array to return (optional, default 0). substr - the from (inclusive) and length (optional, default is to end of string). regex - the regular expression to match. replace - a regular expression to replace and with what.
 - name: out
   required: true
   description: The name of the context output parameter we should write to
 - name: additional
-  description: Additional arguments to add to filter. flags for regex. flags, replace
-    string for replace. length for substr.
+  description: Additional arguments to add to filter. flags for regex. flags, replace string for replace. length for substr.
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

@@ -2,14 +2,19 @@ commonfields:
   id: NessusGetReport
   version: -1
 name: NessusGetReport
-script: |
+script: >
   from time import ctime
+
   res = []
+
   DEFAULT_TIMEOUT = 60 * 5
+
   dArgs = demisto.args()
+
   if 'format' not in dArgs:
       dArgs['format'] = 'nessus'
   resCmd = demisto.executeCommand("scan-export", dArgs)
+
   try:
       for entry in resCmd:
           if isError(entry):
@@ -42,9 +47,7 @@ type: python
 subtype: python2
 tags:
 - nessus
-comment: Get report for a scan. Triggers an export in the requested file format, waits
-  5 minutes for it to complete (or whatever timeout given as an argument) , and downloads
-  the report.
+comment: Deprecated. Get report for a scan. Triggers an export in the requested file format, waits 5 minutes for it to complete (or whatever timeout given as an argument) , and downloads the report.
 system: true
 args:
 - name: scanId
@@ -56,15 +59,11 @@ args:
 - name: format
   description: scan report file format (nessus, csv, html, db, pdf). Default is 'nessus'.
 - name: password
-  description: The password used to encrypt database exports (*Required when exporting
-    as DB).
+  description: The password used to encrypt database exports (*Required when exporting as DB).
 - name: chapters
-  description: 'The chapters to include in the export (expecting a semi-colon delimited
-    string comprised of some combination of the following options: vuln_hosts_summary,
-    vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
+  description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
 - name: timeout
-  description: How long (in seconds) to wait for the result before giving up(Default
-    is 5min)
+  description: How long (in seconds) to wait for the result before giving up(Default is 5min)
 scripttarget: 0
 dependson:
   must:
@@ -73,3 +72,4 @@ dependson:
   - Nessus|||scan-report-download
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0

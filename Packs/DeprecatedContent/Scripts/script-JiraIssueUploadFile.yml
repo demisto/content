@@ -3,9 +3,10 @@ commonfields:
   version: -1
 name: JiraIssueUploadFile
 deprecated: true
-script: |2
+script: >2
 
   resp = demisto.executeCommand("jira-issue-upload-file", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -21,7 +22,7 @@ type: python
 subtype: python2
 tags:
 - jira
-comment: Upload a file attachments to an issue
+comment: Deprecated. Upload a file attachments to an issue
 system: true
 args:
 - description: Issue id
@@ -34,3 +35,4 @@ timeout: 0s
 dependson:
   must:
   - jira-issue-upload-file
+fromversion: 5.0.0

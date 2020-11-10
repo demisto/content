@@ -2,17 +2,27 @@ commonfields:
   id: PWEventPcapDownload
   version: -1
 name: PWEventPcapDownload
-script: |
+script: >
   from time import sleep
+
   res = []
+
   dArgs = demisto.args()
+
   burstSize = demisto.get(dArgs, 'burstsize')
+
   burstSize = int(burstSize) if burstSize else 10
+
   remaining = burstSize
+
   waitSeconds = demisto.get(dArgs, 'waitms')
+
   waitSeconds = float(waitSeconds) / 1000.0 if waitSeconds else 0.5
+
   dArgs["using-brand"] = "ProtectWise"
+
   eventIDs = argToList(demisto.get(dArgs, 'eventId'))
+
   for eid in eventIDs:
       dArgs['eventId'] = eid
       dArgs['filename'] = eid + '.pcap'
@@ -42,11 +52,9 @@ args:
 - name: filename
   description: Optionally provide a filename for the download
 - name: burstsize
-  description: Download <burstsize> files every time, and wait <waitms> milliseconds
-    each time. Defaults are 10 files and 500ms.
+  description: Download <burstsize> files every time, and wait <waitms> milliseconds each time. Defaults are 10 files and 500ms.
 - name: waitms
-  description: Download <burstsize> files every time, and wait <waitms> milliseconds
-    each time. Defaults are 10 files and 500ms.
+  description: Download <burstsize> files every time, and wait <waitms> milliseconds each time. Defaults are 10 files and 500ms.
 scripttarget: 0
 dependson:
   must:
@@ -54,3 +62,4 @@ dependson:
 timeout: 0s
 tests:
 - Protectwise-Test
+fromversion: 5.0.0

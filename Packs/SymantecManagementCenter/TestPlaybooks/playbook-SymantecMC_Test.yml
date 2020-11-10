@@ -648,8 +648,7 @@ tasks:
       id: 764959c2-e057-4bad-8f8b-bc0f0d87ab26
       version: -1
       name: Add IP content
-      description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
-        names.
+      description: Add content to a policy in Symantec MC. Can be IPs or URLs or category names.
       script: Symantec Management Center|||symantec-mc-add-policy-content
       type: regular
       iscommand: true
@@ -705,8 +704,7 @@ tasks:
       id: 84c63834-76b4-4cde-8f35-8b1a77d70738
       version: -1
       name: Add URL content
-      description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
-        names.
+      description: Add content to a policy in Symantec MC. Can be IPs or URLs or category names.
       script: Symantec Management Center|||symantec-mc-add-policy-content
       type: regular
       iscommand: true
@@ -762,8 +760,7 @@ tasks:
       id: 4eab81a1-0907-42d0-8159-4c2bf4a4e07a
       version: -1
       name: Add Category content with policy name
-      description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
-        names.
+      description: Add content to a policy in Symantec MC. Can be IPs or URLs or category names.
       script: Symantec Management Center|||symantec-mc-add-policy-content
       type: regular
       iscommand: true
@@ -1763,9 +1760,7 @@ tasks:
       id: 4a90f660-de80-472b-8c94-e1358cc90ffa
       version: -1
       name: Check Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1832,9 +1827,7 @@ tasks:
       id: 7d70c537-dd95-4797-896d-52e06f97106c
       version: -1
       name: Check Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1895,9 +1888,7 @@ tasks:
       id: 852da456-d987-485f-8554-0040c52775d4
       version: -1
       name: Check Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1959,9 +1950,7 @@ tasks:
       id: 96927dfd-a76c-4097-8008-2cc2508ff08d
       version: -1
       name: Check Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1997,3 +1986,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

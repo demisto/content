@@ -2,8 +2,9 @@ commonfields:
   id: OSQueryProcesses
   version: -1
 name: OSQueryProcesses
-script: |-
+script: >-
   QUERY = "select * from processes"
+
 
   demisto.results(demisto.executeCommand("OSQueryBasicQuery", {'query':QUERY, 'system':demisto.args()['system']}))
 type: python
@@ -22,3 +23,4 @@ dependson:
   must:
   - OSQueryBasicQuery
 timeout: 0s
+fromversion: 5.0.0

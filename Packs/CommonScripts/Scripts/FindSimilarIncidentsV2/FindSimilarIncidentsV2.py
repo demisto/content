@@ -111,14 +111,15 @@ def get_incident_labels_map(labels):
 def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, incident_id, hours_back, ignore_closed,
                           max_number_of_results, extra_query, applied_condition):
     condition_string = ' %s ' % applied_condition.lower()
-    similar_keys_query = condition_string.join(
-        map(lambda t: '%s:"%s"' % (t[0], t[1]
-                                   .replace('\\', '\\\\')
-                                   .replace('"', r'\"')
-                                   .replace("\n", "\\n")
-                                   .replace("\r", "\\r")
-                                   ),
-            similar_incident_keys.items()))
+
+    similar_keys_list = []
+    for key, value in similar_incident_keys.items():
+        value = value.encode('utf-8')
+        compare_str = '{}:={}' if str(value).isdigit() else '{}="{}"'
+        similar_key = compare_str.format(key, str(value).replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r"))
+        similar_keys_list.append(similar_key.decode('utf-8'))
+
+    similar_keys_query = condition_string.join(similar_keys_list)
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
     min_date = incident_time - timedelta(hours=hours_back)
@@ -362,7 +363,7 @@ def main():
     if len(duplicate_incidents or []) > 0:
         duplicate_incidents_rows = map(lambda x: incident_to_record(x, TIME_FIELD), duplicate_incidents)
 
-        duplicate_incidents_rows = list(sorted(duplicate_incidents_rows, key=lambda x: x['time']))
+        duplicate_incidents_rows = list(sorted(duplicate_incidents_rows, key=lambda x: (x['time'], x['id'])))
 
         context = {
             'similarIncidentList': duplicate_incidents_rows[:MAX_CANDIDATES_IN_LIST],

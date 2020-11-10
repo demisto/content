@@ -1,7 +1,7 @@
 id: detonate_url_-_mcafee_atd
 version: -1
 name: Detonate URL - McAfee ATD
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: Detonates a URL using the McAfee Advanced Threat Defense sandbox integration.
 starttaskid: "0"
 tasks:

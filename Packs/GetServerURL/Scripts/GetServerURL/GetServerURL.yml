@@ -27,4 +27,5 @@ runas: DBotWeakRole
 runonce: false
 tags: []
 tests:
-  - no test
+- no test
+fromversion: 5.0.0

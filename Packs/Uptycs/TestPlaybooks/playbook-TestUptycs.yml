@@ -243,8 +243,7 @@ tasks:
       id: 51478857-d76f-41da-8ced-8feea4e75878
       version: -1
       name: Uptycs - Outbound Connection to Threat IOC Incident
-      description: Get information about processes which open connections to known
-        Bad IP's
+      description: Get information about processes which open connections to known Bad IP's
       playbookName: Uptycs - Outbound Connection to Threat IOC Incident
       type: playbook
       iscommand: false
@@ -1010,3 +1009,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

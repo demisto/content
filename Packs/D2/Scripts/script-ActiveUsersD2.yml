@@ -2,17 +2,22 @@ commonfields:
   id: ActiveUsersD2
   version: -1
 name: ActiveUsersD2
-script: |-
+script: >-
   resp = executeCommand("D2ActiveUsers", {});
+
   if (isError(resp[0])) {
       return resp;
   }
 
+
   data = dq(resp[0],'Contents');
+
   if (!data) {
       return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'No Active Users were found' };
   }
+
   users = [];
+
   data.forEach(function(u){
               var user = {};
               var username = null;
@@ -35,7 +40,9 @@ script: |-
           });
 
   var md = tableToMarkdown("Users", users);
+
   var ec = {"Account(val.Username == obj.Username)" : users};
+
   return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': users, "HumanReadable": md, "EntryContext": ec} );
 type: javascript
 tags:
@@ -45,4 +52,5 @@ comment: Get active users from a D2 agent and parsed them into context
 system: true
 scripttarget: 0
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

@@ -97,4 +97,4 @@ This check is done through the 'Successful Login' incident field which is associ
 
 ## Playbook Image
 ---
-![Playbook Image](https://github.com/demisto/content/raw/bd4b287e4642b242e8befcd6e832b66c4b03af97/Packs/SANS/doc_files/Brute_Force_Investigation_-_Generic_-_SANS.png)
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/a82d12338015ed981aef04e170d6d1a0f8545709/Packs/SANS/doc_files/Brute_Force_Investigation_-_Generic_-_SANS.png)

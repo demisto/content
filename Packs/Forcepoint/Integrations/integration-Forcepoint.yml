@@ -28,16 +28,21 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: >
     var SERVER_URL = params.url;
+
     if (SERVER_URL.slice(-1) === '/') {
         SERVER_URL = SERVER_URL.slice(0,-1);
     }
+
     SERVER_URL += ':15873/api/web/v1/';
+
 
     var USER_NAME = params.credentials.identifier;
 
+
     var PASSWORD = params.credentials.password;
+
 
     function sendRequest(url, method, body, transactionID) {
         var req = {
@@ -60,6 +65,7 @@ script:
         var res = http(url, req, params.insecure, params.proxy);
         return res;
     }
+
 
     function transactionFlowRequest(url, method, body) {
         var transactionid = startTransaction();
@@ -87,6 +93,7 @@ script:
         }
         return res;
     }
+
     function startTransaction() {
         var url = SERVER_URL + 'categories/start';
         var tries = 0;
@@ -109,6 +116,7 @@ script:
         return tid;
     }
 
+
     function commitTransaction(transactionID) {
         var url = SERVER_URL + 'categories/commit?transactionid=' + transactionID;
         var res = sendRequest(url, 'POST');
@@ -116,6 +124,7 @@ script:
             throw 'error - transaction commit failed. error  ' + res.Status;
         }
     }
+
 
     function getTransactionStatus() {
         var url = SERVER_URL + 'categories/status';
@@ -131,6 +140,7 @@ script:
         }
     }
 
+
     function parseResponse(response) {
         var body = JSON.parse(response.Body);
         if (response.StatusCode === 200) {
@@ -140,6 +150,7 @@ script:
         }
     }
 
+
     function throwErrDetails(errResponse, StatusCode) {
         var erMessage = '';
         var errArray = errResponse.Error ? errResponse.Error : [];
@@ -148,6 +159,7 @@ script:
         }
         throw 'Request failed with status ' + StatusCode + '. ' + erMessage;
     }
+
 
     function addCategory(){
         var res = addCategoryRequest(
@@ -174,6 +186,7 @@ script:
           return entry;
     }
 
+
     function addCategoryRequest(categoryName, categoryDescription, parent) {
         var url = SERVER_URL + 'categories';
         var body = {
@@ -188,6 +201,7 @@ script:
         var res = transactionFlowRequest(url, 'POST', body);
         return parseResponse(res);
     }
+
 
     function listCategories(){
         var listAll = (args.allCategories === 'true');
@@ -214,6 +228,7 @@ script:
           return entry;
     }
 
+
     function parseCategoryList(categories){
         var categoryArr = [];
         categories.forEach(function(cat) {
@@ -231,11 +246,13 @@ script:
         return categoryArr;
     }
 
+
     function listCategoriesRequest(listAll) {
         var url = listAll ? SERVER_URL + 'categories/all' : SERVER_URL + 'categories';
         var res =  sendRequest(url, 'GET');
         return parseResponse(res);
     }
+
 
     function categoryDetails(){
         if (!args.categoryName && !args.categoryId) {
@@ -263,17 +280,20 @@ script:
 
     }
 
+
     function categoryDetailsByNameRequest(name) {
         url = SERVER_URL + 'categories/urls?catname=' + name;
         var res =  sendRequest(url, 'GET');
         return parseResponse(res);
     }
 
+
     function categoryDetailsByIDRequest(id) {
         url = SERVER_URL + 'categories/urls?catid=' + id;
         var res =  sendRequest(url, 'GET');
         return parseResponse(res);
     }
+
 
     function addAddress() {
         if (!args.ips && !args.urls) {
@@ -304,6 +324,7 @@ script:
         return entry;
     }
 
+
     function editAddressRequest(urls, ips, id, name, del){
         var url = SERVER_URL + 'categories/urls';
         var body = {};
@@ -323,6 +344,7 @@ script:
         var res =  transactionFlowRequest(url, method, body);
         return parseResponse(res);
     }
+
 
     function deleteAddress() {
         if (!args.ips && !args.urls) {
@@ -352,6 +374,7 @@ script:
           entry.EntryContext['Forcepoint.DeleteAddressesFromCategory'] = createContext(context);
           return entry;
     }
+
 
     function deleteCategory() {
         if (!args.categoryIDs && !args.categoryNames) {
@@ -417,6 +440,7 @@ script:
           return entry;
     }
 
+
     function deleteCategoryRequest(ids, names) {
         var url = SERVER_URL + 'categories';
         var body = {};
@@ -433,11 +457,13 @@ script:
         }
     }
 
+
     function test() {
         var tid = startTransaction();
         commitTransaction(tid);
         return 'ok';
     }
+
 
 
     switch(command) {
@@ -464,12 +490,9 @@ script:
       required: true
       description: The category name. Must be unique, alphanumeric name.
     - name: categoryDescription
-      description: The category description.  It may contain alphanumeric characters,
-        periods, and commas.
+      description: The category description.  It may contain alphanumeric characters, periods, and commas.
     - name: parent
-      description: "The category parent. 0 is the top-level category, and can be specified
-        as the parent. \t Subcategories can be added to categories that have a parent
-        of 0, but not to categories with a different parent."
+      description: "The category parent. 0 is the top-level category, and can be specified as the parent. \t Subcategories can be added to categories that have a parent of 0, but not to categories with a different parent."
       defaultValue: "0"
     outputs:
     - contextPath: Forcepoint.AddCategory.CategoryName
@@ -482,8 +505,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Select 'true' to retrieve a list of all the categories. Else, only
-        API-managed categories will be listed.
+      description: Select 'true' to retrieve a list of all the categories. Else, only API-managed categories will be listed.
       defaultValue: "false"
     outputs:
     - contextPath: ListCategories.CategoryName
@@ -530,8 +552,7 @@ script:
       description: Total URLs added to category.
     - contextPath: Forcepoint.AddAddressToCategory.Totals.AddedIPs
       description: Total IP addresses added to category.
-    description: Add URLs and IP addresses to an API-managed category. Refer to category
-      either by it's ID or by it's name.
+    description: Add URLs and IP addresses to an API-managed category. Refer to category either by it's ID or by it's name.
   - name: fp-delete-categories
     arguments:
     - name: categoryIDs
@@ -547,9 +568,7 @@ script:
       description: Category URLs
     - contextPath: Forcepoint.DeletedCategories.IPs
       description: Category IPs
-    description: Delete API-managed categories. Refer to categories you wish to delete
-      either by ID list or by name list. It is possible to pass both lists, when each
-      list refers to different categories.
+    description: Delete API-managed categories. Refer to categories you wish to delete either by ID list or by name list. It is possible to pass both lists, when each list refers to different categories.
   - name: fp-delete-address-from-category
     arguments:
     - name: categoryID
@@ -569,5 +588,5 @@ script:
       description: Total URLs deleted from category.
     - contextPath: Forcepoint.DeleteAddressesFromCategory.Totals.DeletedIPs
       description: Total IP addresses deleted from category.
-    description: ' Remove URLs, IP addresses, and ranges from a specific API-managed
-      category.  Refer to category either by it''s ID or by it''s name.'
+    description: ' Remove URLs, IP addresses, and ranges from a specific API-managed category.  Refer to category either by it''s ID or by it''s name.'
+fromversion: 5.0.0

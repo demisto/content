@@ -1,4 +1,4 @@
-category: Authentication
+category: IT Services
 commonfields:
   id: Microsoft_Graph_Files
   version: -1
@@ -33,8 +33,8 @@ configuration:
   required: false
   type: 8
 description: 'Use the Microsoft Graph Files integration to enable your app get authorized
-  access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires
-  admin consent.'
+  access to files in OneDrive, SharePoint, and MS Teams across your entire organization.
+  This integration requires admin consent.'
 display: Microsoft Graph Files
 name: Microsoft_Graph_Files
 script:
@@ -155,7 +155,8 @@ script:
       description: The application, user, or device that last modified the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.DisplayName
-      description: The identity of the user, device,or application that created the item.
+      description: The identity of the user, device,or application that created the
+        item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.ID
       description: The ID of the creator.
@@ -312,7 +313,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Creates a new folder in a drive with the specified parent item or path.
+    description: Creates a new folder in a drive with the specified parent item or
+      path.
     execution: false
     name: msgraph-create-new-folder
     outputs:
@@ -393,7 +395,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns the list of document libraries (drives) available for a target site.
+    description: Returns the list of document libraries (drives) available for a target
+      site.
     execution: false
     name: msgraph-list-drives-in-site
     outputs:
@@ -413,7 +416,8 @@ script:
       description: Identity of the user, application, or device that created the drive.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Owner.DisplayName
-      description: The display name of the user, device, or application that owns the drive.
+      description: The display name of the user, device, or application that owns
+        the drive.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Owner.ID
       description: The ID of the user, device, or application that owns the drive.
@@ -634,7 +638,7 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.7740
+  dockerimage: demisto/python_pancloud:1.0.0.11433
   feed: false
   isfetch: false
   longRunning: false

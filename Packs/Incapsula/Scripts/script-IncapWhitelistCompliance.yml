@@ -2,43 +2,70 @@ commonfields:
   id: IncapWhitelistCompliance
   version: -1
 name: IncapWhitelistCompliance
-script: |-
+script: >-
   import re
 
+
   #############Consts
+
   COMPLIANCE_LABEL = "Compliance"
+
   CURL_GET_COMMAND = 'curl --insecure -L -I -m 1 http://{0} | grep -C 1 "200 OK"'
+
   HTTP_OK = "200 OK"
+
   MAIL_TO_RECIPIENT = "IncapsulaUpdates@demisto.com"
+
   INCAPSULA_WARNING = "****Incapsula Warning****"
+
   BASIC_WARNING_MAIL = '''
+
   WARNING
+
   Your Site {0} is not compliant to the Incapsula whitelist policy
+
   please update your settings
 
+
   --DBot
+
   '''
+
   ADVANCE_WARNING_MAIL = '''
+
   WARNING
+
   Your Site {0} is not compliant to the Incapsula whitelist policy
+
   please update your settings as soon as possible!
 
+
   --DBot
+
   '''
+
   URL_REGEX = '(?i)(?:\\([-A-Z0-9+&@#\\/%=~_|$?!:,.]*\\)|[-A-Z0-9+&@#\\/%=~_|$?!:,.])*(?:\\([-A-Z0-9+&@#\\/%=~_|$?!:,.]*\\)|[A-Z0-9+&@#\\/%=~_|$])'
 
+
   res = []
+
   res_errors = []
 
+
   ctx = demisto.context()
+
   compliance_table = demisto.get(ctx, COMPLIANCE_LABEL)
+
   if not compliance_table:
       compliance_table = {}
 
   dArgs = {"ssh_server" : demisto.args()["SSHValidationServer"]}
 
+
   # Calling a command - returns a list of one or more entries
+
   resp = demisto.executeCommand("incap-list-sites", {})
+
 
   def sendMail(to, subject, body="", bcc=""):
       return demisto.executeCommand("SendEmail", {'to':to, 'subject':subject, 'body':body, 'bcc':bcc})
@@ -100,9 +127,7 @@ type: python
 subtype: python2
 tags:
 - Incapsula
-comment: "Get all sites from Incapsula.\nFor each site, the script, through a ssh
-  server (one that should NOT be in the whitelist), make sure the site is compliant ( whitelist is being enforced ).\n
-  If not, a warning mail will be sent to the domain owner. "
+comment: "Get all sites from Incapsula.\nFor each site, the script, through a ssh server (one that should NOT be in the whitelist), make sure the site is compliant ( whitelist is being enforced ).\n If not, a warning mail will be sent to the domain owner. "
 system: true
 args:
 - name: SSHValidationServer
@@ -118,4 +143,5 @@ dependson:
   - RemoteExec
 timeout: 0s
 tests:
-  - No test - old script
+- No test - old script
+fromversion: 5.0.0

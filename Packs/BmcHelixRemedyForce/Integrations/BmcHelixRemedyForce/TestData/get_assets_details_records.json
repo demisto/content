@@ -1,0 +1,30 @@
+{
+    "totalSize": 2,
+    "done": true,
+    "records": [
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__BMC_BaseElement__c",
+                "url": "url"
+            },
+            "Id": "a0K2x000000GiMgEAK",
+            "Name": "AMPEDCLIENT02-INST_2014_9_19_1_2_52_6711001",
+            "BMCServiceDesk__Description__c": "AMPEDCLIENT02, Microsoft Windows 7 Enterprise Edition 64-bit",
+            "BMCServiceDesk__ClassName__c": "BMC_ComputerSystem",
+            "BMCServiceDesk__CITag__c": "1102946",
+            "BMCServiceDesk__InstanceType__c": "CI / Asset"
+        },
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__BMC_BaseElement__c",
+                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__BMC_BaseElement__c/a0K2x000000GiMhEAK"
+            },
+            "Id": "a0K2x000000GiMhEAK",
+            "Name": "AMPLIFY02MASTER-INST_2014_9_19_1_4_33_5931001",
+            "BMCServiceDesk__Description__c": "AMPLIFY02MASTER, Microsoft Windows Server 2008 R2 Enterprise Server Edition 64-bit",
+            "BMCServiceDesk__ClassName__c": "BMC_ComputerSystem",
+            "BMCServiceDesk__CITag__c": null,
+            "BMCServiceDesk__InstanceType__c": "CI / Asset"
+        }
+      ]
+}

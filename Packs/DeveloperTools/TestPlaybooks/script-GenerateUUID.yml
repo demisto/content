@@ -2,9 +2,11 @@ commonfields:
   id: GenerateUUID
   version: -1
 name: GenerateUUID
-script: |-
+script: >-
   import uuid
+
   uuid = uuid.uuid4().hex
+
   demisto.results({
       'Type': entryTypes['note'],
       'Contents': uuid,
@@ -24,3 +26,4 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

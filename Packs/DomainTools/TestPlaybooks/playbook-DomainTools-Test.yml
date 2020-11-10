@@ -319,9 +319,7 @@ tasks:
       id: f6a44854-f2ef-4701-87b0-844bfbcddd4a
       version: -1
       name: NotInContextVerification
-      description: "Not in context verification is a script that executes the given
-        command and verifies that the specified field is not in the context after
-        execution. \n"
+      description: "Not in context verification is a script that executes the given command and verifies that the specified field is not in the context after execution. \n"
       script: NotInContextVerification
       type: regular
       iscommand: false
@@ -982,3 +980,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

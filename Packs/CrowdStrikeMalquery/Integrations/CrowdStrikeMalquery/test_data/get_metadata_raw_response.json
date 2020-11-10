@@ -1,0 +1,19 @@
+{
+  "meta": {
+    "query_time": 0.004976772,
+    "powered_by": "malquery-api",
+    "trace_id": "2c77908a-4b9f-4e99-8406-a4f58b678ba4",
+    "status": "done"
+  },
+  "resources": [
+    {
+      "sha256": "accc6794951290467e01b7676e8b4ba177076d54f836589ea7d3298cdf6fc995",
+      "sha1": "b32c34ab09e8c20e1ed93a72bcc5424a982d3042",
+      "md5": "43c596cabeb4c1d335ce53c3c7c4c392",
+      "filesize": 484872,
+      "label": "malware",
+      "family": "Arcyess",
+      "first_seen": "2014/05/09",
+      "filetype": "PE32"
+    }
+  ], "errors": []}

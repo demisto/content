@@ -2,10 +2,13 @@ commonfields:
   id: NexposeEmailParserForVuln
   version: -1
 name: NexposeEmailParserForVuln
-script: |-
+script: >-
   var report = args.report ? args.report : incidents[0].details;
+
   var contents = {};
+
   var nodes = report.split(/<\/node>/);
+
   for (var i=0; i < nodes.length; i++) {
       var nodeRegexp = /<node address="(.*)" status="(.*)" device-id="(.*)" site-name="(.*)" site-importance="(.*)" scan-template="(.*)" risk-score="(.*)">/g;
       var vulnRegexp = /(<test id="(.*)" key="(.*)" status="(.*)" scan-id="(.*)" vulnerable-since="(.*)" pci-compliance-status="fail">)/g;
@@ -33,7 +36,9 @@ script: |-
           }
       }
   }
+
   var k = 0;
+
   for (var key in contents) {
       var element = contents[key];
       var labels = '';
@@ -51,6 +56,7 @@ script: |-
                                     });
       }
   }
+
   return closeInvestigation({Reason: 'Spawned ' + k + ' child incidents'});
 type: javascript
 tags:
@@ -62,10 +68,10 @@ comment: |-
 system: true
 args:
 - name: report
-  description: Full XML contents of the Nexpose report. If not provided, it will be
-    taken from the Incident Details.
+  description: Full XML contents of the Nexpose report. If not provided, it will be taken from the Incident Details.
 scripttarget: 0
 dependson:
   must:
   - nexpose
 timeout: 0s
+fromversion: 5.0.0

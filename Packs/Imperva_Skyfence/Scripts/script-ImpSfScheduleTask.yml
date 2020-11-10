@@ -2,14 +2,19 @@ commonfields:
   id: ImpSfScheduleTask
   version: -1
 name: ImpSfScheduleTask
-script: |-
+script: >-
   res = []
+
   SCHEDULE_TASK_ID_LABAL = "ScheduleTaskID"
 
+
   dArgs = demisto.args()
+
   dArgs['command'] = '!ImpSfRevokeUnaccessedDevices'
 
+
   res = demisto.executeCommand('scheduleEntry', dArgs)
+
   if isError(res[0]):
       demisto.results(res)
   else:
@@ -38,3 +43,4 @@ dependson:
   - scheduleEntry
   - ImpSfRevokeUnaccessedDevices
 timeout: 0s
+fromversion: 5.0.0

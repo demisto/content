@@ -3,12 +3,11 @@ commonfields:
   id: DomainTools
   version: -1
 name: DomainTools
-fromversion: 3.0.0
+fromversion: 5.0.0
 display: DomainTools
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAARCAMAAAAhQZhyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAYBQTFRFenp6u7u72trasLCwRkZGxcXFv7+/hoaGqamp1tbWlpaWdXV1PDw8Xl5eZmZmrq6ulJSU0NDQi4uLn5+fg4ODCwsLtbW1jo6OExMToKCgIiIiAQEBa2trJiYmLi4ukpKSHh4eQEBAWVlZYWFhOTk5NjY2Kioq/////v7+/f39/Pz8+fn5+/v7f39/9PT0+vr63NzcfHx8eHh4jY2N9vb2gYGB5+fnw8PD8/PziYmJ8vLyd3d38fHx+Pj47e3t6enpwsLC4eHh3t7era2tq6urgICAdnZ2vLy8m5ubhYWF2dnZt7e3fn5+7u7utra2xsbGpqameXl59fX1fX194ODgkJCQwcHB5eXlz8/P6+vr1NTUhISEycnJsrKy9/f37+/v0tLSpKSk4+PjmZmZ8PDw6Ojox8fH6urq5OTkzs7O4uLis7Ozvb29uLi4nJyc5ubm3d3dysrK2NjY1dXVjIyMrKyswMDAqqqqmpqaiIiIp6enTU1N39/fo6Ojzc3N////mmwwVQAAAIB0Uk5T/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wA4BUtnAAADRklEQVR42ryVZ0MiMRCGF1BB0LOBolFOvdPJ7gpIly5KB8Heey/Xe5+/fpOw+BPIh+Ql2cwzmZkEBRF9nwDVHyvY0aYgavnkU+xXMLLQafBaM7QRHDkZdObCWkfBeKiMLQHCwY7jqnNkBTLvy8koQsKP3Ka0wJla3vKJS6l9q4xnhFjZBeqH9uXsyls5rMXI39IZqd5thNzn6mLvIVmAg+5mBuQX4YfdbWGILxpH0vebUY7gSyl7g456gdJ78bKh8lBUrlrYi363JyXqbmLKOstMpCLsAfGOdYl1Ps0EDU0uQM6mafesFyH2fUzJ23SEUW+PSakJsjloiYV2/IhqMNXiHj3Fjj4ibFeVrz3DdS9tNe1dN/Dmp3TM8po+feEhz2b6yd8mW0PcYW4NXrN+sf55qn9LjMsTBJ5nrwAnQzIQV6I/LBAprVQRN4tZ8vJinS6Nd0mCF4dpQiXrmnK8e2wrHiDun6NNh5CTJJ7MUbfJopgQSERPmU7seBUZ6LP/Fr+73iwxvQ2errnXDfCinToY6xX6nx3wdkQoX9D/DE4kSxluFBdvflNWAfes3RE/rjp62mCVVTEq7eNsAHFrWGcsVRKhzrA09NnaYFc2y+69X1pgii8vyHzl4oC1UaEWlPAzGNe+Fpx7RlWHLbbkH1TNt3eI5QFuhBpzzIc6OxcpdZUQ6wo2BnFVgK3M42ETvA1ewVXXnP0ZDOMloUe/U8lZRaLfB1QC+9rlzA+3uHGdogOBwGOrCJPHYjjx+PWqy0oq5HpU05PTlPnABgJgfoYKhN1eXm67qL53JfgDwiR79wzGjOMD5+ZigoJ2VNP4dWCIlPdOVVXAm48a3Nfb4FQwEki+TanqmX2jIbaamNvl/isUp5piXSJM3oAwLU68PiPUSB9gbKp1YtTmWye+kpfovmKtxLNCnZYjP70PNKnGj+LxShgT5cqY87L9ZC6vF8cvisH4sLLhdOREek/Dp6oRGT2bkNYW5IuqUs7TsvJ5mGo1TZFNC/81ucqNy8o3N1sVhHDqk3OwQM0vEqH71PbLBecN8013bGSrHurp/nHdwScTfAjZ5eMvwRyYlzr5VreC8iZfeOzsv5PRht798ncQ/F+AAQCqnR8RUnHvswAAAABJRU5ErkJggg==
-description: Domain name, DNS and Internet OSINT-based cyber threat intelligence and
-  cybercrime forensics products and data
+description: Domain name, DNS and Internet OSINT-based cyber threat intelligence and cybercrime forensics products and data
 configuration:
 - display: DomainTools API URL
   name: server
@@ -36,12 +35,13 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var toCamelCase = function(string){
         var str = ' '+string.trim();
         str=str.replace(/ ([a-z,A-Z])/g, function (g) { return g[1].toUpperCase(); });
         return str;
     };
+
 
     var sendRequest = function(url) {
         var res = http(
@@ -67,6 +67,7 @@ script:
         }
     };
 
+
     var addKeyToJson = function(cur, toAdd){
         if(!cur){
             return toAdd;
@@ -77,6 +78,7 @@ script:
         cur.push(toAdd);
         return cur;
     };
+
 
     var changeKeys = function(conv, obj){
         var output = {};
@@ -89,6 +91,7 @@ script:
         }
         return output;
     };
+
 
     var callWhoIs = function(query, parsed,url){
         var res = sendRequest(url + query + '/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
@@ -126,6 +129,7 @@ script:
             };
     };
 
+
     var scoreConv = function(score, threshold){
         if(threshold){
             return score>=threshold ? 3 : 1;
@@ -138,6 +142,7 @@ script:
             return 3;
         return -1;
     };
+
 
     var callDomain = function(url, domain, threshold){
         var repRes = sendRequest(url + 'reputation/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'domain' : domain}));
@@ -164,6 +169,7 @@ script:
             };
     };
 
+
     var callProfile= function(url, domain){
         var domRes = sendRequest(url + domain + '/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
         return {
@@ -172,6 +178,7 @@ script:
                 ContentsFormat: formats.json
             };
     };
+
 
     var argToUrlParam = function(string){
         var map = {
@@ -188,6 +195,7 @@ script:
         };
         return map[string] ? map[string] : string;
     };
+
 
     var callDomainSearch = function(url, args){
         args = changeKeys(argToUrlParam,args);
@@ -220,6 +228,7 @@ script:
                 EntryContext: context
             };
     };
+
 
     var callReverseIP = function(url, args){
         var md = '';
@@ -256,6 +265,7 @@ script:
         };
     }
 
+
     var callReverseNameServer = function(url, server, limit){
         var res = sendRequest(url +server + '/name-server-domains/' + encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'limit': limit? limit : 50}));
         var md = 'Found ' +  res.response.primary_domains.length + ' domains\n';
@@ -274,6 +284,7 @@ script:
             EntryContext: context
         };
     }
+
 
     var callReverseWhoIs = function(url, args){
         args.api_username = params.username;
@@ -304,7 +315,9 @@ script:
         };
     }
 
+
     /*http://api.domaintools.com/v1/domaintools.com/whois/history/*/
+
     var callWhoisHistory = function(url, domain){
         var res = sendRequest(url+domain+'/whois/history/'+ encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
         var splitRecord;
@@ -338,7 +351,9 @@ script:
         };
     }
 
+
     var url = params.server.replace(/[\/]+$/, '');
+
     switch (command) {
         case 'test-module':
                 var res = sendRequest(url + '/v1/demisto.com/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
@@ -373,11 +388,9 @@ script:
     - name: long
       description: Should we return full response with detected URLs
     - name: sampleSize
-      description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format
+      description: The number of samples from each type (resolutions, detections, etc.) to display for long format
     - name: threshold
-      description: 'If number of positive detected domains is bigger than the threshold
-        we will consider it malicious'
+      description: 'If number of positive detected domains is bigger than the threshold we will consider it malicious'
     - name: wait
       description: Wait time between tries if we reach the API rate limit in seconds
     - name: retries
@@ -403,11 +416,9 @@ script:
     - name: query
       required: true
       default: true
-      description: (mandatory and default) Query strings. Each term in the query string
-        must be at least three characters long. Use spaces to separate multiple terms
+      description: (mandatory and default) Query strings. Each term in the query string must be at least three characters long. Use spaces to separate multiple terms
     - name: pageNumber
-      description: 'Sets the page of results to retrieve from the server. Each page
-        is limited to 100 results. Default: 1'
+      description: 'Sets the page of results to retrieve from the server. Each page is limited to 100 results. Default: 1'
       defaultValue: "1"
     - name: maxLength
       description: 'Limit the maximum domain character count. Default: 25'
@@ -416,8 +427,7 @@ script:
       description: 'Limit the minimum domain character count. Default: 1'
       defaultValue: "1"
     - name: hesHyphen
-      description: '(true or false) Return results with hyphens in the domain name.
-        Default: true'
+      description: '(true or false) Return results with hyphens in the domain name. Default: true'
     - name: exclude
       description: Terms to exclude from matching
     - name: activeOnly
@@ -425,40 +435,35 @@ script:
       predefined:
       - "true"
       - "false"
-      description: '(true or false) Return only domains currently registered.Default:
-        false'
+      description: '(true or false) Return only domains currently registered.Default: false'
       defaultValue: "false"
     - name: deletedOnly
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: '(true or false) Return only domains previously registered but
-        not currently registered. Default: false'
+      description: '(true or false) Return only domains previously registered but not currently registered. Default: false'
       defaultValue: "false"
     - name: anchorLeft
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: '(true or false) Return only domains that start with the query
-        term. Default: false'
+      description: '(true or false) Return only domains that start with the query term. Default: false'
       defaultValue: "false"
     - name: anchorRight
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: '(true or false) Return only domains that end with the query term.
-        Default: false'
+      description: '(true or false) Return only domains that end with the query term. Default: false'
       defaultValue: "false"
     - name: hasNumber
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: '(true or false) Return results with numbers in the domain name.
-        Default: true'
+      description: '(true or false) Return results with numbers in the domain name. Default: true'
       defaultValue: "true"
     outputs:
     - contextPath: Domain.Name
@@ -470,11 +475,9 @@ script:
       default: true
       description: (default) specify IP address
     - name: domain
-      description: 'If you provide a domain name, DomainTools will respond with the
-        list of other domains that share the same IP'
+      description: 'If you provide a domain name, DomainTools will respond with the list of other domains that share the same IP'
     - name: limit
-      description: Limits the size of the domain list than can appear in a response.
-        The limit is applied per-IP address, not for the entire request.
+      description: Limits the size of the domain list than can appear in a response. The limit is applied per-IP address, not for the entire request.
     outputs:
     - contextPath: Domain.Name
       description: Domain name
@@ -486,8 +489,7 @@ script:
     - name: nameServer
       required: true
       default: true
-      description: '(default and mandatory) specify the name of the primary or secondary
-        name server'
+      description: '(default and mandatory) specify the name of the primary or secondary name server'
     - name: limit
       description: Limit the size of the domain list than can appear in a response
     outputs:
@@ -499,12 +501,9 @@ script:
     - name: terms
       required: true
       default: true
-      description: '(mandatory and default) List of one or more terms to search for
-        in the Whois record, separated with the pipe character ( | ).'
+      description: '(mandatory and default) List of one or more terms to search for in the Whois record, separated with the pipe character ( | ).'
     - name: exclude
-      description: Domain names with Whois records that match these terms will be
-        excluded from the result set. Separate multiple terms with the pipe character
-        ( | ).
+      description: Domain names with Whois records that match these terms will be excluded from the result set. Separate multiple terms with the pipe character ( | ).
     - name: onlyHistoricScope
       auto: PREDEFINED
       predefined:
@@ -513,9 +512,7 @@ script:
       description: Show only historic records
       defaultValue: "false"
     - name: quoteMode
-      description: 'Only lists the size and retail price of the query if you have
-        per-domain pricing access purchase : includes the complete list of domain
-        names that match the query'
+      description: 'Only lists the size and retail price of the query if you have per-domain pricing access purchase : includes the complete list of domain names that match the query'
       defaultValue: purchase
     outputs:
     - contextPath: Domain.Name
@@ -526,8 +523,7 @@ script:
     - name: query
       required: true
       default: true
-      description: '(mandatory and default) enter domain (do not use full URL). e.g.
-        !whois [query=]demisto.com'
+      description: '(mandatory and default) enter domain (do not use full URL). e.g. !whois [query=]demisto.com'
     - name: parsed
       description: Should return parsed or raw response. Default is true
       auto: PREDEFINED

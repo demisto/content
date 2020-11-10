@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import re
 import json
@@ -25,7 +26,6 @@ from apiclient import discovery
 from oauth2client import service_account
 import itertools as it
 
-
 ''' GLOBAL VARS '''
 ADMIN_EMAIL = None
 PRIVATE_KEY_CONTENT = None
@@ -34,6 +34,9 @@ SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 PROXY = demisto.params().get('proxy')
 DISABLE_SSL = demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '1 days')
+
+SEND_AS_SMTP_FIELDS = ['host', 'port', 'username', 'password', 'securitymode']
+DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
 
 ''' HELPER FUNCTIONS '''
 
@@ -44,13 +47,13 @@ class TextExtractHtmlParser(HTMLParser):
         self._texts = []  # type: list
         self._ignore = False
 
-    def handle_starttag(self, tag, attrs):
-        if tag in ('p', 'br') and not self._ignore:
+    def handle_starttag(self, tag, attrs):  # noqa: F841
+        if tag in ('p', 'br') and not self._ignore:  # ignore
             self._texts.append('\n')
         elif tag in ('script', 'style'):
             self._ignore = True
 
-    def handle_startendtag(self, tag, attrs):
+    def handle_startendtag(self, tag, attrs):  # noqa: F841
         if tag in ('br', 'tr') and not self._ignore:
             self._texts.append('\n')
 
@@ -108,6 +111,8 @@ def get_http_client_with_proxy():
         proxy_user=parsed_proxy.username,
         proxy_pass=parsed_proxy.password)
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
+
+
 # disable-secrets-detection-end
 
 
@@ -126,8 +131,8 @@ def get_credentials(additional_scopes=None, delegated_user=None):
     if additional_scopes is not None:
         scopes += additional_scopes
 
-    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),  # type: ignore
-                                                                            scopes=scopes)
+    cred = service_account.ServiceAccountCredentials. \
+        from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT), scopes=scopes)  # type: ignore
 
     return cred.create_delegated(delegated_user)
 
@@ -210,15 +215,14 @@ def create_base_time(internal_date_timestamp, header_date):
         internal_date_timestamp = int(str(internal_date_timestamp)[:timestamp_len])
 
     utc, delta_in_seconds = localization_extract(header_date)
-    base_time = datetime.utcfromtimestamp(internal_date_timestamp) + \
-        timedelta(seconds=delta_in_seconds)
+    base_time = datetime.utcfromtimestamp(internal_date_timestamp) + timedelta(seconds=delta_in_seconds)
     base_time = str(base_time.strftime('%a, %d %b %Y %H:%M:%S')) + " " + utc
     return base_time
 
 
 def get_email_context(email_data, mailbox):
     context_headers = email_data.get('payload', {}).get('headers', [])
-    context_headers = [{'Name': v['name'], 'Value':v['value']}
+    context_headers = [{'Name': v['name'], 'Value': v['value']}
                        for v in context_headers]
     headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
     body = demisto.get(email_data, 'payload.body.data')
@@ -231,7 +235,8 @@ def get_email_context(email_data, mailbox):
         # in case no internalDate field exists will revert to extracting the date from the email payload itself
         # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
         # email payload nor internalDate
-        demisto.info("No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
+        demisto.info(
+            "No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
         base_time = str(headers.get('date', ''))
 
     context_gmail = {
@@ -298,7 +303,7 @@ def get_email_context(email_data, mailbox):
     return context_gmail, headers, context_email
 
 
-TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
+TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')  # NOSONAR
 
 
 def move_to_gmt(t):
@@ -413,12 +418,8 @@ def users_to_entry(title, response, next_page_token=None):
     context = []
 
     for user_data in response:
-        username = user_data.get('name').get('givenName') if user_data.get('name') \
-            and 'givenName' in user_data.get('name') else None
-
-        display = user_data.get('name').get('fullName') if user_data.get('name') \
-            and 'fullName' in user_data.get('name') else None
-
+        username = dict_safe_get(user_data, ['name', 'givenName'])
+        display = dict_safe_get(user_data, ['name', 'fullName'])
         context.append({
             'Type': 'Google',
             'ID': user_data.get('id'),
@@ -461,10 +462,13 @@ def autoreply_to_entry(title, response, user_id):
             'ResponseSubject': autoreply_data.get('responseSubject'),
             'RestrictToContact': autoreply_data.get('restrictToContacts'),
             'RestrictToDomain': autoreply_data.get('restrictToDomain'),
-
+            'StartTime': autoreply_data.get('startTime'),
+            'EndTime': autoreply_data.get('endTime'),
+            'ResponseBodyHtml': autoreply_data.get('responseBodyHtml')
         })
-    headers = ['EnableAutoReply', 'ResponseBody',
-               'ResponseSubject', 'RestrictToContact', 'RestrictToDomain']
+    headers = ['EnableAutoReply', 'ResponseBody', 'ResponseBodyHtml',
+               'ResponseSubject', 'RestrictToContact', 'RestrictToDomain',
+               'EnableAutoReply', 'StartTime', 'EndTime']
 
     account_context = {
         "Address": user_id,
@@ -483,7 +487,7 @@ def autoreply_to_entry(title, response, user_id):
     }
 
 
-def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, subject):
+def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject):
     gmail_context = []
     for mail_results_data in response:
         gmail_context.append({
@@ -509,7 +513,8 @@ def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, 
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, gmail_context, headers, removeNull=True),
-        'EntryContext': {'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context}
+        'EntryContext': {
+            'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context}
     }
 
 
@@ -614,6 +619,34 @@ def role_to_entry(title, role):
     }
 
 
+def dict_keys_snake_to_camelcase(dictionary):
+    """
+    Converts all dictionary keys from snake case (dict_key) to lower camel case(dictKey).
+    :param dictionary: Dictionary which may contain keys in snake_case
+    :return: Dictionary with snake_case keys converted to lowerCamelCase
+    """
+    underscore_pattern = re.compile(r'_([a-z])')
+    return {underscore_pattern.sub(lambda i: i.group(1).upper(), key.lower()): value for (key, value) in
+            dictionary.items()}
+
+
+def get_millis_from_date(date, arg_name):
+    """
+    Convert a date string into epoch milliseconds or return epoch milliseconds as int.
+
+    :param date: Date string in expected format.
+    :param arg_name: field_name for setting proper error message.
+    :return: Epoch milliseconds.
+    """
+    try:
+        return date_to_timestamp(date, DATE_FORMAT)
+    except ValueError:
+        try:
+            return int(date)
+        except ValueError:
+            raise ValueError('{} argument is not in expected format.'.format(arg_name))
+
+
 ''' FUNCTIONS '''
 
 
@@ -621,7 +654,6 @@ def list_users_command():
     args = demisto.args()
     domain = args.get('domain', ADMIN_EMAIL.split('@')[1])  # type: ignore
     customer = args.get('customer')
-    event = args.get('event')
     view_type = args.get('view-type-public-domain', 'admin_view')
     query = args.get('query')
     sort_order = args.get('sort-order')
@@ -632,17 +664,16 @@ def list_users_command():
         'custom_field_mask') if projection == 'custom' else None
     page_token = args.get('page-token')
 
-    users, next_page_token = list_users(domain, customer, event, query, sort_order, view_type,
+    users, next_page_token = list_users(domain, customer, query, sort_order, view_type,
                                         show_deleted, max_results, projection, custom_field_mask, page_token)
     return users_to_entry('Users:', users, next_page_token)
 
 
-def list_users(domain, customer=None, event=None, query=None, sort_order=None, view_type='admin_view',
+def list_users(domain, customer=None, query=None, sort_order=None, view_type='admin_view',
                show_deleted=False, max_results=100, projection='basic', custom_field_mask=None, page_token=None):
     command_args = {
         'domain': domain,
         'customer': customer,
-        'event': event,
         'viewType': view_type,
         'query': query,
         'sortOrder': sort_order,
@@ -692,7 +723,7 @@ def hide_user_command():
     hide_value = args.get('visible-globally')
     result = hide_user(user_key, hide_value)
 
-    return users_to_entry('User {}:'.format(user_key,), [result])
+    return users_to_entry('User {}:'.format(user_key, ), [result])
 
 
 def hide_user(user_key, hide_value):
@@ -761,21 +792,40 @@ def set_autoreply_command():
     user_id = args.get('user-id')
     enable_autoreply = args.get('enable-autoReply')
     response_subject = args.get('response-subject')
-    response_body_plain_text = args.get('response-body')
+    response_body_entry_id = args.get('response-body-entry-id')
+    file_content = ''
+    if response_body_entry_id and not args.get('response-body'):
+        file_entry = demisto.getFilePath(response_body_entry_id)
+        with open(file_entry['path'], 'r') as f:
+            file_content = str(f.read())
+    response_body_plain_text = file_content if file_content else args.get('response-body')
+    response_body_type = args.get('response-body-type')
+    domain_only = args.get('domain-only')
+    contacts_only = args.get('contacts-only')
+    start_time = get_millis_from_date(args.get('start-time'), 'start-time') if args.get('start-time') else None
+    end_time = get_millis_from_date(args.get('end-time'), 'end-time') if args.get('end-time') else None
 
-    autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text)
+    autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text,
+                                      domain_only, contacts_only, start_time, end_time, response_body_type)
 
     return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message], user_id)
 
 
-def set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text):
-    command_args = {
+def set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text, domain_only, contacts_only,
+                  start_time, end_time, response_body_type='text'):
+    command_args = remove_empty_elements({
         'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
         'body': {
             'enableAutoReply': enable_autoreply,
             'responseSubject': response_subject,
             'responseBodyPlainText': response_body_plain_text,
-        }}
+            'restrictToContacts': contacts_only,
+            'restrictToDomain': domain_only,
+            'startTime': start_time,
+            'endTime': end_time
+        }})
+    if response_body_type.lower() == 'html':
+        command_args['body']['responseBodyHtml'] = response_body_plain_text
 
     service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.basic'],
                           delegated_user=user_id)
@@ -841,7 +891,7 @@ def create_user(primary_email, first_name, family_name, password):
         'name': {
             'givenName': first_name,
             'familyName': family_name,
-            'fullName': '%s %s' % (first_name, family_name, ),
+            'fullName': '%s %s' % (first_name, family_name,),
         },
         'password': password
     }
@@ -1032,7 +1082,7 @@ def search_command(mailbox=None):
 
     if max_results > 500:
         raise ValueError(
-            'maxResults must be lower than 500, got %s' % (max_results, ))
+            'maxResults must be lower than 500, got %s' % (max_results,))
 
     mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query,
                       fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
@@ -1054,9 +1104,9 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'in': _in,
         'has': 'attachment' if has_attachments else ''
     }
-    q = ' '.join('%s:%s ' % (name, value, )
+    q = ' '.join('%s:%s ' % (name, value,)
                  for name, value in query_values.iteritems() if value != '')
-    q = ('%s %s' % (q, query, )).strip()
+    q = ('%s %s' % (q, query,)).strip()
 
     command_args = {
         'userId': user_id,
@@ -1426,7 +1476,7 @@ def randomword(length):
     Generate a random string of given length
     """
     letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
+    return ''.join(random.choice(letters) for i in range(length))  # NOSONAR
 
 
 def header(s):
@@ -1505,7 +1555,8 @@ def handle_html(htmlBody):
     cleanBody = ''
     lastIndex = 0
     for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody,  # NOSONAR
+                        re.I)):
         maintype, subtype = m.group(2).split('/', 1)
         att = {
             'maintype': maintype,
@@ -1666,8 +1717,17 @@ def attachment_handler(message, attachments):
 
 
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
-              transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
-    message = MIMEMultipart()
+              transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
+              templateParams):
+    if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body]):
+        # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
+        message = MIMEText(htmlBody, 'html')  # type: ignore
+    elif body and not any([entry_ids, file_names, attach_cid, manualAttachObj, htmlBody]):
+        # if there is only body and no attachments to the mail , we would like to send it without attaching every part
+        message = MIMEText(body, 'plain', 'utf-8')  # type: ignore
+    else:
+        message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
+
     message['to'] = header(','.join(emailto))
     message['cc'] = header(','.join(cc))
     message['bcc'] = header(','.join(bcc))
@@ -1675,41 +1735,43 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     message['subject'] = header(subject)
     message['reply-to'] = header(replyTo)
 
-    templateParams = template_params(templateParams)
-    if templateParams is not None:
-        if body is not None:
-            body = body.format(**templateParams)
+    # if there are any attachments to the mail
+    if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
+        templateParams = template_params(templateParams)
+        if templateParams is not None:
+            if body is not None:
+                body = body.format(**templateParams)
+
+            if htmlBody is not None:
+                htmlBody = htmlBody.format(**templateParams)
+
+        if additional_headers is not None and len(additional_headers) > 0:
+            for h in additional_headers:
+                header_name, header_value = h.split('=')
+                message[header_name] = header(header_value)
+
+        msg = MIMEText(body, 'plain', 'utf-8')
+        message.attach(msg)
+        htmlAttachments = []  # type: list
+        inlineAttachments = []  # type: list
 
         if htmlBody is not None:
-            htmlBody = htmlBody.format(**templateParams)
+            htmlBody, htmlAttachments = handle_html(htmlBody)
+            msg = MIMEText(htmlBody, 'html', 'utf-8')
+            message.attach(msg)
+            if attach_cid:
+                inlineAttachments = collect_inline_attachments(attach_cid)
 
-    if additional_headers is not None and len(additional_headers) > 0:
-        for h in additional_headers:
-            header_name_and_value = h.split('=')
-            message[header_name_and_value[0]] = header(header_name_and_value[1])
+        else:
+            # if not html body, cannot attach cids in message
+            transientFileCID = None
 
-    msg = MIMEText(body, 'plain', 'utf-8')
-    message.attach(msg)
-    htmlAttachments = []  # type: list
-    inlineAttachments = []  # type: list
+        attachments = collect_attachments(entry_ids, file_names)
+        manual_attachments = collect_manual_attachments()
+        transientAttachments = transient_attachments(transientFile, transientFileContent, transientFileCID)
 
-    if htmlBody is not None:
-        htmlBody, htmlAttachments = handle_html(htmlBody)
-        msg = MIMEText(htmlBody, 'html', 'utf-8')
-        message.attach(msg)
-        if attach_cid is not None and len(attach_cid) > 0:
-            inlineAttachments = collect_inline_attachments(attach_cid)
-
-    else:
-        # if not html body, cannot attach cids in message
-        transientFileCID = None
-
-    attachments = collect_attachments(entry_ids, file_names)
-    manual_attachments = collect_manual_attachments()
-    transientAttachments = transient_attachments(transientFile, transientFileContent, transientFileCID)
-
-    attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
-    attachment_handler(message, attachments)
+        attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
+        attachment_handler(message, attachments)
 
     encoded_message = base64.urlsafe_b64encode(message.as_string())
     command_args = {
@@ -1719,7 +1781,8 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         }
     }
     service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.compose',
-                                                            'https://www.googleapis.com/auth/gmail.send'])
+                                                            'https://www.googleapis.com/auth/gmail.send'],
+                          delegated_user=emailfrom)
     result = service.users().messages().send(**command_args).execute()
     return result
 
@@ -1740,6 +1803,7 @@ def send_mail_command():
     transientFile = argToList(args.get('transientFile'))
     transientFileContent = argToList(args.get('transientFileContent'))
     transientFileCID = argToList(args.get('transientFileCID'))
+    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
     additional_headers = argToList(args.get('additionalHeader'))
     template_param = args.get('templateParams')
 
@@ -1748,8 +1812,99 @@ def send_mail_command():
 
     result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
                        replyTo, file_names, attchCID, transientFile, transientFileContent,
-                       transientFileCID, additional_headers, template_param)
-    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, htmlBody, body, subject)
+                       transientFileCID, manualAttachObj, additional_headers, template_param)
+    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
+
+
+def forwarding_address_add_command():
+    """
+    Creates a forwarding address.
+    """
+
+    args = demisto.args()
+    forwarding_email = args.get('forwarding_email', '')
+    user_id = args.get('user_id', '')
+    request_body = {'forwardingEmail': forwarding_email}
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.sharing'],
+        delegated_user=user_id)
+    result = service.users().settings().forwardingAddresses().create(userId=user_id, body=request_body).execute()
+    readable_output = "Added forwarding address {0} for {1} with status {2}.".format(forwarding_email, user_id,
+                                                                                     result.get('verificationStatus',
+                                                                                                ''))
+    context = dict(result)
+    context['userId'] = user_id
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
+        'EntryContext': {
+            'Gmail.ForwardingAddress((val.forwardingEmail && val.forwardingEmail '
+            '== obj.forwardingEmail) && (val.userId && val.userId == obj.userId))': context,
+        }
+    }
+
+
+def send_as_add_command():
+    """
+    Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP
+    service to validate the configuration before creating the alias. If ownership verification is required for the
+    alias, a message will be sent to the email address and the resource's verification status will be set to pending;
+    otherwise, the resource will be created with verification status set to accepted. If a signature is provided,
+    Gmail will sanitize the HTML before saving it with the alias.
+
+    This method is only available to service account clients that have been delegated domain-wide authority.
+    """
+    args = demisto.args()
+    user_id = args.pop('user_id', '')
+
+    smtp_msa_object = {key.replace('smtp_', ''): value for (key, value) in args.items() if
+                       key.startswith('smtp_')}
+
+    args = {key: value for (key, value) in args.items() if not key.startswith('smtp_')}
+
+    send_as_settings = dict_keys_snake_to_camelcase(args)
+
+    if smtp_msa_object:
+        if any(field not in smtp_msa_object.keys() for field in SEND_AS_SMTP_FIELDS):
+            raise ValueError('SMTP configuration missing. Please provide all the SMTP field values.')
+        smtp_msa_object['securityMode'] = smtp_msa_object.pop('securitymode', '')
+        send_as_settings['smtpMsa'] = smtp_msa_object
+
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.sharing'],
+        delegated_user=user_id)
+    result = service.users().settings().sendAs().create(userId='me', body=send_as_settings).execute()
+    context = result.copy()
+    context['userId'] = user_id
+
+    for (key, value) in context.pop('smtpMsa', {}).items():
+        context['smtpMsa' + (key[0].upper() + key[1:])] = value
+
+    hr_fields = ['sendAsEmail', 'displayName', 'replyToAddress', 'isPrimary', 'treatAsAlias']
+
+    readable_output = tableToMarkdown(
+        'A custom "{}" send-as alias created for "{}".'.format(result.get('sendAsEmail', ''), user_id),
+        context, headerTransform=pascalToSpace, removeNull=True,
+        headers=hr_fields)
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
+        'EntryContext': {
+            'Gmail.SendAs((val.sendAsEmail && val.sendAsEmail '
+            '== obj.sendAsEmail) && (val.userId && val.userId == obj.userId))': context,
+        }
+    }
 
 
 '''FETCH INCIDENTS'''
@@ -1777,14 +1932,14 @@ def fetch_incidents():
 
     query += last_fetch.strftime(' after:%Y/%m/%d')
     LOG('GMAIL: fetch parameters:\nuser: %s\nquery=%s\nfetch time: %s' %
-        (user_key, query, last_fetch, ))
+        (user_key, query, last_fetch,))
 
     result = service.users().messages().list(
         userId=user_key, maxResults=100, q=query).execute()
 
     incidents = []
     # so far, so good
-    LOG('GMAIL: possible new incidents are %s' % (result, ))
+    LOG('GMAIL: possible new incidents are %s' % (result,))
     for msg in result.get('messages', []):
         msg_result = service.users().messages().get(
             id=msg['id'], userId=user_key).execute()
@@ -1837,10 +1992,12 @@ def main():
         'gmail-delegate-user-mailbox': delegate_user_mailbox_command,
         'gmail-remove-delegated-mailbox': remove_delegate_user_mailbox_command,
         'send-mail': send_mail_command,
-        'gmail-get-role': get_role_command
+        'gmail-get-role': get_role_command,
+        'gmail-forwarding-address-add': forwarding_address_add_command,
+        'gmail-send-as-add': send_as_add_command,
     }
     command = demisto.command()
-    LOG('GMAIL: command is %s' % (command, ))
+    LOG('GMAIL: command is %s' % (command,))
     try:
         if command == 'test-module':
             list_users(ADMIN_EMAIL.split('@')[1])
@@ -1871,5 +2028,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins"):
     main()

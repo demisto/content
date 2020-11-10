@@ -2,18 +2,25 @@ commonfields:
   id: SimpleRequestExecutor
   version: -1
 name: SimpleRequestExecutor
-script: |-
+script: >-
   from urllib3 import disable_warnings
 
+
   # disable insecure warnings
+
   disable_warnings()
+
 
   res = []
 
+
   cmd_args = {'debug-mode': 'True'}
 
+
   # Calling a command - returns a list of one or more entries
+
   cmd_res = demisto.executeCommand('SimpleRequest', cmd_args)
+
   try:
       for entry in cmd_res:
           if isError(entry):
@@ -40,3 +47,4 @@ subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.7.4.977
 runas: DBotWeakRole
+fromversion: 5.0.0

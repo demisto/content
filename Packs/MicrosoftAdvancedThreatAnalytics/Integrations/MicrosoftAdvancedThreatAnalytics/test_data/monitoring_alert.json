@@ -1,0 +1,37 @@
+[
+    {
+        "DescriptionDetailFormatKeys": [],
+        "DescriptionFormatKey": "GatewayDomainSynchronizerNotAssignedMonitoringAlertDescription",
+        "DomainSynchronizerNotAssignedDomainDnsNames": [
+            "demisto.local"
+        ],
+        "EndTime": "2020-07-28T11:17:28.6742502Z",
+        "Id": "5f159bbd83eaed101cd5c4e5",
+        "NotificationTime": "2020-07-20T13:27:25.8510125Z",
+        "Severity": "Low",
+        "StartTime": "2020-07-20T13:27:25.7800034Z",
+        "Status": "Closed",
+        "StatusUpdateTime": "2020-07-28T11:17:28.6742502Z",
+        "TitleKey": "GatewayDomainSynchronizerNotAssignedMonitoringAlertTitle",
+        "Type": "GatewayDomainSynchronizerNotAssignedMonitoringAlert",
+        "WindowsEventId": 1007
+    },
+    {
+        "AccountDomainName": "demisto",
+        "AccountName": "Administrator",
+        "DescriptionDetailFormatKeys": [],
+        "DescriptionFormatKey": "GatewayDirectoryServicesClientAccountPasswordExpiryMonitoringAlertDescriptionNearExpiry",
+        "EndTime": "2020-07-28T11:17:28.6662631Z",
+        "Id": "5f159e9283eaed101cd5c837",
+        "IsPasswordExpired": false,
+        "NotificationTime": "2020-07-20T13:39:30.5978881Z",
+        "PasswordExpiryTime": "2020-08-17T13:01:15.1609716Z",
+        "Severity": "Medium",
+        "StartTime": "2020-07-20T13:39:30.5559003Z",
+        "Status": "Closed",
+        "StatusUpdateTime": "2020-07-28T11:17:28.6662631Z",
+        "TitleKey": "GatewayDirectoryServicesClientAccountPasswordExpiryMonitoringAlertTitleNearExpiry",
+        "Type": "GatewayDirectoryServicesClientAccountPasswordExpiryMonitoringAlert",
+        "WindowsEventId": 1006
+    }
+]

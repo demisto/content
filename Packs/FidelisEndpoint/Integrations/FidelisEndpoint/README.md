@@ -20,7 +20,7 @@ To Get the appropriate permissions navigate to __Configuration__ > __Roles__ > _
 2. Search for Fidelis EDR.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Server URL (e.g. https://abcde.fideliscloud.com/)__
+    * __Server URL (e.g. `https://abcde.fideliscloud.com/` )__
     * __Username__
     * __Incident type__
     * __Fetch incidents__

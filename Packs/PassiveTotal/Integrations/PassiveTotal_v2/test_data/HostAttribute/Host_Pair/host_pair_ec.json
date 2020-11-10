@@ -1,0 +1,11 @@
+{
+  "success": [
+    {
+      "firstSeen": "2019-12-10 06:06:19",
+      "lastSeen": "2020-06-02 06:05:05",
+      "cause": "dummy cause",
+      "parent": "dummy parent",
+      "child": "dummy child"
+    }
+  ]
+}

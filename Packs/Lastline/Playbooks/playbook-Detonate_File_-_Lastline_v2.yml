@@ -5,7 +5,7 @@ description: |-
   Detonates a File using the Lastline sandbox.
   Lastline supports the following File Types:
   EXE, SYS, DLL, COM, SCR, CPL, OCX, CGI, DOC, DOTM, DOCX, DOTX, XLS, PPAM, XSLX, PPS, XLSB, PPSX, XLSM, PPSM, PPT, PPTX, PPTM, RTF, SHS, XLTM, SLDM, XLTX, SLDX, XLAM, THMX, DOCM, XAR, JTD, JTDC, PDF, SWF, GZ, 7Z, TGZ, MSI, ZIP, LZH, CAB, LZMA, APK, JAR, CLASS, JPEG, PNG, GIF, CMD, ACE, BAT, ARJ, VBS, CHM, XML, LNK, URL, MOF, HTM, OCX, HTML, POTM, EML, POTX, MSG, PS, |VB, REG, VBA, WSC, VBE, WSF, VBS, WSH
-fromversion: 4.0.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -577,8 +577,7 @@ outputs:
   description: ist of network connections done by the analysis subject
   type: string
 - contextPath: Lastline.Submission.DownloadedFiles
-  description: List of files that were downloaded using the Microsoft Windows file-download
-    API functions. Each element is a tuple of file-origin URL and a File element.
+  description: List of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
   type: string
 - contextPath: Lastline.Submission.UUID
   description: Task UUID of submitted sample
@@ -623,4 +622,4 @@ outputs:
   description: Lastline submission object
   type: unknown
 tests:
-  - Detonate File - Generic Test
+- Detonate File - Generic Test

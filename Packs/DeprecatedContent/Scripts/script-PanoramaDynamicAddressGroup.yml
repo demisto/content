@@ -2,8 +2,9 @@ commonfields:
   id: PanoramaDynamicAddressGroup
   version: -1
 name: PanoramaDynamicAddressGroup
-script: |-
+script: >-
   var req =
+
   '<uid-message>\
        <version>1.0</version>\
        <type>update</type>\
@@ -18,6 +19,7 @@ script: |-
        </payload>\
   </uid-message>';
 
+
   return {Type: 3,
         FileID: saveFile(req),
         File: args.fileName ? args.fileName : 'Dynamic Address Group Mapping.xml',
@@ -25,7 +27,7 @@ script: |-
   };
 type: javascript
 tags: []
-comment: Register/Unregister to address group with Panorama
+comment: Deprecated. Register/Unregister to address group with Panorama
 enabled: true
 args:
 - name: type
@@ -48,3 +50,4 @@ scripttarget: 0
 deprecated: true
 tests:
 - palo_alto_firewall_test_pb
+fromversion: 5.0.0

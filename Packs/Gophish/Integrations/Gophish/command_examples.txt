@@ -1,0 +1,32 @@
+!gophish-get-users
+!gophish-get-user id=1
+!gophish-create-user role=admin username=Thisistheusername password=password
+!gophish-modify-user role=admin username=newusername password=newpassword id=5
+!gophish-delete-user id=5
+!gophish-get-all-sending-profiles
+!gophish-get-sending-profile id=1
+!gophish-create-sending-profile name=TestingCreation from_address="John <john@acme.com>" host=testing.acme.com:25 username=john password=password ignore_cert_errors=True 
+!gophish-delete-sending-profile id=4
+!gophish-get-all-landing-pages
+!gophish-get-landing-page id=1
+!gophish-import-site-as-landing-page url="https://xsoar.pan.dev" include_resources=False
+!gophish-create-landing-page name=TestingCommands html="here goes the html" capture_credentials=True capture_passwords=True redirect_url=https://www.paloaltonetworks.com
+!gophish-delete-landing-page id=3
+!gophish-get-all-templates
+!gophish-get-template id=1
+!gophish-create-template name=TestingTemplates subject=Test text=Test 
+!gophish-delete-template id=3
+!gophish-import-template convert_links=False content=contenthere
+!gophish-get-all-campaigns
+!gophish-get-campaign-details id=1
+!gophish-get-campaign-results id=1
+!gophish-get-campaign-summary id=1
+!gophish-create-campaign nme=TestingCommands template=Credentials url=https://192.168.1.1:80 page=Outlook smtp=Google launch_date=Tomorrow groups=Users
+!gophish-complete-campaign id=3
+!gophish-delete-campaign id=3
+!gophish-get-all-groups
+!gophish-get-group id=1
+!gophish-get-all-groups-summary
+!gophish-get-group-summary id=1
+!gophish-create-group name=Testingcommands targets="email@email.address,john,johnson,CEO"
+!gophish-delete-group id=4

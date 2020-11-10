@@ -2,10 +2,12 @@ commonfields:
   id: IPToHost
   version: -1
 name: IPToHost
-script: |
+script: >
   import socket
 
+
   ip = demisto.args().get('ip')
+
 
   try:
       host_info = socket.gethostbyaddr(ip)
@@ -27,15 +29,20 @@ script: |
 
   hostname = host_info[0]
 
+
   output = {
       "Hostname" : str(hostname),
       "IP" : ip
   }
 
+
   context = {}
+
   context["Endpoint(val.Hostname && val.Hostname === obj.Hostname)"] = output
 
+
   md = tableToMarkdown("IP to Host", [output])
+
 
   demisto.results({
       'Type' : entryTypes['note'],
@@ -66,3 +73,4 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

@@ -1,10 +1,10 @@
 id: Endpoint data collection
 version: -1
 name: Endpoint data collection
-fromversion: ""
-description: Generic playbook to collect data from endpoints for IR purposes. Will
-  use whichever integrations are configured and available.
+fromversion: "5.0.0"
+description: Deprecated. Generic playbook to collect data from endpoints for IR purposes. Will use whichever integrations are configured and available.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -242,4 +242,4 @@ inputs:
   description: ""
 outputs: []
 tests:
-  - No tests - Need to add
+- No tests - Need to add

@@ -1,5 +1,6 @@
 id: Test - PhishMe Intelligence
 version: -1
+fromversion: 5.0.0
 name: Test - PhishMe Intelligence
 starttaskid: "0"
 tasks:

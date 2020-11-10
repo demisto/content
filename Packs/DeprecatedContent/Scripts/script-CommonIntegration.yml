@@ -2,7 +2,7 @@ commonfields:
   id: CommonIntegration
   version: -1
 name: CommonIntegration
-script: |-
+script: >-
   function encodeToURLQuery(args) {
           var query = '';
           if (args) {
@@ -20,6 +20,7 @@ script: |-
           return query;
   };
 
+
   function replaceInTemplates(input, args) {
     var res = input;
     var keys = Object.keys(args);
@@ -28,6 +29,7 @@ script: |-
     }
     return res;
   };
+
 
   function replaceInTemplatesAndRemove(input, args) {
       var res = input;
@@ -41,6 +43,7 @@ script: |-
       return res;
   };
 
+
   var xmlReservedChars = {
     '&': '&amp;',
     '\"': '&quot;',
@@ -48,6 +51,7 @@ script: |-
     '<': '&lt;',
     '>': '&gt;'
   };
+
 
   function escapeXMLChars(input) {
       var res = input;
@@ -61,9 +65,10 @@ type: javascript
 tags:
 - infra
 - server
-comment: Common code that will be merged into each server integration when it runs
+comment: Deprecated. Common code that will be merged into each server integration when it runs
 system: true
 deprecated: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

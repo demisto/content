@@ -11,7 +11,7 @@ description: |-
   * All agents that files with "Hash" has been executed on (TIE)
   * Enrich Agents info from ePO
 starttaskid: "0"
-fromversion: 3.5.0
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
@@ -384,8 +384,7 @@ view: |-
 inputs:
 - key: Hash
   value:
-    simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
-      b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
+    simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a, b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
   required: false
   description: |-
     The Hash to hunt (Could be MD5,SHA1,SHA256).
@@ -398,4 +397,4 @@ outputs:
   description: The endpoint
   type: unknown
 tests:
-  - search_endpoints_by_hash_-_tie_-_test
+- search_endpoints_by_hash_-_tie_-_test

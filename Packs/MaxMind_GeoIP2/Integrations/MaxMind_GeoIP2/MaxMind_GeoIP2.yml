@@ -105,8 +105,8 @@ script:
     - contextPath: MaxMind.City
       description: City the IP is located in
       type: string
-    description: Check IP reputation (when information is available, returns a JSON
-      with details). Uses all configured Threat Intelligence feeds
+    description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds
   runonce: false
 tests:
-  - MaxMind Test
+- MaxMind Test
+fromversion: 5.0.0

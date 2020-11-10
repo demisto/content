@@ -4,7 +4,7 @@ commonfields:
 name: Deep Instinct
 display: Deep Instinct
 category: Network Security
-description: Deep Instinct
+description: The Deep Learning cybersecurity platform, for zero time prevention.
 configuration:
 - display: Base server URL
   name: base_url
@@ -178,8 +178,7 @@ script:
     - contextPath: DeepInstinct.Events.events.reoccurrence_count
       description: event reoccurrence_count
       type: number
-    description: Get all events. Max events in response can be 50, use first_event_id
-      parameter to define first event id to get
+    description: Get all events. Max events in response can be 50, use first_event_id parameter to define first event id to get
   - name: deepinstinct-get-all-groups
     arguments: []
     outputs:
@@ -253,21 +252,21 @@ script:
     description: add file hash to whitelist
   - name: deepinstinct-remove-hash-from-blacklist
     arguments:
-      - name: policy_id
-        required: true
-        description: policy ID
-      - name: file_hash
-        required: true
-        description: file hash
+    - name: policy_id
+      required: true
+      description: policy ID
+    - name: file_hash
+      required: true
+      description: file hash
     description: remove file hash from blacklist
   - name: deepinstinct-remove-hash-from-whitelist
     arguments:
-      - name: policy_id
-        required: true
-        description: policy ID
-      - name: file_hash
-        required: true
-        description: file hash
+    - name: policy_id
+      required: true
+      description: policy ID
+    - name: file_hash
+      required: true
+      description: file hash
     description: remove file hash from whitelist
   - name: deepinstinct-add-devices-to-group
     arguments:
@@ -310,9 +309,10 @@ script:
       description: comma separeted list of event ids
       isArray: true
     description: close list of events
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
+fromversion: 5.0.0

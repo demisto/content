@@ -53,7 +53,6 @@
 <li><a href="#h_6b58f4f4-da5f-4f94-b9b6-2d4acf482aed" target="_self">Get all indicators: threatq-get-all-indicators:</a></li>
 <li><a href="#h_4b89672e-4c43-4ebc-bd2b-c0ee3450df54" target="_self">Get a list of events: threatq-get-all-events</a></li>
 <li><a href="#h_940ef125-9750-463d-8b8b-3a057eac841b" target="_self">Get a list of all adversaries: threatq-get-all-adversaries</a></li>
-<li><a href="#h_46f00d92-a4aa-4fab-8261-6870b92ebb51" target="_self">Perform advanced search: threatq-advanced-search</a></li>
 </ol>
 <h3 id="h_3a7d7db8-675d-4bc0-bf4a-8c618f603caf">1. Search for object by name</h3>
 <hr>
@@ -3487,38 +3486,3 @@
 </pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-all-adversaries.png" alt="get-all-adversaries.png"></p>
-<h3 id="h_46f00d92-a4aa-4fab-8261-6870b92ebb51">32. Perform advanced search</h3>
-<hr>
-<p>Performs an advanced indicator search.</p>
-<h5>Base Command</h5>
-<p><code>threatq-advanced-search</code></p>
-<table style="width: 747px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 179.333px;"><strong>Argument Name</strong></th>
-<th style="width: 457.667px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 179.333px;">query</td>
-<td style="width: 457.667px;"><span>The search query.</span></td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 179.333px;">limit</td>
-<td style="width: 457.667px;"><span>The maximum number of results to return. The default is 10.</span></td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 179.333px;">Indicator Type</td>
-<td style="width: 457.667px;">The indicator type by which to search. It can be either the name or the ID. Possible values: Binary String, CIDR Block, CVE, Email Address, Email Attachment, Email Subject, File Mapping, File Path, Filename, FQDN, Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex, Password, Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject, URL, URL Path, User-agent, Username, X-Mailer</td>
-<td style="width: 71px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !threatq-advanced-search query= indicator_type= limit=8
-</pre>

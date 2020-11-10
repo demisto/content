@@ -247,8 +247,7 @@ script:
     name: cherwell-upload-attachment
     outputs:
     - contextPath: Cherwell.UploadedAttachments.AttachmentFileId
-      description: AttachmentFileId to use to get information about the attachment.
-        attachment
+      description: AttachmentFileId to use to get information about the attachment. attachment
       type: String
     - contextPath: Cherwell.UploadedAttachments.BusinessObjectType
       description: ' Business object type, for example: "Incident". '
@@ -427,14 +426,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "The query to run. A CSV list of filters such that each filter\
-        \ is of the form: [\"field_name\",\"operator\",\"value\"] and operator is\
-        \ one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than, 'contains', 'startwith'.\
-        \ Special characters should be escaped.\nExample: `[[\"CreatedDateTime\":\"\
-        gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"eq\",\"1\"]]`. \nNOTE: If multiple\
-        \ filters are received for the same field name, an 'OR' operation between\
-        \ the filters will be performed, if the field names are different an 'AND'\
-        \ operation will be performed."
+      description: "The query to run. A CSV list of filters such that each filter is of the form: [\"field_name\",\"operator\",\"value\"] and operator is one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than, 'contains', 'startwith'. Special characters should be escaped.\nExample: `[[\"CreatedDateTime\":\"gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"eq\",\"1\"]]`. \nNOTE: If multiple filters are received for the same field name, an 'OR' operation between the filters will be performed, if the field names are different an 'AND' operation will be performed."
       isArray: false
       name: query
       required: true
@@ -464,8 +456,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets information for a field, by one of its properties (Name, Display
-      Name, or id).
+    description: Gets information for a field, by one of its properties (Name, Display Name, or id).
     execution: false
     name: cherwell-get-field-info
     outputs:
@@ -492,8 +483,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Scope owner ID for the saved search. Use "(None)" when no scope
-        owner exists.
+      description: Scope owner ID for the saved search. Use "(None)" when no scope owner exists.
       isArray: false
       name: scope_owner
       required: true
@@ -526,7 +516,7 @@ script:
     - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectName
       description: Business object name.
       type: String
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: true
   runonce: false
   script: '-'
@@ -534,3 +524,4 @@ script:
   subtype: python3
 tests:
 - Cherwell - test
+fromversion: 5.0.0

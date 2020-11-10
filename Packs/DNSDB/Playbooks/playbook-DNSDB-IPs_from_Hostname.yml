@@ -1,0 +1,350 @@
+id: DNSDB - IPs from Hostname
+version: -1
+name: DNSDB - IPs from Hostname
+description: A playbook that uses DNSDB to retrieve all IPs seen for a given hostname
+  around the time of observation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1ce924ef-17a1-4aea-866c-ab68c0916fe3
+    type: start
+    task:
+      id: 1ce924ef-17a1-4aea-866c-ab68c0916fe3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7a13431f-be65-4b4b-8edc-86716e86ba92
+    type: regular
+    task:
+      id: 7a13431f-be65-4b4b-8edc-86716e86ba92
+      version: -1
+      name: DNSDB Lookup RRSet/A
+      description: Lookup RRset records
+      script: DNSDB_v2|||dnsdb-rrset
+      type: regular
+      iscommand: true
+      brand: DNSDB_v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      aggr: {}
+      bailiwick: {}
+      extend-context:
+        simple: resolvedIPs=RData
+      limit: {}
+      offset: {}
+      owner_name:
+        simple: ${inputs.Domain}
+      rrtype:
+        simple: A
+      time_first_after: {}
+      time_first_before:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "86400"
+      time_last_after:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "-15552000"
+      time_last_before: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 552152ce-fbbc-4379-8685-e6eba78f1559
+    type: title
+    task:
+      id: 552152ce-fbbc-4379-8685-e6eba78f1559
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c5ecf748-2269-4416-8b3f-44ac2e338d41
+    type: regular
+    task:
+      id: c5ecf748-2269-4416-8b3f-44ac2e338d41
+      version: -1
+      name: DNSDB Lookup RRSet/AAAA
+      description: Lookup RRset records
+      script: DNSDB_v2|||dnsdb-rrset
+      type: regular
+      iscommand: true
+      brand: DNSDB_v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      aggr: {}
+      bailiwick: {}
+      extend-context:
+        simple: resolvedIPs=RData
+      ignore-outputs:
+        simple: "false"
+      limit: {}
+      offset: {}
+      owner_name:
+        simple: ${inputs.Domain}
+      rrtype:
+        simple: AAAA
+      time_first_after: {}
+      time_first_before:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "86400"
+      time_last_after:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "15552000"
+      time_last_before: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f8ea69e9-5a17-4fee-88b0-533cece470d1
+    type: condition
+    task:
+      id: f8ea69e9-5a17-4fee-88b0-533cece470d1
+      version: -1
+      name: Is DNSDB v2 Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "Yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DNSDB_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: d61c298a-48d7-467d-8d3e-6502f088e33a
+    type: condition
+    task:
+      id: d61c298a-48d7-467d-8d3e-6502f088e33a
+      version: -1
+      name: Are there any domains?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 59cd0dba-5193-4605-81e9-072726c40d8f
+    type: regular
+    task:
+      id: 59cd0dba-5193-4605-81e9-072726c40d8f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: resolvedIPs
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 932.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+  required: false
+  description: "The domain name to enhance with IP addresses from Farsight DNSDB."
+  playbookInputQuery:
+outputs:
+- contextPath: resolvedIPs
+  description: An array of one or more IP addresses that the input domain names have
+    resolved to.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

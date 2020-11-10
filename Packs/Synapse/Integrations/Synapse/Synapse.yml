@@ -1,0 +1,432 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Synapse
+  version: -1
+configuration:
+- display: Server URL (e.g. https://synapse.vertex.link)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: '4443'
+  display: REST API Port (default is 4443).
+  name: port
+  required: true
+  type: 0
+- display: Username and password to user to authenticate to Synapse.
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: 'Optionally set display timezone for timestamps. Default is UTC.
+    Ex: "US/Eastern"'
+  display: Timezone (optional)
+  name: timezone
+  required: false
+  type: 0
+- additionalinfo: Tag that denotes indicator is malicious (i.e. "threat.mal" or "mal.foo.bar").
+    Depends on custom tag heirarchy. Use highest heirarchical tag that is considered
+    malicious.
+  display: Malicious Tag
+  hidden: false
+  name: bad_tag
+  required: false
+  type: 0
+- additionalinfo: Tag that denotes indicator is benign (i.e. "omit.benign" or "legit.beign").
+    Depends on custom tag heirarchy. Use highest heirarchical tag that is considered
+    benign.
+  display: Benign Tag
+  hidden: false
+  name: good_tag
+  required: false
+  type: 0
+description: Synapse intelligence analysis platform.
+display: Synapse
+name: Synapse
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: List of IPs.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns IP information and reputation.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: Synapse.IP.ip
+      description: The IP address of the indicator.
+      type: String
+    - contextPath: Synapse.IP.tags
+      description: The tags applied to the IP address.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The value assigned by DBot for the indicator.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type assigned by DBot for the indicator.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The score assigned by DBot for the indicator.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: IP.Address
+      description: The IP address of the indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the full description.
+      type: string
+  - arguments:
+    - default: true
+      description: List of URLs.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns URL information and reputation.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: Synapse.URL.url
+      description: The data of the URL indicator.
+      type: String
+    - contextPath: Synapse.URL.tags
+      description: The tags applied to the url.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The value assigned by DBot for the indicator.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type assigned by DBot for the indicator.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The score assigned by DBot for the indicator.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: URL.Data
+      description: The data of the URL indicator.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+  - arguments:
+    - default: true
+      description: List of Domains.
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns Domain information and reputation.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Synapse.Domain.domain
+      description: The fully qualified domain name.
+      type: String
+    - contextPath: Synapse.Domain.tags
+      description: The tags applied to the domain.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The value assigned by DBot for the indicator.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type assigned by DBot for the indicator.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The score assigned by DBot for the indicator.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: Domain.Name
+      description: The name of the domain.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+  - arguments:
+    - default: true
+      description: List of File Hashes (accepts MD5, SHA1, SHA256, SHA512).
+      isArray: true
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns File information and reputation.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: Synapse.File.hash
+      description: The queried file hash.
+      type: String
+    - contextPath: Synapse.File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: Synapse.File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: Synapse.File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: Synapse.File.SHA512
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: Synapse.File.query
+      description: The formatted query in storm syntax.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The value assigned by DBot for the indicator.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type assigned by DBot for the indicator.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The score assigned by DBot for the indicator.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+  - arguments:
+    - default: true
+      description: Synapse storm query (i.e. "inet:ipv4=1.2.3.4")
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Limit the number of results returned. Default is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Execute a Synapse Storm query.
+    execution: false
+    name: synapse-storm-query
+    outputs:
+    - contextPath: Synapse.Nodes.created
+      description: Timestamp when the node was first created in the Synapse Cortex.
+      type: String
+    - contextPath: Synapse.Nodes.form
+      description: 'The type of node (i.e. "inet:ipv4" for an IP address).'
+      type: String
+    - contextPath: Synapse.Nodes.tags
+      description: The tags associated with the resulting node.
+      type: String
+    - contextPath: Synapse.Nodes.valu
+      description: 'The node primary value (i.e. "1.2.3.4" for an IP).'
+      type: String
+  - deprecated: false
+    description: Lists current users in Synapse Cortex.
+    execution: false
+    name: synapse-list-users
+    outputs:
+    - contextPath: Synapse.Users.Admin
+      description: True/False whether the Synapse user is an admin.
+      type: Boolean
+    - contextPath: Synapse.Users.Email
+      description: The email address of the Synapse user.
+      type: String
+    - contextPath: Synapse.Users.Iden
+      description: The unique identifier of the Synapse user.
+      type: String
+    - contextPath: Synapse.Users.Name
+      description: The user's Synapse username.
+      type: String
+    - contextPath: Synapse.Users.Roles
+      description: The roles applied to the Synapse user.
+      type: String
+    - contextPath: Synapse.Users.Rules
+      description: The rules applied to the Synapse user.
+      type: String
+  - deprecated: false
+    description: Lists current roles in Synapse Cortex.
+    execution: false
+    name: synapse-list-roles
+    outputs:
+    - contextPath: Synapse.Roles.Iden
+      description: The unique identifier of the Synapse Role.
+      type: String
+    - contextPath: Synapse.Roles.Name
+      description: The name of the Synapse Role.
+      type: String
+    - contextPath: Synapse.Roles.Rules
+      description: The rules applied to the Synapse Role.
+      type: String
+  - arguments:
+    - default: false
+      description: New username to be created.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: Optionally set the new user's password.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new Synapse user.
+    execution: false
+    name: synapse-create-user
+    outputs:
+    - contextPath: Synapse.Users.Admin
+      description: True/False whether the Synapse user is an admin.
+      type: Boolean
+    - contextPath: Synapse.Users.Email
+      description: The email address of the Synapse user.
+      type: String
+    - contextPath: Synapse.Users.Iden
+      description: The unique identifier of the Synapse user.
+      type: String
+    - contextPath: Synapse.Users.Name
+      description: The user's Synapse username.
+      type: String
+    - contextPath: Synapse.Users.Roles
+      description: The roles applied to the Synapse user.
+      type: String
+    - contextPath: Synapse.Users.Rules
+      description: The rules applied to the Synapse user.
+      type: String
+  - arguments:
+    - default: false
+      description: New role to create in Synapse.
+      isArray: false
+      name: role
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new Synapse role.
+    execution: false
+    name: synapse-create-role
+    outputs:
+    - contextPath: Synapse.Roles.Iden
+      description: The unique identifier of the Synapse Role.
+      type: String
+    - contextPath: Synapse.Roles.Name
+      description: The name of the Synapse Role.
+      type: String
+    - contextPath: Synapse.Roles.Rules
+      description: The rules applied to the Synapse Role.
+      type: String
+  - arguments:
+    - default: false
+      description: User's "iden" property - not the username.
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    - default: false
+      description: Role's "iden" property - not the name of the role.
+      isArray: false
+      name: role
+      required: true
+      secret: false
+    deprecated: false
+    description: Grants a user access to role based perrmissions.
+    execution: false
+    name: synapse-grant-user-role
+    outputs:
+    - contextPath: Synapse.Users.Admin
+      description: True/False whether the Synapse user is an admin.
+      type: Boolean
+    - contextPath: Synapse.Users.Email
+      description: The email address of the Synapse user.
+      type: String
+    - contextPath: Synapse.Users.Iden
+      description: The unique identifier of the Synapse user.
+      type: String
+    - contextPath: Synapse.Users.Name
+      description: The user's Synapse username.
+      type: String
+    - contextPath: Synapse.Users.Roles
+      description: The roles applied to the Synapse user.
+      type: String
+    - contextPath: Synapse.Users.Rules
+      description: The rules applied to the Synapse user.
+      type: String
+  - arguments:
+    - default: false
+      description: Type/Form query (i.e. "inet:ipv4" or "inet"fqdn")
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Query the Synapse data model and return details for given type or
+      form (i.e. "inet:ipv4" for an IPv4 IP address).
+    execution: false
+    name: synapse-query-model
+    outputs:
+    - contextPath: Synapse.Model.Doc
+      description: The docstring associated with the particular Synapse model element.
+      type: String
+    - contextPath: Synapse.Model.Example
+      description: An example of the given Synapse element.
+      type: String
+    - contextPath: Synapse.Model.Form
+      description: A form is the definition of an object in the Synapse data model (node).
+      type: String
+    - contextPath: Synapse.Model.Properties
+      description: The unique properties associated with the given Synapse object.
+      type: String
+    - contextPath: Synapse.Model.Type
+      description: A Type is the definition of a data element within the data model.
+      type: String
+    - contextPath: Synapse.Model.Valu
+      description: The given value of the Synapse object type.
+      type: String
+  dockerimage: demisto/aiohttp:1.0.0.12410
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0

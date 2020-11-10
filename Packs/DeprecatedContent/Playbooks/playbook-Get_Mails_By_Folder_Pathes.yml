@@ -4,7 +4,7 @@ name: Get Mails By Folder Pathes
 description: Deprecated. Use the "Get Mails By Folder Paths" playbook instead.
 hidden: true
 starttaskid: "0"
-fromversion: "4.5.0"
+fromversion: "5.0.0"
 tasks:
   "0":
     id: "0"
@@ -19,7 +19,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -46,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     scriptarguments:
       foldersPaths:
         simple: ${inputs.foldersPaths}${inputs.foldersPathsGlobal}
@@ -82,7 +82,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "4"
+      - "4"
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
@@ -115,7 +115,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - "2"
     scriptarguments:
       cleanHTML: {}
       dedupThreshold: {}
@@ -176,20 +176,20 @@ view: |-
     }
   }
 inputs:
-  - key: foldersPathsGlobal
-    value:
-      simple: inbox,inbox\TESTATTACH
-    required: true
-    description: "A comma-separated List of folder paths from the Inbox. \nFor example: inbox,inbox\\\\folder"
-  - key: listName
-    value: {}
-    required: true
-    description: Name of the list in which mails will be saved.
-  - key: limit
-    value:
-      simple: "10"
-    required: false
-    description: Maximum number of emails to fetch from each folder.
+- key: foldersPathsGlobal
+  value:
+    simple: inbox,inbox\TESTATTACH
+  required: true
+  description: "A comma-separated List of folder paths from the Inbox. \nFor example: inbox,inbox\\\\folder"
+- key: listName
+  value: {}
+  required: true
+  description: Name of the list in which mails will be saved.
+- key: limit
+  value:
+    simple: "10"
+  required: false
+  description: Maximum number of emails to fetch from each folder.
 outputs: []
 tests:
-  - No Test - use the "Get Mails By Folder Paths" playbook instead.
+- No Test - use the "Get Mails By Folder Paths" playbook instead.

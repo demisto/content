@@ -8,8 +8,7 @@ configuration:
   name: server_url
   required: false
   type: 0
-- display: Tenant ID (received from the admin consent - see Detailed Instructions
-    (?) section)
+- display: Tenant ID (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   required: true
   type: 4
@@ -25,24 +24,20 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Unified security management and advanced threat protection across hybrid
-  cloud workloads.
-display: Azure Security Center
+description: Deprecated. Unified security management and advanced threat protection across hybrid cloud workloads.
+display: Azure Security Center (Deprecated)
 name: Azure Security Center
 script:
   commands:
   - arguments:
     - default: false
-      description: The name of the resource group within the user's subscription.
-        The name is case insensitive.
+      description: The name of the resource group within the user's subscription. The name is case insensitive.
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: The location where Azure Security Center stores the data of the
-        subscription. Run the 'azure-sc-location-list' command to get the ascLocation.
-        This command requires the resourceGroupName argument.
+      description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-location-list' command to get the ascLocation. This command requires the resourceGroupName argument.
       isArray: false
       name: asc_location
       required: false
@@ -137,8 +132,7 @@ script:
       secret: false
     - default: false
       defaultValue: current
-      description: Name of Advanced Threat Detection setting, default setting's name
-        is 'current'.
+      description: Name of Advanced Threat Detection setting, default setting's name is 'current'.
       isArray: false
       name: setting_name
       required: false
@@ -166,15 +160,13 @@ script:
   - arguments:
     - default: true
       defaultValue: default
-      description: Name of the auto provisioning setting, default setting's name is
-        'default'
+      description: Name of the auto provisioning setting, default setting's name is 'default'
       isArray: false
       name: setting_name
       required: true
       secret: false
     - default: false
-      description: Describes the type of security agent provisioning action to take
-        (On or Off)
+      description: Describes the type of security agent provisioning action to take (On or Off)
       isArray: false
       name: auto_provision
       required: true
@@ -188,8 +180,7 @@ script:
       description: Setting display name
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
-      description: Display the type of security agent provisioning action to take
-        (On or Off)
+      description: Display the type of security agent provisioning action to take (On or Off)
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
       description: Setting resource ID
@@ -211,8 +202,7 @@ script:
       description: Setting display name
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
-      description: Display the type of security agent provisioning action to take
-        (On or Off)
+      description: Display the type of security agent provisioning action to take (On or Off)
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
       description: Set resource ID
@@ -226,30 +216,26 @@ script:
       description: Setting display name
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
-      description: Display the type of security agent provisioning action to take
-        (On or Off)
+      description: Display the type of security agent provisioning action to take (On or Off)
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
       description: Setting resource ID
       type: string
   - arguments:
     - default: false
-      description: The location where Azure Security Center stores the data of the
-        subscription. Run the 'azure-sc-list-location' command to get the asc_location.
+      description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location.
       isArray: false
       name: asc_location
       required: false
       secret: false
     - default: false
-      description: The name of the resource group within the user's subscription.
-        The name is case insensitive.
+      description: The name of the resource group within the user's subscription. The name is case insensitive.
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     deprecated: true
-    description: Lists all policies for protecting resources using Just-in-Time access
-      control.
+    description: Lists all policies for protecting resources using Just-in-Time access control.
     execution: false
     name: azure-sc-list-jit
     outputs:
@@ -257,8 +243,7 @@ script:
       description: Poliyc display name
       type: string
     - contextPath: AzureSecurityCenter.JITPolicy.Rules
-      description: 'CSV list of access rules for Microsoft.Compute/virtualMachines
-        resource, in the format (VMName: allowPort1,...)'
+      description: 'CSV list of access rules for Microsoft.Compute/virtualMachines resource, in the format (VMName: allowPort1,...)'
       type: string
     - contextPath: AzureSecurityCenter.JITPolicy.Location
       description: Location where the resource is stored
@@ -290,3 +275,4 @@ script:
 tests:
 - No tests
 deprecated: true
+fromversion: 5.0.0

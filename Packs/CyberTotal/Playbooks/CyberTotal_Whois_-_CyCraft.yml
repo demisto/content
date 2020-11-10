@@ -1,0 +1,670 @@
+id: CyberTotal Whois - CyCraft
+version: -1
+name: CyberTotal Whois - CyCraft
+description: 'This playbook is used to automatically retrieve Whois information regarding
+  IPs, URLs and domains. Playbook input: IPs, URLs, domains. Playbook output: Whois
+  lookup information.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 28a45f06-572f-4a6e-8286-65279704821d
+    type: start
+    task:
+      id: 28a45f06-572f-4a6e-8286-65279704821d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 364c1a06-f8ac-4066-8c53-29cb19b8381c
+    type: condition
+    task:
+      id: 364c1a06-f8ac-4066-8c53-29cb19b8381c
+      version: -1
+      name: Is there any IP?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4a7f2334-bb84-4cc1-8bb1-43f7506b2ae0
+    type: condition
+    task:
+      id: 4a7f2334-bb84-4cc1-8bb1-43f7506b2ae0
+      version: -1
+      name: Is there any URL?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 95cf5f7f-267d-4559-80b5-dc2658144b24
+    type: condition
+    task:
+      id: 95cf5f7f-267d-4559-80b5-dc2658144b24
+      version: -1
+      name: Is there any domain?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 69bcfc3a-588e-4ca0-87d5-ed212da7d497
+    type: regular
+    task:
+      id: 69bcfc3a-588e-4ca0-87d5-ed212da7d497
+      version: -1
+      name: Get domain whois information
+      description: Return domain whois information
+      script: '|||cybertotal-domain-whois'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 316b9f8f-6670-4a07-879d-c859bd5dded9
+    type: regular
+    task:
+      id: 316b9f8f-6670-4a07-879d-c859bd5dded9
+      version: -1
+      name: Get URL whois information
+      description: Return url whois information
+      script: '|||cybertotal-url-whois'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 6ba8ccb9-2a3c-4223-8f4a-5bfa573513de
+    type: regular
+    task:
+      id: 6ba8ccb9-2a3c-4223-8f4a-5bfa573513de
+      version: -1
+      name: Get IP whois information
+      description: Return ip whois information
+      script: '|||cybertotal-ip-whois'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 94599d33-0400-4abc-8b96-76e707547049
+    type: title
+    task:
+      id: 94599d33-0400-4abc-8b96-76e707547049
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: cd7ef4ec-890f-4e05-8b24-63814c5fdaf2
+    type: condition
+    task:
+      id: cd7ef4ec-890f-4e05-8b24-63814c5fdaf2
+      version: -1
+      name: Is CyberTotal enabled?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+      - "3"
+      - "1"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: CyberTotal
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_7_#default#": 0.18,
+      "2_7_#default#": 0.19,
+      "3_7_#default#": 0.18
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 1260,
+        "x": 10,
+        "y": -150
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+  required: false
+  description: The input domain will be searched automatically on CyberTotal to retrieve
+    whois information.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+  required: false
+  description: The input ip will be searched automatically on CyberTotal to retrieve
+    whois information.
+  playbookInputQuery:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: The input url will be searched automatically on CyberTotal to retrieve
+    whois information.
+  playbookInputQuery:
+outputs:
+- contextPath: CyberTotal.WHOIS-Domain.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-Domain.task_id
+  description: The unique id of each scan in CyberTotal.
+- contextPath: CyberTotal.WHOIS-Domain.resource
+  description: The scan target sent to CyberTotal.
+- contextPath: CyberTotal.WHOIS-Domain.message
+  description: Message about this search.
+- contextPath: CyberTotal.WHOIS-Domain.permalink
+  description: The link of this whois report in CyberTotal.
+- contextPath: CyberTotal.WHOIS-Domain.createdAt
+  description: 'Create date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-Domain.updatedAt
+  description: 'Update date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-Domain.status
+  description: Status of this Domain
+- contextPath: CyberTotal.WHOIS-Domain.domain
+  description: Top level Domain of this domain
+- contextPath: CyberTotal.WHOIS-Domain.domainMd5
+  description: MD5 translation of CyberTotal.WHOIS-Domain.domain
+- contextPath: CyberTotal.WHOIS-Domain.domainUnicode
+  description: Encode CyberTotal.WHOIS-Domain.domain by using unicode
+- contextPath: CyberTotal.WHOIS-Domain.nameservers
+  description: An array of all DNS nameservers
+- contextPath: CyberTotal.WHOIS-Domain.registrarName
+  description: The name of registrar
+- contextPath: CyberTotal.WHOIS-Domain.registrarEmail
+  description: The email address of registrar
+- contextPath: CyberTotal.WHOIS-Domain.registrarPhone
+  description: The phone number of registrar
+- contextPath: CyberTotal.WHOIS-Domain.registrarCreatedAt
+  description: 'Registrar create date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-Domain.registrarUpdatedAt
+  description: 'Registrar update date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-Domain.registrarExpiresAt
+  description: 'Registrar expire date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-Domain.auditCreatedAt
+  description: 'Registrar update date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-Domain.auditUpdatedAt
+  description: 'Registrar expire date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-Domain.contactEmails
+  description: An array of all contact email address
+- contextPath: CyberTotal.WHOIS-Domain.contacts
+  description: An array of all contact details
+- contextPath: CyberTotal.WHOIS-Domain.contactNames
+  description: An array of all contact names
+- contextPath: CyberTotal.WHOIS-Domain.contactCountries
+  description: An array of all contact countries
+- contextPath: CyberTotal.WHOIS-Domain.domainAvailable
+  description: If this domain is available
+- contextPath: CyberTotal.WHOIS-Domain.expired
+  description: If this domain is expired
+- contextPath: CyberTotal.WHOIS-Domain.registrant.name
+  description: The name of registrant
+- contextPath: CyberTotal.WHOIS-Domain.registrant.organization
+  description: The organization name of registrant
+- contextPath: CyberTotal.WHOIS-Domain.registrant.street
+  description: The street name of registrant
+- contextPath: CyberTotal.WHOIS-Domain.registrant.city
+  description: The location city of registrant
+- contextPath: CyberTotal.WHOIS-Domain.registrant.state
+  description: The location state name of registrant
+- contextPath: CyberTotal.WHOIS-Domain.registrant.zip
+  description: The post zip code of registrant
+- contextPath: CyberTotal.WHOIS-Domain.registrant.country
+  description: The country of registrant
+- contextPath: CyberTotal.WHOIS-Domain.registrant.address
+  description: The address of registrant
+- contextPath: CyberTotal.WHOIS-Domain.admin.name
+  description: The name of admin
+- contextPath: CyberTotal.WHOIS-Domain.admin.organization
+  description: The organization name of admin
+- contextPath: CyberTotal.WHOIS-Domain.admin.street
+  description: The street name of admin
+- contextPath: CyberTotal.WHOIS-Domain.admin.city
+  description: The location city of admin
+- contextPath: CyberTotal.WHOIS-Domain.admin.state
+  description: The location state name of admin
+- contextPath: CyberTotal.WHOIS-Domain.admin.zip
+  description: The post zip code of admin
+- contextPath: CyberTotal.WHOIS-Domain.admin.country
+  description: The country of admin
+- contextPath: CyberTotal.WHOIS-Domain.admin.address
+  description: The address of admin
+- contextPath: CyberTotal.WHOIS-Domain.technical.name
+  description: The name of technical
+- contextPath: CyberTotal.WHOIS-Domain.technical.organization
+  description: The organization name of technical
+- contextPath: CyberTotal.WHOIS-Domain.technical.street
+  description: The street name of technical
+- contextPath: CyberTotal.WHOIS-Domain.technical.city
+  description: The location city of technical
+- contextPath: CyberTotal.WHOIS-Domain.technical.state
+  description: The location state name of technical
+- contextPath: CyberTotal.WHOIS-Domain.technical.zip
+  description: The post zip code of technical
+- contextPath: CyberTotal.WHOIS-Domain.technical.country
+  description: The country of technical
+- contextPath: CyberTotal.WHOIS-Domain.technical.address
+  description: The address of technical
+- contextPath: CyberTotal.WHOIS-URL.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-URL.task_id
+  description: The unique id of each scan in CyberTotal.
+- contextPath: CyberTotal.WHOIS-URL.resource
+  description: The scan target sent to CyberTotal.
+- contextPath: CyberTotal.WHOIS-URL.message
+  description: Message about this search.
+- contextPath: CyberTotal.WHOIS-URL.permalink
+  description: The link of this whois report in CyberTotal.
+- contextPath: CyberTotal.WHOIS-URL.createdAt
+  description: 'Create date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-URL.updatedAt
+  description: 'Update date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-URL.status
+  description: Status of this IP
+- contextPath: CyberTotal.WHOIS-URL.domain
+  description: Domain of this IP
+- contextPath: CyberTotal.WHOIS-URL.domainMd5
+  description: MD5 translation of CyberTotal.WHOIS-URL.domain
+- contextPath: CyberTotal.WHOIS-URL.domainUnicode
+  description: Encode CyberTotal.WHOIS-URL.domain by using unicode
+- contextPath: CyberTotal.WHOIS-URL.nameservers
+  description: An array of all DNS nameservers
+- contextPath: CyberTotal.WHOIS-URL.registrarName
+  description: The name of registrar
+- contextPath: CyberTotal.WHOIS-URL.registrarEmail
+  description: The email address of registrar
+- contextPath: CyberTotal.WHOIS-URL.registrarPhone
+  description: The phone number of registrar
+- contextPath: CyberTotal.WHOIS-URL.registrarCreatedAt
+  description: 'Registrar create date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-URL.registrarUpdatedAt
+  description: 'Registrar update date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-URL.registrarExpiresAt
+  description: 'Registrar expire date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-URL.auditCreatedAt
+  description: 'Registrar update date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-URL.auditUpdatedAt
+  description: 'Registrar expire date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-URL.contactEmails
+  description: An array of all contact email address
+- contextPath: CyberTotal.WHOIS-URL.contacts
+  description: An array of all contact details
+- contextPath: CyberTotal.WHOIS-URL.contactNames
+  description: An array of all contact names
+- contextPath: CyberTotal.WHOIS-URL.contactCountries
+  description: An array of all contact countries
+- contextPath: CyberTotal.WHOIS-URL.domainAvailable
+  description: If this domain is available
+- contextPath: CyberTotal.WHOIS-URL.expired
+  description: If this URL is expired
+- contextPath: CyberTotal.WHOIS-URL.registrant.name
+  description: The name of registrant
+- contextPath: CyberTotal.WHOIS-URL.registrant.organization
+  description: The organization name of registrant
+- contextPath: CyberTotal.WHOIS-URL.registrant.street
+  description: The street name of registrant
+- contextPath: CyberTotal.WHOIS-URL.registrant.city
+  description: The location city of registrant
+- contextPath: CyberTotal.WHOIS-URL.registrant.state
+  description: The location state name of registrant
+- contextPath: CyberTotal.WHOIS-URL.registrant.zip
+  description: The post zip code of registrant
+- contextPath: CyberTotal.WHOIS-URL.registrant.country
+  description: The country of registrant
+- contextPath: CyberTotal.WHOIS-URL.registrant.address
+  description: The address of registrant
+- contextPath: CyberTotal.WHOIS-URL.admin.name
+  description: The name of admin
+- contextPath: CyberTotal.WHOIS-URL.admin.organization
+  description: The organization name of admin
+- contextPath: CyberTotal.WHOIS-URL.admin.street
+  description: The street name of admin
+- contextPath: CyberTotal.WHOIS-URL.admin.city
+  description: The location city of admin
+- contextPath: CyberTotal.WHOIS-URL.admin.state
+  description: The location state name of admin
+- contextPath: CyberTotal.WHOIS-URL.admin.zip
+  description: The post zip code of admin
+- contextPath: CyberTotal.WHOIS-URL.admin.country
+  description: The country of admin
+- contextPath: CyberTotal.WHOIS-URL.admin.address
+  description: The address of admin
+- contextPath: CyberTotal.WHOIS-URL.technical.name
+  description: The name of technical
+- contextPath: CyberTotal.WHOIS-URL.technical.organization
+  description: The organization name of technical
+- contextPath: CyberTotal.WHOIS-URL.technical.street
+  description: The street name of technical
+- contextPath: CyberTotal.WHOIS-URL.technical.city
+  description: The location city of technical
+- contextPath: CyberTotal.WHOIS-URL.technical.state
+  description: The location state name of technical
+- contextPath: CyberTotal.WHOIS-URL.technical.zip
+  description: The post zip code of technical
+- contextPath: CyberTotal.WHOIS-URL.technical.country
+  description: The country of technical
+- contextPath: CyberTotal.WHOIS-URL.technical.address
+  description: The address of technical
+- contextPath: CyberTotal.WHOIS-IP.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-IP.task_id
+  description: The unique id of each scan in CyberTotal.
+- contextPath: CyberTotal.WHOIS-IP.resource
+  description: The scan target sent to CyberTotal.
+- contextPath: CyberTotal.WHOIS-IP.message
+  description: Message about this search.
+- contextPath: CyberTotal.WHOIS-IP.permalink
+  description: The link of this whois report in CyberTotal.
+- contextPath: CyberTotal.WHOIS-IP.createdAt
+  description: 'Create date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-IP.updatedAt
+  description: 'Update date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-IP.status
+  description: Status of this IP
+- contextPath: CyberTotal.WHOIS-IP.domain
+  description: Domain of this IP
+- contextPath: CyberTotal.WHOIS-IP.domainMd5
+  description: MD5 translation of CyberTotal.WHOIS-IP.domain
+- contextPath: CyberTotal.WHOIS-IP.domainUnicode
+  description: Encode CyberTotal.WHOIS-IP.domain by using unicode
+- contextPath: CyberTotal.WHOIS-IP.nameservers
+  description: An array of all DNS nameservers
+- contextPath: CyberTotal.WHOIS-IP.registrarName
+  description: The name of registrar
+- contextPath: CyberTotal.WHOIS-IP.registrarEmail
+  description: The email address of registrar
+- contextPath: CyberTotal.WHOIS-IP.registrarPhone
+  description: The phone number of registrar
+- contextPath: CyberTotal.WHOIS-IP.registrarCreatedAt
+  description: 'Registrar create date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-IP.registrarUpdatedAt
+  description: 'Registrar update date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-IP.registrarExpiresAt
+  description: 'Registrar expire date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-IP.auditCreatedAt
+  description: 'Registrar update date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-IP.auditUpdatedAt
+  description: 'Registrar expire date format: ISO 8601'
+- contextPath: CyberTotal.WHOIS-IP.contactEmails
+  description: An array of all contact email address
+- contextPath: CyberTotal.WHOIS-IP.contacts
+  description: An array of all contact details
+- contextPath: CyberTotal.WHOIS-IP.contactNames
+  description: An array of all contact names
+- contextPath: CyberTotal.WHOIS-IP.contactCountries
+  description: An array of all contact countries
+- contextPath: CyberTotal.WHOIS-IP.domainAvailable
+  description: If this domain is available
+- contextPath: CyberTotal.WHOIS-IP.expired
+  description: If this IP is expired
+- contextPath: CyberTotal.WHOIS-IP.registrant.name
+  description: The name of registrant
+- contextPath: CyberTotal.WHOIS-IP.registrant.organization
+  description: The organization name of registrant
+- contextPath: CyberTotal.WHOIS-IP.registrant.street
+  description: The street name of registrant
+- contextPath: CyberTotal.WHOIS-IP.registrant.city
+  description: The location city of registrant
+- contextPath: CyberTotal.WHOIS-IP.registrant.state
+  description: The location state name of registrant
+- contextPath: CyberTotal.WHOIS-IP.registrant.zip
+  description: The post zip code of registrant
+- contextPath: CyberTotal.WHOIS-IP.registrant.country
+  description: The country of registrant
+- contextPath: CyberTotal.WHOIS-IP.registrant.address
+  description: The address of registrant
+- contextPath: CyberTotal.WHOIS-IP.admin.name
+  description: The name of admin
+- contextPath: CyberTotal.WHOIS-IP.admin.organization
+  description: The organization name of admin
+- contextPath: CyberTotal.WHOIS-IP.admin.street
+  description: The street name of admin
+- contextPath: CyberTotal.WHOIS-IP.admin.city
+  description: The location city of admin
+- contextPath: CyberTotal.WHOIS-IP.admin.state
+  description: The location state name of admin
+- contextPath: CyberTotal.WHOIS-IP.admin.zip
+  description: The post zip code of admin
+- contextPath: CyberTotal.WHOIS-IP.admin.country
+  description: The country of admin
+- contextPath: CyberTotal.WHOIS-IP.admin.address
+  description: The address of admin
+- contextPath: CyberTotal.WHOIS-IP.technical.name
+  description: The name of technical
+- contextPath: CyberTotal.WHOIS-IP.technical.organization
+  description: The organization name of technical
+- contextPath: CyberTotal.WHOIS-IP.technical.street
+  description: The street name of technical
+- contextPath: CyberTotal.WHOIS-IP.technical.city
+  description: The location city of technical
+- contextPath: CyberTotal.WHOIS-IP.technical.state
+  description: The location state name of technical
+- contextPath: CyberTotal.WHOIS-IP.technical.zip
+  description: The post zip code of technical
+- contextPath: CyberTotal.WHOIS-IP.technical.country
+  description: The country of technical
+- contextPath: CyberTotal.WHOIS-IP.technical.address
+  description: The address of technical
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

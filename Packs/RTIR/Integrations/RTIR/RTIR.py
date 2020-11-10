@@ -960,7 +960,7 @@ def main():
         elif demisto.command() == 'rtir-add-reply':
             add_reply()
 
-    except Exception, e:
+    except Exception as e:
         LOG(e.message)
         LOG.print_log()
         raise

@@ -1,0 +1,59 @@
+{
+	"brandName": "Microsoft Advanced Threat Analytics",
+	"custom": true,
+	"defaultIncidentType": "Microsoft ATA Suspicious Activity",
+	"id": "babb69e2-059c-4ac2-896a-76e9e42844e6",
+	"incidentSamples": [],
+	"isDefault": false,
+	"keyTypeMap": {},
+	"mapping": {
+		"Microsoft ATA Suspicious Activity": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Src Hostname": {
+					"complex": null,
+					"simple": "SourceComputerIds"
+				},
+				"Suspicious Activity End Time": {
+					"complex": null,
+					"simple": "EndTime"
+				},
+				"Suspicious Activity ID": {
+					"complex": null,
+					"simple": "Id"
+				},
+				"Suspicious Activity Severity": {
+					"complex": null,
+					"simple": "Severity"
+				},
+				"Suspicious Activity Start Time": {
+					"complex": null,
+					"simple": "StartTime"
+				},
+				"Suspicious Activity Status": {
+					"complex": null,
+					"simple": "Status"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Event ID": {
+					"complex": null,
+					"simple": "WindowsEventId"
+				},
+				"details": {
+					"complex": null,
+					"simple": "DescriptionFormatKey"
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {},
+	"unclassifiedCases": {},
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"toVersion": "5.9.9"
+}

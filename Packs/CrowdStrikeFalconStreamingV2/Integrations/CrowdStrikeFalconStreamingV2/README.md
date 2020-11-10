@@ -17,6 +17,7 @@ The required scope is Event streams.
     * __Cloud Base URL (e.g. https://api.crowdstrike.com)__
     * __Client ID__
     * __Client Secret__
+    * __Application ID__
     * __Event type to fetch__
     * __Offset to fetch events from__
     * __Incident type__
@@ -41,6 +42,8 @@ The required scope is Event streams.
    In order to fetch all events of all types, you can leave it empty.
    
    You can also add event type that is not listed, by entering it in the parameter value.
+    
+ - In order to run multiple clients (stream consumers) simultaneously, each integration instance should have unique application ID. The application ID can be of length up to 32 characters.
 
 ## Fetched Incidents Data
 Event metadata will be fetched as the incident details, which contain the following:
@@ -56,11 +59,14 @@ Event metadata will be fetched as the incident details, which contain the follow
 ## Mapping incoming events
 Because this is a push-based streaming integration, it cannot fetch sample events in the mapping wizard.
 
-In order to view sample events, enable events storage by selecting the checkbox of the integration parameter **Store sample events for mapping** and run the `crowdstrike-falcon-streaming-get-sample-events` command.
+In order to view sample events, enable events storage by selecting the checkbox of the integration parameter **Store sample events for mapping**. 
 
 The last events (maximum of 20) are fetched every 1 minute. Allow the integration to run for at least 5 minutes before running the command.
 After you finish mapping, it is recommended to turn off the **Store sample events for mapping** to reduce performance overhead.
-#### Usage example
+
+For Cortex XSOAR version 6.0 and above, you will be able to fetch samples in the mapping wizard
+
+For earlier versions, you should run the `crowdstrike-falcon-streaming-get-sample-events` command.
 
 The command output is as follows:
 ```json

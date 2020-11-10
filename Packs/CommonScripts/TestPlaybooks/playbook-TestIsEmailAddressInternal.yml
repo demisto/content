@@ -69,8 +69,7 @@ tasks:
       id: ddbe1cd1-3bcb-4bdc-8ff1-3c7dc9c5437e
       version: -1
       name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -437,3 +436,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

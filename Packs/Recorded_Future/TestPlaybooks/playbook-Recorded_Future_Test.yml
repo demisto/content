@@ -1,7 +1,7 @@
 id: Recorded Future Test
 version: -1
 name: Recorded Future Test
-fromversion: 4.1.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -108,8 +108,7 @@ tasks:
       id: d9459189-f2e3-468a-8c0c-6991aca43bb9
       version: -1
       name: domain
-      description: Look up threat intel information for a domain or DNS in Recorded
-        Future.
+      description: Look up threat intel information for a domain or DNS in Recorded Future.
       script: Recorded Future|||domain
       type: regular
       iscommand: true
@@ -313,8 +312,7 @@ tasks:
       id: a9f7cbb4-6b76-465f-89e7-3286d8f15c9c
       version: -1
       name: domain
-      description: Look up threat intel information for a domain or DNS in Recorded
-        Future.
+      description: Look up threat intel information for a domain or DNS in Recorded Future.
       script: Recorded Future|||domain
       type: regular
       iscommand: true

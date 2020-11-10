@@ -19,8 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: IBM BigFix Patch provides an automated, simplified patching process that
-  is administered from a single console.
+description: IBM BigFix Patch provides an automated, simplified patching process that is administered from a single console.
 display: BigFix
 name: BigFix
 script:
@@ -56,8 +55,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Name of the site. If the site is external or operator then site
-        must be provided
+      description: Name of the site. If the site is external or operator then site must be provided
       isArray: false
       name: site_name
       required: false
@@ -119,8 +117,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the site. If the site is external or operator then site
-        must be provided
+      description: Name of the site. If the site is external or operator then site must be provided
       isArray: false
       name: site_name
       required: false
@@ -176,9 +173,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to get endpoint full details of each endpoint or just basic
-        details, such as ID and last reported time. We recommend setting this to false
-        if there are many endpoints to retrieve.
+      description: Whether to get endpoint full details of each endpoint or just basic details, such as ID and last reported time. We recommend setting this to false if there are many endpoints to retrieve.
       isArray: false
       name: get_endpoint_details
       predefined:
@@ -385,22 +380,19 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Name of the site. If the site is external or operator then site
-        must be provided
+      description: Name of the site. If the site is external or operator then site must be provided
       isArray: false
       name: site_name
       required: true
       secret: false
     - default: false
-      description: Provide ids of computers to deploy the patch. Pass 'all' to deploy
-        to all the computers
+      description: Provide ids of computers to deploy the patch. Pass 'all' to deploy to all the computers
       isArray: true
       name: computer_ids
       required: true
       secret: false
     - default: false
-      description: The Fixlet ID. To use the action script from the original Fixlet
-        or Task Message.
+      description: The Fixlet ID. To use the action script from the original Fixlet or Task Message.
       isArray: false
       name: fixlet_id
       required: true
@@ -412,11 +404,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Create an action on BigFix that will run the given action from the
-      given fixlet on target computers.  The computerID parameter takes a comma-separated
-      list of BigFix computer IDs. If no computers are given, the action will be run
-      on the default computers configured on BigFix. If the action should run on all
-      computers set the computerID parameter to all.
+    description: Create an action on BigFix that will run the given action from the given fixlet on target computers.  The computerID parameter takes a comma-separated list of BigFix computer IDs. If no computers are given, the action will be run on the default computers configured on BigFix. If the action should run on all computers set the computerID parameter to all.
     execution: false
     name: bigfix-deploy-patch
     outputs:
@@ -458,8 +446,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the site. If the site is external or operator then site
-        must be provided
+      description: Name of the site. If the site is external or operator then site must be provided
       isArray: false
       name: site_name
       required: false
@@ -516,9 +503,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Stops and deletes the specified action. Note: You cannot delete
-      actions that are members of a Multiple Action Group. This note applies to IBM
-      BigFix V9.2 and later.'
+    description: 'Stops and deletes the specified action. Note: You cannot delete actions that are members of a Multiple Action Group. This note applies to IBM BigFix V9.2 and later.'
     execution: false
     name: bigfix-action-delete
   - arguments:
@@ -558,8 +543,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Evaluate a relevance expression and get the result. This runs request
-      is processed through the server to WebReports.
+    description: Evaluate a relevance expression and get the result. This runs request is processed through the server to WebReports.
     execution: false
     name: bigfix-query
     outputs:
@@ -574,3 +558,4 @@ script:
   script: '-'
   subtype: python2
   type: python
+fromversion: 5.0.0

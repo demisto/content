@@ -1,0 +1,85 @@
+{
+  "success": {
+    "results": [
+      {
+        "firstSeen": 1547559631314,
+        "lastSeen": 1547607634446,
+        "fingerprint": "dummy fingerprint",
+        "sslVersion": "3",
+        "expirationDate": "Apr 09 13:15:00 2019 GMT",
+        "issueDate": "Jan 15 13:15:00 2019 GMT",
+        "sha1": "dummy sha1",
+        "serialNumber": "serial number",
+        "subjectCountry": "US",
+        "issuerCommonName": "issuer common name",
+        "issuerProvince": "issuer province",
+        "subjectStateOrProvinceName": "subject state or province name",
+        "subjectStreetAddress": "subject street address",
+        "issuerStateOrProvinceName": null,
+        "subjectSurname": "subject surname",
+        "issuerCountry": "US",
+        "subjectLocalityName": "subject locality",
+        "subjectAlternativeNames": [
+          "subject alternative name1",
+          "subject alternative name2"
+        ],
+        "issuerOrganizationUnitName": null,
+        "issuerOrganizationName": "issue org name",
+        "subjectEmailAddress": null,
+        "subjectOrganizationName": "subject org name",
+        "issuerLocalityName": null,
+        "subjectCommonName": "subject common name",
+        "subjectProvince": "subject province name",
+        "issuerGivenName": null,
+        "subjectOrganizationUnitName": null,
+        "issuerEmailAddress": null,
+        "subjectGivenName": null,
+        "subjectSerialNumber": null,
+        "issuerStreetAddress": null,
+        "issuerSerialNumber": null,
+        "issuerSurname": null
+      },
+      {
+        "firstSeen": 1547559631314,
+        "lastSeen": 1547607634446,
+        "fingerprint": "dummy fingerprint",
+        "sslVersion": "3",
+        "expirationDate": "Apr 09 13:15:00 2019 GMT",
+        "issueDate": "Jan 15 13:15:00 2019 GMT",
+        "sha1": "dummy sha1",
+        "serialNumber": "serial number",
+        "subjectCountry": "US",
+        "issuerCommonName": "issuer common name",
+        "issuerProvince": "issuer province",
+        "subjectStateOrProvinceName": "subject state or province name",
+        "subjectStreetAddress": "subject street address",
+        "issuerStateOrProvinceName": null,
+        "subjectSurname": "subject surname",
+        "issuerCountry": "US",
+        "subjectLocalityName": "subject locality",
+        "subjectAlternativeNames": [
+          "subject alternative name1",
+          "subject alternative name2"
+        ],
+        "issuerOrganizationUnitName": null,
+        "issuerOrganizationName": "issue org name",
+        "subjectEmailAddress": null,
+        "subjectOrganizationName": "subject org name",
+        "issuerLocalityName": null,
+        "subjectCommonName": "subject common name",
+        "subjectProvince": "subject province name",
+        "issuerGivenName": null,
+        "subjectOrganizationUnitName": null,
+        "issuerEmailAddress": null,
+        "subjectGivenName": null,
+        "subjectSerialNumber": null,
+        "issuerStreetAddress": null,
+        "issuerSerialNumber": null,
+        "issuerSurname": null
+      }
+    ]
+  },
+  "zeroRecords": {
+    "results": []
+  }
+}

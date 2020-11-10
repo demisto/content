@@ -2,18 +2,24 @@ commonfields:
   id: PWObservations
   version: -1
 name: PWObservations
-script: |
+script: >
   from datetime import datetime, timedelta
+
   res = []
+
   dArgs = demisto.args()
+
   dArgs["using-brand"] = "ProtectWise"
+
   if not demisto.get(dArgs, 'end'):
       dArgs['end'] = FormatIso8601(datetime.now())
   # Default to past 24 hrs if start datetime is not provided
+
   if not demisto.get(dArgs, 'start'):
       dArgs['start'] = FormatIso8601(datetime.now() - timedelta(hours=24))
 
   sensorList = argToList(demisto.get(dArgs, 'sensorId'))
+
   for sensorId in sensorList:
       dArgs['sensorId'] = sensorId
       resSearch = demisto.executeCommand("observation-search", dArgs)
@@ -44,25 +50,21 @@ type: python
 subtype: python2
 tags:
 - protectwise
-comment: Query for ProtectWise observations. Supports a comma-separated list of sensor
-  IDs - will query each sensor with the given parameters.
+comment: Deprecated. Query for ProtectWise observations. Supports a comma-separated list of sensor IDs - will query each sensor with the given parameters.
 system: true
 args:
 - name: start
   default: true
-  description: 'Timestamp of the start time of the event end, Example: 1401451200000,
-    or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+  description: 'Timestamp of the start time of the event end, Example: 1401451200000, or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
 - name: end
-  description: 'Timestamp of the end of the event, Example: 1401451500000, or ISO
-    8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+  description: 'Timestamp of the end of the event, Example: 1401451500000, or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
 - name: sensorId
   required: true
   description: the sensor id or a comma-separated list of sensor ids
 - name: hasKillChain
   description: Search for observations in every kill chain stage (true false)
 - name: killChainStage
-  description: Filter by killchain stage (Methodology Recon Delivery Exploit Beacon
-    CnC Fortification Data_Theft)
+  description: Filter by killchain stage (Methodology Recon Delivery Exploit Beacon CnC Fortification Data_Theft)
 - name: minLimit
   description: Try to return at least this many results per page
 - name: maxLimit
@@ -74,11 +76,9 @@ args:
 - name: threatLevel
   description: Filter by Low, Medium, or High threats (NONE LOW MEDIUM HIGH)
 - name: threatCategory
-  description: Filter by threat category (ExploitsAndAttacks DenialOfService Malware
-    Scanning Botnets Phishing Suspicious MaliciousHost APT Misc Unknown)
+  description: Filter by threat category (ExploitsAndAttacks DenialOfService Malware Scanning Botnets Phishing Suspicious MaliciousHost APT Misc Unknown)
 - name: signatureId
-  description: 'Filter by threat signature (find observations of the same type of
-    threat) - Example: 69020504'
+  description: 'Filter by threat signature (find observations of the same type of threat) - Example: 69020504'
 - name: expandDetails
   description: Include observation records (true or false)
 - name: reverseOrder
@@ -91,3 +91,4 @@ dependson:
   - ProtectWise|||observation-search
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0

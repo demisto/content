@@ -1,7 +1,7 @@
 id: Detonate File - BitDam
 version: -1
 name: Detonate File - BitDam
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: |-
   Detonates one or more files using BitDam integration.
   Returns verdict to the War Room and file reputations to the context data.
@@ -416,8 +416,7 @@ inputs:
   value:
     simple: "10"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
 outputs:
 - contextPath: BitDam.Analysis.ID
   description: Sample ID

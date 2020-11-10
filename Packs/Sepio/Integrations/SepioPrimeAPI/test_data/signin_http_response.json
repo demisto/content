@@ -1,0 +1,18 @@
+{
+    "token": "a.b.-c-d",
+    "user": {
+        "userName": "User",
+        "password": null,
+        "userProfile": 10,
+        "firstName": "",
+        "lastName": "",
+        "email": "",
+        "phone": null,
+        "image": ""
+    },
+    "navigation": {
+        "startPage": "USB"
+    },
+    "license": {
+    }
+}

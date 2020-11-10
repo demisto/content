@@ -2,7 +2,7 @@ commonfields:
   id: StringReplace
   version: -1
 name: StringReplace
-script: |-
+script: >-
   if ((typeof args.data) !== 'string') {
       return {
           Type: entryTypes.error,
@@ -11,23 +11,33 @@ script: |-
       }
   }
 
+
   var arr = [];
+
   if (args.replaceAll === 'true') {
       arr.push('g');
   }
+
   if (args.caseInsensitive === 'true') {
       arr.push('i');
   }
+
   if (args.multiLine === 'true') {
       arr.push('m');
   }
 
+
   var newValue = args.newValue === "''" ? "" : args.newValue;
+
   var r = new RegExp(args.regex, arr.join(''));
+
   var val = args.data.replace(r, newValue);
 
+
   //if no match found - return the original string
+
   setContext('StringReplace.Result', val);
+
   return {
       Type: entryTypes.note,
       Contents: val,
@@ -63,8 +73,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Pass True to preform case-insensitive search and replace, false for
-    case-sensitive.
+  description: Pass True to preform case-insensitive search and replace, false for case-sensitive.
   defaultValue: "true"
 - name: multiLine
   auto: PREDEFINED
@@ -77,3 +86,4 @@ outputs:
 - contextPath: StringReplace.Result
   description: The string after replace was preformed
 scripttarget: 0
+fromversion: 5.0.0

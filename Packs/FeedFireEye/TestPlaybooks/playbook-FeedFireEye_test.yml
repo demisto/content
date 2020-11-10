@@ -1,0 +1,189 @@
+id: playbook-FeedFireEye_test
+version: -1
+name: playbook-FeedFireEye_test
+starttaskid: "0"
+description: Test Playbook for FireEye Feed
+tasks:
+  "0":
+    id: "0"
+    taskid: 9381a551-0215-4530-8ba6-16d35d615d32
+    type: start
+    task:
+      id: 9381a551-0215-4530-8ba6-16d35d615d32
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f721c60c-3d3f-43b1-8e06-21b26932fb6c
+    type: regular
+    task:
+      id: f721c60c-3d3f-43b1-8e06-21b26932fb6c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7ae7b580-f603-4671-8317-ce5a3e68dcc0
+    type: regular
+    task:
+      id: 7ae7b580-f603-4671-8317-ce5a3e68dcc0
+      version: -1
+      name: fireeye-get-indicators
+      description: Gets indicators from the feed.
+      script: '|||fireeye-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: Indicator=.[0]
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8bec8f63-fd48-490d-8797-065fad511624
+    type: condition
+    task:
+      id: 8bec8f63-fd48-490d-8797-065fad511624
+      version: -1
+      name: Verify Outputs
+      description: Verify that indicators were fetched.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.rawJSON
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4ff5def2-2ea2-4886-8a6d-1ca96360b834
+    type: title
+    task:
+      id: 4ff5def2-2ea2-4886-8a6d-1ca96360b834
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 825,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

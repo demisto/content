@@ -2,8 +2,9 @@ commonfields:
   id: CuckooDetonateFile
   version: -1
 name: CuckooDetonateFile
-script: |-
+script: >-
   res =  demisto.executeCommand("cuckoo-create-task-from-file", demisto.args())
+
   if isError(res[0]):
       demisto.results(res)
   else:
@@ -17,8 +18,7 @@ type: python
 subtype: python2
 tags:
 - cuckoo
-comment: Adds a file to the list of pending tasks. Returns the ID of the newly created
-  task.
+comment: Adds a file to the list of pending tasks. Returns the ID of the newly created task.
 system: false
 args:
 - name: entryID
@@ -34,14 +34,11 @@ args:
 - name: enforce_timeout
   description: (optional) enable to enforce the execution for the full timeout value
 - name: platform
-  description: (optional) - name of the platform to select the analysis machine from
-    (e.g. “windows”)
+  description: (optional) - name of the platform to select the analysis machine from (e.g. “windows”)
 - name: tags
-  description: (optional) - define machine to start by tags. Platform must be set
-    to use that. Tags are comma separated
+  description: (optional) - define machine to start by tags. Platform must be set to use that. Tags are comma separated
 - name: memory
-  description: (optional) - enable the creation of a full memory dump of the analysis
-    machine
+  description: (optional) - enable the creation of a full memory dump of the analysis machine
 - name: options
   description: (optional) - options to pass to the analysis package
 scripttarget: 0
@@ -50,4 +47,5 @@ dependson:
   - cuckoo-create-task-from-file
 timeout: 0s
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

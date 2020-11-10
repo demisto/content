@@ -2,7 +2,7 @@ id: Detonate URL - Lastline
 version: -1
 name: Detonate URL - Lastline
 description: Detonates a URL using the Lastline sandbox integration.
-fromversion: 4.0.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -442,8 +442,7 @@ outputs:
   description: ist of network connections done by the analysis subject
   type: string
 - contextPath: Lastline.Submission.DownloadedFiles
-  description: List of files that were downloaded using the Microsoft Windows file-download
-    API functions. Each element is a tuple of file-origin URL and a File element.
+  description: List of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
   type: string
 - contextPath: Lastline.Submission.UUID
   description: ID of the submission

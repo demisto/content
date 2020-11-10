@@ -32,8 +32,7 @@ tasks:
       id: 0e6073b2-cfbd-4ed3-83bb-533f9b7077f5
       version: -1
       name: wisdom-domain-flags
-      description: Returns a list of flags (categories and features) assigned to a
-        domain by AlphaSOC Threat Intelligence
+      description: Returns a list of flags (categories and features) assigned to a domain by AlphaSOC Threat Intelligence
       script: AlphaSOC Wisdom|||wisdom-domain-flags
       type: regular
       iscommand: true
@@ -95,9 +94,7 @@ tasks:
       id: e9d8c429-89ea-453e-815a-4b6fbb385b1c
       version: -1
       name: wisdom-ip-flags
-      description: Returns a list of flags (categories and features) assigned to an
-        IP connection (defined by protocol, destination address and port number) by
-        AlphaSOC Threat Intelligence
+      description: Returns a list of flags (categories and features) assigned to an IP connection (defined by protocol, destination address and port number) by AlphaSOC Threat Intelligence
       script: AlphaSOC Wisdom|||wisdom-ip-flags
       type: regular
       iscommand: true
@@ -165,3 +162,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

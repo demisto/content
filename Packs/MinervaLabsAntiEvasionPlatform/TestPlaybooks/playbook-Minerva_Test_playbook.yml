@@ -345,8 +345,7 @@ tasks:
       id: df695dc2-bcb2-4efa-8caf-9d38e3933a48
       version: -1
       name: Check if explorer.exe hash exclusion is in the exclusion list
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: IsValueInArray
       type: condition
       iscommand: false
@@ -495,3 +494,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

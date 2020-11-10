@@ -2,12 +2,16 @@ commonfields:
   id: TrendMicroGetPolicyID
   version: -1
 name: TrendMicroGetPolicyID
-script: |-
+script: >-
   ID_LABEL = 'Label/PolicyID'
 
+
   policies = argToList(demisto.get(demisto.args(),'policy'))
+
   ID = []
+
   res = []
+
   if policies:
       resp = demisto.executeCommand("TrendmicroSecurityProfileRetrieveAll", {})
       if isError(resp[0]):
@@ -41,3 +45,4 @@ dependson:
   must:
   - trendmicro-security-profile-retrieve-all
 timeout: 0s
+fromversion: 5.0.0

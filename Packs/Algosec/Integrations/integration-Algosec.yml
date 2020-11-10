@@ -29,25 +29,35 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var username = params.credentials.identifier;
+
     var password = params.credentials.password;
+
     var server = params.server.replace(/[\/]+$/, '');
+
     var insecure = params.insecure;
+
     var proxy = params.proxy;
+
     var baseAFF = server + '/WebServices/WSDispatcher.pl';
+
     var baseAFA = server + '/afa/php/ws.php';
+
     var baseBF = server + '/BusinessFlow/rest/v1/network_objects/find';
+
 
     function fillInSoapContent(content, service) {
         var request = service === 'AFF' ? '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsh="https://www.algosec.com/WSHandler"><soapenv:Header/><soapenv:Body>%content%</soapenv:Body></soapenv:Envelope>' : '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:afa="https://www.algosec.com/afa-ws"><soapenv:Header/><soapenv:Body>%content%</soapenv:Body></soapenv:Envelope>';
         return replaceInTemplates(request, {content: content});
     }
 
+
     function fillInSOAPRequestTemplate(method, content, service) {
         var template = service === 'AFF' ? '<wsh:%method%><FFWSHeader><version>1</version></FFWSHeader>%content%</wsh:%method%>' : '<afa:%method%>%content%</afa:%method%>';
         return fillInSoapContent(replaceInTemplates(template, {content: content, method: method}), service);
     }
+
 
     var responseDict = {
         'authenticate': /<sessionId xsi:type="xsd:string">(.*)<\/sessionId/,
@@ -58,18 +68,22 @@ script:
         'QueryRequest': /<SOAP-ENV:Body>((.|\n)*)<\/SOAP-ENV:Body/
     };
 
+
     var commandToMethod = {
         'algosec-get-ticket': 'getTicket',
         'algosec-create-ticket': 'createTicket',
         'algosec-query': 'QueryRequest'
     };
 
+
     var commandToURL = {
         'algosec-get-applications': '/applications',
         'algosec-get-network-object': ''
     };
 
+
     var sessionData = '<sessionId>%sessionId%</sessionId>';
+
     var methodDict = {
         'authenticate': '<username>%username%</username><password>%password%</password>',
         'getTicket': sessionData + '<ticketId>%ticketId%</ticketId>',
@@ -81,8 +95,11 @@ script:
         'QueryInput': '<Source>%source%</Source><Destination>%destination%</Destination><Service>%service%</Service>'
     };
 
+
     var affCommands = ['algosec-create-ticket', 'algosec-get-ticket'];
+
     var bfCommands = ['algosec-get-applications', 'algosec-get-network-object'];
+
 
     function createTemplate(method, args) {
         switch (method) {
@@ -101,6 +118,7 @@ script:
         }
     }
 
+
     function sendSOAPRequest(method, args, service) {
         var req = fillInSOAPRequestTemplate(method, replaceInTemplates(createTemplate(method, args), args), service);
         var res = http(
@@ -117,6 +135,7 @@ script:
             }
         return res.Body;
     }
+
 
     function sendRESTRequest(url, args) {
         var res = http(
@@ -135,6 +154,7 @@ script:
         return res.Body;
     }
 
+
     function sendAndParse(method, args, service) {
         var responseXML = sendSOAPRequest(method, args, service);
         var match = responseDict[method].exec(responseXML);
@@ -144,6 +164,7 @@ script:
         throw method +' failed';
     }
 
+
     if (command === 'test-module') {
         if (sendAndParse('authenticate', {username: username, password: password}, 'AFF')) {
             return 'ok';
@@ -151,18 +172,24 @@ script:
         return 'something is wrong';
     }
 
+
     if (affCommands.indexOf(command) !== -1) {
         args.sessionId = sendAndParse('authenticate', {username: username, password: password}, 'AFF');
         return JSON.parse(x2j(sendAndParse(commandToMethod[command], args, 'AFF')));
     }
 
+
     if (bfCommands.indexOf(command) !== -1) {
         return JSON.parse(sendRESTRequest(commandToURL[command] ,args));
     }
 
+
     args.sessionId = sendAndParse('ConnectRequest', {username: username, password: password}, 'AFA');
+
     res = JSON.parse(x2j(sendAndParse(commandToMethod[command], args)));
+
     sendAndParse('DisconnectRequest', {sessionId: args.sessionId}, 'AFA');
+
     return res;
   type: javascript
   commands:
@@ -202,8 +229,7 @@ script:
       description: The change request's title
     - name: service
       required: true
-      description: The device service or port for the connection, for example, "http"
-        or ￼￼￼￼￼￼￼￼Mandatory "tcp/123"
+      description: The device service or port for the connection, for example, "http" or ￼￼￼￼￼￼￼￼Mandatory "tcp/123"
     - name: user
       required: true
       description: The user for the connection
@@ -246,16 +272,13 @@ script:
     - name: source
       required: true
       default: true
-      description: source(s) for the query. Multiple values are separated by commas
-        (,)
+      description: source(s) for the query. Multiple values are separated by commas (,)
     - name: destination
       required: true
-      description: destination(s) for the query. Multiple values are separated by
-        commas (,)
+      description: destination(s) for the query. Multiple values are separated by commas (,)
     - name: service
       required: true
-      description: service(s) for the query. Multiple values are separated by commas
-        (,)
+      description: service(s) for the query. Multiple values are separated by commas (,)
     - name: user
       description: user for the query
     - name: application
@@ -264,3 +287,4 @@ script:
   runonce: false
 tests:
 - No tests
+fromversion: 5.0.0

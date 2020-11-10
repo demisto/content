@@ -2,9 +2,10 @@ commonfields:
   id: VectraGetHostById
   version: -1
 name: VectraGetHostById
-script: |2
+script: >2
 
   resp = demisto.executeCommand("vec-get-host-by-id", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -20,7 +21,7 @@ type: python
 subtype: python2
 tags:
 - Vectra
-comment: Get host by id
+comment: Deprecated. Get host by id
 system: true
 args:
 - default: true
@@ -33,3 +34,4 @@ dependson:
   must:
   - vec-get-host-by-id
 deprecated: true
+fromversion: 5.0.0

@@ -1,9 +1,8 @@
 id: calculate_severity_-_3rd-party_integrations
 version: -1
 name: Calculate Severity - 3rd-party integrations
-fromversion: 3.6.0
-description: Calculates the incident severity level according to the methodology of
-  a 3rd-party integration.
+fromversion: 5.0.0
+description: Calculates the incident severity level according to the methodology of a 3rd-party integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -475,4 +474,4 @@ outputs:
   description: The output severity
   type: string
 tests:
-  - No tests
+- No tests

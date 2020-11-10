@@ -34,7 +34,7 @@ Creates an instance resource in the specified project using the data included in
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name |  The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
+| name |  The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
 | description | An optional description of this resource. Provide this property when you create the resource. | Optional | 
 | zone | The name of the zone for this request. | Required | 
 | tags | Tags to apply to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035. Multiple tags can be specified via the &#x27;tags.items&#x27; field. | Optional | 
@@ -2234,7 +2234,7 @@ Creates an address resource in the specified project using the data included in 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
+| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
 | region | Name of the region for this request. | Required | 
 | description | An optional description of this resource. Provide this property when you create the resource. | Optional | 
 | address | The static IP address represented by this resource. | Optional | 
@@ -2629,7 +2629,7 @@ Creates an address resource in the specified project using the data included in 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
+| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
 | description | An optional description of this resource. Provide this property when you create the resource. | Optional | 
 | address | The static IP address represented by this resource. | Optional | 
 | prefixLength | The prefix length if the resource reprensents an IP range. | Optional | 
@@ -3183,7 +3183,7 @@ Creates a persistent disk in the specified project using the data in the request
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
+| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
 | zone | The name of the zone for this request. | Required | 
 | disktype | URL of the disk type resource describing which disk type to use to create the disk. Provide this when creating the disk. For example: project/zones/zone/diskTypes/pd-standard or pd-ssd | Required | 
 | description | An optional description of this resource. Provide this property when you create the resource. | Optional | 
@@ -4044,7 +4044,7 @@ Creates an image in the specified project using the data included in the request
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
+| name | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
 | description | An optional description of this resource. Provide this property when you create the resource. | Optional | 
 | rawDiskSource | The full Google Cloud Storage URL where the disk image is stored. You must provide either this property or the sourceDisk property but not both. | Optional | 
 | rawDiskSha1Checksum | An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created. | Optional | 
@@ -5361,7 +5361,7 @@ Adds a peering to the specified network.
 | network | Name of the network resource to add peering to. | Required | 
 | name |  Name of the peering, which should conform to RFC1035. | Optional | 
 | peerNetwork | URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network. | Optional | 
-| networkPeeringName | Name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Optional | 
+| networkPeeringName | Name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Optional | 
 | networkPeeringNetwork | The URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network. | Optional | 
 | networkPeeringExchangeSubnetRoutes | Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the peering state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network. | Required | 
 
@@ -5505,7 +5505,7 @@ Creates a network in the specified project using the data included in the reques
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
+| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
 | description | An optional description of this resource. Provide this property when you create the resource. | Optional | 
 | autoCreateSubnetworks | When set to true, the VPC network is created in &quot;auto&quot; mode. When set to false, the VPC network is created in &quot;custom&quot; mode.  An auto mode VPC network starts with one subnet per region. Each subnet has a predetermined range as described in Auto mode VPC network IP ranges. | Optional | 
 | routingConfigRoutingMode | The network-wide routing mode to use. If set to REGIONAL, this network&#x27;s cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this network&#x27;s cloud routers will advertise routes with all subnets of this network, across regions. | Optional | 
@@ -5801,7 +5801,7 @@ Creates a firewall rule in the specified project using the data included in the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
+| name | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
 | description | An optional description of this resource. Provide this property when you create the resource. | Optional | 
 | network | URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used | Optional | 
 | priority | Priority for this rule. This is an integer between 0 and 42, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules having equal priority. | Optional | 
@@ -5899,7 +5899,7 @@ Updates the specified firewall rule with the data included in the request.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
+| name | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
 | description | An optional description of this resource. Provide this property when you create the resource. | Optional | 
 | network | URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used | Optional | 
 | priority | Priority for this rule. This is an integer between 0 and 42, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules having equal priority. | Optional | 
@@ -6243,7 +6243,7 @@ Sets the labels on a snapshot.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name or id of the resource for this request. | Required | 
-| labels | A list of labels to apply for this resource. Each label key &amp; value must comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. For example, key=abc,value=123;key=abc,value=123 | Required | 
+| labels | A list of labels to apply for this resource. Each label key &amp; value must comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. For example, key=abc,value=123;key=abc,value=123 | Required | 
 | labelFingerprint | The fingerprint of the previous set of labels for this resource, used to detect conflicts. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash when updating or changing labels, otherwise the request will fail with error 412 conditionNotMet. Make a get() request to the resource to get the latest fingerprint. | Required | 
 
 

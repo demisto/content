@@ -81,8 +81,7 @@ tasks:
       id: 32eec206-f850-4c54-8f49-463fa1f509ca
       version: -1
       name: UnzipFile
-      description: Unzip a file using fileName or entryID to specify a file. Files
-        unzipped will be pushed to the war room and names will be pushed to the context.
+      description: Unzip a file using fileName or entryID to specify a file. Files unzipped will be pushed to the war room and names will be pushed to the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -265,8 +264,7 @@ tasks:
       id: ea0120b6-1fb8-4a3e-852a-c1a7919430c4
       version: -1
       name: Unzip with wrong password
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -517,3 +515,4 @@ inputs:
   required: false
   description: ""
 outputs: []
+fromversion: 5.0.0

@@ -1,5 +1,10 @@
 <!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->
 
+## Contributing to Cortex XSOAR Content
+Make sure to register your contribution by filling the [contribution registration form](https://forms.gle/XDfxU4E61ZwEESSMA)
+
+**The Pull Request will be reviewed only after the contribution registration form is filled.**
+
 ## Status
 - [x] In Progress
 - [ ] Ready
@@ -15,9 +20,9 @@ A few sentences describing the overall goals of the pull request's commits.
 Paste here any images that will help the reviewer
 
 ## Minimum version of Demisto
-- [ ] 4.5.0
 - [ ] 5.0.0
 - [ ] 5.5.0
+- [ ] 6.0.0
 
 ## Does it break backward compatibility?
    - [ ] Yes
@@ -27,7 +32,3 @@ Paste here any images that will help the reviewer
 ## Must have
 - [ ] Tests
 - [ ] Documentation 
-
-## Demisto Partner?
-- [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**
-

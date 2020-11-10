@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e41ac918-d3d3-471e-8593-5875ca95872d
+    taskid: 6552d42c-44f1-4147-8faf-08e4e39eeeb0
     type: start
     task:
-      id: e41ac918-d3d3-471e-8593-5875ca95872d
+      id: 6552d42c-44f1-4147-8faf-08e4e39eeeb0
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1227.5,
+          "x": 715,
           "y": 50
         }
       }
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 57ee0dae-2993-4376-89cd-5bbaf6c72ef7
+    taskid: 5a9abad8-19fd-45f4-8097-8e9398aa66de
     type: regular
     task:
-      id: 57ee0dae-2993-4376-89cd-5bbaf6c72ef7
+      id: 5a9abad8-19fd-45f4-8097-8e9398aa66de
       version: -1
       name: panorama
       description: Run any panorama command supported in api.
@@ -73,7 +73,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
+          "x": 500,
           "y": 370
         }
       }
@@ -84,10 +84,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 54377650-4548-4cc2-838f-1f92977461f3
+    taskid: bc5216e3-d2f8-4e10-8b6a-9fed50886d09
     type: regular
     task:
-      id: 54377650-4548-4cc2-838f-1f92977461f3
+      id: bc5216e3-d2f8-4e10-8b6a-9fed50886d09
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -99,6 +99,7 @@ tasks:
       '#none#':
       - "1"
       - "88"
+      - "108"
     scriptarguments:
       all:
         simple: "yes"
@@ -110,7 +111,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1227.5,
+          "x": 715,
           "y": 195
         }
       }
@@ -121,10 +122,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 28951929-d84a-459f-873a-1ee85b2749e4
+    taskid: 3fd3eae4-ff9b-4e0c-8229-55820a404ffb
     type: title
     task:
-      id: 28951929-d84a-459f-873a-1ee85b2749e4
+      id: 3fd3eae4-ff9b-4e0c-8229-55820a404ffb
       version: -1
       name: Addresses
       type: title
@@ -137,7 +138,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1442.5,
+          "x": 1472.5,
           "y": 705
         }
       }
@@ -148,10 +149,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 7b4cef35-1b5c-48df-8ac9-10e5f0aacdd5
+    taskid: ac3e0ac9-6a4f-4798-8b50-98aa47bd23fa
     type: title
     task:
-      id: 7b4cef35-1b5c-48df-8ac9-10e5f0aacdd5
+      id: ac3e0ac9-6a4f-4798-8b50-98aa47bd23fa
       version: -1
       name: Addresses and Address Groups
       type: title
@@ -165,7 +166,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1227.5,
+          "x": 715,
           "y": 545
         }
       }
@@ -176,10 +177,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 1edde7f8-eef5-4537-8b56-4d42ffdda8d1
+    taskid: 6d5a45ed-6c3e-4fa6-8b17-60c4d916fb9f
     type: title
     task:
-      id: 1edde7f8-eef5-4537-8b56-4d42ffdda8d1
+      id: 6d5a45ed-6c3e-4fa6-8b17-60c4d916fb9f
       version: -1
       name: Custom URL Category
       type: title
@@ -192,8 +193,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2920
+          "x": 480,
+          "y": 3270
         }
       }
     note: false
@@ -203,10 +204,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 7685ee58-383c-4c30-81c0-6db064dc03b9
+    taskid: 749214c8-52f6-4426-8451-399d44b7b335
     type: regular
     task:
-      id: 7685ee58-383c-4c30-81c0-6db064dc03b9
+      id: 749214c8-52f6-4426-8451-399d44b7b335
       version: -1
       name: panorama-address-add
       script: '|||panorama-create-address'
@@ -229,7 +230,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1442.5,
+          "x": 1472.5,
           "y": 1040
         }
       }
@@ -240,10 +241,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: eb003b1e-b650-422e-8bf6-6a81a14df91f
+    taskid: a68ea818-93c4-488b-833f-e904fb8386c8
     type: condition
     task:
-      id: eb003b1e-b650-422e-8bf6-6a81a14df91f
+      id: a68ea818-93c4-488b-833f-e904fb8386c8
       version: -1
       name: Test panorama-create-address
       type: condition
@@ -271,7 +272,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 2015,
           "y": 1915
         }
       }
@@ -282,10 +283,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: cee4e240-ec3b-4fac-8c6f-667be48aca06
+    taskid: ab29797c-95b1-4763-81be-8fdae22edd2c
     type: regular
     task:
-      id: cee4e240-ec3b-4fac-8c6f-667be48aca06
+      id: ab29797c-95b1-4763-81be-8fdae22edd2c
       version: -1
       name: Panorama Addresses get
       script: '|||panorama-list-addresses'
@@ -299,7 +300,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1442.5,
+          "x": 1472.5,
           "y": 865
         }
       }
@@ -310,10 +311,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 121af1c8-87e0-4b63-8770-d5161f4d618e
+    taskid: 40d34c56-7e81-49d0-8434-1f1046e6fcdf
     type: regular
     task:
-      id: 121af1c8-87e0-4b63-8770-d5161f4d618e
+      id: 40d34c56-7e81-49d0-8434-1f1046e6fcdf
       version: -1
       name: panorama-delete-address
       script: '|||panorama-delete-address'
@@ -330,7 +331,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 2127.5,
           "y": 2090
         }
       }
@@ -341,10 +342,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 97d9d474-c27b-48c9-82eb-0189ef8ca0f9
+    taskid: a5c643ca-3c3c-441a-8db8-9a5c3838f146
     type: regular
     task:
-      id: 97d9d474-c27b-48c9-82eb-0189ef8ca0f9
+      id: a5c643ca-3c3c-441a-8db8-9a5c3838f146
       version: -1
       name: panorama-list-address-groups
       script: '|||panorama-list-address-groups'
@@ -363,7 +364,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
+          "x": 715,
           "y": 690
         }
       }
@@ -374,10 +375,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 400da99d-be82-46b4-80bf-591ffae3ac89
+    taskid: f3d4a573-5e6f-4c9b-8f5a-febaf9b46198
     type: regular
     task:
-      id: 400da99d-be82-46b4-80bf-591ffae3ac89
+      id: f3d4a573-5e6f-4c9b-8f5a-febaf9b46198
       version: -1
       name: panorama-create-address-group(dynamic)
       script: '|||panorama-create-address-group'
@@ -401,7 +402,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
+          "x": 1042.5,
           "y": 1040
         }
       }
@@ -412,10 +413,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: d5257c83-5ef9-4640-8ba8-702b33ba7929
+    taskid: ec3914f9-339f-46b9-8518-4bdc98866168
     type: regular
     task:
-      id: d5257c83-5ef9-4640-8ba8-702b33ba7929
+      id: ec3914f9-339f-46b9-8518-4bdc98866168
       version: -1
       name: panorama-create-address-group(static)
       script: '|||panorama-create-address-group'
@@ -442,7 +443,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
+          "x": 612.5,
           "y": 1040
         }
       }
@@ -453,10 +454,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 70e07a0a-6e10-43a6-81bc-b5b0d843ca61
+    taskid: 0da0d52f-b220-4a0d-84fe-edd78fe1ca9b
     type: regular
     task:
-      id: 70e07a0a-6e10-43a6-81bc-b5b0d843ca61
+      id: 0da0d52f-b220-4a0d-84fe-edd78fe1ca9b
       version: -1
       name: panorama-get-address-group
       script: '|||panorama-get-address-group'
@@ -473,7 +474,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 490,
           "y": 1915
         }
       }
@@ -484,10 +485,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: ba3659b5-5288-416e-852f-305fe0a1a714
+    taskid: 3460b64f-bcae-4c6f-8881-7ca5009e9e77
     type: regular
     task:
-      id: ba3659b5-5288-416e-852f-305fe0a1a714
+      id: 3460b64f-bcae-4c6f-8881-7ca5009e9e77
       version: -1
       name: panorama-address-group-delete
       script: '|||panorama-delete-address-group'
@@ -504,7 +505,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 490,
           "y": 2090
         }
       }
@@ -515,10 +516,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: d0130a18-54ed-4a2e-838c-bd672a447bc1
+    taskid: c1323bea-6d83-4427-8c5c-05dea61ec3eb
     type: condition
     task:
-      id: d0130a18-54ed-4a2e-838c-bd672a447bc1
+      id: c1323bea-6d83-4427-8c5c-05dea61ec3eb
       version: -1
       name: Test panorama-address-group-create(static)
       type: condition
@@ -556,7 +557,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 930,
           "y": 1390
         }
       }
@@ -567,10 +568,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 032974bc-3452-46be-85bc-9ed28671a241
+    taskid: 35dbae0c-4db4-4f54-8717-2ffd590eb486
     type: regular
     task:
-      id: 032974bc-3452-46be-85bc-9ed28671a241
+      id: 35dbae0c-4db4-4f54-8717-2ffd590eb486
       version: -1
       name: panorama-edit-address-group
       script: '|||panorama-edit-address-group'
@@ -595,7 +596,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1145,
           "y": 1565
         }
       }
@@ -606,10 +607,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 11a53551-1a85-4625-84d1-e77ddcdb9c37
+    taskid: b3e911df-02c8-406d-85e2-f00308d391d0
     type: condition
     task:
-      id: 11a53551-1a85-4625-84d1-e77ddcdb9c37
+      id: b3e911df-02c8-406d-85e2-f00308d391d0
       version: -1
       name: Test panorama-address-group-edit
       type: condition
@@ -635,7 +636,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1145,
           "y": 1915
         }
       }
@@ -646,10 +647,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: de265d70-ec5e-4285-86de-4ca009908cff
+    taskid: 56ee0b14-16c5-4ea5-8561-8a0929bca5c7
     type: regular
     task:
-      id: de265d70-ec5e-4285-86de-4ca009908cff
+      id: 56ee0b14-16c5-4ea5-8561-8a0929bca5c7
       version: -1
       name: panorama-delete-address-group
       script: '|||panorama-delete-address-group'
@@ -666,7 +667,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1145,
           "y": 2090
         }
       }
@@ -677,10 +678,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: d386e833-c52e-41cd-813c-3c118613cbd2
+    taskid: 68c5f5cd-a76d-47ba-83b8-44100ce23fa5
     type: regular
     task:
-      id: d386e833-c52e-41cd-813c-3c118613cbd2
+      id: 68c5f5cd-a76d-47ba-83b8-44100ce23fa5
       version: -1
       name: panorama-get-custom-url-category
       script: '|||panorama-get-custom-url-category'
@@ -697,8 +698,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3080
+          "x": 480,
+          "y": 3430
         }
       }
     note: false
@@ -708,10 +709,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 0ad2b7be-792f-4400-8a3b-411671c2ff1d
+    taskid: 5094de0e-e036-44e1-88f9-1dfe3270a579
     type: regular
     task:
-      id: 0ad2b7be-792f-4400-8a3b-411671c2ff1d
+      id: 5094de0e-e036-44e1-88f9-1dfe3270a579
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -732,8 +733,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3255
+          "x": 500,
+          "y": 3605
         }
       }
     note: false
@@ -743,10 +744,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 3c8f268f-d86a-452b-843b-46cf59aa29ae
+    taskid: 3796c666-2e8b-4d70-8ecf-1119716cac91
     type: regular
     task:
-      id: 3c8f268f-d86a-452b-843b-46cf59aa29ae
+      id: 3796c666-2e8b-4d70-8ecf-1119716cac91
       version: -1
       name: Sleep 14 seconds
       description: Sleep for X seconds
@@ -764,7 +765,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1145,
           "y": 1740
         }
       }
@@ -775,10 +776,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 81cbe1f4-5348-41bd-8a54-8015ed4df283
+    taskid: 79eca86f-eeb4-4f38-80e6-b31e42e53b4a
     type: regular
     task:
-      id: 81cbe1f4-5348-41bd-8a54-8015ed4df283
+      id: 79eca86f-eeb4-4f38-80e6-b31e42e53b4a
       version: -1
       name: panorama-get-url-category
       script: '|||panorama-get-url-category'
@@ -795,8 +796,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 4420
+          "x": 1575,
+          "y": 4770
         }
       }
     note: false
@@ -806,10 +807,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 77b96a29-a780-41d6-8ad6-a90306788ff3
+    taskid: 4038ec6f-b407-4be8-8700-17dd259fa3ba
     type: condition
     task:
-      id: 77b96a29-a780-41d6-8ad6-a90306788ff3
+      id: 4038ec6f-b407-4be8-8700-17dd259fa3ba
       version: -1
       name: Test panorama-url-category-get
       type: condition
@@ -845,8 +846,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 4595
+          "x": 1575,
+          "y": 4945
         }
       }
     note: false
@@ -856,10 +857,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 479ac149-f9d9-4667-8f5a-31bb67d8d58d
+    taskid: 2a4d5af1-70b4-46f1-8b92-adbb63946a0c
     type: title
     task:
-      id: 479ac149-f9d9-4667-8f5a-31bb67d8d58d
+      id: 2a4d5af1-70b4-46f1-8b92-adbb63946a0c
       version: -1
       name: Done
       type: title
@@ -869,8 +870,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 6080
+          "x": 1472.5,
+          "y": 6430
         }
       }
     note: false
@@ -880,10 +881,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 43f28774-3e9d-44c0-842a-287940187853
+    taskid: 1eaf851d-9732-4b17-89ff-b58bf477b718
     type: title
     task:
-      id: 43f28774-3e9d-44c0-842a-287940187853
+      id: 1eaf851d-9732-4b17-89ff-b58bf477b718
       version: -1
       name: URL Filter
       type: title
@@ -896,8 +897,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2920
+          "x": 50,
+          "y": 3270
         }
       }
     note: false
@@ -907,10 +908,10 @@ tasks:
     quietmode: 0
   "60":
     id: "60"
-    taskid: 57496e60-f9f1-4891-83ed-b833a13d5397
+    taskid: d3a8cd65-3f72-41ff-8e8d-e0968f72fdcb
     type: title
     task:
-      id: 57496e60-f9f1-4891-83ed-b833a13d5397
+      id: d3a8cd65-3f72-41ff-8e8d-e0968f72fdcb
       version: -1
       name: Security Rules Creation
       type: title
@@ -923,8 +924,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3575
+          "x": 275,
+          "y": 3925
         }
       }
     note: false
@@ -934,10 +935,10 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: 5846fb47-ba1a-4092-8fc1-7fd8876bc984
+    taskid: 11083fce-ad66-4359-8e66-2dbd8d872c7d
     type: title
     task:
-      id: 5846fb47-ba1a-4092-8fc1-7fd8876bc984
+      id: 11083fce-ad66-4359-8e66-2dbd8d872c7d
       version: -1
       name: Dynamic Address Groups
       type: title
@@ -950,7 +951,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
+          "x": 1042.5,
           "y": 880
         }
       }
@@ -961,10 +962,10 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: 02fc9fa4-94ee-4bc3-8d3a-c48109c6c7da
+    taskid: 0d8902b5-6c93-450f-861a-f6166aba2a11
     type: title
     task:
-      id: 02fc9fa4-94ee-4bc3-8d3a-c48109c6c7da
+      id: 0d8902b5-6c93-450f-861a-f6166aba2a11
       version: -1
       name: Static Address Groups
       type: title
@@ -977,7 +978,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
+          "x": 612.5,
           "y": 880
         }
       }
@@ -988,10 +989,10 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: 61cf92fd-e516-443b-8298-411aaaaac04c
+    taskid: e5245789-ab07-4e54-82dc-7fa74d0f969c
     type: regular
     task:
-      id: 61cf92fd-e516-443b-8298-411aaaaac04c
+      id: e5245789-ab07-4e54-82dc-7fa74d0f969c
       version: -1
       name: panorama-create-rule
       description: Create policy rule in Palo Alto Firewall or Panorama
@@ -1026,8 +1027,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3720
+          "x": 275,
+          "y": 4070
         }
       }
     note: false
@@ -1037,10 +1038,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: 7a253422-86c3-4602-8d8a-e7fdf9014439
+    taskid: bc58e0b7-5660-4763-8f76-bc57d91cd459
     type: regular
     task:
-      id: 7a253422-86c3-4602-8d8a-e7fdf9014439
+      id: bc58e0b7-5660-4763-8f76-bc57d91cd459
       version: -1
       name: panorama-edit-rule
       description: Edit a policy rule in Palo Alto Firewall or Panorama
@@ -1065,8 +1066,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4245
+          "x": 275,
+          "y": 4595
         }
       }
     note: false
@@ -1076,10 +1077,10 @@ tasks:
     quietmode: 0
   "70":
     id: "70"
-    taskid: dbaf963c-b44f-4e05-8108-54144da8282f
+    taskid: a71ea26c-de98-4f4c-81e6-47126422012c
     type: regular
     task:
-      id: dbaf963c-b44f-4e05-8108-54144da8282f
+      id: a71ea26c-de98-4f4c-81e6-47126422012c
       version: -1
       name: panorama-rule-delete
       description: Delete a policy rule in Palo Alto Firewall or Panorama
@@ -1100,8 +1101,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4770
+          "x": 275,
+          "y": 5120
         }
       }
     note: false
@@ -1111,10 +1112,10 @@ tasks:
     quietmode: 0
   "74":
     id: "74"
-    taskid: fb3b38a3-abe3-4c78-8850-dca54036bf8b
+    taskid: ca6e70ef-2c26-4b17-8989-8ebab7f15c33
     type: regular
     task:
-      id: fb3b38a3-abe3-4c78-8850-dca54036bf8b
+      id: ca6e70ef-2c26-4b17-8989-8ebab7f15c33
       version: -1
       name: panorama-get-url-filter
       description: Get a URL Filtering rule  from Palo Alto Firewall or Panorama
@@ -1132,8 +1133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3080
+          "x": 50,
+          "y": 3430
         }
       }
     note: false
@@ -1143,10 +1144,10 @@ tasks:
     quietmode: 0
   "80":
     id: "80"
-    taskid: e9232d57-ac5f-4a78-892e-0d991e41058f
+    taskid: f2eb5244-4ae1-4d31-871b-f8641743b30b
     type: title
     task:
-      id: e9232d57-ac5f-4a78-892e-0d991e41058f
+      id: f2eb5244-4ae1-4d31-871b-f8641743b30b
       version: -1
       name: PCAPS
       type: title
@@ -1154,13 +1155,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "82"
+      - "109"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4435
+          "x": 715,
+          "y": 4260
         }
       }
     note: false
@@ -1170,12 +1171,12 @@ tasks:
     quietmode: 0
   "81":
     id: "81"
-    taskid: 9fc07495-ef98-49ab-8272-4eafd4e8097f
+    taskid: 1e06d82c-7e32-47bd-8db8-f7710054e0d9
     type: regular
     task:
-      id: 9fc07495-ef98-49ab-8272-4eafd4e8097f
+      id: 1e06d82c-7e32-47bd-8db8-f7710054e0d9
       version: -1
-      name: panorama-get-pcap
+      name: panorama-get-pcap (filter pcap)
       description: Get panorama pcaps
       script: '|||panorama-get-pcap'
       type: regular
@@ -1183,8 +1184,9 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "96"
+      - "111"
     scriptarguments:
+      deviceName: {}
       from:
         simple: pcap_test
       localName: {}
@@ -1194,13 +1196,13 @@ tasks:
         simple: filter-pcap
       searchTime: {}
       serialNo: {}
-    continueonerror: true
+      sessionID: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4770
+          "x": 1145,
+          "y": 4945
         }
       }
     note: false
@@ -1210,10 +1212,10 @@ tasks:
     quietmode: 0
   "82":
     id: "82"
-    taskid: fa892625-9ce2-440b-87bf-28531014ce74
+    taskid: 3a20bf08-8e5a-4229-83cf-6243681677c1
     type: regular
     task:
-      id: fa892625-9ce2-440b-87bf-28531014ce74
+      id: 3a20bf08-8e5a-4229-83cf-6243681677c1
       version: -1
       name: panorama-list-pcaps
       description: Returns a list of pcap names
@@ -1228,13 +1230,12 @@ tasks:
       password: {}
       pcapType:
         simple: filter-pcap
-    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4595
+          "x": 1145,
+          "y": 4770
         }
       }
     note: false
@@ -1244,10 +1245,10 @@ tasks:
     quietmode: 0
   "83":
     id: "83"
-    taskid: 2644dc79-2140-442d-8382-f5573f7bcee5
+    taskid: 65571a12-a4f8-4381-8339-fb0432c4f594
     type: title
     task:
-      id: 2644dc79-2140-442d-8382-f5573f7bcee5
+      id: 65571a12-a4f8-4381-8339-fb0432c4f594
       version: -1
       name: EDL
       type: title
@@ -1260,7 +1261,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1237.5,
           "y": 2410
         }
       }
@@ -1271,10 +1272,10 @@ tasks:
     quietmode: 0
   "84":
     id: "84"
-    taskid: ad61df93-73e9-4d88-8349-197afc339cd5
+    taskid: 8170cbd2-f382-4c35-8e80-7e10ca3abe00
     type: regular
     task:
-      id: ad61df93-73e9-4d88-8349-197afc339cd5
+      id: 8170cbd2-f382-4c35-8e80-7e10ca3abe00
       version: -1
       name: panorama-list-edls
       description: Returns a list of external dynamic lists
@@ -1289,7 +1290,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1237.5,
           "y": 2555
         }
       }
@@ -1300,10 +1301,10 @@ tasks:
     quietmode: 0
   "85":
     id: "85"
-    taskid: ca8c1007-8ee9-461e-8c88-ee604cd3c7dc
+    taskid: 314f36a6-b8cc-4a72-8f5a-968c38b89dc2
     type: regular
     task:
-      id: ca8c1007-8ee9-461e-8c88-ee604cd3c7dc
+      id: 314f36a6-b8cc-4a72-8f5a-968c38b89dc2
       version: -1
       name: panorama-get-edl
       description: Get information for an external dynamic list
@@ -1321,7 +1322,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1237.5,
           "y": 2730
         }
       }
@@ -1332,16 +1333,18 @@ tasks:
     quietmode: 0
   "86":
     id: "86"
-    taskid: c45dc60c-d56d-49ad-8e9e-04d974d978a6
+    taskid: d7b895fd-7ac6-4fcc-8d2d-05d3c903b1b5
     type: condition
     task:
-      id: c45dc60c-d56d-49ad-8e9e-04d974d978a6
+      id: d7b895fd-7ac6-4fcc-8d2d-05d3c903b1b5
       version: -1
       name: Test panorama edl commands
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "38"
       "yes":
       - "87"
     separatecontext: false
@@ -1361,7 +1364,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1237.5,
           "y": 2905
         }
       }
@@ -1372,10 +1375,10 @@ tasks:
     quietmode: 0
   "87":
     id: "87"
-    taskid: fd9e5d71-93bc-4833-8d77-9a2b29fc2534
+    taskid: 655720f4-4f3d-4ada-8aaa-0a0532fc0252
     type: regular
     task:
-      id: fd9e5d71-93bc-4833-8d77-9a2b29fc2534
+      id: 655720f4-4f3d-4ada-8aaa-0a0532fc0252
       version: -1
       name: panorama-refresh-edl
       description: Refresh a given external dynamic list
@@ -1385,7 +1388,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+      - "114"
     scriptarguments:
       name:
         simple: test_pb_domain_edl_DONT_DEL
@@ -1404,10 +1407,10 @@ tasks:
     quietmode: 0
   "88":
     id: "88"
-    taskid: 6c46b7b0-0702-40ad-873e-a046adf384af
+    taskid: 442162da-575c-4029-8a1f-624220a0ee49
     type: regular
     task:
-      id: 6c46b7b0-0702-40ad-873e-a046adf384af
+      id: 442162da-575c-4029-8a1f-624220a0ee49
       version: -1
       name: panorama-register-ip-tag
       description: Register IPs to a tag
@@ -1429,7 +1432,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1442.5,
+          "x": 930,
           "y": 370
         }
       }
@@ -1440,10 +1443,10 @@ tasks:
     quietmode: 0
   "89":
     id: "89"
-    taskid: 69e38903-82ae-4ba5-8bbe-f68155ec9374
+    taskid: 0ef69c18-0ce4-4edc-831a-7f6924610593
     type: regular
     task:
-      id: 69e38903-82ae-4ba5-8bbe-f68155ec9374
+      id: 0ef69c18-0ce4-4edc-831a-7f6924610593
       version: -1
       name: panorama-unregister-ip-tag
       description: Unregister IPs to a tag
@@ -1463,8 +1466,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5905
+          "x": 807.5,
+          "y": 6255
         }
       }
     note: false
@@ -1474,10 +1477,10 @@ tasks:
     quietmode: 0
   "90":
     id: "90"
-    taskid: 2665bed0-6c13-4eeb-84ea-8b99c24cde83
+    taskid: 251fc8e1-5422-479a-8212-82a15da7691e
     type: regular
     task:
-      id: 2665bed0-6c13-4eeb-84ea-8b99c24cde83
+      id: 251fc8e1-5422-479a-8212-82a15da7691e
       version: -1
       name: panorama-list-rules
       description: Returns a list of predefined Security Rules
@@ -1494,8 +1497,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4070
+          "x": 275,
+          "y": 4420
         }
       }
     note: false
@@ -1505,12 +1508,15 @@ tasks:
     quietmode: 0
   "92":
     id: "92"
-    taskid: 81eb674b-0e39-4f91-863a-c15d76e5b7a2
+    taskid: 4b84d341-dd66-4bb7-8ff2-a3d09e1279b6
     type: playbook
     task:
-      id: 81eb674b-0e39-4f91-863a-c15d76e5b7a2
+      id: 4b84d341-dd66-4bb7-8ff2-a3d09e1279b6
       version: -1
       name: PAN-OS Commit Configuration
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
+        as Panorama, it also pushes the Policies to the specified Device Group in
+        the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -1524,7 +1530,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 930,
           "y": 1215
         }
       }
@@ -1535,10 +1541,10 @@ tasks:
     quietmode: 0
   "93":
     id: "93"
-    taskid: b3502719-f645-4ff8-86ae-60b8aa90416b
+    taskid: ec82f3f7-3e5b-4989-8330-f4c49c7aeedc
     type: title
     task:
-      id: b3502719-f645-4ff8-86ae-60b8aa90416b
+      id: ec82f3f7-3e5b-4989-8330-f4c49c7aeedc
       version: -1
       name: Finished Addresses UC
       type: title
@@ -1553,7 +1559,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 817.5,
           "y": 2265
         }
       }
@@ -1564,10 +1570,10 @@ tasks:
     quietmode: 0
   "94":
     id: "94"
-    taskid: 09d60136-0db4-4d00-81be-f0012b4ecac5
+    taskid: 27e33fac-27a7-46d9-890a-3ed8c20e6479
     type: title
     task:
-      id: 09d60136-0db4-4d00-81be-f0012b4ecac5
+      id: 27e33fac-27a7-46d9-890a-3ed8c20e6479
       version: -1
       name: FInished Objects UC
       type: title
@@ -1582,8 +1588,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3430
+          "x": 807.5,
+          "y": 3780
         }
       }
     note: false
@@ -1593,12 +1599,15 @@ tasks:
     quietmode: 0
   "95":
     id: "95"
-    taskid: db63a64b-6df2-4932-82e7-8a3d9a3d2d48
+    taskid: b0143bf4-a8c2-4f92-81c3-ac1ff1335783
     type: playbook
     task:
-      id: db63a64b-6df2-4932-82e7-8a3d9a3d2d48
+      id: b0143bf4-a8c2-4f92-81c3-ac1ff1335783
       version: -1
       name: PAN-OS Commit Configuration
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
+        as Panorama, it also pushes the Policies to the specified Device Group in
+        the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -1615,8 +1624,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3895
+          "x": 275,
+          "y": 4245
         }
       }
     note: false
@@ -1626,10 +1635,10 @@ tasks:
     quietmode: 0
   "96":
     id: "96"
-    taskid: 07d06314-acfe-4925-8d50-03f3fe290d2c
+    taskid: 105a5ff9-fde4-4224-835c-d13d628093e3
     type: title
     task:
-      id: 07d06314-acfe-4925-8d50-03f3fe290d2c
+      id: 105a5ff9-fde4-4224-835c-d13d628093e3
       version: -1
       name: Security Policy Match
       type: title
@@ -1642,8 +1651,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4945
+          "x": 807.5,
+          "y": 5295
         }
       }
     note: false
@@ -1653,10 +1662,10 @@ tasks:
     quietmode: 0
   "97":
     id: "97"
-    taskid: c13aca1a-d028-405e-854c-64fdd6ee1934
+    taskid: 1a3583e3-20fe-4e43-814f-6af6fb36ed8e
     type: regular
     task:
-      id: c13aca1a-d028-405e-854c-64fdd6ee1934
+      id: 1a3583e3-20fe-4e43-814f-6af6fb36ed8e
       version: -1
       name: panorama-security-policy-match
       description: Checks whether a session matches the specified security policy.
@@ -1686,8 +1695,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5090
+          "x": 807.5,
+          "y": 5440
         }
       }
     note: false
@@ -1697,10 +1706,10 @@ tasks:
     quietmode: 0
   "98":
     id: "98"
-    taskid: fbfaba6b-7b34-4716-824e-42b4d4462bcd
+    taskid: e158ba08-ac18-43aa-8c8e-e621fc2b8ee4
     type: title
     task:
-      id: fbfaba6b-7b34-4716-824e-42b4d4462bcd
+      id: e158ba08-ac18-43aa-8c8e-e621fc2b8ee4
       version: -1
       name: URL FIltering
       type: title
@@ -1713,8 +1722,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 4260
+          "x": 1575,
+          "y": 4610
         }
       }
     note: false
@@ -1724,10 +1733,10 @@ tasks:
     quietmode: 0
   "99":
     id: "99"
-    taskid: ab2c113f-e225-4fa5-8528-3f33f9d21e47
+    taskid: 3f35681b-e237-4bc7-89e1-b96cc4f9ccd8
     type: regular
     task:
-      id: ab2c113f-e225-4fa5-8528-3f33f9d21e47
+      id: 3f35681b-e237-4bc7-89e1-b96cc4f9ccd8
       version: -1
       name: panorama-get-url-category-from-cloud
       description: Gets a URL category from URL Filtering.
@@ -1745,8 +1754,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 4770
+          "x": 1575,
+          "y": 5120
         }
       }
     note: false
@@ -1756,10 +1765,10 @@ tasks:
     quietmode: 0
   "100":
     id: "100"
-    taskid: e80c85ee-4f90-4961-8c7e-54b45745e083
+    taskid: 895a5762-39b1-4952-8ec6-c1850f60fadc
     type: title
     task:
-      id: e80c85ee-4f90-4961-8c7e-54b45745e083
+      id: 895a5762-39b1-4952-8ec6-c1850f60fadc
       version: -1
       name: Static Routes (network)
       type: title
@@ -1772,8 +1781,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5265
+          "x": 807.5,
+          "y": 5615
         }
       }
     note: false
@@ -1783,10 +1792,10 @@ tasks:
     quietmode: 0
   "101":
     id: "101"
-    taskid: 1226a493-89ba-48b3-89cc-9310aca9b250
+    taskid: 755bc97f-4693-4a66-8c6f-96ab402ae8db
     type: regular
     task:
-      id: 1226a493-89ba-48b3-89cc-9310aca9b250
+      id: 755bc97f-4693-4a66-8c6f-96ab402ae8db
       version: -1
       name: panorama-list-static-routes
       description: List the static routes of a virtual router.
@@ -1804,8 +1813,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5410
+          "x": 807.5,
+          "y": 5760
         }
       }
     note: false
@@ -1815,10 +1824,10 @@ tasks:
     quietmode: 0
   "102":
     id: "102"
-    taskid: 47109ab8-9303-4d38-80c2-0fa79ad5a7ca
+    taskid: 062041e2-b5a5-4c82-88c5-b204f3f42430
     type: regular
     task:
-      id: 47109ab8-9303-4d38-80c2-0fa79ad5a7ca
+      id: 062041e2-b5a5-4c82-88c5-b204f3f42430
       version: -1
       name: panorama-get-static-route
       description: Get a specific static route of a virtual router.
@@ -1851,8 +1860,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5585
+          "x": 807.5,
+          "y": 5935
         }
       }
     note: false
@@ -1862,10 +1871,10 @@ tasks:
     quietmode: 0
   "103":
     id: "103"
-    taskid: f1cc4c12-ca47-4919-8bfd-c7c41aaeb02b
+    taskid: 0ddebcb7-da6a-47c2-8348-ade1837f259b
     type: title
     task:
-      id: f1cc4c12-ca47-4919-8bfd-c7c41aaeb02b
+      id: 0ddebcb7-da6a-47c2-8348-ade1837f259b
       version: -1
       name: DAG
       type: title
@@ -1878,8 +1887,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5760
+          "x": 807.5,
+          "y": 6110
         }
       }
     note: false
@@ -1889,10 +1898,10 @@ tasks:
     quietmode: 0
   "104":
     id: "104"
-    taskid: 8c539e18-5188-4a76-8e76-696929cb771a
+    taskid: 6239e596-691b-4406-8213-fbd9f84a851c
     type: playbook
     task:
-      id: 8c539e18-5188-4a76-8e76-696929cb771a
+      id: 6239e596-691b-4406-8213-fbd9f84a851c
       version: -1
       name: PAN-OS Commit Configuration
       description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
@@ -1914,8 +1923,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4420
+          "x": 275,
+          "y": 4770
         }
       }
     note: false
@@ -1925,10 +1934,10 @@ tasks:
     quietmode: 0
   "105":
     id: "105"
-    taskid: bb93d3b3-a178-4adc-8ee4-ab9bde0267a2
+    taskid: 85a9eb19-c481-4e0b-8489-233e562101d8
     type: regular
     task:
-      id: bb93d3b3-a178-4adc-8ee4-ab9bde0267a2
+      id: 85a9eb19-c481-4e0b-8489-233e562101d8
       version: -1
       name: panorama-edit-rule
       description: Edits a policy rule.
@@ -1955,8 +1964,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4595
+          "x": 275,
+          "y": 4945
         }
       }
     note: false
@@ -1966,10 +1975,10 @@ tasks:
     quietmode: 0
   "106":
     id: "106"
-    taskid: e10496f4-4651-4512-8349-a7a6cafc76c4
+    taskid: 5f9399bd-64bc-46f7-8986-5d4c041d8b63
     type: regular
     task:
-      id: e10496f4-4651-4512-8349-a7a6cafc76c4
+      id: 5f9399bd-64bc-46f7-8986-5d4c041d8b63
       version: -1
       name: panorama-address-add failed
       description: Prints an error entry with a given message
@@ -1977,6 +1986,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
     scriptarguments:
       message:
         simple: Creating an address object failed.
@@ -1984,8 +1996,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1667.5,
-          "y": 2090
+          "x": 1902.5,
+          "y": 6255
         }
       }
     note: false
@@ -1995,10 +2007,10 @@ tasks:
     quietmode: 0
   "107":
     id: "107"
-    taskid: 99cae8e9-3074-4786-8924-7576839ec898
+    taskid: 2a287536-1a87-41f7-8287-08f695b50c07
     type: regular
     task:
-      id: 99cae8e9-3074-4786-8924-7576839ec898
+      id: 2a287536-1a87-41f7-8287-08f695b50c07
       version: -1
       name: panorama-create-address-group failed
       description: Prints an error entry with a given message
@@ -2013,8 +2025,271 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1227.5,
+          "x": 715,
           "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "108":
+    id: "108"
+    taskid: 063211a9-0bd9-4bd0-868d-45b83a3dfe03
+    type: regular
+    task:
+      id: 063211a9-0bd9-4bd0-868d-45b83a3dfe03
+      version: -1
+      name: panorama-show-location-ip
+      description: Show the IP location information as returned by the APIs
+      script: '|||panorama-show-location-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ip_address:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: 2060947e-b5f0-4212-850e-3ec3eba3eac6
+    type: regular
+    task:
+      id: 2060947e-b5f0-4212-850e-3ec3eba3eac6
+      version: -1
+      name: panorama-show-device-version
+      description: Show firewall device software version.
+      script: '|||panorama-show-device-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "110"
+    scriptarguments:
+      target: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 4420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "110":
+    id: "110"
+    taskid: 7ef6b9d6-4aec-439c-8ced-a01f8c1aed09
+    type: condition
+    task:
+      id: 7ef6b9d6-4aec-439c-8ced-a01f8c1aed09
+      version: -1
+      name: Is 8.1 pan-os Firewall?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "96"
+      "yes":
+      - "82"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Panorama.Device.Info
+                accessor: Version
+            iscontext: true
+          right:
+            value:
+              simple: "8.1"
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 4595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "111":
+    id: "111"
+    taskid: 000223ae-4d3b-4556-810c-edfd527b665f
+    type: regular
+    task:
+      id: 000223ae-4d3b-4556-810c-edfd527b665f
+      version: -1
+      name: panorama-get-pcap (threat)
+      description: Returns information for a Panorama PCAP file. The recommended maximum
+        file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall
+        and run the scp export command to export the PCAP file. For more information,
+        see the Palo Alto Networks documentation.
+      script: '|||panorama-get-pcap'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      deviceName: {}
+      from: {}
+      localName: {}
+      password: {}
+      pcapID:
+        simple: "1206009018640762463"
+      pcapType:
+        simple: threat-pcap
+      searchTime:
+        simple: 2020/05/05 13:20:14
+      serialNo: {}
+      sessionID:
+        simple: "84190"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 5120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "112":
+    id: "112"
+    taskid: dd47576a-c936-423e-8434-baa463f5ab34
+    type: condition
+    task:
+      id: dd47576a-c936-423e-8434-baa463f5ab34
+      version: -1
+      name: Is 8.1 pan-os Firewall?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Panorama.Device.Info
+                accessor: Version
+            iscontext: true
+          right:
+            value:
+              simple: "8.1"
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "113":
+    id: "113"
+    taskid: bb55db80-fc9d-43bf-86e2-5c591e0f999f
+    type: regular
+    task:
+      id: bb55db80-fc9d-43bf-86e2-5c591e0f999f
+      version: -1
+      name: panorama-refresh-edl on Panorama
+      description: Refresh a given external dynamic list
+      script: '|||panorama-refresh-edl'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      device-group: {}
+      edl_type:
+        simple: ip
+      location:
+        simple: Lab-Devices
+      name:
+        simple: TIP
+      vsys:
+        simple: vsys1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "114":
+    id: "114"
+    taskid: ad99255f-a219-4cb9-8a74-66d9ba1aab8a
+    type: regular
+    task:
+      id: ad99255f-a219-4cb9-8a74-66d9ba1aab8a
+      version: -1
+      name: panorama-show-device-version
+      description: Show firewall device software version.
+      script: '|||panorama-show-device-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "112"
+    scriptarguments:
+      target: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3255
         }
       }
     note: false
@@ -2030,8 +2305,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6095,
-        "width": 1997.5,
+        "height": 6445,
+        "width": 2457.5,
         "x": 50,
         "y": 50
       }
@@ -2039,3 +2314,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

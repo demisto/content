@@ -45,8 +45,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Custom
-      description: If time_frame is "Custom", specify the start time for the time
-        range.
+      description: If time_frame is "Custom", specify the start time for the time range.
       isArray: false
       name: time-frame
       predefined:
@@ -58,15 +57,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Start date for the data query, for example: "2018-04-20". Only
-        use this argument if the time-frame argument is "Custom".'
+      description: 'Start date for the data query, for example: "2018-04-20". Only use this argument if the time-frame argument is "Custom".'
       isArray: false
       name: start-date
       required: false
       secret: false
     - default: false
-      description: 'End date for the data query, for example: "2018-04-20". Only use
-        this argument if the time-frame argument is "Custom".'
+      description: 'End date for the data query, for example: "2018-04-20". Only use this argument if the time-frame argument is "Custom".'
       isArray: false
       name: end-date
       required: false
@@ -115,8 +112,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of hosts for a given entity, or an empty list if
-      none is found.
+    description: Retrieves a list of hosts for a given entity, or an empty list if none is found.
     execution: false
     name: lr-get-hosts-by-entity
     outputs:
@@ -580,8 +576,7 @@ script:
       description: The alarm event ID.
       type: String
     - contextPath: Logrhythm.Alarm.LastDxTimeStamp
-      description: The timestamp when the drilldown returned new results
-        from the Data Indexer.
+      description: The timestamp when the drilldown returned new results from the Data Indexer.
       type: String
     - contextPath: Logrhythm.Alarm.DateInserted
       description: The alarm date inserted.
@@ -614,8 +609,7 @@ script:
       description: The alarm web console IDs.
       type: String
     - contextPath: Logrhythm.Alarm.Summary.PIFType
-      description: Alarm Primary Inspection Field (the original name for "Summary
-        Field").
+      description: Alarm Primary Inspection Field (the original name for "Summary Field").
       type: String
     - contextPath: Logrhythm.Alarm.Summary.DrillDownSummaryLogs
       description: Drill down summary logs.
@@ -635,8 +629,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of fields (outputs) to return to the context.
-        If empty, all fields are returned.
+      description: A CSV list of fields (outputs) to return to the context. If empty, all fields are returned.
       isArray: false
       name: fields
       predefined:
@@ -672,3 +665,4 @@ script:
   subtype: python3
 tests:
 - LogRhythm REST test
+fromversion: 5.0.0

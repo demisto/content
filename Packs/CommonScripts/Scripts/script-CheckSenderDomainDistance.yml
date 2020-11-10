@@ -2,8 +2,9 @@ commonfields:
   id: CheckSenderDomainDistance
   version: -1
 name: CheckSenderDomainDistance
-script: |-
+script: >-
   import re
+
 
   def levenshtein(s1, s2):
       l1 = len(s1)
@@ -20,9 +21,12 @@ script: |-
       return matrix[l2][l1]
 
   res = []
+
   found = False
 
+
   domains = argToList(demisto.get(demisto.args(), 'domain'))
+
   if not domains:
       res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract domain from arguments'})
   else:
@@ -64,9 +68,7 @@ args:
 - name: domain
   required: true
   default: true
-  description: The domain to be measured against the domain in the sender's email
-    address.Usually the domain used by the company for email, e.g. acme.com when users
-    are assigned jane@acme.com (could be multiple domains with a comma separator)
+  description: The domain to be measured against the domain in the sender's email address.Usually the domain used by the company for email, e.g. acme.com when users are assigned jane@acme.com (could be multiple domains with a comma separator)
 - name: sender
   required: true
   description: Sender email address
@@ -80,3 +82,4 @@ outputs:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

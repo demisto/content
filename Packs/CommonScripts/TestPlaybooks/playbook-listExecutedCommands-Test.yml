@@ -100,10 +100,7 @@ tasks:
       id: 96fa6799-1ad0-48a0-8218-409ffd58a729
       version: -1
       name: Save response to context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+      description: "Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. \nFor accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -303,3 +300,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

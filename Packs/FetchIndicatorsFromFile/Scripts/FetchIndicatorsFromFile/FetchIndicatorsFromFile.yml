@@ -87,7 +87,7 @@ args:
   name: starting_row
   required: false
   secret: false
-comment: Fetches indicators from a file.
+comment: Fetches indicators from a file. Supports TXT, XLS, XLSX, CSV, DOC and DOCX file types.
 commonfields:
   id: FetchIndicatorsFromFile
   version: -1
@@ -107,5 +107,5 @@ tags:
 - indicators
 timeout: '0'
 type: python
-dockerimage: demisto/xlrd-py3:1.0.0.7364
+dockerimage: demisto/xlrd-py3:1.0.0.8854
 fromversion: 5.5.0

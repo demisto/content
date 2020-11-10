@@ -13,7 +13,7 @@ requests.packages.urllib3.disable_warnings()
 """ GLOBALS """
 MAX_UNIQUE = int(demisto.params().get('max_unique', 2000))
 FETCH_CHUNK_SIZE = int(demisto.params().get('fetch_chunk_size', 50))
-FETCH_CHUNK_SIZE = min(50, FETCH_CHUNK_SIZE)  # fetch size should no exceed 50
+FETCH_CHUNK_SIZE = min(300, FETCH_CHUNK_SIZE)  # fetch size should no exceed 300
 
 BASE_URL = demisto.params().get('server').rstrip('/') + '/'
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
@@ -125,7 +125,36 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
                 elif key in TIMESTAMP_FIELDS:
                     key = key.replace('Time', 'Date').replace('stamp', '')
                     d[key] = parse_timestamp_to_datestring(value)
+                elif key in ['eventId', 'baseEventIds']:
+                    d[key] = str(value)
     return d
+
+
+@logger
+def filter_entries(entries, entry_filter):
+    """ Filters the entries according to the entry_filter given """
+    if not entry_filter:
+        return entries
+
+    filtered_entries = []
+    filters = entry_filter.split(',')
+    for entry in entries:
+        append_flag = True
+
+        for f in filters:
+            k, v = f.split(':')
+            if k:
+                if not entry.get(k) == v:
+                    # if there is a key and its value is not equal to the entry_filter value
+                    append_flag = False
+            elif v not in entry.values():
+                # if there is no key check that the value exists in one of the entry's keys
+                append_flag = False
+
+        if append_flag:
+            filtered_entries.append(entry)
+
+    return filtered_entries
 
 
 def login():
@@ -371,12 +400,13 @@ def fetch():
             }
 
             incidents.append(incident)
-            if len(incidents) >= FETCH_CHUNK_SIZE:
-                break
 
             if len(already_fetched) > MAX_UNIQUE:
                 already_fetched.pop(0)
             already_fetched.append(r_id)
+
+            if len(incidents) >= FETCH_CHUNK_SIZE:
+                break
 
     last_run = {
         'already_fetched': already_fetched,
@@ -677,19 +707,36 @@ def delete_case_command():
 def get_entries_command():
     resource_id = demisto.args().get('resourceId')
     entry_filter = demisto.args().get('entryFilter')
+    use_rest = demisto.params().get('use_rest', False)
 
-    query_path = 'www/manager-service/services/ActiveListService/'
-    body = REQ_SOAP_BODY(function='getEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=None)
-
-    res = send_request(query_path, body=body)
+    if use_rest:
+        query_path = 'www/manager-service/rest/ActiveListService/getEntries'
+        params = {
+            'alt': 'json'
+        }
+        body = {
+            "act.getEntries": {
+                "act.authToken": AUTH_TOKEN,
+                "act.resourceId": resource_id,
+            }
+        }  # type: Union[str, Dict[str, Dict[str, Any]]]
+        res = send_request(query_path, json=body, params=params)
+    else:
+        query_path = 'www/manager-service/services/ActiveListService/'
+        body = REQ_SOAP_BODY(function='getEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=None)
+        res = send_request(query_path, body=body)
 
     if not res.ok:
         demisto.debug(res.text)
         return_error("Failed to get entries:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
             resource_id, res.status_code, body, res.text))
 
-    res_json = json.loads(xml2json((res.text).encode('utf-8')))
-    raw_entries = demisto.get(res_json, 'Envelope.Body.getEntriesResponse.return')
+    if use_rest:
+        res_json = res.json()
+        raw_entries = res_json.get('act.getEntriesResponse', {}).get('act.return', {})
+    else:
+        res_json = json.loads(xml2json((res.text).encode('utf-8')))
+        raw_entries = demisto.get(res_json, 'Envelope.Body.getEntriesResponse.return')
 
     # retrieve columns
     cols = demisto.get(raw_entries, 'columns')
@@ -710,13 +757,9 @@ def get_entries_command():
         # if the user wants only entries that contain certain 'field:value' sets (filters)
         # e.g., "name:myName,eventId:0,:ValueInUnknownField"
         # if the key is empty, search in every key
-        filtered = entries
-        if entry_filter:
-            for f in entry_filter.split(','):
-                k, v = f.split(':')
-                filtered = [entry for entry in filtered if ((entry.get(k) == v) if k else (v in entry.values()))]
+        filtered_entries = filter_entries(entries, entry_filter)
 
-        contents = decode_arcsight_output(filtered)
+        contents = decode_arcsight_output(filtered_entries)
         ActiveListContext = {
             'ResourceID': resource_id,
             'Entries': contents,
@@ -725,9 +768,9 @@ def get_entries_command():
             'ArcSightESM.ActiveList.{id}'.format(id=resource_id): contents,
             'ArcSightESM.ActiveList(val.ResourceID===obj.ResourceID)': ActiveListContext
         }
-        human_readable = tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered,
+        human_readable = tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered_entries,
                                          removeNull=True)
-        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=entries)
 
     else:
         demisto.results('Active List has no entries')
@@ -736,9 +779,24 @@ def get_entries_command():
 @logger
 def clear_entries_command():
     resource_id = demisto.args().get('resourceId')
-    query_path = 'www/manager-service/services/ActiveListService/'
-    body = REQ_SOAP_BODY(function='clearEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=None)
-    res = send_request(query_path, body=body)
+    use_rest = demisto.params().get('use_rest', False)
+
+    if use_rest:
+        query_path = 'www/manager-service/rest/ActiveListService/clearEntries'
+        params = {
+            'alt': 'json'
+        }
+        body = {
+            "act.clearEntries": {
+                "act.authToken": AUTH_TOKEN,
+                "act.resourceId": resource_id,
+            }
+        }  # type: Union[str, Dict[str, Dict[str, Any]]]
+        res = send_request(query_path, json=body, params=params)
+    else:
+        query_path = 'www/manager-service/services/ActiveListService/'
+        body = REQ_SOAP_BODY(function='clearEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=None)
+        res = send_request(query_path, body=body)
 
     if not res.ok:
         demisto.debug(res.text)

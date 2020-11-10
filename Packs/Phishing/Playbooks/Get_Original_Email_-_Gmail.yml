@@ -1,7 +1,7 @@
 id: get_original_email_-_gmail
 version: -1
 name: Get Original Email - Gmail
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: |
   Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
 
@@ -116,8 +116,7 @@ tasks:
       id: cc460fc4-1d86-464c-8853-e996eed85049
       version: -1
       name: Retrieve the forwarded email from Gmail
-      description: Get the data and metadata of the forwarded email from the Gmail
-        service.
+      description: Get the data and metadata of the forwarded email from the Gmail service.
       script: Gmail|||gmail-get-mail
       type: regular
       iscommand: true
@@ -400,8 +399,7 @@ tasks:
       key:
         simple: OriginalEmail
       value:
-        simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID"
-          && h.Value == val.InReplyTo).length > 0)}
+        simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID" && h.Value == val.InReplyTo).length > 0)}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -459,8 +457,7 @@ tasks:
       id: 0ce28338-abb6-4b8d-8155-3444a9df6ca9
       version: -1
       name: Was the original email retrieved?
-      description: Verify that the original email is in context (matched by the InReplyTo
-        ID).
+      description: Verify that the original email is in context (matched by the InReplyTo ID).
       type: condition
       iscommand: false
       brand: ""
@@ -476,8 +473,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID"
-                && h.Value == val.InReplyTo).length > 0)}
+              simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID" && h.Value == val.InReplyTo).length > 0)}
             iscontext: false
     view: |-
       {
@@ -508,9 +504,7 @@ tasks:
       key:
         simple: Email
       value:
-        simple: '${OriginalEmail={Subject: val[''Subject''], To: val[''To''], From:
-          val[''From''], Text: val[''Body''], HTML: val[''HTML''], Headers: val[''Headers''],
-          CC: val[''CC''], BCC: val[''BCC'']}}'
+        simple: '${OriginalEmail={Subject: val[''Subject''], To: val[''To''], From: val[''From''], Text: val[''Body''], HTML: val[''HTML''], Headers: val[''Headers''], CC: val[''CC''], BCC: val[''BCC'']}}'
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -605,4 +599,4 @@ outputs:
   description: Original attachments
   type: unknown
 tests:
-  - No test
+- No test

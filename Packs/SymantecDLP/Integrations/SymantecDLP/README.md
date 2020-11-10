@@ -1,12 +1,27 @@
 <p>
 Symantec Data Loss Prevention let's you discover, monitor and protect your sensitive corporate information.
 </p>
+<p>
+This integration was integrated and tested with Symantec DLP version 15.5. The integration uses the SOAP-based Incident Reporting and Update API. 
+</p>
+<p>
+<b>Important Note:</b> Symantec DLP 15.7 introduced a new RESTful API, which this integration does not support. If you want to use the new REST API, please file a feature request that we can track. For more information about the Symantec DLP REST API see the <a href="https://community.broadcom.com/symantecenterprise/communities/community-home/librarydocuments/viewdocument?DocumentKey=f6319a99-6c61-4d58-8554-f8cbdd380e4d&CommunityKey=65cf8c43-bb97-4e96-ae0b-0db8ba1b4d07&tab=librarydocuments">Synantec documentation</>.
+</p>
 <h2>Permissions</h2>
 <p>Symantec Data Loss Prevention requires that the integration user be assigned to the "Incident Reporting API Web Service" role. Make sure to follow Symantec's documentation on how to create such a role and assign it to the user:
 <ul>
 <li>Symantec DLP 15.5: <a href="https://help.symantec.com/cs/DLP15.5/DLP/id-SF0B0167317a_v128674454/Configuring-roles?locale=EN_US">Configuring Roles</a></li>
 <li>Symantec DLP 15.7: <a href="https://apidocs.symantec.com/home/DLP15.7#_creating_a_user_and_role_for_an_incident_reporting_api_client"> Creating a user and role for an Incident Reporting API client</a></li>
 </ul>
+</p>
+<p>
+If you are using an AD User to authenticate as the API user make sure to follow the proper naming convention of:
+<pre>
+&lt;Username&gt;:&lt;Active_Directory_Domain_In_Upper_Case&gt;
+OR
+&lt;Role&gt;\&lt;Username&gt;:&lt;Active_Directory_Domain_In_Upper_Case&gt;
+</pre>
+More details at: <a href="https://knowledge.broadcom.com/external/article/159761/unable-to-authenticate-to-reporting-api.html">https://knowledge.broadcom.com/external/article/159761/unable-to-authenticate-to-reporting-api.html</a>
 </p>
 <h2>Fetch Incidents</h2>
 <p>The Symantec Data Loss Prevention integration is configured to fetch incidents and integrate them into Demisto's incidents and has the fetch limit parameter.</p>

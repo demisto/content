@@ -3,29 +3,22 @@
 <ul>
 <li>Monitor a specific email account and create incidents from incoming emails to the defined folder.</li>
 <li>Send and reply to emails.</li>
-</ul><h2>Detailed Description</h2>
-<p>To allow us access to Microsoft Graph Mail, you need to approve our app, by clicking on the following <a href="https://oproxy.demisto.ninja/ms-graph-mail-listener" target="_blank" rel="noopener">link</a>. After authorizing the Demisto app, you will receive an ID, Refresh Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.</p>
+</ul>
+
 <h2>Fetch Incidents</h2>
 <p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Demisto fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.</p>
-<h2>Generate Authentication Parameters</h2>
-<ol>
-<li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong> &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-<li>Search for Microsoft Graph Mail Single User.</li>
-<li>Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.</li>
-<li>Click the question mark button in the upper-right corner and read the information, and click the link.
-</li>
-<li>Click the <b>Start Authorization Process</b> button.</li>
-<li>Log in with Microsoft user credentials.</li>
-<li>Authorize Demisto application to access data.</li>
-<li>When you are redirected, copy the parameter values, which you will need when configuring the integration instance in Demisto.
-  <ul>
-    <li><b>ID</b></li>
-    <li><b>Key</b></li>
-    <li><b>Token</b></li>
-  </ul>
-</li>
-</ol>
-<h2>Configure Microsoft Graph Mail Single User on Demisto</h2>
+
+<h2>Authentication</h2>
+For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
+<h3>Required Permissions</h3>
+The following permissions are required for all commands:
+<ul>
+ <li>Mail.ReadWrite - Delegated</li>
+ <li>Mail.Send - Delegated</li>
+ <li>User.Read - Delegated</li>
+</ul>
+<h2>Configure Microsoft Graph Mail Single User on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -34,9 +27,11 @@
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>ID (received from the authorization step - see Detailed Instructions (?) section)</strong></li>
-   <li><strong>Token (received from the authorization step - see Detailed Instructions (?) section)</strong></li>
-   <li><strong>Key (received from the authorization step - see Detailed Instructions (?) section)</strong></li>
+   <li><strong>ID or Client ID - see Detailed Instructions (?)</strong></li>
+   <li><strong>Token or Tenant ID - see Detailed Instructions (?)</strong></li>
+   <li><strong>Key or Client Secret - see Detailed Instructions (?)</strong></li>
+   <li><strong>Authorization code (required for self-deployed Azure app)</strong></li>
+   <li><strong>Application redirect URI (required for self-deployed Azure app)</strong></li>
    <li><strong>Fetch incidents</strong></li>
    <li><strong>Email address from which to fetch incidents  (e.g. "example@demisto.com")</strong></li>
    <li><strong>Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing)</strong></li>
@@ -50,13 +45,7 @@
     Run&nbsp;<strong>!msgraph-mail-test</strong>&nbsp;command in CLI(instead of test button) to validate the new instance.
   </li>
 </ol>
-<h2>Required Permissions</h2>
-The following permissions are required for all commands:
-<ul>
- <li>Mail.ReadWrite</li>
- <li>Mail.Send</li>
- <li>User.Read</li>
-</ul>
+
 <h2>Commands</h2>
 <p>
   You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -759,13 +748,5 @@ There are no context output for this command.
 
 <h5>Human Readable Output</h5>
 <p>
-<p>
-```✅ Success!```
+✅ Success!
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>

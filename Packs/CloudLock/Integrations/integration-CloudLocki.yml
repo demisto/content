@@ -34,8 +34,9 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var base = params.server.replace(/[\/]+$/, '') + '/api/' + params.version + '/';
+
 
     var commands = {
         'cloudlock-get-users': {
@@ -114,6 +115,7 @@ script:
         },
     };
 
+
     function mapObjFunction(mapFields, filter) {
         var transformSingleObj= function(obj) {
             var res = {};
@@ -139,6 +141,7 @@ script:
             return transformSingleObj(obj);
         };
     }
+
 
     function createContext(data) {
         var createContextSingle = function(obj) {
@@ -167,6 +170,7 @@ script:
         return createContextSingle(data);
     }
 
+
     function sendRequest(commandData) {
         var res = http(
             base + replaceInTemplatesAndRemove(commandData.url, args) + (commandData.method === 'GET' ? encodeToURLQuery(args || commandData.defaultArgs) : ''),
@@ -187,23 +191,33 @@ script:
         return JSON.parse(res.Body);
     }
 
+
     var commandData = commands[command];
+
     var email = args.email && command === 'cloudlock-get-user-apps' ? args.email : undefined;
+
     var filterKey = args['filter_key'];
+
     var filterValue = args['filter_value'];
+
     delete args['filter_key'];
+
     delete args['filter_value'];
 
 
+
     var result = sendRequest(commandData);
+
     if (command === 'test-module') {
         return 'ok';
     }
+
     var entry = {
         Type: entryTypes.note,
         Contents: result,
         ContentsFormat: formats.json,
     };
+
     if (commandData.extended) {
         var filterFunc = commandData.filter ? commandData.filter(filterKey, filterValue) : null;
         var translated = mapObjFunction(commandData.translator, filterFunc) (
@@ -216,6 +230,7 @@ script:
         context.Email = email;
         entry.EntryContext[commandData.contextPath] = context;
     }
+
     return entry;
   type: javascript
   commands:
@@ -226,12 +241,9 @@ script:
     - name: limit
       description: To determine the quantity of results to return in the response
     - name: order
-      description: Use the “order” parameter to indicate the order for your request
-        list result. For multiple sort orders use a comma-delimted list of sort parameters.
-        Default direction is ascending, and a leading “-” character denotes descending
+      description: Use the “order” parameter to indicate the order for your request list result. For multiple sort orders use a comma-delimted list of sort parameters. Default direction is ascending, and a leading “-” character denotes descending
     - name: platform
-      description: 'The application supplying the underlying data (i.e. Google Drive,
-        Google Sites). platform value should be in the format: <vendor>_<origin_type>'
+      description: 'The application supplying the underlying data (i.e. Google Drive, Google Sites). platform value should be in the format: <vendor>_<origin_type>'
     - name: users
       description: comma delimited list of owner email addresses
     - name: exposure
@@ -272,8 +284,7 @@ script:
       description: CloudLock user total entities
     - contextPath: CloudLock.Users.Entities.Exposed
       description: CloudLock user exposed entities
-    description: This endpoint will return data about the users in the cloud lock
-      system
+    description: This endpoint will return data about the users in the cloud lock system
   - name: cloudlock-get-user-apps
     arguments:
     - name: email
@@ -293,8 +304,7 @@ script:
       description: CloudLock user application name
     - contextPath: CloudLock.Users,Applications.Vendor
       description: CloudLock user application vendor
-    description: This endpoint returns all of the applications installed by a user
-      (based on the users email address)
+    description: This endpoint returns all of the applications installed by a user (based on the users email address)
   - name: cloudlock-get-activities
     description: Returns UBA (User Behavioral Analysis) activities
     arguments:
@@ -350,4 +360,5 @@ script:
       description: Activity user full name
 hidden: false
 tests:
- -  No tests
+- No tests
+fromversion: 5.0.0

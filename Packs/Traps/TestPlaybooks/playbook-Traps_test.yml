@@ -492,8 +492,7 @@ tasks:
       id: 2fbd4929-4ac4-4aac-853d-db5d8e2d6d12
       version: -1
       name: Traps Scan Endpoint
-      description: Use this playbook to initiate an endpoint scan and retrieve the
-        scan results.
+      description: Use this playbook to initiate an endpoint scan and retrieve the scan results.
       playbookName: Traps Scan Endpoint
       type: playbook
       iscommand: false
@@ -677,3 +676,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

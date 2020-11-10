@@ -1,7 +1,6 @@
 id: RiskSense Get Host Finding Detail - Test
 version: -1
 name: RiskSense Get Host Finding Detail - Test
-fromversion: 5.0.0
 description: This playbook uses the RiskSense integration and tests the various scenarios
   of the "risksense-get-host-findings-detail" command. 
 starttaskid: "0"
@@ -11,12 +10,12 @@ tasks:
     taskid: 9e354111-798f-460c-8174-3e126f932041
     type: start
     task:
-      description: ""
       id: 9e354111-798f-460c-8174-3e126f932041
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -101,13 +100,13 @@ tasks:
     taskid: ee385e28-ddba-4f6c-8c6d-e4f909ff1669
     type: condition
     task:
-      description: ""
       id: ee385e28-ddba-4f6c-8c6d-e4f909ff1669
       version: -1
       name: Is context data matched to the response?
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "yes":
       - "7"
@@ -317,13 +316,13 @@ tasks:
     taskid: c998a8c9-e608-46e8-8a0b-1104eefa534c
     type: title
     task:
-      description: ""
       id: c998a8c9-e608-46e8-8a0b-1104eefa534c
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -385,4 +384,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: RiskSense Get Open Host Findings - Test
+fromversion: 5.0.0

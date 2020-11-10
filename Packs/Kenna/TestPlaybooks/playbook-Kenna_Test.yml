@@ -692,8 +692,7 @@ tasks:
       id: 4ba73f47-3331-46e6-86ab-91e9187318da
       version: -1
       name: Kenna-search-fixes
-      description: Filters fixes by a given set of vulnerability and asset parameters
-        and returns the filtered fixes.
+      description: Filters fixes by a given set of vulnerability and asset parameters and returns the filtered fixes.
       script: '|||kenna-search-fixes'
       type: regular
       iscommand: true
@@ -740,3 +739,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,55 @@
+commonfields:
+  id: Barracuda Reputation Block List - BRBL
+  version: -1
+name: Barracuda Reputation Block List - BRBL
+display: Barracuda Reputation Block List (BRBL)
+category: Data Enrichment & Threat Intelligence
+description: This integration enables reputation checks against IPs from Barracuda
+  Reputation Block List (BRBL)
+configuration: []
+script:
+  script: ''
+  type: python
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP to look up
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: ip
+      description: Get IP details from Barracuda(BRBL) service
+      type: String
+    - contextPath: Barracuda.IP
+      description: IP details
+      type: String
+    - contextPath: DbotScore.Indicator
+      description: The indicator itself
+      type: String
+    - contextPath: DbotScore.Score
+      description: Score
+      type: Number
+    - contextPath: DbotScore.Type
+      description: Type of the indicator
+      type: String
+    - contextPath: DbotScore.Vendor
+      description: Vendor information
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    description: Get IP Reputation
+  dockerimage: demisto/python3:3.8.6.12176
+  runonce: false
+  subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

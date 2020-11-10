@@ -5,6 +5,7 @@ description: Deprecated. Use the Failed Login - Slack v2 playbook instead.
 system: true
 fromversion: 5.0.0
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"

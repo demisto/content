@@ -1,6 +1,6 @@
 id: Wait Until Datetime
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Wait Until Datetime
 description: Pauses execution until the date and time that was specified in the plabyook input is reached.
 starttaskid: '0'
@@ -101,8 +101,7 @@ tasks:
       id: dfa02b41-5472-4879-8259-fec9aeacbe53
       version: -1
       name: For when is the datetime specified?
-      description: Determines if the datetime to wait until is now, in the future
-        or in the past.
+      description: Determines if the datetime to wait until is now, in the future or in the past.
       type: condition
       iscommand: false
       brand: ''
@@ -144,8 +143,7 @@ tasks:
       id: bb5fa066-c4a9-40ab-8281-7b552f83ff4a
       version: -1
       name: Calculate time to wait
-      description: Calculates the amount of time, in minutes, to wait until the 
-        datetime is reached.
+      description: Calculates the amount of time, in minutes, to wait until the datetime is reached.
       scriptName: CalculateTimeDifference
       type: regular
       iscommand: false
@@ -343,8 +341,7 @@ inputs:
 - key: DatetimeToWaitUntil
   value: {}
   required: true
-  description: 'The date and time to wait until before finishing the playbook. Should
-    be in ISO-8601 format. For example: 2019-11-13T15:33:10.314406457Z'
+  description: 'The date and time to wait until before finishing the playbook. Should be in ISO-8601 format. For example: 2019-11-13T15:33:10.314406457Z'
 outputs: []
 tests:
-  - Wait Until Datetime - Test
+- Wait Until Datetime - Test

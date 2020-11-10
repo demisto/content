@@ -55,7 +55,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Quest KACE integration.
+description: Use the Comprehensive Quest KACE solution to Provision, manage, secure, and service all network-connected devices.
 display: Quest KACE Systems Management Appliance (Beta)
 name: QuestKace
 script:

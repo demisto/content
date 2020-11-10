@@ -269,8 +269,7 @@ tasks:
       cmdToRun:
         simple: nessus-scan-status
       keyToWatch:
-        simple: ${NessusScan='NessusScan(val.ID \u0026\u0026 val.ID == ' + val.ID
-          + ').Status'}
+        simple: ${NessusScan='NessusScan(val.ID \u0026\u0026 val.ID == ' + val.ID + ').Status'}
       maxIterations: {}
       sleepTime:
         simple: "10"
@@ -313,8 +312,7 @@ tasks:
       cmdToRun:
         simple: nessus-scan-export-status
       keyToWatch:
-        simple: ${NessusScan='NessusScan(val.ID \u0026\u0026 val.ID == ' + val.ID
-          + ').ScanReportStatus'}
+        simple: ${NessusScan='NessusScan(val.ID \u0026\u0026 val.ID == ' + val.ID + ').ScanReportStatus'}
       maxIterations: {}
       sleepTime:
         simple: "10"
@@ -347,3 +345,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

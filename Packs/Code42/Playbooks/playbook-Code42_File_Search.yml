@@ -296,7 +296,7 @@ outputs:
 - contextPath: Code42.SecurityData.EmailFrom
   description: Sender email address for email exfiltration events
 - contextPath: Code42.SecurityData.EmailTo
-  description: Recipient emial address for email exfiltration events
+  description: Recipient email address for email exfiltration events
 - contextPath: Code42.SecurityData.EmailSubject
   description: Email subject line for email exfiltration events
 - contextPath: Code42.SecurityData.EventID
@@ -324,7 +324,7 @@ outputs:
 - contextPath: Code42.SecurityData.DevicePublicIPAddress
   description: Public IP address of device where event was captured
 - contextPath: Code42.SecurityData.RemovableMediaType
-  description: Type of removate media
+  description: Type of removable media
 - contextPath: Code42.SecurityData.RemovableMediaCapacity
   description: Total capacity of removable media in bytes
 - contextPath: Code42.SecurityData.RemovableMediaMediaName
@@ -369,7 +369,7 @@ outputs:
 - contextPath: File.MD5
   description: MD5 hash of file
 - contextPath: File.SHA256
-  description: FSHA256 hash of file
+  description: SHA256 hash of file
 - contextPath: File.Hostname
   description: Hostname where file event was captured
 sourceplaybookid: Code42 File Search

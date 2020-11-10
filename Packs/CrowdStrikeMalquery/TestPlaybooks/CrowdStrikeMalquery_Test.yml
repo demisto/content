@@ -1,0 +1,661 @@
+id: CrowdStrikeMalquery-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: CrowdStrikeMalquery-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 792c04fb-ecfe-4372-8f28-3f7f117acf86
+    type: start
+    task:
+      id: 792c04fb-ecfe-4372-8f28-3f7f117acf86
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 672bfed9-148d-4f2a-865b-fb309a00da6a
+    type: regular
+    task:
+      id: 672bfed9-148d-4f2a-865b-fb309a00da6a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ea07e4c5-8ceb-47f4-8c38-90c829f35252
+    type: regular
+    task:
+      id: ea07e4c5-8ceb-47f4-8c38-90c829f35252
+      version: -1
+      name: Get Quota
+      description: Get information about search and download quotas in your environment.
+      script: '|||cs-malquery-get-ratelimit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: aaa96c37-a5e9-4f22-85fb-5abd7f7c5c8c
+    type: regular
+    task:
+      id: aaa96c37-a5e9-4f22-85fb-5abd7f7c5c8c
+      version: -1
+      name: Fuzzy search
+      description: Search Falcon MalQuery quickly, but with more potential for false
+        positives. Search for a combination of hex patterns and strings in order to
+        identify samples based upon file content at byte level granularity.
+      script: '|||cs-malquery-fuzzy-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      ascii: {}
+      filter_meta: {}
+      hex:
+        simple: 8948208b480833ca33f989502489482889782c8bd7
+      limit:
+        simple: "1"
+      wide: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: ca727b60-e748-4e0a-8ae5-579efc69fbe1
+    type: condition
+    task:
+      id: ca727b60-e748-4e0a-8ae5-579efc69fbe1
+      version: -1
+      name: Validate results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Malquery.File.sha256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 87aaa6ae-051d-4d7c-8d55-81758cca51a0
+    type: condition
+    task:
+      id: 87aaa6ae-051d-4d7c-8d55-81758cca51a0
+      version: -1
+      name: Validate Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Malquery.File.sha256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -217.5,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 696a9ea3-d0e7-493f-8c4e-4bf3ad24c31b
+    type: title
+    task:
+      id: 696a9ea3-d0e7-493f-8c4e-4bf3ad24c31b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: c9015788-c877-4867-8468-6287f2278ea6
+    type: condition
+    task:
+      id: c9015788-c877-4867-8468-6287f2278ea6
+      version: -1
+      name: Check quota
+      description: Get information about search and download quotas in your environment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      Both:
+      - "27"
+      Download:
+      - "33"
+      Hunt:
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: Both
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              simple: Malquery.Quota.hunt_count
+            iscontext: true
+          right:
+            value:
+              simple: Malquery.Quota.hunt_limit
+            iscontext: true
+      - - operator: lessThan
+          left:
+            value:
+              simple: Malquery.Quota.download_count
+            iscontext: true
+          right:
+            value:
+              simple: Malquery.Quota.download_limit
+            iscontext: true
+    - label: Download
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              simple: Malquery.Quota.download_count
+            iscontext: true
+          right:
+            value:
+              simple: Malquery.Quota.download_limit
+            iscontext: true
+    - label: Hunt
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              simple: Malquery.Quota.hunt_count
+            iscontext: true
+          right:
+            value:
+              simple: Malquery.Quota.hunt_limit
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 89005180-2c87-4728-8fd6-0b704c7ea69b
+    type: condition
+    task:
+      id: 89005180-2c87-4728-8fd6-0b704c7ea69b
+      version: -1
+      name: Validate results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Malquery.File.sha256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 8e05ed0e-033e-43bb-809e-6d9e141192e2
+    type: regular
+    task:
+      id: 8e05ed0e-033e-43bb-809e-6d9e141192e2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 09419ba8-2987-4838-8c0a-3daeb08d1187
+    type: title
+    task:
+      id: 09419ba8-2987-4838-8c0a-3daeb08d1187
+      version: -1
+      name: Both
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 2f720840-d934-438a-82b0-c517a0d30335
+    type: condition
+    task:
+      id: 2f720840-d934-438a-82b0-c517a0d30335
+      version: -1
+      name: Validate Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 053aaed6-063c-48ef-8c47-8bc9709106cf
+    type: regular
+    task:
+      id: 053aaed6-063c-48ef-8c47-8bc9709106cf
+      version: -1
+      name: file
+      description: Retrieve indexed files metadata by their hash.
+      script: CrowdStrikeMalquery|||file
+      type: regular
+      iscommand: true
+      brand: CrowdStrikeMalquery
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      file:
+        simple: ${Malquery.File.sha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: e82505ad-3676-40f6-8c41-c1b47bf2c926
+    type: condition
+    task:
+      id: e82505ad-3676-40f6-8c41-c1b47bf2c926
+      version: -1
+      name: Validate results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 588adb4d-01a3-45e4-82e4-6357332c5cbe
+    type: playbook
+    task:
+      id: 588adb4d-01a3-45e4-82e4-6357332c5cbe
+      version: -1
+      name: Exact Search
+      playbookName: CrowdStrikeMalquery - Search
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      ascii: {}
+      filter_filetypes: {}
+      filter_meta: {}
+      hex:
+        simple: 8948208b480833ca33f989502489482889782c8bd7
+      limit:
+        simple: "1"
+      max_date: {}
+      max_size: {}
+      min_date: {}
+      min_size: {}
+      search_command:
+        simple: exact-search
+      wide_string: {}
+      yara_rule: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 04550bd9-db72-47e3-8acc-31fb2e49c1c7
+    type: playbook
+    task:
+      id: 04550bd9-db72-47e3-8acc-31fb2e49c1c7
+      version: -1
+      name: Hunt - Search
+      playbookName: CrowdStrikeMalquery - Search
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      ascii: {}
+      filter_filetypes: {}
+      filter_meta: {}
+      hex: {}
+      limit:
+        simple: "1"
+      max_date: {}
+      max_size: {}
+      min_date: {}
+      min_size: {}
+      search_command:
+        simple: hunt
+      wide_string: {}
+      yara_rule:
+        simple: 'rule CrowdStrike_16142_01 : wiper { strings: $ = { 41 61 43 63 64
+          44 65 46 66 47 68 69 4B 4C 6C 4D 6D 6E 4E 6F 4F 70 50 72 52 73 53 54 74
+          55 75 56 76 77 57 78 79 5A 7A 33 32 2E 5C 45 62 67 6A 48 49 20 5F 59 51
+          42 3A 22 2F 40 } condition: all of them and filesize < 800KB }'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -217.5,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: e6e74c6e-1710-4fae-8368-5dba65ed29fa
+    type: playbook
+    task:
+      id: e6e74c6e-1710-4fae-8368-5dba65ed29fa
+      version: -1
+      name: Multidownload and Fetch
+      playbookName: CrowdStrikeMalquery - Multidownload and Fetch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      sha256:
+        simple: ${Malquery.File.sha256}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2455,
+        "width": 1190,
+        "x": -217.5,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+

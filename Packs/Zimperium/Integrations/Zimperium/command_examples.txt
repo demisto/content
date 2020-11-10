@@ -1,0 +1,9 @@
+zimperium-events-search query="severity==LOW;eventName==THREAT_DETECTED;osType==Android"
+zimperium-users-search size=3 page=0
+zimperium-user-get-by-id object_id=a045723f-5d3b-46f6-915a-fcbd42752aa0
+zimperium-devices-search query="osType==Android"
+zimperium-device-get-by-id zdid=2a086e00-32f3-4c03-90b2-b9fd4ea836e5
+zimperium-devices-get-last-updated from_last_update="1 month"
+zimperium-app-classification-get app_name=Duo
+file file=85525e9c1fd30a20848812e417f3bb1a using-brand=Zimperium
+zimperium-report-get app_hash=f26cf1135f9d2ea60532a5a13c6fbed5

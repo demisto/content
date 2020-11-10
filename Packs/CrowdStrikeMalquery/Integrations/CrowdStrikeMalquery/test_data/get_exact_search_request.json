@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "query_time": 9390,
+    "powered_by": "malquery-api",
+    "trace_id": "b28d2176-87af-4744-b58d-9cdb8f25458c",
+    "reqid": "fc4db762-288c-40cc-5f4f-4f19b65649a8",
+    "reqtype": "search",
+    "status": "done",
+    "stats": {
+      "clean_count": 0,
+      "malware_count": 0,
+      "pua_count": 0,
+      "total_count": 10,
+      "unknown_count": 10
+    },
+    "yara_rule": "rule binarly_exact_search \n{\n meta:\n description = \"Exact search\"\n strings:\n     $ = { 8948208b480833ca33f989502489482889782c8bd7 }\n \n condition: all of them \n}\n",
+    "patterns": [
+      {
+        "type": "hex",
+        "value": "8948208b480833ca33f989502489482889782c8bd7"
+      }
+    ],
+    "options": {
+      "filter_meta": [
+        "sha256",
+        "type",
+        "size"
+      ],
+      "limit": 10
+    }
+  },
+  "resources": [
+    {
+      "sha256": "201e81ecf31926dc9160741c5666a5b1d9a9795e637a4c7955417a6af7e5b2a4",
+      "filesize": 484872,
+      "filetype": "PE32",
+      "samples": []
+    },
+    {
+      "sha256": "9a3c5febd9b4659e948ffd6a71802f409feca44c9c7f0aa0c152aa93c950a947",
+      "filesize": 2112000,
+      "filetype": "PE32",
+      "samples": []
+    },
+    {
+      "sha256": "07c95170772e76b7e8d87f5b3535fb3a65a57a468cf9b0a42664fcd3813d21cd",
+      "filesize": 1080320,
+      "filetype": "PE32",
+      "samples": []
+    },
+    {
+      "sha256": "b293c151970a37eee4ed696d85cc845c00ae07e039795fdcd13f3ae3f093431c",
+      "filesize": 229376,
+      "filetype": "PE32",
+      "samples": []
+    },
+    {
+      "sha256": "d7364785cef732b41894f3d4523d28a396944dc1de8fbbc6a0df5a0b6aeb887e",
+      "filesize": 303360,
+      "filetype": "PE32",
+      "samples": []
+    },
+    {
+      "sha256": "de055123772aff2ef0d0a2c6faa1759f007e970f56310db2c93ae99577cb53bb",
+      "filesize": 573440,
+      "filetype": "PE32",
+      "samples": []
+    },
+    {
+      "sha256": "72862c0ca1a862e63d0e6b351abb95f23d94b52eb0fc38b358b92a4923c5d66a",
+      "filesize": 2142208,
+      "filetype": "PE32",
+      "samples": []
+    },
+    {
+      "sha256": "24805fdb4f387db3c76e4a8422857f2154a5d6793762fbe27efa5a7f7d3b0cf3",
+      "filesize": 163840,
+      "filetype": "PE32",
+      "samples": []
+    },
+    {
+      "sha256": "2871b4b8eda4a717d5e5a57551063a30b30aef94a5ac5a7fd35b8d41a6e0be07",
+      "filesize": 2007552,
+      "filetype": "PE32",
+      "samples": []
+    },
+    {
+      "sha256": "c6c20403715090ce0ccecb9de2c71e78673bd87abf8f4cbcda5e97a72bddfbf9", "filesize": 216472, "filetype": "PE32", "samples": []}]}

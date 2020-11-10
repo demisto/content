@@ -287,22 +287,22 @@ script:
       isArray: false
       name: region
       predefined:
-        - us-east-1
-        - us-east-2
-        - us-west-1
-        - us-west-2
-        - ca-central-1
-        - eu-west-1
-        - eu-central-1
-        - eu-west-2
-        - ap-northeast-1
-        - ap-northeast-2
-        - ap-southeast-1
-        - ap-southeast-2
-        - ap-south-1
-        - sa-east-1
-        - eu-north-1
-        - eu-west-3
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
       required: false
       secret: false
     - name: roleArn
@@ -341,22 +341,22 @@ script:
       isArray: false
       name: region
       predefined:
-        - us-east-1
-        - us-east-2
-        - us-west-1
-        - us-west-2
-        - ca-central-1
-        - eu-west-1
-        - eu-central-1
-        - eu-west-2
-        - ap-northeast-1
-        - ap-northeast-2
-        - ap-southeast-1
-        - ap-southeast-2
-        - ap-south-1
-        - sa-east-1
-        - eu-north-1
-        - eu-west-3
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
       required: false
       secret: false
     - name: roleArn
@@ -384,22 +384,22 @@ script:
       isArray: false
       name: region
       predefined:
-        - us-east-1
-        - us-east-2
-        - us-west-1
-        - us-west-2
-        - ca-central-1
-        - eu-west-1
-        - eu-central-1
-        - eu-west-2
-        - ap-northeast-1
-        - ap-northeast-2
-        - ap-southeast-1
-        - ap-southeast-2
-        - ap-south-1
-        - sa-east-1
-        - eu-north-1
-        - eu-west-3
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
       required: false
       secret: false
     - name: roleArn
@@ -423,22 +423,22 @@ script:
       isArray: false
       name: region
       predefined:
-        - us-east-1
-        - us-east-2
-        - us-west-1
-        - us-west-2
-        - ca-central-1
-        - eu-west-1
-        - eu-central-1
-        - eu-west-2
-        - ap-northeast-1
-        - ap-northeast-2
-        - ap-southeast-1
-        - ap-southeast-2
-        - ap-south-1
-        - sa-east-1
-        - eu-north-1
-        - eu-west-3
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
       required: false
       secret: false
     - name: roleArn
@@ -469,22 +469,22 @@ script:
       isArray: false
       name: region
       predefined:
-        - us-east-1
-        - us-east-2
-        - us-west-1
-        - us-west-2
-        - ca-central-1
-        - eu-west-1
-        - eu-central-1
-        - eu-west-2
-        - ap-northeast-1
-        - ap-northeast-2
-        - ap-southeast-1
-        - ap-southeast-2
-        - ap-south-1
-        - sa-east-1
-        - eu-north-1
-        - eu-west-3
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
       required: false
       secret: false
     - name: roleArn
@@ -510,8 +510,9 @@ script:
       in that order. The certificate and certificate chain are base64 encoded. If
       you want to decode the certificate to see the individual fields, you can use
       OpenSSL.
-  dockerimage: demisto/boto3py3:1.0.0.1030
+  dockerimage: demisto/boto3py3:1.0.0.13191
   runonce: false
   subtype: python3
 tests:
-  - ACM-Test
+- ACM-Test
+fromversion: 5.0.0

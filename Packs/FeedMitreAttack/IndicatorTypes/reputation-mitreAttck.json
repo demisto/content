@@ -5,7 +5,7 @@
     "sortValues": null,
     "commitMessage": "",
     "shouldCommit": false,
-    "regex": "\\b((MOB-T|T|TA|G|S|M)\\d{3,4})|((attack-pattern\u2013|intrusion-set|malware|tool|course-of-action|x-mitre-tactic|x-mitre-matrix)[a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})|(((APT)|(CAPEC\\-))\\d{1,4})\\b",
+    "regex": "\\b((T\\d{3,4}\\.\\d{3})|(MOB-T|T|TA|G|S|M)\\d{3,4})|((attack-pattern–|intrusion-set|malware|tool|course-of-action|x-mitre-tactic|x-mitre-matrix)[a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})|(((APT)|(CAPEC\\-))\\d{1,4})\\b",
     "details": "MITRE ATT&CK",
     "prevDetails": "MITRE ATT&CK",
     "reputationScriptName": "",
@@ -25,5 +25,6 @@
     "manualMapping": null,
     "fileHashesPriority": null,
     "expiration": 20160,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "layout": "MITRE ATT&CK"
 }

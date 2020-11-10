@@ -2,15 +2,21 @@ commonfields:
   id: TaniumFilterComputersByIndexQueryFileDetails
   version: -1
 name: TaniumFilterComputersByIndexQueryFileDetails
-script: |
+script: >
   dArgs = demisto.args()
+
   question_filters="Index Query File Details"
 
+
   sensors=dArgs.get("sensors")
+
   del dArgs['sensors']
 
+
   filter_type = None
+
   filter_value = None
+
 
   if 'filter_type' in dArgs:
       filter_type = dArgs.get('filter_type')
@@ -21,6 +27,7 @@ script: |
       del dArgs['filter_value']
 
   params = []
+
   for key in dArgs:
       params.append(key + "=" + dArgs[key])
 
@@ -35,11 +42,7 @@ type: python
 subtype: python2
 tags:
 - tanium
-comment: "Get the requested sensors from all machines where the Index Query File Details
-  match the given filter.\nE.g. !TaniumFilterQuestionByIndexQueryFileDetails sensors=\"Computer
-  Name\" filter_type=contains filter_value=Demisto limit=5 \nwill be translated the
-  following plain text Tanium question:\n\"Get Computer Name from all machines with
-  any Index Query File Details[*, *, *, *, *, *, *, 5] containing \"Demisto\"\""
+comment: "Get the requested sensors from all machines where the Index Query File Details match the given filter.\nE.g. !TaniumFilterQuestionByIndexQueryFileDetails sensors=\"Computer Name\" filter_type=contains filter_value=Demisto limit=5 \nwill be translated the following plain text Tanium question:\n\"Get Computer Name from all machines with any Index Query File Details[*, *, *, *, *, *, *, 5] containing \"Demisto\"\""
 enabled: true
 args:
 - name: directoryPath
@@ -81,13 +84,11 @@ args:
   required: true
   description: Value to filter results by
 - name: sensors
-  description: Semicolon separated list of columns to return. E.g. "Computer Name;IP
-    Address"
+  description: Semicolon separated list of columns to return. E.g. "Computer Name;IP Address"
   defaultValue: Computer Name
 outputs:
 - contextPath: Tanium.QuestionResults.Computer Name
-  description: Computer Name that contains the index query file details as specified
-    by the filters
+  description: Computer Name that contains the index query file details as specified by the filters
 - contextPath: Tanium.QuestionResults.Count
   description: Number or results per computer name that match the filter
 scripttarget: 0
@@ -95,3 +96,4 @@ runonce: false
 dependson:
   must:
   - tn-ask-manual-question
+fromversion: 5.0.0

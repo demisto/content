@@ -2,8 +2,9 @@ commonfields:
   id: D2Winpmem
   version: -1
 name: D2Winpmem
-script: |-
+script: >-
   //+winpmem/winpmem_2.0.1.exe
+
   try {
     if (env.OS !== 'windows') {
       throw ('script can only run on Windows');
@@ -27,10 +28,9 @@ tags:
 - agent
 - memory
 - forensics
-comment: Use the D2 agent to carry the winpmem binary to a system and return the memory
-  dump file to the war room. This usually takes a while, depending on amount of RAM
-  in the target system.
+comment: Use the D2 agent to carry the winpmem binary to a system and return the memory dump file to the war room. This usually takes a while, depending on amount of RAM in the target system.
 system: true
 scripttarget: 1
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

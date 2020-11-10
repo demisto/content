@@ -1,0 +1,1052 @@
+id: PassiveTotal_v2-Test
+version: -1
+name: PassiveTotal_v2-Test
+description: This playbook uses the PassiveTotal integration and tests the scenarios
+  of the various commands like pt-whois-search, pt-get-components, pt-get-trackers,
+  pt-get-pdns-details, pt-ssl-cert-search and pt-get-host-pairs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7a3af83e-8693-4ab8-8ecc-9bc670927895
+    type: start
+    task:
+      id: 7a3af83e-8693-4ab8-8ecc-9bc670927895
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: bcd48b7b-bfd9-453c-8ef7-4e2573e3eebf
+    type: regular
+    task:
+      id: bcd48b7b-bfd9-453c-8ef7-4e2573e3eebf
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4c673f10-967e-4475-8625-cbb60068aeb4
+    type: regular
+    task:
+      id: 4c673f10-967e-4475-8625-cbb60068aeb4
+      version: -1
+      name: pt-whois-search
+      script: '|||pt-whois-search'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: domain
+      query:
+        simple: amazon.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8f4f14ea-d799-4ee5-8bd8-5d1c86061819
+    type: condition
+    task:
+      id: 8f4f14ea-d799-4ee5-8bd8-5d1c86061819
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.CreationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.UpdatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.ExpirationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.NameServers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Admin.Email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Admin.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Admin.Phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Admin.Country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Registrant.Email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Registrant.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Registrant.Phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Registrant.Country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Admin.Email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Admin.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Admin.Phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Admin.Country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Registrar.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Registrant.Email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Registrant.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Registrant.Phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Registrant.Country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registrar
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.whoisServer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registered
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.expiresAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registryUpdatedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.lastLoadedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.nameServers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.contactEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registrantEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registrantName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registrantOrganization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registrantStreet
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registrantCity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registrantState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registrantPostalCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registrantCountry
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.registrantTelephone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.adminEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.adminName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.adminOrganization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.adminStreet
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.adminCity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.adminState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.adminPostalCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.adminCountry
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.adminTelephone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.techEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.techName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.techOrganization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.techStreet
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.techCity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.techState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.techPostalCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.techCountry
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.WHOIS.techTelephone
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: e9432eab-7d5a-4c73-8bf0-c48dceb2de2f
+    type: regular
+    task:
+      id: e9432eab-7d5a-4c73-8bf0-c48dceb2de2f
+      version: -1
+      name: pt-get-components
+      script: '|||pt-get-components'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      end: {}
+      query:
+        simple: www.furth.com.ar
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 0b88d2a0-ea1b-4ce9-8a98-97c65e1289b6
+    type: condition
+    task:
+      id: 0b88d2a0-ea1b-4ce9-8a98-97c65e1289b6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.Component.firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.Component.lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.Component.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.Component.label
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.Component.hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e5c646da-c179-47a2-891a-23d18fa6db2a
+    type: regular
+    task:
+      id: e5c646da-c179-47a2-891a-23d18fa6db2a
+      version: -1
+      name: pt-get-trackers
+      script: '|||pt-get-trackers'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      end: {}
+      query:
+        simple: filmesonlinegratis.net
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 11610289-73b1-4c35-8d28-78c92657d0ca
+    type: condition
+    task:
+      id: 11610289-73b1-4c35-8d28-78c92657d0ca
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.Tracker.firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.Tracker.lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.Tracker.attributeValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.Tracker.attributeType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.Tracker.hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 48af900a-9e8e-4581-8731-e2273f818625
+    type: regular
+    task:
+      id: 48af900a-9e8e-4581-8731-e2273f818625
+      version: -1
+      name: pt-get-pdns-details
+      script: '|||pt-get-pdns-details'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      end: {}
+      query:
+        simple: www.furth.com.ar
+      start: {}
+      timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: edea642c-0b6c-4da4-8980-34fa8ac19453
+    type: condition
+    task:
+      id: edea642c-0b6c-4da4-8980-34fa8ac19453
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.PDNS.resolve
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.PDNS.resolveType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.PDNS.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.PDNS.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.PDNS.firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.PDNS.lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.PDNS.collected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.PDNS.recordType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.PDNS.recordHash
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 2722e710-eef6-407c-8edd-d337fa085ac5
+    type: regular
+    task:
+      id: 2722e710-eef6-407c-8edd-d337fa085ac5
+      version: -1
+      name: pt-ssl-cert-search
+      script: '|||pt-ssl-cert-search'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      field:
+        simple: serialNumber
+      query:
+        simple: 61135c80f8ed28d2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: b0f0509e-4a81-4031-8386-daf9238e673e
+    type: condition
+    task:
+      id: b0f0509e-4a81-4031-8386-daf9238e673e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.fingerprint
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.sslVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.expirationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.issueDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.serialNumber
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.issuerCountry
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.issuerCommonName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.issuerOrganizationName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.subjectCommonName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.subjectOrganizationName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.subjectLocalityName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.subjectProvince
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.subjectStateOrProvinceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.subjectCountry
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.SSL.subjectAlternativeNames
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 9e78f579-c068-492a-861c-89035493f8a4
+    type: regular
+    task:
+      id: 9e78f579-c068-492a-861c-89035493f8a4
+      version: -1
+      name: pt-get-host-pairs
+      script: '|||pt-get-host-pairs'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      direction:
+        simple: children
+      end: {}
+      query:
+        simple: ns1.furth.com.ar
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 51e5d559-2344-48e3-8422-2fdd2b37bfb9
+    type: condition
+    task:
+      id: 51e5d559-2344-48e3-8422-2fdd2b37bfb9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.HostPair.firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.HostPair.lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.HostPair.cause
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.HostPair.parent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PassiveTotal.HostPair.child
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2bac2053-31b1-453f-889e-e51a56c6f600
+    type: title
+    task:
+      id: 2bac2053-31b1-453f-889e-e51a56c6f600
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2815,
+        "width": 390,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests

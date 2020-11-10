@@ -1,7 +1,7 @@
 id: Autofocus Query Samples, Sessions and Tags
 version: -1
 name: Autofocus Query Samples, Sessions and Tags
-fromversion: 4.5.0
+fromversion: 5.0.0
 description: |-
   This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
 
@@ -815,18 +815,15 @@ inputs:
 - key: Tags class
   value: {}
   required: false
-  description: Values can be Actor, Campaign, Exploit, Malicious Behavior, Malware
-    Family
+  description: Values can be Actor, Campaign, Exploit, Malicious Behavior, Malware Family
 - key: Tags private
   value: {}
   required: false
-  description: Values can be True, False. If true the search will only focus on private
-    (non public) objects. Default is false
+  description: Values can be True, False. If true the search will only focus on private (non public) objects. Default is false
 - key: Tags public
   value: {}
   required: false
-  description: Values can be True, False. If true the search will only focus on public
-    (non private) objects. Default is false.
+  description: Values can be True, False. If true the search will only focus on public (non private) objects. Default is false.
 - key: Commodity
   value: {}
   required: false
@@ -834,8 +831,7 @@ inputs:
 - key: Unit 42
   value: {}
   required: false
-  description: Values can be True, False. Default is false objects that have been
-    analyzed by Palo Alto's Unit 42 global threat intelligence team.
+  description: Values can be True, False. Default is false objects that have been analyzed by Palo Alto's Unit 42 global threat intelligence team.
 outputs:
 - contextPath: AutoFocus.SessionsResults
   description: Results of Autofocus sessions search.

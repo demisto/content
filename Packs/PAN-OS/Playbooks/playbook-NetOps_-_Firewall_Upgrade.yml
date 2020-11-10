@@ -4,7 +4,7 @@ fromversion: 5.0.0
 name: NetOps - Upgrade PAN-OS Firewall Device
 description: 'Network operations playbook that upgrades the firewall.
   You must have Superuser permissions to update the PAN-OS version.
-  Note: This playbook should only be used for minor version upgrades. Major version upgrades will not work due to a change in the API key. '
+  Note: This playbook should only be used for minor version upgrades. Major version upgrades will not work due to a change in the API key.'
 starttaskid: "0"
 tasks:
   "0":

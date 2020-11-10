@@ -24,8 +24,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Lists all of the security vulnerabilities for various products (OS,Applications)
-  etc)
+description: Lists all of the security vulnerabilities for various products (OS,Applications) etc)
 display: VulnDB
 name: VulnDB
 script:
@@ -361,8 +360,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns full details about a specific vulnerability, by vendor name and
-      product name.
+    description: Returns full details about a specific vulnerability, by vendor name and product name.
     execution: false
     name: vulndb-get-vuln-by-vendor-and-product-name
     outputs:
@@ -471,8 +469,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns full details about a specific vulnerability, by vendor ID and
-      product ID.
+    description: Returns full details about a specific vulnerability, by vendor ID and product ID.
     execution: false
     name: vulndb-get-vuln-by-vendor-and-product-id
     outputs:
@@ -913,3 +910,4 @@ script:
   type: python
 tests:
 - Test-VulnDB
+fromversion: 5.0.0

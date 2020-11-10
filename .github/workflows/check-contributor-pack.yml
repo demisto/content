@@ -1,0 +1,32 @@
+name: Check contributor packs
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  check_contributor_pack:
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'contrib/') == false && startsWith(github.head_ref, 'to-merge/') == false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r dev-requirements-py3.txt
+      - name: Check pack and request review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          echo "PR number is: $PR_NUMBER"
+          echo "Target branch name is: $BRANCH_NAME"
+          echo "Starting check of contributor packs"
+          python Utils/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
+          echo "Finished check of contributor packs"

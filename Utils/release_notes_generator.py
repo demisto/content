@@ -1,4 +1,3 @@
-from __future__ import print_function
 import re
 import os
 import sys
@@ -7,11 +6,12 @@ import glob
 import argparse
 from datetime import datetime
 from typing import Dict, Tuple
+import logging
 
 from distutils.version import LooseVersion
 import requests
-from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, get_dict_from_file
-
+from demisto_sdk.commands.common.tools import run_command, get_dict_from_file
+from Tests.scripts.utils.log_util import install_logging
 
 PACKS_DIR = 'Packs'
 DATE_FORMAT = '%d %B %Y'
@@ -20,8 +20,9 @@ PACKS_RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
 
 EMPTY_LINES_REGEX = re.compile(r'\s*-\s*\n')
 IGNORED_LINES_REGEX = re.compile(r'<!-[\W\w]*?-->')
-ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### (\w+)$\n([\w\W]*?)(?=^#### )|^#### (\w+)$\n([\w\W]*)', re.M)
-ENTITY_SECTION_REGEX = re.compile(r'^##### (.+)$\n([\w\W]*?)(?=^##### )|^##### (.+)$\n([\w\W]*)', re.M)
+ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### ([\w ]+)$\n([\w\W]*?)(?=^#### )|^#### ([\w ]+)$\n([\w\W]*)', re.M)
+ENTITY_SECTION_REGEX = re.compile(r'^##### (.+)$\n([\w\W]*?)(?=^##### )|^##### (.+)$\n([\w\W]*)|'
+                                  r'^- \*\*(.+)\*\*$\n([\w\W]*)', re.M)
 
 LAYOUT_TYPE_TO_NAME = {
     "details": "Summary",
@@ -47,13 +48,14 @@ def get_new_packs(git_sha1):
     try:
         diff_result = run_command(diff_cmd, exit_on_error=False)
     except RuntimeError:
-        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
-                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
-                    'If you\'re not on a fork, run "git merge origin/master".\n'
-                    'If you are on a fork, first set https://github.com/demisto/content to be '
-                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
-                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
-                    'these steps will merge your branch with content master as a base.')
+        logging.critical(
+            'Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
+            'branch is not updated with origin master. Merge from origin master and, try again.\n'
+            'If you\'re not on a fork, run "git merge origin/master".\n'
+            'If you are on a fork, first set https://github.com/demisto/content to be '
+            'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
+            'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
+            'these steps will merge your branch with content master as a base.')
         sys.exit(1)
 
     pack_paths = [os.path.dirname(file_path) for file_path in diff_result.split('\n')
@@ -69,17 +71,22 @@ def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
         type_id = data.get('typeId', '')
         return f'{type_id} - {layout_kind}', ''
 
-    name = data.get('name', '')
+    name = data.get('name', entity_path)
     if 'integrations' in entity_path.lower() and data.get('display'):
         name = data.get('display')
 
-    if not name:
-        print_error(f'missing name for {entity_path}')
+    if 'classifiers' in entity_path.lower():
+        name = data.get('name')
+        if not name:
+            name = data.get('brandName')
+
+    if name == entity_path:
+        logging.error(f'missing name for {entity_path}')
 
     # script entities has "comment" instead of "description"
     description = data.get('description', '') or data.get('comment', '')
     if not description:
-        print_warning(f'missing description for {entity_path}')
+        logging.warning(f'missing description for {entity_path}')
 
     return name, description
 
@@ -108,15 +115,20 @@ def construct_entities_block(entities_data: dict):
     """
     release_notes = ''
     for entity_type, entities_description in sorted(entities_data.items()):
-        release_notes += f'#### {entity_type}\n'
+        pretty_entity_type = re.sub(r'(\w)([A-Z])', r'\1 \2', entity_type)
+        release_notes += f'#### {pretty_entity_type}\n'
         for name, description in entities_description.items():
-            release_notes += f'##### {name}  \n{description}\n'
+            if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields',
+                               'Incident Types', 'Indicator Types', 'Incident Fields'):
+                release_notes += f'- **{name}**\n{description}\n'
+            else:
+                release_notes += f'##### {name}  \n{description}\n'
 
     return release_notes
 
 
 def get_pack_entities(pack_path):
-    print(f'Processing "{pack_path}" files:')
+    logging.info(f'Processing "{pack_path}" files:')
     pack_entities = sum([
         glob.glob(f'{pack_path}/*/*.json'),
         glob.glob(f'{pack_path}/*/*.yml'),
@@ -127,7 +139,7 @@ def get_pack_entities(pack_path):
     for entity_path in pack_entities:
         # ignore test files
         if 'test' in entity_path.lower():
-            print(f'skipping test file: {entity_path}')
+            logging.info(f'skipping test file: {entity_path}')
             continue
 
         match = re.match(f'{pack_path}/([^/]*)/.*', entity_path)
@@ -142,7 +154,7 @@ def get_pack_entities(pack_path):
 
     release_notes = construct_entities_block(entities_data)
 
-    print('Finished processing pack')
+    logging.info('Finished processing pack')
     return release_notes
 
 
@@ -160,13 +172,14 @@ def get_all_modified_release_note_files(git_sha1):
     try:
         diff_result = run_command(diff_cmd, exit_on_error=False)
     except RuntimeError:
-        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
-                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
-                    'If you\'re not on a fork, run "git merge origin/master".\n'
-                    'If you are on a fork, first set https://github.com/demisto/content to be '
-                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
-                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
-                    'these steps will merge your branch with content master as a base.')
+        logging.critical(
+            'Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
+            'branch is not updated with origin master. Merge from origin master and, try again.\n'
+            'If you\'re not on a fork, run "git merge origin/master".\n'
+            'If you are on a fork, first set https://github.com/demisto/content to be '
+            'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
+            'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
+            'these steps will merge your branch with content master as a base.')
         sys.exit(1)
 
     release_notes_files = [file_path for file_path in diff_result.split('\n')
@@ -174,19 +187,22 @@ def get_all_modified_release_note_files(git_sha1):
     return release_notes_files
 
 
-def get_pack_name_from_metdata(pack_path):
+def get_pack_metadata(pack_path):
     pack_metadata_path = os.path.join(pack_path, PACK_METADATA)
     with open(pack_metadata_path, 'r') as json_file:
         pack_metadata = json.load(json_file)
-        pack_name = pack_metadata.get('name')
 
-    return pack_name
+    return pack_metadata
 
 
-def get_pack_name_from_release_note(file_path):
+def is_partner_supported_in_metadata(metadata):
+    return metadata and metadata.get('support') == 'partner'
+
+
+def get_pack_path_from_release_note(file_path):
     match = re.search(r'(.*)/ReleaseNotes/.*', file_path)
     if match:
-        return get_pack_name_from_metdata(match.group(1))
+        return match.group(1)
 
     raise ValueError('Pack name was not found for file path {}'.format(file_path))
 
@@ -215,23 +231,28 @@ def get_release_notes_dict(release_notes_files):
 
     Returns:
         (dict) A mapping from pack names to dictionaries of pack versions to release notes.
+        (dict) A mapping from pack name to the pack metadata object
     """
     release_notes_dict = {}
+    packs_metadata_dict = {}
     for file_path in release_notes_files:
-        pack_name = get_pack_name_from_release_note(file_path)
+        pack_path = get_pack_path_from_release_note(file_path)
+        pack_metadata = get_pack_metadata(pack_path)
+        pack_name = pack_metadata.get('name')
+        packs_metadata_dict[pack_name] = pack_metadata
         pack_version = get_pack_version_from_path(file_path)
 
         release_note = read_and_format_release_note(file_path)
         if release_note:
             release_notes_dict.setdefault(pack_name, {})[pack_version] = release_note
-            print('Adding release notes for pack {} {}...'.format(pack_name, pack_version))
+            logging.info('Adding release notes for pack {} {}...'.format(pack_name, pack_version))
         else:
-            print('Ignoring release notes for pack {} {}...'.format(pack_name, pack_version))
+            logging.info('Ignoring release notes for pack {} {}...'.format(pack_name, pack_version))
 
-    return release_notes_dict
+    return release_notes_dict, packs_metadata_dict
 
 
-def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
+def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict):
     """
     merge several pack release note versions into a single block.
 
@@ -264,27 +285,30 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
             entity_comments = ENTITY_SECTION_REGEX.findall(entity_section)
             for entity in entity_comments:
                 # name of the script, integration, playbook, etc...
-                entity_name = entity[0] or entity[2]
+                entity_name = entity[0] or entity[2] or entity[4]
                 entity_name = entity_name.replace('__', '')
                 # release notes of the entity
-                entity_comment = entity[1] or entity[3]
+                entity_comment = entity[1] or entity[3] or entity[5]
                 if entity_name in entities_data[entity_type]:
                     entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
                 else:
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
 
     pack_release_notes = construct_entities_block(entities_data)
-    return (f'### {pack_name} Pack v{latest_version}\n'
+
+    partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
+    return (f'### {pack_name} Pack v{latest_version}{partner}\n'
             f'{pack_release_notes.strip()}')
 
 
-def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, version, asset_id,
-                                   release_notes_file):
+def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, packs_metadata_dict, version,
+                                   asset_id, release_notes_file):
     """ Creates a release notes summary markdown file.
 
     Args:
         new_packs_release_notes (dict): A mapping from pack names to pack summary.
         modified_release_notes_dict (dict): A mapping from pack names to dictionaries of pack versions to release notes.
+        packs_metadata_dict (dict): A mapping from pack names to the packs metadata
         version (str): Content version.
         asset_id (str): The asset ID.
         release_notes_file (str): release notes output file path
@@ -298,11 +322,14 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
 
     pack_rn_blocks = []
     for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
-        pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0\n'
+        pack_metadata = packs_metadata_dict[pack_name]
+        partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
+        pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0{partner}\n'
                               f'{pack_summary}')
 
     for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
-        pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict))
+        pack_metadata = packs_metadata_dict[pack_name]
+        pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict, pack_metadata))
         # for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
         #                                                key=lambda pack_item: LooseVersion(pack_item[0])):
         #     pack_rn_blocks.append(f'### {pack_name} Pack v{pack_version}\n'
@@ -325,7 +352,7 @@ def get_release_notes_draft(github_token, asset_id):
     :return: draft text (or empty string on error).
     """
     if github_token is None:
-        print_warning('Unable to download draft without github token.')
+        logging.warning('Unable to download draft without github token.')
         return ''
 
     # Disable insecure warnings
@@ -336,11 +363,11 @@ def get_release_notes_draft(github_token, asset_id):
                            verify=False,  # guardrails-disable-line
                            headers={'Authorization': 'token {}'.format(github_token)})
     except requests.exceptions.ConnectionError as exc:
-        print_warning(f'Unable to get release draft, reason:\n{str(exc)}')
+        logging.warning(f'Unable to get release draft, reason:\n{str(exc)}')
         return ''
 
     if res.status_code != 200:
-        print_warning(f'Unable to get release draft ({res.status_code}), reason:\n{res.text}')
+        logging.warning(f'Unable to get release draft ({res.status_code}), reason:\n{res.text}')
         return ''
 
     drafts = [release for release in res.json() if release.get('draft', False)]
@@ -353,7 +380,7 @@ def get_release_notes_draft(github_token, asset_id):
 
             return draft_body
 
-        print_warning(f'Too many drafts to choose from ({len(drafts)}), skipping update.')
+        logging.warning(f'Too many drafts to choose from ({len(drafts)}), skipping update.')
 
     return ''
 
@@ -383,6 +410,7 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
 
 
 def main():
+    install_logging('Build Content Descriptor.log')
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
@@ -394,14 +422,20 @@ def main():
 
     new_packs = get_new_packs(args.git_sha1)
     new_packs_release_notes = {}
+    new_packs_metadata = {}
     for pack in new_packs:
-        pack_name = get_pack_name_from_metdata(pack)
+        pack_metadata = get_pack_metadata(pack)
+        pack_name = pack_metadata.get('name')
         new_packs_release_notes[pack_name] = get_pack_entities(pack)
+        new_packs_metadata[pack_name] = pack_metadata
 
+    packs_metadata_dict = {}
     modified_release_notes = get_all_modified_release_note_files(args.git_sha1)
-    modified_release_notes_dict = get_release_notes_dict(modified_release_notes)
+    modified_release_notes_dict, modified_packs_metadata = get_release_notes_dict(modified_release_notes)
+    packs_metadata_dict.update(new_packs_metadata)
+    packs_metadata_dict.update(modified_packs_metadata)
     release_notes = generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict,
-                                                   args.version, args.asset_id, args.output)
+                                                   packs_metadata_dict, args.version, args.asset_id, args.output)
     create_content_descriptor(release_notes, args.version, args.asset_id, args.github_token)
 
 

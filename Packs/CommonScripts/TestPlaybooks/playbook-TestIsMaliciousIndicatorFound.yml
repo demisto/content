@@ -85,8 +85,7 @@ tasks:
       id: 277d313e-0e5a-463a-816e-1a548b2c7312
       version: -1
       name: IsMaliciuosFound
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -176,8 +175,7 @@ tasks:
       id: 07d11d80-2f67-4eed-8426-63db73603d7c
       version: -1
       name: IsMaliciuosFound
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -268,8 +266,7 @@ tasks:
       id: 54c9bf70-06a8-48cf-855d-658745bdf2a4
       version: -1
       name: IsMaliciuosFound-no-suspicious
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -304,8 +301,7 @@ tasks:
       id: 965baa8d-a8c1-4a35-8d4d-e499aded282e
       version: -1
       name: IsMaliciuosFound-include-suspicious
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -438,8 +434,7 @@ tasks:
       id: 022fa758-3049-497b-8002-0ad4a62bb747
       version: -1
       name: IsMaliciuosFound
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -475,8 +470,7 @@ tasks:
       id: 113d8e4e-0e24-4c2c-85b9-73c9a0988137
       version: -1
       name: IsMaliciuosFound
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -1215,8 +1209,7 @@ tasks:
       id: 9a869794-32db-4501-8452-ff3e1ddefdb2
       version: -1
       name: IsMaliciuosFound-include-suspicious
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -1283,8 +1276,7 @@ tasks:
       id: a6078fac-e689-4b3d-85d5-b215cb583a03
       version: -1
       name: IsMaliciuosFound
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -1350,8 +1342,7 @@ tasks:
       id: 55761573-5e71-4196-8e45-1b0e71ecdd0a
       version: -1
       name: IsMaliciuosFound
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -1417,8 +1408,7 @@ tasks:
       id: a6695b95-69db-4575-8ad1-fbe1ed82b566
       version: -1
       name: IsMaliciuosFound
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -1459,4 +1449,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.1.0
+fromversion: 5.0.0

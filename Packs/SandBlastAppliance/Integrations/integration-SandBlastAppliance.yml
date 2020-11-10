@@ -28,13 +28,19 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var server = params.server;
+
     var insecure = params.insecure;
+
     var proxy = params.proxy;
+
     var version = params.version;
+
     var requestTemplate = JSON.stringify({request:[{features:['te']}]});
+
     var base = server.replace(/[\/]+$/, '') +':18194/tecloud/gw/' + version + '/file/';
+
 
     var urlDict = {
         'sb-query': 'query',
@@ -44,6 +50,7 @@ script:
         'sandblast-upload': 'upload',
         'sandblast-download': 'download'
     };
+
 
     var sendRequest = function(url, body, queryName) {
         var res = http(
@@ -61,7 +68,9 @@ script:
         return JSON.parse(res.Body);
     };
 
+
     var teArgs = {'images': 0, 'reports': 0, 'benign_reports': 1};
+
 
     var createRequest = function(args) {
         if (!args.features) {
@@ -93,7 +102,9 @@ script:
         return JSON.stringify(request);
     };
 
+
     var raw;
+
     switch (command) {
         case 'test-module':
             if (sendRequest(urlDict['sb-query'], createRequest({md5:'31335bc6357f0eb6e3370803b9a6a318'}), 'test')) {
@@ -152,6 +163,7 @@ script:
             raw = {Type: entryTypes.note, ContentsFormat: formats.json, Contents: contents};
     }
 
+
     if (command === 'sandblast-upload' || command === 'sandblast-query' || command === 'sb-upload' || command === 'sb-query') {
         var uniqueKeys = ['md5', 'sha1', 'sha256'];
         var ec = {};
@@ -208,6 +220,7 @@ script:
             ', md5 ' + raw.Contents.response.md5,
             raw.Contents.response.te);
     }
+
     return raw;
   type: javascript
   commands:
@@ -239,8 +252,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: By default, reports are returned only for malicious files - you
-        can mark this as true and get benign reports
+      description: By default, reports are returned only for malicious files - you can mark this as true and get benign reports
     - name: quota
       auto: PREDEFINED
       predefined:
@@ -249,9 +261,7 @@ script:
       description: If true, response delivers the quota data (for cloud services only)
     - name: file_name
       description: File name - service calculates the file name from the part name
-    description: Use the Query API to have a client application look for either the
-      analysis report of a specific file on the Check Point Threat Prevention service
-      databases or the status of a file, uploaded for analysis
+    description: Use the Query API to have a client application look for either the analysis report of a specific file on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis
   - name: sandblast-query
     arguments:
     - name: md5
@@ -279,8 +289,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: By default, reports are returned only for malicious files - you
-        can mark this as true and get benign reports
+      description: By default, reports are returned only for malicious files - you can mark this as true and get benign reports
     - name: quota
       auto: PREDEFINED
       predefined:
@@ -310,9 +319,7 @@ script:
       description: The file sha1
     - contextPath: File.SHA256
       description: The file sha256
-    description: Use the Query API to have a client application look for either the
-      analysis report of a specific file on the Check Point Threat Prevention service
-      databases or the status of a file, uploaded for analysis
+    description: Use the Query API to have a client application look for either the analysis report of a specific file on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis
   - name: sb-upload
     deprecated: true
     arguments:
@@ -345,15 +352,11 @@ script:
       predefined:
       - "true"
       - "false"
-      description: By default, reports are returned only for malicious files - you
-        can mark this as true and get benign reports
+      description: By default, reports are returned only for malicious files - you can mark this as true and get benign reports
     - name: file_id
       required: true
       description: The file id
-    description: Use the Upload API to have a client application request that Check
-      Point Threat Prevention modules scan and analyze a file. When you upload a file
-      to the service, the file is encrypted. It is un-encrypted during analysis, and
-      then deleted
+    description: Use the Upload API to have a client application request that Check Point Threat Prevention modules scan and analyze a file. When you upload a file to the service, the file is encrypted. It is un-encrypted during analysis, and then deleted
   - name: sandblast-upload
     arguments:
     - name: file_name
@@ -385,8 +388,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: By default, reports are returned only for malicious files - you
-        can mark this as true and get benign reports
+      description: By default, reports are returned only for malicious files - you can mark this as true and get benign reports
     - name: file_id
       required: true
       description: The file id
@@ -411,10 +413,7 @@ script:
       description: The file sha1
     - contextPath: File.SHA256
       description: The file sha256
-    description: Use the Upload API to have a client application request that Check
-      Point Threat Prevention modules scan and analyze a file. When you upload a file
-      to the service, the file is encrypted. It is un-encrypted during analysis, and
-      then deleted
+    description: Use the Upload API to have a client application request that Check Point Threat Prevention modules scan and analyze a file. When you upload a file to the service, the file is encrypted. It is un-encrypted during analysis, and then deleted
   - name: sb-download
     deprecated: true
     arguments:
@@ -422,10 +421,7 @@ script:
       required: true
       default: true
       description: File id to download
-    description: 'Use the Download API to have a client application download files
-      generated by the Check Point Threat Prevention service: analysis reports, Threat
-      Emulation sandbox outputs, and more. The request must have the ID of the file
-      to download'
+    description: 'Use the Download API to have a client application download files generated by the Check Point Threat Prevention service: analysis reports, Threat Emulation sandbox outputs, and more. The request must have the ID of the file to download'
   - name: sandblast-download
     arguments:
     - name: id
@@ -441,10 +437,7 @@ script:
       description: The file sha256
     - contextPath: File.Name
       description: The file name
-    description: 'Use the Download API to have a client application download files
-      generated by the Check Point Threat Prevention service: analysis reports, Threat
-      Emulation sandbox outputs, and more. The request must have the ID of the file
-      to download'
-fromversion: 3.5.0
+    description: 'Use the Download API to have a client application download files generated by the Check Point Threat Prevention service: analysis reports, Threat Emulation sandbox outputs, and more. The request must have the ID of the file to download'
+fromversion: 5.0.0
 tests:
-  - no test
+- no test

@@ -22,9 +22,6 @@ THRESHOLD = int(demisto.params().get('threshold', '0'))
 if THRESHOLD:
     THRESHOLD = int(THRESHOLD)
 
-domain_regex = r'(?i)(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)+[-A-Z0-9]+' \
-               r'(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!:,.\(\);\*|]*[-A-Z0-9+&@#\/%=~_$\(\);\*|])?|' \
-               r'\b[-A-Za-z0-9._%+\*|]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
 url_regex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)?(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?(?:(?:\/|\?)'\
             r'[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
@@ -34,7 +31,6 @@ REGEX_MAP = {
     'md5': re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags),
     'sha1': re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags),
     'sha256': re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags),
-    'domain': re.compile(domain_regex, regexFlags)
 }
 
 TQ_TO_DEMISTO_INDICATOR_TYPES = {
@@ -158,6 +154,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
 
         if not files:
             params = json.dumps(params)
+            api_call_headers.update({'Content-Type': 'application/json'})
 
     response = requests.request(
         method,
@@ -632,7 +629,7 @@ def get_indicator_type_id(indicator_name: str) -> str:
         if indicator.get('name', '').lower() == indicator_name.lower():
             return indicator.get('id')
 
-    raise ValueError(f'Could not find indicator')
+    raise ValueError('Could not find indicator')
 
 
 def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
@@ -722,7 +719,7 @@ def advance_search_command():
 def search_by_name_command():
     args = demisto.args()
     name = args.get('name')
-    limit = args.get('limit')
+    limit = args.get('limit', '10')
 
     if limit and isinstance(limit, str) and not limit.isdigit():
         return_error('limit argument must be an integer.')
@@ -1126,7 +1123,7 @@ def upload_file_command():
     args = demisto.args()
     entry_id = args.get('entry_id')
     title = args.get('title')
-    malware_safety_lock = args.get('malware_safety_lock')
+    malware_safety_lock = args.get('malware_safety_lock', 'off')
     file_category = args.get('file_category')
 
     file_info = demisto.getFilePath(entry_id)
@@ -1185,8 +1182,8 @@ def download_file_command():
 
 def get_all_objs_command(obj_type):
     args = demisto.args()
-    page = int(args.get('page'))
-    limit = int(args.get('limit'))
+    page = int(args.get('page', 0))
+    limit = int(args.get('limit', 50))
     if limit > 200:
         limit = 200
 
@@ -1252,11 +1249,7 @@ def get_domain_reputation():
     domains = argToList(args.get('domain'))
 
     for domain in domains:
-        if not REGEX_MAP['domain'].match(domain):
-            return_error('{0} is not a valid domain.'.format(domain))
-
         generic_context = {'Name': domain}
-
         make_indicator_reputation_request(indicator_type='domain', value=domain, generic_context=generic_context)
 
 

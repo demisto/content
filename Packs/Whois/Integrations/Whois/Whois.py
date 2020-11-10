@@ -8,7 +8,7 @@ from codecs import encode, decode
 import socks
 import errno
 
-ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) else entryTypes['warning']
+SHOULD_ERROR = demisto.params().get('with_error', False)
 
 # flake8: noqa
 
@@ -7235,13 +7235,12 @@ def get_root_server(domain):
                     }
                 },
             })
-            demisto.results({
-                'ContentsFormat': 'text',
-                'Type': ENTRY_TYPE,
-                'Contents': 'The domain - {} - is not supported by the Whois service'.format(domain),
-                'EntryContext': context
-            })
-            sys.exit(-1)
+            if SHOULD_ERROR:
+                return_error('The domain - {} - is not supported by the Whois service'.format(domain),
+                             outputs=context)
+            else:
+                return_warning('The domain - {} - is not supported by the Whois service'.format(domain),
+                               exit=True, outputs=context)
 
         return host
 
@@ -7263,15 +7262,11 @@ def whois_request(domain, server, port=43):
             },
         })
 
-        demisto.results(
-            {
-                'ContentsFormat': 'text',
-                'Type': ENTRY_TYPE,
-                'Contents': "Whois returned - Couldn't connect with the socket-server: {}".format(msg),
-                'EntryContext': context
-            }
-        )
-        sys.exit(-1)
+        if SHOULD_ERROR:
+            return_error("Whois returned - Couldn't connect with the socket-server: {}".format(msg), outputs=context)
+        else:
+            return_warning("Whois returned - Couldn't connect with the socket-server: {}".format(msg),
+                           exit=True, outputs=context)
 
     else:
         sock.send(("%s\r\n" % domain).encode("utf-8"))
@@ -8042,7 +8037,7 @@ def parse_dates(dates):
                     hour = 0
                     minute = 0
                     second = 0
-                    print(e.message)  # FIXME: This should have proper logging of some sort...?
+                    demisto.debug(e.message)
         try:
             if year > 0:
                 try:
@@ -8192,9 +8187,9 @@ def parse_registrants(data, never_query_handles=True, handle_server=""):
                     i += 1
                 obj["organization"] = "\n".join(organization_items)
             if 'changedate' in obj:
-                obj['changedate'] = parse_dates([obj['changedate']])[0]
+                obj['changedate'] = parse_dates([obj['changedate']])[0].strftime('%d-%m-%Y')
             if 'creationdate' in obj:
-                obj['creationdate'] = parse_dates([obj['creationdate']])[0]
+                obj['creationdate'] = parse_dates([obj['creationdate']])[0].strftime('%d-%m-%Y')
             if 'street' in obj and "\n" in obj["street"] and 'postalcode' not in obj:
                 # Deal with certain mad WHOIS servers that don't properly delimit address data... (yes, AFNIC, looking at you)
                 lines = [x.strip() for x in obj["street"].splitlines()]
@@ -8368,20 +8363,21 @@ def create_outputs(whois_result, domain, query=None):
 
 
 def domain_command():
-    domain = demisto.args().get('domain')
-    whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': str(whois_result),
-        'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': {
-            'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
-                dbot_score
-        }
-    })
+    domains = demisto.args().get('domain', [])
+    for domain in argToList(domains):
+        whois_result = get_whois(domain)
+        md, standard_ec, dbot_score = create_outputs(whois_result, domain)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': str(whois_result),
+            'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
+            'EntryContext': {
+                'Domain(val.Name && val.Name == obj.Name)': standard_ec,
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
+                    dbot_score
+            }
+        })
 
 
 def whois_command():

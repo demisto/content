@@ -1,7 +1,7 @@
 import demistomock as demisto
 import json
 import pytest
-from MicrosoftDefenderAdvancedThreatProtection import MsClient
+from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 
@@ -647,3 +647,35 @@ MACHINE_DATA = {
     'AADDeviceID': '12ab34cd',
     'ExposureLevel': "Medium"
 }
+
+
+def tests_get_future_time(mocker):
+    from datetime import datetime
+    mocker.patch(
+        'MicrosoftDefenderAdvancedThreatProtection.parse_date_range',
+        return_value=(datetime(1992, 3, 18), datetime(1992, 3, 21)))
+    assert '1992-03-24T00:00:00Z' == get_future_time('3 days')
+
+
+def test_build_std_output_domain():
+    domain = "serverity5s55.com"
+    res = build_std_output([{
+        "domainName": domain
+    }])
+    assert res['Domain(val.Name && val.Name == obj.Name)'][0]['Name'] == domain
+
+
+def test_build_std_output_ip():
+    ip = "8.8.8.8"
+    res = build_std_output([{
+        "networkIPv4": ip
+    }])
+    assert res['IP(val.Address && val.Address == obj.Address)'][0]['Address'] == ip
+
+
+def test_build_std_output_url():
+    url = "https://www.example.com/"
+    res = build_std_output([{
+        "url": url
+    }])
+    assert res['URL(val.Data && val.Data == obj.Data)'][0]['Data'] == url

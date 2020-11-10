@@ -1,0 +1,211 @@
+id: PCAP Analysis Test
+version: -1
+fromversion: 5.0.0
+description: Test playbook
+name: PCAP Analysis Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 38ed73b1-a63e-478a-8bea-d6f60ffc3599
+    type: start
+    task:
+      id: 38ed73b1-a63e-478a-8bea-d6f60ffc3599
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 50ac5260-1f02-4a15-8b6a-2bfa7c11e959
+    type: regular
+    task:
+      id: 50ac5260-1f02-4a15-8b6a-2bfa7c11e959
+      version: -1
+      name: Get PCAP
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: smb-on-windows-10.pcapng
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/Packs/PcapAnalysis/Scripts/PcapMinerV2/TestData/smb-on-windows-10.pcapng
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1e4d8093-391d-4249-86ad-bdeac08b164d
+    type: playbook
+    task:
+      id: 1e4d8093-391d-4249-86ad-bdeac08b164d
+      version: -1
+      name: PCAP Analysis
+      description: 'This playbook leverages all of the PCAP miner automation capabilities
+        including: * Search for specific values in a PCAP file * Parse and enrich
+        detected indicators found by the search such as IP addresses, URLs, email
+        addresses and domains. * Carve (extract) files found in the http, smb and
+        other protocols and perform enrichment and detonation.'
+      playbookName: PCAP Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      AdvancedSearchFilter: {}
+      ExtractedFilesLimit:
+        simple: "5"
+      FileExtensionFilter: {}
+      FileTypeFilter: {}
+      FilterType:
+        simple: inclusive
+      IPAddressToSearch: {}
+      InternalEmailDomainName: {}
+      InternalIPRange: {}
+      InternalUrlName: {}
+      PcapFileEntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapfile.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pcap
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: cap
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pcapng
+          accessor: EntryID
+      ProtocolToSearch:
+        simple: smb,smb2
+      QueryOperator:
+        simple: and
+      RegexToSearch: {}
+      RsaDecryptKeyEntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapencryptionkey.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: key
+          accessor: EntryID
+      RunFileCarving:
+        simple: "true"
+      RunParsingAndEnrichment:
+        simple: "true"
+      TCPPortsToSearch: {}
+      UDPPortsToSearch: {}
+      WpaPassword: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 545,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

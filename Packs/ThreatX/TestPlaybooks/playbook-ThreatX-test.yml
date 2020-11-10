@@ -293,8 +293,7 @@ tasks:
       id: 16b5cc24-17f2-4072-840f-ce92f0a472df
       version: -1
       name: threatx-add-entity-note
-      description: 'Add a new note to the Entity. Example: !threatx-add-entity-note
-        entity_id=566056709695514809 message="test note"'
+      description: 'Add a new note to the Entity. Example: !threatx-add-entity-note entity_id=566056709695514809 message="test note"'
       script: ThreatX|||threatx-add-entity-note
       type: regular
       iscommand: true
@@ -492,8 +491,7 @@ tasks:
       id: e06be206-2882-40d4-81a2-c299e855d001
       version: -1
       name: IP Address Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -561,8 +559,7 @@ tasks:
       id: 6458ab81-7833-43a7-86dd-62b4ba29450a
       version: -1
       name: IP Address Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -662,8 +659,7 @@ tasks:
       id: a1409a53-89c3-403c-82cb-3b0efa9803e0
       version: -1
       name: IP Address Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -731,8 +727,7 @@ tasks:
       id: a82c59a4-1760-4c8e-8cc0-b3ab4c915dff
       version: -1
       name: IP Address Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -832,8 +827,7 @@ tasks:
       id: e372c138-d952-46b2-8312-57da6679ffb3
       version: -1
       name: IP Address Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -901,8 +895,7 @@ tasks:
       id: 1a374c76-701e-4129-8c27-3d2f57c232e7
       version: -1
       name: IP Address Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -970,8 +963,7 @@ tasks:
       id: cdd9645c-c415-433c-8a75-5e87660f2249
       version: -1
       name: Entity ID Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1003,8 +995,7 @@ tasks:
       id: 81cb6a5a-3393-4388-876c-9e393881d58e
       version: -1
       name: Entity Note Content Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1036,8 +1027,7 @@ tasks:
       id: ca5edf0c-c87e-40f3-88e4-0dad41836ad5
       version: -1
       name: Entity Note Timestamp Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1069,8 +1059,7 @@ tasks:
       id: 2a3f8277-175e-457d-8020-0aa53720ccba
       version: -1
       name: Entity Note Username Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1102,8 +1091,7 @@ tasks:
       id: fd7d6aaf-b018-468d-8b12-432d158b5728
       version: -1
       name: Entity ID Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1137,8 +1125,7 @@ tasks:
       id: d75a80a2-e4c4-4609-8ad7-a10752e5cd8a
       version: -1
       name: Entity Name Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1170,8 +1157,7 @@ tasks:
       id: 6aa78f84-0867-46a5-8493-69f7182e7639
       version: -1
       name: Entity IP Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1203,8 +1189,7 @@ tasks:
       id: 4f7dc249-fe9e-47d4-828e-3b10c83368fa
       version: -1
       name: Entity Risk Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1236,10 +1221,7 @@ tasks:
       id: 44a19905-86c5-4c86-866c-128752e75774
       version: -1
       name: threatx-get-entities
-      description: 'Get high-level Entity information using the Entity ID, Entity
-        Name, or Entity IP. For example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot
-        entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14. Note: long
-        look-back timeframes for a large number of Entities can timeout.'
+      description: 'Get high-level Entity information using the Entity ID, Entity Name, or Entity IP. For example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14. Note: long look-back timeframes for a large number of Entities can timeout.'
       script: ThreatX|||threatx-get-entities
       type: regular
       iscommand: true
@@ -1304,3 +1286,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -6,7 +6,7 @@ configuration:
 - display: Fetch indicators
   name: feed
   required: false
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
@@ -33,6 +33,16 @@ configuration:
   required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -43,6 +53,11 @@ configuration:
     - interval
     - indicatorType
     - suddenDeath
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - display: ""
   name: feedExpirationInterval
   required: false
@@ -117,7 +132,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.5.10845
   feed: true
   isfetch: false
   longRunning: false

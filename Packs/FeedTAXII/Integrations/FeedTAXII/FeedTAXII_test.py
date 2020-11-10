@@ -1,6 +1,8 @@
 import json
 import pytest
 
+from FeedTAXII import TAXIIClient, fetch_indicators_command
+
 """ helper functions """
 
 
@@ -86,12 +88,29 @@ class TestUtilFunctions:
 
 class TestCommands:
     def test_fetch_indicators(self, mocker):
-        from FeedTAXII import TAXIIClient, fetch_indicators_command
         client = TAXIIClient(collection='a collection')
         with open('FeedTAXII_test/TestCommands/raw_indicators.json', 'r') as f:
             raw_indicators = json.load(f)
             mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
             res = fetch_indicators_command(client)
-            with open('FeedTAXII_test/TestCommands/indicators_results.json', 'r') as exp_f:
+            with open('FeedTAXII_test/TestCommands/indicators_results.json') as exp_f:
                 expected = json.load(exp_f)
                 assert res == expected
+
+
+@pytest.mark.parametrize('tags', (['tags1, tags2'], []))
+def test_tags_parameter(mocker, tags):
+    """
+    Given:
+    - tags parameters
+    When:
+    - Executing any command on feed
+    Then:
+    - Validate the tags supplied exists in the indicators
+    """
+    client = TAXIIClient(collection='a collection', tags=json.dumps(tags))
+    with open('FeedTAXII_test/TestCommands/raw_indicators.json', 'r') as f:
+        raw_indicators = json.load(f)
+        mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
+        res = fetch_indicators_command(client)
+        assert tags == res[0]['fields']['tags']

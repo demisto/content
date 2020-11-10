@@ -2,11 +2,11 @@ commonfields:
   id: FalconHost
   version: -1
 name: FalconHost
-display: FalconHost
-fromversion: 2.5.0
+display: FalconHost (Deprecated)
+fromversion: 5.0.0
 category: Endpoint
 image: data:image/png;base64,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
-description: Crowdstrike IOCs, detections API, Threat Graph API.
+description: Deprecated. Use the CrowdStrike Falcon integration instead.
 detaileddescription: |-
   Please provide the API id and key for the CrowsStrike Falcon Host API.
   API Key Pairs can be requested by emailing support@crowdstrike.com.
@@ -18,12 +18,10 @@ configuration:
   required: true
 - display: API ID
   name: id
-  defaultvalue: ""
   type: 0
   required: true
 - display: API Key
   name: key
-  defaultvalue: ""
   type: 4
   required: true
 - display: Use system proxy settings
@@ -37,12 +35,15 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var SERVER_URL = params.url;
+
     if (SERVER_URL[SERVER_URL.length - 1] !== '/') {
         SERVER_URL += '/';
     }
+
     //HELPER FUNCTIONS
+
 
     function doReq(method, path, query, body) {
         var result = http(
@@ -95,9 +96,11 @@ script:
         }
     }
 
+
     function dateToEpoch(d) {
         return d ? new Date(d).getTime() : null;
     }
+
 
     function uploadIOC() {
         args.expiration_days = parseInt(args.expiration_days)
@@ -111,7 +114,9 @@ script:
     }
 
 
+
     // add args to a if exists
+
     function add(a, k, f) {
         if (args[k]) {
             // check if the argument is a number
@@ -130,7 +135,9 @@ script:
         }
     }
 
+
     //COMMANDS//
+
 
     function getIOC() {
         var res = doReq('GET', 'indicators/entities/iocs/v1', {ids: args.type + ':' + args.value});
@@ -150,6 +157,7 @@ script:
         };
     }
 
+
     function updateIOC() {
         var a = {};
         add(a, 'policy');
@@ -166,6 +174,7 @@ script:
         };
     }
 
+
     function deleteIOC() {
         var a = {};
         var res = doReq('DELETE', 'indicators/entities/iocs/v1', {ids: args.type + ':' + args.value});
@@ -176,6 +185,7 @@ script:
             HumanReadable: 'IOC [' + args.value + '] deleted'
         };
     }
+
 
     function searchIOCs() {
         var a = {};
@@ -216,6 +226,7 @@ script:
         };
     }
 
+
     function deviceSearch() {
         var a = {};
         add(a, 'filter');
@@ -244,6 +255,7 @@ script:
             EntryContext: ec
         };
     }
+
 
     function deviceDetails() {
         var ids = argToList(args.ids);
@@ -297,6 +309,7 @@ script:
         };
     }
 
+
     function deviceCountIOC() {
         var res = doReq('GET', 'indicators/aggregates/devices-count/v1', args);
         var md = '## Falcon Host IOC Device Count\n';
@@ -312,6 +325,7 @@ script:
             HumanReadable: md
         };
     }
+
 
     function deviceRanOn() {
         var res = doReq('GET', 'indicators/queries/devices/v1', args);
@@ -335,6 +349,7 @@ script:
         };
     }
 
+
     function processesRanOn() {
         var res = doReq('GET', 'indicators/queries/processes/v1', args);
         var md = '## Falcon Host IOC Processes Ran On Device\n';
@@ -357,6 +372,7 @@ script:
         };
     }
 
+
     function processDetails() {
         var ids = argToList(args.ids);
         var res = doReq('GET', 'processes/entities/processes/v1', {ids: ids});
@@ -373,6 +389,7 @@ script:
             HumanReadable: md
         };
     }
+
 
     function resolveDetection() {
         var ids = argToList(args.ids);
@@ -397,6 +414,7 @@ script:
             }
         };
     }
+
 
     function detectionSearch() {
         var headers = {};
@@ -441,6 +459,7 @@ script:
         };
     }
 
+
     function prettifyDetectionsDetails(detections) {
         var prettyDetections = [];
         for (var i=0; i<detections.length; i++) {
@@ -459,6 +478,7 @@ script:
         }
         return prettyDetections;
     }
+
 
     function detectionDetails() {
         var ids = argToList(args.detection_id);
@@ -483,6 +503,7 @@ script:
         };
     }
 
+
     function threatGraphSummary() {
         var ids = argToList(args.ctg_id);
         var res = doReq('GET', 'threatgraph/combined/control-graphs/summary/v1', {ids: ids});
@@ -503,6 +524,7 @@ script:
         };
     }
 
+
     function threatGraphProcesses() {
         var ids = argToList(args.process_id);
         var res = doReq('GET', 'threatgraph/combined/processes/summary/v1', {ids: ids});
@@ -522,6 +544,7 @@ script:
             EntryContext: ec
         };
     }
+
     function threatGraphDetections() {
         var ids = argToList(args.detection_id);
         var res = doReq('GET', 'threatgraph/combined/detections/summary/v1', {ids: ids});
@@ -541,6 +564,7 @@ script:
             EntryContext: ec
         };
     }
+
 
     switch (command) {
         case 'test-module':
@@ -607,22 +631,17 @@ script:
       predefined:
       - detect
       - none
-      description: "The policy to enact when the value is detected on a host. A value
-        of none is equivalent to turning the indicator off.\t"
+      description: "The policy to enact when the value is detected on a host. A value of none is equivalent to turning the indicator off.\t"
       defaultValue: detect
     - name: share_level
       auto: PREDEFINED
       predefined:
       - red
-      description: The level at which the indicator will be shared. Only red share
-        level (not shared) is supported, which indicates that the IOC is not shared
-        with other Falcon Host customers.
+      description: The level at which the indicator will be shared. Only red share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
     - name: expiration_days
-      description: 'This represents the days the indicator should be valid for. This
-        only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided. '
+      description: 'This represents the days the indicator should be valid for. This only applies to domain, ipv4, and ipv6 types. Default is 30 if not provided. '
     - name: source
-      description: The source where this indicator originated. This can be used for
-        tracking where this indicator was defined. Limit 200 characters.
+      description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
     - name: description
       description: A meaningful description of the indicator. Limit 200 characters.
     description: Uploads one or more indicators for CrowdStrike to monitor
@@ -665,22 +684,17 @@ script:
       predefined:
       - detect
       - none
-      description: The policy to enact when the value is detected on a host. A value
-        of none is equivalent to turning the indicator off.
+      description: The policy to enact when the value is detected on a host. A value of none is equivalent to turning the indicator off.
       defaultValue: detect
     - name: share_level
       auto: PREDEFINED
       predefined:
       - red
-      description: The level at which the indicator will be shared. Only red share
-        level (not shared) is supported, which indicates that the IOC is not shared
-        with other Falcon Host customers.
+      description: The level at which the indicator will be shared. Only red share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
     - name: expiration_days
-      description: This represents the days the indicator should be valid for. This
-        only applies to domain, ipv4, and ipv6 types. Default is 30.
+      description: This represents the days the indicator should be valid for. This only applies to domain, ipv4, and ipv6 types. Default is 30.
     - name: source
-      description: The source where this indicator originated. This can be used for
-        tracking where this indicator was defined. Limit 200 characters.
+      description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limit 200 characters.
     - name: description
       description: A meaningful description of the indicator. Limit 200 characters.
     description: Updates one or more of the uploaded indicators
@@ -705,8 +719,7 @@ script:
   - name: cs-search-iocs
     arguments:
     - name: types
-      description: A list of indicator types. Separate multiple types by comma. Valid
-        types are sha256, sha1, md5, domain, ipv4, ipv6.
+      description: A list of indicator types. Separate multiple types by comma. Valid types are sha256, sha1, md5, domain, ipv4, ipv6.
       isArray: true
     - name: values
       description: Comma-separated list of indicator values
@@ -739,11 +752,9 @@ script:
       - expiration_timestamp.desc
       description: The order of the results. Format is field.asc or field.desc.
     - name: limit
-      description: The maximum number of records to return. The minimum is 1 and the
-        maximum is 500. Default is 100.
+      description: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     - name: offset
-      description: The offset to begin the list from. For example, start from the
-        10th record and return the list. Default is 0.
+      description: The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0.
     description: Returns a list of your uploaded IOCs that match the search criteria
   - name: cs-device-search
     arguments:
@@ -751,10 +762,7 @@ script:
       default: true
       description: Search for a value across all fields
     - name: filter
-      description: Filter devices using query syntax of "field:value+field:value"
-        where string values are enclosed in single quotes or as arrays in single quotes
-        (['x', 'y']). Numerical fields and dates also support operators like field:>value.
-        For a list of relevant fields, see the CrowdStrike documentation.
+      description: Filter devices using query syntax of "field:value+field:value" where string values are enclosed in single quotes or as arrays in single quotes (['x', 'y']). Numerical fields and dates also support operators like field:>value. For a list of relevant fields, see the CrowdStrike documentation.
     - name: limit
       description: Number of results to return
     - name: offset
@@ -763,8 +771,7 @@ script:
     - contextPath: FalconHostDevices
       description: Device IDs found by device search
       type: string
-    description: Search for devices in your environment by platform, host name, IP,
-      or various other parameters
+    description: Search for devices in your environment by platform, host name, IP, or various other parameters
   - name: cs-device-details
     arguments:
     - name: ids
@@ -773,8 +780,7 @@ script:
       description: The ID of the process. Allows multiple values separated by comma.
     outputs:
     - contextPath: FalconHostDetails
-      description: The ID to retrieve details for. Supports comma-separated list of
-        IDs.
+      description: The ID to retrieve details for. Supports comma-separated list of IDs.
       type: string
     - contextPath: Endpoint.ID
       description: Unique ID of the endpoint in FalconHost
@@ -816,8 +822,7 @@ script:
       required: true
       default: true
       description: The actual string representation of the indicator
-    description: Returns the number of devices on which an IOC ran, according to type
-      and value of an IOC
+    description: Returns the number of devices on which an IOC ran, according to type and value of an IOC
   - name: cs-device-ran-on
     arguments:
     - name: type
@@ -828,6 +833,8 @@ script:
       - sha1
       - md5
       - domain
+      - ipv4
+      - ipv6
       description: The type of indicator from the list of supported indicator types.
     - name: value
       required: true
@@ -858,24 +865,21 @@ script:
     - contextPath: FalconHostProcesses
       description: List of processes of the searched indicators
       type: string
-    description: Returns the process ID of the indicator if it ran on given device
-      recently
+    description: Returns the process ID of the indicator if it ran on given device recently
   - name: cs-process-details
     arguments:
     - name: ids
       required: true
       default: true
       description: The ID of the process. Allows multiple values separated by comma.
-    description: Retrieves the details of a process, according to process ID, that
-      is running or that previously ran.
+    description: Retrieves the details of a process, according to process ID, that is running or that previously ran.
   - name: cs-resolve-detection
+    deprecated: true
     arguments:
     - name: ids
       required: true
       default: true
-      description: "The IDs of the detections you want to resolve. Falcon Host API
-        v2: detection ids are in the following format: ldt:[first field]:[second field],
-        \ for example, ldt:cf54bb61f92e4d3e75bf4f7c11fc8f74:4295536142.\t"
+      description: "The IDs of the detections you want to resolve. Falcon Host API v2: detection ids are in the following format: ldt:[first field]:[second field],  for example, ldt:cf54bb61f92e4d3e75bf4f7c11fc8f74:4295536142.\t"
     - name: status
       required: true
       auto: PREDEFINED
@@ -992,10 +996,10 @@ script:
     - contextPath: CrowdStrikeHost.Detections.behaviors.technique
       description: Technique of the behavior
       type: string
-    description: Sets the state of a detection in Falcon Host. You can obtain detection
-      IDs from the Falcon Host UI or from the Falcon Streaming API.
+    description: Deprecated. Use the cs-falcon-resolve-detection command from the CrowdStrike Falcon integration instead.
     execution: true
   - name: cs-detection-search
+    deprecated: true
     arguments:
     - name: query
       description: Free text search filter
@@ -1005,10 +1009,9 @@ script:
     - contextPath: CrowdStrikeHost.Detections.detection_id
       description: IDs of the related detections
       type: string
-    description: String search through all Crowdstrike Detection fields.  For example,
-      provide a sensor ID to search for all detections that contain that sensor ID
-      (and any other fields that would happen to contain it)
+    description: Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike Falcon integration instead.
   - name: cs-detection-details
+    deprecated: true
     arguments:
     - name: detection_id
       required: true
@@ -1120,7 +1123,7 @@ script:
     - contextPath: CrowdStrikeHost.Detections.behaviors.technique
       description: Technique of the behavior
       type: string
-    description: Fetches details of a Crowdstrike Detection using the detection ID
+    description: Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike Falcon integration instead.
   - name: cs-threatgraph-summary
     arguments:
     - name: ctg_id
@@ -1222,5 +1225,6 @@ script:
       type: string
     description: Gets the child process Threat Graph Detections.
   runonce: false
+deprecated: true
 tests:
 - No tests

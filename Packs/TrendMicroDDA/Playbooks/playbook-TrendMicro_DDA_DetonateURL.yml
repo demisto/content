@@ -1,7 +1,7 @@
 id: Detonate URL - Trend Micro Deep Discovery Analyzer Beta
 version: -1
 name: Detonate URL - Trend Micro Deep Discovery Analyzer Beta
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: Detonates a URL using the Trend Micro Deep Discovery Analyzer sandbox.
 starttaskid: "0"
 tasks:

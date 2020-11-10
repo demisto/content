@@ -1,11 +1,12 @@
 commonfields:
   id: okta
   version: -1
+deprecated: true
 name: okta
-display: okta
+display: okta (Deprecated)
 category: Authentication
 image: data:image/png;base64,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
-description: Integration with Okta's cloud-based identity management service
+description: Deprecated. Use the Okta v2 integration instead.
 detaileddescription: |-
   For information on getting your Okta API token, see the Okta documentation.
   https://developer.okta.com/docs/api/getting_started/getting_a_token
@@ -31,7 +32,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     function fixUrl(base) {
         var res = base;
         if (base && base[base.length - 1] !== '/') {
@@ -39,6 +40,7 @@ script:
         }
         return res;
     }
+
 
     var PROFILE_ARGS = [
         'firstName',
@@ -74,10 +76,15 @@ script:
         'manager'
     ];
 
+
     var API_POSTFIX = 'api/v1/';
+
     var SERVER_URL = fixUrl(params.url) + API_POSTFIX;
+
     var DEFAULT_SEARCH_LIMIT = 200;
+
     var CLIENT_USERAGENT = 'Demisto/1.0';
+
 
     function createReadableLog(log){
         var logObject = {};
@@ -114,6 +121,7 @@ script:
         return logObject;
     }
 
+
     function getPagedResults(path, queryParams){
         var results = [];
 
@@ -142,6 +150,7 @@ script:
         return results;
     }
 
+
     function buildProfile(args) {
         var profile = {};
         var keys = Object.keys(args);
@@ -152,6 +161,7 @@ script:
         }
         return profile;
     }
+
 
     function buildCredentials(args) {
         var creds = {};
@@ -176,6 +186,7 @@ script:
         return creds;
     }
 
+
     function identLevel(count) {
         var ret='';
         for (var i=0;i<count;i++) {
@@ -183,6 +194,7 @@ script:
         }
         return ret;
     }
+
 
     function flattenValue(value, level, isArray) {
         if (!level) {
@@ -202,6 +214,7 @@ script:
 
     }
 
+
     function profileToMd(profile) {
         var head = '|';
         var line = '|';
@@ -214,6 +227,7 @@ script:
         }
         return head + '\n' + line + '\n' + data + '\n';
     }
+
 
     function usersToMarkdown(users, verbose) {
         var md='';
@@ -253,6 +267,7 @@ script:
         return md;
     }
 
+
     function usersToEntryContext(users) {
         var ec={};
         ec.Account = [];
@@ -287,6 +302,7 @@ script:
         }
         return ec;
     }
+
 
 
     function sendRequest(path, method, queryParams, body, pagination){
@@ -341,6 +357,7 @@ script:
         return JSON.parse(res.Body);
     }
 
+
     function getUserId(username){
         var uri = 'users?filter=' + encodeURIComponent('profile.login eq "' + username + '"');
         var res = sendRequest(uri);
@@ -351,6 +368,7 @@ script:
         }
     }
 
+
     function getGroupId(groupName){
         var group = listGroups(groupName);
         if(!group){
@@ -359,6 +377,7 @@ script:
 
         return group[0].id;
     }
+
 
     function suspendUserCommand(){
         var userId = getUserId(args.username);
@@ -375,17 +394,20 @@ script:
         };
     }
 
+
     function suspendUser(userId){
         var uri = 'users/' + userId + '/lifecycle/suspend';
 
         return sendRequest(uri, 'POST');
     }
 
+
     function unSuspendUser(userId){
         var uri = 'users/' + userId + '/lifecycle/unsuspend';
 
         return sendRequest(uri, 'POST');
     }
+
 
     function unSuspendUserCommand(){
         var userId = getUserId(args.username);
@@ -403,6 +425,7 @@ script:
     }
 
 
+
     function unlockUserCommand(){
         var userId = getUserId(args.username);
 
@@ -418,10 +441,12 @@ script:
         };
     }
 
+
     function unlockUser(userId){
         var uri = 'users/' + userId + '/lifecycle/unlock';
         return sendRequest(uri, 'POST');
     }
+
 
     function deactivateUserCommand() {
         var userId = getUserId(args.username);
@@ -438,11 +463,13 @@ script:
         };
     }
 
+
     function deactivateUser(userId){
         var uri = 'users/' + userId + '/lifecycle/deactivate';
 
         return sendRequest(uri, 'POST');
     }
+
 
     function activateUserCommand(){
         var userId = getUserId(args.username);
@@ -459,11 +486,13 @@ script:
         };
     }
 
+
     function activateUser(userId) {
         var uri = 'users/' + userId + '/lifecycle/activate';
 
         return sendRequest(uri, 'POST');
     }
+
 
     function getGroupsCommand() {
         var userId = getUserId(args.username);
@@ -490,6 +519,7 @@ script:
         };
     }
 
+
     function getGroupsHumanReadable(results){
         if(!Array.isArray(results)){
             results = [results];
@@ -514,11 +544,13 @@ script:
         return groups;
     }
 
+
     function getGroups(userId) {
         var uri = 'users/' + userId + '/groups';
 
         return sendRequest(uri);
     }
+
 
     function listGroupsCommand(){
         var results = listGroups(args.query, args.filter, args.limit);
@@ -535,6 +567,7 @@ script:
             HumanReadable: tableToMarkdown('Groups', hr)
         };
     }
+
 
     function listGroups(query, filter, limit){
         var queryParams = {};
@@ -553,6 +586,7 @@ script:
 
         return getPagedResults('groups', queryParams);
     }
+
 
     function getGroupMembersCommand(){
         var groupId = args.groupId;
@@ -587,6 +621,7 @@ script:
         return entry;
     }
 
+
     function getGroupMembers(groupId, limit){
         queryParams = {};
 
@@ -596,6 +631,7 @@ script:
 
         return getPagedResults('groups/' + groupId + '/users', queryParams);
     }
+
 
     function addUserToGroupCommand(){
         var groupId = args.groupId;
@@ -620,11 +656,13 @@ script:
         return 'Succesfully added user to group';
     }
 
+
     function addUserToGroup(userId, groupId){
         var uri = 'groups/' + groupId + '/users/' + userId;
 
         return sendRequest(uri, 'PUT');
     }
+
 
     function removeUserFromGroupCommand(){
         var groupId = args.groupId;
@@ -649,11 +687,13 @@ script:
         return 'Succesfully removed user from group';
     }
 
+
     function removeUserFromGroup(userId, groupId){
         var uri = 'groups/' + groupId + '/users/' + userId;
 
         return sendRequest(uri, 'DELETE');
     }
+
 
     function setPasswordCommand(){
         var userId = getUserId(args.username);
@@ -671,6 +711,7 @@ script:
         };
     }
 
+
     function setPassword(userId, password) {
         var uri = 'users/' + userId;
 
@@ -682,6 +723,7 @@ script:
 
         return sendRequest(uri, 'POST', null, body);
     }
+
 
     function searchCommand(){
         var limit = args.limit ? args.limit : DEFAULT_SEARCH_LIMIT;
@@ -709,11 +751,13 @@ script:
         };
     }
 
+
     function search(term, limit) {
         var uri = 'users?q=' + term + '&limit=' + limit;
 
         return sendRequest(uri);
     }
+
 
     function getUserCommand(){
         var term = args.username ? encodeURIComponent(args.username) : args.userid;
@@ -736,11 +780,13 @@ script:
         };
     }
 
+
     function getUser(term){
         var uri = 'users/' + term;
 
         return sendRequest(uri);
     }
+
 
     function getUserFactorsCommand(){
         var userId = args.userId;
@@ -797,11 +843,13 @@ script:
         };
     }
 
+
     function getUserFactors(userId){
         var uri = 'users/' + userId + '/factors';
 
         return sendRequest(uri);
     }
+
 
     function verifyPushCommand(){
         var userId = args.userId;
@@ -836,11 +884,13 @@ script:
         };
     }
 
+
     function verifyPush(userId, factorId){
         var path = '/users/' + userId + '/factors/' + factorId + '/verify';
 
         return sendRequest(path, 'POST');
     }
+
 
 
     function pollVerifyPush(verifyLink){
@@ -861,6 +911,7 @@ script:
 
         return response;
     }
+
 
     function resetFactorCommand(){
         var userId = args.userId;
@@ -885,11 +936,13 @@ script:
         };
     }
 
+
     function resetFactor(userId, factorId){
         var path = '/users/' + userId + '/factors/' + factorId;
 
         return sendRequest(path, 'DELETE');
     }
+
 
     function createUserCommand(){
         var cred = buildCredentials(args);
@@ -918,6 +971,7 @@ script:
         };
     }
 
+
     function createUser(cred, profile, groupIds, activate) {
         var body = {
             profile: profile,
@@ -932,6 +986,7 @@ script:
 
         return sendRequest(uri, 'POST','', body);
     }
+
 
     function updateUserCommand() {
         var userId = getUserId(args.username);
@@ -951,6 +1006,7 @@ script:
         };
     }
 
+
     function updateUser(userId, profile, cred){
         var body = {
             profile: profile,
@@ -962,7 +1018,9 @@ script:
         return sendRequest(uri, 'POST', '', body);
     }
 
+
     function getLogs(filter, query, since, until, sortOrder, limit)
+
     {
         var queryParams = {};
 
@@ -993,6 +1051,7 @@ script:
         return getPagedResults('logs', queryParams);
     }
 
+
     function getFailedLoginsCommand(){
         var readableLogs = [];
         var filter = 'eventType eq "user.session.start" and outcome.result eq "FAILURE"';
@@ -1018,6 +1077,7 @@ script:
             HumanReadable: md
         };
     }
+
 
     function getGroupAssignmentsCommand(){
         var readableLogs = [];
@@ -1045,6 +1105,7 @@ script:
         };
     }
 
+
     function getApplicationAssignmentsCommand(){
         var readableLogs = [];
         var filter = 'eventType eq "application.user_membership.add"';
@@ -1070,6 +1131,7 @@ script:
             HumanReadable: md
         };
     }
+
 
     function getApplicationAuthenticationCommand(){
         var readableLogs = [];
@@ -1097,6 +1159,7 @@ script:
         };
     }
 
+
     function getLogsCommand(){
         var readableLogs = [];
         var logs = getLogs(args.filter, args.query, args.since, args.until, args.sortOrder, args.limit);
@@ -1122,6 +1185,7 @@ script:
         };
     }
 
+
     function test() {
         var uri = 'users/me';
         var res = sendRequest(uri);
@@ -1129,7 +1193,9 @@ script:
         return res ? 'ok' : 'not ok';
     }
 
+
     var entry;
+
     switch (command){
         case 'test-module':
             return test();
@@ -1205,6 +1271,7 @@ script:
     }
 
 
+
     return entry;
   type: javascript
   commands:
@@ -1216,6 +1283,7 @@ script:
       description: Unlocks a specified user.
     description: Unlock user
     execution: true
+    deprecated: true
   - name: okta-deactivate-user
     arguments:
     - name: username
@@ -1224,6 +1292,7 @@ script:
       description: Deactivates a specified user.
     description: Deactivate user
     execution: true
+    deprecated: true
   - name: okta-activate-user
     arguments:
     - name: username
@@ -1232,24 +1301,25 @@ script:
       description: Username in Okta to activate
     description: Activates a specific user.
     execution: true
+    deprecated: true
   - name: okta-suspend-user
     arguments:
     - name: username
       required: true
       default: true
       description: Username in Okta to suspend
-    description: Suspends a user.  This operation can only be performed on users with
-      an ACTIVE status. The user has a status of SUSPENDED when the process is complete.
+    description: Suspends a user.  This operation can only be performed on users with an ACTIVE status. The user has a status of SUSPENDED when the process is complete.
     execution: true
+    deprecated: true
   - name: okta-unsuspend-user
     arguments:
     - name: username
       required: true
       default: true
       description: Okta username you want to change to ACTIVE status.
-    description: Returns a user to ACTIVE status.  This operation
-      can only be performed on users that have a SUSPENDED status.
+    description: Returns a user to ACTIVE status.  This operation can only be performed on users that have a SUSPENDED status.
     execution: true
+    deprecated: true
   - name: okta-get-user-factors
     arguments:
     - name: userId
@@ -1276,6 +1346,7 @@ script:
       description: Okta account factor profile.
       type: string
     description: Returns all the enrolled factors for the specified user.
+    deprecated: true
   - name: okta-verify-push-factor
     arguments:
     - name: userId
@@ -1293,6 +1364,7 @@ script:
       type: string
     description: Enrolls and verifies a push factor for a specified user.
     execution: true
+    deprecated: true
   - name: okta-reset-factor
     arguments:
     - name: userId
@@ -1302,9 +1374,9 @@ script:
     - name: factorId
       required: true
       description: The ID of the factor to reset.
-    description: Unenrolls an existing factor for the specified user, which enables the
-      user to enroll a new factor.
+    description: Unenrolls an existing factor for the specified user, which enables the user to enroll a new factor.
     execution: true
+    deprecated: true
   - name: okta-get-groups
     arguments:
     - name: username
@@ -1345,6 +1417,7 @@ script:
       description: Description of the group.
       type: string
     description: Returns all user groups associated with a specified user.
+    deprecated: true
   - name: okta-set-password
     arguments:
     - name: username
@@ -1354,9 +1427,9 @@ script:
     - name: password
       required: true
       description: The new password to set for the user.
-    description: Creates a user without a recovery question and answer requirement. The new user
-      can log in after activation with the assigned password. 
+    description: Creates a user without a recovery question and answer requirement. The new user can log in after activation with the assigned password.
     execution: true
+    deprecated: true
   - name: okta-search
     arguments:
     - name: term
@@ -1388,6 +1461,7 @@ script:
       description: Account type returned by search - Okta.
       type: string
     description: Search for Okta users
+    deprecated: true
   - name: okta-get-user
     arguments:
     - name: username
@@ -1420,6 +1494,7 @@ script:
       description: Okta account status.
       type: string
     description: Fetches information for a specific user. You must enter one or more parameters for the command to run.
+    deprecated: true
   - name: okta-create-user
     arguments:
     - name: firstName
@@ -1469,13 +1544,11 @@ script:
     - name: preferredLanguage
       description: User’s preferred written or spoken languages.
     - name: locale
-      description: User’s default location for purposes of localizing items such as
-        currency, date time format, numerical representations, etc.
+      description: User’s default location for purposes of localizing items such as currency, date time format, numerical representations, etc.
     - name: timezone
       description: User time zone.
     - name: userType
-      description: Used to identify the organization to user relationship such as
-        “Employee” or “Contractor”.
+      description: Used to identify the organization to user relationship such as “Employee” or “Contractor”.
     - name: employeeNumber
       description: Organization or company assigned unique identifier for the user.
     - name: costCenter
@@ -1508,8 +1581,7 @@ script:
     - name: providerName
       description: Name of provider.
     - name: groupIds
-      description: Ids of groups that user will be immediately added to at time of
-        creation (Do not include default group).
+      description: Ids of groups that user will be immediately added to at time of creation (Do not include default group).
     - name: activate
       description: Activates lifecycle operation when creating the user.
     outputs:
@@ -1528,10 +1600,8 @@ script:
     - contextPath: Account.Type
       description: Type of create account - Okta.
       type: string
-    description: Creates a new user with an option of setting password, recovery question
-      and answer. The new user will immediately be able to login after activation
-      with the assigned password. This flow is common when developing a custom user
-      registration experience.
+    description: Creates a new user with an option of setting password, recovery question and answer. The new user will immediately be able to login after activation with the assigned password. This flow is common when developing a custom user registration experience.
+    deprecated: true
     execution: true
   - name: okta-update-user
     arguments:
@@ -1579,13 +1649,11 @@ script:
     - name: "preferredLanguage\t"
       description: User’s preferred written or spoken languages.
     - name: locale
-      description: User’s default location for purposes of localizing items such as
-        currency, date time format, numerical representations, etc.
+      description: User’s default location for purposes of localizing items such as currency, date time format, numerical representations, etc.
     - name: "timezone\t"
       description: User time zone.
     - name: userType
-      description: Used to identify the organization to user relationship such as
-        “Employee” or “Contractor”
+      description: Used to identify the organization to user relationship such as “Employee” or “Contractor”
     - name: employeeNumber
       description: Organization or company assigned unique identifier for the user.
     - name: costCenter
@@ -1617,17 +1685,15 @@ script:
       description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
     - name: providerName
       description: Name of provider.
-    description: Update user with a given login, all fields are optional, fields which
-      are not set will not be overriden
+    description: Update user with a given login, all fields are optional, fields which are not set will not be overriden
     execution: true
+    deprecated: true
   - name: okta-get-failed-logins
     arguments:
     - name: since
-      description: 'Filters the lower time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
     - name: until
-      description: 'Filters the upper time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
     - name: sortOrder
       auto: PREDEFINED
       predefined:
@@ -1635,8 +1701,7 @@ script:
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
     - name: limit
-      description: Sets the number of results returned in the response. Default is
-        100.
+      description: Sets the number of results returned in the response. Default is 100.
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
       description: Alternative ID of actor
@@ -1648,9 +1713,7 @@ script:
       description: ID of actor
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of the user agent, formatted according
-        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
-        OS fields can be derived from this field.
+      description: A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.os
       description: The Operating System on which the client runs. For example, Microsoft Windows 10.
@@ -1662,23 +1725,19 @@ script:
       description: Type of device that client operated from (e.g. Computer).
       type: string
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests, the ID of the OAuth client making the
-        request. For SSWS token requests, the ID of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
       type: string
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: IP address in which the client made its request.
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
-      description: The city encompassing the area containing the geolocation coordinates,
-        if available (e.g. Seattle, San Francisco)
+      description: The city encompassing the area containing the geolocation coordinates, if available (e.g. Seattle, San Francisco)
       type: string
     - contextPath: Okta.Logs.Events.geographicalContext.state
-      description: Full name of the state/province encompassing the area containing
-        the geolocation coordinates (e.g. Montana, Incheon)
+      description: Full name of the state/province encompassing the area containing the geolocation coordinates (e.g. Montana, Incheon)
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geolocation
-        coordinates (e.g. France, Uganda)
+      description: Full name of the country encompassing the area containing the geolocation coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event
@@ -1699,19 +1758,16 @@ script:
       description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
       type: string
     - contextPath: Okta.Logs.Events.securityContext.asNumber
-      description: Autonomous system number associated with the autonomous system
-        that the event request was sourced to
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to
       type: number
     - contextPath: Okta.Logs.Events.securityContext.asOrg
-      description: Organization associated with the autonomous system that the event
-        request was sourced to
+      description: Organization associated with the autonomous system that the event request was sourced to
       type: string
     - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to sent the event’s request
       type: string
     - contextPath: Okta.Logs.Events.securityContext.domain
-      description: The domain name associated with the IP address of the inbound event
-        request
+      description: The domain name associated with the IP address of the inbound event request
       type: string
     - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event’s request is from a known proxy
@@ -1720,16 +1776,13 @@ script:
       description: IP address
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
-      description: The city encompassing the area containing the geolocation coordinates,
-        if available (e.g. Seattle, San Francisco)
+      description: The city encompassing the area containing the geolocation coordinates, if available (e.g. Seattle, San Francisco)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
-      description: Full name of the state/province encompassing the area containing
-        the geolocation coordinates (e.g. Montana, Incheon)
+      description: Full name of the state/province encompassing the area containing the geolocation coordinates (e.g. Montana, Incheon)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geolocation
-        coordinates (e.g. France, Uganda)
+      description: Full name of the country encompassing the area containing the geolocation coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source
@@ -1747,14 +1800,13 @@ script:
       description: Display name of a target
       type: string
     description: Returns event details for when a user is added to a group.
+    deprecated: true
   - name: okta-get-group-assignments
     arguments:
     - name: since
-      description: 'Filters the lower time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
     - name: until
-      description: 'Filters the upper time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
     - name: sortOrder
       auto: PREDEFINED
       predefined:
@@ -1762,8 +1814,7 @@ script:
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
     - name: limit
-      description: Sets the number of results returned in the response. Default is
-        100.
+      description: Sets the number of results returned in the response. Default is 100.
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
       description: Alternative ID of actor
@@ -1775,9 +1826,7 @@ script:
       description: ID of actor
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of the user agent, formatted according
-        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
-        OS fields can be derived from this field.
+      description: A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.os
       description: The Operating System on which the client runs. For example, Microsoft Windows 10.
@@ -1789,23 +1838,19 @@ script:
       description: Type of device that the client operated from (e.g. Computer).
       type: string
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests, the ID of the OAuth client making the
-        request. For SSWS token requests, the ID of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
       type: string
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: IP address that the client made its request from.
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
-      description: The city encompassing the area containing the geolocation coordinates,
-        if available (e.g. Seattle, San Francisco)
+      description: The city encompassing the area containing the geolocation coordinates, if available (e.g. Seattle, San Francisco)
       type: string
     - contextPath: Okta.Logs.Events.geographicalContext.state
-      description: Full name of the state/province encompassing the area containing
-        the geolocation coordinates (e.g. Montana, Incheon)
+      description: Full name of the state/province encompassing the area containing the geolocation coordinates (e.g. Montana, Incheon)
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geolocation
-        coordinates (e.g. France, Uganda)
+      description: Full name of the country encompassing the area containing the geolocation coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event.
@@ -1826,19 +1871,16 @@ script:
       description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
       type: string
     - contextPath: Okta.Logs.Events.securityContext.asNumber
-      description: Autonomous system number associated with the autonomous system
-        that the event request was sourced to
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to
       type: number
     - contextPath: Okta.Logs.Events.securityContext.asOrg
-      description: Organization associated with the autonomous system that the event
-        request was sourced to
+      description: Organization associated with the autonomous system that the event request was sourced to
       type: string
     - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to sent the event’s request
       type: string
     - contextPath: Okta.Logs.Events.securityContext.domain
-      description: The domain name associated with the IP address of the inbound event
-        request
+      description: The domain name associated with the IP address of the inbound event request
       type: string
     - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event’s request is from a known proxy
@@ -1847,16 +1889,13 @@ script:
       description: IP address
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
-      description: The city encompassing the area containing the geolocation coordinates,
-        if available (e.g. Seattle, San Francisco)
+      description: The city encompassing the area containing the geolocation coordinates, if available (e.g. Seattle, San Francisco)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
-      description: Full name of the state/province encompassing the area containing
-        the geolocation coordinates (e.g. Montana, Incheon)
+      description: Full name of the state/province encompassing the area containing the geolocation coordinates (e.g. Montana, Incheon)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geolocation
-        coordinates (e.g. France, Uganda)
+      description: Full name of the country encompassing the area containing the geolocation coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source
@@ -1874,14 +1913,13 @@ script:
       description: Display name of a target
       type: string
     description: Get events for when a user was added to a group.
+    deprecated: true
   - name: okta-get-application-assignments
     arguments:
     - name: since
-      description: 'Filters the lower time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
     - name: until
-      description: 'Filters the upper time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
     - name: sortOrder
       auto: PREDEFINED
       predefined:
@@ -1889,8 +1927,7 @@ script:
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
     - name: limit
-      description: Sets the number of results returned in the response. Default is
-        100.
+      description: Sets the number of results returned in the response. Default is 100.
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
       description: Alternative ID of actor
@@ -1902,9 +1939,7 @@ script:
       description: ID of actor
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of the user agent, formatted according
-        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
-        OS fields can be derived from this field.
+      description: A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.os
       description: The Operating System on which the client runs. For example, Microsoft Windows 10.
@@ -1916,23 +1951,19 @@ script:
       description: Type of device that the client operated from (e.g. Computer)
       type: string
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests this is the id of the OAuth client making the
-        request. For SSWS token requests, this is the id of the agent making the request.
+      description: For OAuth requests this is the id of the OAuth client making the request. For SSWS token requests, this is the id of the agent making the request.
       type: string
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: Ip address that the client made its request from
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
-      description: The city encompassing the area containing the geolocation coordinates,
-        if available (e.g. Seattle, San Francisco)
+      description: The city encompassing the area containing the geolocation coordinates, if available (e.g. Seattle, San Francisco)
       type: string
     - contextPath: Okta.Logs.Events.geographicalContext.state
-      description: Full name of the state/province encompassing the area containing
-        the geolocation coordinates (e.g. Montana, Incheon)
+      description: Full name of the state/province encompassing the area containing the geolocation coordinates (e.g. Montana, Incheon)
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geolocation
-        coordinates (e.g. France, Uganda)
+      description: Full name of the country encompassing the area containing the geolocation coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event
@@ -1953,19 +1984,16 @@ script:
       description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
       type: string
     - contextPath: Okta.Logs.Events.securityContext.asNumber
-      description: Autonomous system number associated with the autonomous system
-        that the event request was sourced to
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to
       type: number
     - contextPath: Okta.Logs.Events.securityContext.asOrg
-      description: Organization associated with the autonomous system that the event
-        request was sourced to
+      description: Organization associated with the autonomous system that the event request was sourced to
       type: string
     - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to sent the event’s request
       type: string
     - contextPath: Okta.Logs.Events.securityContext.domain
-      description: The domain name associated with the IP address of the inbound event
-        request
+      description: The domain name associated with the IP address of the inbound event request
       type: string
     - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event’s request is from a known proxy
@@ -1974,16 +2002,13 @@ script:
       description: IP address
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
-      description: The city encompassing the area containing the geolocation coordinates,
-        if available (e.g. Seattle, San Francisco)
+      description: The city encompassing the area containing the geolocation coordinates, if available (e.g. Seattle, San Francisco)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
-      description: Full name of the state/province encompassing the area containing
-        the geolocation coordinates (e.g. Montana, Incheon)
+      description: Full name of the state/province encompassing the area containing the geolocation coordinates (e.g. Montana, Incheon)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geolocation
-        coordinates (e.g. France, Uganda)
+      description: Full name of the country encompassing the area containing the geolocation coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source
@@ -2001,14 +2026,13 @@ script:
       description: Display name of a target
       type: string
     description: Returns events for when a user was assigned to an application.
+    deprecated: true
   - name: okta-get-application-authentication
     arguments:
     - name: since
-      description: 'Filters the lower time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
     - name: until
-      description: 'Filters the upper time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
     - name: sortOrder
       auto: PREDEFINED
       predefined:
@@ -2016,8 +2040,7 @@ script:
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
     - name: limit
-      description: Sets the number of results returned in the response. Default is
-        100.
+      description: Sets the number of results returned in the response. Default is 100.
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
       description: Alternative ID of actor
@@ -2029,9 +2052,7 @@ script:
       description: ID of actor
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of the user agent, formatted according
-        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
-        OS fields can be derived from this field.
+      description: A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.os
       description: The Operating System on which the client runs. For example, Microsoft Windows 10.
@@ -2043,23 +2064,19 @@ script:
       description: Type of device that the client operated from (e.g. Computer)
       type: string
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests, the id of the OAuth client making the
-        request. For SSWS token requests, the id of the agent making the request.
+      description: For OAuth requests, the id of the OAuth client making the request. For SSWS token requests, the id of the agent making the request.
       type: string
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: Ip address that the client made its request from
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
-      description: The city encompassing the area containing the geolocation coordinates,
-        if available (e.g. Seattle, San Francisco)
+      description: The city encompassing the area containing the geolocation coordinates, if available (e.g. Seattle, San Francisco)
       type: string
     - contextPath: Okta.Logs.Events.geographicalContext.state
-      description: Full name of the state/province encompassing the area containing
-        the geolocation coordinates (e.g. Montana, Incheon)
+      description: Full name of the state/province encompassing the area containing the geolocation coordinates (e.g. Montana, Incheon)
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geolocation
-        coordinates (e.g. France, Uganda)
+      description: Full name of the country encompassing the area containing the geolocation coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event
@@ -2080,19 +2097,16 @@ script:
       description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
       type: string
     - contextPath: Okta.Logs.Events.securityContext.asNumber
-      description: Autonomous system number associated with the autonomous system
-        that the event request was sourced to
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to
       type: number
     - contextPath: Okta.Logs.Events.securityContext.asOrg
-      description: Organization associated with the autonomous system that the event
-        request was sourced to
+      description: Organization associated with the autonomous system that the event request was sourced to
       type: string
     - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to sent the event’s request
       type: string
     - contextPath: Okta.Logs.Events.securityContext.domain
-      description: The domain name associated with the IP address of the inbound event
-        request
+      description: The domain name associated with the IP address of the inbound event request
       type: string
     - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event’s request is from a known proxy
@@ -2101,16 +2115,13 @@ script:
       description: IP address
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
-      description: The city encompassing the area containing the geolocation coordinates,
-        if available (e.g. Seattle, San Francisco)
+      description: The city encompassing the area containing the geolocation coordinates, if available (e.g. Seattle, San Francisco)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
-      description: Full name of the state/province encompassing the area containing
-        the geolocation coordinates (e.g. Montana, Incheon)
+      description: Full name of the state/province encompassing the area containing the geolocation coordinates (e.g. Montana, Incheon)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geolocation
-        coordinates (e.g. France, Uganda)
+      description: Full name of the country encompassing the area containing the geolocation coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source
@@ -2128,30 +2139,17 @@ script:
       description: Display name of a target
       type: string
     description: Returns logs using specified filters.
+    deprecated: true
   - name: okta-get-logs
     arguments:
     - name: filter
-      description: "Useful for performing structured queries
-        where constraints on LogEvent attribute values can be explicitly targeted.
-        \ The following expressions are supported for events with the filter query
-        parameter: eventType eq \":eventType\" -\tEvents that have a specific action;
-        eventType target.id eq \":id\" - Events published with a specific target id;
-        actor.id eq \":id\" - Events published with a specific actor id. For more
-        information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      description: "Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  The following expressions are supported for events with the filter query parameter: eventType eq \":eventType\" -\tEvents that have a specific action; eventType target.id eq \":id\" - Events published with a specific target id; actor.id eq \":id\" - Events published with a specific actor id. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
     - name: query
-      description: 'The query parameter can be used to perform keyword matching against
-        a LogEvents object’s attribute values. In order to satisfy the constraint,
-        all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The
-        following are some examples of common keyword filtering: Events that mention
-        a specific city: query=San Francisco; Events that mention a specific url:
-        query=interestingURI.com; Events that mention a specific person: query=firstName
-        lastName.'
+      description: 'The query parameter can be used to perform keyword matching against a LogEvents object’s attribute values. In order to satisfy the constraint, all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The following are some examples of common keyword filtering: Events that mention a specific city: query=San Francisco; Events that mention a specific url: query=interestingURI.com; Events that mention a specific person: query=firstName lastName.'
     - name: since
-      description: 'Filters the lower time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
     - name: until
-      description: 'Filters the upper time bound of the log events in the Internet
-        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
     - name: sortOrder
       auto: PREDEFINED
       predefined:
@@ -2159,8 +2157,7 @@ script:
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
     - name: limit
-      description: Sets the number of results returned in the response. Default is
-        100.
+      description: Sets the number of results returned in the response. Default is 100.
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
       description: Alternative ID of actor
@@ -2172,9 +2169,7 @@ script:
       description: ID of actor
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
-      description: A raw string representation of the user agent, formatted according
-        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
-        OS fields can be derived from this field.
+      description: A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.os
       description: The Operating System on which the client runs. For example, Microsoft Windows 10.
@@ -2186,23 +2181,19 @@ script:
       description: Type of device that the client operated from (e.g. Computer)
       type: string
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests, the ID of the OAuth client making the
-        request. For SSWS token requests, the ID of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request.
       type: string
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: IP address that the client made its request from.
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
-      description: The city encompassing the area containing the geolocation coordinates,
-        if available (e.g. Seattle, San Francisco)
+      description: The city encompassing the area containing the geolocation coordinates, if available (e.g. Seattle, San Francisco)
       type: string
     - contextPath: Okta.Logs.Events.geographicalContext.state
-      description: Full name of the state/province encompassing the area containing
-        the geolocation coordinates (e.g. Montana, Incheon)
+      description: Full name of the state/province encompassing the area containing the geolocation coordinates (e.g. Montana, Incheon)
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geolocation
-        coordinates (e.g. France, Uganda)
+      description: Full name of the country encompassing the area containing the geolocation coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event
@@ -2223,19 +2214,16 @@ script:
       description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
       type: string
     - contextPath: Okta.Logs.Events.securityContext.asNumber
-      description: Autonomous system number associated with the autonomous system
-        that the event request was sourced to
+      description: Autonomous system number associated with the autonomous system that the event request was sourced to
       type: number
     - contextPath: Okta.Logs.Events.securityContext.asOrg
-      description: Organization associated with the autonomous system that the event
-        request was sourced to
+      description: Organization associated with the autonomous system that the event request was sourced to
       type: string
     - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to sent the event’s request
       type: string
     - contextPath: Okta.Logs.Events.securityContext.domain
-      description: The domain name associated with the IP address of the inbound event
-        request
+      description: The domain name associated with the IP address of the inbound event request
       type: string
     - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event’s request is from a known proxy
@@ -2244,16 +2232,13 @@ script:
       description: IP address
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
-      description: The city encompassing the area containing the geolocation coordinates,
-        if available (e.g. Seattle, San Francisco)
+      description: The city encompassing the area containing the geolocation coordinates, if available (e.g. Seattle, San Francisco)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
-      description: Full name of the state/province encompassing the area containing
-        the geolocation coordinates (e.g. Montana, Incheon)
+      description: Full name of the state/province encompassing the area containing the geolocation coordinates (e.g. Montana, Incheon)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
-      description: Full name of the country encompassing the area containing the geolocation
-        coordinates (e.g. France, Uganda)
+      description: Full name of the country encompassing the area containing the geolocation coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source
@@ -2271,6 +2256,7 @@ script:
       description: Display name of a target
       type: string
     description: Get logs by providing optional filters
+    deprecated: true
   - name: okta-add-to-group
     arguments:
     - name: userId
@@ -2283,6 +2269,7 @@ script:
       description: Name of the group to add the user to
     description: Adds a user to a group with OKTA_GROUP type.
     execution: true
+    deprecated: true
   - name: okta-remove-from-group
     arguments:
     - name: userId
@@ -2295,19 +2282,13 @@ script:
       description: Name of the group to remove the user from
     description: Removes a user from a group with OKTA_GROUP type.
     execution: true
+    deprecated: true
   - name: okta-list-groups
     arguments:
     - name: query
       description: Searches the name property of groups for matching value
     - name: filter
-      description: 'Useful for performing structured queries
-        where constraints on group attribute values can be explicitly targeted. The
-        following expressions are supported(among others) for groups with the filter
-        query parameter: type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP;
-        lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated
-        before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ"
-        - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK"
-        - Group with a specified id. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering'
+      description: 'Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. The following expressions are supported(among others) for groups with the filter query parameter: type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified id. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering'
     - name: limit
       description: Sets the number of results returned in the response.
       defaultValue: "200"
@@ -2328,8 +2309,7 @@ script:
       description: Timestamp for when the group’s memberships were last updated
       type: date
     - contextPath: Okta.Group.Type
-      description: Determines how a group’s profile and memberships are managed -
-        OKTA_GROUP, APP_GROUP and BUILT_IN
+      description: Determines how a group’s profile and memberships are managed - OKTA_GROUP, APP_GROUP and BUILT_IN
       type: string
     - contextPath: Okta.Group.Name
       description: Name of the group
@@ -2337,8 +2317,8 @@ script:
     - contextPath: Okta.Group.Description
       description: Description of the group
       type: string
-    description: Lists groups in your organization. A subset of groups can be
-      returned that match a supported filter expression or query.
+    description: Lists groups in your organization. A subset of groups can be returned that match a supported filter expression or query.
+    deprecated: true
   - name: okta-get-group-members
     arguments:
     - name: groupId
@@ -2370,5 +2350,6 @@ script:
       description: Account type - Okta
       type: string
     description: Enumerates all users that are members of a group
+    deprecated: true
   runonce: false
-fromversion: 3.6.0
+fromversion: 5.0.0

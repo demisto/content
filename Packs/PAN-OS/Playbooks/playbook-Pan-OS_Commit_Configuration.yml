@@ -1,9 +1,8 @@
 id: PAN-OS Commit Configuration
 version: -1
-fromversion: 4.0.0
+fromversion: 5.0.0
 name: PAN-OS Commit Configuration
-description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as
-  Panorama, it also pushes the Policies to the specified Device Group in the instance.
+description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
 starttaskid: '0'
 tasks:
   '0':
@@ -33,8 +32,7 @@ tasks:
       id: 3cdca23e-0cc3-4d3f-8f27-aef7c980e40d
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
-      description: Verify that there is a valid instance of Palo Alto Networks PAN-OS
-        enabled.
+      description: Verify that there is a valid instance of Palo Alto Networks PAN-OS enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -104,12 +102,7 @@ tasks:
       id: 16b55e1b-edf4-4495-8acd-ec822793a904
       version: -1
       name: GenericPolling
-      description: "Use as a sub-playbook to block execution of the master playbook\
-        \ until a remote action is complete.\nThis playbook implements polling by\
-        \ continually running the command in Step #2 until the operation completes.\n\
-        The remote action should have the following structure:\n\n1. Initiate the\
-        \ operation.\n2. Poll to check if the operation completed.\n3. (optional)\
-        \ Get the results of the operation."
+      description: "Use as a sub-playbook to block execution of the master playbook until a remote action is complete.\nThis playbook implements polling by continually running the command in Step #2 until the operation completes.\nThe remote action should have the following structure:\n\n1. Initiate the operation.\n2. Poll to check if the operation completed.\n3. (optional) Get the results of the operation."
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -175,8 +168,7 @@ tasks:
       id: 358f0fa5-163a-4c92-8f77-7f743207c155
       version: -1
       name: Push rules to the Panorama device group
-      description: Push rules from Palo Alto Panorama to the Palo Alto configured
-        device group.
+      description: Push rules from Palo Alto Panorama to the Palo Alto configured device group.
       script: '|||panorama-push-to-device-group'
       type: regular
       iscommand: true
@@ -199,12 +191,7 @@ tasks:
       id: d7c1b22b-2529-494e-8959-dd33edd07e6e
       version: -1
       name: GenericPolling
-      description: "Use as a sub-playbook to block execution of the master playbook\
-        \ until a remote action is complete.\nThis playbook implements polling by\
-        \ continually running the command in Step #2 until the operation completes.\n\
-        The remote action should have the following structure:\n\n1. Initiate the\
-        \ operation.\n2. Poll to check if the operation completed.\n3. (optional)\
-        \ Get the results of the operation."
+      description: "Use as a sub-playbook to block execution of the master playbook until a remote action is complete.\nThis playbook implements polling by continually running the command in Step #2 until the operation completes.\nThe remote action should have the following structure:\n\n1. Initiate the operation.\n2. Poll to check if the operation completed.\n3. (optional) Get the results of the operation."
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -594,12 +581,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"10_3_yes\": 0.82,\n    \"10_5_#default#\"\
-  : 0.1,\n    \"11_5_#default#\": 0.1,\n    \"13_5_#default#\": 0.1,\n    \"13_6_Panorama\"\
-  : 0.73,\n    \"14_12_yes\": 0.24,\n    \"15_17_#default#\": 0.2,\n    \"15_5_yes\"\
-  : 0.1,\n    \"1_5_#default#\": 0.17\n  },\n  \"paper\": {\n    \"dimensions\": {\n\
-  \      \"height\": 4415,\n      \"width\": 1780,\n      \"x\": -190,\n      \"y\"\
-  : -250\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {\n    \"10_3_yes\": 0.82,\n    \"10_5_#default#\": 0.1,\n    \"11_5_#default#\": 0.1,\n    \"13_5_#default#\": 0.1,\n    \"13_6_Panorama\": 0.73,\n    \"14_12_yes\": 0.24,\n    \"15_17_#default#\": 0.2,\n    \"15_5_yes\": 0.1,\n    \"1_5_#default#\": 0.17\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4415,\n      \"width\": 1780,\n      \"x\": -190,\n      \"y\": -250\n    }\n  }\n}"
 inputs: []
 outputs:
 - contextPath: Panorama.Commit.Warnings

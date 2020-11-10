@@ -658,59 +658,6 @@
 				"size": 0,
 				"category": ""
 			}
-		},
-		{
-			"id": "34a8d5e0-66e7-11ea-9204-9b2092cbe074",
-			"forceRange": false,
-			"x": 6,
-			"y": 2,
-			"i": "34a8d5e0-66e7-11ea-9204-9b2092cbe074",
-			"w": 6,
-			"h": 2,
-			"widget": {
-				"id": "incidentPerFeed",
-				"version": 7,
-				"modified": "2020-03-15T18:03:00.066866266Z",
-				"propagationLabels": [
-					"all"
-				],
-				"name": "Incidents Per Feed",
-				"dataType": "scripts",
-				"widgetType": "table",
-				"query": "ThreatIntelManagementGetIncidentsPerFeed",
-				"sort": null,
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"tableColumns": [
-						{
-							"isDefault": true,
-							"key": "Feed Name",
-							"position": 0,
-							"width": 382
-						},
-						{
-							"isDefault": true,
-							"key": "Number Of Incidents",
-							"position": 1
-						}
-					]
-				},
-				"size": 0,
-				"category": ""
-			}
 		}
 	],
 	"fromVersion": "5.5.0",

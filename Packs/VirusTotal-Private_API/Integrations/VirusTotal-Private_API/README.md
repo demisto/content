@@ -2482,6 +2482,16 @@
 <td style="width: 386px;">Resolve date of IPs that resolved to this URL</td>
 </tr>
 <tr>
+<td style="width: 294px;">URL.VirusTotal.ResponseContentSHA256</td>
+<td style="width: 60px;">Unknown</td>
+<td style="width: 386px;">SHA256 hash of the response content</td>
+</tr>
+<tr>
+<td style="width: 294px;">URL.VirusTotal.ResponseHeaders</td>
+<td style="width: 60px;">Unknown</td>
+<td style="width: 386px;">The response headers</td>
+</tr>
+<tr>
 <td style="width: 294px;">URL.VirusTotal.Scans.Source</td>
 <td style="width: 60px;">Unknown</td>
 <td style="width: 386px;">Scan vendor for this URL</td>
@@ -4660,11 +4670,11 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 268px;">VirusTotal.SearchResult</td>
+<td style="width: 268px;">VirusTotal.SearchFile.SearchResult</td>
 <td style="width: 453px;">Hashes of files that match the query</td>
 </tr>
 <tr>
-<td style="width: 268px;">VirusTotal.Query</td>
+<td style="width: 268px;">VirusTotal.SearchFile.Query</td>
 <td style="width: 453px;">Original search query</td>
 </tr>
 </tbody>

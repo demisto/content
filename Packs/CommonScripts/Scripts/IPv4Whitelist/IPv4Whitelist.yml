@@ -8,9 +8,7 @@ subtype: python3
 tags:
 - transformer
 - entirelist
-comment: Transformer that returns a filtered list of IPv4 addresses, based on whether
-  they match a comma-separated list of IPv4 ranges.  Useful for filtering in internal
-  IP address space.
+comment: Transformer that returns a filtered list of IPv4 addresses, based on whether they match a comma-separated list of IPv4 ranges.  Useful for filtering in internal IP address space.
 enabled: true
 args:
 - name: value
@@ -27,4 +25,5 @@ runonce: false
 dockerimage: demisto/netutils:1.0.0.5165
 runas: DBotWeakRole
 tests:
-  - No test - unit test
+- No test - unit test
+fromversion: 5.0.0
