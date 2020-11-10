@@ -729,7 +729,7 @@ tasks:
     task:
       id: 3999e34f-ff50-40da-8d9a-8e9b9660d3ae
       version: -1
-      name: Set timestamp to epoch
+      name: Set timestamp
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular

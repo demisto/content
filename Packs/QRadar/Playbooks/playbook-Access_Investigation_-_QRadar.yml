@@ -494,7 +494,7 @@ tasks:
     task:
       id: 1fd3c2d2-c84b-485b-8a79-8dbb71e767c7
       version: -1
-      name: Set timestamp to epoch
+      name: Set timestamp
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -510,14 +510,7 @@ tasks:
       stringify: {}
       value:
         complex:
-          root: incident.labels
-          accessor: start_time
-          transformers:
-          - operator: FormattedDateToEpoch
-            args:
-              formatter:
-                value:
-                  simple: '%Y-%m-%dT%H:%M:%S.%fZ'
+          root: inputs.StartTime
     separatecontext: false
     view: |-
       {
