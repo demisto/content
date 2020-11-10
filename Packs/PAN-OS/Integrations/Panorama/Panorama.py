@@ -6844,7 +6844,7 @@ def main():
 
         # Pcaps
         elif demisto.command() == 'panorama-list-pcaps':
-            panorama_list_pcaps_command()
+            panorama_list_pcaps_command(args)
 
         elif demisto.command() == 'panorama-get-pcap':
             panorama_get_pcap_command(args)
