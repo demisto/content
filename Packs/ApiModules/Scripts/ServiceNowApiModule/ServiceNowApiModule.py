@@ -101,8 +101,8 @@ class ServiceNowClient(BaseClient):
                     'refresh_token': res.get('refresh_token')
                 }
                 set_integration_context(refresh_token)
-        except Exception as e:
-            return_error(f'Login failed. Please check the instance configuration and the given username and password.')
+        except Exception:
+            return_error('Login failed. Please check the instance configuration and the given username and password.')
 
     def get_access_token(self):
         """

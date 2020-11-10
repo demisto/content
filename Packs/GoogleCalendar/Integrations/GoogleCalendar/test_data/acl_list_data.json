@@ -1,0 +1,69 @@
+{
+  "args": {
+    "calendar_id": "demo@test.com",
+    "user_id": "demo@test.com",
+    "show_deleted": "true",
+    "max_results": "2"
+  },
+  "wrong_args": {
+    "calendar_id": "demo@test.com",
+    "user_id": "demo@test.com",
+    "show_deleted": "11",
+    "max_results": "2"
+  },
+  "Contents": {
+    "etag": "\"p3389jk4srr3um0g\"",
+    "items": [
+      {
+        "etag": "\"00000000000000000000\"",
+        "id": "user:demo@test.com",
+        "kind": "calendar#aclRule",
+        "role": "owner",
+        "scope": {
+          "type": "user",
+          "value": "demo@test.com"
+        }
+      },
+      {
+        "etag": "\"00001598613730980000\"",
+        "id": "default",
+        "kind": "calendar#aclRule",
+        "role": "reader",
+        "scope": {
+          "type": "default",
+          "value": "__public_principal__@public.calendar.google.com"
+        }
+      }
+    ],
+    "kind": "calendar#acl",
+    "nextPageToken": "ENCZ0Jzex-sCGAAgADISCgwI4tGj-gUQgLqm0wMSAiAB"
+  },
+  "ContentsFormat": "json",
+  "EntryContext": {
+    "GoogleCalendar.Acl(val.id == obj.id && val.calendarId == obj.calendarId && val.userId == obj.userId)": [
+      {"calendarId": "demo@test.com",
+        "userId": "demo@test.com",
+        "etag": "\"00000000000000000000\"",
+        "id": "user:demo@test.com",
+        "kind": "calendar#aclRule",
+        "role": "owner",
+        "scopeType": "user",
+        "scopeValue": "demo@test.com"
+      },
+      {"calendarId": "demo@test.com",
+        "userId": "demo@test.com",
+        "etag": "\"00001598613730980000\"",
+        "id": "default",
+        "kind": "calendar#aclRule",
+        "role": "reader",
+        "scopeType": "default",
+        "scopeValue": "__public_principal__@public.calendar.google.com"
+      }
+    ],
+    "GoogleCalendar.PageToken.Acl(val.calendarId == obj.calendarId && val.userId == obj.userId)": {"calendarId": "demo@test.com", "userId": "demo@test.com",
+      "nextPageToken": "ENCZ0Jzex-sCGAAgADISCgwI4tGj-gUQgLqm0wMSAiAB"
+    }
+  },
+  "HumanReadable": "### Next Page Token: ENCZ0Jzex-sCGAAgADISCgwI4tGj-gUQgLqm0wMSAiAB\n### Total Retrieved ACL: 2\n|Id|Role|Scope Type|Scope Value|\n|---|---|---|---|\n| user:demo@test.com | owner | user | demo@test.com |\n| default | reader | default | __public_principal__@public.calendar.google.com |\n",
+  "Type": 1
+}
