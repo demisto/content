@@ -45,6 +45,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  additionalinfo: The maximum number of incidents per fetch cannot exceed 100.
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
