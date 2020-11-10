@@ -87,7 +87,10 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         str: downloaded index generation.
 
     """
-    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
+        index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    else:
+        index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -484,7 +487,7 @@ def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
-                                   index_folder_path: str, pack_names: set, is_private_build: bool) \
+                                   index_folder_path: str, pack_names: set) \
         -> Tuple[Union[list, list], str, Any]:
     """ Updates index with priced packs and returns list of priced packs data.
 
@@ -493,7 +496,6 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         extract_destination_path (str): full path to extract directory.
         index_folder_path (str): downloaded index folder directory path.
         pack_names (set): Collection of pack names.
-        is_private_build (bool): Indicates if the build is private.
 
     Returns:
         list: priced packs from private bucket.
@@ -941,8 +943,7 @@ def main():
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs, _, _ = update_index_with_priced_packs(private_storage_bucket,
                                                              extract_destination_path,
-                                                             index_folder_path, pack_names,
-                                                             is_private_build=False)
+                                                             index_folder_path, pack_names)
     else:  # skipping private packs
         logging.debug("Skipping index update of priced packs")
         private_packs = []

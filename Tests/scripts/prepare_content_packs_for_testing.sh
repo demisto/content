@@ -58,6 +58,7 @@ else
   elif [ -n "${BUCKET_UPLOAD}" ]; then
       REMOVE_PBS=true
       BUCKET_UPLOAD_FLOW=true
+      GCS_PRIVATE_BUCKET="marketplace-dist-private"
     if [ -n "${FORCE_PACK_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
       echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"
       OVERRIDE_ALL_PACKS=true
@@ -68,7 +69,7 @@ else
       PACKS_LIST="all"
     fi
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -bu $BUCKET_UPLOAD_FLOW -c "$FORCE_PREVIOUS_COMMIT"
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -bu $BUCKET_UPLOAD_FLOW -c "$FORCE_PREVIOUS_COMMIT" -pb "$GCS_PRIVATE_BUCKET"
   echo "Finished updating content packs successfully."
 fi
 
