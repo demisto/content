@@ -1,6 +1,6 @@
 from requests import Response, Session
 from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, \
-    enable_user_command, disable_user_command, get_mapping_fields_command
+    enable_user_command, disable_user_command, get_mapping_fields_command, get_assigned_user_for_app_command
 from CommonServerPython import IAMErrors, IAMUserProfile, IAMActions, EntryType
 
 
@@ -340,3 +340,39 @@ def test_get_mapping_fields_command(mocker):
 
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field1') == 'description1'
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'description2'
+
+
+def test_get_assigned_user_for_app_command(mocker):
+    """
+    Given:
+        - An Okta IAM client object
+        - Okta User ID
+        - Okta Application ID
+    When:
+        - Calling function get_assigned_user_for_app_command
+    Then:
+        - Ensure a User Assignment object to the application is retrieved in the correct format.
+    """
+    client = mock_client()
+
+    args = {
+        'user-id': 'mock_user_id',
+        'application-id': 'mock_app_id'
+    }
+
+    get_assignment_response = {
+        'id': 'mock_user_id',
+        'profile': {},
+        'created': '2020-11-03T09:59:30.000Z',
+        'credentials': {'userName': 'mock_username'},
+        'externalId': None,
+        'status': 'ACTIVE'
+    }
+
+    mocker.patch.object(Session, 'request', return_value=get_assignment_response)
+
+    command_result = get_assigned_user_for_app_command(client, args)
+
+    assert command_result.outputs.get('id') == 'mock_user_id'
+    assert command_result.outputs.get('credentials').get('userName') == 'mock_username'
+    assert 'Okta User App Assignment' in command_result.readable_output

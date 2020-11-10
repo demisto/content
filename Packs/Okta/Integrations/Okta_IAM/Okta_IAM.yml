@@ -49,6 +49,37 @@ configuration:
   name: mapper-out
   required: true
   type: 0
+- display: Fetch Samples
+  name: fetch_samples
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: If checked, the fetch incidents command will sample (at most) five
+    incidents.     Use only to sample incidents for classification & mapping.
+- display: Fetch Limit (recommended less than 200)
+  name: max_fetch
+  defaultvalue: "50"
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch Query Filter
+  name: fetch_query_filter
+  type: 0
+  required: true
+  additionalinfo: Generate a query filter for okta logs API to retrieve only applications
+    configured in XSOAR.
 description: Integrate with Okta's Identity Access Management service to execute CRUD
   operations to employee lifecycle processes.
 display: Okta IAM
@@ -276,6 +307,36 @@ script:
       Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
+  - name: okta-get-assigned-user-for-app
+    arguments:
+    - name: user-id
+      required: true
+      description: ID of the user for which to get information.
+    - name: application-id
+      required: true
+      description: ID of the application for which to get information.
+    outputs:
+    - contextPath: Okta.UserAppAssignment.profile
+      description: App-specific profile for the user.
+      type: unknown
+    - contextPath: Okta.UserAppAssignment.created
+      description: Timestamp when app user was created.
+      type: date
+    - contextPath: Okta.UserAppAssignment.externalId
+      description: ID of user in target app.
+      type: string
+    - contextPath: Okta.UserAppAssignment.id
+      description: Unique ID of the user.
+      type: string
+    - contextPath: Okta.UserAppAssignment.status
+      description: Status of app user.
+      type: string
+    - contextPath: Okta.UserAppAssignment.credentials
+      description: Credentials for assigned app.
+    - contextPath: Okta.UserAppAssignment.credentials.userName
+      description: Username of the user.
+      type: string
+    description: Gets a specific user assignment for an application by id.
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   longRunning: false

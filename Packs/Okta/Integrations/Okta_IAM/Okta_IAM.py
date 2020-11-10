@@ -13,6 +13,8 @@ requests.packages.urllib3.disable_warnings()
 
 '''CONSTANTS'''
 
+FETCH_SAMPLES_SIZE = 5
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
 USER_IS_DISABLED_MSG = 'Deactivation failed because the user is already disabled.'
 USER_IS_DISABLED_ERROR = 'E0000007'
@@ -110,6 +112,60 @@ class Client(BaseClient):
         okta_fields.update({k: custom_properties[k].get('title') for k in custom_properties.keys()})
 
         return okta_fields
+
+    def get_assigned_user_for_app(self, application_id, user_id):
+        uri = f'/apps/{application_id}/users/{user_id}'
+        res = self._http_request(
+            method='GET',
+            url_suffix=uri
+        )
+        return res
+
+    def get_logs(self, query_filter, last_run_time=None, time_now=None, fetch_samples=False):
+        logs = []
+
+        uri = 'logs'
+        params = {
+            'filter': encode_string_results(query_filter),
+            'since': encode_string_results(last_run_time),
+            'until': encode_string_results(time_now)
+        }
+        batch, next_page = self.get_logs_batch(url_suffix=uri, params=params)
+
+        while batch:
+            logs.extend(batch)
+            batch, next_page = self.get_logs_batch(full_url=next_page)
+        return logs
+
+    def get_logs_batch(self, url_suffix='', params=None, full_url=''):
+        """ Gets a batch of logs from Okta.
+            Args:
+                url_suffix (str): The logs API endpoint.
+                params (dict): The API query params.
+                full_url (str): The full url retrieved from the last API call.
+
+            Return:
+                batch (dict): The logs batch.
+                next_page (str): URL for next API call (equals '' on last batch).
+        """
+        if not url_suffix and not full_url:
+            return None, None
+
+        res = self._http_request(
+            method='GET',
+            url_suffix=url_suffix,
+            params=params,
+            full_url=full_url,
+            resp_type='response'
+        )
+
+        batch = res.json()
+        if batch:
+            next_page = res.links.get('next', {}).get('url')
+        else:
+            next_page = ''
+
+        return batch, next_page
 
 
 '''HELPER FUNCTIONS'''
@@ -362,6 +418,79 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
     return user_profile
 
 
+def get_assigned_user_for_app_command(client, args):
+    user_id = args.get('user-id')
+    application_id = args.get('application-id')
+
+    res = client.get_assigned_user_for_app(application_id, user_id)
+
+    headers = ['id', 'profile', 'created', 'credentials', 'externalId', 'status']
+    readable_output = tableToMarkdown('Okta User App Assignment', res, headers, removeNull=True)
+
+    return CommandResults(
+        outputs=res,
+        outputs_prefix='Okta.UserAppAssignment',
+        outputs_key_field='id',
+        readable_output=readable_output
+    )
+
+
+def fetch_samples(client, query_filter):
+    """
+        Args:
+            client: Okta client
+            query_filter: A query filter for okta logs API
+        Returns:
+            samples: Sample incidents/events that will be created in Cortex XSOAR
+    """
+    samples = []
+
+    try:
+        demisto.debug(f'Okta: Fetching sample logs.')
+        params = {
+            'filter': encode_string_results(query_filter),
+            'limit': FETCH_SAMPLES_SIZE
+        }
+        events, _ = client.get_logs_batch(url_suffix='logs', params=params)
+        for entry in events:
+            # Set the raw JSON to the event. Mapping will be done at the classification and mapping
+            event = {'rawJSON': json.dumps(entry)}
+            samples.append(event)
+
+    except Exception as e:
+        demisto.error('Failed to fetch Okta sample log events.')
+        raise e
+
+    return samples
+
+
+def fetch_incidents(client, query_filter, last_run_time=None):
+    """
+        Args:
+            client: Okta client
+            query_filter: A query filter for okta logs API
+            last_run_time:
+        Returns:
+            events: Incidents/Events that will be created in Cortex XSOAR
+            time_now: Current time, used for last run.
+    """
+    events = []
+    time_now = datetime.now().strftime(DATE_FORMAT)
+    try:
+        demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
+        log_events = client.get_logs(query_filter, last_run_time, time_now)
+        for entry in log_events:
+            # Set the raw JSON to the event. Mapping will be done at the classification and mapping
+            event = {'rawJSON': json.dumps(entry)}
+            events.append(event)
+
+    except Exception as e:
+        demisto.error(f'Failed to fetch Okta log events from {last_run_time} to {time_now}.')
+        raise e
+
+    return events, time_now
+
+
 def main():
     user_profile = None
     params = demisto.params()
@@ -371,6 +500,7 @@ def main():
     mapper_out = params.get('mapper-out')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    fetch_query_filter = params.get('fetch_query_filter')
     command = demisto.command()
     args = demisto.args()
 
@@ -426,6 +556,36 @@ def main():
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
+
+        elif command == 'okta-get-assigned-user-for-app':
+            return_results(get_assigned_user_for_app_command(client, args))
+
+        elif command == 'fetch-incidents':
+            '''
+                Checks if there are events are stored in the integration context.
+                If yes, it gets it from there. Else, it makes a call to Workday to get a new report
+                Returns the first x events (x being the fetch limit) and stores the remaining in integration context
+            '''
+
+            if params.get('fetch_samples'):
+                sample_events = fetch_samples(client, fetch_query_filter)
+                demisto.incidents(sample_events)
+
+            else:
+                fetch_limit = int(params.get('max_fetch'))
+                last_run = demisto.getLastRun()
+                last_run_time = last_run.get('last_run_time')
+                events = last_run.get('events', [])
+                time_now = None
+
+                if not events:
+                    events, time_now = fetch_incidents(client, fetch_query_filter, last_run_time)
+
+                demisto.incidents(events[:fetch_limit])
+                demisto.setLastRun({
+                    'events': events[fetch_limit:],
+                    'last_run_time': time_now if time_now else last_run_time
+                })
 
     except Exception:
         # For any other integration command exception, return an error
