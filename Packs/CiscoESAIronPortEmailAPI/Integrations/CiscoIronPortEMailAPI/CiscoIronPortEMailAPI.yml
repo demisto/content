@@ -65,7 +65,7 @@ script:
       description: limit
       name: limit
     description: 'Search in SPAM , Only One Parameter at once '
-    name: ironPortSearchSpam
+    name: iron-port-search-spam
   - arguments:
     - description: MID
       name: mid
