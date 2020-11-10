@@ -733,7 +733,7 @@ def get_session_data_by_ip_request(ip):
         'CiscoISE.Endpoint(val.ID && val.ID === obj.ID)': session_data
     }
 
-    return_outputs('The targeted users session xml is being returned ', context)
+    return_outputs('The targeted users session xml is being returned.', context)
 
 
 def get_session_data_by_ip():
@@ -745,8 +745,6 @@ def get_session_data_by_ip():
         return_error('Please enter the ip')
 
     get_session_data_by_ip_request(ip)
-
-    return
 
 
 ''' EXECUTION CODE '''
