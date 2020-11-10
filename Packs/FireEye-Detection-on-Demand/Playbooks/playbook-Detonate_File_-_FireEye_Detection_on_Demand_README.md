@@ -34,4 +34,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Detonate File - FireEye Detection on Demand](Insert the link to your image here)
+![Detonate File - FireEye Detection on Demand](../doc_files/playbook-Detonate_File_-_FireEye_Detection_on_Demand.png)

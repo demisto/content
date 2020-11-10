@@ -4,7 +4,7 @@ name: Detonate File - FireEye Detection on Demand
 description: Detonate one or more files using the FireEye Detection on Demand integration.  This
   playbook returns relevant reports to the War Room and file reputations to the context
   data.
-fromversion: 5.0.0
+fromversion: 6.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -17,7 +17,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -36,17 +35,17 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 806fa3f1-9e65-475e-8bc7-2635c5efacda
+    taskid: 04290307-5a7a-49a2-8e2e-758abc9bfb90
     type: regular
     task:
-      id: 806fa3f1-9e65-475e-8bc7-2635c5efacda
+      id: 04290307-5a7a-49a2-8e2e-758abc9bfb90
       version: -1
       name: fireeye-dod-submit-file
       description: Submits file to FireEye Detection on Demand for analysis
-      script: FireEye Detection on Demand|||fireeye-dod-submit-file
+      script: '|||fireeye-dod-submit-file'
       type: regular
       iscommand: true
-      brand: FireEye Detection on Demand
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -75,17 +74,17 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: e4594409-81c2-4beb-8d1b-e3c210b18cac
+    taskid: 1ae3a453-3f4a-407e-87fc-86f57e9833b2
     type: regular
     task:
-      id: e4594409-81c2-4beb-8d1b-e3c210b18cac
+      id: 1ae3a453-3f4a-407e-87fc-86f57e9833b2
       version: -1
       name: fireeye-dod-get-reports
       description: Retrieves one or more reports of file scans
-      script: FireEye Detection on Demand|||fireeye-dod-get-reports
+      script: '|||fireeye-dod-get-reports'
       type: regular
       iscommand: true
-      brand: FireEye Detection on Demand
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -196,7 +195,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -244,7 +242,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -278,22 +275,20 @@ inputs:
     simple: ${File}
   required: false
   description: File object of the file to detonate
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Timeout
   value:
     simple: "30"
   required: false
   description: How much time to wait before a timeout occurs  (minutes)
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: File
   description: The File object
   type: unknown
-tests:
-- No tests (auto formatted)

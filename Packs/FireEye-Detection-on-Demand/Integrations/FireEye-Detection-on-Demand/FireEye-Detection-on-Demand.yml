@@ -264,6 +264,6 @@ script:
       defaultValue: "72"
     description: Generates a pre-signed URL for a report
 
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

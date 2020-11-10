@@ -1,5 +1,5 @@
 FireEye Detection On Demand is a threat detection service delivered as an API for integration into the SOC workflow, SIEM analytics, data repositories, or web applications, etc. It delivers flexible file and content analysis to identify malicious behavior wherever the enterprise needs it.
-This integration was integrated and tested with version xx of FireEye Detection on Demand
+This integration was integrated and tested with version 1.4.1 of FireEye Detection on Demand
 ## Configure FireEye Detection on Demand on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -57,10 +57,49 @@ Queries FireEye Detection on Demand reports for the provided md5 hashes
 
 
 #### Command Example
-``` ```
+```!fireeye-dod-get-hashes md5_hashes=47f9fdc617f8c98a6732be534d8dbe9c```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "47f9fdc617f8c98a6732be534d8dbe9c",
+        "Score": 0,
+        "Type": "file",
+        "Vendor": "FireEye DoD"
+    },
+    "File": {
+        "FireEyeDoD": {
+            "engine_results": {
+                "av_lookup": {
+                    "verdict": "not_found"
+                },
+                "avs_lookup": {
+                    "verdict": "not_found"
+                },
+                "cache_lookup": {
+                    "verdict": "not_found"
+                },
+                "dti_lookup": {
+                    "verdict": "not_found"
+                },
+                "dynamic_analysis": {
+                    "verdict": "not_found"
+                }
+            },
+            "is_malicious": false
+        },
+        "MD5": "47f9fdc617f8c98a6732be534d8dbe9c"
+    }
+}
+```
 
 #### Human Readable Output
 
+>### FireEye DoD Results
+>|MD5|SHA256|Malicious|
+>|---|---|---|
+>| 47f9fdc617f8c98a6732be534d8dbe9c |  |  |
 
 
 ### fireeye-dod-submit-file
@@ -95,11 +134,25 @@ Submits file to FireEye Detection on Demand for analysis
 
 
 #### Command Example
-``` ```
+```!fireeye-dod-submit-file entryID=37@760083ae-625e-4a6c-8e93-87ece7964dd0```
+
+#### Context Example
+```json
+{
+    "FireEyeDoD": {
+        "Scan": {
+            "filename": "test-infection.exe",
+            "md5": "47f9fdc617f8c98a6732be534d8dbe9a",
+            "overall_status": "RUNNING",
+            "report_id": "c1d32790-5b08-45ab-a3be-3e61f8826e8b"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>Started analysis of test-infection.exe with FireEye Detection on Demand. Results will be published to report id: c1d32790-5b08-45ab-a3be-3e61f8826e8b
 
 ### fireeye-dod-submit-urls
 ***
@@ -125,11 +178,24 @@ Submits URLs to FireEye Detection on Demand for analysis
 
 
 #### Command Example
-``` ```
+```!fireeye-dod-submit-urls urls="https://www.google.com"```
+
+#### Context Example
+```json
+{
+    "FireEyeDoD": {
+        "Scan": {
+            "md5": "NA",
+            "overall_status": "RUNNING",
+            "report_id": "55223a00-6741-41c4-80a9-28d3c133a5db"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>Started analysis of ['https://www.google.com'] with FireEye Detection on Demand. Results will be published to report id: 55223a00-6741-41c4-80a9-28d3c133a5db
 
 ### fireeye-dod-get-reports
 ***
@@ -168,10 +234,59 @@ Retrieves one or more reports of file scans
 
 
 #### Command Example
-``` ```
+```!fireeye-dod-get-reports report_ids=82e71bec-04c7-4f04-945b-4d344a758abe```
+
+#### Context Example
+```json
+{
+    "FireEyeDoD": {
+        "Scan": {
+            "completed_at": "2020-11-10 14:28:18",
+            "duration": 0,
+            "file_extension": "urlscan",
+            "file_name": "test-infection.exe",
+            "file_size": 28672,
+            "is_malicious": true,
+            "magic": null,
+            "md5": "NA",
+            "name": "test-infection.exe",
+            "overall_status": "DONE",
+            "report_id": "82e71bec-04c7-4f04-945b-4d344a758abe",
+            "sha1": "NA",
+            "sha256": "NA",
+            "signature_name": [
+                "Phish.LIVE.DTI.URL",
+                "Malicious.LIVE.DTI.URL",
+                "fe_ml_heuristic",
+                "FireEye.Malware.exe",
+                "FETestEvent"
+            ],
+            "size": 28672,
+            "started_at": "2020-11-10 14:28:18",
+            "type": "urlscan",
+            "urls": [
+                "http://fedeploycheck.fireeye.com/appliance-test/block.html",
+                "http://165.227.14.8/?NDU2MDgz&amp;yOyeu&amp;YPocHQsbD=disagree&amp;lAjd=callous&amp;mvUq=disagree&amp;eSCpt=disagree&amp;mnnYBwlX=abettor&amp;MZMJ=everyone&amp;ipEMqw=professional&amp;xRefGF=callous&amp;tzsdfga4=dJORROwbnhRaGKA1hlIhYVV0W8a2ojkbXzhCf1JaG9RGIZ1hD-sGcELgL6G2xyPNRcw&amp;cvggd54=wnfQMvXcJBXQFYbIKuXDSKxDKU7WFEaVw4-RhMG3YpjNfynz1-zURnL6tASVVFuRrbM&amp;hMdqbI=electrical&amp;qgZufk=disagree&amp;egHdAM=abettor&amp;BUfBH=professional&amp;RGVeFwBNTM2MzY2",
+                "http://br430.teste.website/~idbrok92/idb/UI/Login/",
+                "http://www.dulys.co.zw/",
+                "http://fedeploycheck.fireeye.com/appliance-test/test-infection.exe",
+                "http://fedeploycheck.fireeye.com/appliance-test/test-infection.pdf",
+                "http://fedeploycheck.fireeye.com/appliance-test/alert.html",
+                "https://tinyurl.com/y2qezvol",
+                "https://fedeploycheck.fireeye.com/appliance-test/alert.html"
+            ],
+            "verdict": "MALICIOUS"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Scan status
+>|completed_at|duration|file_extension|file_name|file_size|is_malicious|magic|md5|name|overall_status|report_id|sha1|sha256|signature_name|size|started_at|type|urls|verdict|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2020-11-10 14:28:18 | 0 | urlscan | test-infection.exe | 28672 | true |  | NA | test-infection.exe | DONE | 82e71bec-04c7-4f04-945b-4d344a758abe | NA | NA | Phish.LIVE.DTI.URL,<br/>Malicious.LIVE.DTI.URL,<br/>fe_ml_heuristic,<br/>FireEye.Malware.exe,<br/>FETestEvent | 28672 | 2020-11-10 14:28:18 | urlscan | http://fedeploycheck.fireeye.com/appliance-test/block.html,<br/>http://165.227.14.8/?NDU2MDgz&amp;yOyeu&amp;YPocHQsbD=disagree&amp;lAjd=callous&amp;mvUq=disagree&amp;eSCpt=disagree&amp;mnnYBwlX=abettor&amp;MZMJ=everyone&amp;ipEMqw=professional&amp;xRefGF=callous&amp;tzsdfga4=dJORROwbnhRaGKA1hlIhYVV0W8a2ojkbXzhCf1JaG9RGIZ1hD-sGcELgL6G2xyPNRcw&amp;cvggd54=wnfQMvXcJBXQFYbIKuXDSKxDKU7WFEaVw4-RhMG3YpjNfynz1-zURnL6tASVVFuRrbM&amp;hMdqbI=electrical&amp;qgZufk=disagree&amp;egHdAM=abettor&amp;BUfBH=professional&amp;RGVeFwBNTM2MzY2,<br/>http://br430.teste.website/~idbrok92/idb/UI/Login/,<br/>http://www.dulys.co.zw/,<br/>http://fedeploycheck.fireeye.com/appliance-test/test-infection.exe,<br/>http://fedeploycheck.fireeye.com/appliance-test/test-infection.pdf,<br/>http://fedeploycheck.fireeye.com/appliance-test/alert.html,<br/>https://tinyurl.com/y2qezvol,<br/>https://fedeploycheck.fireeye.com/appliance-test/alert.html | MALICIOUS |
 
 
 ### fireeye-dod-get-report-url
@@ -195,8 +310,13 @@ Generates a pre-signed URL for a report
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!fireeye-dod-get-report-url report_id=82e71bec-04c7-4f04-945b-4d344a758abe```
+
+#### Context Example
+```json
+{}
+```
 
 #### Human Readable Output
 
-
+>Report 82e71bec-04c7-4f04-945b-4d344a758abe is available [here](https://public-feapi.marketplace.apps.fireeye.com/reports/82e71bec-04c7-4f04-945b-4d344a758abe?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyZXBvcnRfaWQiOiI4MmU3MWJlYy0wNGM3LTRmMDQtOTQ1Yi00ZDM0NGE3NThhYmUiLCJleHAiOjE2MDUyNzkxMjh9.xcGa3OKhbDJMbJJpwxCvxOYr36OEd59a-47VJ4Rh05o)
