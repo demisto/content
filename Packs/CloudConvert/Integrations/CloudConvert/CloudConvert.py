@@ -52,7 +52,7 @@ class Client(BaseClient):
             timeout=100,
             headers=self._headers
         )
-        form = response_get_form.get('data').get('result').get('form')
+        form = response_get_form.get('data', {}).get('result', {}).get('form', {})
         port_url = form.get('url')
         params = form.get('parameters')
 
