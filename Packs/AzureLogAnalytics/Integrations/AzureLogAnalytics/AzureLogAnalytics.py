@@ -83,12 +83,17 @@ class Client:
                 error_msg = res_json.get('error', {}).get('message', res_json)
                 return_error(f"*****Status code:{res.status_code}, Error_code: {code}, Error_msg: {error_msg}*****")
 
-        except ValueError:
-            return_error(res.status_code)
         except Exception as e:
-            demisto.debug(f"*****{res.text}: {e}")
-            demisto.debug(f"*****{res.content} :{e}")
-            demisto.debug(f"*****{res.status_code} :{e}")
+
+            demisto.debug(f"\n\n*****res.text:\n {res.text}\n\n")
+            demisto.debug(f"\n\n*****res.content:\n{res.content}\n\n")
+            demisto.debug(f"\n\n*****res.status_code\n{res.status_code}\n\n")
+
+            try:
+                demisto.debug(f"\n\n*****res.error:\n {res.error}\n\n")
+
+            except Exception as e:
+                demisto.debug(f"\n\n*****Could not get res.error\n\n")
 
         return res_json
 
