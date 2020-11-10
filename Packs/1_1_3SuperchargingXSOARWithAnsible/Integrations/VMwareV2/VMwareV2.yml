@@ -32,7 +32,7 @@ configuration:
   required: true
   type: 8
 description: Manage VMware vSphere Server, Guests, and ESXi Hosts
-display: VMware V2
+display: VMware v2
 name: VMwareV2
 script:
   commands:
