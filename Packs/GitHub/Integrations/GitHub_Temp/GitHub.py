@@ -8,22 +8,9 @@ import json
 import requests
 from typing import Union, Any
 from datetime import datetime
-import urllib3
-from tempfile import NamedTemporaryFile
-from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
-from gevent.pywsgi import WSGIServer
-from flask import Flask, Response, request
-from multiprocessing import Process
-from typing import Any, Dict, cast
 
 # Disable insecure warnings
-urllib3.disable_warnings()
-
-class Handler:
-    @staticmethod
-    def write(msg):
-        demisto.info(msg)
-
+requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -46,12 +33,6 @@ PULLS_SUFFIX = USER_SUFFIX + '/pulls'
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
 ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
                  'Assignees', 'Labels']
-
-APP: Flask = Flask('Github-LRI')
-XSOAR_LOGGER: Handler = Handler()
-
-CERTIFICATE: str = demisto.params().get('certificate', '')
-CERT_PRIVATE_KEY: str = demisto.params().get('private_key', '')
 
 # Headers to be sent in requests
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
@@ -589,177 +570,6 @@ def format_comment_outputs(comment: dict, issue_number: Union[int, str]) -> dict
         'User': format_user_outputs(comment.get('user', {}))
     }
     return ec_object
-
-
-def try_parse_integer(int_to_parse, err_msg):
-    try:
-        res = int(int_to_parse)
-    except (TypeError, ValueError):
-        raise DemistoException(err_msg)
-    return res
-
-
-def get_params_port():
-    port_mapping: str = demisto.params().get('longRunningPort', '')
-    err_msg: str
-    port: int
-    if port_mapping:
-        err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
-        if ':' in port_mapping:
-            port = try_parse_integer(port_mapping.split(':')[1], err_msg)
-        else:
-            port = try_parse_integer(port_mapping, err_msg)
-    else:
-        raise ValueError('Please provide a Listen Port.')
-    return port
-
-
-def validate_authentication(headers, app_secret, app_id=None):
-    request_app_id = headers.get('X-App-ID', '')
-    request_app_secret = headers.get('X-App-Secret', '')
-
-    if not request_app_secret:
-        return False
-    elif app_id is None and app_secret not in request_app_secret:
-        return False
-    elif app_secret in request_app_secret and app_id in request_app_id:
-        return True
-    return False
-
-
-def create_incident(raw):
-
-    if raw.get('commits'):
-        customfields = {
-            "CommitDelivery": raw
-        }
-        incident = demisto.createIncidents([
-            {
-                "name": f"New Git Commit with ID: {raw.get('after')} ",
-                "type": "New Git Commit",
-                "customFields": customfields
-            }
-        ])
-
-    elif raw.get('before') == "0000000000000000000000000000000000000000":
-        customfields = {
-            "BranchDelivery": raw
-        }
-        incident = demisto.createIncidents([
-            {
-                "name": "New Git Branch ",
-                "type": "New Git Branch",
-                "customFields": customfields
-            }
-        ])
-
-    elif raw.get('pull_request') and raw.get('action') == "opened":
-        customfields = {
-            "PRDelivery": raw
-        }
-        incident = demisto.createIncidents([
-            {
-                "name": f"New Git PR: {raw.get('number')} ",
-                "type": "New Git PR",
-                "customFields": customfields
-            }
-        ])
-
-    elif raw.get('pull_request') and raw.get('action') == "closed":
-        customfields = {
-            "PRDelivery": raw
-        }
-        incident = demisto.createIncidents([
-            {
-                "name": f"Closed Git PR: {raw.get('number')}",
-                "type": "Closed Git PR",
-                "customFields": customfields
-            }
-        ])
-
-    elif raw.get('issue') and raw.get('action') == "opened":
-        customfields = {
-            "IssueDelivery": raw
-        }
-        incident = demisto.createIncidents([
-            {
-                "name": f"New Git Issue: {raw.get('issue')['number']}",
-                "type": "New Git Issue",
-                "customFields": customfields
-            }
-        ])
-
-    elif raw.get('check_run') and raw.get('action') == "completed":
-        customfields = {
-            "TaskDelivery": raw
-        }
-        incident = demisto.createIncidents([
-            {
-                "name": f"Git App Task: {raw.get('check_run')['app']['name']} ",
-                "type": "Git App Task",
-                "customFields": customfields
-            }
-        ])
-
-    else:
-        customfields = {
-            "GitDelivery": raw
-        }
-
-        incident = demisto.createIncidents([
-            {
-                "name": "New Git Delivery",
-                "type": "New Git Delivery",
-                "customFields": customfields
-            }
-        ])
-    return incident
-
-
-''' ROUTE FUNCTIONS '''
-
-
-@APP.route('/', methods=['GET'])
-def void():
-
-    app_id = demisto.params().get('app_id')
-    app_secret = demisto.params().get('app_secret')
-
-    if app_secret:
-        headers = cast(Dict[Any, Any], request.headers)
-        if not validate_authentication(headers, app_secret=app_secret, app_id=app_id):
-            err_msg = 'Authentication failed. Make sure you are using the right credentials.'
-            demisto.error(err_msg)
-            return Response(err_msg, status=401)
-
-    response = {
-        "message": "Please use the right API Endpoint"
-    }
-    return Response(json.dumps(response), status=404, mimetype='application/json')
-
-
-@APP.route('/github/webhook', methods=['POST'])
-def route_incidents():
-    """
-    Main handler for creating new incidents
-    """
-    params = demisto.params()
-
-    app_id = params.get('app_id')
-    app_secret = params.get('app_secret')
-
-    if app_secret:
-        headers = cast(Dict[Any, Any], request.headers)
-        if not validate_authentication(headers, app_secret=app_secret, app_id=app_id):
-            err_msg = 'Authentication failed. Make sure you are using the right credentials.'
-            demisto.error(err_msg)
-            return Response(err_msg, status=401)
-
-    response = {
-        "message": create_incident(raw=request.json)
-    }
-
-    return Response(json.dumps(response), status=200, mimetype='application/json')
 
 
 ''' COMMANDS '''
@@ -1414,6 +1224,57 @@ def get_github_actions_usage():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=usage_result)
 
 
+def list_check_runs(owner_name, repository_name, run_id, commit_id):
+    url_suffix = None
+
+    if run_id:
+        url_suffix = f"/orgs/{owner_name}/{repository_name}/check-runs/{run_id}"
+    elif commit_id:
+        url_suffix = f"/orgs/{owner_name}/{repository_name}/commits/{commit_id}/check-runs"
+    else:
+        return_error("You have to specify either the check run id of the head commit refernce")
+
+    check_runs = http_request(method="GET", url_suffix=url_suffix)
+
+    return [r for r in check_runs.get('check_runs')]
+
+
+def get_github_get_check_run():
+    """ List github check runs.
+
+    """
+    command_args = demisto.args()
+    owner_name = command_args.get('owner', '')
+    repository_name = command_args.get('repository', '')
+    run_id = command_args.get('run_id', '')
+    commit_id = command_args.get('commit_id', '')
+
+    check_run_result = []
+
+    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id, commit_id=commit_id)
+
+    for check_run in check_runs:
+            check_run_id = check_run.get('id', '')
+            check_run_status = check_run.get('status', '')
+            check_run_conclusion = check_run.get('conclusion', '')
+
+
+            check_run_result.append({
+                'WorkflowName': workflow_name,
+                'WorkflowID': workflow_id,
+                'RepositoryName': repository_name,
+                'WorkflowUsage': workflow_usage,
+            })
+
+    ec = {
+        'GitHub.ActionsUsage': usage_result
+    }
+    human_readable = tableToMarkdown('Github Actions Usage', usage_result,
+                                     headerTransform=string_to_table_header)
+
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=usage_result)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1441,69 +1302,36 @@ def fetch_incidents_command():
             if updated_at > last_time:
                 last_time = updated_at
 
+    if demisto.params().get('fetch_pull_requests'):
+        pr_list = http_request(method='GET',
+                               url_suffix=PULLS_SUFFIX,
+                               params={
+                                   'state': 'open',
+                                   'sort': 'created',
+                                   'per_page': 30,
+                                   'page': 1
+                               })
+        for pr in pr_list:
+            updated_at_str = pr.get('created_at')
+            updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
+            if updated_at > start_time:
+                inc = {
+                    'name': pr.get('url'),
+                    'occurred': updated_at_str,
+                    'rawJSON': json.dumps(pr)
+                }
+                incidents.append(inc)
+                if updated_at > last_time:
+                    last_time = updated_at
+
     demisto.setLastRun({'start_time': datetime.strftime(last_time, '%Y-%m-%dT%H:%M:%SZ')})
     demisto.incidents(incidents)
-
-
-def run_long_running(is_test=False):
-    certificate: str = CERTIFICATE
-    private_key: str = CERT_PRIVATE_KEY
-
-    certificate_path = str()
-    private_key_path = str()
-
-    try:
-        port = get_params_port()
-        ssl_args = dict()
-
-        if (certificate and not private_key) or (private_key and not certificate):
-            raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
-
-        if certificate and private_key:
-            certificate_file = NamedTemporaryFile(delete=False)
-            certificate_path = certificate_file.name
-            certificate_file.write(bytes(certificate, 'utf-8'))
-            certificate_file.close()
-
-            private_key_file = NamedTemporaryFile(delete=False)
-            private_key_path = private_key_file.name
-            private_key_file.write(bytes(private_key, 'utf-8'))
-            private_key_file.close()
-
-            context = SSLContext(PROTOCOL_TLSv1_2)
-            context.load_cert_chain(certificate_path, private_key_path)
-            ssl_args['ssl_context'] = context
-            demisto.debug('Starting HTTPS Server')
-        else:
-            demisto.debug('Starting HTTP Server')
-
-        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=XSOAR_LOGGER)
-        if is_test:
-            server_process = Process(target=server.serve_forever)
-            server_process.start()
-            time.sleep(5)
-            server_process.terminate()
-        else:
-            server.serve_forever()
-    except SSLError as e:
-        ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
-        demisto.error(ssl_err_message)
-        raise ValueError(ssl_err_message)
-    except Exception as e:
-        demisto.error(f'An error occurred in long running loop: {str(e)}')
-        raise ValueError(str(e))
-    finally:
-        if certificate_path:
-            os.unlink(certificate_path)
-        if private_key_path:
-            os.unlink(private_key_path)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 COMMANDS = {
     'test-module': test_module,
-    'long-running-execution': run_long_running,
     'fetch-incidents': fetch_incidents_command,
     'GitHub-create-issue': create_command,
     'GitHub-close-issue': close_command,
@@ -1530,6 +1358,8 @@ COMMANDS = {
     'GitHub-is-pr-merged': is_pr_merged_command,
     'GitHub-create-pull-request': create_pull_request_command,
     'Github-get-github-actions-usage': get_github_actions_usage,
+    'Github-get-check-run': get_github_get_check_run,
+
 }
 
 '''EXECUTION'''
@@ -1553,16 +1383,6 @@ HEADERS = {
 
 def main():
     handle_proxy()
-    params = demisto.params()
-
-    credentials = params.get('credentials') if params.get('credentials') else {}
-    username: str = credentials.get('identifier', '')
-    password: str = credentials.get('password', '')
-    if (username and not password) or (password and not username):
-        err_msg: str = 'If using credentials, both username and password should be provided.'
-        demisto.debug(err_msg)
-        raise DemistoException(err_msg)
-
     cmd = demisto.command()
     LOG(f'command is {cmd}')
     try:

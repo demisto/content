@@ -7,6 +7,11 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- display: Fetch Pull Requests
+  hidden: false
+  name: fetch_pull_requests
+  required: false
+  type: 8
 - display: API Token
   name: token
   required: false
@@ -47,21 +52,6 @@ configuration:
   type: 0
 - display: GitHub app installation ID
   name: installation_id
-  required: false
-  type: 0
-- display: Listen Port
-  hidden: false
-  name: longRunningPort
-  required: false
-  type: 0
-- display: Certificate (Required for HTTPS)
-  hidden: false
-  name: certificate
-  required: false
-  type: 0
-- display: Private Key (Required for HTTPS)
-  hidden: false
-  name: private_key
   required: false
   type: 0
 description: Integration to GitHub API
@@ -2628,11 +2618,40 @@ script:
     - contextPath: GitHub.ActionsUsage.WorkflowUsage
       description: GitHub action worflow usage on different OS.
       type: Unknown
-  dockerimage: aymanam/gravity:longrunning
+  - arguments:
+    - default: false
+      description: Organization or Owner
+      isArray: false
+      name: owner
+      required: true
+      secret: false
+    - default: false
+      description: Git Repository Name
+      isArray: false
+      name: repository
+      required: true
+      secret: false
+    - default: false
+      description: Check Run ID
+      isArray: false
+      name: run_id
+      required: false
+      secret: false
+    - default: false
+      description: Head Commit ID
+      isArray: false
+      name: commit_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a check run details
+    execution: false
+    name: Github-get-check-run
+  dockerimage: demisto/pyjwt3:1.0.0.13142
   feed: false
   isfetch: true
-  longRunning: true
-  longRunningPort: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
