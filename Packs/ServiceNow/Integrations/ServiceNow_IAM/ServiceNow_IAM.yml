@@ -7,7 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ServiceNow API Version. Specify this value to use an endpoint version other than the latest.
+- display: ServiceNow API Version (e.g. 'v1'). Specify this value to use an endpoint version other than the latest.
   name: api_version
   required: false
   type: 0
