@@ -637,7 +637,7 @@ script:
       - openssl
     description: Send direct requests to an ACME server
     name: acme_inspect
-  dockerimage: demisto/ansible-runner
+  dockerimage: demisto/ansible-runner:1.0.0.12761
   runonce: false
   script: ''
   subtype: python3
