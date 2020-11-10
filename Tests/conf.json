@@ -405,10 +405,6 @@
             "timeout": 1000
         },
         {
-            "integrations": "Darktrace",
-            "playbookID": "TestDarktracePlaybook"
-        },
-        {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld-Test",
             "fromversion": "5.0.0"
@@ -3079,6 +3075,10 @@
             "timeout": 60000
         },
         {
+            "integrations": "Darktrace",
+            "playbookID": "Darktrace Test Playbook"
+        },
+        {
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
             "fromversion": "5.0.0",
@@ -3346,7 +3346,11 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 73fa122efa883d0058ed6c34da7281fdb4f36570
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
@@ -3354,7 +3358,11 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 73fa122efa883d0058ed6c34da7281fdb4f36570
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "Humio": "supported by the partner",
