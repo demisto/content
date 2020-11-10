@@ -1,7 +1,7 @@
 from requests import Response, Session
 from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, \
     enable_user_command, disable_user_command, get_mapping_fields_command
-from CommonServerPython import IAMErrors, IAMUserProfile, IAMActions
+from CommonServerPython import IAMErrors, IAMUserProfile, IAMActions, EntryType
 
 
 OKTA_USER_OUTPUT = {
@@ -227,6 +227,40 @@ def test_update_user_command__command_is_disabled(mocker):
     assert outputs.get('success') is True
     assert outputs.get('skipped') is True
     assert outputs.get('reason') == 'Command is disabled.'
+
+
+def test_update_user_command__rate_limit_error(mocker):
+    """
+    Given:
+        - An Okta IAM client object
+        - A user-profile argument
+    When:
+        - Calling function update_user_command
+        - API call exceeded rate limit
+    Then:
+        - Ensure an error entry is returned, as rate limit error code is in ERROR_CODES_TO_RETURN_ERROR list.
+    """
+    client = mock_client()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
+
+    bad_response = Response()
+    bad_response.status_code = 429
+    bad_response._content = b'{"errorCode": "E0000047", ' \
+                            b'"errorSummary": "API call exceeded rate limit due to too many requests."}'
+
+    mocker.patch.object(Session, 'request', return_value=bad_response)
+
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
+                                       is_create_user_enabled=False, create_if_not_exists=False)
+
+    entry_context = user_profile.to_entry()
+    outputs = entry_context.get('Contents')
+
+    assert entry_context.get('Type') == EntryType.ERROR
+    assert outputs.get('action') == IAMActions.UPDATE_USER
+    assert outputs.get('success') is False
+    assert outputs.get('return_error') is True
+    assert outputs.get('error_code') == 'E0000047'
 
 
 def test_enable_user_command__non_existing_user(mocker):
