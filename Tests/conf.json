@@ -8,6 +8,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GoogleDrive",
+            "playbookID": "GoogleDrive-Test",
+            "fromversion": "5.0.0"
+        },
+        {
               "integrations": "GoogleCalendar",
               "playbookID": "GoogleCalendar-Test",
               "fromversion": "5.0.0"
@@ -3471,6 +3476,7 @@
         "Google Resource Manager": "googleclient sdk has time based challenge exchange",
         "Google Cloud Storage": "SDK",
         "GoogleCalendar": "googleclient sdk has time based challenge exchange",
+        "GoogleDrive":  "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
