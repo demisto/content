@@ -329,7 +329,7 @@ def main():
             # print("senderPattern :",senderPattern)
             ironPortSearchQuarantines(period, senderPattern, recipientPattern, subjectPattern, limit)
 
-        elif demisto.command() == 'ironPortSearchSpam':
+        elif demisto.command() == 'iron-port-search-spam':
             period = demisto.args().get('periodInDays')
             # senderPattern=""
             senderPattern = demisto.args().get('senderPattern')
