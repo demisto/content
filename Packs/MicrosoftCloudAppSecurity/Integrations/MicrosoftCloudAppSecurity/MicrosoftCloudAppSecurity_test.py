@@ -154,4 +154,3 @@ def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
     assert fetch_start_time == 1602771392519
     assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d8"
     assert res_incidents == []
-
