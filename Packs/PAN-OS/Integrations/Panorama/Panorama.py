@@ -5202,7 +5202,7 @@ def panorama_download_panos_status_command(args: dict):
     if DEVICE_GROUP:
         raise Exception('PAN-OS version download status is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
-    job_id = args['job_id']
+    job_id = args.get('job_id')
     result = panorama_download_panos_status(target, job_id)
     panos_download_status = {
         'JobID': result['response']['result']['job']['id']
