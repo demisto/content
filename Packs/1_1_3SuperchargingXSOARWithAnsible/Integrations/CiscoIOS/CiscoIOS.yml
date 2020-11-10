@@ -908,7 +908,7 @@ script:
       name: route_import_ipv6
     description: Manage the collection of VRF definitions on Cisco IOS devices
     name: ios_vrf
-  dockerimage: demisto/ansible-runner
+  dockerimage: demisto/ansible-runner:1.0.0.12761
   runonce: false
   script: ''
   subtype: python3
