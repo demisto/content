@@ -2467,7 +2467,7 @@ def main():
         elif 'already exists' in str(e):
             return_error(f'The object name already exists in your f5 server.\n\nError: {e}')
         else:
-            raise e
+            raise
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. \n\nError:\n{str(e)}')
