@@ -1,0 +1,32 @@
+{
+  "args": {
+    "user_key": "demo2@test.com",
+    "alias": "test_alias@test.com",
+    "admin_email": "admin@test.com"
+  },
+  "Outputs": {
+    "alias": "test_alias@test.com",
+    "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/zZFs5oGMYEqqxraQgchhlJxnY2k\"",
+    "id": "id",
+    "kind": "admin#directory#alias"
+  },
+  "Contents": {
+    "alias": "test_alias@test.com",
+    "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/zZFs5oGMYEqqxraQgchhlJxnY2k\"",
+    "id": "id",
+    "kind": "admin#directory#alias"
+  },
+  "ContentsFormat": "json",
+  "EntryContext": {
+    "GSuite.UserAlias(val.id == obj.id && val.alias == obj.alias)":
+      {
+        "alias": "test_alias@test.com",
+        "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/zZFs5oGMYEqqxraQgchhlJxnY2k\"",
+        "id": "id",
+        "kind": "admin#directory#alias"
+      }
+
+  },
+  "HumanReadable": "Added alias \"test_alias@test.com\" to user key \"demo2@test.com\".",
+  "Type": 1
+}
