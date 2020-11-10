@@ -14,8 +14,8 @@ requests.packages.urllib3.disable_warnings()
 URL = ''
 API_KEY = None
 USE_SSL = None
-USE_URL_FILTERING = ''
-TEMPLATE = ''
+USE_URL_FILTERING = None
+TEMPLATE = None
 VSYS = ''
 PRE_POST = ''
 
@@ -1951,7 +1951,7 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
         body=params,
     )
 
-    custom_url_category_output = {'Name': custom_url_category_name}
+    custom_url_category_output: Dict[str, Any] = {'Name': custom_url_category_name}
     if DEVICE_GROUP:
         custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
     if description:
@@ -2059,8 +2059,8 @@ def panorama_edit_custom_url_category(custom_url_category_name: str, type_: str,
         body=params,
     )
 
-    custom_url_category_output = {'Name': custom_url_category_name,
-                                  'Type': type_}
+    custom_url_category_output: Dict[str, Any] = {'Name': custom_url_category_name,
+                                                  'Type': type_}
     if DEVICE_GROUP:
         custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
     if description:
@@ -2073,7 +2073,7 @@ def panorama_edit_custom_url_category(custom_url_category_name: str, type_: str,
     return result, custom_url_category_output
 
 
-def panorama_custom_url_category_add_items(custom_url_category_name, items, type_):
+def panorama_custom_url_category_add_items(custom_url_category_name: str, items: list, type_: str):
     """
     Add sites or categories to a configured custom url category
     """
@@ -2105,7 +2105,7 @@ def panorama_custom_url_category_add_items(custom_url_category_name, items, type
     })
 
 
-def panorama_custom_url_category_remove_items(custom_url_category_name, items, type_):
+def panorama_custom_url_category_remove_items(custom_url_category_name: str, items: list, type_: str):
     """
     Add sites or categories to a configured custom url category
     """
@@ -2151,7 +2151,7 @@ def panorama_edit_custom_url_category_command(args: dict):
 
 
 @logger
-def panorama_get_url_category(url_cmd, url):
+def panorama_get_url_category(url_cmd: str, url: str):
     params = {
         'action': 'show',
         'type': 'op',
@@ -2177,7 +2177,7 @@ def panorama_get_url_category(url_cmd, url):
     return category
 
 
-def populate_url_filter_category_from_context(category):
+def populate_url_filter_category_from_context(category: str):
     url_filter_category = demisto.dt(demisto.context(), f'Panorama.URLFilter(val.Category === "{category}")')
     if not url_filter_category:
         return []
@@ -2192,7 +2192,7 @@ def populate_url_filter_category_from_context(category):
             return context_urls
 
 
-def calculate_dbot_score(category: str):
+def calculate_dbot_score(category: str, additional_suspicious: list, additional_malicious: list):
     """translate a category to a dbot score. For more information:
     https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cm5hCAC
 
@@ -2204,11 +2204,9 @@ def calculate_dbot_score(category: str):
     """
     predefined_suspicious = ['high-risk', 'medium-risk', 'hacking', 'proxy-avoidance-and-anonymizers', 'grayware',
                              'not-resolved']
-    additional_suspicious = argToList(demisto.params().get('additional_suspicious'))
     suspicious_categories = list((set(additional_suspicious)).union(set(predefined_suspicious)))
 
     predefined_malicious = ['phishing', 'command-and-control', 'malware']
-    additional_malicious = argToList(demisto.params().get('additional_malicious'))
     malicious_categories = list((set(additional_malicious)).union(set(predefined_malicious)))
 
     dbot_score = 1
@@ -2222,7 +2220,7 @@ def calculate_dbot_score(category: str):
     return dbot_score
 
 
-def panorama_get_url_category_command(url_cmd: str, url: str):
+def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list, additional_malicious: list):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2242,7 +2240,7 @@ def panorama_get_url_category_command(url_cmd: str, url: str):
         context_urls = populate_url_filter_category_from_context(category)
         categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-        score = calculate_dbot_score(category.lower())
+        score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
@@ -2293,7 +2291,7 @@ def panorama_get_url_category_command(url_cmd: str, url: str):
 ''' URL Filter '''
 
 
-def prettify_get_url_filter(url_filter):
+def prettify_get_url_filter(url_filter: dict):
     pretty_url_filter = {'Name': url_filter['@name']}
     if DEVICE_GROUP:
         pretty_url_filter['DeviceGroup'] = DEVICE_GROUP
@@ -2354,7 +2352,7 @@ def prettify_get_url_filter(url_filter):
 
 
 @logger
-def panorama_get_url_filter(name):
+def panorama_get_url_filter(name: str):
     params = {
         'action': 'get',
         'type': 'config',
@@ -2395,11 +2393,11 @@ def panorama_get_url_filter_command(name: str):
 
 @logger
 def panorama_create_url_filter(
-        url_filter_name, action,
-        url_category_list,
-        override_allow_list=None,
-        override_block_list=None,
-        description=None):
+        url_filter_name: str, action: str,
+        url_category_list: str,
+        override_allow_list: Optional[str] = None,
+        override_block_list: Optional[str] = None,
+        description: Optional[str] = None):
     element = add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list',
                                                                                      True) + add_argument_list(
         override_block_list, 'block-list', True) + add_argument(description, 'description',
@@ -2420,7 +2418,7 @@ def panorama_create_url_filter(
     return result
 
 
-def panorama_create_url_filter_command(args):
+def panorama_create_url_filter_command(args: dict):
     """
     Create a URL Filter
     """
@@ -2463,13 +2461,14 @@ def panorama_create_url_filter_command(args):
 
 
 @logger
-def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element=None):
+def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, element_value: str,
+                             add_remove_element: Optional[str] = None):
     url_filter_prev = panorama_get_url_filter(url_filter_name)
     if '@dirtyId' in url_filter_prev:
         LOG(f'Found uncommitted item:\n{url_filter_prev}')
         raise Exception('Please commit the instance prior to editing the URL Filter.')
 
-    url_filter_output = {'Name': url_filter_name}
+    url_filter_output: Dict[str, Any] = {'Name': url_filter_name}
     if DEVICE_GROUP:
         url_filter_output['DeviceGroup'] = DEVICE_GROUP
     params = {
@@ -2479,8 +2478,7 @@ def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, 
     }
 
     if element_to_change == 'description':
-        params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/"
-        + element_to_change
+        params['xpath'] = XPATH_OBJECTS + f"profiles/url-filtering/entry[@name='{url_filter_name}']/{element_to_change}"
         params['element'] = add_argument_open(element_value, 'description', False)
         result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
@@ -2538,7 +2536,7 @@ def panorama_edit_url_filter_command(args: dict):
 
 
 @logger
-def panorama_delete_url_filter(url_filter_name):
+def panorama_delete_url_filter(url_filter_name: str):
     params = {
         'action': 'delete',
         'type': 'config',
@@ -2582,7 +2580,7 @@ def panorama_delete_url_filter_command(url_filter_name: str):
 ''' Security Rules Managing '''
 
 
-def prettify_rule(rule):
+def prettify_rule(rule: dict):
     pretty_rule = {
         'Name': rule['@name'],
         'Action': rule['action']
@@ -2613,7 +2611,7 @@ def prettify_rule(rule):
     return pretty_rule
 
 
-def prettify_rules(rules):
+def prettify_rules(rules: Union[List[dict], dict]):
     if not isinstance(rules, list):
         return prettify_rule(rules)
     pretty_rules_arr = []
@@ -2634,7 +2632,7 @@ def panorama_list_rules(xpath: str, tag: str = None):
     }
 
     if tag:
-        params['xpath'] += f'[( tag/member = \'{tag}\')]'
+        params["xpath"] = f'{params["xpath"]}[( tag/member = \'{tag}\')]'
 
     result = http_request(
         URL,
@@ -2830,7 +2828,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
             params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-    params['xpath'] += '/' + element_to_change
+    params["xpath"] = f'{params["xpath"]}/' + element_to_change
 
     current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
     if behaviour == 'add':
@@ -2862,20 +2860,20 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
 
 
 @logger
-def panorama_edit_rule_command():
+def panorama_edit_rule_command(args: dict):
     """
     Edit a security rule
     """
-    rulename = demisto.args()['rulename']
-    element_to_change = demisto.args()['element_to_change']
+    rulename = args['rulename']
+    element_to_change = args['element_to_change']
     if element_to_change == 'log-forwarding':
         element_to_change = 'log-setting'
-    element_value = demisto.args()['element_value']
+    element_value = args['element_value']
 
     if element_to_change == 'target' and not DEVICE_GROUP:
         raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
 
-    behaviour = demisto.args().get('behaviour') if 'behaviour' in demisto.args() else 'replace'
+    behaviour = args.get('behaviour') if 'behaviour' in args else 'replace'
     if behaviour != 'replace':
         panorama_edit_rule_items(rulename, element_to_change, argToList(element_value), behaviour)
     else:
@@ -2899,8 +2897,7 @@ def panorama_edit_rule_command():
             if not PRE_POST:
                 raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
             else:
-                params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + \
-                                  '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+                params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + f'/security/rules/entry[@name=\'{rulename}\']'
         else:
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
         params['xpath'] += '/' + element_to_change
@@ -2927,12 +2924,10 @@ def panorama_edit_rule_command():
 
 
 @logger
-def panorama_delete_rule_command():
+def panorama_delete_rule_command(rulename: str):
     """
     Delete a security rule
     """
-    rulename = demisto.args()['rulename']
-
     params = {
         'type': 'config',
         'action': 'delete',
@@ -2962,19 +2957,19 @@ def panorama_delete_rule_command():
 
 
 @logger
-def panorama_custom_block_rule_command():
+def panorama_custom_block_rule_command(args: dict):
     """
     Block an object in Panorama
     """
-    object_type = demisto.args()['object_type']
-    object_value = argToList(demisto.args()['object_value'])
-    direction = demisto.args()['direction'] if 'direction' in demisto.args() else 'both'
-    rulename = demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + (str(uuid.uuid4()))[:8])
+    object_type = args['object_type']
+    object_value = argToList(args['object_value'])
+    direction = args['direction'] if 'direction' in args else 'both'
+    rulename = args['rulename'] if 'rulename' in args else ('demisto-' + (str(uuid.uuid4()))[:8])
     block_destination = False if direction == 'from' else True
     block_source = False if direction == 'to' else True
-    target = argToList(demisto.args().get('target')) if 'target' in demisto.args() else None
-    log_forwarding = demisto.args().get('log_forwarding', None)
-    tags = argToList(demisto.args()['tags']) if 'tags' in demisto.args() else None
+    target = argToList(args.get('target')) if 'target' in args else None
+    log_forwarding = args.get('log_forwarding', None)
+    tags = argToList(args['tags']) if 'tags' in args else None
 
     if not DEVICE_GROUP:
         if target:
@@ -3052,22 +3047,22 @@ def panorama_custom_block_rule_command():
 
 
 @logger
-def panorama_list_pcaps_command():
+def panorama_list_pcaps_command(args: dict):
     """
     Get list of pcap files
     """
     if DEVICE_GROUP:
         raise Exception('PCAP listing is only supported on Firewall (not Panorama).')
-    pcap_type = demisto.args()['pcapType']
+    pcap_type = args['pcapType']
     params = {
         'type': 'export',
         'key': API_KEY,
         'category': pcap_type
     }
 
-    if 'password' in demisto.args():
-        params['dlp-password'] = demisto.args()['password']
-    elif demisto.args()['pcapType'] == 'dlp-pcap':
+    if 'password' in args:
+        params['dlp-password'] = args['password']
+    elif args['pcapType'] == 'dlp-pcap':
         raise Exception('can not provide dlp-pcap without password')
 
     result = http_request(URL, 'GET', params=params, is_pcap=True)
@@ -3113,13 +3108,12 @@ def validate_search_time(search_time: str) -> str:
 
 
 @logger
-def panorama_get_pcap_command():
+def panorama_get_pcap_command(args: dict):
     """
     Get pcap file
     """
     if DEVICE_GROUP:
         raise Exception('Downloading a PCAP file is only supported on a Firewall (not on Panorama).')
-    args = demisto.args()
     pcap_type = args['pcapType']
     params = {
         'type': 'export',
@@ -3182,7 +3176,7 @@ def panorama_get_pcap_command():
 ''' Applications '''
 
 
-def prettify_applications_arr(applications_arr):
+def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
     pretty_application_arr = []
     if not isinstance(applications_arr, list):
         applications_arr = [applications_arr]
@@ -3232,11 +3226,11 @@ def panorama_list_applications(predefined: bool):
     return application_arr
 
 
-def panorama_list_applications_command():
+def panorama_list_applications_command(predefined: Optional[str] = None):
     """
     List all applications
     """
-    predefined = str(demisto.args().get('predefined', '')) == 'true'
+    predefined = predefined == 'true'
     applications_arr = panorama_list_applications(predefined)
     applications_arr_output = prettify_applications_arr(applications_arr)
     headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']
@@ -3256,7 +3250,7 @@ def panorama_list_applications_command():
 ''' External Dynamic Lists Commands '''
 
 
-def prettify_edls_arr(edls_arr):
+def prettify_edls_arr(edls_arr: Union[list, dict]):
     pretty_edls_arr = []
     if not isinstance(edls_arr, list):  # handle case of only one edl in the instance
         return prettify_edl(edls_arr)
@@ -3322,7 +3316,7 @@ def panorama_list_edls_command():
     })
 
 
-def prettify_edl(edl):
+def prettify_edl(edl: dict):
     pretty_edl = {
         'Name': edl['@name'],
         'Type': ''.join(edl['type'].keys())
@@ -3346,7 +3340,7 @@ def prettify_edl(edl):
 
 
 @logger
-def panorama_get_edl(edl_name):
+def panorama_get_edl(edl_name: str):
     params = {
         'action': 'show',
         'type': 'config',
@@ -3366,7 +3360,6 @@ def panorama_get_edl_command(edl_name: str):
     """
     Get an EDL
     """
-    edl_name = demisto.args()['name']
     edl = panorama_get_edl(edl_name)
     edl_output = prettify_edl(edl)
 
@@ -3385,7 +3378,8 @@ def panorama_get_edl_command(edl_name: str):
 
 
 @logger
-def panorama_create_edl(edl_name, url, type_, recurring, certificate_profile=None, description=None):
+def panorama_create_edl(edl_name: str, url: str, type_: str, recurring: str, certificate_profile: Optional[str],
+                        description: Optional[str]):
     params = {
         'action': 'set',
         'type': 'config',
@@ -3405,12 +3399,12 @@ def panorama_create_edl(edl_name, url, type_, recurring, certificate_profile=Non
     return result
 
 
-def panorama_create_edl_command(args: dict):
+def panorama_create_edl_command(args: Dict[str, str]):
     """
     Create an edl object
     """
     edl_name = args.get('name')
-    url = args.get('url').replace(' ', '%20')
+    url = args.get('url', '').replace(' ', '%20')
     type_ = args.get('type')
     recurring = args.get('recurring')
     certificate_profile = args.get('certificate_profile')
@@ -3445,7 +3439,7 @@ def panorama_create_edl_command(args: dict):
 
 
 @logger
-def panorama_edit_edl(edl_name, element_to_change, element_value):
+def panorama_edit_edl(edl_name: str, element_to_change: str, element_value: str):
     edl_prev = panorama_get_edl(edl_name)
     if '@dirtyId' in edl_prev:
         LOG(f'Found uncommitted item:\n{edl_prev}')
@@ -3489,9 +3483,9 @@ def panorama_edit_edl_command(args: dict):
     """
     Edit an EDL
     """
-    edl_name = demisto.args()['name']
-    element_to_change = demisto.args()['element_to_change']
-    element_value = demisto.args()['element_value']
+    edl_name = args['name']
+    element_to_change = args['element_to_change']
+    element_value = args['element_value']
 
     result, edl_output = panorama_edit_edl(edl_name, element_to_change, element_value)
 
@@ -3508,7 +3502,7 @@ def panorama_edit_edl_command(args: dict):
 
 
 @logger
-def panorama_delete_edl(edl_name):
+def panorama_delete_edl(edl_name: str):
     params = {
         'action': 'delete',
         'type': 'config',
@@ -3530,8 +3524,6 @@ def panorama_delete_edl_command(edl_name: str):
     """
     Delete an EDL
     """
-    edl_name = demisto.args()['name']
-
     edl = panorama_delete_edl(edl_name)
     edl_output = {'Name': edl_name}
     if DEVICE_GROUP:
@@ -3587,7 +3579,7 @@ def panorama_refresh_edl_command(args: dict):
     if DEVICE_GROUP:
         raise Exception('EDL refresh is only supported on Firewall (not Panorama).')
 
-    edl_name = args.get('name')
+    edl_name = args.get('name', '')
     edl_type = args.get('edl_type', '')
     location = args.get('location', '')
     vsys = args.get('vsys', '')
@@ -3693,8 +3685,8 @@ def panorama_unregister_ip_tag_command(args: dict):
     """
     Register IPs to a Tag
     """
-    tag = demisto.args()['tag']
-    ips = argToList(demisto.args()['IPs'])
+    tag = args['tag']
+    ips = argToList(args['IPs'])
 
     result = panorama_unregister_ip_tag(tag, ips)
 
@@ -3797,8 +3789,8 @@ def panorama_unregister_user_tag_command(args: dict):
     major_version = get_pan_os_major_version()
     if major_version <= 8:
         raise Exception('The panorama-unregister-user-tag command is only available for PAN-OS 9.X and above versions.')
-    tag = demisto.args()['tag']
-    users = argToList(demisto.args()['Users'])
+    tag = args['tag']
+    users = argToList(args['Users'])
 
     result = panorama_unregister_user_tag(tag, users)
 
@@ -3814,8 +3806,8 @@ def panorama_unregister_user_tag_command(args: dict):
 ''' Traffic Logs '''
 
 
-def build_traffic_logs_query(source=None, destination=None, receive_time=None,
-                             application=None, to_port=None, action=None):
+def build_traffic_logs_query(source: str, destination: Optional[str], receive_time: Optional[str],
+                             application: Optional[str], to_port: Optional[str], action: Optional[str]):
     query = ''
     if source and len(source) > 0:
         query += '(addr.src in ' + source + ')'
@@ -3843,8 +3835,8 @@ def build_traffic_logs_query(source=None, destination=None, receive_time=None,
 
 
 @logger
-def panorama_query_traffic_logs(number_of_logs, direction, query,
-                                source, destination, receive_time, application, to_port, action):
+def panorama_query_traffic_logs(number_of_logs: str, direction: str, query: str, source: str, destination: str,
+                                receive_time: str, application: str, to_port: str, action: str):
     params = {
         'type': 'log',
         'log-type': 'traffic',
@@ -3868,19 +3860,19 @@ def panorama_query_traffic_logs(number_of_logs, direction, query,
     return result
 
 
-def panorama_query_traffic_logs_command():
+def panorama_query_traffic_logs_command(args: dict):
     """
     Query the traffic logs
     """
-    number_of_logs = demisto.args().get('number_of_logs')
-    direction = demisto.args().get('direction')
-    query = demisto.args().get('query')
-    source = demisto.args().get('source')
-    destination = demisto.args().get('destination')
-    receive_time = demisto.args().get('receive_time')
-    application = demisto.args().get('application')
-    to_port = demisto.args().get('to_port')
-    action = demisto.args().get('action')
+    number_of_logs = args.get('number_of_logs')
+    direction = args.get('direction')
+    query = args.get('query')
+    source = args.get('source')
+    destination = args.get('destination')
+    receive_time = args.get('receive_time')
+    application = args.get('application')
+    to_port = args.get('to_port')
+    action = args.get('action')
 
     if query and (source or destination or receive_time or application or to_port or action):
         raise Exception('Use the query argument or the '
@@ -3915,7 +3907,7 @@ def panorama_query_traffic_logs_command():
 
 
 @logger
-def panorama_get_traffic_logs(job_id):
+def panorama_get_traffic_logs(job_id: str):
     params = {
         'action': 'get',
         'type': 'log',
@@ -3932,8 +3924,7 @@ def panorama_get_traffic_logs(job_id):
     return result
 
 
-def panorama_check_traffic_logs_status_command():
-    job_id = demisto.args().get('job_id')
+def panorama_check_traffic_logs_status_command(job_id: str):
     result = panorama_get_traffic_logs(job_id)
 
     if result['response']['@status'] == 'error':
@@ -3965,7 +3956,7 @@ def panorama_check_traffic_logs_status_command():
     })
 
 
-def prettify_traffic_logs(traffic_logs):
+def prettify_traffic_logs(traffic_logs: List[dict]):
     pretty_traffic_logs_arr = []
     for traffic_log in traffic_logs:
         pretty_traffic_log = {}
@@ -4012,8 +4003,7 @@ def prettify_traffic_logs(traffic_logs):
     return pretty_traffic_logs_arr
 
 
-def panorama_get_traffic_logs_command():
-    job_id = demisto.args().get('job_id')
+def panorama_get_traffic_logs_command(job_id: str):
     result = panorama_get_traffic_logs(job_id)
 
     if result['response']['@status'] == 'error':
@@ -4069,7 +4059,7 @@ def panorama_get_traffic_logs_command():
 ''' Logs '''
 
 
-def build_array_query(query, arg_string, string, operator):
+def build_array_query(query: str, arg_string: str, string: str, operator: str):
     list_string = argToList(arg_string)
     list_string_length = len(list_string)
 
@@ -4087,9 +4077,10 @@ def build_array_query(query, arg_string, string, operator):
     return query
 
 
-def build_logs_query(address_src=None, address_dst=None, ip_=None,
-                     zone_src=None, zone_dst=None, time_generated=None, action=None,
-                     port_dst=None, rule=None, url=None, filedigest=None):
+def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_: Optional[str],
+                     zone_src: Optional[str], zone_dst: Optional[str], time_generated: Optional[str],
+                     action: Optional[str], port_dst: Optional[str], rule: Optional[str], url: Optional[str],
+                     filedigest: Optional[str]):
     query = ''
     if address_src:
         query += build_array_query(query, address_src, 'addr.src', 'in')
@@ -4140,9 +4131,9 @@ def build_logs_query(address_src=None, address_dst=None, ip_=None,
 
 
 @logger
-def panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
-                        zone_src, zone_dst, time_generated, action,
-                        port_dst, rule, url, filedigest):
+def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
+                        zone_src: str, zone_dst: str, time_generated: str, action: str,
+                        port_dst: str, rule: str, url: str, filedigest: str):
     params = {
         'type': 'log',
         'log-type': log_type,
@@ -4175,24 +4166,24 @@ def panorama_query_logs(log_type, number_of_logs, query, address_src, address_ds
     return result
 
 
-def panorama_query_logs_command():
+def panorama_query_logs_command(args: dict):
     """
     Query logs
     """
-    log_type = demisto.args().get('log-type')
-    number_of_logs = demisto.args().get('number_of_logs')
-    query = demisto.args().get('query')
-    address_src = demisto.args().get('addr-src')
-    address_dst = demisto.args().get('addr-dst')
-    ip_ = demisto.args().get('ip')
-    zone_src = demisto.args().get('zone-src')
-    zone_dst = demisto.args().get('zone-dst')
-    time_generated = demisto.args().get('time-generated')
-    action = demisto.args().get('action')
-    port_dst = demisto.args().get('port-dst')
-    rule = demisto.args().get('rule')
-    filedigest = demisto.args().get('filedigest')
-    url = demisto.args().get('url')
+    log_type = args.get('log-type')
+    number_of_logs = args.get('number_of_logs')
+    query = args.get('query')
+    address_src = args.get('addr-src')
+    address_dst = args.get('addr-dst')
+    ip_ = args.get('ip')
+    zone_src = args.get('zone-src')
+    zone_dst = args.get('zone-dst')
+    time_generated = args.get('time-generated')
+    action = args.get('action')
+    port_dst = args.get('port-dst')
+    rule = args.get('rule')
+    filedigest = args.get('filedigest')
+    url = args.get('url')
     if url and url[-1] != '/':
         url += '/'
 
@@ -4231,11 +4222,11 @@ def panorama_query_logs_command():
     })
 
 
-def panorama_check_logs_status_command():
+def panorama_check_logs_status_command(job_id: str):
     """
     Check query logs status
     """
-    job_ids = argToList(demisto.args().get('job_id'))
+    job_ids = argToList(job_id)
     for job_id in job_ids:
         result = panorama_get_traffic_logs(job_id)
 
@@ -4268,7 +4259,7 @@ def panorama_check_logs_status_command():
         })
 
 
-def prettify_log(log):
+def prettify_log(log: dict):
     pretty_log = {}
 
     if 'action' in log:
@@ -4355,7 +4346,7 @@ def prettify_log(log):
     return pretty_log
 
 
-def prettify_logs(logs):
+def prettify_logs(logs: Union[list, dict]):
     if not isinstance(logs, list):  # handle case of only one log that matched the query
         return prettify_log(logs)
     pretty_logs_arr = []
@@ -4365,9 +4356,9 @@ def prettify_logs(logs):
     return pretty_logs_arr
 
 
-def panorama_get_logs_command():
-    ignore_auto_extract = demisto.args().get('ignore_auto_extract') == 'true'
-    job_ids = argToList(demisto.args().get('job_id'))
+def panorama_get_logs_command(args: dict):
+    ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
+    job_ids = argToList(args.get('job_id'))
     for job_id in job_ids:
         result = panorama_get_traffic_logs(job_id)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
@@ -4432,9 +4423,9 @@ def panorama_get_logs_command():
 ''' Security Policy Match'''
 
 
-def build_policy_match_query(application=None, category=None,
-                             destination=None, destination_port=None, from_=None, to_=None,
-                             protocol=None, source=None, source_user=None):
+def build_policy_match_query(application: Optional[str] = None, category: Optional[str] = None, destination: Optional[str] = None,
+                             destination_port: Optional[str] = None, from_: Optional[str] = None, to_: Optional[str] = None,
+                             protocol: Optional[str] = None, source: Optional[str] = None, source_user: Optional[str] = None):
     query = '<test><security-policy-match>'
     if from_:
         query += f'<from>{from_}</from>'
@@ -4459,9 +4450,11 @@ def build_policy_match_query(application=None, category=None,
     return query
 
 
-def panorama_security_policy_match(application=None, category=None, destination=None,
-                                   destination_port=None, from_=None, to_=None,
-                                   protocol=None, source=None, source_user=None):
+def panorama_security_policy_match(application: Optional[str] = None, category: Optional[str] = None,
+                                   destination: Optional[str] = None, destination_port: Optional[str] = None,
+                                   from_: Optional[str] = None, to_: Optional[str] = None,
+                                   protocol: Optional[str] = None, source: Optional[str] = None,
+                                   source_user: Optional[str] = None):
     params = {'type': 'op', 'key': API_KEY,
               'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
@@ -4475,7 +4468,7 @@ def panorama_security_policy_match(application=None, category=None, destination=
     return result['response']['result']
 
 
-def prettify_matching_rule(matching_rule):
+def prettify_matching_rule(matching_rule: dict):
     pretty_matching_rule = {}
 
     if '@name' in matching_rule:
@@ -4496,7 +4489,7 @@ def prettify_matching_rule(matching_rule):
     return pretty_matching_rule
 
 
-def prettify_matching_rules(matching_rules):
+def prettify_matching_rules(matching_rules: Union[list, dict]):
     if not isinstance(matching_rules, list):  # handle case of only one log that matched the query
         return prettify_matching_rule(matching_rules)
 
@@ -4508,9 +4501,10 @@ def prettify_matching_rules(matching_rules):
     return pretty_matching_rules_arr
 
 
-def prettify_query_fields(application=None, category=None,
-                          destination=None, destination_port=None, from_=None, to_=None,
-                          protocol=None, source=None, source_user=None):
+def prettify_query_fields(application: Optional[str] = None, category: Optional[str] = None,
+                          destination: Optional[str] = None, destination_port: Optional[str] = None,
+                          from_: Optional[str] = None, to_: Optional[str] = None, protocol: Optional[str] = None,
+                          source: Optional[str] = None, source_user: Optional[str] = None):
     pretty_query_fields = {'Source': source, 'Destination': destination, 'Protocol': protocol}
     if application:
         pretty_query_fields['Application'] = application
@@ -4527,19 +4521,19 @@ def prettify_query_fields(application=None, category=None,
     return pretty_query_fields
 
 
-def panorama_security_policy_match_command():
+def panorama_security_policy_match_command(args: dict):
     if not VSYS:
         raise Exception("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
 
-    application = demisto.args().get('application')
-    category = demisto.args().get('category')
-    destination = demisto.args().get('destination')
-    destination_port = demisto.args().get('destination-port')
-    from_ = demisto.args().get('from')
-    to_ = demisto.args().get('to')
-    protocol = demisto.args().get('protocol')
-    source = demisto.args().get('source')
-    source_user = demisto.args().get('source-user')
+    application = args.get('application')
+    category = args.get('category')
+    destination = args.get('destination')
+    destination_port = args.get('destination-port')
+    from_ = args.get('from')
+    to_ = args.get('to')
+    protocol = args.get('protocol')
+    source = args.get('source')
+    source_user = args.get('source-user')
 
     matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
                                                     protocol, source, source_user)
@@ -4610,7 +4604,7 @@ def prettify_static_route(static_route: Dict, virtual_router: str, template: Opt
     return pretty_static_route
 
 
-def prettify_static_routes(static_routes, virtual_router: str, template: Optional[str] = None):
+def prettify_static_routes(static_routes: Union[dict, list], virtual_router: str, template: Optional[str] = None):
     if not isinstance(static_routes, list):  # handle case of only one static route in a virtual router
         return prettify_static_route(static_routes, virtual_router, template)
 
@@ -4635,14 +4629,14 @@ def panorama_list_static_routes(xpath_network: str, virtual_router: str, show_un
     return result['response']['result']
 
 
-def panorama_list_static_routes_command():
+def panorama_list_static_routes_command(args: dict):
     """
     List all static routes of a virtual Router
     """
-    template = demisto.args().get('template')
+    template = args.get('template')
     xpath_network, template = set_xpath_network(template)
-    virtual_router = demisto.args()['virtual_router']
-    show_uncommitted = demisto.args().get('show_uncommitted') == 'true'
+    virtual_router = args['virtual_router']
+    show_uncommitted = args.get('show_uncommitted') == 'true'
     virtual_router_object = panorama_list_static_routes(xpath_network, virtual_router, show_uncommitted)
 
     if 'static-route' not in virtual_router_object or 'entry' not in virtual_router_object['static-route']:
@@ -4677,14 +4671,14 @@ def panorama_get_static_route(xpath_network: str, virtual_router: str, static_ro
     return result['response']['result']
 
 
-def panorama_get_static_route_command():
+def panorama_get_static_route_command(args: dict):
     """
     Get a static route of a virtual router
     """
-    template = demisto.args().get('template')
+    template = args.get('template')
     xpath_network, template = set_xpath_network(template)
-    virtual_router = demisto.args()['virtual_router']
-    static_route_name = demisto.args()['static_route']
+    virtual_router = args['virtual_router']
+    static_route_name = args['static_route']
     static_route_object = panorama_get_static_route(xpath_network, virtual_router, static_route_name)
     if '@count' in static_route_object and int(static_route_object['@count']) < 1:
         raise Exception('Static route does not exist.')
@@ -4717,27 +4711,27 @@ def panorama_add_static_route(xpath_network: str, virtual_router: str, static_ro
                    f'<nexthop><{nexthop_type}>{nexthop_value}</{nexthop_type}></nexthop>'
     }
     if interface:
-        params['element'] += f'<interface>{interface}</interface>'
+        params["element"] = f'{params["element"]}<interface>{interface}</interface>'
     if metric:
-        params['element'] += f'<metric>{metric}</metric>'
+        params['element'] = f'{params["element"]}<metric>{metric}</metric>'
 
     result = http_request(URL, 'GET', params=params)
     return result['response']
 
 
-def panorama_add_static_route_command():
+def panorama_add_static_route_command(args: dict):
     """
     Add a Static Route
     """
-    template = demisto.args().get('template')
+    template = args.get('template')
     xpath_network, template = set_xpath_network(template)
-    virtual_router = demisto.args().get('virtual_router')
-    static_route_name = demisto.args().get('static_route')
-    destination = demisto.args().get('destination')
-    nexthop_type = demisto.args().get('nexthop_type')
-    nexthop_value = demisto.args().get('nexthop_value')
-    interface = demisto.args().get('interface', None)
-    metric = demisto.args().get('metric', None)
+    virtual_router = args.get('virtual_router')
+    static_route_name = args.get('static_route')
+    destination = args.get('destination')
+    nexthop_type = args.get('nexthop_type')
+    nexthop_value = args.get('nexthop_value')
+    interface = args.get('interface', None)
+    metric = args.get('metric', None)
 
     if nexthop_type == 'fqdn':
         # Only from PAN-OS 9.x, creating a static route based on FQDN nexthop is available.
@@ -4809,19 +4803,18 @@ def panorama_get_predefined_threats_list(target: str):
     return result
 
 
-def panorama_get_predefined_threats_list_command():
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+def panorama_get_predefined_threats_list_command(target: Optional[str] = None):
     result = panorama_get_predefined_threats_list(target)
     return_results(fileResult('predefined-threats.json', json.dumps(result['response']['result']).encode('utf-8')))
 
 
-def panorama_block_vulnerability():
+def panorama_block_vulnerability(args: dict):
     """
     Override vulnerability signature such that it is in block mode
     """
-    threatid = demisto.args().get('threat_id')
-    vulnerability_profile = demisto.args().get('vulnerability_profile')
-    drop_mode = demisto.args().get('drop_mode', 'drop')
+    threatid = args.get('threat_id', '')
+    vulnerability_profile = args.get('vulnerability_profile', '')
+    drop_mode = args.get('drop_mode', 'drop')
 
     threat = panorama_override_vulnerability(threatid, vulnerability_profile, drop_mode)
     threat_output = {'ID': threatid, 'NewAction': drop_mode}
@@ -4851,14 +4844,14 @@ def panorama_delete_static_route(xpath_network: str, virtual_router: str, route_
     return result
 
 
-def panorama_delete_static_route_command():
+def panorama_delete_static_route_command(args: dict):
     """
     Delete a Static Route
     """
-    template = demisto.args().get('template')
+    template = args.get('template')
     xpath_network, template = set_xpath_network(template)
-    virtual_router = demisto.args()['virtual_router']
-    route_name = demisto.args()['route_name']
+    virtual_router = args['virtual_router']
+    route_name = args['route_name']
     deleted_static_route = panorama_delete_static_route(xpath_network, virtual_router, route_name)
     entry_context = {
         'Name': route_name,
@@ -4892,12 +4885,10 @@ def panorama_show_device_version(target: str = None):
     return result['response']['result']['system']
 
 
-def panorama_show_device_version_command():
+def panorama_show_device_version_command(target: Optional[str] = None):
     """
     Get device details and show message in war room
     """
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
-
     response = panorama_show_device_version(target)
 
     info_data = {
@@ -4937,13 +4928,12 @@ def panorama_download_latest_content_update_content(target: str):
     return result
 
 
-def panorama_download_latest_content_update_command():
+def panorama_download_latest_content_update_command(target: Optional[str] = None):
     """
     Download content and show message in war room
     """
     if DEVICE_GROUP:
         raise Exception('Download latest content is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     result = panorama_download_latest_content_update_content(target)
 
     if 'result' in result['response']:
@@ -4986,14 +4976,14 @@ def panorama_content_update_download_status(target: str, job_id: str):
     return result
 
 
-def panorama_content_update_download_status_command():
+def panorama_content_update_download_status_command(args: dict):
     """
     Check jobID of content update download status
     """
     if DEVICE_GROUP:
         raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
-    job_id = demisto.args()['job_id']
+    target = str(args['target']) if 'target' in args else None
+    job_id = args['job_id']
     result = panorama_content_update_download_status(target, job_id)
 
     content_download_status = {
@@ -5040,13 +5030,12 @@ def panorama_install_latest_content_update(target: str):
     return result
 
 
-def panorama_install_latest_content_update_command():
+def panorama_install_latest_content_update_command(target: Optional[str] = None):
     """
         Check jobID of content content install status
     """
     if DEVICE_GROUP:
         raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     result = panorama_install_latest_content_update(target)
 
     if 'result' in result['response']:
@@ -5088,14 +5077,14 @@ def panorama_content_update_install_status(target: str, job_id: str):
     return result
 
 
-def panorama_content_update_install_status_command():
+def panorama_content_update_install_status_command(args: dict):
     """
     Check jobID of content update install status
     """
     if DEVICE_GROUP:
         raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
-    job_id = demisto.args()['job_id']
+    target = str(args['target']) if 'target' in args else None
+    job_id = args['job_id']
     result = panorama_content_update_install_status(target, job_id)
 
     content_install_status = {
@@ -5125,10 +5114,9 @@ def panorama_content_update_install_status_command():
     })
 
 
-def panorama_check_latest_panos_software_command():
+def panorama_check_latest_panos_software_command(target: Optional[str] = None):
     if DEVICE_GROUP:
         raise Exception('Checking latest PAN-OS version is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     params = {
         'type': 'op',
         'cmd': '<request><system><software><check></check></software></system></request>',
@@ -5160,14 +5148,14 @@ def panorama_download_panos_version(target: str, target_version: str):
     return result
 
 
-def panorama_download_panos_version_command():
+def panorama_download_panos_version_command(args: dict):
     """
     Check jobID of pan-os version download
     """
     if DEVICE_GROUP:
         raise Exception('Downloading PAN-OS version is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
-    target_version = str(demisto.args()['target_version'])
+    target = str(args['target']) if 'target' in args else None
+    target_version = str(args['target_version'])
     result = panorama_download_panos_version(target, target_version)
 
     if 'result' in result['response']:
@@ -5207,14 +5195,14 @@ def panorama_download_panos_status(target: str, job_id: str):
     return result
 
 
-def panorama_download_panos_status_command():
+def panorama_download_panos_status_command(args: dict):
     """
     Check jobID of panos download status
     """
     if DEVICE_GROUP:
         raise Exception('PAN-OS version download status is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
-    job_id = demisto.args()['job_id']
+    target = str(args['target']) if 'target' in args else None
+    job_id = args['job_id']
     result = panorama_download_panos_status(target, job_id)
     panos_download_status = {
         'JobID': result['response']['result']['job']['id']
@@ -5261,14 +5249,14 @@ def panorama_install_panos_version(target: str, target_version: str):
     return result
 
 
-def panorama_install_panos_version_command():
+def panorama_install_panos_version_command(args: dict):
     """
     Check jobID of panos install
     """
     if DEVICE_GROUP:
         raise Exception('PAN-OS installation is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
-    target_version = str(demisto.args()['target_version'])
+    target = str(args['target']) if 'target' in args else None
+    target_version = str(args['target_version'])
     result = panorama_install_panos_version(target, target_version)
 
     if 'result' in result['response']:
@@ -5308,14 +5296,14 @@ def panorama_install_panos_status(target: str, job_id: str):
     return result
 
 
-def panorama_install_panos_status_command():
+def panorama_install_panos_status_command(args: dict):
     """
     Check jobID of panos install status
     """
     if DEVICE_GROUP:
         raise Exception('PAN-OS installation status status is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
-    job_id = demisto.args()['job_id']
+    target = str(args['target']) if 'target' in args else None
+    job_id = args['job_id']
     result = panorama_install_panos_status(target, job_id)
 
     panos_install_status = {
@@ -5345,10 +5333,9 @@ def panorama_install_panos_status_command():
     })
 
 
-def panorama_device_reboot_command():
+def panorama_device_reboot_command(target: Optional[str] = None):
     if DEVICE_GROUP:
         raise Exception('Device reboot is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     params = {
         'type': 'op',
         'cmd': '<request><restart><system></system></restart></request>',
@@ -5379,11 +5366,10 @@ def panorama_show_location_ip(ip_address: str):
     return result
 
 
-def panorama_show_location_ip_command():
+def panorama_show_location_ip_command(ip_address: str):
     """
     Check location of a specified ip address
     """
-    ip_address = demisto.args().get('ip_address')
     result = panorama_show_location_ip(ip_address)
 
     if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
@@ -5520,11 +5506,10 @@ def get_security_profile(xpath: str) -> Dict:
     return result
 
 
-def get_security_profiles_command():
+def get_security_profiles_command(security_profile: str = None):
     """
     Get information about profiles.
     """
-    security_profile = demisto.args().get('security_profile')
     if security_profile:
         xpath = f'{XPATH_RULEBASE}profiles/{security_profile}'
     else:
@@ -6583,34 +6568,34 @@ def create_wildfire_best_practice_profile_command(profile_name: str):
     return_results(f'The profile {profile_name} was created successfully.')
 
 
-def initialize_instance(args, params):
+def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
     global URL, API_KEY, USE_SSL, USE_URL_FILTERING, VSYS, DEVICE_GROUP, XPATH_SECURITY_RULES, XPATH_OBJECTS, \
         XPATH_RULEBASE, TEMPLATE, PRE_POST
     if not params.get('port'):
-        return_error('Set a port for the instance')
+        raise DemistoException('Set a port for the instance')
 
-    URL = params['server'].rstrip('/:') + ':' + params.get('port') + '/api/'
+    URL = params.get('server', '').rstrip('/:') + ':' + params.get('port', '') + '/api/'
     API_KEY = str(params.get('key'))
     USE_SSL = not params.get('insecure')
     USE_URL_FILTERING = params.get('use_url_filtering')
     TEMPLATE = params.get('template')
 
     # determine a vsys or a device-group
-    VSYS = params.get('vsys')
+    VSYS = params.get('vsys', '')
 
-    if args and args.get('device-group', None):
-        DEVICE_GROUP = args.get('device-group')
+    if args and args.get('device-group'):
+        DEVICE_GROUP = args.get('device-group')  # type: ignore[assignment]
     else:
-        DEVICE_GROUP = demisto.params().get('device_group', None)
+        DEVICE_GROUP = params.get('device_group', None)  # type: ignore[arg-type]
 
-    PRE_POST = args.get('pre_post')
+    PRE_POST = args.get('pre_post', '')
 
     # configuration check
     if DEVICE_GROUP and VSYS:
-        return_error(
+        raise DemistoException(
             'Cannot configure both vsys and Device group. Set vsys for firewall, set Device group for Panorama.')
     if not DEVICE_GROUP and not VSYS:
-        return_error('Set vsys for firewall or Device group for Panorama.')
+        raise DemistoException('Set vsys for firewall or Device group for Panorama.')
 
     # setting security xpath relevant to FW or panorama management
     if DEVICE_GROUP:
@@ -6632,7 +6617,7 @@ def initialize_instance(args, params):
         else:
             XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
     else:
-        XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
+        XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"  # ignore:
 
     # setting security rulebase xpath relevant to FW or panorama management
     if DEVICE_GROUP:
@@ -6648,12 +6633,14 @@ def initialize_instance(args, params):
 
 
 def main():
-    args = demisto.args()
-    params = demisto.params()
-    initialize_instance(args=args, params=params)
-    LOG(f'Command being called is: {demisto.command()}')
-
     try:
+        args = demisto.args()
+        params = demisto.params()
+        additional_malicious = argToList(demisto.params().get('additional_malicious'))
+        additional_suspicious = argToList(demisto.params().get('additional_suspicious'))
+        initialize_instance(args=args, params=params)
+        LOG(f'Command being called is: {demisto.command()}')
+
         # Remove proxy if not set to true in params
         handle_proxy()
 
@@ -6749,17 +6736,25 @@ def main():
         # URL Filtering capabilities
         elif demisto.command() == 'url':
             if USE_URL_FILTERING:  # default is false
-                panorama_get_url_category_command(url_cmd='url', url=args.get('url'))
+                panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
+                                                  additional_suspicious=additional_suspicious,
+                                                  additional_malicious=additional_malicious)
             # do not error out
 
         elif demisto.command() == 'panorama-get-url-category':
-            panorama_get_url_category_command(url_cmd='url', url=args.get('url'))
+            panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
+                                              additional_suspicious=additional_suspicious,
+                                              additional_malicious=additional_malicious)
 
         elif demisto.command() == 'panorama-get-url-category-from-cloud':
-            panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'))
+            panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'),
+                                              additional_suspicious=additional_suspicious,
+                                              additional_malicious=additional_malicious)
 
         elif demisto.command() == 'panorama-get-url-category-from-host':
-            panorama_get_url_category_command(url_cmd='url-info-host', url=args.get('url'))
+            panorama_get_url_category_command(url_cmd='url-info-host', url=args.get('url'),
+                                              additional_suspicious=additional_suspicious,
+                                              additional_malicious=additional_malicious)
 
         # URL Filter
         elif demisto.command() == 'panorama-get-url-filter':
@@ -6819,123 +6814,123 @@ def main():
             panorama_create_rule_command(args)
 
         elif demisto.command() == 'panorama-custom-block-rule':
-            panorama_custom_block_rule_command()
+            panorama_custom_block_rule_command(args)
 
         elif demisto.command() == 'panorama-edit-rule':
-            panorama_edit_rule_command()
+            panorama_edit_rule_command(args)
 
         elif demisto.command() == 'panorama-delete-rule':
-            panorama_delete_rule_command()
+            panorama_delete_rule_command(args.get('rulename'))
 
         # Traffic Logs - deprecated
         elif demisto.command() == 'panorama-query-traffic-logs':
-            panorama_query_traffic_logs_command()
+            panorama_query_traffic_logs_command(args)
 
         elif demisto.command() == 'panorama-check-traffic-logs-status':
-            panorama_check_traffic_logs_status_command()
+            panorama_check_traffic_logs_status_command(args.get('job_id'))
 
         elif demisto.command() == 'panorama-get-traffic-logs':
-            panorama_get_traffic_logs_command()
+            panorama_get_traffic_logs_command(args.get('job_id'))
 
         # Logs
         elif demisto.command() == 'panorama-query-logs':
-            panorama_query_logs_command()
+            panorama_query_logs_command(args)
 
         elif demisto.command() == 'panorama-check-logs-status':
-            panorama_check_logs_status_command()
+            panorama_check_logs_status_command(args.get('job_id'))
 
         elif demisto.command() == 'panorama-get-logs':
-            panorama_get_logs_command()
+            panorama_get_logs_command(args)
 
         # Pcaps
         elif demisto.command() == 'panorama-list-pcaps':
             panorama_list_pcaps_command()
 
         elif demisto.command() == 'panorama-get-pcap':
-            panorama_get_pcap_command()
+            panorama_get_pcap_command(args)
 
         # Application
         elif demisto.command() == 'panorama-list-applications':
-            panorama_list_applications_command()
+            panorama_list_applications_command(args.get('predefined'))
 
         # Test security policy match
         elif demisto.command() == 'panorama-security-policy-match':
-            panorama_security_policy_match_command()
+            panorama_security_policy_match_command(args)
 
         # Static Routes
         elif demisto.command() == 'panorama-list-static-routes':
-            panorama_list_static_routes_command()
+            panorama_list_static_routes_command(args)
 
         elif demisto.command() == 'panorama-get-static-route':
-            panorama_get_static_route_command()
+            panorama_get_static_route_command(args)
 
         elif demisto.command() == 'panorama-add-static-route':
-            panorama_add_static_route_command()
+            panorama_add_static_route_command(args)
 
         elif demisto.command() == 'panorama-delete-static-route':
-            panorama_delete_static_route_command()
+            panorama_delete_static_route_command(args)
 
         # Firewall Upgrade
         # Check device software version
         elif demisto.command() == 'panorama-show-device-version':
-            panorama_show_device_version_command()
+            panorama_show_device_version_command(args.get('target'))
 
         # Download the latest content update
         elif demisto.command() == 'panorama-download-latest-content-update':
-            panorama_download_latest_content_update_command()
+            panorama_download_latest_content_update_command(args.get('target'))
 
         # Download the latest content update
         elif demisto.command() == 'panorama-content-update-download-status':
-            panorama_content_update_download_status_command()
+            panorama_content_update_download_status_command(args)
 
         # Install the latest content update
         elif demisto.command() == 'panorama-install-latest-content-update':
-            panorama_install_latest_content_update_command()
+            panorama_install_latest_content_update_command(args.get('target'))
 
         # Content update install status
         elif demisto.command() == 'panorama-content-update-install-status':
-            panorama_content_update_install_status_command()
+            panorama_content_update_install_status_command(args)
 
         # Check PAN-OS latest software update
         elif demisto.command() == 'panorama-check-latest-panos-software':
-            panorama_check_latest_panos_software_command()
+            panorama_check_latest_panos_software_command(args.get('target'))
 
         # Download target PAN-OS version
         elif demisto.command() == 'panorama-download-panos-version':
-            panorama_download_panos_version_command()
+            panorama_download_panos_version_command(args)
 
         # PAN-OS download status
         elif demisto.command() == 'panorama-download-panos-status':
-            panorama_download_panos_status_command()
+            panorama_download_panos_status_command(args)
 
         # PAN-OS software install
         elif demisto.command() == 'panorama-install-panos-version':
-            panorama_install_panos_version_command()
+            panorama_install_panos_version_command(args)
 
         # PAN-OS install status
         elif demisto.command() == 'panorama-install-panos-status':
-            panorama_install_panos_status_command()
+            panorama_install_panos_status_command(args)
 
         # Reboot Panorama Device
         elif demisto.command() == 'panorama-device-reboot':
-            panorama_device_reboot_command()
+            panorama_device_reboot_command(args.get('target'))
 
         # PAN-OS Set vulnerability to drop
         elif demisto.command() == 'panorama-block-vulnerability':
-            panorama_block_vulnerability()
+            panorama_block_vulnerability(args)
 
         # Get pre-defined threats list from the firewall
         elif demisto.command() == 'panorama-get-predefined-threats-list':
-            panorama_get_predefined_threats_list_command()
+            panorama_get_predefined_threats_list_command(args.get('target'))
 
         elif demisto.command() == 'panorama-show-location-ip':
-            panorama_show_location_ip_command()
+            panorama_show_location_ip_command(args.get('ip_address'))
 
         elif demisto.command() == 'panorama-get-licenses':
             panorama_get_license_command()
 
         elif demisto.command() == 'panorama-get-security-profiles':
-            get_security_profiles_command()
+            get_security_profiles_command(args.get('security_profile'))
 
         elif demisto.command() == 'panorama-apply-security-profile':
             apply_security_profile_command(**args)
