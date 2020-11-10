@@ -925,10 +925,6 @@ script:
     - name: operation_id
       required: true
       description: The script invocation operation ID
-    - name: timeout
-      defaultValue: '30'
-      required: false
-      description: The timeout in seconds to poll for invocation results.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID

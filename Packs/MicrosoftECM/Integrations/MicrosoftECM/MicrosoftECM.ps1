@@ -743,14 +743,17 @@ Function InvocationResults()
 	)
 	$InvocationResults = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $operationID, $timeoutSeconds -ErrorAction Stop -ScriptBlock {
 		param($SiteCode, $operationID, $timeoutSeconds)
-		$job = start-job -scriptblock {
-			Do
-			{
-				$result = Get-CimInstance -Namespace "root\SMS\site_$SiteCode" -ClassName SMS_ScriptsExecutionStatus  | Where-Object { $_.ClientOperationId -eq $operationID }
-			} until ($null -ne $result)
+		if ($timeoutSeconds)
+		{
+			$job = start-job -scriptblock {
+				Do
+				{
+					$result = Get-CimInstance -Namespace "root\SMS\site_$SiteCode" -ClassName SMS_ScriptsExecutionStatus  | Where-Object { $_.ClientOperationId -eq $operationID }
+				} until ($null -ne $result)
+			}
+			wait-job $job -timeout $timeoutSeconds
+			remove-job -force $job
 		}
-		wait-job $job -timeout $timeoutSeconds
-		remove-job -force $job
 		Get-CimInstance -Namespace "root\SMS\site_$SiteCode" -ClassName SMS_ScriptsExecutionStatus  | Where-Object { $_.ClientOperationId -eq $operationID }
 	}
 	if ($InvocationResults)
@@ -1409,8 +1412,7 @@ function Main
 			}
 			"ms-ecm-script-invocation-results" {
 				$operationID = $demisto.Args()['operation_id']
-				$timeoutSeconds = ArgToInteger $demisto.Args()['timeout'] 30
-				InvocationResults $operationID $timeoutSeconds
+				InvocationResults $operationID
 			}
 			"ms-ecm-script-approve" {
 				$scriptGuid = $demisto.Args()['script_guid']

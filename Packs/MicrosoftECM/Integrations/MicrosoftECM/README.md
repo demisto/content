@@ -1143,8 +1143,6 @@ Stops a service on a device or collection (Implemented by creating and invoking 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | operation_id | The script invocation operation ID | Required | 
-| timeout | The timeout in seconds to poll for invocation results. Default is 30 seconds. | Optional | 
-
 
 #### Context Output
 
