@@ -191,6 +191,7 @@ tasks:
       id: f96e5c12-86a1-496c-8bf9-afc3d88b5f43
       version: -1
       name: GenericPolling
+      description: ''
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -240,6 +241,7 @@ tasks:
       version: -1
       name: Done
       type: title
+      description: ''
       iscommand: false
       brand: ""
     separatecontext: false
