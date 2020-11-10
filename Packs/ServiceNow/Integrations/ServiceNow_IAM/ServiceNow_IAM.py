@@ -123,7 +123,7 @@ def get_error_details(res):
         (str) The parsed error details.
     """
     message = res.get('error', {}).get('message')
-    details = res.get('error', {}).get('details')
+    details = res.get('error', {}).get('detail')
     return f'{message}: {details}'
 
 
