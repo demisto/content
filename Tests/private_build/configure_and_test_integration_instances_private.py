@@ -52,8 +52,8 @@ def install_packs_private(build: Build, prints_manager: ParallelPrintsManager, p
     for server in build.servers:
         try:
             flag = search_and_install_packs_and_their_dependencies_private(build.test_pack_path,
-                                                                              pack_ids, server.client,
-                                                                              prints_manager)
+                                                                           pack_ids, server.client,
+                                                                           prints_manager)
             if not flag:
                 raise Exception('Failed to search and install packs.')
         except Exception as exc:
