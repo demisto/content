@@ -45,34 +45,50 @@ class Client:
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
-    def __init__(self, params):
-        params['headers'] = {
+    def __init__(self, credentials: dict, use_oauth: bool = False, client_id: str = '', client_secret: str = '',
+                 url: str = '', verify: bool = False, proxy: bool = False):
+        """
+        Args:
+            - credentials: the username and password given by the user.
+            - client_id: the client id of the application of the user.
+            - client_secret - the client secret of the application of the user.
+            - url: the instance url of the user, i.e: https://<instance>.service-now.com.
+                   NOTE - url should be given without an API specific suffix as it is also used for the OAuth process.
+            - insecure: Whether the request should verify the SSL certificate.
+            - proxy: Whether to run the integration using the system proxy.
+            - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
+            - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
+        """
+        headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
-        self._snow_client: ServiceNowClient = ServiceNowClient(params=params)
+        self.use_oauth = use_oauth
+        self.snow_client: ServiceNowClient = ServiceNowClient(credentials=credentials, use_oauth=use_oauth,
+                                                              client_id=client_id, client_secret=client_secret,
+                                                              url=url, verify=verify, proxy=proxy, headers=headers)
 
     def records_list(self, class_name, params=None):
-        return self._snow_client.http_request(method='GET', url_suffix=class_name, params=params)
+        return self.snow_client.http_request(method='GET', url_suffix=f'{API_VERSION}{class_name}', params=params)
 
     def get_record(self, class_name, sys_id, params=None):
-        url_suffix = f'{class_name}/{sys_id}'
-        return self._snow_client.http_request(method='GET', url_suffix=url_suffix, params=params)
+        url_suffix = f'{API_VERSION}{class_name}/{sys_id}'
+        return self.snow_client.http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def create_record(self, class_name, data, params=None):
-        return self._snow_client.http_request(method='POST', url_suffix=class_name, params=params, data=data)
+        return self.snow_client.http_request(method='POST', url_suffix=f'{API_VERSION}{class_name}', params=params, data=data)
 
     def update_record(self, class_name, sys_id, data, params=None):
-        url_suffix = f'{class_name}/{sys_id}'
-        return self._snow_client.http_request(method='PATCH', url_suffix=url_suffix, params=params, data=data)
+        url_suffix = f'{API_VERSION}{class_name}/{sys_id}'
+        return self.snow_client.http_request(method='PATCH', url_suffix=url_suffix, params=params, data=data)
 
     def add_relation(self, class_name, sys_id, data, params=None):
-        url_suffix = f'{class_name}/{sys_id}/relation'
-        return self._snow_client.http_request(method='POST', url_suffix=url_suffix, params=params, data=data)
+        url_suffix = f'{API_VERSION}{class_name}/{sys_id}/relation'
+        return self.snow_client.http_request(method='POST', url_suffix=url_suffix, params=params, data=data)
 
     def delete_relation(self, class_name, sys_id, rel_sys_id, params=None):
-        url_suffix = f'{class_name}/{sys_id}/relation/{rel_sys_id}'
-        return self._snow_client.http_request(method='DELETE', url_suffix=url_suffix, params=params)
+        url_suffix = f'{API_VERSION}{class_name}/{sys_id}/relation/{rel_sys_id}'
+        return self.snow_client.http_request(method='DELETE', url_suffix=url_suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -408,24 +424,55 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+    # Notify the user that test button can't be used when using OAuth 2.0:
+    if client.use_oauth:
+        return_error('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-cmdb-login command '
+                     'followed by the !servicenow-cmdb-test command to test the instance.')
 
-    # INTEGRATION DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
     try:
         client.records_list(class_name='cmdb_ci_linux_server')
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+    except Exception as e:
+        raise e
     return 'ok'
+
+
+def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+    """
+    Test the instance configurations when using OAuth authentication.
+    """
+    try:
+        client.records_list(class_name='cmdb_ci_linux_server')
+    except Exception as e:
+        raise e
+    hr = '### Instance Configured Successfully.\n' \
+         'A refresh token was generated successfully and will be used to produce new access tokens as they expire.'
+    return hr, {}, {}, True
+
+
+def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+    """
+    Login the user using OAuth authorization
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    # Verify that the user checked the `Use OAuth` checkbox:
+    if not client.use_oauth:
+        return_error('Please check the `Use OAuth` checkbox before running the login command.')
+
+    username = args.get('username', '')
+    password = args.get('password', '')
+    try:
+        client.snow_client.login(username, password)
+        hr = '### Logged in successfully and an access token was generated.'
+    except Exception as e:
+        return_error(f'Failed to login. Please verify that the provided username and password are correct, and that you'
+                     f' entered the correct client id and client secret in the instance configuration (see ? for'
+                     f'correct usage when using OAuth).\n\n{e}')
+    return hr, {}, {}, True
 
 
 ''' MAIN FUNCTION '''
@@ -435,10 +482,24 @@ def main() -> None:
     """main function, parses params and runs command functions
     """
     params = demisto.params()
-    params['url'] = urljoin(params.get('url'), API_VERSION)
-    client = Client(params=params)
+
+    url = params.get('url', '')
+    verify = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    client_id = client_secret = ''
+    credentials = params.get('credentials', {})
+    use_oauth = params.get('use_oauth', False)
+
+    if use_oauth:
+        client_id = credentials.get('identifier')
+        client_secret = credentials.get('password')
+
+    client = Client(credentials=credentials, use_oauth=use_oauth, client_id=client_id,
+                    client_secret=client_secret, url=url, verify=verify, proxy=proxy)
 
     commands = {
+        'servicenow-cmdb-login': login_command,
+        'servicenow-cmdb-test': oauth_test_module,
         'servicenow-cmdb-records-list': records_list_command,
         'servicenow-cmdb-record-get-by-id': get_record_command,
         'servicenow-cmdb-record-create': create_record_command,
@@ -465,8 +526,8 @@ def main() -> None:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
-# from Packs.ApiModules.Scripts.ServiceNowApiModule.ServiceNowApiModule import ServiceNowClient  # noqa: E402
-from ServiceNowApiModule import *
+from ServiceNowApiModule import *  # noqa: E402
+
 
 ''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
