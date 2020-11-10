@@ -1,8 +1,8 @@
 Rundeck is runbook automation for incident management, business continuity, and self-service operations.
-If you wish to use Rundeck in Demisto but you don't have Rundeck set up yet. please follow this installation guide first and get Rundeck:
-https://docs.rundeck.com/docs/administration/install/
+If you want to use Rundeck in Cortex XSOAR but don't have Rundeck set up yet, follow the instructions in the installation guide (https://docs.rundeck.com/docs/administration/install/).
 
-If you already have Rundeck, in order to use it in Demisto you need to get:
-1. Token: you can generate a new one or use an existing one if you already have. just follow this link in order to learn how to get it: https://docs.rundeck.com/docs/manual/10-user.html#profile
-2. Project Name: if you wish to configure a default project to work with, go to Rundeck and in the navigation bar choose 'Projects' and you will have a list of all projects to choose from.
-3. Url: a link to your Rundeck site.
+
+If you already have Rundeck, to use it in Cortex XSOAR you need to get:
+- Token: You can generate a new token or use one you already have. Follow this link to learn how to get a token: https://docs.rundeck.com/docs/manual/10-user.html#profile
+- Project Name: To configure a default project to work with, go to Rundeck and in the navigation bar choose 'Projects'. Choose a project from the list that appears. 
+- URL: A link to your Rundeck site.
