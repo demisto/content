@@ -52,7 +52,7 @@ configuration:
   required: true
   type: 0
 description: Manage Azure Compute resources
-display: Azure Compute V3
+display: Azure Compute v3
 name: AzureComputeV3
 script:
   commands:
