@@ -6,9 +6,9 @@ This integration replaces the Gmail functionality in the GoogleApps API and G Su
 
 There are several procedures you have to perform in Google before configuring the integration on Demisto.
 
-* Get a New Private Key
-* Delegate Domain-wide Authority to Your Service Account
-* Get an Immutable Google Apps ID
+* [Get a New Private Key](#get-a-new-private-key)
+* [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account)
+* [Get an Immutable Google Apps ID](#get-an-immutable-google-apps-id-parameters)
 
 ### Get a New Private Key
 
