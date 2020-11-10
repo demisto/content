@@ -11,7 +11,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": ["Learn More About Threat Signatures from PAN-OS firewall logs."],
     "keywords": [],
     "dependencies": {
         "CommonScripts": {
