@@ -207,7 +207,6 @@ def add_milliseconds_to_epoch_time(epoch_time):
 def epoch_to_milliseconds_timestamp(epoch_time: int):
     """
     Create human readable time in the format of '1970-01-01T02:00:00.000Z'
-    Add 1 millisecond so we would not get duplicate incidents.
     Args:
         epoch_time: Epoch time as it is in the raw_content
     Returns:
