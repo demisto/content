@@ -728,6 +728,7 @@ def option_handler():
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
     parser.add_argument('-c', '--force_previous_commit', help='A commit to be used as the previous commit to diff with')
+    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 

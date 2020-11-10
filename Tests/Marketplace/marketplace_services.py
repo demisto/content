@@ -937,8 +937,14 @@ class Pack(object):
 
         """
         logging.info(f"Found Changelog for: {self._pack_name}")
-        changelog = get_json(changelog_index_path)
-
+        if os.path.exists(changelog_index_path):
+            try:
+                with open(changelog_index_path, "r") as changelog_file:
+                    changelog = json.load(changelog_file)
+            except json.JSONDecodeError:
+                changelog = {}
+        else:
+            changelog = {}
         # get the latest rn version in the changelog.json file
         changelog_rn_versions = [LooseVersion(ver) for ver in changelog]
         # no need to check if changelog_rn_versions isn't empty because changelog file exists

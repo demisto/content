@@ -4,6 +4,7 @@ import json
 import os
 import random
 from unittest.mock import mock_open
+from mock import Mock
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
@@ -1120,6 +1121,7 @@ class TestReleaseNotes:
             }
         }
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
+        mocker.patch('os.path.exists', return_value=True)
         changelog, changelog_latest_rn_version = dummy_pack.get_changelog_latest_rn('fake_path')
         assert changelog == original_changelog_dict
         assert changelog_latest_rn_version == LooseVersion('2.0.0')
@@ -1195,13 +1197,8 @@ class TestReleaseNotes:
     }
 
     @pytest.mark.parametrize('failed_packs_dict, task_status, status', [
-        ({
-            'TestPack': {'status': 'wow1'},
-            'TestPack2': {'status': 'wow2'}
-        }, True, 'wow1'),
-        ({
-             'TestPack2': {'status': 'wow2'}
-         }, False, str())
+        ({'TestPack': {'status': 'wow1'}, 'TestPack2': {'status': 'wow2'}}, True, 'wow1'),
+        ({'TestPack2': {'status': 'wow2'}}, False, str())
     ])
     def test_is_failed_to_upload(self, failed_packs_dict, task_status, status, dummy_pack):
         """
