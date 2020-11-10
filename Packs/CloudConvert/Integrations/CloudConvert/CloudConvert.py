@@ -53,8 +53,8 @@ class Client(BaseClient):
             headers=self._headers
         )
         form = response_get_form.get('data', {}).get('result', {}).get('form', {})
-        port_url = form.get('url')
-        params = form.get('parameters')
+        port_url = form['url'] # if no url field in form, we should have an exception
+        params = form['parameters']
 
         # Creating a temp file with the same data of the given file
         # This way the uploaded file has a path that the API can parse properly
