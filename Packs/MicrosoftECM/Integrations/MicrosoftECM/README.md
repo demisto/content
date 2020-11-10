@@ -224,7 +224,7 @@ Lists a Configuration Manager device
 | --- | --- | --- |
 | collection_id | Specifies an ID for a device collection (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
 | collection_name | Specifies the name of a device collection (can be retrived via `!ms-ecm-collection-list collection_type="Device"`) | Optional | 
-| limit | Specifies the maximum number of devices to be returned, default value is 100. | Optional | 
+| limit | Specifies the maximum number of devices to be returned. | Optional | 
 
 
 #### Context Output
@@ -242,8 +242,8 @@ Lists a Configuration Manager device
 ```json
 {
     "MicrosoftECM": {
-        "DevicesList": {
-            "Name": "EC2AMAZ-2AKQ815",
+        "Devices": {
+            "DeviceName": "EC2AMAZ-2AKQ815",
             "ResourceID": 16777220
         }
     }
@@ -253,9 +253,9 @@ Lists a Configuration Manager device
 #### Human Readable Output
 
 >### Devices List
->| Name | ResourceID
+>| ResourceID | DeviceName
 >| --- | ---
->| EC2AMAZ\-2AKQ815 | 16777220
+>| 16777220 | EC2AMAZ\-2AKQ815
 
 
 ### ms-ecm-script-list
@@ -1222,31 +1222,31 @@ Gets a Configuration Manager device By querying the SMS_CM_RES_COLL_SMS00001 cla
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftECM.DeviceCollectionMember.Name | string | The name of the device | 
-| MicrosoftECM.DeviceCollectionMember.ClientVersion | string | Version of the installed client software. | 
-| MicrosoftECM.DeviceCollectionMember.DeviceOS | string | Device operating system. | 
-| MicrosoftECM.DeviceCollectionMember.ResourceID | number | Unique Configuration Manager-supplied ID for the resource. | 
-| MicrosoftECM.DeviceCollectionMember.IsActive | boolean | true if there has been a recent heartbeat from the client. | 
-| MicrosoftECM.DeviceCollectionMember.LastActiveTime | date | Comes from Client Health. Represents the last reported time the client was active. | 
-| MicrosoftECM.DeviceCollectionMember.LastClientCheckTime | date | Comes from Client Health. Represents the last reported health evaluation time. | 
-| MicrosoftECM.DeviceCollectionMember.LastDDR | date | Last heartbeat timestamp from client DDR discovery. | 
-| MicrosoftECM.DeviceCollectionMember.LastHardwareScan | date | Timestamp from the last hardware inventory scan. | 
-| MicrosoftECM.DeviceCollectionMember.LastPolicyRequest | date | Timestamp of the last policy request for this client. | 
-| MicrosoftECM.DeviceCollectionMember. Domain | string | Domain to which the resource belongs. | 
-| MicrosoftECM.DeviceCollectionMember.PrimaryUser | string | The primary user of the device | 
-| MicrosoftECM.DeviceCollectionMember.Status | string | Current status of the device. | 
-| MicrosoftECM.DeviceCollectionMember.MACAddress | string | The MAC Address of the device. | 
-| MicrosoftECM.DeviceCollectionMember.IsVirtualMachine | boolean | true if the client is a virtual machine. | 
-| MicrosoftECM.DeviceCollectionMember.IsDecommissioned | boolean | true if the collection member is decommissioned. | 
-| MicrosoftECM.DeviceCollectionMember.IsClient | boolean | true, if the client is a Configuration Manager client. | 
-| MicrosoftECM.DeviceCollectionMember.IsBlocked | boolean | true if a system is blocked. Block/unblock is a manual action in the Admin Console UI that the administrator can invoke. By blocking a client, client communication with the server will be cut off. | 
-| MicrosoftECM.DeviceCollectionMember.ExchangeServer | string | Name of the Exchange server for Exchange Active Sync \(EAS\). | 
-| MicrosoftECM.DeviceCollectionMember.DeviceThreatLevel | string | The threat level of the device | 
-| MicrosoftECM.DeviceCollectionMember.CurrentLogonUser | string | Current logged on user | 
-| MicrosoftECM.DeviceCollectionMember.LastLogonUser | string | The last user who logged in to the device | 
-| MicrosoftECM.DeviceCollectionMember.DeviceOSBuild | string | The OS build number of the device | 
-| MicrosoftECM.DeviceCollectionMember.ADLastLogonTime | date | Last logon timestamp of the computer \(discovered from Active Directory\). | 
-| MicrosoftECM.DeviceCollectionMember.SiteCode | string | Site code of the site that created the collection. | 
+| MicrosoftECM.Devices.DeviceName | string | The name of the device | 
+| MicrosoftECM.Devices.CollectionMemberDetails.ClientVersion | string | Version of the installed client software. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.DeviceOS | string | Device operating system. | 
+| MicrosoftECM.Devices.ResourceID | number | Unique Configuration Manager-supplied ID for the resource. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.IsActive | boolean | true if there has been a recent heartbeat from the client. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.LastActiveTime | date | Comes from Client Health. Represents the last reported time the client was active. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.LastClientCheckTime | date | Comes from Client Health. Represents the last reported health evaluation time. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.LastDDR | date | Last heartbeat timestamp from client DDR discovery. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.LastHardwareScan | date | Timestamp from the last hardware inventory scan. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.LastPolicyRequest | date | Timestamp of the last policy request for this client. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.Domain | string | Domain to which the resource belongs. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.PrimaryUser | string | The primary user of the device | 
+| MicrosoftECM.Devices.CollectionMemberDetails.Status | string | Current status of the device. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.MACAddress | string | The MAC Address of the device. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.IsVirtualMachine | boolean | true if the client is a virtual machine. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.IsDecommissioned | boolean | true if the collection member is decommissioned. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.IsClient | boolean | true, if the client is a Configuration Manager client. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.IsBlocked | boolean | true if a system is blocked. Block/unblock is a manual action in the Admin Console UI that the administrator can invoke. By blocking a client, client communication with the server will be cut off. | 
+| MicrosoftECM.Devices.CollectionMemberDetails.ExchangeServer | string | Name of the Exchange server for Exchange Active Sync \(EAS\). | 
+| MicrosoftECM.Devices.CollectionMemberDetails.DeviceThreatLevel | string | The threat level of the device | 
+| MicrosoftECM.Devices.CollectionMemberDetails.CurrentLogonUser | string | Current logged on user | 
+| MicrosoftECM.Devices.CollectionMemberDetails.LastLogonUser | string | The last user who logged in to the device | 
+| MicrosoftECM.Devices.CollectionMemberDetails.DeviceOSBuild | string | The OS build number of the device | 
+| MicrosoftECM.Devices.CollectionMemberDetails.ADLastLogonTime | date | Last logon timestamp of the computer \(discovered from Active Directory\). | 
+| MicrosoftECM.Devices.CollectionMemberDetails.SiteCode | string | Site code of the site that created the collection. | 
 
 
 #### Command Example
@@ -1256,31 +1256,33 @@ Gets a Configuration Manager device By querying the SMS_CM_RES_COLL_SMS00001 cla
 ```json
 {
     "MicrosoftECM": {
-        "DeviceCollectionMember": {
-            "ADLastLogonTime": "2020-11-02T05:34:01",
-            "ClientVersion": "5.00.8790.1007",
-            "CurrentLogonUser": null,
+        "Devices": {
+            "CollectionMemberDetails": {
+                "ADLastLogonTime": "2020-11-02T05:34:01",
+                "ClientVersion": "5.00.8790.1007",
+                "CurrentLogonUser": null,
+                "DeviceOS": "Microsoft Windows NT Advanced Server 10.0",
+                "DeviceOSBuild": "10.0.14393.3025",
+                "DeviceThreatLevel": null,
+                "Domain": "DEMISTO",
+                "ExchangeServer": null,
+                "IsActive": true,
+                "IsBlocked": false,
+                "IsClient": true,
+                "IsDecommissioned": false,
+                "IsVirtualMachine": false,
+                "LastActiveTime": "2020-11-10T11:40:44Z",
+                "LastClientCheckTime": "2020-11-07T16:42:39Z",
+                "LastDDR": "2020-11-09T18:30:48Z",
+                "LastHardwareScan": "2020-11-08T12:02:36Z",
+                "LastLogonUser": null,
+                "LastPolicyRequest": "2020-11-10T11:40:44Z",
+                "PrimaryUser": "demisto\sccmadmin",
+                "SiteCode": "ISR",
+                "Status": null
+            },
             "DeviceName": "EC2AMAZ-2AKQ815",
-            "DeviceOS": "Microsoft Windows NT Advanced Server 10.0",
-            "DeviceOSBuild": "10.0.14393.3025",
-            "DeviceThreatLevel": null,
-            "Domain": "DEMISTO",
-            "ExchangeServer": null,
-            "IsActive": true,
-            "IsBlocked": false,
-            "IsClient": true,
-            "IsDecommissioned": false,
-            "IsVirtualMachine": false,
-            "LastActiveTime": "2020-11-09T13:45:43Z",
-            "LastClientCheckTime": "2020-11-07T16:42:39Z",
-            "LastDDR": "2020-11-08T18:30:48Z",
-            "LastHardwareScan": "2020-11-08T12:02:36Z",
-            "LastLogonUser": null,
-            "LastPolicyRequest": "2020-11-09T13:45:43Z",
-            "PrimaryUser": "demisto\\sccmadmin",
-            "ResourceID": 16777220,
-            "SiteCode": "ISR",
-            "Status": null
+            "ResourceID": 16777220
         }
     }
 }
@@ -1288,10 +1290,11 @@ Gets a Configuration Manager device By querying the SMS_CM_RES_COLL_SMS00001 cla
 
 #### Human Readable Output
 
->### Devices As Collection Member
->| LastDDR | Domain | ResourceID | DeviceName | ExchangeServer | DeviceOSBuild | Status | LastHardwareScan | IsDecommissioned | SiteCode | PrimaryUser | IsBlocked | LastPolicyRequest | DeviceOS | ClientVersion | LastLogonUser | LastClientCheckTime | IsActive | CurrentLogonUser | IsClient | ADLastLogonTime | LastActiveTime | IsVirtualMachine | DeviceThreatLevel
+>### Device As Collection Member
+>| LastActiveTime | ExchangeServer | IsVirtualMachine | LastHardwareScan | LastClientCheckTime | IsClient | LastLogonUser | Domain | CurrentLogonUser | ResourceID | LastPolicyRequest | IsActive | Status | ClientVersion | ADLastLogonTime | LastDDR | DeviceOSBuild | IsBlocked | PrimaryUser | IsDecommissioned | DeviceThreatLevel | DeviceName | DeviceOS | SiteCode
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| 2020\-11\-08T18:30:48Z | DEMISTO | 16777220 | EC2AMAZ\-2AKQ815 |  | 10.0.14393.3025 |  | 2020\-11\-08T12:02:36Z | False | ISR | demisto\\sccmadmin | False | 2020\-11\-09T13:45:43Z | Microsoft Windows NT Advanced Server 10.0 | 5.00.8790.1007 |  | 2020\-11\-07T16:42:39Z | True |  | True | 11/2/2020 5:34:01 AM | 2020\-11\-09T13:45:43Z | False | 
+>| 2020\-11\-10T11:40:44Z |  | False | 2020\-11\-08T12:02:36Z | 2020\-11\-07T16:42:39Z | True |  | DEMISTO |  | 16777220 | 2020\-11\-10T11:40:44Z | True |  | 5.00.8790.1007 | 11/2/2020 5:34:01 AM | 2020\-11\-09T18:30:48Z | 10.0.14393.3025 | False | demisto\sccmadmin | False |  | EC2AMAZ\-2AKQ815 | Microsoft Windows NT Advanced Server 10.0 | ISR
+
 
 ### ms-ecm-device-get-resource
 ***
@@ -1313,26 +1316,26 @@ Gets a Configuration Manager device By querying the SMS_R_System class. You can 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftECM.DeviceResource.Name | string | The name of the device | 
-| MicrosoftECM.DeviceResource.AgentName | string | List of the names of discovery agents that found the resource. | 
-| MicrosoftECM.DeviceResource.ResourceId | number | Configuration Manager-supplied ID that uniquely identifies a Configuration Manager client resource | 
-| MicrosoftECM.DeviceResource.ADSiteName | string | The Active Directory site name that is assigned to the client. | 
-| MicrosoftECM.DeviceResource.AgentSite | string | List of sites from which the discovery agents run. | 
-| MicrosoftECM.DeviceResource.AgentTime | date | List of discovery dates and times. | 
-| MicrosoftECM.DeviceResource.CPUType | string | The CPU type, for example, StrongARM. Currently, only device clients report this value. | 
-| MicrosoftECM.DeviceResource.DistinguishedName | string | The distinguished name of the account. | 
-| MicrosoftECM.DeviceResource.FullDomainName | string | The full name of the device's domain | 
-| MicrosoftECM.DeviceResource.IPAddresses | string | List of the IP addresses that are associated with the resource. More than one address is listed if the resource has multiple network cards installed. | 
-| MicrosoftECM.DeviceResource.NetbiosName | string | Name used by the NetBIOS protocol. | 
-| MicrosoftECM.DeviceResource.UserAccountControl | number | User account control value retrieved from Active Directory. | 
-| MicrosoftECM.DeviceResource.LastLogonUserName | date | Name of the last logged-on user at the time the discovery agent ran. | 
-| MicrosoftECM.DeviceResource.LastLogonUserDomain | string | Domain used by the last logged-on user at the time the discovery agent ran. | 
-| MicrosoftECM.DeviceResource.LastLogonTimestamp | date | The date of the last user logon. | 
-| MicrosoftECM.DeviceResource.OperatingSystemNameandVersion | string | Free-form string that describes the operating system. | 
-| MicrosoftECM.DeviceResource.VirtualMachineHostName | string | Virtual machine host name. | 
-| MicrosoftECM.DeviceResource.VirtualMachineType | string | The type of the virtual machine | 
-| MicrosoftECM.DeviceResource.DNSForestGuid | string | A unique identifier for the DNS forest | 
-| MicrosoftECM.DeviceResource.HardwareID | string | An ID that uniquely describes the hardware on which the client is installed. This ID remains unchanged through re-imaging or through successive installations of the operating system or client. This differs from the Configuration Manager unique ID, which might change under these circumstances. | 
+| MicrosoftECM.Devices.DeviceName | string | The name of the device | 
+| MicrosoftECM.Devices.ResourceDetails.AgentName | string | List of the names of discovery agents that found the resource. | 
+| MicrosoftECM.Devices.ResourceID | number | Configuration Manager-supplied ID that uniquely identifies a Configuration Manager client resource | 
+| MicrosoftECM.Devices.ResourceDetails.ADSiteName | string | The Active Directory site name that is assigned to the client. | 
+| MicrosoftECM.Devices.ResourceDetails.AgentSite | string | List of sites from which the discovery agents run. | 
+| MicrosoftECM.Devices.ResourceDetails.AgentTime | date | List of discovery dates and times. | 
+| MicrosoftECM.Devices.ResourceDetails.CPUType | string | The CPU type, for example, StrongARM. Currently, only device clients report this value. | 
+| MicrosoftECM.Devices.ResourceDetails.DistinguishedName | string | The distinguished name of the account. | 
+| MicrosoftECM.Devices.ResourceDetails.FullDomainName | string | The full name of the device's domain | 
+| MicrosoftECM.Devices.ResourceDetails.IPAddresses | string | List of the IP addresses that are associated with the resource. More than one address is listed if the resource has multiple network cards installed. | 
+| MicrosoftECM.Devices.ResourceDetails.NetbiosName | string | Name used by the NetBIOS protocol. | 
+| MicrosoftECM.Devices.ResourceDetails.UserAccountControl | number | User account control value retrieved from Active Directory. | 
+| MicrosoftECM.Devices.ResourceDetails.LastLogonUserName | date | Name of the last logged-on user at the time the discovery agent ran. | 
+| MicrosoftECM.Devices.ResourceDetails.LastLogonUserDomain | string | Domain used by the last logged-on user at the time the discovery agent ran. | 
+| MicrosoftECM.Devices.ResourceDetails.LastLogonTimestamp | date | The date of the last user logon. | 
+| MicrosoftECM.Devices.ResourceDetails.OperatingSystemNameandVersion | string | Free-form string that describes the operating system. | 
+| MicrosoftECM.Devices.ResourceDetails.VirtualMachineHostName | string | Virtual machine host name. | 
+| MicrosoftECM.Devices.ResourceDetails.VirtualMachineType | string | The type of the virtual machine | 
+| MicrosoftECM.Devices.ResourceDetails.DNSForestGuid | string | A unique identifier for the DNS forest | 
+| MicrosoftECM.Devices.ResourceDetails.HardwareID | string | An ID that uniquely describes the hardware on which the client is installed. This ID remains unchanged through re-imaging or through successive installations of the operating system or client. This differs from the Configuration Manager unique ID, which might change under these circumstances. | 
 
 
 #### Command Example
@@ -1342,42 +1345,44 @@ Gets a Configuration Manager device By querying the SMS_R_System class. You can 
 ```json
 {
     "MicrosoftECM": {
-        "DeviceResource": {
-            "ADSiteName": "Default-First-Site-Name",
-            "AgentName": [
-                "SMS_AD_SYSTEM_DISCOVERY_AGENT",
-                "MP_ClientRegistration",
-                "Heartbeat Discovery"
-            ],
-            "AgentSite": [
-                "ISR",
-                "ISR",
-                "ISR"
-            ],
-            "AgentTime": [
-                "2020-11-05T00:00:01Z",
-                "2019-07-07T10:12:48Z",
-                "2020-11-09T13:30:48Z"
-            ],
-            "CPUType": "Intel64 Family 6 Model 85 Stepping 4",
-            "DNSForestGuid": "E8AA1F36-33BE-41F2-ADCB-E40376F5B168",
+        "Devices": {
             "DeviceName": "EC2AMAZ-2AKQ815",
-            "DistinguishedName": "CN=EC2AMAZ-2AKQ815,CN=Computers,DC=demisto,DC=local",
-            "FullDomainName": "DEMISTO.LOCAL",
-            "HardwareID": "2:387B42C549C5E7D718B68BC65959FA9041F7F2D0",
-            "IPAddresses": [
-                "2.2.2.2",
-                "fe80::81c5:1670:9363:a40b"
-            ],
-            "LastLogonTimestamp": "2020-11-02T05:34:01Z",
-            "LastLogonUserDomain": null,
-            "LastLogonUserName": null,
-            "NetbiosName": "EC2AMAZ-2AKQ815",
-            "OperatingSystemNameandVersion": "Microsoft Windows NT Advanced Server 10.0",
-            "ResourceId": 16777220,
-            "UserAccountControl": 4096,
-            "VirtualMachineHostName": "",
-            "VirtualMachineType": 0
+            "ResourceDetails": {
+                "ADSiteName": "Default-First-Site-Name",
+                "AgentName": [
+                    "SMS_AD_SYSTEM_DISCOVERY_AGENT",
+                    "MP_ClientRegistration",
+                    "Heartbeat Discovery"
+                ],
+                "AgentSite": [
+                    "ISR",
+                    "ISR",
+                    "ISR"
+                ],
+                "AgentTime": [
+                    "2020-11-05T00:00:01Z",
+                    "2019-07-07T10:12:48Z",
+                    "2020-11-10T11:30:48Z"
+                ],
+                "CPUType": "Intel64 Family 6 Model 85 Stepping 4",
+                "DNSForestGuid": "E8AA1F36-33BE-41F2-ADCB-E40376F5B168",
+                "DistinguishedName": "CN=EC2AMAZ-2AKQ815,CN=Computers,DC=demisto,DC=local",
+                "FullDomainName": "DEMISTO.LOCAL",
+                "HardwareID": "2:387B42C549C5E7D718B68BC65959FA9041F7F2D0",
+                "IPAddresses": [
+                    "2.2.2.2",
+                    "fe80::81c5:1670:9363:a40b"
+                ],
+                "LastLogonTimestamp": "2020-11-02T05:34:01Z",
+                "LastLogonUserDomain": null,
+                "LastLogonUserName": null,
+                "NetbiosName": "EC2AMAZ-2AKQ815",
+                "OperatingSystemNameandVersion": "Microsoft Windows NT Advanced Server 10.0",
+                "UserAccountControl": 4096,
+                "VirtualMachineHostName": "",
+                "VirtualMachineType": 0
+            },
+            "ResourceID": 16777220
         }
     }
 }
@@ -1385,10 +1390,11 @@ Gets a Configuration Manager device By querying the SMS_R_System class. You can 
 
 #### Human Readable Output
 
->### Devices As Resource
->| AgentTime | IPAddresses | ResourceId | UserAccountControl | AgentSite | DistinguishedName | VirtualMachineHostName | FullDomainName | ADSiteName | NetbiosName | LastLogonTimestamp | DeviceName | VirtualMachineType | CPUType | AgentName | LastLogonUserName | DNSForestGuid | OperatingSystemNameandVersion | LastLogonUserDomain | HardwareID
+>### Device As Resource
+>| AgentSite | VirtualMachineType | LastLogonUserName | AgentName | HardwareID | ADSiteName | NetbiosName | OperatingSystemNameandVersion | AgentTime | LastLogonTimestamp | ResourceID | CPUType | VirtualMachineHostName | UserAccountControl | IPAddresses | DNSForestGuid | FullDomainName | LastLogonUserDomain | DistinguishedName | DeviceName
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| \["2020\-11\-05T00:00:01Z","2019\-07\-07T10:12:48Z","2020\-11\-09T13:30:48Z"\] | \["2.2.2.2","fe80::81c5:1670:9363:a40b"\] | 16777220 | 4096 | \["ISR","ISR","ISR"\] | CN=EC2AMAZ\-2AKQ815,CN=Computers,DC=demisto,DC=local |  | DEMISTO.LOCAL | Default\-First\-Site\-Name | EC2AMAZ\-2AKQ815 | 2020\-11\-02T05:34:01Z | EC2AMAZ\-2AKQ815 | 0 | Intel64 Family 6 Model 85 Stepping 4 | \["SMS\_AD\_SYSTEM\_DISCOVERY\_AGENT","MP\_ClientRegistration","Heartbeat Discovery"\] |  | E8AA1F36\-33BE\-41F2\-ADCB\-E40376F5B168 | Microsoft Windows NT Advanced Server 10.0 |  | 2:387B42C549C5E7D718B68BC65959FA9041F7F2D0
+>| \["ISR","ISR","ISR"\] | 0 |  | \["SMS\_AD\_SYSTEM\_DISCOVERY\_AGENT","MP\_ClientRegistration","Heartbeat Discovery"\] | 2:387B42C549C5E7D718B68BC65959FA9041F7F2D0 | Default\-First\-Site\-Name | EC2AMAZ\-2AKQ815 | Microsoft Windows NT Advanced Server 10.0 | \["2020\-11\-05T00:00:01Z","2019\-07\-07T10:12:48Z","2020\-11\-10T11:30:48Z"\] | 2020\-11\-02T05:34:01Z | 16777220 | Intel64 Family 6 Model 85 Stepping 4 |  | 4096 | \["2.2.2.2","fe80::81c5:1670:9363:a40b"\] | E8AA1F36\-33BE\-41F2\-ADCB\-E40376F5B168 | DEMISTO.LOCAL |  | CN=EC2AMAZ\-2AKQ815,CN=Computers,DC=demisto,DC=local | EC2AMAZ\-2AKQ815
+
 
 ### ms-ecm-get-user-device-affinity
 ***

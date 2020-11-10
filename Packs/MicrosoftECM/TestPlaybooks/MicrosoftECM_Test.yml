@@ -147,10 +147,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 6bc198b9-46f6-46e3-850e-a6e712ce363c
+    taskid: 4505d37f-e2ef-4025-89dc-f92b270df690
     type: regular
     task:
-      id: 6bc198b9-46f6-46e3-850e-a6e712ce363c
+      id: 4505d37f-e2ef-4025-89dc-f92b270df690
       version: -1
       name: 'Get Device As resource '
       description: Gets a Configuration Manager device By querying the SMS_R_System
@@ -166,7 +166,7 @@ tasks:
       - "45"
     scriptarguments:
       device_names:
-        simple: ${MicrosoftECM.DevicesList.Name}
+        simple: ${MicrosoftECM.Devices.DeviceName}
       resource_ids: {}
     separatecontext: false
     view: |-
@@ -1278,7 +1278,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1040
+          "y": 1050
         }
       }
     note: false
@@ -1288,10 +1288,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: cbb5c5bb-081e-4e12-88e0-2fc38c334b0e
+    taskid: c5854fec-25bb-4ac5-88ca-6a623d508ec8
     type: regular
     task:
-      id: cbb5c5bb-081e-4e12-88e0-2fc38c334b0e
+      id: c5854fec-25bb-4ac5-88ca-6a623d508ec8
       version: -1
       name: Stop Service
       description: Stops a service on a device or collection (Implemented by creating
@@ -1308,8 +1308,11 @@ tasks:
       collection_name:
         simple: All Systems
       device_name: {}
+      poll_results:
+        simple: "true"
       service_name:
         simple: dnscache
+      timeout: {}
     separatecontext: false
     view: |-
       {
@@ -1377,7 +1380,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1230
+          "y": 1245
         }
       }
     note: false
@@ -1492,10 +1495,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 21806e8e-9347-43d7-87fa-042d2581dc2b
+    taskid: 0002b130-cc11-4823-87ba-4f857e2ce1ec
     type: condition
     task:
-      id: 21806e8e-9347-43d7-87fa-042d2581dc2b
+      id: 0002b130-cc11-4823-87ba-4f857e2ce1ec
       version: -1
       name: 'Validate Device As resource '
       type: condition
@@ -1508,23 +1511,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: in
-          left:
-            value:
-              complex:
-                root: MicrosoftECM.DeviceResource
-                accessor: ResourceId
-                transformers:
-                - operator: FirstArrayElement
-            iscontext: true
-          right:
-            value:
-              simple: "16777220"
       - - operator: isEqualString
           left:
             value:
               complex:
-                root: MicrosoftECM.DeviceResource
+                root: MicrosoftECM.Devices.ResourceDetails
                 accessor: FullDomainName
                 transformers:
                 - operator: FirstArrayElement
@@ -1546,10 +1537,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: c06df387-8274-4a04-87f5-c8762f748781
+    taskid: fcfde248-e715-4976-8f02-3714137063ea
     type: regular
     task:
-      id: c06df387-8274-4a04-87f5-c8762f748781
+      id: fcfde248-e715-4976-8f02-3714137063ea
       version: -1
       name: Get Device As Collection Member
       description: Gets a Configuration Manager device By querying the SMS_CM_RES_COLL_SMS00001
@@ -1565,7 +1556,7 @@ tasks:
       - "47"
     scriptarguments:
       device_names:
-        simple: ${MicrosoftECM.DevicesList.Name}
+        simple: ${MicrosoftECM.Devices.DeviceName}
       resource_ids: {}
     separatecontext: false
     view: |-
@@ -1582,10 +1573,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: d6ada902-a017-4804-82dd-bafd8918d8fb
+    taskid: 0edce3a6-69d4-400b-849f-91983685adb6
     type: condition
     task:
-      id: d6ada902-a017-4804-82dd-bafd8918d8fb
+      id: 0edce3a6-69d4-400b-849f-91983685adb6
       version: -1
       name: Validate Device As Collection Member
       type: condition
@@ -1602,19 +1593,7 @@ tasks:
           left:
             value:
               complex:
-                root: MicrosoftECM.DeviceCollectionMember
-                accessor: ResourceID
-                transformers:
-                - operator: FirstArrayElement
-            iscontext: true
-          right:
-            value:
-              simple: "16777220"
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: MicrosoftECM.DeviceCollectionMember
+                root: MicrosoftECM.Devices.CollectionMemberDetails
                 accessor: Domain
             iscontext: true
           right:

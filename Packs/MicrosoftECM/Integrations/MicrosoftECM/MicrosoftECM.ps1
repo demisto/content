@@ -582,14 +582,14 @@ Function GetDeviceList()
 	if ($Devices)
 	{
 		$output = [PSCustomObject]@{
-			"MicrosoftECM.DevicesList(val.ResourceID && val.ResourceID === obj.ResourceID)" = $Devices | ForEach-Object {
+			"MicrosoftECM.Devices(val.ResourceID && val.ResourceID === obj.ResourceID)" = $Devices | ForEach-Object {
 				[PSCustomObject]@{
-					Name = $_.Name
+					DeviceName = $_.Name
 					ResourceID = $_.ResourceID
 				}
 			}
 		}
-		$MDOutput = $output."MicrosoftECM.DevicesList(val.ResourceID && val.ResourceID === obj.ResourceID)" | TableToMarkdown -Name "Devices List"
+		$MDOutput = $output."MicrosoftECM.Devices(val.ResourceID && val.ResourceID === obj.ResourceID)" | TableToMarkdown -Name "Devices List"
 		ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $Devices | Out-Null
 	}
 	else
@@ -782,7 +782,7 @@ Function InvocationResults()
 		$output = [PSCustomObject]@{
 			"MicrosoftECM.ScriptsInvocationResults(val.OperationId && val.OperationId === obj.OperationId)" = [PSCustomObject]@{
 				OperationId = $operationID
-				ScriptExecutionState = 'Not Found'
+				ScriptExecutionState = 'Pending'
 			}
 		}
 	}
@@ -1060,12 +1060,42 @@ Function GetDeviceAsCollectionMember()
 	}
 	if ($devices)
 	{
-		$output = $devices | ForEach-Object {
+		$outputToContext = $devices | ForEach-Object {
 			[PSCustomObject]@{
 				DeviceName = $_.Name
+				ResourceID = $_.ResourceID
+				CollectionMemberDetails = [PSCustomObject]@{
+					ClientVersion = $_.ClientVersion
+					DeviceOS = $_.DeviceOS
+					IsActive = $_.IsActive
+					LastActiveTime = ParseDateTimeObjectToIso $_.LastActiveTime
+					LastClientCheckTime = ParseDateTimeObjectToIso $_.LastClientCheckTime
+					LastDDR = ParseDateTimeObjectToIso $_.LastDDR
+					LastHardwareScan = ParseDateTimeObjectToIso $_.LastHardwareScan
+					LastPolicyRequest = ParseDateTimeObjectToIso $_.LastPolicyRequest
+					Domain = $_.Domain
+					PrimaryUser = $_.PrimaryUser
+					Status = $_.Status
+					IsVirtualMachine = $_.IsVirtualMachine
+					IsDecommissioned = $_.IsDecommissioned
+					IsClient = $_.IsClient
+					IsBlocked = $_.IsBlocked
+					ExchangeServer = $_.ExchangeServer
+					DeviceThreatLevel = $_.DeviceThreatLevel
+					CurrentLogonUser = $_.CurrentLogonUser
+					LastLogonUser = $_.LastLogonUser
+					DeviceOSBuild = $_.DeviceOSBuild
+					ADLastLogonTime = $_.ADLastLogonTime
+					SiteCode = $_.SiteCode
+				}
+			}
+		}
+		$outputToHumanReadable = $devices | ForEach-Object {
+			[PSCustomObject]@{
+				DeviceName = $_.Name
+				ResourceID = $_.ResourceID
 				ClientVersion = $_.ClientVersion
 				DeviceOS = $_.DeviceOS
-				ResourceID = $_.ResourceID
 				IsActive = $_.IsActive
 				LastActiveTime = ParseDateTimeObjectToIso $_.LastActiveTime
 				LastClientCheckTime = ParseDateTimeObjectToIso $_.LastClientCheckTime
@@ -1088,8 +1118,8 @@ Function GetDeviceAsCollectionMember()
 				SiteCode = $_.SiteCode
 			}
 		}
-		$MDOutput = $output | TableToMarkdown -Name "Devices As Collection Member"
-		$output = [PSCustomObject]@{ "MicrosoftECM.DeviceCollectionMember(val.DeviceName && val.DeviceName === obj.DeviceName)" = $output }
+		$MDOutput = $outputToHumanReadable | TableToMarkdown -Name "Device As Collection Member"
+		$output = [PSCustomObject]@{ "MicrosoftECM.Devices(val.DeviceName && val.DeviceName === obj.DeviceName)" = $outputToContext }
 		ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $devices | Out-Null
 	}
 	else
@@ -1150,11 +1180,37 @@ Function GetDeviceAsResource()
 	}
 	if ($devices)
 	{
-		$output = $devices | ForEach-Object {
+		$outputToContext = $devices | ForEach-Object {
 			[PSCustomObject]@{
 				DeviceName = $_.Name
+				ResourceID = $_.ResourceId
+				ResourceDetails = [PSCustomObject]@{
+					AgentName = $_.AgentName
+					ADSiteName = $_.ADSiteName
+					AgentSite = $_.AgentSite
+					AgentTime = $_.AgentTime | Foreach-Object { ParseDateTimeObjectToIso $_ }
+					CPUType = $_.CPUType
+					DistinguishedName = $_.DistinguishedName
+					FullDomainName = $_.FullDomainName
+					IPAddresses = $_.IPAddresses
+					NetbiosName = $_.NetbiosName
+					UserAccountControl = $_.UserAccountControl
+					LastLogonUserName = $_.LastLogonUserName
+					LastLogonUserDomain = $_.LastLogonUserDomain
+					LastLogonTimestamp = ParseDateTimeObjectToIso $_.LastLogonTimestamp
+					OperatingSystemNameandVersion = $_.OperatingSystemNameandVersion
+					VirtualMachineHostName = $_.VirtualMachineHostName
+					VirtualMachineType = $_.VirtualMachineType
+					DNSForestGuid = $_.DNSForestGuid
+					HardwareID = $_.HardwareID
+				}
+			}
+		}
+		$outputToHumanReadable = $devices | ForEach-Object {
+			[PSCustomObject]@{
+				DeviceName = $_.Name
+				ResourceID = $_.ResourceId
 				AgentName = $_.AgentName
-				ResourceId = $_.ResourceId
 				ADSiteName = $_.ADSiteName
 				AgentSite = $_.AgentSite
 				AgentTime = $_.AgentTime | Foreach-Object { ParseDateTimeObjectToIso $_ }
@@ -1174,8 +1230,8 @@ Function GetDeviceAsResource()
 				HardwareID = $_.HardwareID
 			}
 		}
-		$MDOutput = $output | TableToMarkdown -Name "Devices As Resource"
-		$output = [PSCustomObject]@{ "MicrosoftECM.DeviceResource(val.ResourceId && val.ResourceId === obj.ResourceId)" = $output }
+		$MDOutput = $outputToHumanReadable | TableToMarkdown -Name "Device As Resource"
+		$output = [PSCustomObject]@{ "MicrosoftECM.Devices(val.ResourceID && val.ResourceID === obj.ResourceID)" = $outputToContext }
 		ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $devices | Out-Null
 	}
 	else

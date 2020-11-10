@@ -132,13 +132,13 @@ script:
       description: Specifies the name of a device collection (can be retrived via
         `!ms-ecm-collection-list collection_type="Device"`)
     - name: limit
-      description: Specifies the maximum number of devices to be returned, default
-        value is 100.
+      defaultValue: '100'
+      description: Specifies the maximum number of devices to be returned.
     outputs:
-    - contextPath: MicrosoftECM.DevicesList.Name
+    - contextPath: MicrosoftECM.Devices.Name
       description: The name of the device
       type: string
-    - contextPath: MicrosoftECM.DevicesList.ResourceID
+    - contextPath: MicrosoftECM.Devices.ResourceID
       description: Unique Configuration Manager-supplied ID for the resource.
       type: number
     description: Lists a Configuration Manager device
@@ -253,15 +253,16 @@ script:
     - name: device_name
       description: Specifies a device name in Configuration Manager
     - name: poll_results
+      defaultValue: 'false'
       description: Whether to poll for the script invocation results or not
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: timeout
+      defaultValue: '30'
       required: false
-      description: The timeout in seconds to poll for invocation results. Default
-        is 30 seconds.
+      description: The timeout in seconds to poll for invocation results.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
@@ -710,15 +711,16 @@ script:
       description: The name of the collection to start the service in. (can be retrived
         via `!ms-ecm-collection-list collection_type="Device"`)
     - name: poll_results
+      defaultValue: 'false'
       description: Whether to poll for the script invocation results or not
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: timeout
+      defaultValue: '30'
       required: false
-      description: The timeout in seconds to poll for invocation results. Default
-        is 30 seconds.
+      description: The timeout in seconds to poll for invocation results.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
@@ -783,15 +785,16 @@ script:
       description: The name of the collection to start the service in. (can be retrived
         via `!ms-ecm-collection-list collection_type="Device"`)
     - name: poll_results
+      defaultValue: 'false'
       description: Whether to poll for the script invocation results or not
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: timeout
+      defaultValue: '30'
       required: false
-      description: The timeout in seconds to poll for invocation results. Default
-        is 30 seconds.
+      description: The timeout in seconds to poll for invocation results.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
@@ -856,15 +859,16 @@ script:
       description: The name of the collection to start the service in. (can be retrived
         via `!ms-ecm-collection-list collection_type="Device"`)
     - name: poll_results
+      defaultValue: 'false'
       description: Whether to poll for the script invocation results or not
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: timeout
+      defaultValue: '30'
       required: false
-      description: The timeout in seconds to poll for invocation results. Default
-        is 30 seconds.
+      description: The timeout in seconds to poll for invocation results.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
@@ -922,9 +926,9 @@ script:
       required: true
       description: The script invocation operation ID
     - name: timeout
+      defaultValue: '30'
       required: false
-      description: The timeout in seconds to poll for invocation results. Default
-        is 30 seconds.
+      description: The timeout in seconds to poll for invocation results.
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID
@@ -982,83 +986,83 @@ script:
       description: A comma separated list of resource ids, i.e `ID1,ID2,etc.`
       isArray: true
     outputs:
-    - contextPath: MicrosoftECM.DeviceCollectionMember.Name
+    - contextPath: MicrosoftECM.Devices.DeviceName
       description: The name of the device
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.ClientVersion
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.ClientVersion
       description: Version of the installed client software.
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.DeviceOS
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.DeviceOS
       description: Device operating system.
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.ResourceID
+    - contextPath: MicrosoftECM.Devices.ResourceID
       description: Unique Configuration Manager-supplied ID for the resource.
       type: number
-    - contextPath: MicrosoftECM.DeviceCollectionMember.IsActive
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.IsActive
       description: true if there has been a recent heartbeat from the client.
       type: boolean
-    - contextPath: MicrosoftECM.DeviceCollectionMember.LastActiveTime
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.LastActiveTime
       description: Comes from Client Health. Represents the last reported time the
         client was active.
       type: date
-    - contextPath: MicrosoftECM.DeviceCollectionMember.LastClientCheckTime
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.LastClientCheckTime
       description: Comes from Client Health. Represents the last reported health evaluation
         time.
       type: date
-    - contextPath: MicrosoftECM.DeviceCollectionMember.LastDDR
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.LastDDR
       description: Last heartbeat timestamp from client DDR discovery.
       type: date
-    - contextPath: MicrosoftECM.DeviceCollectionMember.LastHardwareScan
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.LastHardwareScan
       description: Timestamp from the last hardware inventory scan.
       type: date
-    - contextPath: MicrosoftECM.DeviceCollectionMember.LastPolicyRequest
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.LastPolicyRequest
       description: Timestamp of the last policy request for this client.
       type: date
-    - contextPath: MicrosoftECM.DeviceCollectionMember.Domain
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.Domain
       description: Domain to which the resource belongs.
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.PrimaryUser
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.PrimaryUser
       description: The primary user of the device
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.Status
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.Status
       description: Current status of the device.
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.MACAddress
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.MACAddress
       description: The MAC Address of the device.
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.IsVirtualMachine
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.IsVirtualMachine
       description: true if the client is a virtual machine.
       type: boolean
-    - contextPath: MicrosoftECM.DeviceCollectionMember.IsDecommissioned
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.IsDecommissioned
       description: true if the collection member is decommissioned.
       type: boolean
-    - contextPath: MicrosoftECM.DeviceCollectionMember.IsClient
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.IsClient
       description: true, if the client is a Configuration Manager client.
       type: boolean
-    - contextPath: MicrosoftECM.DeviceCollectionMember.IsBlocked
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.IsBlocked
       description: true if a system is blocked. Block/unblock is a manual action in
         the Admin Console UI that the administrator can invoke. By blocking a client,
         client communication with the server will be cut off.
       type: boolean
-    - contextPath: MicrosoftECM.DeviceCollectionMember.ExchangeServer
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.ExchangeServer
       description: Name of the Exchange server for Exchange Active Sync (EAS).
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.DeviceThreatLevel
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.DeviceThreatLevel
       description: The threat level of the device
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.CurrentLogonUser
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.CurrentLogonUser
       description: Current logged on user
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.LastLogonUser
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.LastLogonUser
       description: The last user who logged in to the device
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.DeviceOSBuild
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.DeviceOSBuild
       description: The OS build number of the device
       type: string
-    - contextPath: MicrosoftECM.DeviceCollectionMember.ADLastLogonTime
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.ADLastLogonTime
       description: Last logon timestamp of the computer (discovered from Active Directory).
       type: date
-    - contextPath: MicrosoftECM.DeviceCollectionMember.SiteCode
+    - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.SiteCode
       description: Site code of the site that created the collection.
       type: string
     description: Gets a Configuration Manager device By querying the SMS_CM_RES_COLL_SMS00001
@@ -1074,70 +1078,70 @@ script:
       description: A comma separated list of resource ids, i.e `ID1,ID2,etc.`
       isArray: true
     outputs:
-    - contextPath: MicrosoftECM.DeviceResource.Name
+    - contextPath: MicrosoftECM.Devices.DeviceName
       description: The name of the device
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.AgentName
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.AgentName
       description: List of the names of discovery agents that found the resource.
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.ResourceId
+    - contextPath: MicrosoftECM.Devices.ResourceID
       description: Configuration Manager-supplied ID that uniquely identifies a Configuration
         Manager client resource
       type: number
-    - contextPath: MicrosoftECM.DeviceResource.ADSiteName
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.ADSiteName
       description: The Active Directory site name that is assigned to the client.
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.AgentSite
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.AgentSite
       description: List of sites from which the discovery agents run.
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.AgentTime
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.AgentTime
       description: List of discovery dates and times.
       type: date
-    - contextPath: MicrosoftECM.DeviceResource.CPUType
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.CPUType
       description: The CPU type, for example, StrongARM. Currently, only device clients
         report this value.
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.DistinguishedName
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.DistinguishedName
       description: The distinguished name of the account.
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.FullDomainName
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.FullDomainName
       description: The full name of the device's domain
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.IPAddresses
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.IPAddresses
       description: List of the IP addresses that are associated with the resource.
         More than one address is listed if the resource has multiple network cards
         installed.
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.NetbiosName
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.NetbiosName
       description: Name used by the NetBIOS protocol.
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.UserAccountControl
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.UserAccountControl
       description: User account control value retrieved from Active Directory.
       type: number
-    - contextPath: MicrosoftECM.DeviceResource.LastLogonUserName
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.LastLogonUserName
       description: Name of the last logged-on user at the time the discovery agent
         ran.
       type: date
-    - contextPath: MicrosoftECM.DeviceResource.LastLogonUserDomain
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.LastLogonUserDomain
       description: Domain used by the last logged-on user at the time the discovery
         agent ran.
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.LastLogonTimestamp
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.LastLogonTimestamp
       description: The date of the last user logon.
       type: date
-    - contextPath: MicrosoftECM.DeviceResource.OperatingSystemNameandVersion
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.OperatingSystemNameandVersion
       description: Free-form string that describes the operating system.
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.VirtualMachineHostName
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.VirtualMachineHostName
       description: Virtual machine host name.
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.VirtualMachineType
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.VirtualMachineType
       description: The type of the virtual machine
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.DNSForestGuid
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.DNSForestGuid
       description: A unique identifier for the DNS forest
       type: string
-    - contextPath: MicrosoftECM.DeviceResource.HardwareID
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.HardwareID
       description: An ID that uniquely describes the hardware on which the client
         is installed. This ID remains unchanged through re-imaging or through successive
         installations of the operating system or client. This differs from the Configuration
