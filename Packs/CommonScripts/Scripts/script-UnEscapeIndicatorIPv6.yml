@@ -8,15 +8,15 @@ script: >-
   var ENDING_CHARACTERS_LIST = [')', ']', ' ', '-', '\'', '"', '.', ',', '`'];
 
   function extract_ipv6(un_extracting_ipv6s){
-    first_letter = un_extracting_ipv6s.charAt(0);
+    var first_letter = un_extracting_ipv6s.charAt(0);
 
-    if (BEGINNING_CHARACTERS_LIST.includes(first_letter)) {
+    if (BEGINNING_CHARACTERS_LIST.indexOf(first_letter) > -1) {
       un_extracting_ipv6s = un_extracting_ipv6s.slice(1);
     }
 
-    last_letter = un_extracting_ipv6s.charAt(un_extracting_ipv6s.length-1);
+    var last_letter = un_extracting_ipv6s.charAt(un_extracting_ipv6s.length-1);
 
-    if (ENDING_CHARACTERS_LIST.includes(first_letter)) {
+    if (ENDING_CHARACTERS_LIST.indexOf(last_letter) > -1) {
       un_extracting_ipv6s = un_extracting_ipv6s.slice(0, -1);
     }
 
@@ -33,6 +33,7 @@ script: >-
   }
 
   var un_extracting_ipv6s = argToList(args.input);
+  var ipv6_addresses;
   ipv6_addresses = extract_ipv6_list(un_extracting_ipv6s);
   return ipv6_addresses;
 

@@ -3,7 +3,7 @@ comment: Data output script for populating the dashboard number graph widget wit
 commonfields:
   id: IncidentsCheck-Widget-NumberofErrors
   version: -1
-dockerimage: demisto/python3:3.8.5.11789
+dockerimage: demisto/python3:3.8.6.12176
 enabled: true
 name: IncidentsCheck-Widget-NumberofErrors
 runas: DBotWeakRole

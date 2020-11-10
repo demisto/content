@@ -2218,7 +2218,9 @@ def panorama_get_url_category(url_cmd, url):
     )
     result = raw_result['response']['result']
     if url_cmd == 'url-info-host':
-        category = result.split(': ')[1]
+        # The result in this case looks like so: "Ancestors info:\nBM:\nURL.com,1,5,search-engines,, {some more info
+        # here...}" - The 4th element is the url category.
+        category = result.split(',')[3]
     else:
         result = result.splitlines()[1]
         if url_cmd == 'url':

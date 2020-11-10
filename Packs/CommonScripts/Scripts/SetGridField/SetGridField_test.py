@@ -54,6 +54,10 @@ def test_validate_entry_context(entry_context: dict, keys: list, raise_exception
                               False),
                              (["*"], ["col1", "col2"], "context_entry_dict_with_elements.json",
                               "expected_dict_with_elements_grid.json", True),
+                             (["firstname", "lastname", "email"], ["Fname", "Lname", "Email"],
+                              "context_single_dict_with_keys.json", "expected_single_dict_with_keys_grid.json", False),
+                             (["firstname", "lastname", "email"], ["Fname", "Lname", "Email"],
+                              "context_entry_list_of_dicts.json", "expected_list_of_dicts_grid.json", False)
                          ])
 def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json: str, expected_json: str,
                     unpack_nested: bool):

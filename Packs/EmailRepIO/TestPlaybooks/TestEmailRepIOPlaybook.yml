@@ -1,0 +1,641 @@
+id: TestEmailRepIOPlaybook
+version: -1
+fromversion: 5.0.0
+vcShouldKeepItemLegacyProdMachine: false
+name: TestEmailRepIOPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1c92afc5-1c96-4580-83c2-17293ee7a669
+    type: start
+    task:
+      id: 1c92afc5-1c96-4580-83c2-17293ee7a669
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 575ef9a2-5fc3-48bd-8f7f-5550231189e3
+    type: regular
+    task:
+      id: 575ef9a2-5fc3-48bd-8f7f-5550231189e3
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e5760376-657a-4a4e-844d-2923c461a86e
+    type: regular
+    task:
+      id: e5760376-657a-4a4e-844d-2923c461a86e
+      version: -1
+      name: emailrepio-email-reputation-get
+      script: '|||emailrepio-email-reputation-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      email_address:
+        simple: test@example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: adc55366-9c08-4415-8c2f-be80d4f38d70
+    type: condition
+    task:
+      id: adc55366-9c08-4415-8c2f-be80d4f38d70
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.reputation
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.suspicious
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.references
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.blacklisted
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.malicious_activity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.malicious_activity_recent
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.credentials_leaked
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.credentials_leaked_recent
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.data_breach
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.details.first_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.details.last_seen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.domain_exists
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.details.domain_reputation
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.new_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.details.days_since_domain_creation
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.suspicious_tld
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.spam
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.free_provider
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.disposable
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.deliverable
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.accept_all
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.valid_mx
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.spoofable
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.spf_strict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.dmarc_enforced
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.details.profiles
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EmailRepIO.Email.email
+            iscontext: true
+          right:
+            value:
+              simple: test@example.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 69734a1a-c0b3-4ec3-89c6-bc65ff7c0dae
+    type: regular
+    task:
+      id: 69734a1a-c0b3-4ec3-89c6-bc65ff7c0dae
+      version: -1
+      name: email
+      script: '|||email'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      email:
+        simple: test@example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 867eb202-cb80-45e4-8876-72284c99c245
+    type: condition
+    task:
+      id: 867eb202-cb80-45e4-8876-72284c99c245
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: test@example.com
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: account
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: EmailRepIO
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EmailRepIO.Email.email
+            iscontext: true
+          right:
+            value:
+              simple: test@example.com
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.reputation
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.suspicious
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.references
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.blacklisted
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.malicious_activity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.malicious_activity_recent
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.credentials_leaked
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.credentials_leaked_recent
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.data_breach
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.details.first_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.details.last_seen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.domain_exists
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.details.domain_reputation
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.new_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.details.days_since_domain_creation
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.suspicious_tld
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.spam
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.free_provider
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.disposable
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.deliverable
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.accept_all
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.valid_mx
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.spoofable
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.spf_strict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EmailRepIO.Email.details.dmarc_enforced
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailRepIO.Email.details.profiles
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b9f57270-3fe5-493b-8ccc-573f6965c489
+    type: regular
+    task:
+      id: b9f57270-3fe5-493b-8ccc-573f6965c489
+      version: -1
+      name: emailrepio-email-address-report
+      script: '|||emailrepio-email-address-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      description: {}
+      email_address:
+        simple: test@example.com
+      expires: {}
+      tags:
+        simple: scam
+      timestamp: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 296cfc58-75f2-47ad-8f0f-b9bb43f93de0
+    type: title
+    task:
+      id: 296cfc58-75f2-47ad-8f0f-b9bb43f93de0
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d700a492-f49e-4261-8a75-726be5568da5
+    type: regular
+    task:
+      id: d700a492-f49e-4261-8a75-726be5568da5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 5e7c5b22-0da9-4f58-83f2-d194f1910a7f
+    type: regular
+    task:
+      id: 5e7c5b22-0da9-4f58-83f2-d194f1910a7f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1685,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

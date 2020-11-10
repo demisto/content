@@ -1,20 +1,20 @@
 id: servicenow_test_v2
 version: -1
-fromversion: 5.0.0
 name: ServiceNow Test V2
 description: This playbook tests the ServiceNow integration commands.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2f37a970-cddb-4ce1-8528-89a229191907
+    taskid: 2d00b146-de33-48c4-889b-5740fc40f42a
     type: start
     task:
-      id: 2f37a970-cddb-4ce1-8528-89a229191907
+      id: 2d00b146-de33-48c4-889b-5740fc40f42a
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 510
+          "y": 50
         }
       }
     note: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 82b17010-1282-4732-87cd-e25cd9622bc6
+    taskid: c5a30aa2-b0b8-464f-8293-103ecd16d5f8
     type: regular
     task:
-      id: 82b17010-1282-4732-87cd-e25cd9622bc6
+      id: c5a30aa2-b0b8-464f-8293-103ecd16d5f8
       version: -1
       name: DeleteContext (all)
       description: Delete field from context
@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 655
+          "y": 195
         }
       }
     note: false
@@ -66,10 +66,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: ee8fd594-0822-4206-8067-9c34d099aa4a
+    taskid: d90d827d-d316-4500-884a-a2879a34c773
     type: regular
     task:
-      id: ee8fd594-0822-4206-8067-9c34d099aa4a
+      id: d90d827d-d316-4500-884a-a2879a34c773
       version: -1
       name: 'servicenow-create-ticket, Summary: "Hello World"'
       description: Create new ServiceNow ticket
@@ -164,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1295
+          "y": 835
         }
       }
     note: false
@@ -174,10 +174,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 910e5495-1ed6-4776-85ba-42535376361f
+    taskid: 5a6461dc-92cb-45cb-85c2-be52dc491322
     type: regular
     task:
-      id: 910e5495-1ed6-4776-85ba-42535376361f
+      id: 5a6461dc-92cb-45cb-85c2-be52dc491322
       version: -1
       name: 'VerifyContextFields: Summary, Assignee'
       scriptName: VerifyContextFields
@@ -211,7 +211,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1470
+          "y": 1010
         }
       }
     note: false
@@ -221,10 +221,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 5558f96d-e937-46d3-848d-5bd88bcbb098
+    taskid: 9ff0944d-39e4-47df-828b-4fa73e7f63fc
     type: regular
     task:
-      id: 5558f96d-e937-46d3-848d-5bd88bcbb098
+      id: 9ff0944d-39e4-47df-828b-4fa73e7f63fc
       version: -1
       name: 'servicenow-create-ticket, Summary: "Lovely Day"'
       description: Create new ServiceNow ticket
@@ -318,7 +318,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1645
+          "y": 1185
         }
       }
     note: false
@@ -328,10 +328,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 4e1fce3c-baa5-4824-8b05-b8fee732da86
+    taskid: 3d5a9d93-dfa6-4fcd-8682-d6e9804c6aae
     type: regular
     task:
-      id: 4e1fce3c-baa5-4824-8b05-b8fee732da86
+      id: 3d5a9d93-dfa6-4fcd-8682-d6e9804c6aae
       version: -1
       name: 'VerifyContextFields: ServiceNow.Ticket[1].Summary, ServiceNow.Ticket[1].Assignee'
       scriptName: VerifyContextFields
@@ -340,7 +340,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "82"
     scriptarguments:
       field1:
         simple: ServiceNow.Ticket.[1].Assignee
@@ -360,8 +360,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1820
+          "x": 480,
+          "y": 1360
         }
       }
     note: false
@@ -371,15 +371,16 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 51e390e9-28b0-41d0-835a-5b3e08b86eaa
+    taskid: c6842e13-44c2-46ce-8e91-845cfcad7399
     type: title
     task:
-      id: 51e390e9-28b0-41d0-835a-5b3e08b86eaa
+      id: c6842e13-44c2-46ce-8e91-845cfcad7399
       version: -1
       name: Create two tickets
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -388,7 +389,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1150
+          "y": 690
         }
       }
     note: false
@@ -398,15 +399,16 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 4ade5968-c7ff-4291-883a-8f83bd50d3bc
+    taskid: f1e4619c-c4d9-4018-8350-898fd902c2ea
     type: title
     task:
-      id: 4ade5968-c7ff-4291-883a-8f83bd50d3bc
+      id: f1e4619c-c4d9-4018-8350-898fd902c2ea
       version: -1
       name: Query and update tickets
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -415,7 +417,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1995
+          "y": 2380
         }
       }
     note: false
@@ -425,10 +427,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 7307150b-0630-492f-8d34-e63d71306b1e
+    taskid: ce8144df-18c4-4195-88eb-2875e7b5f463
     type: regular
     task:
-      id: 7307150b-0630-492f-8d34-e63d71306b1e
+      id: ce8144df-18c4-4195-88eb-2875e7b5f463
       version: -1
       name: 'servicenow-query-tickets Ticket #0'
       script: '|||servicenow-query-tickets'
@@ -448,7 +450,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2140
+          "y": 2525
         }
       }
     note: false
@@ -458,10 +460,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 7a5f7ca9-a5b5-4603-871a-0df4ee961765
+    taskid: d6cb8a7a-6e26-43c7-8563-0eb8f2d41310
     type: regular
     task:
-      id: 7a5f7ca9-a5b5-4603-871a-0df4ee961765
+      id: d6cb8a7a-6e26-43c7-8563-0eb8f2d41310
       version: -1
       name: 'servicenow-get-ticket Ticket #1'
       script: '|||servicenow-get-ticket'
@@ -482,7 +484,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2490
+          "y": 2875
         }
       }
     note: false
@@ -492,10 +494,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 0072fea1-5d54-40fb-8482-16d69c34e376
+    taskid: 5cb28708-2d2f-4e30-86ff-2debbf79d03d
     type: regular
     task:
-      id: 0072fea1-5d54-40fb-8482-16d69c34e376
+      id: 5cb28708-2d2f-4e30-86ff-2debbf79d03d
       version: -1
       name: 'servicenow-update-ticket Ticket #0, Summary: "Goodbye Please", Assignee:
         "New Assignee", State: "2 - In Progress"'
@@ -585,7 +587,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2840
+          "y": 3225
         }
       }
     note: false
@@ -595,10 +597,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 19747040-def4-4b47-885e-9e89a0286063
+    taskid: 8ad5dded-0f13-4728-8316-405544a9cac3
     type: regular
     task:
-      id: 19747040-def4-4b47-885e-9e89a0286063
+      id: 8ad5dded-0f13-4728-8316-405544a9cac3
       version: -1
       name: 'VerifyContextFields (Entry updated - #0, ServiceNow.Ticket[0])'
       scriptName: VerifyContextFields
@@ -632,7 +634,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3255
+          "y": 3575
         }
       }
     note: false
@@ -642,10 +644,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: b22ad62a-e56a-44ce-8b72-6ae040932e8f
+    taskid: 33f15b8c-8bd3-4b53-88ed-6adae9f0b0d2
     type: regular
     task:
-      id: b22ad62a-e56a-44ce-8b72-6ae040932e8f
+      id: 33f15b8c-8bd3-4b53-88ed-6adae9f0b0d2
       version: -1
       name: 'servicenow-add-comment Ticket #0'
       script: '|||servicenow-add-comment'
@@ -667,7 +669,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3485
+          "y": 3750
         }
       }
     note: false
@@ -677,10 +679,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: b398b1c9-5e59-496b-8190-26a804ee92df
+    taskid: 0aa97efb-332c-43fe-8681-9f984655d447
     type: regular
     task:
-      id: b398b1c9-5e59-496b-8190-26a804ee92df
+      id: 0aa97efb-332c-43fe-8681-9f984655d447
       version: -1
       name: 'servicenow-add-link Ticket #0'
       script: '|||servicenow-add-link'
@@ -703,7 +705,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4305
+          "y": 4450
         }
       }
     note: false
@@ -713,10 +715,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 350b7ceb-b573-4e00-8fcf-4f2f2edc783a
+    taskid: 92a47514-77f8-4e99-8004-480025583b54
     type: regular
     task:
-      id: 350b7ceb-b573-4e00-8fcf-4f2f2edc783a
+      id: 92a47514-77f8-4e99-8004-480025583b54
       version: -1
       name: Upload File to War Room
       scriptName: FileCreateAndUpload
@@ -737,7 +739,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4655
+          "y": 4800
         }
       }
     note: false
@@ -747,10 +749,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 68b44258-7a8a-4d82-8d1d-3ddd3fc23797
+    taskid: 3f0d8ff4-2051-42f3-85d3-7d26c8cd3173
     type: regular
     task:
-      id: 68b44258-7a8a-4d82-8d1d-3ddd3fc23797
+      id: 3f0d8ff4-2051-42f3-85d3-7d26c8cd3173
       version: -1
       name: 'Verify output contains: "Hello World"'
       scriptName: VerifyHumanReadableContains
@@ -770,7 +772,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1470
+          "y": 1010
         }
       }
     note: false
@@ -780,10 +782,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 354dce05-e3bd-4267-8ffe-5521f49b4762
+    taskid: 277736e8-d26d-4726-8b8b-b88a91aa86a1
     type: regular
     task:
-      id: 354dce05-e3bd-4267-8ffe-5521f49b4762
+      id: 277736e8-d26d-4726-8b8b-b88a91aa86a1
       version: -1
       name: 'Verify output contains: "Lovely Day"'
       scriptName: VerifyHumanReadableContains
@@ -792,7 +794,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "82"
     scriptarguments:
       extend-context: {}
       humanReadableEntryId:
@@ -803,8 +805,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1820
+          "x": 50,
+          "y": 1360
         }
       }
     note: false
@@ -814,10 +816,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: e4bfb3b7-b81d-4b51-83d6-b1c5f0550439
+    taskid: 537dfc57-2c77-4a1c-8948-49b5f5be4f9d
     type: regular
     task:
-      id: e4bfb3b7-b81d-4b51-83d6-b1c5f0550439
+      id: 537dfc57-2c77-4a1c-8948-49b5f5be4f9d
       version: -1
       name: 'Verify output contains: "Hello World"'
       scriptName: VerifyHumanReadableContains
@@ -837,7 +839,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2315
+          "y": 2700
         }
       }
     note: false
@@ -847,10 +849,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 49ffa93a-c1dd-4dce-87e0-fd75490443e2
+    taskid: e9fa2750-35cb-4b67-813d-9b3dc96bb4d6
     type: regular
     task:
-      id: 49ffa93a-c1dd-4dce-87e0-fd75490443e2
+      id: e9fa2750-35cb-4b67-813d-9b3dc96bb4d6
       version: -1
       name: 'Verify output contains: "Goodbye Please"'
       scriptName: VerifyHumanReadableContains
@@ -870,7 +872,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3255
+          "y": 3575
         }
       }
     note: false
@@ -880,10 +882,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: f99e85af-5943-451b-8bbf-5dbc5557e2b8
+    taskid: 3b5da510-1201-4464-8a17-324646d0445e
     type: regular
     task:
-      id: f99e85af-5943-451b-8bbf-5dbc5557e2b8
+      id: 3b5da510-1201-4464-8a17-324646d0445e
       version: -1
       name: 'Verify output contains: "Lovely Day"'
       scriptName: VerifyHumanReadableContains
@@ -903,7 +905,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2665
+          "y": 3050
         }
       }
     note: false
@@ -913,10 +915,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 3129da9a-b9ce-46c6-8708-8d43f2acbddc
+    taskid: 5effe4e5-6c9e-460c-8549-afa942b1355b
     type: regular
     task:
-      id: 3129da9a-b9ce-46c6-8708-8d43f2acbddc
+      id: 5effe4e5-6c9e-460c-8549-afa942b1355b
       version: -1
       name: 'Verify output contains: "Goodbye Please"'
       scriptName: VerifyHumanReadableContains
@@ -936,7 +938,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3730
+          "y": 3925
         }
       }
     note: false
@@ -946,10 +948,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 2b038b26-b693-48b7-83d9-1e820a1efff2
+    taskid: 33fec2e2-730c-4654-8ebe-f7c9b1eaa004
     type: regular
     task:
-      id: 2b038b26-b693-48b7-83d9-1e820a1efff2
+      id: 33fec2e2-730c-4654-8ebe-f7c9b1eaa004
       version: -1
       name: 'Verify output contains: "Goodbye Please"'
       scriptName: VerifyHumanReadableContains
@@ -969,7 +971,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4480
+          "y": 4625
         }
       }
     note: false
@@ -979,10 +981,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 769aab44-9be3-4e8e-86a8-f6a73eddcf6f
+    taskid: e42b0407-a462-49ef-8239-11682e82257b
     type: regular
     task:
-      id: 769aab44-9be3-4e8e-86a8-f6a73eddcf6f
+      id: e42b0407-a462-49ef-8239-11682e82257b
       version: -1
       name: 'Verify output contains: "test_file.txt"'
       scriptName: VerifyHumanReadableContains
@@ -1002,7 +1004,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5180
+          "y": 5325
         }
       }
     note: false
@@ -1012,10 +1014,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 2702b5df-3d9f-40fc-8731-708b60b25906
+    taskid: 85dd56a5-f01a-41f2-8741-2fa8ce68b323
     type: regular
     task:
-      id: 2702b5df-3d9f-40fc-8731-708b60b25906
+      id: 85dd56a5-f01a-41f2-8741-2fa8ce68b323
       version: -1
       name: 'servicenow-upload-file test_file.txt to Ticket #0'
       script: '|||servicenow-upload-file'
@@ -1037,7 +1039,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5005
+          "y": 5150
         }
       }
     note: false
@@ -1047,10 +1049,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 21301da7-1766-4976-8823-1c8502828748
+    taskid: a2cd6ef4-ae80-4cf2-822b-e0ac57b70c65
     type: regular
     task:
-      id: 21301da7-1766-4976-8823-1c8502828748
+      id: a2cd6ef4-ae80-4cf2-822b-e0ac57b70c65
       version: -1
       name: VerifyContextFields - File Uploaded to War Room
       scriptName: VerifyContextFields
@@ -1078,7 +1080,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4830
+          "y": 4975
         }
       }
     note: false
@@ -1088,10 +1090,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 85392ba0-d90b-44d9-84a7-25e700f2a71a
+    taskid: edde349f-40c2-40e1-82fd-a996bdeefca5
     type: regular
     task:
-      id: 85392ba0-d90b-44d9-84a7-25e700f2a71a
+      id: edde349f-40c2-40e1-82fd-a996bdeefca5
       version: -1
       name: Get group by name
       description: Return information about specific servicenow group
@@ -1113,7 +1115,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5880
+          "y": 6025
         }
       }
     note: false
@@ -1123,10 +1125,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: a3f8130f-b156-4e9a-8e03-291a72c764a4
+    taskid: ae3852c8-7278-4907-811d-d6206a703ef9
     type: regular
     task:
-      id: a3f8130f-b156-4e9a-8e03-291a72c764a4
+      id: ae3852c8-7278-4907-811d-d6206a703ef9
       version: -1
       name: VerifyContext
       description: |-
@@ -1152,7 +1154,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6055
+          "y": 6200
         }
       }
     note: false
@@ -1162,10 +1164,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 8414764f-b22f-4c62-833c-97e4888db411
+    taskid: f3bbd2cd-46aa-4469-805d-ebd17a14fc82
     type: regular
     task:
-      id: 8414764f-b22f-4c62-833c-97e4888db411
+      id: f3bbd2cd-46aa-4469-805d-ebd17a14fc82
       version: -1
       name: 'Get Ticket #0 with attachments'
       description: Retrieve ticket information by specific ticket ID
@@ -1188,7 +1190,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5530
+          "y": 5675
         }
       }
     note: false
@@ -1198,10 +1200,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 6542043a-92f6-4713-8b9d-08f19f64d433
+    taskid: dd431362-3168-49fe-8f79-77d88a3dbf33
     type: regular
     task:
-      id: 6542043a-92f6-4713-8b9d-08f19f64d433
+      id: dd431362-3168-49fe-8f79-77d88a3dbf33
       version: -1
       name: Verify File
       description: |-
@@ -1227,7 +1229,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5705
+          "y": 5850
         }
       }
     note: false
@@ -1237,10 +1239,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 6e18c8eb-6e32-4309-85d9-a4b267dfa37b
+    taskid: 00bd1f82-26f2-4b02-82c2-feca9fddaed0
     type: regular
     task:
-      id: 6e18c8eb-6e32-4309-85d9-a4b267dfa37b
+      id: 00bd1f82-26f2-4b02-82c2-feca9fddaed0
       version: -1
       name: Delete File Context
       description: Delete field from context
@@ -1263,7 +1265,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5355
+          "y": 5500
         }
       }
     note: false
@@ -1273,10 +1275,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: db81523a-9f86-482e-8838-e0c116406acd
+    taskid: ac7ac499-2092-48fe-8e08-75a343ffc576
     type: regular
     task:
-      id: db81523a-9f86-482e-8838-e0c116406acd
+      id: ac7ac499-2092-48fe-8e08-75a343ffc576
       version: -1
       name: Query table
       description: Query a specified table in ServiceNow
@@ -1300,7 +1302,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6230
+          "y": 6375
         }
       }
     note: false
@@ -1310,10 +1312,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: 9f37eafa-b96a-42e8-8001-9c93fbfb6226
+    taskid: 8caf9310-7d12-456e-835a-4f02bec49b9a
     type: regular
     task:
-      id: 9f37eafa-b96a-42e8-8001-9c93fbfb6226
+      id: 8caf9310-7d12-456e-835a-4f02bec49b9a
       version: -1
       name: VerifyContext
       description: |-
@@ -1340,7 +1342,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6405
+          "y": 6550
         }
       }
     note: false
@@ -1350,10 +1352,10 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: 3d5c12e2-3a48-4932-8dcf-518f4ca5e783
+    taskid: 40edb131-dcf2-484e-8572-3fa9084be2a7
     type: regular
     task:
-      id: 3d5c12e2-3a48-4932-8dcf-518f4ca5e783
+      id: 40edb131-dcf2-484e-8572-3fa9084be2a7
       version: -1
       name: Delete the tickets
       description: Delete a ticket from ServiceNow
@@ -1373,7 +1375,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6580
+          "y": 6725
         }
       }
     note: false
@@ -1383,10 +1385,10 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: 653a158a-fa95-4c79-8a13-f3f8bbb697d7
+    taskid: a286c548-6554-419a-829f-a1534d3441cd
     type: regular
     task:
-      id: 653a158a-fa95-4c79-8a13-f3f8bbb697d7
+      id: a286c548-6554-419a-829f-a1534d3441cd
       version: -1
       name: Create incident as record
       description: Retrieve record information by specific record ID
@@ -1409,7 +1411,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6930
+          "y": 7075
         }
       }
     note: false
@@ -1419,10 +1421,10 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: fc3403e8-35c9-4b4f-84f9-778091f53164
+    taskid: 510bcbaf-459e-4e32-81fb-389b91bcda6a
     type: regular
     task:
-      id: fc3403e8-35c9-4b4f-84f9-778091f53164
+      id: 510bcbaf-459e-4e32-81fb-389b91bcda6a
       version: -1
       name: Get the record
       description: Retrieve record information by specific record ID
@@ -1445,7 +1447,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7105
+          "y": 7250
         }
       }
     note: false
@@ -1455,10 +1457,10 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: 5488cb82-bf12-431f-8694-e119fdda7837
+    taskid: 75c0ea5f-60fa-499f-8b9d-81a3eea29b9b
     type: regular
     task:
-      id: 5488cb82-bf12-431f-8694-e119fdda7837
+      id: 75c0ea5f-60fa-499f-8b9d-81a3eea29b9b
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
@@ -1488,7 +1490,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7280
+          "y": 7425
         }
       }
     note: false
@@ -1498,10 +1500,10 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: d7583857-374f-43ae-86a8-b34f57a0eee6
+    taskid: 1e030b38-9816-47d4-8704-8ef96c273287
     type: regular
     task:
-      id: d7583857-374f-43ae-86a8-b34f57a0eee6
+      id: 1e030b38-9816-47d4-8704-8ef96c273287
       version: -1
       name: Update record
       description: Update specific ticket
@@ -1525,7 +1527,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7455
+          "y": 7600
         }
       }
     note: false
@@ -1535,10 +1537,10 @@ tasks:
     quietmode: 0
   "60":
     id: "60"
-    taskid: 88be81eb-461c-4811-87fa-b902925b9fb9
+    taskid: 6b2fa382-eb31-4e70-8a97-a8c183702a70
     type: regular
     task:
-      id: 88be81eb-461c-4811-87fa-b902925b9fb9
+      id: 6b2fa382-eb31-4e70-8a97-a8c183702a70
       version: -1
       name: Get the record
       description: Retrieve record information by specific record ID
@@ -1561,7 +1563,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7630
+          "y": 7775
         }
       }
     note: false
@@ -1571,10 +1573,10 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: 67a3dea1-0e98-4fd5-8663-44e5673fc015
+    taskid: a01c9548-1d46-40b7-8017-cb731980e1e0
     type: regular
     task:
-      id: 67a3dea1-0e98-4fd5-8663-44e5673fc015
+      id: a01c9548-1d46-40b7-8017-cb731980e1e0
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
@@ -1604,7 +1606,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7805
+          "y": 7950
         }
       }
     note: false
@@ -1614,10 +1616,10 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: 2e05f1dd-0f71-4e2f-8eb4-747aaa43a715
+    taskid: 12713056-92f3-4385-8ce0-e219885402bf
     type: regular
     task:
-      id: 2e05f1dd-0f71-4e2f-8eb4-747aaa43a715
+      id: 12713056-92f3-4385-8ce0-e219885402bf
       version: -1
       name: Delete the record
       description: Delete a record in a specified ServiceNow table
@@ -1638,7 +1640,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7980
+          "y": 8125
         }
       }
     note: false
@@ -1648,10 +1650,10 @@ tasks:
     quietmode: 0
   "63":
     id: "63"
-    taskid: 4c008b93-fbee-4e56-8e19-048801eba3ab
+    taskid: 5033a0c9-2274-4e80-8b48-9d619cd76ea8
     type: regular
     task:
-      id: 4c008b93-fbee-4e56-8e19-048801eba3ab
+      id: 5033a0c9-2274-4e80-8b48-9d619cd76ea8
       version: -1
       name: servicenow-list-table-fields
       description: List API fields for a specified ServiceNow table
@@ -1670,7 +1672,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8155
+          "y": 8300
         }
       }
     note: false
@@ -1680,10 +1682,10 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: 011204be-cd26-4b90-8750-71f44cd66311
+    taskid: dcb4edd9-a86f-492e-8ce8-2bf25752c273
     type: regular
     task:
-      id: 011204be-cd26-4b90-8750-71f44cd66311
+      id: dcb4edd9-a86f-492e-8ce8-2bf25752c273
       version: -1
       name: servicenow-query-computers
       description: Query the cmdb_ci_computer table in ServiceNow
@@ -1706,7 +1708,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8330
+          "y": 8475
         }
       }
     note: false
@@ -1716,10 +1718,10 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: 131bee99-354e-4697-8422-c72c3e381461
+    taskid: 92de36ff-a389-4688-8885-0899399be08d
     type: regular
     task:
-      id: 131bee99-354e-4697-8422-c72c3e381461
+      id: 92de36ff-a389-4688-8885-0899399be08d
       version: -1
       name: servicenow-query-groups
       description: Query the sys_user_group table in ServiceNow
@@ -1741,7 +1743,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8505
+          "y": 8650
         }
       }
     note: false
@@ -1751,10 +1753,10 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: 8dee1156-a3b5-4c65-8d11-9669a6716672
+    taskid: 706df6ed-a321-49ee-8cb6-f90f10169bc5
     type: regular
     task:
-      id: 8dee1156-a3b5-4c65-8d11-9669a6716672
+      id: 706df6ed-a321-49ee-8cb6-f90f10169bc5
       version: -1
       name: VerifyContext
       description: |-
@@ -1781,7 +1783,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9030
+          "y": 9175
         }
       }
     note: false
@@ -1791,10 +1793,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: cecc30bb-187e-4bca-8c33-bcb646b1d184
+    taskid: b527c686-080c-4ac1-8960-20931883c0e3
     type: regular
     task:
-      id: cecc30bb-187e-4bca-8c33-bcb646b1d184
+      id: b527c686-080c-4ac1-8960-20931883c0e3
       version: -1
       name: servicenow-query-users
       description: Query the sys_user table in ServiceNow
@@ -1817,7 +1819,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8680
+          "y": 8825
         }
       }
     note: false
@@ -1827,10 +1829,10 @@ tasks:
     quietmode: 0
   "69":
     id: "69"
-    taskid: 8a1e16b7-2657-4381-864c-b0da3e480831
+    taskid: f2a41c99-8fd4-4743-8c5c-6c3cd2318ebb
     type: regular
     task:
-      id: 8a1e16b7-2657-4381-864c-b0da3e480831
+      id: f2a41c99-8fd4-4743-8c5c-6c3cd2318ebb
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1853,7 +1855,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6755
+          "y": 6900
         }
       }
     note: false
@@ -1863,10 +1865,10 @@ tasks:
     quietmode: 0
   "70":
     id: "70"
-    taskid: 0f30bf99-945c-4b2c-85e3-a55d5bff8680
+    taskid: d3dfced7-d958-417b-86a6-c772beb433c5
     type: regular
     task:
-      id: 0f30bf99-945c-4b2c-85e3-a55d5bff8680
+      id: d3dfced7-d958-417b-86a6-c772beb433c5
       version: -1
       name: servicenow-get-table-name
       description: Get table names by a label to use in commands
@@ -1885,7 +1887,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8855
+          "y": 9000
         }
       }
     note: false
@@ -1895,10 +1897,10 @@ tasks:
     quietmode: 0
   "71":
     id: "71"
-    taskid: cdb212ea-661e-4ef6-8f7d-e3a1c75c26f7
+    taskid: 796f768d-f974-4e79-8873-e56d8fafce9d
     type: regular
     task:
-      id: cdb212ea-661e-4ef6-8f7d-e3a1c75c26f7
+      id: 796f768d-f974-4e79-8873-e56d8fafce9d
       version: -1
       name: servicenow-get-ticket-notes
       description: Get notes from the specified ServiceNow ticket - Permissions are
@@ -1920,7 +1922,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3955
+          "y": 4100
         }
       }
     note: false
@@ -1930,10 +1932,10 @@ tasks:
     quietmode: 0
   "72":
     id: "72"
-    taskid: 311155be-319c-4925-88eb-224e29c8f6db
+    taskid: 90abf37d-da3a-40fd-8721-4020fb6b39ed
     type: regular
     task:
-      id: 311155be-319c-4925-88eb-224e29c8f6db
+      id: 90abf37d-da3a-40fd-8721-4020fb6b39ed
       version: -1
       name: Verify Notes
       description: |-
@@ -1960,7 +1962,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4130
+          "y": 4275
         }
       }
     note: false
@@ -1970,10 +1972,10 @@ tasks:
     quietmode: 0
   "76":
     id: "76"
-    taskid: e3cf2931-f590-4cc3-8efd-dce7bd176132
+    taskid: 0abcc594-ef42-4bfd-8447-8849e63667e2
     type: regular
     task:
-      id: e3cf2931-f590-4cc3-8efd-dce7bd176132
+      id: 0abcc594-ef42-4bfd-8447-8849e63667e2
       version: -1
       name: 'servicenow-query Ticket #0'
       script: '|||servicenow-query-tickets'
@@ -1997,7 +1999,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3080
+          "y": 3400
         }
       }
     note: false
@@ -2007,10 +2009,10 @@ tasks:
     quietmode: 0
   "77":
     id: "77"
-    taskid: 8aecc429-b507-42dc-8452-be279449cba7
+    taskid: 5fe375e3-42db-427c-81ae-3855d759e368
     type: regular
     task:
-      id: 8aecc429-b507-42dc-8452-be279449cba7
+      id: 5fe375e3-42db-427c-81ae-3855d759e368
       version: -1
       name: Test fetch
       description: Execute FetchIncident for a given instance
@@ -2033,7 +2035,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9205
+          "y": 9350
         }
       }
     note: false
@@ -2043,10 +2045,10 @@ tasks:
     quietmode: 0
   "78":
     id: "78"
-    taskid: c05e9fac-c401-4da8-8868-7d84e6e5fc23
+    taskid: 8dc1e208-64bd-4706-8383-066a9c2e5926
     type: regular
     task:
-      id: c05e9fac-c401-4da8-8868-7d84e6e5fc23
+      id: 8dc1e208-64bd-4706-8383-066a9c2e5926
       version: -1
       name: Query with no results
       description: Retrieve ticket info with a query
@@ -2069,7 +2071,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9380
+          "y": 9525
         }
       }
     note: false
@@ -2079,10 +2081,10 @@ tasks:
     quietmode: 0
   "79":
     id: "79"
-    taskid: 2082ffb7-aac5-436a-8004-cabc5d4d54bf
+    taskid: 9080f61e-0769-401d-8682-c5678a607e88
     type: regular
     task:
-      id: 2082ffb7-aac5-436a-8004-cabc5d4d54bf
+      id: 9080f61e-0769-401d-8682-c5678a607e88
       version: -1
       name: Get non existant ticket
       description: Retrieve ticket information by specific ticket ID
@@ -2101,7 +2103,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9555
+          "y": 9700
         }
       }
     note: false
@@ -2111,10 +2113,10 @@ tasks:
     quietmode: 0
   "80":
     id: "80"
-    taskid: 05845955-4a82-4cd9-8afa-f34c2bc45680
+    taskid: fa1cb5ce-4053-43e7-8bc1-8dbe0f0b4f31
     type: regular
     task:
-      id: 05845955-4a82-4cd9-8afa-f34c2bc45680
+      id: fa1cb5ce-4053-43e7-8bc1-8dbe0f0b4f31
       version: -1
       name: Query user with non-ascii char
       description: Query the sys_user table in ServiceNow
@@ -2137,7 +2139,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 975
+          "y": 515
         }
       }
     note: false
@@ -2147,10 +2149,10 @@ tasks:
     quietmode: 0
   "81":
     id: "81"
-    taskid: 6707ba1d-f784-4435-8732-8b4503db5832
+    taskid: 33679b04-6d8a-46fb-815f-34d4b13c3532
     type: title
     task:
-      id: 6707ba1d-f784-4435-8732-8b4503db5832
+      id: 33679b04-6d8a-46fb-815f-34d4b13c3532
       version: -1
       name: Test non-ASCII chars
       description: Query the sys_user table in ServiceNow
@@ -2165,7 +2167,264 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 830
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: a66383c9-15bf-4fb2-82bf-020768858163
+    type: title
+    task:
+      id: a66383c9-15bf-4fb2-82bf-020768858163
+      version: -1
+      name: Create a ticket with the type=Standard
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "83"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: 97bf438e-9f8f-48e1-8d16-5b961c2fff07
+    type: regular
+    task:
+      id: 97bf438e-9f8f-48e1-8d16-5b961c2fff07
+      version: -1
+      name: servicenow-create-ticket
+      description: Creates new ServiceNow ticket.
+      script: ServiceNow v2|||servicenow-create-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      active: {}
+      activity_due: {}
+      additional_assignee_list: {}
+      additional_fields: {}
+      approval: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to: {}
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller: {}
+      caller_id: {}
+      category: {}
+      caused_by: {}
+      change_type:
+        simple: standard
+      close_code: {}
+      close_notes: {}
+      closed_at: {}
+      closed_by: {}
+      cmdb_ci: {}
+      comments: {}
+      comments_and_work_notes: {}
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      custom_fields: {}
+      delivery_plan: {}
+      description: {}
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      impact: {}
+      incident_state: {}
+      input_display_value: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      opened_at: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity: {}
+      short_description:
+        simple: Ticket with type=Standard
+      sla_due: {}
+      state: {}
+      subcategory: {}
+      sys_updated_by: {}
+      sys_updated_on: {}
+      template: {}
+      ticket_type:
+        simple: change_request
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: 80257dbb-c821-447c-82c1-42480be33228
+    type: condition
+    task:
+      id: 80257dbb-c821-447c-82c1-42480be33228
+      version: -1
+      name: Verify Type Standard
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ticket_type
+            iscontext: true
+          right:
+            value:
+              simple: standard
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 630520fc-5dbb-4586-8486-99e3c0bcfa2c
+    type: regular
+    task:
+      id: 630520fc-5dbb-4586-8486-99e3c0bcfa2c
+      version: -1
+      name: Get ticket of type Standard
+      description: Retrieves ticket information by ticket ID.
+      script: '|||servicenow-get-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      additional_fields: {}
+      custom_fields: {}
+      extend-context:
+        simple: ticket_type=result.type
+      get_attachments: {}
+      id:
+        simple: ${ServiceNow.Ticket.ID}
+      number: {}
+      ticket_type:
+        simple: change_request
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 666d7550-e23a-4db7-8ecc-c20db743f5d1
+    type: regular
+    task:
+      id: 666d7550-e23a-4db7-8ecc-c20db743f5d1
+      version: -1
+      name: servicenow-delete-ticket
+      description: Deletes a ticket from ServiceNow.
+      script: ServiceNow v2|||servicenow-delete-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      id:
+        complex:
+          root: ServiceNow.Ticket
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ServiceNow.Ticket.Summary
+                iscontext: true
+              right:
+                value:
+                  simple: Ticket with type=Standard
+          accessor: ID
+      ticket_type:
+        simple: change_request
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2205
         }
       }
     note: false
@@ -2178,12 +2437,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9140,
+        "height": 9745,
         "width": 810,
         "x": 50,
-        "y": 510
+        "y": 50
       }
     }
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
