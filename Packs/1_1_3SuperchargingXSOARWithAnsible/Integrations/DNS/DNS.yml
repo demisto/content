@@ -80,7 +80,7 @@ script:
       - udp
     description: Manage DNS records.
     name: dns_nsupdate
-  dockerimage: demisto/ansible-runner
+  dockerimage: demisto/ansible-runner:1.0.0.12761
   runonce: false
   script: ''
   subtype: python3
