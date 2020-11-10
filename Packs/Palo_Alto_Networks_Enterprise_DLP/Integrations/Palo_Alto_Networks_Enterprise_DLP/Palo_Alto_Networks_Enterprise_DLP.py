@@ -16,8 +16,8 @@ REFRESH_TOKEN_URL = 'public/oauth/refreshToken'
 
 class Client(BaseClient):
 
-    def __init__(self, refresh_token, access_token):
-        super().__init__(base_url=BASE_URL, headers=None, verify=True)
+    def __init__(self, refresh_token, access_token, insecure, proxy):
+        super().__init__(base_url=BASE_URL, headers=None, verify=not insecure, proxy=proxy)
         self.refresh_token = refresh_token
         self.access_token = access_token
 
@@ -51,7 +51,7 @@ class Client(BaseClient):
             return
         try:
             self._refresh_token()
-        except DemistoException:
+        except Exception:
             pass
 
     def _get_dlp_api_call(self, url_suffix):
@@ -214,15 +214,16 @@ def main():
     """ Main Function"""
     try:
         demisto.info('Command is %s' % (demisto.command(),))
-        access_token = demisto.params().get('access_token')
-        refresh_token = demisto.params().get('refresh_token')
+        params = demisto.params()
+        access_token = params.get('access_token')
+        refresh_token = params.get('refresh_token')
 
-        client = Client(refresh_token, access_token)
+        client = Client(refresh_token, access_token, params.get('insecure'), params.get('proxy'))
 
         if demisto.command() == 'pan-dlp-get-report':
             args = demisto.args()
             report_id = args.get('report_id')
-            fetch_snippets = args.get('fetch_snippets', 'false') == 'true'
+            fetch_snippets = argToBool(args.get('fetch_snippets'))
             report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
             parse_dlp_report(report_json)
 
