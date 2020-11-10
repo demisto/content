@@ -3354,11 +3354,7 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 73fa122efa883d0058ed6c34da7281fdb4f36570
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "Humio": "supported by the partner",
