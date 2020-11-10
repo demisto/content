@@ -58,6 +58,8 @@ class Client(BaseClient):
 
         # Creating a temp file with the same data of the given file
         # This way the uploaded file has a path that the API can parse properly
+        # The reason is that the API asserts the file type by the file extension,
+        # and getFilePath returns a file name without that extension
         demisto.debug('creating a temp file for upload operation')
         with tempfile.TemporaryFile(suffix=file_name) as temp_file:
             with open(file_path, 'rb') as file:
