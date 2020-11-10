@@ -46,7 +46,7 @@ script:
       description: limit
       name: limit
     description: ironPortSearchQuarantines Can combine multiple parameters
-    name: ironPortSearchQuarantines
+    name: iron-port-search-quarantines
     outputs:
     - contextPath: ironPortSearchQuarantinesOutput.data
       description: 'Search in Quarantines '
