@@ -6,7 +6,6 @@ import urllib3
 import uuid
 import dateparser
 from typing import List, Dict, Any, Tuple, Optional, Union, Callable
-from google.auth.transport.requests import Request
 
 # Disable insecure warnings
 urllib3.disable_warnings()

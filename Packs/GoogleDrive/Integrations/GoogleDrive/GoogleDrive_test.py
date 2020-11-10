@@ -3,7 +3,7 @@ import pytest
 
 from unittest.mock import patch
 
-from GoogleDrive import MESSAGES, OUTPUT_PREFIX, HR_MESSAGES, GSuiteClient, DemistoException
+from GoogleDrive import MESSAGES, OUTPUT_PREFIX, HR_MESSAGES, GSuiteClient
 
 with open('test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
@@ -32,7 +32,7 @@ def test_test_function(mocker, gsuite_client):
     Then:
     - Ensure 'ok' should be return.
     """
-    from GoogleDrive import test_module, GSuiteClient, service_account, demisto
+    from GoogleDrive import test_module, GSuiteClient
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
     mocker.patch.object(GSuiteClient, 'http_request')
     assert test_module(gsuite_client, {}, {}) == 'ok'
