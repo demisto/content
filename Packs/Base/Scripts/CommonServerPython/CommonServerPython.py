@@ -2780,15 +2780,15 @@ def arg_to_int(arg, arg_name, required = False):
 
     if not arg:
         if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
+            raise ValueError('Missing "{}"'.format(arg_name))
         return None
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
-        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
+        raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
     if isinstance(arg, int):
         return arg
-    raise ValueError(f'Invalid number: "{arg_name}"')
+    raise ValueError('Invalid number: "{}"'.format(arg_name))
 
 
 def arg_to_timestamp(arg, arg_name, required = False):
@@ -2821,7 +2821,7 @@ def arg_to_timestamp(arg, arg_name, required = False):
 
     if arg is None:
         if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
+            raise ValueError('Missing "{}"'.format(arg_name))
         return None
 
     if isinstance(arg, str) and arg.isdigit():
@@ -2834,13 +2834,13 @@ def arg_to_timestamp(arg, arg_name, required = False):
         date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
         if date is None:
             # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
+            raise ValueError('Invalid date: {}'.format(arg_name))
 
         return int(date.timestamp())
     if isinstance(arg, (int, float)):
         # Convert to int if the input is a float
         return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
+    raise ValueError('Invalid date: "{}"'.format(arg_name))
 
 
 class CommandResults:
