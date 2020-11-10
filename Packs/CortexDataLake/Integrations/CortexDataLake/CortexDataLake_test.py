@@ -122,9 +122,9 @@ MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [(1582017903000000
 
 
 @pytest.mark.parametrize('epoch_time, expected_response', MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES)
-def test_epoch_to_milliseconds_timestamp(epoch_time, expected_response):
-    from CortexDataLake import epoch_to_milliseconds_timestamp
-    assert epoch_to_milliseconds_timestamp(epoch_time) == expected_response
+def test_epoch_to_timestamp_and_add_milli(epoch_time, expected_response):
+    from CortexDataLake import epoch_to_timestamp_and_add_milli
+    assert epoch_to_timestamp_and_add_milli(epoch_time) == expected_response
 
 
 def test_get_table_name():
