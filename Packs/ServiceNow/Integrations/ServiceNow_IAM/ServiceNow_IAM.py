@@ -11,10 +11,6 @@ import traceback
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-'''CONSTANTS'''
-
-ERROR_CODES_TO_SKIP = []
-
 '''CLIENT CLASS'''
 
 
@@ -39,8 +35,8 @@ class Client(BaseClient):
             params=query_params
         )
 
-        if res and len(res) == 1:
-            return res[0]
+        if res and len(res.get('result', [])) == 1:
+            return res.get('result')[0]
         return None
 
     def create_user(self, user_data):
@@ -50,7 +46,7 @@ class Client(BaseClient):
             url_suffix=uri,
             data=json.dumps(user_data)
         )
-        return res
+        return res.get('result')
 
     def update_user(self, user_id, user_data):
         uri = f'/table/sys_user/{user_id}'
@@ -59,22 +55,22 @@ class Client(BaseClient):
             url_suffix=uri,
             data=json.dumps(user_data)
         )
-        return res
+        return res.get('result')
 
     def get_service_now_fields(self):
-        # todo: impl
         service_now_fields = {}
-        uri = 'meta/schemas/user/default'
+        uri = 'table/sys_dictionary?sysparm_query=name=sys_user'
         res = self._http_request(
             method='GET',
             url_suffix=uri
         )
 
-        base_properties = res.get('definitions', {}).get('base', {}).get('properties', {})
-        service_now_fields.update({k: base_properties[k].get('title') for k in base_properties.keys()})
-
-        custom_properties = res.get('definitions', {}).get('custom', {}).get('properties', {})
-        service_now_fields.update({k: custom_properties[k].get('title') for k in custom_properties.keys()})
+        elements = res.get('result', [])
+        for elem in elements:
+            if elem.get('element'):
+                field_name = elem.get('element')
+                description = elem.get('sys_name')
+                service_now_fields[field_name] = description
 
         return service_now_fields
 
@@ -108,19 +104,27 @@ def handle_exception(user_profile, e, action):
         e (DemistoException): The exception error that holds the response json.
         action (IAMActions): An enum represents the current action (get, update, create, etc).
     """
-    error_code = e.res.get('errorCode')
-    error_message = e.res.get('error', {}).get('message')
+    error_message = get_error_details(e.res)
 
-    if error_code in ERROR_CODES_TO_SKIP:
-        user_profile.set_result(action=action,
-                                skip=True,
-                                skip_reason=error_message)
-    else:
-        user_profile.set_result(action=action,
-                                success=False,
-                                error_code=error_code,
-                                error_message=error_message,
-                                details=e.res)
+    user_profile.set_result(action=action,
+                            success=False,
+                            error_code='',  # todo: fix in CSP if needed
+                            error_message=error_message,
+                            details=e.res)
+
+
+def get_error_details(res):
+    """ Parses the error details retrieved from ServiceNow and outputs the resulted string.
+
+    Args:
+        res (dict): The data retrieved from Okta.
+
+    Returns:
+        (str) The parsed error details.
+    """
+    message = res.get('error', {}).get('message')
+    details = res.get('error', {}).get('details')
+    return f'{message}: {details}'
 
 
 '''COMMAND FUNCTIONS'''
@@ -340,7 +344,7 @@ def main():
         verify=verify_certificate,
         proxy=proxy,
         headers=headers,
-        ok_codes=(200,),
+        ok_codes=(200, 201),
         auth=(username, password)
     )
 
