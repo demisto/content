@@ -1924,7 +1924,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     """
     Test the instance configurations when using basic authorization.
     """
-    # Notify hte user that test button can't be used when using OAuth 2.0:
+    # Notify the user that test button can't be used when using OAuth 2.0:
     if client.use_oauth:
         return_error('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-login command '
                      'followed by the !servicenow-test command to test the instance.')

@@ -65,7 +65,8 @@ class ServiceNowClient(BaseClient):
                         err_msg = f'Unauthorized request: \n{str(res)}'
                     raise DemistoException(err_msg)
                 else:
-                    raise Exception(res)
+                    raise Exception(f'Authentication failed. Please verify that the username and password are correct.'
+                                    f'\n{res}')
 
         except Exception as e:
             if 'SSL Certificate Verification Failed' in e.args[0]:
@@ -96,15 +97,12 @@ class ServiceNowClient(BaseClient):
             if res.get('access_token'):
                 expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
                 expiry_time += res.get('expires_in') * 1000 - 10
-                new_token = {
-                    'access_token': res.get('access_token'),
-                    'refresh_token': res.get('refresh_token'),
-                    'expiry_time': expiry_time
+                refresh_token = {
+                    'refresh_token': res.get('refresh_token')
                 }
-                set_integration_context(new_token)
+                set_integration_context(refresh_token)
         except Exception as e:
-            return_error(f'Login failed. Please check the instance configuration and the given username and password.'
-                         f'\n\n{e.args[0]}')
+            return_error(f'Login failed. Please check the instance configuration and the given username and password.')
 
     def get_access_token(self):
         """
@@ -126,7 +124,7 @@ class ServiceNowClient(BaseClient):
                 data['grant_type'] = 'refresh_token'
             else:
                 raise Exception('Could not create an access token. Maybe the user is not logged in. Try running the'
-                                ' !servicenow-login command.')
+                                ' login command.')
 
             try:
                 headers = {
