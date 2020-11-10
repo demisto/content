@@ -341,6 +341,7 @@ tasks:
       id: 975ea04b-4f88-4d4b-87f2-e84069981424
       version: -1
       name: Is Qradar v1 enabled?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -396,6 +397,7 @@ tasks:
       id: aac3592e-525f-41ad-8ca7-97b3ac752554
       version: -1
       name: Is Qradar v2 enabled?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
