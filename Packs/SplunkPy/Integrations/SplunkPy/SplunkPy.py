@@ -186,6 +186,13 @@ def notable_to_incident(event):
     incident = {}  # type: Dict[str,Any]
     rule_title = ''
     rule_name = ''
+
+    if isinstance(event, results.Message):
+        if "Error in" in event.message:
+            raise ValueError(event.message)
+        else:
+            demisto.debug(f'\n\n message in notable_to_incident is: {convert_to_str(event.message)}  \n\n')
+
     if demisto.get(event, 'rule_title'):
         rule_title = event['rule_title']
     if demisto.get(event, 'rule_name'):
@@ -483,6 +490,8 @@ def fetch_incidents(service):
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
+    demisto.debug(f'\n\n last run time: {last_run}, now: {now} \n\n')
+
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
 
@@ -499,7 +508,13 @@ def fetch_incidents(service):
     reader = results.ResultsReader(oneshotsearch_results)
     for item in reader:
         inc = notable_to_incident(item)
+        demisto.debug(f'\n\n inc after notable_to_incident: {inc} \n\n')
         incidents.append(inc)
+
+    demisto.debug(f'\n\n total number of incidents found: from {}\n to {}\n with '
+                  f'the query: {searchquery_oneshot} is: {len(incidents)}.\n  '
+                  f'incidents found: {incidents} \n\n')
+
 
     demisto.incidents(incidents)
     if len(incidents) < FETCH_LIMIT:
