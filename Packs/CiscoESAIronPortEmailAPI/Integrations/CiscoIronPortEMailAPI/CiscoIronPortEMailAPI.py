@@ -319,7 +319,7 @@ def main():
             mesId = demisto.args().get('mid')
             ironportSpamReleaseEmail(mesId)
 
-        elif demisto.command() == 'ironPortSearchQuarantines':
+        elif demisto.command() == 'iron-port-search-quarantines':
             period = demisto.args().get('periodInDays')
             # senderPattern=""
             senderPattern = demisto.args().get('senderPattern')
