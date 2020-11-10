@@ -48,22 +48,22 @@ script:
     execution: false
     name: f5-asm-policy-list
     outputs:
-    - contextPath: f5.ListPolicy.name
+    - contextPath: f5.Policy.name
       description: Display name of the policy.
       type: String
-    - contextPath: f5.ListPolicy.active
+    - contextPath: f5.Policy.active
       description: Indicates if the policy is active
       type: Boolean
-    - contextPath: f5.ListPolicy.creatorName
+    - contextPath: f5.Policy.creatorName
       description: Indicates the user that created the policy
       type: String
-    - contextPath: f5.ListPolicy.createdTime
+    - contextPath: f5.Policy.createdTime
       description: Indicated the time that the policy was created
       type: String
-    - contextPath: f5.ListPolicy.enforcementMode
+    - contextPath: f5.Policy.enforcementMode
       description: Indicates if the policy is in enforcement mode
       type: Boolean
-    - contextPath: f5.ListPolicy.type
+    - contextPath: f5.Policy.type
       description: policy type
       type: String
   - arguments:
@@ -88,6 +88,7 @@ script:
       predefined:
       - parent
       - child
+      - security
       required: true
       secret: false
     - default: false
@@ -119,28 +120,51 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: indicates if to allow the new policy
+      isArray: false
+      name: allow
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: indicates if to activate the new policy
+      isArray: false
+      name: active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Create a new ASM policy
     execution: false
     name: f5-asm-policy-create
     outputs:
-    - contextPath: f5.CreatePolicy.name
+    - contextPath: f5.Policy.name
       description: Display name of the policy.
       type: String
-    - contextPath: f5.CreatePolicy.id
+    - contextPath: f5.Policy.id
       description: ID for the policy
       type: String
-    - contextPath: f5.CreatePolicy.fullPath
+    - contextPath: f5.Policy.fullPath
       description: Full path of the policy
       type: String
-    - contextPath: f5.CreatePolicy.description
+    - contextPath: f5.Policy.description
       description: Description of the policy
       type: String
-    - contextPath: f5.CreatePolicy.type
+    - contextPath: f5.Policy.type
       description: Type of the policy
       type: String
-    - contextPath: f5.CreatePolicy.versionDatetime
+    - contextPath: f5.Policy.versionDatetime
       description: Policy creation time
+      type: String
+    - contextPath: f5.Policy.selfLink
+      description: Policy self link
       type: String
   - arguments:
     - default: false
@@ -154,19 +178,19 @@ script:
     execution: false
     name: f5-asm-policy-apply
     outputs:
-    - contextPath: f5.ApplyPolicy.id
+    - contextPath: f5.Policy.id
       description: Policy ID
       type: String
-    - contextPath: f5.ApplyPolicy.kind
+    - contextPath: f5.Policy.kind
       description: Policy kind
       type: String
-    - contextPath: f5.ApplyPolicy.policyReference
+    - contextPath: f5.Policy.policyReference
       description: policy reference link
       type: String
-    - contextPath: f5.ApplyPolicy.status
+    - contextPath: f5.Policy.status
       description: policy status
       type: String
-    - contextPath: f5.ApplyPolicy.startTime
+    - contextPath: f5.Policy.startTime
       description: Policy start time
       type: String
   - arguments:
@@ -198,25 +222,25 @@ script:
     execution: false
     name: f5-asm-policy-export-file
     outputs:
-    - contextPath: f5.ExportPolicy.kind
+    - contextPath: f5.Policy.kind
       description: policy kind
       type: String
-    - contextPath: f5.ExportPolicy.format
+    - contextPath: f5.Policy.format
       description: policy format
       type: String
-    - contextPath: f5.ExportPolicy.filename
+    - contextPath: f5.Policy.filename
       description: filename of the file exported
       type: String
-    - contextPath: f5.ExportPolicy.policyReference
+    - contextPath: f5.Policy.policyReference
       description: policy reference link
       type: String
-    - contextPath: f5.ExportPolicy.id
+    - contextPath: f5.Policy.id
       description: policy id
       type: String
-    - contextPath: f5.ExportPolicy.startTime
+    - contextPath: f5.Policy.startTime
       description: policy start time
       type: String
-    - contextPath: f5.ExportPolicy.status
+    - contextPath: f5.Policy.status
       description: policy status
       type: String
   - arguments:
@@ -683,13 +707,13 @@ script:
     execution: false
     name: f5-asm-policy-file-types-delete
     outputs:
-    - contextPath: f5.policy-delete.name
+    - contextPath: f5.FileType.name
       description: Display name of the policy.
       type: String
-    - contextPath: f5.policy-delete.id
+    - contextPath: f5.FileType.id
       description: ID of the policy that was deleted
       type: String
-    - contextPath: f5.policy-delete.selfLink
+    - contextPath: f5.FileType.selfLink
       description: Self link of the policy that was deleted
       type: String
   - arguments:
@@ -704,13 +728,13 @@ script:
     execution: false
     name: f5-asm-policy-delete
     outputs:
-    - contextPath: f5.DeletePolicy.name
+    - contextPath: f5.Policy.name
       description: Display name of the deleted policy.
       type: String
-    - contextPath: f5.DeletePolicy.id
+    - contextPath: f5.Policy.id
       description: ID of the deleted policy.
       type: String
-    - contextPath: f5.DeletePolicy.selfLink
+    - contextPath: f5.Policy.selfLink
       description: Self link of the deleted policy.
       type: String
   - arguments:
@@ -1207,7 +1231,7 @@ script:
     - contextPath: f5.Cookies.enforcementType
       description: Enforcement type
       type: String
-    - contextPath: f5.Cookies..performStaging
+    - contextPath: f5.Cookies.performStaging
       description: Indicates if the user wishes to perform staging
       type: Boolean
     - contextPath: f5.Cookies.type
@@ -1485,7 +1509,7 @@ script:
     - contextPath: f5.Url.clickjackingProtection
       description: Is clickjacking protection enabled in the URL.
       type: Boolean
-    - contextPath: f5.Url..performStaging
+    - contextPath: f5.Url.performStaging
       description: Is the URL in staging.
       type: Boolean
     - contextPath: f5.Url.mandatoryBody
@@ -2563,7 +2587,7 @@ script:
       description: Display name of the GWT profile. ID or display name must be filled.
       isArray: false
       name: gwt_profile_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: Optional description for the profile
@@ -3619,7 +3643,7 @@ script:
     - contextPath: f5.Policy.md5
       description: MD5 hash of the policy
       type: String
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
   longRunning: false
