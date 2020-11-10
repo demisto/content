@@ -20,6 +20,9 @@ ERROR_CODES_TO_SKIP = [
     'E0000016',  # user is already enabled
     USER_IS_DISABLED_ERROR
 ]
+ERROR_CODES_TO_RETURN_ERROR = [
+    'E0000047',  # rate limit - resets after 1 minute
+]
 
 '''CLIENT CLASS'''
 
@@ -148,8 +151,10 @@ def handle_exception(user_profile, e, action):
                                 skip=True,
                                 skip_reason=error_message)
     else:
+        should_return_error = error_code in ERROR_CODES_TO_RETURN_ERROR
         user_profile.set_result(action=action,
                                 success=False,
+                                return_error=should_return_error,
                                 error_code=error_code,
                                 error_message=error_message,
                                 details=e.res)
