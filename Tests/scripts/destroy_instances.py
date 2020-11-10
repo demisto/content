@@ -3,7 +3,6 @@ import os
 import json
 import subprocess
 import logging
-from demisto_sdk.commands.common.tools import print_warning, print_error
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 from Tests.scripts.utils.log_util import install_logging
 
