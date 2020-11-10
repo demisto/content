@@ -117,7 +117,7 @@ def get_error_details(res):
     """ Parses the error details retrieved from ServiceNow and outputs the resulted string.
 
     Args:
-        res (dict): The data retrieved from Okta.
+        res (dict): The data retrieved from ServiceNow.
 
     Returns:
         (str) The parsed error details.

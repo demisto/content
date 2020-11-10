@@ -49,7 +49,7 @@ def test_get_user_command__existing_user(mocker):
     assert outputs.get('success') is True
     assert outputs.get('active') is True
     assert outputs.get('id') == 'mock_id'
-    assert outputs.get('username') == 'testdemisto2@paloaltonetworks.com'
+    assert outputs.get('username') == 'mock_user_name'
     assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
     assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
@@ -132,7 +132,7 @@ def test_create_user_command__success(mocker):
     assert outputs.get('success') is True
     assert outputs.get('active') is True
     assert outputs.get('id') == 'mock_id'
-    assert outputs.get('username') == 'testdemisto2@paloaltonetworks.com'
+    assert outputs.get('username') == 'mock_user_name'
     assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
     assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
@@ -191,7 +191,7 @@ def test_update_user_command__non_existing_user(mocker):
     assert outputs.get('success') is True
     assert outputs.get('active') is True
     assert outputs.get('id') == 'mock_id'
-    assert outputs.get('username') == 'testdemisto2@paloaltonetworks.com'
+    assert outputs.get('username') == 'mock_user_name'
     assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
     assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
