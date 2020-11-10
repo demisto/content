@@ -35,7 +35,7 @@ def test_test_function(mocker, gsuite_client):
     from GoogleDrive import test_module, GSuiteClient, service_account, demisto
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
     mocker.patch.object(GSuiteClient, 'http_request')
-    assert test_module(gsuite_client) == 'ok'
+    assert test_module(gsuite_client, {}, {}) == 'ok'
 
 
 @patch(MOCKER_HTTP_METHOD)
