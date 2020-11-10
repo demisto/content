@@ -1,5 +1,5 @@
 Palo Alto Networks Enterprise DLP discovers and protect company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
-This integration was integrated and tested with version xx of Palo Alto Networks Enterprise DLP
+This integration was integrated and tested with Palo Alto Networks Enterprise DLP
 ## Configure Palo Alto Networks Enterprise DLP on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
