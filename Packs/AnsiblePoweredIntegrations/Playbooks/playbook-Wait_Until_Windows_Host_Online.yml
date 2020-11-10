@@ -98,6 +98,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Is the host online?"
       brand: ""
       id: ad660901-5688-44aa-84ad-44cf2d9b3b9a
       iscommand: false

@@ -37,7 +37,7 @@ tasks:
       }
   "1":
     form:
-      description: ""
+      description: "Prompt for which packages to deploy"
       expired: false
       questions:
       - defaultrows: []
@@ -110,6 +110,7 @@ tasks:
       name: 'Prompt: Which package(s) and host?'
       type: collection
       version: -1
+      description: "Prompt for which packages to deploy"
     taskid: 4179bf64-26dd-449d-8deb-dbb5af4255ed
     timertriggers: []
     type: collection
@@ -147,9 +148,10 @@ tasks:
       brand: ""
       id: 60c9f3eb-c5b2-4263-8cc5-97e8bf974bc5
       iscommand: false
-      name: Is Workstations currently Online?
+      name: Is Workstation currently Online?
       type: condition
       version: -1
+      description: "Check if workstation is online"
     taskid: 60c9f3eb-c5b2-4263-8cc5-97e8bf974bc5
     timertriggers: []
     type: condition
@@ -398,6 +400,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Check if the software was insalled successfully"
       brand: ""
       id: 54e890e8-a06a-4efa-8fd8-899b79266ea1
       iscommand: false
@@ -471,6 +474,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Prompt for retry behaviour"
       brand: ""
       id: a55e24ba-39eb-44c1-8f1e-104524f05b57
       iscommand: false
@@ -578,7 +582,7 @@ tasks:
       }
   "20":
     form:
-      description: ""
+      description: "Prompt for end users email address"
       expired: false
       questions:
       - defaultrows: []
@@ -587,7 +591,7 @@ tasks:
         id: "0"
         label: ""
         labelarg:
-          simple: What is the users email addresses?
+          simple: What is the users email address?
         options: []
         optionsarg: []
         placeholder: ""
@@ -620,6 +624,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Prompt for end users email"
       brand: ""
       id: 89e146c7-144d-4824-8e81-f8658a5ad789
       iscommand: false
@@ -647,6 +652,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Wait for ready email"
       brand: ""
       id: e4e6ef51-6204-4abf-8e49-9aee3f4b23bd
       iscommand: false
