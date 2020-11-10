@@ -503,8 +503,11 @@ script:
         }
 
         if (version === 'v2') {
+          var fileScan = null;
+          if(hash != null){
             var fileScan = scan(hash);
-            return resultEntry(res, fileType, fileScan)
+          }
+          return resultEntry(res, fileType, fileScan);
         } else {
             return res;
         }
@@ -546,13 +549,16 @@ script:
             case 'pdf':
                 filename += '.pdf';
         }
-        ec = {
-            DBotScore: {
-                Indicator: scan[0].sha256,
-                Type: 'hash',
-                Vendor: 'CrowdStrike Falcon Sandbox',
-                Score: translateScore(scan[0]['threat_level'])
-            }
+        ec = {}
+        if(scan != null){
+          ec = {
+              DBotScore: {
+                  Indicator: scan[0].sha256,
+                  Type: 'hash',
+                  Vendor: 'CrowdStrike Falcon Sandbox',
+                  Score: translateScore(scan[0]['threat_level'])
+              }
+          }
         }
         return {
             Type: 9,
