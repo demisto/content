@@ -32,7 +32,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7.5,
+          "x": -170,
           "y": -440
         }
       }
@@ -73,8 +73,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -372.5,
-          "y": 140
+          "x": -170,
+          "y": 150
         }
       }
     note: false
@@ -574,14 +574,14 @@ tasks:
     task:
       id: 0876b8fd-d1a3-4519-8310-e0e8973cf071
       version: -1
-      name: Is Qradar enabled?
+      name: Is Qradar v1 enabled?
       type: condition
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - "2"
+      - "1"
       "yes":
       - "29"
     separatecontext: false
@@ -614,7 +614,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
+          "x": 250,
           "y": -280
         }
       }
@@ -630,14 +630,14 @@ tasks:
     task:
       id: 3f254d5a-a5f6-4dc5-8f00-fc777a1e9efe
       version: -1
-      name: Is Qradar v2 enabled?
+      name: Is QRadar v2 enabled?
       type: condition
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - "2"
+      - "1"
       "yes":
       - "28"
     separatecontext: false
@@ -670,8 +670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -960,
-          "y": -280
+          "x": -520,
+          "y": -270
         }
       }
     note: false
@@ -713,8 +713,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1070,
-          "y": -30
+          "x": -600,
+          "y": -20
         }
       }
     note: false
@@ -750,8 +750,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -470,
-          "y": -30
+          "x": 320,
+          "y": -20
         }
       }
     note: false
@@ -767,8 +767,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2315,
-        "width": 2090,
-        "x": -1070,
+        "width": 1620,
+        "x": -600,
         "y": -440
       }
     }
