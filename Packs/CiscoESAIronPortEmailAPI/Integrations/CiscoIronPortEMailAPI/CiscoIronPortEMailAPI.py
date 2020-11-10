@@ -311,7 +311,7 @@ def main():
             # generateStartEndDates(1)
             return "ok"
 
-        elif demisto.command() == 'ironportQuarantineReleaseEmail':
+        elif demisto.command() == 'iron-port-quarantine-release-email':
             mesId = demisto.args().get('mid')
             ironportQuarantineReleaseEmail(mesId)
 
