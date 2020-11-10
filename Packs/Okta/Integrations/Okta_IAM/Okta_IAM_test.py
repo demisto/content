@@ -259,7 +259,7 @@ def test_update_user_command__rate_limit_error(mocker):
     assert entry_context.get('Type') == EntryType.ERROR
     assert outputs.get('action') == IAMActions.UPDATE_USER
     assert outputs.get('success') is False
-    assert outputs.get('error_code') == 'E0000047'
+    assert outputs.get('errorCode') == 'E0000047'
 
 
 def test_enable_user_command__non_existing_user(mocker):
