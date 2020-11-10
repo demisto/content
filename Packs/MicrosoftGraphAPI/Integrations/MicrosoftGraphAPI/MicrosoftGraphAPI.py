@@ -100,7 +100,7 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
 
     if args.get('populate_context'):
         results['outputs'] = response.get('value')
-        results['outputs_prefix'] = 'MicrosoftGraphGeneric'
+        results['outputs_prefix'] = 'MicrosoftGraph'
 
     return CommandResults(**results)
 
@@ -127,13 +127,13 @@ def main() -> None:
         if command == 'test-module':
             result = test_module(client, params)
             return_results(result)
-        elif command == 'msgraph-generic-request':
+        elif command == 'msgraph-api-request':
             return_results(generic_command(client, demisto.args()))
-        elif command == 'msgraph-generic-auth-start':
+        elif command == 'msgraph-api-auth-start':
             return_results(start_auth(client))
-        elif command == 'msgraph-generic-auth-complete':
+        elif command == 'msgraph-api-auth-complete':
             return_results(complete_auth(client))
-        elif command == 'msgraph-generic-test':
+        elif command == 'msgraph-api-test':
             return_results(test_command(client))
     except Exception as e:
         demisto.error(traceback.format_exc())

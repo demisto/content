@@ -1,7 +1,7 @@
-id: Microsoft Graph Generic - Test
+id: Microsoft Graph API - Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Microsoft Graph Generic - Test
+name: Microsoft Graph API - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -73,9 +73,9 @@ tasks:
     task:
       id: 954e6ba7-ef0a-49b4-8acd-54afcb015ae2
       version: -1
-      name: Microsoft Graph Generic - List Applications
+      name: Microsoft Graph API - List Applications
       description: Run a Microsoft Graph API query.
-      script: '|||msgraph-generic-request'
+      script: '|||msgraph-api-request'
       type: regular
       iscommand: true
       brand: ""
@@ -85,7 +85,7 @@ tasks:
     scriptarguments:
       api_version: {}
       extend-context:
-        simple: MicrosoftGraphGeneric.Application.ID=value.[0].appId
+        simple: MicrosoftGraph.Application.ID=value.[0].appId
       http_method: {}
       odata: {}
       request_body: {}
@@ -125,7 +125,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: MicrosoftGraphGeneric.Application.ID
+              simple: MicrosoftGraph.Application.ID
             iscontext: true
     view: |-
       {

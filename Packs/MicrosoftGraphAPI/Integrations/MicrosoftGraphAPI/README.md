@@ -1,6 +1,5 @@
-Use the Microsoft Graph Generic integration to interact with Microsoft Graph API. 
+Use the Microsoft Graph API integration to interact with Microsoft APIs that do not have dedicated integrations in Cortex XSOAR, for example, Mail Single-User, etc.
 
-The integration should be used for APIs that are not implemented in other specific Microsoft Graph integrations.
 ---
 
 Note: In this documentation, we will use the [Application resource type](https://docs.microsoft.com/en-us/graph/api/resources/application?view=graph-rest-1.0) as an example.
@@ -23,11 +22,11 @@ For example, if we wish to use the [List applications](https://docs.microsoft.co
 
 3. The ***Application Secret*** and the ***Tenant ID*** integration parameters should be left blank.
 
-4. Run the *msgraph-generic-auth-start* command - you will be prompted to open the page https://microsoft.com/devicelogin and enter the generated code.
+4. Run the *msgraph-api-auth-start* command - you will be prompted to open the page https://microsoft.com/devicelogin and enter the generated code.
 
-5. Run the *msgraph-generic-auth-complete* command
+5. Run the *msgraph-api-auth-complete* command
 
-6. Run the *msgraph-generic-test* command to ensure connectivity to Microsoft. 
+6. Run the *msgraph-api-test* command to ensure connectivity to Microsoft. 
  
 #### Self Deployed Azure app
 
@@ -45,10 +44,10 @@ The integration supports only Application permission type, and does not support 
 
 **Note**: The integration stores in cache the API access token based on the permissions it is first run with, so if the permissions are modified, it is recommended to create a new instance of the integration.
 
-## Configure Microsoft Graph Generic on Cortex XSOAR
+## Configure Microsoft Graph API on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Graph Generic.
+2. Search for Microsoft Graph API.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -65,14 +64,14 @@ The integration supports only Application permission type, and does not support 
 ## Commands
 You can execute the command from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### msgraph-generic-request
+### msgraph-api-request
 ***
 Run a Microsoft Graph API query.
 
 
 #### Base Command
 
-`msgraph-generic`
+`msgraph-api`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -88,7 +87,7 @@ Run a Microsoft Graph API query.
 #### Context Output
 
 The context data output depends on the resource executed.
-The *populate_context* argument sets whether to output to the context data, under the path **MicrosoftGraphGeneric**.
+The *populate_context* argument sets whether to output to the context data, under the path **MicrosoftGraph**.
 For resources which return a large response, we recommend to narrow the results by using the *odata* argument or outputting to the context data using [Extend Context](https://xsoar.pan.dev/docs/playbooks/playbooks-extend-context).
 
 
@@ -99,5 +98,4 @@ We can see that according to the [HTTP request](https://docs.microsoft.com/en-us
  - The HTTP method is ***GET***
  - The resource is ***/applications***
  
-So in order to list all the applications using the integration, we would run the command: `!msgraph-generic resource=/applications http_method=GET`
-If we would like to store in the context data the first application ID returned, we would run the command: `!msgraph-generic resource=/applications http_method=GET extend-context=MicrosoftGraphGeneric.Application.ID=value.[0].appId`.
+So in order to list all the applications using the integration, we would run the command: `!msgraph-api resource=/applications http_method=GET`

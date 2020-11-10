@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Microsoft Graph Generic
+  id: Microsoft Graph API
   version: -1
 configuration:
 - defaultvalue: 8922dd2d-7539-4711-b839-374f86083959
@@ -31,11 +31,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Microsoft Graph Generic integration to interact with Microsoft
-  Graph API. It should be used for APIs that are not implemented in other specific
-  Microsoft Graph integrations.
-display: Microsoft Graph Generic
-name: Microsoft Graph Generic
+description: Use the Microsoft Graph API integration to interact with Microsoft
+  APIs that do not have dedicated integrations in Cortex XSOAR, for example, Mail Single-User, etc.
+display: Microsoft Graph API
+name: Microsoft Graph API
 script:
   commands:
   - arguments:
@@ -100,21 +99,21 @@ script:
     deprecated: false
     description: Run a Microsoft Graph API query.
     execution: false
-    name: msgraph-generic-request
+    name: msgraph-api-request
   - deprecated: false
     description: Run this command to start the autorization process and follow the
       instructions in the command results.
     execution: false
-    name: msgraph-generic-auth-start
+    name: msgraph-api-auth-start
   - deprecated: false
     description: Run this command to complete the authorization process. Shoul be
       used after running the msgraph-auth-start command.
     execution: false
-    name: msgraph-generic-auth-complete
+    name: msgraph-api-auth-complete
   - deprecated: false
     description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
     execution: false
-    name: msgraph-generic-test
+    name: msgraph-api-test
   dockerimage: demisto/crypto:1.0.0.12807
   feed: false
   isfetch: false
