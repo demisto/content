@@ -601,7 +601,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Qradar
+                        simple: QRadar
                 - - operator: isEqualString
                     left:
                       value:
