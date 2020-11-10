@@ -403,6 +403,7 @@ def main():
     LOG(f'Command being called is {command}')
 
     try:
+        handle_proxy()
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
