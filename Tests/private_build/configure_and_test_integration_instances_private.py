@@ -51,7 +51,7 @@ def install_packs_private(build: Build, prints_manager: ParallelPrintsManager, p
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
-            _, flag = search_and_install_packs_and_their_dependencies_private(build.test_pack_path,
+            flag = search_and_install_packs_and_their_dependencies_private(build.test_pack_path,
                                                                               pack_ids, server.client,
                                                                               prints_manager)
             if not flag:
