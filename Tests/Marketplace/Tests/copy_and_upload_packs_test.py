@@ -67,7 +67,13 @@ class TestHelperFunctions:
             }))
         successful, failed = get_successful_and_failed_packs(file)
         assert successful == {"TestPack1": {"status": "status1", "aggregated": True}}
+        successful_list = [*successful]
+        ans = 'TestPack1' in successful_list
+        assert ans
         assert failed == {"TestPack2": {"status": "status2", "aggregated": False}}
+        failed_list = [*failed]
+        ans = 'TestPack2' in failed_list
+        assert ans
 
         try:
             shutil.rmtree(tempdir)

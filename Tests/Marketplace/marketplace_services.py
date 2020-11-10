@@ -900,7 +900,10 @@ class Pack(object):
         prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
         existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
         # We check that the pack version was bumped by comparing the pack version in build bucket and production bucket
-        if (existing_prod_version_files or self._pack_name not in successful_packs_dict) and not override_pack:
+        successful_packs_list = [*successful_packs_dict]
+        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_list
+        pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
+        if (existing_prod_version_files or pack_not_uploaded_in_prepare_content) and not override_pack:
             logging.warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
@@ -916,8 +919,10 @@ class Pack(object):
         self.public_storage_path = copied_blob.public_url
         task_status = task_status and copied_blob.exists()
 
-        if self._pack_name in successful_packs_dict:
+        if pack_uploaded_in_prepare_content:
+            print(f'aggregating {self._pack_name}')
             self._aggregated = successful_packs_dict[self._pack_name].get('aggregated')
+            print(f'done aggregating {self._pack_name}')
 
         if not task_status:
             logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
@@ -925,6 +930,11 @@ class Pack(object):
             logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
         return task_status, False
+
+    def wow(self, successful_packs_dict):
+        print(f'aggregating {self._pack_name}')
+        self._aggregated = successful_packs_dict[self._pack_name].get('aggregated')
+        print(f'done aggregating {self._pack_name}')
 
     def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion]:
         """
