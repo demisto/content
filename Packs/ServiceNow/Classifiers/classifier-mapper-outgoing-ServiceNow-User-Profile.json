@@ -62,10 +62,6 @@
 					"complex": null,
 					"simple": "title"
 				},
-				"user_name": {
-					"complex": null,
-					"simple": "username"
-				},
 				"zip": {
 					"complex": null,
 					"simple": "zipcode"
