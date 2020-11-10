@@ -2987,8 +2987,8 @@
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
         },
-        {
-            "integrations": "Deep Instinct",
+		{
+			"integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
         },
@@ -3131,6 +3131,13 @@
             "integrations": "Whois",
             "fromversion": "4.5.0"
         },
+		{
+            "integrations": "F5 WAF",
+            "playbookID": "playbook-F5_ASM-Test",
+            "timeout": 600,
+            "fromversion": "5.0.0",
+            "nightly": true
+		},
         {
             "playbookID": "Hatching Triage - Detonate File",
             "integrations": "Hatching Triage",
