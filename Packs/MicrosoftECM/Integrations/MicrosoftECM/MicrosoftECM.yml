@@ -254,7 +254,7 @@ script:
       description: Specifies a device name in Configuration Manager
     - name: poll_results
       defaultValue: 'false'
-      description: Whether to poll for the script invocation results or not
+      description: Whether to poll for the script invocation results or not.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -712,7 +712,7 @@ script:
         via `!ms-ecm-collection-list collection_type="Device"`)
     - name: poll_results
       defaultValue: 'false'
-      description: Whether to poll for the script invocation results or not
+      description: Whether to poll for the script invocation results or not.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -786,7 +786,7 @@ script:
         via `!ms-ecm-collection-list collection_type="Device"`)
     - name: poll_results
       defaultValue: 'false'
-      description: Whether to poll for the script invocation results or not
+      description: Whether to poll for the script invocation results or not.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -860,7 +860,7 @@ script:
         via `!ms-ecm-collection-list collection_type="Device"`)
     - name: poll_results
       defaultValue: 'false'
-      description: Whether to poll for the script invocation results or not
+      description: Whether to poll for the script invocation results or not.
       auto: PREDEFINED
       predefined:
       - 'true'
