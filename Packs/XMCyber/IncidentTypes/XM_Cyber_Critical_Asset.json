@@ -1,13 +1,13 @@
 {
-    "id": "XM Cyber Security Score",
+    "id": "XM Cyber Critical Asset",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "XM Cyber Security Score",
-    "prevName": "XM Cyber Security Score",
-    "color": "#00B8D4",
+    "name": "XM Cyber Critical Asset",
+    "prevName": "XM Cyber Critical Asset",
+    "color": "#275726",
     "sla": 168,
-    "playbookId": "XM_Cyber_Risk_Score_To_Jira",
+    "playbookId": "Enrich Endpoint - XM Cyber",
     "hours": 0,
     "days": 0,
     "weeks": 1,
@@ -20,6 +20,6 @@
     "autorun": false,
     "disabled": false,
     "reputationCalc": 0,
-    "layout": "XM_Cyber_Security_Score",
+    "layout": "XM_Cyber_Layout",
     "fromVersion": "6.0.0"
-   }
+}

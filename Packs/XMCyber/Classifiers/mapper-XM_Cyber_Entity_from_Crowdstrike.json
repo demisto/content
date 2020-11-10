@@ -3,7 +3,7 @@
 	"description": "Maps Crowdstrike Falcon incident data to XM Cyber fields for automatic enrichment",
 	"feed": false,
 	"fromVersion": "6.0.0",
-	"id": "classifier-XM_Cyber_Entity_from_Crowdstrike",
+	"id": "XM Cyber Entity from Crowdstrike",
 	"mapping": {
 		"XM Cyber Incident": {
 			"dontMapEventToLabels": true,

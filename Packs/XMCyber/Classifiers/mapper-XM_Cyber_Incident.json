@@ -1,8 +1,8 @@
 {
 	"defaultIncidentType": "",
-	"description": "",
+	"description": "Maps fields from XM Cyber incidents",
 	"feed": false,
-	"id": "92eb9160-4a8c-4df6-8a75-e7710a5abdc7",
+	"id": "XM Cyber Incident Mapper",
 	"mapping": {
 		"XM Cyber Incident": {
 			"dontMapEventToLabels": false,
@@ -226,7 +226,7 @@
 			}
 		}
 	},
-	"name": "XM Cyber Incident",
+	"name": "XM Cyber Incident Mapper",
 	"type": "mapping-incoming",
 	"fromVersion": "6.0.0",
 	"version": -1
