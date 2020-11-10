@@ -30,7 +30,7 @@ script:
       name: mid
       required: true
     description: Release Email from Quaranties
-    name: ironportQuarantineReleaseEmail
+    name: iron-port-quarantine-release-email
   - arguments:
     - defaultValue: "1"
       description: 'Last # number of Days to search in '
