@@ -114,10 +114,10 @@ def parse_data_pattern_rule(report_json, verdict_field, results_field):
     for dp in report_json.get("scanContentRawReport", {}).get(results_field, []):
         if (dp.get("state") == "EVALUATED") and (dp.get("unique_detection_frequency", 0) >= 1):
             data_patterns.append({
-                'DataPatternName': dp["name"],
-                'LowConfidenceFrequency': dp["low_confidence_frequency"],
-                'HighConfidenceFrequency': dp["high_confidence_frequency"],
-                'MediumConfidenceFrequency': dp["medium_confidence_frequency"],
+                'DataPatternName': dp.get('name'),
+                'LowConfidenceFrequency': dp.get('low_confidence_frequency'),
+                'HighConfidenceFrequency': dp.get('high_confidence_frequency'),
+                'MediumConfidenceFrequency': dp.get('medium_confidence_frequency'),
                 'Detections': dp.get("detections")
             })
     return data_patterns
@@ -195,7 +195,8 @@ def parse_dlp_report(report_json):
         outputs_prefix='DLP.Reports',
         outputs_key_field='DataProfile',
         outputs=data_patterns,
-        readable_output=convert_to_human_readable(data_patterns)
+        readable_output=convert_to_human_readable(data_patterns),
+        raw_response=report_json
     )
     return_results(results)
 
