@@ -1,4 +1,3 @@
-import collections
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -54,7 +53,7 @@ class Client(BaseClient):
         except Exception:
             pass
 
-    def _get_dlp_api_call(self, url_suffix):
+    def _get_dlp_api_call(self, url_suffix: str):
         """
         Makes a HTTPS Get call on the DLP API
         Args:
@@ -81,7 +80,7 @@ class Client(BaseClient):
         result_json = {} if res.status_code == 204 else res.json()
         return result_json, res.status_code
 
-    def get_dlp_report(self, report_id, fetch_snippets=False):
+    def get_dlp_report(self, report_id: str, fetch_snippets=False):
         """
         Fetches DLP reports
         Args:
@@ -177,11 +176,6 @@ def convert_to_human_readable(data_patterns):
     return tableToMarkdown(title, matches, headers)
 
 
-def makehash():
-    """Creates a hashmap with recursive default values"""
-    return collections.defaultdict(makehash)
-
-
 def parse_dlp_report(report_json):
     """
     Parses DLP Report for display
@@ -223,7 +217,7 @@ def main():
         if demisto.command() == 'pan-dlp-get-report':
             args = demisto.args()
             report_id = args.get('report_id')
-            fetch_snippets = argToBool(args.get('fetch_snippets'))
+            fetch_snippets = args.get('fetch_snippets', 'false') == 'true'
             report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
             parse_dlp_report(report_json)
 
