@@ -609,11 +609,11 @@ def test_module(gsuite_client, last_run: Dict, params: Dict[str, Any]) -> str:
         fetch_incidents(gsuite_client, last_run, params, is_test=True)
     else:
         with GSuiteClient.http_exception_handler():
-            gsuite_client.set_authorized_http(scopes=SCOPES['TEST_MODULE'])
-            gsuite_client.credentials.refresh(Request())
+            body = prepare_body_for_drive_activity(params)
+            user_id = params.get('user_id', '')
+            gsuite_client.set_authorized_http(scopes=COMMAND_SCOPES['DRIVE_ACTIVITY'], subject=user_id)
+            gsuite_client.http_request(full_url=URLS['DRIVE_ACTIVITY'], method='POST', body=body)
 
-        if not gsuite_client.credentials.valid:
-            raise DemistoException(MESSAGES['TEST_FAILED_ERROR'])
     return 'ok'
 
 
