@@ -337,7 +337,7 @@
    {
     "hidden": false,
     "id": "ovd3iztlms",
-    "name": "QR Offense",
+    "name": "QRadar Offense",
     "sections": [
      {
       "displayType": "ROW",
@@ -1003,7 +1003,7 @@
    {
     "hidden": false,
     "id": "rlehdz7hto",
-    "name": "QR Events",
+    "name": "QRadar Events",
     "sections": [
      {
       "h": 8,
@@ -1031,7 +1031,7 @@
    {
     "hidden": false,
     "id": "inroi8ol1r",
-    "name": "QR Assets",
+    "name": "QRadar Assets",
     "sections": [
      {
       "h": 9,
