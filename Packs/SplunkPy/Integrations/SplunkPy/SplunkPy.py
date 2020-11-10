@@ -518,7 +518,7 @@ def fetch_incidents(service):
         demisto.setLastRun({'time': last_run, 'offset': 0})
 
     # if incident are found but brought less then the fetch limit - advance the fetch time.
-    if len(incidents) < FETCH_LIMIT:
+    elif len(incidents) < FETCH_LIMIT:
         demisto.debug("################# FOUND INCIDENTS UPDATING TIME TO {}".format(now))
         demisto.setLastRun({'time': now, 'offset': 0})
 
