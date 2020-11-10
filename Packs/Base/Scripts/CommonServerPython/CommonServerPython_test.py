@@ -2730,3 +2730,182 @@ def test_return_results_multiple_dict_results(mocker):
     args, kwargs = demisto_results_mock.call_args_list[0]
     assert demisto_results_mock.call_count == 1
     assert [{'MockContext': 0}, {'MockContext': 1}] in args
+
+
+def test_arg_to_int__valid_numbers():
+    """
+    Given
+        valid numbers
+    When
+        converting them to int
+    Then
+        ensure proper int returned
+    """
+    from CommonServerPython import arg_to_int
+
+    result = arg_to_int(
+        arg='5',
+        arg_name='foo')
+
+    assert result == 5
+
+    result = arg_to_int(
+        arg='2.0',
+        arg_name='foo')
+
+    assert result == 2
+
+    result = arg_to_int(
+        arg=3,
+        arg_name='foo')
+
+    assert result == 3
+
+    result = arg_to_int(
+        arg=4,
+        arg_name='foo',
+        required=True)
+
+    assert result == 3
+
+
+def test_arg_to_int__valid_numbers():
+    """
+    Given
+        invalid numbers
+    When
+        converting them to int
+    Then
+        raise ValueError
+    """
+    from CommonServerPython import arg_to_int
+
+    try:
+        arg_to_int(
+            arg='aa',
+            arg_name='foo')
+
+        assert False
+
+    except ValueError as e:
+        assert 'Invalid number' in str(e)
+
+
+def test_arg_to_int_required():
+    """
+    Given
+        argument foo which with value None
+
+    When
+        converting the arg to number via required flag as True
+
+    Then
+        ensure ValueError raised
+    """
+    from CommonServerPython import arg_to_int
+
+    # required set to false
+    result = arg_to_int(
+        arg=None,
+        arg_name='foo',
+        required=False)
+
+    assert result is None
+
+    try:
+        arg_to_int(
+            arg=None,
+            arg_name='foo',
+            required=True)
+
+        assert False
+
+    except ValueError as e:
+        assert 'Missing' in str(e)
+
+    try:
+        arg_to_int(
+            arg='',
+            arg_name='foo',
+            required=True)
+
+        assert False
+
+    except ValueError as e:
+        assert 'Missing' in str(e)
+
+
+def test_arg_to_timestamp_valid_inputs():
+    """
+    Given
+        valid dates provided
+
+    When
+        converting dates into timestamp
+
+    Then
+        ensure returned int which represents timestamp in milliseconds
+    """
+    from CommonServerPython import arg_to_timestamp
+
+    # hard coded date
+    result = arg_to_timestamp(
+        arg='2020-11-10 21:43:43',
+        arg_name='foo'
+    )
+
+    assert result == 1605037423
+
+    # relative dates also work
+    result = arg_to_timestamp(
+        arg='2 hours ago',
+        arg_name='foo'
+    )
+
+    assert result > 1605030471
+
+
+def test_arg_to_timestamp_invalid_inputs():
+    """
+    Given
+        invalid date like 'aaaa' or '2010-32-01'
+
+    When
+        when converting date to timestamp
+
+    Then
+        ensure ValueError is raised
+    """
+    from CommonServerPython import arg_to_timestamp
+
+    try:
+        arg_to_timestamp(
+            arg=None,
+            arg_name='foo',
+            required=True)
+
+        assert False
+
+    except ValueError as e:
+        assert 'Missing' in str(e)
+
+    try:
+        arg_to_timestamp(
+            arg='aaaa',
+            arg_name='foo')
+
+        assert False
+
+    except ValueError as e:
+        assert 'Invalid date' in str(e)
+
+    try:
+        dd = arg_to_timestamp(
+            arg='2010-32-01',
+            arg_name='foo')
+
+        assert False
+
+    except ValueError as e:
+        assert 'Invalid date' in str(e)
+

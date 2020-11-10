@@ -28,6 +28,7 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
     from typing import Optional, List, Any
+    import dateparser
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
@@ -2777,7 +2778,7 @@ def arg_to_int(arg, arg_name, required = False):
     :rtype: ``Optional[int]``
     """
 
-    if arg is None:
+    if not arg:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
         return None
