@@ -71,7 +71,7 @@ script:
       name: mid
       required: true
     description: Release Email from Spam
-    name: ironportSpamReleaseEmail
+    name: iron-port-spam-release-Email
   - arguments:
     - description: periodInDays
       name: periodInDays
