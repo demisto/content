@@ -5,6 +5,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, ServiceNowClient
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
@@ -16,7 +17,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE, RESPONSE_FETCH, RESPONSE_FETCH_ATTACHMENTS_FILE, \
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, \
     RESPONSE_MIRROR_FILE_ENTRY, RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, \
-    MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR
+    MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
@@ -724,3 +725,52 @@ def test_update_remote_data_sc_task(mocker):
     mocker.patch('ServiceNowv2.get_ticket_fields', side_effect=ticket_fields)
     mocker.patch.object(client, 'update', side_effect=update_ticket)
     update_remote_system_command(client, args, params)
+
+
+@pytest.mark.parametrize('query, expected', [
+    ("id=5&status=pi", ["id=5", "status=pi"]),
+    ("id=5&status=pi&name=bobby", ["id=5", "status=pi", "name=bobby"]),
+    ("&status=pi", ["status=pi"]),
+    ("status=pi&", ["status=pi"]),
+])
+def test_build_query_for_request_params(query, expected):
+    """
+    Given:
+     - Query with multiple arguments
+
+    When:
+     - Running Cilent.query function
+
+    Then:
+     - Verify the query was split to a list of sub queries according to the &.
+    """
+    sub_queries = build_query_for_request_params(query)
+    assert sub_queries == expected
+
+
+@pytest.mark.parametrize('command, args', [
+    (query_tickets_command, {'limit': "50", 'query': "assigned_to=123&active=true", 'ticket_type': "sc_task"}),
+    (query_table_command, {'limit': "50", 'query': "assigned_to=123&active=true", 'table_name': "sc_task"})
+])
+def test_multiple_query_params(requests_mock, command, args):
+    """
+    Given:
+     - Query with multiple arguments
+
+    When:
+     - Using servicenow-query-tickets command with multiple sysparm_query arguments.
+     - Using servicenow-query-table command with multiple sysparm_query arguments.
+
+    Then:
+     - Verify the right request is called with '&' distinguishing different arguments.
+    """
+    url = 'https://test.service-now.com/api/now/v2/'
+    client = Client(url, 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+    requests_mock.request('GET', f'{url}table/sc_task?sysparm_limit=50&sysparm_offset=0&'
+                                 'sysparm_query=assigned_to%3D123&sysparm_query=active%3Dtrue',
+                          json=RESPONSE_TICKET_ASSIGNED)
+    human_readable, entry_context, result, bol = command(client, args)
+
+    assert result == RESPONSE_TICKET_ASSIGNED
