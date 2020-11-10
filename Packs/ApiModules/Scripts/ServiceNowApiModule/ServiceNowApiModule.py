@@ -96,12 +96,10 @@ class ServiceNowClient(BaseClient):
             if res.get('access_token'):
                 expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
                 expiry_time += res.get('expires_in') * 1000 - 10
-                new_token = {
-                    'access_token': res.get('access_token'),
-                    'refresh_token': res.get('refresh_token'),
-                    'expiry_time': expiry_time
+                refresh_token = {
+                    'refresh_token': res.get('refresh_token')
                 }
-                set_integration_context(new_token)
+                set_integration_context(refresh_token)
         except Exception as e:
             return_error(f'Login failed. Please check the instance configuration and the given username and password.'
                          f'\n\n{e.args[0]}')
