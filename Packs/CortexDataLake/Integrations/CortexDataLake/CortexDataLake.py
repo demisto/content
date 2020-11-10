@@ -1003,7 +1003,7 @@ def fetch_incidents(client: Client,
     max_fetched_event_timestamp = max(records, key=lambda record: record.get('time_generated', 0)).get('time_generated',
                                                                                                        0)
 
-    next_run = {'lastRun': epoch_to_milliseconds_timestamp(max_fetched_event_timestamp)}
+    next_run = {'lastRun': epoch_to_timestamp_and_add_milli(max_fetched_event_timestamp)}
     return next_run, incidents
 
 
