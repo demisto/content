@@ -1,57 +1,113 @@
-import requests
 import collections
 import demistomock as demisto
+import urllib3
 from CommonServerPython import *
 from CommonServerUserPython import *
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 MAX_ATTEMPTS = 3
 BASE_URL = 'https://api.dlp.paloaltonetworks.com/v1/'
 REPORT_URL = 'public/report/{}'
-REFRESH_TOKEN_URL = BASE_URL + 'public/oauth/refreshToken'
-ACCESS_TOKEN = ''
-REFRESH_TOKEN = ''
+REFRESH_TOKEN_URL = 'public/oauth/refreshToken'
 
 
-def makehash():
-    """Creates a hashmap with recursive default values"""
-    return collections.defaultdict(makehash)
+class Client(BaseClient):
 
+    def __init__(self, refresh_token, access_token):
+        super().__init__(base_url=BASE_URL, headers=None, verify=True)
+        self.refresh_token = refresh_token
+        self.access_token = access_token
 
-def refreshtoken(access_token, refresh_token):
-    """Refreshes Access Token"""
-    headers = {
-        "Authorization": "Bearer " + access_token,
-        "Content-Type": "application/json"
-    }
-    params = {
-        "refresh_token": refresh_token
-    }
-    r = requests.post(REFRESH_TOKEN_URL, json=params, headers=headers)
-    return r.json()['access_token'] if r.ok else None
-
-
-def get_dlp_api_call(url):
-    """ Makes a HTTPS Get call on the DLP API"""
-
-    global ACCESS_TOKEN
-    count = 0
-    while count < MAX_ATTEMPTS:
-        res = requests.get(url=url, headers={'Authorization': "Bearer " + ACCESS_TOKEN})
-        if res.status_code != 403:
-            break
-        new_token = refreshtoken(ACCESS_TOKEN, REFRESH_TOKEN)
+    def _refresh_token(self):
+        """Refreshes Access Token"""
+        headers = {
+            "Authorization": "Bearer " + self.access_token,
+            "Content-Type": "application/json"
+        }
+        params = {
+            "refresh_token": self.refresh_token
+        }
+        r = self._http_request(
+            method='POST',
+            headers=headers,
+            url_suffix=REFRESH_TOKEN_URL,
+            json_data=params,
+            ok_codes=[200, 201, 204]
+        )
+        new_token = r.get('access_token')
         if new_token:
-            ACCESS_TOKEN = new_token
-        count += 1
-    if res.status_code < 200 or res.status_code >= 300:
-        raise Exception("Request to {} failed with status code {}".format(url, res.status_code))
-    result_json = {} if res.status_code == 204 else res.json()
-    return result_json, res.status_code
+            self.access_token = new_token
+
+    def _handle_403_errors(self, res):
+        """
+        Handles 403 exception on get-dlp-report and tries to refresh token
+        Args:
+            res: Response of DLP API call
+        """
+        if res.status_code != 403:
+            return
+        try:
+            self._refresh_token()
+        except DemistoException:
+            pass
+
+    def _get_dlp_api_call(self, url_suffix):
+        """
+        Makes a HTTPS Get call on the DLP API
+        Args:
+            url_suffix: URL suffix for dlp api call
+        """
+        count = 0
+        while count < MAX_ATTEMPTS:
+            res = self._http_request(
+                method='GET',
+                headers={'Authorization': "Bearer " + self.access_token},
+                url_suffix=url_suffix,
+                ok_codes=[200, 201, 204],
+                error_handler=self._handle_403_errors,
+                resp_type='',
+                return_empty_response=True
+            )
+            if res.status_code != 403:
+                break
+            count += 1
+
+        if res.status_code < 200 or res.status_code >= 300:
+            raise DemistoException("Request to {} failed with status code {}".format(url_suffix, res.status_code))
+
+        result_json = {} if res.status_code == 204 else res.json()
+        return result_json, res.status_code
+
+    def get_dlp_report(self, report_id, fetch_snippets=False):
+        """
+        Fetches DLP reports
+        Args:
+            report_id: Report ID to fetch from DLP service
+            fetch_snippets: if True, fetches the snippets
+
+        Returns: DLP Report json
+        """
+        url = REPORT_URL.format(report_id)
+        if fetch_snippets:
+            url = url + "?fetchSnippets=true"
+
+        return self._get_dlp_api_call(url)
 
 
 def parse_data_pattern_rule(report_json, verdict_field, results_field):
-    """Parse data pattern matches for a given rule"""
+    """
+    Parses data pattern matches from a given rule in DLP report JSON
+    Args:
+        report_json: DLP report json
+        verdict_field: Name of the verdict field
+        results_field: Name of the result field
+
+    Returns: data pattern matches for the given rule
+
+    """
     if report_json.get(verdict_field) != "MATCHED":
         return []
     data_patterns = []
@@ -68,7 +124,13 @@ def parse_data_pattern_rule(report_json, verdict_field, results_field):
 
 
 def parse_data_patterns(report_json):
-    """Parse data pattern matches from the raw report"""
+    """
+    Parse data pattern matches from the raw report
+    Args:
+        report_json: DLP report JSON
+
+    Returns: Data pattern matches
+    """
     data_patterns = []
     data_patterns.extend(
         parse_data_pattern_rule(report_json, "data_pattern_rule_1_verdict", "data_pattern_rule_1_results"))
@@ -80,17 +142,14 @@ def parse_data_patterns(report_json):
     }
 
 
-def get_dlp_report(report_id, fetch_snippets=False):
-    """Fetches DLP reports"""
-    url = urljoin(BASE_URL, REPORT_URL.format(report_id))
-    if fetch_snippets:
-        url = url + "?fetchSnippets=true"
-
-    return get_dlp_api_call(url)
-
-
 def convert_to_human_readable(data_patterns):
-    """Converts the results for human readable format"""
+    """
+    Converts the results for human readable format
+    Args:
+        data_patterns: Data Pattern matches
+
+    Returns: Human Readable Format result
+    """
     matches: list = []
     if not data_patterns:
         return matches
@@ -118,9 +177,19 @@ def convert_to_human_readable(data_patterns):
     return tableToMarkdown(title, matches, headers)
 
 
-def parse_dlp_report(report_json):
-    """Parses DLP Report for display"""
+def makehash():
+    """Creates a hashmap with recursive default values"""
+    return collections.defaultdict(makehash)
 
+
+def parse_dlp_report(report_json):
+    """
+    Parses DLP Report for display
+    Args:
+        report_json: DLP report json
+
+    Returns: DLP report results
+    """
     data_patterns = parse_data_patterns(report_json)
     results = CommandResults(
         outputs_prefix='DLP.Reports',
@@ -131,39 +200,38 @@ def parse_dlp_report(report_json):
     return_results(results)
 
 
-def test():
+def test(client):
     """ Test Function to test validity of access and refresh tokens"""
-    report_json, status_code = get_dlp_report('1')
+    report_json, status_code = client.get_dlp_report('1')
     if status_code in [200, 204]:
         return_results("ok")
     else:
-        raise Exception("Integration test failed: Unexpected status ({})".format(status_code))
+        raise DemistoException("Integration test failed: Unexpected status ({})".format(status_code))
 
 
 def main():
     """ Main Function"""
     try:
-        LOG('Command is %s' % (demisto.command(),))
-        global ACCESS_TOKEN, REFRESH_TOKEN
-        ACCESS_TOKEN = demisto.params().get('access_token')
-        REFRESH_TOKEN = demisto.params().get('refresh_token')
+        demisto.info('Command is %s' % (demisto.command(),))
+        access_token = demisto.params().get('access_token')
+        refresh_token = demisto.params().get('refresh_token')
 
-        if demisto.command() == 'get-dlp-report':
-            report_id = demisto.args().get('report_id')
-            fetch_snippets = demisto.args().get('fetch_snippets', 'false') == 'true'
-            report_json, status_code = get_dlp_report(report_id, fetch_snippets)
+        client = Client(refresh_token, access_token)
+
+        if demisto.command() == 'pan-dlp-get-report':
+            args = demisto.args()
+            report_id = args.get('report_id')
+            fetch_snippets = args.get('fetch_snippets', 'false') == 'true'
+            report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
             parse_dlp_report(report_json)
 
         if demisto.command() == "test-module":
-            test()
+            test(client)
 
     except Exception as e:
         demisto.debug('Unknown Command')
         error_message = str(e)
         return_error(error_message)
-
-    finally:
-        LOG.print_log()
 
 
 if __name__ in ["__builtin__", "builtins"]:

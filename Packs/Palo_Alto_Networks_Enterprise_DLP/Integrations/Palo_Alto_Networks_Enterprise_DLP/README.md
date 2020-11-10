@@ -10,22 +10,19 @@ This integration was integrated and tested with version xx of Palo Alto Networks
 | --- | --- | --- |
 | access_token | Access Token | True |
 | refresh_token | Refresh Token | True |
-| longRunning | Long running instance | False |
-| incidentType | Incident type | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### get-dlp-report
+### pan-dlp-get-report
 ***
 Fetches DLP report associated with a Report ID
- 
 
 
 #### Base Command
 
-`get-dlp-report`
+`pan-dlp-get-report`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,7 +44,7 @@ Fetches DLP report associated with a Report ID
 
 
 #### Command Example
-```!get-dlp-report report_id=3165792284```
+```!pan-dlp-get-report report_id=3165792284```
 
 #### Context Example
 ```json
