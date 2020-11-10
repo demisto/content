@@ -467,6 +467,171 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
         return f'Error occurred while preforming delete-tags command {err}', {}, []
 
 
+def get_asset_group(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Search Asset Group command.
+    Args:
+        client:  Client which connects to api
+        args: arguments for the request
+    Returns:
+        Human Readable
+        Entry Context
+        Raw Data
+    """
+    args_id = str(args.get('id'))
+
+    url_suffix = f'/asset_groups/{args_id}'
+    human_readable_markdown = ''
+
+    response = client.http_request(message='GET', suffix=url_suffix).get('asset_group')
+
+    if response:
+        context = {
+            'Kenna.AssetGroup':{
+                'ID': int(response.get('id')),
+                'Name': str(response.get('name')),
+                'QueryString': str(response.get('querystring')),
+                'createdAt': str(response.get('created_at')),
+                'UpdatedAt': str(response.get('updated_at')),
+                'RiskMeterScore': int(response.get('risk_meter_score')),
+                'TrueRiskMeterScore': int(response.get('true_risk_meter_score')),
+                'AssetCount': int(response.get('asset_count')),
+                'VulnerabilityCount': int(response.get('vulnerability_count')),
+                'FixCount': int(response.get('fix_count')),
+                'TopPriorityCount': int(response.get('top_priority_count')),
+                'ActiveInternetBreachesCount': int(response.get('active_internet_breaches_count')),
+                'EasilyExploitableCount': int(response.get('easily_exploitable_count')),
+                'MalwareExploitableCount': int(response.get('malware_exploitable_count')),
+                'PopularTargetsCount': int(response.get('popular_targets_count')),
+                'UniqueOpenCVECount': int(response.get('unique_open_cve_count')),
+                'PredictedExploitableCount': int(response.get('predicted_exploitable_count'))
+            }
+        }
+
+        human_readable_markdown += 'Name: ' + str(response.get('name')) + '\n'
+        human_readable_markdown += 'ID: ' + str(response.get('id')) + '\n'
+        human_readable_markdown += 'Asset Count: ' + str(response.get('asset_count')) + '\n'
+        human_readable_markdown += 'Risk Meter Score: ' + str(response.get('risk_meter_score')) + '\n'
+        human_readable_markdown += 'Vulnerability Count: ' + str(response.get('vulnerability_count')) + '\n'
+        human_readable_markdown += 'Fix Count: ' + str(response.get('fix_count')) + '\n'
+        human_readable_markdown += 'Active Internet Breaches Count: ' + str(response.get('active_internet_breaches_count')) + '\n'
+
+    else:
+        human_readable_markdown = "Group not found."
+    return human_readable_markdown, context, response
+
+
+def list_asset_groups(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Lists Asset Groups command.
+    Args:
+        client:  Client which connects to api
+        args: arguments for the request
+    Returns:
+        Human Readable
+        Entry Context
+        Raw Data
+    """
+    human_readable_markdown = ''
+    url_suffix = '/asset_groups?per_page=1000'
+
+    response = client.http_request(message='GET', suffix=url_suffix).get('asset_groups')
+
+    if response:
+        wanted_keys = ['ID', 'Name', 'RiskMeterScore', 'AssetCount', 'FixCount']
+        actual_keys = ['id', 'name', 'risk_meter_score', 'asset_count','fix_count']
+        context_list = parse_response(response, wanted_keys, actual_keys)
+        context = {
+            'Kenna.AssetGroups(val.ID === obj.ID)': context_list
+        }
+        human_readable_markdown = tableToMarkdown('Asset Groups', context_list, headers=['Name','ID','RiskMeterScore', 'AssetCount', 'FixCount'])
+    else:
+        human_readable_markdown = "no groups in response."
+    return human_readable_markdown, context, response
+
+
+def get_top_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Gets Top Fixes command.
+    Args:
+        client:  Client which connects to api
+        args: arguments for the request
+    Returns:
+        Human Readable
+        Entry Context
+        Raw Data
+    """
+    args_id = str(args.get('id'))
+
+    url_suffix = f'/asset_groups/{args_id}/top_fixes'
+    human_readable_markdown = ''
+
+    response = client.http_request(message='GET', suffix=url_suffix).get('asset_group')
+
+    if response:
+
+        asset_group = response
+        topfix_groups = asset_group.get('top_fixes')
+
+        context_topfixes = []
+        for topfix in topfix_groups:
+            cur_topfix = {}
+            cur_topfix['FixGroupNumber'] = topfix.get('fix_group_number')
+            cur_topfix['RiskScoreReduction'] = topfix.get('risk_score_reduction')
+            cur_topfix['Fixes'] = []
+
+            for fix in topfix.get('fixes'):
+                cur_fix= {}
+                cur_fix['ID'] = fix.get('id')
+                cur_fix['Title'] = fix.get('title')
+                cur_fix['Diagnosis'] = fix.get('diagnosis')
+                cur_fix['Solution'] = fix.get('solution')
+                cur_fix['Category'] = fix.get('category')
+                cur_fix['Consequence'] = fix.get('consequence')
+
+                assets = []
+                for asset in fix.get('assets'):
+                    cur_asset = {}
+                    cur_asset['ID'] = asset.get('id')
+                    cur_asset['Hostname'] = asset.get('hostname')
+                    cur_asset['IP_Address'] = asset.get('ip_address')
+                    cur_asset['Operating_System'] = asset.get('operating_system')
+                    assets.append(cur_asset)
+
+                cur_fix['Assets'] = assets
+                cur_topfix['Fixes'].append(cur_fix)
+            context_topfixes.append(cur_topfix)
+
+        context = {
+            'Kenna.AssetGroup.TopFixes': context_topfixes
+        }
+
+
+        # human readable section
+        human_readable = []
+        human_readable_markdown += 'Group Name: ' + str(asset_group.get('name')) + '\n'
+        human_readable_markdown += 'Group ID: ' + str(asset_group.get('id')) + '\n'
+        human_readable_markdown += 'Current Risk Meter Score: ' + str(asset_group.get('risk_meter_score')) + '\n'
+
+
+        for topfix in topfix_groups:
+            fix_titles = ''
+            asset_count = ''
+            for fix in topfix.get('fixes'):
+                fix_titles += str('* ' + fix.get('title') + '\n')
+                asset_count += str(len(fix.get('assets')))  + '\n'
+
+            curr_dict = {
+                'Fix Score Reduction': topfix.get('risk_score_reduction'),
+                'Assets Involved': asset_count,
+                'Fixes': fix_titles
+            }
+            human_readable.append(curr_dict)
+
+        human_readable_markdown +=  tableToMarkdown('Top Fixes', human_readable, headers=['Fix Score Reduction','Assets Involved', 'Fixes'])
+
+    else:
+        human_readable_markdown = "Group not found."
+    return human_readable_markdown, context, response
+
+
 def main():
     params = demisto.params()
     api = params.get('key')
@@ -493,6 +658,9 @@ def main():
         'kenna-get-asset-vulnerabilities': get_asset_vulnerabilities,
         'kenna-add-tag': add_tags,
         'kenna-delete-tag': delete_tags,
+        'kenna-get-asset-group': get_asset_group,
+        'kenna-list-asset-groups': list_asset_groups,
+        'kenna-get-top-fixes': get_top_fixes,
     }
 
     try:

@@ -502,6 +502,112 @@ script:
     description: Deletes tags from the specified asset.
     execution: false
     name: kenna-delete-tag
+  - name: kenna-get-asset-group
+    arguments:
+    - name: id
+      required: true
+      description: ID of Asset Group to lookup
+    outputs:
+    - contextPath: Kenna.AssetGroup.ID
+      description: The group asset ID.
+      type: number
+    - contextPath: Kenna.AssetGroup.Name
+      description: The name of the group.
+      type: string
+    - contextPath: Kenna.AssetGroup.createdAt
+      description: Date group created
+      type: date
+    - contextPath: Kenna.AssetGroup.UpdatedAt
+      description: Date group updated
+      type: date
+    - contextPath: Kenna.AssetGroup.RiskMeterScore
+      description: Group risk meter score
+      type: number
+    - contextPath: Kenna.AssetGroup.TrueRiskMeterScore
+      description: Group true risk meter
+      type: number
+    - contextPath: Kenna.AssetGroup.AssetCount
+      description: Number of assets in group
+      type: number
+    - contextPath: Kenna.AssetGroup.VulnerabilityCount
+      description: Number of Vulnerabilities across assets in group
+      type: number
+    - contextPath: Kenna.AssetGroup.FixCount
+      description: Number of fixes
+      type: number
+    - contextPath: Kenna.AssetGroup.ActiveInternetBreachesCount
+      description: NUmber of active internet breaches
+      type: number
+    - contextPath: Kenna.AssetGroup.EasilyExploitableCount
+      description: Number of easily exploitable vulnerabilities
+      type: number
+    - contextPath: Kenna.AssetGroup.MalwareExploitableCount
+      description: Number of vulnerabilities exploiable via malware
+      type: number
+    - contextPath: Kenna.AssetGroup.PopularTargetsCount
+      description: Number of popular targets
+      type: number
+    - contextPath: Kenna.AssetGroup.UniqueOpenCVECount
+      description: Number of unique CVEs
+      type: number
+    - contextPath: Kenna.AssetGroup.PredictedExploitableCount
+      description: Predicted number of exploitable
+      type: number
+    description: Gets a asset group details
+  - name: kenna-list-asset-groups
+    arguments: []
+    outputs:
+    - contextPath: Kenna.AssetGroups.ID
+      description: Group ID
+      type: number
+    - contextPath: Kenna.AssetGroups.Name
+      description: Group name
+    - contextPath: Kenna.AssetGroups.RiskMeterScore
+      description: Risk meter score
+    - contextPath: Kenna.AssetGroups.AssetCount
+      description: Asset Count
+    - contextPath: Kenna.AssetGroups.FixCount
+      description: Number of fixes availiable
+    description: Lists the asset groups
+  - name: kenna-get-top-fixes
+    arguments:
+    - name: id
+      required: true
+      description: ID of Asset Group to lookup
+    outputs:
+    - contextPath: Kenna.AssetGroup.TopFixes.FixGroupNumber
+      description: Fix group number
+      type: number
+    - contextPath: Kenna.AssetGroup.TopFixes.RiskScoreReduction
+      description: Risk score reduction
+      type: number
+    - contextPath: Kenna.AssetGroup.TopFixes.Fix.ID
+      description: Fix ID
+      type: number
+    - contextPath: Kenna.AssetGroup.TopFixes.Fix.Title
+      description: Fix title
+      type: string
+    - contextPath: Kenna.AssetGroup.TopFixes.Fix.Diagnosis
+      description: Fix diagnosis
+      type: string
+    - contextPath: Kenna.AssetGroup.TopFixes.Fix.Solution
+      description: Fix solution
+      type: string
+    - contextPath: Kenna.AssetGroup.TopFixes.Fix.Category
+      description: Fix category
+      type: string
+    - contextPath: Kenna.AssetGroup.TopFixes.Fix.Assets.ID
+      description: Fix asset ID
+      type: string
+    - contextPath: Kenna.AssetGroup.TopFixes.Fix.Assets.Hostname
+      description: Fix asset hostname
+    - contextPath: Kenna.AssetGroup.TopFixes.Fix.Consequence
+      description: What happens if an attack exploits this vunerability
+    - contextPath: Kenna.AssetGroup.TopFixes.Fix.Assets.IP_Address
+      description: IP Address of asset
+    - contextPath: Kenna.AssetGroup.TopFixes.Fix.Assets.Operating_System
+      description: Operating system of asset
+    description: Returns top fixes for an asset group ID
   dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
   longRunning: false
