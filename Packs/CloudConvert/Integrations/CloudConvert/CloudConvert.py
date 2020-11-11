@@ -16,7 +16,7 @@ class Client(BaseClient):
     def __init__(self, headers, verify=False, proxy=False):
         url = 'https://api.cloudconvert.com/v2'
         super().__init__(url, headers=headers, verify=verify, proxy=proxy)
-    
+
     @logger
     def import_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -34,7 +34,7 @@ class Client(BaseClient):
             data=arguments,
             ok_codes=(422, 200, 201, 500, 401)
         )
-    
+
     @logger
     def import_entry_id(self, file_path: str, file_name: str) -> Dict[str, Any]:
         """
@@ -51,7 +51,7 @@ class Client(BaseClient):
             headers=self._headers
         )
         form = response_get_form.get('data', {}).get('result', {}).get('form', {})
-        port_url = form['url'] # if no url field in form, we should have an exception
+        port_url = form['url']  # if no url field in form, we should have an exception
         params = form['parameters']
 
         # Creating a temp file with the same data of the given file
@@ -79,7 +79,7 @@ class Client(BaseClient):
         response_get_form['data'].pop('message')
         response_get_form['data'].pop('result')
         return response_get_form
-    
+
     @logger
     def convert(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -117,7 +117,7 @@ class Client(BaseClient):
             headers=self._headers,
             ok_codes=(422, 200, 201, 500)
         )
-    
+
     @logger
     def export_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -139,6 +139,7 @@ class Client(BaseClient):
             data=arguments,
             ok_codes=(422, 200, 201, 500)
         )
+
     @logger
     def get_file_from_url(self, url: str):
         """

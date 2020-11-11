@@ -183,7 +183,7 @@
             "integrations": "CloudConvert",
             "playbookID": "CloudConvert-test",
             "fromversion": "5.0.0",
-            "timeout": 500
+            "timeout": 1000
         },
 
         {
