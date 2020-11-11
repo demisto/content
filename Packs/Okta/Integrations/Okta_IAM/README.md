@@ -27,7 +27,7 @@ For more information, please refer to the [Identity Lifecycle Management article
 | incidentFetchInterval | Incidents Fetch Interval | False |
 | incidentType | Incident type | False |
 | fetch_query_filter | Fetch Query Filter | True |
-| fetch_time | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) | False |
+| fetch_time | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
 
 * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
 
