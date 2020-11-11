@@ -877,8 +877,13 @@ def main():
 
         task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
                                                               remote_previous_commit_hash)
+
+        print(f'Task Status - {task_status}')
+        print(f'Was Pack Modified - {pack_was_modified}')
+
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
+            print(f'This is the pack status - {pack.status}')
             pack.cleanup()
             continue
 

@@ -786,7 +786,6 @@ class Pack(object):
             task_status = True
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
-            sys.exit(1)
         finally:
             return task_status, pack_was_modified
 
