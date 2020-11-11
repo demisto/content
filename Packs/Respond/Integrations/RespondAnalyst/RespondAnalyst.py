@@ -271,8 +271,7 @@ class RestClient(BaseClient):
 
     def construct_and_send_new_escalations_query(self, tenant_id, incident_id):
         data = {"query": "query {"
-                         "newEscalations(consumer: \"XSOAR" + str(tenant_id) + str(
-            incident_id) + "\") { "
+                          "newEscalations(consumer: \"XSOAR" + tenant_id + "\", patterns: [{type: INCIDENT_ID, value: \"" + incident_id + "\"}]) { "
                            "    timeGenerated "
                            "    sourceType "
                            "    incident { "
