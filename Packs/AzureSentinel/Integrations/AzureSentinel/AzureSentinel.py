@@ -409,9 +409,9 @@ def incident_add_comment_command(client, args):
 
 def get_entity_by_id_command(client, args):
     entity_id = args.get('entity_id')
-    expend_entity_information = str_to_bool(args.get('expend_entity_information'))
+    expand_entity_information = str_to_bool(args.get('expand_entity_information'))
 
-    if not expend_entity_information:
+    if not expand_entity_information:
         url_suffix = f'entities/{entity_id}'
 
         result = client.http_request('GET', url_suffix, is_get_entity_cmd=True)
