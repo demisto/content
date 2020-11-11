@@ -664,7 +664,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
         last_incident_time: str = ''
         last_incident_id: str = ''
         for incident_id in incidents_ids:
-            if last_id_fetched == incident_id:
+            if last_id_fetched and last_id_fetched == incident_id:
                 # Skipping last incident from last cycle if fetched again
                 continue
 
