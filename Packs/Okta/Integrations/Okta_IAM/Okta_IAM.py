@@ -443,7 +443,7 @@ def fetch_incidents(client, query_filter, fetch_time, fetch_limit):
     """
 
     last_run = demisto.getLastRun()
-    incidents = last_run.get('incidents')
+    incidents = last_run.get('incidents', [])
     last_run_time = last_run.get('last_run_time', fetch_time)  # if last_run_time is undefined, use fetch_time param
     time_now = datetime.now().strftime(DATE_FORMAT)
 

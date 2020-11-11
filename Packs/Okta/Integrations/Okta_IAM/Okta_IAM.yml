@@ -49,7 +49,7 @@ configuration:
   name: mapper-out
   required: true
   type: 0
-- display: Fetch Limit (recommended less than 200)
+- display: Fetch limit (recommended value is less than 200)
   name: max_fetch
   defaultvalue: "50"
   type: 0
