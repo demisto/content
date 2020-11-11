@@ -33,7 +33,6 @@ def create_incident_field(path: Path, layout_name: str) -> str:
         'id': f'incident_{cliname}',
         'associatedTypes': [layout_name]
     })
-    field = [field]  # Remove this line after https://github.com/demisto/etc/issues/30046 fixed.
     dest_incident = path / 'IncidentFields'
 
     if not os.path.isdir(dest_incident):
