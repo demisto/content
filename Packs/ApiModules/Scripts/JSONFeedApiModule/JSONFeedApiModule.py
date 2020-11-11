@@ -75,28 +75,25 @@ class Client:
         self.cert = (cert_file, key_file) if cert_file and key_file else None
         self.tlp_color = tlp_color
 
-    def build_iterator(self, **kwargs) -> List:
-        results = []
-        for feed_name, feed in self.feed_name_to_config.items():
-            r = requests.get(
-                url=feed.get('url', self.url),
-                verify=self.verify,
-                auth=self.auth,
-                cert=self.cert,
-                headers=self.headers,
-                **kwargs
-            )
+    def build_iterator(self, feed, **kwargs) -> List:
+        r = requests.get(
+            url=feed.get('url', self.url),
+            verify=self.verify,
+            auth=self.auth,
+            cert=self.cert,
+            headers=self.headers,
+            **kwargs
+        )
 
-            try:
-                r.raise_for_status()
-                data = r.json()
-                result = jmespath.search(expression=feed.get('extractor'), data=data)
-                results.append({feed_name: result})
+        try:
+            r.raise_for_status()
+            data = r.json()
+            result = jmespath.search(expression=feed.get('extractor'), data=data)
 
-            except ValueError as VE:
-                raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
+        except ValueError as VE:
+            raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
 
-        return results
+        return result
 
 
 def test_module(client, params) -> str:
@@ -113,7 +110,15 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     :param feedTags: the indicator tags
     """
     indicators = []
-    for result in client.build_iterator(**kwargs):
+    feeds_results = []
+    for feed_name, feed in client.feed_name_to_config.items():
+        build_iterator_paging = feed.get('build_iterator_paging')
+        if build_iterator_paging:
+            feeds_results.append({feed_name: build_iterator_paging(client, feed, **kwargs)})
+        else:
+            feeds_results.append({feed_name: client.build_iterator(feed, **kwargs)})
+
+    for result in feeds_results:
         for service_name, items in result.items():
             feed_config = client.feed_name_to_config.get(service_name, {})
             indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
