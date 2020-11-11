@@ -162,6 +162,7 @@ class DBotScoreType(object):
     DBotScoreType.URL
     DBotScoreType.CVE
     DBotScoreType.ACCOUNT
+    DBotScoreType.CRYPTOCURRENCY
     :return: None
     :rtype: ``None``
     """
@@ -171,6 +172,7 @@ class DBotScoreType(object):
     URL = 'url'
     CVE = 'cve'
     ACCOUNT = 'account'
+    CRYPTOCURRENCY = 'Cryptocurrency'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -186,7 +188,8 @@ class DBotScoreType(object):
             DBotScoreType.DOMAIN,
             DBotScoreType.URL,
             DBotScoreType.CVE,
-            DBotScoreType.ACCOUNT
+            DBotScoreType.ACCOUNT,
+            DBotScoreType.CRYPTOCURRENCY,
         )
 
 
@@ -1998,7 +2001,7 @@ class Common(object):
 
     class IP(Indicator):
         """
-        IP indicator class - https://xsoar.pan.dev/docs/context-standards#ip
+        IP indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#ip
 
         :type ip: ``str``
         :param ip: IP address
@@ -2135,7 +2138,7 @@ class Common(object):
 
     class File(Indicator):
         """
-        File indicator class - https://xsoar.pan.dev/docs/context-standards#file
+        File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
         :type name: ``str``
         :param name: The full file name (including file extension).
 
@@ -2285,7 +2288,7 @@ class Common(object):
 
     class CVE(Indicator):
         """
-        CVE indicator class - https://xsoar.pan.dev/docs/context-standards#cve
+        CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatorycve
         :type id: ``str``
         :param id: The ID of the CVE, for example: "CVE-2015-1653".
         :type cvss: ``str``
@@ -2344,7 +2347,7 @@ class Common(object):
 
     class URL(Indicator):
         """
-        URL indicator - https://xsoar.pan.dev/docs/context-standards#url
+        URL indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#url
         :type url: ``str``
         :param url: The URL
 
@@ -2404,7 +2407,7 @@ class Common(object):
 
     class Domain(Indicator):
         """ ignore docstring
-        Domain indicator - https://xsoar.pan.dev/docs/context-standards#domain
+        Domain indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#domain
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
@@ -2530,7 +2533,7 @@ class Common(object):
 
     class Endpoint(Indicator):
         """ ignore docstring
-        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards#endpoint
+        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
         """
         CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
 
@@ -2600,7 +2603,7 @@ class Common(object):
 
     class Account(Indicator):
         """
-        Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards#account
+        Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#account
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If account has reputation then create DBotScore object
@@ -2671,6 +2674,46 @@ class Common(object):
 
             return ret_value
 
+    class Cryptocurrency(Indicator):
+        """
+        TODO: fix docstring
+        TODO: add docs to https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
+        URL indicator - https://xsoar.pan.dev/docs/context-standards#url
+        :type url: ``str``
+        :param url: The URL
+
+        :type detection_engines: ``int``
+        :param detection_engines: The total number of engines that checked the indicator.
+
+        :type positive_detections: ``int``
+        :param positive_detections: The number of engines that positively detected the indicator as malicious.
+
+        :type category: ``str``
+        :param category: The category associated with the indicator.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If URL has reputation then create DBotScore object
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Cryptocurrency(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, address, address_type):
+            self.address = address
+            self.address_type = address_type
+
+        def to_context(self):
+            endpoint_context = {
+                'Address': self.address,
+                'AddressType': self.address_type
+            }
+
+            ret_value = {
+                Common.Cryptocurrency.CONTEXT_PATH: endpoint_context
+            }
+
+            return ret_value
 
 def camelize_string(src_str, delim='_'):
     """
