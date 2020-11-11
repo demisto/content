@@ -486,7 +486,7 @@ def get_asset_group(client: Client, args: dict) -> Tuple[str, Dict[str, Any], Li
 
     if response:
         context = {
-            'Kenna.AssetGroup':{
+            'Kenna.AssetGroup': {
                 'ID': int(response.get('id')),
                 'Name': str(response.get('name')),
                 'QueryString': str(response.get('querystring')),
@@ -537,12 +537,13 @@ def list_asset_groups(client: Client, args: dict) -> Tuple[str, Dict[str, Any], 
 
     if response:
         wanted_keys = ['ID', 'Name', 'RiskMeterScore', 'AssetCount', 'FixCount']
-        actual_keys = ['id', 'name', 'risk_meter_score', 'asset_count','fix_count']
+        actual_keys = ['id', 'name', 'risk_meter_score', 'asset_count', 'fix_count']
         context_list = parse_response(response, wanted_keys, actual_keys)
         context = {
             'Kenna.AssetGroups(val.ID === obj.ID)': context_list
         }
-        human_readable_markdown = tableToMarkdown('Asset Groups', context_list, headers=['Name','ID','RiskMeterScore', 'AssetCount', 'FixCount'])
+        asset_group_header = ['Name', 'ID', 'RiskMeterScore', 'AssetCount', 'FixCount']
+        human_readable_markdown = tableToMarkdown('Asset Groups', context_list, headers=asset_group_header)
     else:
         human_readable_markdown = "no groups in response."
     return human_readable_markdown, context, response
@@ -578,7 +579,7 @@ def get_top_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
             cur_topfix['Fixes'] = []
 
             for fix in topfix.get('fixes'):
-                cur_fix= {}
+                cur_fix = {}
                 cur_fix['ID'] = fix.get('id')
                 cur_fix['Title'] = fix.get('title')
                 cur_fix['Diagnosis'] = fix.get('diagnosis')
@@ -603,20 +604,18 @@ def get_top_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
             'Kenna.AssetGroup.TopFixes': context_topfixes
         }
 
-
         # human readable section
         human_readable = []
         human_readable_markdown += 'Group Name: ' + str(asset_group.get('name')) + '\n'
         human_readable_markdown += 'Group ID: ' + str(asset_group.get('id')) + '\n'
         human_readable_markdown += 'Current Risk Meter Score: ' + str(asset_group.get('risk_meter_score')) + '\n'
 
-
         for topfix in topfix_groups:
             fix_titles = ''
             asset_count = ''
             for fix in topfix.get('fixes'):
                 fix_titles += str('* ' + fix.get('title') + '\n')
-                asset_count += str(len(fix.get('assets')))  + '\n'
+                asset_count += str(len(fix.get('assets'))) + '\n'
 
             curr_dict = {
                 'Fix Score Reduction': topfix.get('risk_score_reduction'),
@@ -625,7 +624,8 @@ def get_top_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
             }
             human_readable.append(curr_dict)
 
-        human_readable_markdown +=  tableToMarkdown('Top Fixes', human_readable, headers=['Fix Score Reduction','Assets Involved', 'Fixes'])
+        top_fix_header = ['Fix Score Reduction', 'Assets Involved', 'Fixes']
+        human_readable_markdown += tableToMarkdown('Top Fixes', human_readable, headers=top_fix_header)
 
     else:
         human_readable_markdown = "Group not found."
