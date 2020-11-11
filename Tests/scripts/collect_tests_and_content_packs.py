@@ -8,7 +8,6 @@ import glob
 import json
 import logging
 import os
-import random
 import sys
 from copy import deepcopy
 from distutils.version import LooseVersion
@@ -121,9 +120,6 @@ class TestConf(object):
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
-
-# number of random tests to run when there're no runnable tests
-RANDOM_TESTS_NUM = 3
 
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
@@ -417,7 +413,8 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
         if integration_id in integration_ids:
             integration_pack = integration_object.get('pack')
             if integration_pack:
-                logging.info(f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
+                logging.info(
+                    f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
                 packs_to_install.add(integration_object.get('pack'))
             else:
                 logging.warning(f'Found integration {integration_id} without pack - not adding to packs to install')
@@ -770,9 +767,10 @@ def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
         test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
-                                          server_v=server_version,
-                                          to_v=test_conf.get('toversion', '99.99.99')))), None)
+        and is_runnable_in_server_version(
+            from_v=test_conf.get('fromversion', '0.0'),
+            server_v=server_version,
+            to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -909,18 +907,6 @@ def is_test_uses_active_integration(integration_ids, conf=deepcopy(CONF)):
     return True
 
 
-def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SET), server_version='0'):
-    """Gets runnable tests for the server version"""
-    all_test_ids = conf.get_test_playbook_ids()
-    runnable_test_ids = [test_id for test_id in all_test_ids if is_test_runnable(test_id, id_set, conf, server_version)]
-    if len(runnable_test_ids) <= tests_num:
-        random_test_ids_to_run = runnable_test_ids
-    else:
-        random_test_ids_to_run = rand.sample(runnable_test_ids, k=tests_num)
-
-    return set(random_test_ids_to_run)
-
-
 def get_tests_for_pack(pack_path):
     pack_yml_files = tools.get_files_in_dir(pack_path, ['yml'])
     pack_test_playbooks = [tools.collect_ids(file) for file in pack_yml_files if
@@ -1043,20 +1029,22 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
     if not tests:
-        rand = random.Random(branch_name)
-        tests = get_random_tests(
-            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=minimum_server_version)
-        packs_to_install = get_content_pack_name_of_test(tests, id_set)
-        if changed_common:
-            logging.debug('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
-        elif sample_tests:  # Choosing 3 random tests for infrastructure testing
-            logging.debug('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
-        else:
-            logging.debug("Running Sanity check only")
+        logging.info("No tests found running sanity check only")
 
-        tests.add('TestCommonPython')  # test with no integration configured
-        tests.add('HelloWorld-Test')  # test with integration configured
+        sanity_tests = {
+            "Sanity Test - Playbook with no integration",
+            "Sanity Test - Playbook with integration",
+            "Sanity Test - Playbook with mocked integration",
+            "Sanity Test - Playbook with Unmockable Integration"
+        }
+        logging.debug(f"Adding sanity tests: {sanity_tests}")
+        tests.update(sanity_tests)
+        logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
         packs_to_install.add("HelloWorld")
+        logging.debug(
+            "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' using it"
+        )
+        packs_to_install.add("Gmail")
 
     if changed_common:
         tests.add('TestCommonPython')

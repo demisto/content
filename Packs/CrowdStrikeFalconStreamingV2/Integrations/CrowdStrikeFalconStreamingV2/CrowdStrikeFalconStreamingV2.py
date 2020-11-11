@@ -52,7 +52,7 @@ class Client(BaseClient):
         demisto.debug('Set access token successfully')
 
     def set_auth_headers(self, token: str) -> None:
-        self._headers = {'Authorization': f'Bearer {token}'}
+        self._headers.update({'Authorization': f'Bearer {token}'})
         demisto.debug('Set auth headers successfully')
 
     def discover_stream(self) -> Dict:
@@ -64,7 +64,7 @@ class Client(BaseClient):
         )
 
     def refresh_stream_session(self) -> None:
-        demisto.debug('Sending request to refresh stream')
+        demisto.debug(f'Sending request to refresh stream to {self.refresh_stream_url}')
         self._http_request(
             method='POST',
             url_suffix='',
@@ -238,6 +238,7 @@ class RefreshToken:
         self.expiry_time: int = 0
 
     async def set_access_token(self, client: Client) -> None:
+        demisto.debug('Setting access token')
         self.client = client
         if not self.token:
             token = await self.get_access_token()
@@ -255,6 +256,7 @@ class RefreshToken:
         Raises:
             RuntimeError: An error occurred (json.decoder.JSONDecodeError) trying to deserialize the API response.
         """
+        demisto.debug('Sending request to get access token')
         token = None
         body = None
         max_retries = 3
@@ -298,10 +300,12 @@ class RefreshToken:
             self.expiry_time = body.get('expires_in', MINUTES_30) - TIME_BUFFER_1_MINUTE
         if not token:
             raise RuntimeError('Failed to retrieve token')
+        demisto.debug('Got access token successfully')
         return token
 
     async def refresh_token_loop(self) -> None:
         while True:
+            demisto.debug(f'Starting refresh token loop iteration, going to sleep for {self.expiry_time}')
             await sleep(self.expiry_time)
             token = await self.get_access_token()
             self.token = token
@@ -371,6 +375,7 @@ async def long_running_loop(
         sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
         async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
             stream.set_refresh_token(refresh_token)
+            demisto.debug('Finished initializing refresh token, starting fetch events loop')
             async for event in stream.fetch_event(
                     first_fetch_time=first_fetch_time, initial_offset=offset, event_type=event_type
             ):
