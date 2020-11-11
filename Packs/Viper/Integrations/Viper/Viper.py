@@ -13,6 +13,7 @@ class ViperClient(BaseClient):
     Should only do requests and return data.
     """
 
+
     def sample_information(self, file_hash):
         '''Get Sample instance information from Viper'''
         return self._http_request(
@@ -49,12 +50,19 @@ def sample_download_helper(file_hash):
     url = f'{base_url}/malware/{file_hash}/download/'
     authorization = f'Token {api_key}'
     try:
-        sample = requests.get(url, verify=verify_certificate, headers={'Authorization': authorization, 'Accept': 'application/json'})
-
+		sample = requests.get(
+			url,
+			verify=verify_certificate, 
+			headers={
+				'Authorization': authorization, 
+				'Accept': 'application/json'
+			}
+		)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
     return sample
+
 
 def viper_download(client, args):
 
@@ -76,19 +84,20 @@ def viper_search(client, args):
         sample_info = client.sample_information(file_hash)
 
         if sample_info['data']:
+			
             filename = sample_info['data']['name']
             viper_id = sample_info['data']['id']
             mime = sample_info['data']['mime']
             file_type = sample_info['data']['type']
             size = sample_info['data']['size']
-
+			
             viper_search_results = CommandResults(
                  outputs_prefix='Viper',
                  outputs_key_field='ViperID',
                  outputs={
-                     'Name': filename,
-                     'SHA256': file_hash,
-                     'ViperID': viper_id,
+				 	'Name': filename,
+                 	'SHA256': file_hash,
+                 	'ViperID': viper_id,
                     'MIME': mime,
                     'Type': file_type,
                     'Size': size
@@ -142,5 +151,7 @@ def main():
         # demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
+
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+	
