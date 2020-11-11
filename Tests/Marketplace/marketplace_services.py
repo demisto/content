@@ -772,7 +772,7 @@ class Pack(object):
             previous_commit_hash = downloaded_metadata.get('commit', remote_previous_commit_hash)
             # set 2 commits by hash value in order to check the modified files of the diff
             current_commit = content_repo.commit(current_commit_hash)
-            previous_commit = content_repo.commit('f54d3c344fa2ec50d86829782c5bc2ea363a2903')
+            previous_commit = content_repo.commit('f54d3c344fa2ec50d86829782c5bc2ea363a2909')
 
             for modified_file in current_commit.diff(previous_commit).iter_change_type('M'):
                 if modified_file.a_path.startswith(PACKS_FOLDER):
