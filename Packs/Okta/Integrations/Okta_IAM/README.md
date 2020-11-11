@@ -68,7 +68,7 @@ Creates a user.
 
 
 #### Command Example
-```!iam-create-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"lastname\":\"Test\",\"firstname\":\"Demisto\"} using=Okta_IAM```
+```!iam-create-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"surname\":\"Test\",\"givenname\":\"Demisto\"}```
 
 #### Human Readable Output
 ### Create User Results (Okta IAM)
@@ -110,7 +110,7 @@ Updates an existing user with the data passed in the user-profile argument.
 
 
 #### Command Example
-```!iam-update-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"firstname\":\"Demisto-Test\"}```
+```!iam-update-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"givenname\":\"Demisto-Test\"}```
 
 #### Human Readable Output
 ### Update User Results (Okta IAM)
@@ -282,4 +282,4 @@ Gets a specific user assignment for an application by id.
 ### Okta User App Assignment
 |id|profile|created|credentials|status|
 |---|---|---|---|---|
-| 00uuv6y8t1iy8YXm94h7 | firstName: Test<br/>lastName: Demisto<br/>groupAdmin: false<br>resourceViewer: false<br/>admin: false<br/>licensedSheetCreator: false<br/>email: testdemisto2@paloaltonetworks.com | 2020-11-03T09:59:30.000Z | userName: testdemisto2@paloaltonetworks.com | ACTIVE |
+| 00uuv6y8t1iy8YXm94h7 | firstName: Test<br/>lastName: Demisto<br/>groupAdmin: false<br/>resourceViewer: false<br/>admin: false<br/>licensedSheetCreator: false<br/>email: testdemisto2@paloaltonetworks.com | 2020-11-03T09:59:30.000Z | userName: testdemisto2@paloaltonetworks.com | ACTIVE |

@@ -1,6 +1,6 @@
 from requests import Response, Session
 from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, enable_user_command, \
-    disable_user_command, get_mapping_fields_command, get_assigned_user_for_app_command, fetch_incidents, DATE_FORMAT
+    disable_user_command, get_mapping_fields_command, get_assigned_user_for_app_command, fetch_incidents
 from CommonServerPython import IAMErrors, IAMUserProfile, IAMActions, EntryType
 
 
@@ -408,8 +408,10 @@ def mock_get_logs_batch(url_suffix='', params=None, full_url=''):
     if url_suffix:
         # first iteration
         return first_batch, 'mock_next_page'
+
     elif full_url:
         # second iteration
         return second_batch, None
+
     # third iteration - nothing is returned
     return None, None
