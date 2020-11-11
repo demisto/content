@@ -17,6 +17,7 @@ def create_incident_field(path: Path, layout_name: str) -> str:
 
     Args:
         path: A path of the pack
+        layout_name: a layout to associate the incident field
 
     Returns:
         The path to the incident field
@@ -110,7 +111,7 @@ def main():
     layout_name = 'Hello World Test Layout'
     uploaded_entities = [
         create_layout(pack_path, layout_name),
-        create_incident_field(pack_path),
+        create_incident_field(pack_path, layout_name),
         create_incident_type(pack_path, layout_name)
     ]
     print("Created entities:")
