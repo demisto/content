@@ -436,7 +436,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """
     Test the instance configurations when using OAuth authentication.
     """
@@ -446,10 +446,10 @@ def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any
         raise e
     hr = '### Instance Configured Successfully.\n' \
          'A refresh token was generated successfully and will be used to produce new access tokens as they expire.'
-    return hr, {}, {}, True
+    return hr, {}, {}
 
 
-def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """
     Login the user using OAuth authorization
     Args:
@@ -472,7 +472,7 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
         return_error(f'Failed to login. Please verify that the provided username and password are correct, and that you'
                      f' entered the correct client id and client secret in the instance configuration (see ? for'
                      f'correct usage when using OAuth).\n\n{e}')
-    return hr, {}, {}, True
+    return hr, {}, {}
 
 
 ''' MAIN FUNCTION '''
@@ -509,6 +509,7 @@ def main() -> None:
     }
 
     command = demisto.command()
+
     demisto.debug(f'Command being called is {command}')
     try:
         if demisto.command() == 'test-module':
