@@ -38,13 +38,13 @@ SOURCE_PATH="content/packs"
 # ====== TESTING CONFIGURATION ======
 
 GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
-SOURCE_TESTING_PATH="wow/content/packs"
+SOURCE_TESTING_PATH="dev/content/packs"
 
-if [ ! -n "{$BUCKET_UPLOAD" ]; then
+if [ ! -n "${BUCKET_UPLOAD}" ]; then
   echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
   gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
 else
-  echo "Copying master files at: gs://$GCS_MARKET_TESTING_BUCKET/$SOURCE_TESTING_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
+  echo "Copying testing files at: gs://$GCS_MARKET_TESTING_BUCKET/$SOURCE_TESTING_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
   gsutil -m cp -r "gs://$GCS_MARKET_TESTING_BUCKET/$SOURCE_TESTING_PATH" "gs://$PACKS_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
 fi
 echo "Finished copying successfully."
@@ -60,7 +60,7 @@ if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
       echo "Did not get content packs to update in the bucket."
     else
       echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
-      python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p $CONTENT_PACKS_TO_INSTALL -o true -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt false --id_set_path $ID_SET -bu false
+      python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p $CONTENT_PACKS_TO_INSTALL -o true -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt false --id_set_path $ID_SET -bu false -c $CIRCLE_BRANCH
       echo "Finished updating content packs successfully."
     fi
   fi
@@ -84,7 +84,7 @@ else
       PACKS_LIST="all"
     fi
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -bu $BUCKET_UPLOAD_FLOW -c "$FORCE_PREVIOUS_COMMIT" -pb "$GCS_PRIVATE_BUCKET"
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -bu $BUCKET_UPLOAD_FLOW -fc "$FORCE_PREVIOUS_COMMIT" -pb "$GCS_PRIVATE_BUCKET" -c $CIRCLE_BRANCH
   echo "Finished updating content packs successfully."
 fi
 

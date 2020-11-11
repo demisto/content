@@ -886,7 +886,7 @@ jobs:
                   ID_SET=$CIRCLE_ARTIFACTS/id_set.json
                   GCS_PATH=$(mktemp)
                   echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -o false -rt true -bu false
+                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -o false -rt true -bu false -c $CIRCLE_BRANCH
                   rm $GCS_PATH
                 when: on_success
             - run:
@@ -967,36 +967,6 @@ jobs:
             - *comment_on_contrib_pr
             - *destroy_instances
             - *store_artifacts
-  
-  Force Upload Packs To Marketplace:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - *attach_workspace
-      - *add_ssh_keys
-      - *prepare_environment
-      - *check_user_permissions_to_upload_packs
-      - run:
-          name: Force Upload Packs To Marketplace Storage
-          command: |
-            EXTRACT_FOLDER=$(mktemp -d)
-            PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-            PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-            GCS_PATH=$(mktemp)
-            CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
-            CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
-            echo $GCS_MARKET_KEY > $GCS_PATH
-
-            GCS_BUILD_BUCKET="marketplace-ci-build"
-            GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
-            SOURCE_TESTING_PATH="wow/content/packs"
-
-            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb $GCS_MARKET_TESTING_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -o true -pbp "$SOURCE_TESTING_PATH"
-            rm $GCS_PATH
-          when: on_success
-      - *destroy_instances
-      - *store_artifacts
 
   Force Pack Upload:
     <<: *container_config
@@ -1016,7 +986,7 @@ jobs:
             ID_SET=$CIRCLE_ARTIFACTS/id_set.json
             GCS_PATH=$(mktemp)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o true -bu false -rt true
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o true -bu false -rt true -c $CIRCLE_BRANCH
             rm $GCS_PATH
           when: on_success
       - *destroy_instances
@@ -1050,7 +1020,7 @@ jobs:
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
                   GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
-                  SOURCE_TESTING_PATH="wow/content/packs"
+                  SOURCE_TESTING_PATH="dev/content/packs"
 
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_TESTING_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -o false -pbp "$SOURCE_TESTING_PATH"
                   rm $GCS_PATH 
@@ -1320,28 +1290,6 @@ workflows:
           requires:
             - Setup Environment
       - Force Pack Upload:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - Create Instances
-
-  force_pack_bucket_upload:
-    when: << pipeline.parameters.force_pack_upload >>
-    jobs:
-      - Setup Environment:
-          context: bucket_upload_env
-      - Create Instances:
-          context: bucket_upload_env
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - Setup Environment
-      - Force Upload Packs To Marketplace:
-          context: bucket_upload_env
           filters:
             branches:
               only:

@@ -459,7 +459,7 @@ def get_content_git_client(content_repo_path: str):
 
 
 def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket_upload_flow: bool,
-                            force_previous_commit: str, is_private_build: bool = False):
+                            force_previous_commit: str, is_private_build: bool = False, circle_branch: str = "master"):
     """ Returns recent commits hashes (of head and remote master)
 
     Args:
@@ -468,6 +468,7 @@ def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket
         is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
         is_private_build (bool): indicates whether its a run of private build or not
         force_previous_commit (str): if exists, this should be the commit to diff with
+        circle_branch (str): CircleCi branch of current build
 
     Returns:
         str: last commit hash of head.
@@ -483,7 +484,8 @@ def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket
             logging.critical(f'Force commit {force_previous_commit} does not exist in content repo. Additional '
                              f'info:\n {e}')
             sys.exit(1)
-    return head_commit, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build)
+    return head_commit, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build,
+                                            circle_branch)
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
@@ -728,8 +730,9 @@ def option_handler():
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
-    parser.add_argument('-c', '--force_previous_commit', help='A commit to be used as the previous commit to diff with')
+    parser.add_argument('-fc', '--force_previous_commit', help='A commit to be used as the previous commit to diff with')
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-c', '--circle_branch', help="CircleCi branch of current build", required=True)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -775,7 +778,7 @@ def handle_github_response(response: json) -> dict:
     return res_dict
 
 
-def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build):
+def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build, circle_branch):
     """ If running in bucket upload workflow we want to get the commit in the index which is the index
     We've last uploaded to production bucket. Otherwise, we are in a commit workflow and the diff should be from the
     head of origin/master
@@ -785,6 +788,7 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, 
         index_folder_path (str): the path to the local index folder
         is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
         is_private_build (bool): indicates whether its a run of private build or not
+        circle_branch (str): CircleCi branch of current build
 
     Returns:
         str: previous commit depending on the flow the script is running
@@ -794,11 +798,18 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, 
         return get_last_upload_commit_hash(content_repo, index_folder_path)
     elif is_private_build:
         previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
-        logging.info(f"Using previous origin/master head commit hash {previous_master_head_commit} to diff with.")
+        logging.info(f"Using origin/master HEAD~1 commit hash {previous_master_head_commit} to diff with.")
         return previous_master_head_commit
     else:
-        previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
-        logging.info(f"Using previous origin/master head commit hash {previous_master_head_commit} to diff with.")
+        if circle_branch == 'master':
+            head_str = "HEAD~1"
+            # if circle branch is master than current commit is origin/master HEAD, so we need to diff with HEAD~1
+            previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
+        else:
+            head_str = "HEAD"
+            # else we are on a regular branch and the diff should be done with origin/master HEAD
+            previous_master_head_commit = content_repo.commit('origin/master').hexsha
+        logging.info(f"Using origin/master {head_str} commit hash {previous_master_head_commit} to diff with.")
         return previous_master_head_commit
 
 
@@ -910,6 +921,7 @@ def main():
     is_bucket_upload_flow = option.bucket_upload
     force_previous_commit = option.force_previous_commit
     private_bucket_name = option.private_bucket_name
+    circle_branch = option.circle_branch
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -925,7 +937,8 @@ def main():
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
-                                                                        is_bucket_upload_flow, force_previous_commit)
+                                                                        is_bucket_upload_flow, force_previous_commit,
+                                                                        circle_branch)
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs, previous_commit_hash)
