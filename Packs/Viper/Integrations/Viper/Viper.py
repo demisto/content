@@ -52,9 +52,9 @@ def sample_download_helper(file_hash):
     try:
 		sample = requests.get(
 			url,
-			verify=verify_certificate, 
+			verify=verify_certificate,
 			headers={
-				'Authorization': authorization, 
+				'Authorization': authorization,
 				'Accept': 'application/json'
 			}
 		)
