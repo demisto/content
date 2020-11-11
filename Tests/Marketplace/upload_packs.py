@@ -878,14 +878,10 @@ def main():
         task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
                                                               remote_previous_commit_hash)
 
-        print(f'Task Status - {task_status}')
-        print(f'Was Pack Modified - {pack_was_modified}')
-
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
-            print(f'This is the pack status - {pack.status}')
             pack.cleanup()
-            continue
+            sys.exit(1)
 
         (task_status, skipped_pack_uploading, full_pack_path) = \
             pack.upload_to_storage(zip_pack_path, pack.latest_version,
