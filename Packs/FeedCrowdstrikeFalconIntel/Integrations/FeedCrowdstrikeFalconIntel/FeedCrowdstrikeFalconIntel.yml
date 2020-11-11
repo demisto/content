@@ -127,11 +127,6 @@ configuration:
   name: custom_filter
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
-  type: 8
-  required: false
 description: The CrowdStrike intelligence team tracks the activities of threat actor
   groups and advanced persistent threats (APTs) to understand as much as possible
   about their known aliases, targets, methods, and more. This integration retrieves

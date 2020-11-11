@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9c115f98-250c-4cef-890a-d24354765be7
+    taskid: b9e9f70f-04f2-4558-81a8-f341508d2a29
     type: start
     task:
-      id: 9c115f98-250c-4cef-890a-d24354765be7
+      id: b9e9f70f-04f2-4558-81a8-f341508d2a29
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: fd3c9383-9092-426d-87b5-c94c5fec9450
+    taskid: e867e12b-cdff-49c7-8cd6-f6702fbb5a1d
     type: regular
     task:
-      id: fd3c9383-9092-426d-87b5-c94c5fec9450
+      id: e867e12b-cdff-49c7-8cd6-f6702fbb5a1d
       version: -1
       name: Fetch from instance
       script: FetchFromInstance
@@ -63,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: bfc8f8d1-f4a6-4db0-88fa-eef3cb3592a6
+    taskid: fb1a1031-8593-458e-89d1-a679634f6400
     type: regular
     task:
-      id: bfc8f8d1-f4a6-4db0-88fa-eef3cb3592a6
+      id: fb1a1031-8593-458e-89d1-a679634f6400
       version: -1
       name: Get detections by filter
       script: '|||cs-falcon-search-detection'
@@ -95,10 +95,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: f642be5d-b84b-4667-8256-50ce654d8425
+    taskid: f7798670-cc89-4ab5-86e9-12fb9ab038b3
     type: condition
     task:
-      id: f642be5d-b84b-4667-8256-50ce654d8425
+      id: f7798670-cc89-4ab5-86e9-12fb9ab038b3
       version: -1
       name: Assert detections were fetched
       type: condition
@@ -137,10 +137,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 3291fe01-7a3a-48a3-880e-0f7fda01c839
+    taskid: d1aa307f-066d-4454-8e33-942ccb35a38c
     type: regular
     task:
-      id: 3291fe01-7a3a-48a3-880e-0f7fda01c839
+      id: d1aa307f-066d-4454-8e33-942ccb35a38c
       version: -1
       name: Get behavior
       script: '|||cs-falcon-get-behavior'
@@ -168,10 +168,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 66dca8cd-3006-42a3-8191-9e87c3dbe8b8
+    taskid: 071c0beb-3c6e-40b1-8fd0-6eb2da2b60c4
     type: condition
     task:
-      id: 66dca8cd-3006-42a3-8191-9e87c3dbe8b8
+      id: 071c0beb-3c6e-40b1-8fd0-6eb2da2b60c4
       version: -1
       name: Assert 'suspicious_activity' scenario
       type: condition
@@ -208,10 +208,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: d53235a3-961d-44c7-8f4e-ea301c00e4e6
+    taskid: 15798f90-a1fb-4e06-85e7-2c56a6817b18
     type: regular
     task:
-      id: d53235a3-961d-44c7-8f4e-ea301c00e4e6
+      id: 15798f90-a1fb-4e06-85e7-2c56a6817b18
       version: -1
       name: Get multiple devices
       script: '|||cs-falcon-search-device'
@@ -245,10 +245,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 79e2c686-e915-440c-827c-53fe005d89f1
+    taskid: d4a0ddc3-04e4-45f0-8cc0-689e29665f94
     type: condition
     task:
-      id: 79e2c686-e915-440c-827c-53fe005d89f1
+      id: d4a0ddc3-04e4-45f0-8cc0-689e29665f94
       version: -1
       name: Assert devices were fetched
       type: condition
@@ -287,10 +287,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 2c597d72-adc3-452f-8db0-2d348fd0080b
+    taskid: 33f3677a-aee2-42cc-858f-4cabcad96a2e
     type: title
     task:
-      id: 2c597d72-adc3-452f-8db0-2d348fd0080b
+      id: 33f3677a-aee2-42cc-858f-4cabcad96a2e
       version: -1
       name: Done
       type: title
@@ -301,7 +301,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3870
+          "y": 3520
         }
       }
     note: false
@@ -311,10 +311,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 8c34aae8-9ce3-4d46-84bd-42ebf5e71243
+    taskid: 44a43c55-47fb-433d-82c5-5bb6a9d353af
     type: regular
     task:
-      id: 8c34aae8-9ce3-4d46-84bd-42ebf5e71243
+      id: 44a43c55-47fb-433d-82c5-5bb6a9d353af
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -347,10 +347,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: cfdd5833-7bd4-466e-8eaf-974af3751f6b
+    taskid: 38ff9799-7a06-4004-8c86-5649ddd051ac
     type: regular
     task:
-      id: cfdd5833-7bd4-466e-8eaf-974af3751f6b
+      id: 38ff9799-7a06-4004-8c86-5649ddd051ac
       version: -1
       name: Search for domain IOCs
       description: Returns a list of your uploaded IOCs that match the search criteria
@@ -388,10 +388,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: dec9b730-99ed-47cc-8909-bbf2d7f4c43a
+    taskid: c3b42102-f758-4026-8470-ba83433d4a42
     type: condition
     task:
-      id: dec9b730-99ed-47cc-8909-bbf2d7f4c43a
+      id: c3b42102-f758-4026-8470-ba83433d4a42
       version: -1
       name: Assert domains were fetched
       type: condition
@@ -450,10 +450,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 7eef9ca5-81ba-415a-8477-4a3efbdb0d2b
+    taskid: 32a3f045-f07a-4acc-8491-b3389bfc4404
     type: regular
     task:
-      id: 7eef9ca5-81ba-415a-8477-4a3efbdb0d2b
+      id: 32a3f045-f07a-4acc-8491-b3389bfc4404
       version: -1
       name: Create test IOC
       description: Uploads an indicator for CrowdStrike to monitor.
@@ -493,10 +493,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 5191b205-a142-4e25-81f6-649dfe5ab626
+    taskid: 864dce4a-a230-4c82-83ac-5bf76cc69562
     type: condition
     task:
-      id: 5191b205-a142-4e25-81f6-649dfe5ab626
+      id: 864dce4a-a230-4c82-83ac-5bf76cc69562
       version: -1
       name: Assert IOC was created
       type: condition
@@ -547,10 +547,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: df8ffb0b-b41b-4f04-876b-140882c9ba20
+    taskid: c9212b85-b8c9-40bd-88a7-8c9c7b2b2fae
     type: regular
     task:
-      id: df8ffb0b-b41b-4f04-876b-140882c9ba20
+      id: c9212b85-b8c9-40bd-88a7-8c9c7b2b2fae
       version: -1
       name: Update IOC
       description: Updates an indicator for CrowdStrike to monitor.
@@ -588,10 +588,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 20119b79-6453-446a-8f2b-645ab4b3ca16
+    taskid: f5c04a84-6a86-4903-89c8-96c49184896a
     type: condition
     task:
-      id: 20119b79-6453-446a-8f2b-645ab4b3ca16
+      id: f5c04a84-6a86-4903-89c8-96c49184896a
       version: -1
       name: Assert IOC was updated
       type: condition
@@ -634,10 +634,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: c8e243b2-c5c8-43fd-80c0-40b3b6e84af5
+    taskid: 7797c10d-47f1-491b-85c7-ed8dcc8757de
     type: regular
     task:
-      id: c8e243b2-c5c8-43fd-80c0-40b3b6e84af5
+      id: 7797c10d-47f1-491b-85c7-ed8dcc8757de
       version: -1
       name: Delete test IOC
       description: Deletes a monitored indicator.
@@ -668,10 +668,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 26af97ff-2cf8-410b-8157-552921954f76
+    taskid: 6d128b56-a620-41eb-8ddd-a9219dd96de6
     type: regular
     task:
-      id: 26af97ff-2cf8-410b-8157-552921954f76
+      id: 6d128b56-a620-41eb-8ddd-a9219dd96de6
       version: -1
       name: Clear context
       description: Delete field from context
@@ -704,10 +704,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 383250de-5df5-4a99-8432-2efb9407db74
+    taskid: 2a24e0dd-e299-4412-8ea6-3f0049908e67
     type: regular
     task:
-      id: 383250de-5df5-4a99-8432-2efb9407db74
+      id: 2a24e0dd-e299-4412-8ea6-3f0049908e67
       version: -1
       name: Get just created test IOC
       description: Get the full definition of one or more indicators that you are
@@ -739,10 +739,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 2ac9b381-a814-4113-8782-81bdf3be2281
+    taskid: ab1e6031-1367-4e5c-8d5e-6372cbfe9a87
     type: condition
     task:
-      id: 2ac9b381-a814-4113-8782-81bdf3be2281
+      id: ab1e6031-1367-4e5c-8d5e-6372cbfe9a87
       version: -1
       name: Assert IOC was fetched
       type: condition
@@ -793,10 +793,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 4ea72fd3-6cd3-47a2-85e2-84dae1508277
+    taskid: 934054f5-0ade-453b-8d7f-a0e3d45b580c
     type: regular
     task:
-      id: 4ea72fd3-6cd3-47a2-85e2-84dae1508277
+      id: 934054f5-0ade-453b-8d7f-a0e3d45b580c
       version: -1
       name: Check device count for IOC
       description: Number of hosts that observed the given IOC.
@@ -827,10 +827,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: e1f1994f-19c6-4872-850a-14ef1a6cd06d
+    taskid: 3143c142-9cfa-4a57-880a-3fcb0179c67d
     type: condition
     task:
-      id: e1f1994f-19c6-4872-850a-14ef1a6cd06d
+      id: 3143c142-9cfa-4a57-880a-3fcb0179c67d
       version: -1
       name: Assert Device ID was fetched correctly
       type: condition
@@ -838,7 +838,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "22"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -887,150 +887,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "22":
-    id: "22"
-    taskid: a4a0fd96-de60-4127-89d5-08b35001884d
-    type: regular
-    task:
-      id: a4a0fd96-de60-4127-89d5-08b35001884d
-      version: -1
-      name: Get process details
-      description: Retrieves the details of a process, according to process ID, that
-        is running or that previously ran.
-      script: '|||cs-falcon-process-details'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      ids:
-        simple: pid:15dbb9d8f06b45fe9f61eb46e829d986:650164094720
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: aa9356dc-e76f-404b-831e-218722c43a3e
-    type: condition
-    task:
-      id: aa9356dc-e76f-404b-831e-218722c43a3e
-      version: -1
-      name: Assert details
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CrowdStrike.Process.process_id
-            iscontext: true
-          right:
-            value:
-              simple: 15dbb9d8f06b45fe9f61eb46e829d986:650164094720
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CrowdStrike.Process.process_id_local
-            iscontext: true
-          right:
-            value:
-              simple: "650164094720"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CrowdStrike.Process.device_id
-            iscontext: true
-          right:
-            value:
-              simple: 15dbb9d8f06b45fe9f61eb46e829d986
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CrowdStrike.Process.file_name
-            iscontext: true
-          right:
-            value:
-              simple: \Device\HarddiskVolume1\Program Files (x86)\Google\Chrome\Application\chrome.exe
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CrowdStrike.Process.command_line
-            iscontext: true
-          right:
-            value:
-              simple: '"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
-                --type=utility --utility-sub-type=network.mojom.NetworkService --field-trial-handle=1668,1163143545001209172,16811972915961847889,131072
-                --lang=en-US --service-sandbox-type=network --enable-audio-service-sandbox
-                --mojo-platform-channel-handle=1964 /prefetch:8'
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CrowdStrike.Process.start_timestamp_raw
-            iscontext: true
-          right:
-            value:
-              simple: "132460167512852140"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CrowdStrike.Process.start_timestamp
-            iscontext: true
-          right:
-            value:
-              simple: "2020-10-01T09:05:51Z"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CrowdStrike.Process.stop_timestamp_raw
-            iscontext: true
-          right:
-            value:
-              simple: "132460946259334768"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CrowdStrike.Process.stop_timestamp
-            iscontext: true
-          right:
-            value:
-              simple: "2020-10-02T06:43:45Z"
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 3695
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3885,
+        "height": 3535,
         "width": 810,
         "x": 50,
         "y": 50

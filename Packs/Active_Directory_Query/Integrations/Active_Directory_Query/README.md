@@ -11,7 +11,7 @@ Use Cases
 * Use the `!ad-search` command to run a query for Active Directory objects (users, contacts, computers, and so on). This command enables you to determine which data fields should be returned for the objects.
 ##### Manage users and contacts
 
-* The integration enables you to create, update and delete users and contacts in Active Directory using the following commands: 
+* The integration enables you to create, update, and delete users and contacts in Active Directory using the following commands: 
     + `ad-create-user`
     + `ad-create-contact`
     + `ad-update-user`
@@ -28,15 +28,15 @@ Use Cases
 
 ##### Manage Computers
 
-* Modify computer organizational unit using the ‘ad-modify-computer-ou’ command.
+* Modify a computer organizational unit using the ‘ad-modify-computer-ou’ command.
 * Add or remove a computer from a group using the following commands: 
     + `ad-add-to-group`
     + `ad-remove-from-group`
 
 ##### IAM premium pack uses
 
-* Create of modify Active Directory users.
-* Manage users accounts and their status
+* Create or modify Active Directory users.
+* Manage user accounts and their status
 
 Configure Active Directory Query v2 on Demisto
 ----------------------------------------------
@@ -46,20 +46,30 @@ Configure Active Directory Query v2 on Demisto
 2. Click **Add instance** to create and configure a new integration instance. 
     *  **Name**: a textual name for the integration instance.
     *  **Server IP address (e.g., 192.168.0.1)**: The Server IP that should be used to access Active Directory.
-    *  **Port**: Server port. If not specified, default the port is 389, or 636 for LDAPS
+    *  **Port**: Server port. If not specified, the default port is 389, or 636 for LDAPS.
     *  **Credentials**: User credentials.
     *  **NTLM authentication**: Indicates whether to use NTLM authentication.
     *  **Base DN (for example “dc=company,dc=com”)**: The basic hierarchical path of objects in the active directory.
     *  **Page size**: The number of results to be returned, per page (page - response content from AD server), from a query. This may effect query run time.
     *  **Secure Connection**: Use SSL secure connection or ‘None’ (communication over clear-text).
-    *  **Trust any certificate (not secure)**:Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate)
+    *  **Trust any certificate (not secure)**:Select to avoid server certification validation. You may want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to a missing CA certificate)
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+##### Identity Lifecycle Management premium pack configuration
+
+The premium ILM content pack introduces new functionality that uses both an incoming and an outgoing mapper.
+
+1. Configure the "Incoming Mapper" with the name of the incoming mapper that you're using. ILM's default mapper is "User Profile - Active Directory (Incoming)".
+2. Configure the "Outgoing Mapper" with the name of the outgoing mapper that you're using. ILM's default mapper is "User Profile - Active Directory (Outgoing)".
+
+To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and *not* in the "Mapper (outgoing)" dropdown list selector.
 
 Commands
 --------
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 2. [Expire a password: ad-expire-password](#expire-a-password)
 4. [Create an AD user: ad-create-user](#create-an-ad-user)
@@ -105,7 +115,7 @@ There is no context output for this command.
 
 ### 2. Create an AD user
 
-Creates a new user in Active Directory.
+Creates a user in Active Directory.
 
 ##### Base Command
 
@@ -119,11 +129,11 @@ Creates a new user in Active Directory.
 | password | The initial password to set for the user. The user will be asked to change the password after the initial login. | Required |
 | user-dn | The user’s DN. | Required |
 | display-name | The user’s display name. | Optional |
-| description | The user’s email address. | Optional |
+| description | A description of the user or their function. | Optional |
 | email | The user’s email address. | Optional |
 | telephone-number | The user’s telephone number. | Optional |
 | title | The user’s job title. | Optional |
-| custom-attributes | ets basic or custom attributes of the user object. For example, custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company name\"}" | Optional |     
+| custom-attributes | set basic or custom attributes of the user object. For example, custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company name\"}" | Optional |     
 
 ##### Context Output
 
@@ -737,15 +747,15 @@ Used in the IAM premium pack.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
+| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | String | Gives the user information if the API is success else error information | 
+| IAM.Vendor.details | String | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The email address of the employee. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
 | IAM.Vendor.instanceName | String | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
+| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
 | IAM.Vendor.action | String | The command name. | 
 
@@ -776,22 +786,22 @@ Used in the IAM premium pack.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
-| create-if-not-exists | If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
+| create-if-not-exists | When true, the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
+| IAM.Vendor.active | Boolean | When true, indicates the employee's status is active. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | String | Gives the user information if the API is success else error information | 
+| IAM.Vendor.details | String | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The email address of the employee. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
 | IAM.Vendor.instanceName | String | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
+| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
 | IAM.Vendor.action | String | The command name. | 
 
@@ -829,15 +839,15 @@ Used in the IAM premium pack.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
+| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | String | Gives the user information if the API is success else error information | 
+| IAM.Vendor.details | String | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The email address of the employee. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
 | IAM.Vendor.instanceName | String | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
+| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
 | IAM.Vendor.action | String | The command name. | 
 
@@ -866,21 +876,21 @@ Used in the IAM premium pack.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
-| create-if-not-exists | If true the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
+| create-if-not-exists | When true, the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
+| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | String | Gives the user information if the API is success else error information | 
+| IAM.Vendor.details | String | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The email address of the employee. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
 | IAM.Vendor.instanceName | String | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
+| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
 | IAM.Vendor.action | String | The command name. | 
 
@@ -913,15 +923,15 @@ Used in the IAM premium pack.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
+| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | String | Gives the user information if the API is success else error information | 
+| IAM.Vendor.details | String | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The email address of the employee. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
 | IAM.Vendor.instanceName | String | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
+| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
 | IAM.Vendor.action | String | The command name. | 
 

@@ -3453,6 +3453,24 @@ def unfold(s):
     return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
 
 
+def decode_content(mime):
+    """
+      Decode content
+    """
+    charset = mime.get_content_charset()
+    payload = mime.get_payload(decode=True)
+    try:
+        if payload:
+            if charset:
+                return payload.decode(charset)
+            else:
+                return payload.decode()
+        else:
+            return ''
+    except Exception:
+        return payload
+
+
 def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
     global ENCODINGS_TYPES
 
@@ -3627,10 +3645,10 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 # This is because SMTP duplicate dots for lines that start with `.` and get_payload() doesn't format
                 # this correctly
                 part._payload = part._payload.replace('=\r\n..', '=\r\n.')
-                html = get_utf_string(part.get_payload(decode=True), 'HTML')
+                html = get_utf_string(decode_content(part), 'HTML')
 
             elif part.get_content_type() == 'text/plain':
-                text = get_utf_string(part.get_payload(decode=True), 'TEXT')
+                text = get_utf_string(decode_content(part), 'TEXT')
         email_data = None
         # if we are parsing a signed attachment there can be one of two options:
         # 1. it is 'multipart/signed' so it is probably a wrapper and we can ignore the outer "email"
