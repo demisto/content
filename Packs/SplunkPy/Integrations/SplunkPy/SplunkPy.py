@@ -204,8 +204,11 @@ def notable_to_incident(event):
         incident["details"] = event["rule_description"]
     if demisto.get(event, "_time"):
         incident["occurred"] = event["_time"]
+        demisto.debug(f'\n\n occurred time in if: {incident["occurred"]} \n\n')
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
+        demisto.debug(f'\n\n occurred time in else: {incident["occurred"]} \n\n')
+
     event = replace_keys(event) if REPLACE_FLAG else event
     incident["rawJSON"] = json.dumps(event)
     labels = []
@@ -465,6 +468,19 @@ def splunk_results_command(service):
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
+def get_latest_incident_time(incidents):
+    def get_incident_time_datetime(incident):
+        incident_time = incident["occurred"]
+        incident_time_without_timezone = incident_time.split('.')[0]
+        incident_time_datetime = datetime.strptime(incident_time_without_timezone, SPLUNK_TIME_FORMAT)
+        return incident_time_datetime
+
+    latest_incident = max(incidents, key=get_incident_time_datetime)
+    latest_incident_time = latest_incident["occurred"]
+    demisto.debug(f'\n\n latest incident time is:  {latest_incident_time}\n\n')
+    return latest_incident_time
+
+
 def fetch_incidents(service):
     last_run = demisto.getLastRun() and demisto.getLastRun()['time']
     search_offset = demisto.getLastRun().get('offset', 0)
@@ -506,6 +522,7 @@ def fetch_incidents(service):
 
     oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
+
     for item in reader:
         inc = notable_to_incident(item)
         demisto.debug(f'\n\n inc after notable_to_incident: {inc} \n\n')
@@ -515,10 +532,12 @@ def fetch_incidents(service):
                   f'the query: {searchquery_oneshot} is: {len(incidents)}.\n  '
                   f'incidents found: {incidents} \n\n')
 
-
     demisto.incidents(incidents)
-    if len(incidents) < FETCH_LIMIT:
-        demisto.setLastRun({'time': now, 'offset': 0})
+    if len(incidents) == 0:
+        demisto.setLastRun({'time': last_run, 'offset': 0})
+    elif len(incidents) < FETCH_LIMIT:
+        latest_incident_fetched_time = get_latest_incident_time(incidents)
+        demisto.setLastRun({'time': latest_incident_fetched_time, 'offset': 0})
     else:
         demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
 
