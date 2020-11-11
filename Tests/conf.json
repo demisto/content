@@ -2,16 +2,16 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-         {
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
             "fromversion": "5.0.0"
         },
         {
-              "integrations": "GoogleCalendar",
-              "playbookID": "GoogleCalendar-Test",
-              "fromversion": "5.0.0"
-         },
+            "integrations": "GoogleCalendar",
+            "playbookID": "GoogleCalendar-Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
@@ -19,6 +19,11 @@
         {
             "integrations": "EmailRepIO",
             "playbookID": "TestEmailRepPlaybook",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Palo Alto Networks Threat Vault",
+            "playbookID": "PANW Threat Vault - Signature Search - Test",
             "fromversion": "5.0.0"
         },
         {
@@ -3062,7 +3067,7 @@
             "integrations": "CrowdStrikeMalquery",
             "playbookID": "CrowdStrikeMalquery-Test",
             "fromversion": "5.0.0",
-            "timeout": 1500
+            "timeout": 2500
         },
         {
             "integrations": "Sixgill_Darkfeed",
@@ -3242,7 +3247,7 @@
         "TestEmailRepPlaybook": "Issue 30070",
         "CounterCraft - Test": "Issue 30069",
         "Test-BPA": "Issue 28406",
-        "Indicators reputation-.json Test": "Issue 30116"
+        "SymantecEndpointProtection_Test": "Issue 30157"
     },
     "skipped_integrations": {
         
@@ -3339,7 +3344,7 @@
         "SNDBOX": "Issue 28826",
         "illuminate": "Will be replaced by analyst1 - Issue 9401",
         "Workday": "License expired Issue: 29590, 29595",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
