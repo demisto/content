@@ -1712,10 +1712,9 @@ class TestBaseClient:
 
     def test_exception_response_text_parsing_when_ok_code_is_invalid(self, requests_mock):
         from CommonServerPython import DemistoException
-        text_response = b'{"error": "additional text"}'
         requests_mock.get('http://example.com/api/v2/event',
                           status_code=400,
-                          text=text_response)
+                          text='{"error": "additional text"}')
         try:
             self.client._http_request('get', 'event', ok_codes=(200,))
         except DemistoException as e:
