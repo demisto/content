@@ -645,7 +645,6 @@ Total number of packs: {len(packs_list)}
         skipped_packs_table = _build_summary_table(skipped_packs)
         logging.warning(f"Number of skipped packs: {len(skipped_packs)}")
         logging.warning(f"Skipped packs:\n{skipped_packs_table}")
-        sys.exit(1)
     if failed_packs:
         failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
         logging.critical(f"Number of failed packs: {len(failed_packs)}")
@@ -882,7 +881,7 @@ def main():
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
-            continue
+            sys.exit(1)
 
         (task_status, skipped_pack_uploading, full_pack_path) = \
             pack.upload_to_storage(zip_pack_path, pack.latest_version,

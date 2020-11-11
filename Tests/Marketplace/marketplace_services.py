@@ -14,7 +14,6 @@ import base64
 import urllib.parse
 import logging
 import warnings
-import sys
 from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
