@@ -2850,11 +2850,11 @@ def test_arg_to_timestamp_valid_inputs():
 
     # hard coded date
     result = arg_to_timestamp(
-        arg='2020-11-10 21:43:43',
+        arg='2020-11-10T21:43:43Z',
         arg_name='foo'
     )
 
-    assert result == 1605037423
+    assert result == 1605044623
 
     # relative dates also work
     result = arg_to_timestamp(

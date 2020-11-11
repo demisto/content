@@ -518,10 +518,10 @@ def convert_to_demisto_severity(severity: str) -> int:
     # might be required in your integration, so a dedicated function is
     # recommended. This mapping should also be documented.
     return {
-        'Low': 1,  # low severity
-        'Medium': 2,  # medium severity
-        'High': 3,  # high severity
-        'Critical': 4   # critical severity
+        'Low': IncidentSeverity.LOW,
+        'Medium': IncidentSeverity.MEDIUM,
+        'High': IncidentSeverity.HIGH,
+        'Critical': IncidentSeverity.CRITICAL
     }[severity]
 
 
