@@ -104,13 +104,18 @@ def handle_exception(user_profile, e, action):
         e (DemistoException): The exception error that holds the response json.
         action (IAMActions): An enum represents the current action (get, update, create, etc).
     """
-    error_message = get_error_details(e.res)
+    try:
+        resp = e.res.json()
+        error_message = get_error_details(e.res.json())
+    except ValueError:
+        resp = e.res.text
+        error_message = ''
 
     user_profile.set_result(action=action,
                             success=False,
-                            error_code='',  # todo: fix in CSP if needed
+                            error_code=e.res.status_code,
                             error_message=error_message,
-                            details=e.res)
+                            details=resp)
 
 
 def get_error_details(res):
