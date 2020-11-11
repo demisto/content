@@ -1,4 +1,5 @@
 from collections import deque
+from copy import copy
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
@@ -9,6 +10,7 @@ from fastapi import Depends, FastAPI, Request, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
 from pydantic import BaseModel
+from uvicorn.logging import AccessFormatter
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -28,6 +30,23 @@ app = FastAPI(logger=DebugLogger(), docs_url=None, redoc_url=None, openapi_url=N
 
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
+
+
+class GenericWebhookAccessFormatter(AccessFormatter):
+    def get_user_agent(self, scope: Dict) -> str:
+        headers = scope.get('headers', [])
+        user_agent_header = list(filter(lambda header: header[0].decode() == 'user-agent', headers))
+        user_agent = ''
+        if len(user_agent_header) == 1:
+            user_agent = user_agent_header[0][1].decode()
+        return user_agent
+
+    def formatMessage(self, record):
+        recordcopy = copy(record)
+        scope = recordcopy.__dict__['scope']
+        user_agent = self.get_user_agent(scope)
+        recordcopy.__dict__.update({'user_agent': user_agent})
+        return super().formatMessage(recordcopy)
 
 
 @app.post('/')
@@ -131,9 +150,13 @@ def main() -> None:
 
                     integration_logger = IntegrationLogger()
                     integration_logger.buffering = False
-                    log_config = uvicorn.config.LOGGING_CONFIG
+                    log_config = dict(uvicorn.config.LOGGING_CONFIG)
                     log_config['handlers']['default']['stream'] = integration_logger
                     log_config['handlers']['access']['stream'] = integration_logger
+                    log_config['formatters']['access'] = {
+                        '()': GenericWebhookAccessFormatter,
+                        'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
+                    }
                     uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
                 except Exception as e:
                     demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
