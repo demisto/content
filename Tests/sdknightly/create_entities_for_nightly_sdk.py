@@ -11,7 +11,7 @@ def run_command(cmd: str) -> Tuple[str, str]:
     return subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
 
 
-def create_incident_field(path: Path) -> str:
+def create_incident_field(path: Path, layout_name: str) -> str:
     """
     Creates an incident field
 
@@ -29,7 +29,8 @@ def create_incident_field(path: Path) -> str:
     field.update({
         'name': name,
         'cliName': cliname,
-        'id': f'incident_{cliname}'
+        'id': f'incident_{cliname}',
+        'associatedTypes': [layout_name]
     })
     dest_incident = path / 'IncidentFields'
 
