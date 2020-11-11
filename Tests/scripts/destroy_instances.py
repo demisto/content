@@ -25,14 +25,15 @@ def main():
                      '{}@{}:/var/log/demisto/server.log {} || echo "WARN: Failed downloading server.log"'
 
         try:
-            logging.debug(f'Trying to run {ssh_string}')
+            logging.debug(f'Changing permissions of folder /var/log/demisto on server {env["InstanceDNS"]}')
             subprocess.check_output(
                 ssh_string.format(env["SSHuser"], env["InstanceDNS"]), shell=True)
 
-        except subprocess.CalledProcessError as exc:
-            logging.exception(exc.output)
+        except subprocess.CalledProcessError:
+            logging.exception(f'Failed changing permissions of folder /var/log/demisto on server {env["InstanceDNS"]}')
 
         try:
+            logging.debug(f'Downloading server logs from server {env["InstanceDNS"]}')
             server_ip = env["InstanceDNS"].split('.')[0]
             subprocess.check_output(
                 scp_string.format(
@@ -41,17 +42,18 @@ def main():
                     "{}/server_{}_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''), server_ip)),
                 shell=True)
 
-        except subprocess.CalledProcessError as exc:
-            logging.exception(exc.output)
+        except subprocess.CalledProcessError:
+            logging.exception(f'Failed downloading server logs from server {env["InstanceDNS"]}')
 
         if time_to_live:
             logging.info(f'Skipping - Time to live was set to {time_to_live} minutes')
             continue
         if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
-            logging.info(f'Destroying instance {env.get("Role", "Unknown role")}')
+            logging.info(f'Destroying instance with role - {env.get("Role", "Unknown role")} and IP - '
+                         f'{env["InstanceDNS"]}')
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
-                logging.error(rminstance)
+                logging.error(rminstance['Message'])
         else:
             logging.warning(f'Tests failed on {env.get("Role", "Unknown role")}, keeping instance alive')
 
