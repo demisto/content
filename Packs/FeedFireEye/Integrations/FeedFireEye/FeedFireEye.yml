@@ -57,7 +57,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '240'
+- defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -74,8 +74,21 @@ configuration:
   name: credentials
   required: true
   type: 9
+- additionalinfo: Select which collections to fetch from the feed.
+  defaultvalue: Indicators,Reports
+  display: Collection(s) to fetch from feed
+  name: collections_to_fetch
+  options:
+  - Indicators
+  - Reports
+  required: true
+  type: 16
+- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year). Leave empty to fetch from the first indicator available.
+  name: first_fetch_timestamp
+  required: false
+  type: 0
 - additionalinfo: |-
-    The minimum score from the feed to consider the indicator as malicious. Default is "70".
+    The minimum score returned from the feed to determine whether the indicator is malicious. Default is 70.
   defaultvalue: '70'
   display: Malicious Threshold
   name: threshold
@@ -83,7 +96,7 @@ configuration:
   type: 0
 - additionalinfo: |-
     If this number of days has passed since the indicator was created, then its reputation can be at most "Suspicious".
-    Default is "30".
+    Default is 30.
   defaultvalue: '30'
   display: Reputation Interval
   name: reputation_interval
@@ -116,8 +129,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of indicators to return. The default value is
-        10.
+      description: The maximum number of indicators to return. Default is 10.
       isArray: false
       name: limit
       required: false
@@ -126,6 +138,10 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: fireeye-get-indicators
+  - deprecated: false
+    description: 'WARNING: This command will reset your fetch history.'
+    execution: false
+    name: fireeye-reset-fetch-indicators
   dockerimage: demisto/python3:3.8.6.12176
   feed: true
   isfetch: false

@@ -4,13 +4,14 @@ import sys
 import shutil
 import json
 import argparse
+import logging
 from zipfile import ZipFile
 from contextlib import contextmanager
 from datetime import datetime
-from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS
-from Tests.Marketplace.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
+from Tests.private_build.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
     extract_packs_artifacts
 from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
+from Tests.scripts.utils.log_util import install_logging
 
 MAX_SECONDS_TO_WAIT_FOR_LOCK = 600
 LOCK_FILE_PATH = 'lock.txt'
@@ -21,8 +22,8 @@ def lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
     try:
         acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
         yield
-    except Exception as e:
-        print(f"Error: {str(e)}")
+    except Exception:
+        logging.exception("Error in dummy index lock context manager.")
     finally:
         release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
 
@@ -82,10 +83,9 @@ def upload_modified_index(public_index_folder_path, extract_destination_path, pu
         public_ci_dummy_index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
         public_ci_dummy_index_blob.upload_from_filename(index_zip_path)
 
-        print_color("Finished uploading index.zip to storage.", LOG_COLORS.GREEN)
-    except Exception as e:
-        print_error(f"Failed in uploading index. "
-                    f"Mismatch in index file generation, additional info: {e}\n")
+        logging.success("Finished uploading index.zip to storage.")
+    except Exception:
+        logging.exception("Failed in uploading index. Mismatch in index file generation.")
         sys.exit(1)
     finally:
         shutil.rmtree(public_index_folder_path)
@@ -145,12 +145,12 @@ def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
     total_seconds_waited = 0
     while is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
         if total_seconds_waited >= MAX_SECONDS_TO_WAIT_FOR_LOCK:
-            print_error("Error: Failed too long to acquire lock, exceeded max wait time.")
+            logging.critical("Error: Failed too long to acquire lock, exceeded max wait time.")
             sys.exit(1)
 
         if total_seconds_waited % 60 == 0:
             # Printing a message every minute to keep the machine from dying due to no output
-            print("Waiting to acquire lock.")
+            logging.info("Waiting to acquire lock.")
 
         total_seconds_waited += 10
         time.sleep(10)
@@ -189,6 +189,7 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
 
 
 def main():
+    install_logging('prepare_public_index_for_private_testing.log')
     upload_config = option_handler()
     service_account = upload_config.service_account
     build_number = upload_config.ci_build_number
