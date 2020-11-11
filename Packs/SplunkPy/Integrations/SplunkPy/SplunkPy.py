@@ -477,8 +477,11 @@ def get_latest_incident_time(incidents):
 
     latest_incident = max(incidents, key=get_incident_time_datetime)
     latest_incident_time = latest_incident["occurred"]
+    last_incident_json = json.loads(latest_incident.get('rawJSON'))
+    last_incident_id = last_incident_json.get('EventID')
+    demisto.debug('\n\n last_incident_id found is: {} \n\n'.format(last_incident_id))
     demisto.debug('\n\n latest incident time is:  {}\n\n'.format(latest_incident_time))
-    return latest_incident_time
+    return latest_incident_time, last_incident_id
 
 
 def fetch_incidents(service):
@@ -532,13 +535,19 @@ def fetch_incidents(service):
                     'query: {} is: {}.\n incidents found: {} \n\n'.format(last_run, now, searchquery_oneshot,
                                                                           len(incidents), incidents)
     demisto.debug(debug_message)
+    latest_incident_fetched_time, latest_incident_fetched_id = get_latest_incident_time(incidents)
+    last_run_latest_event_id = demisto.getLastRun().get('latest_event_id')
 
+    if latest_incident_fetched_id and last_run_latest_event_id and latest_incident_fetched_id == \
+            last_run_latest_event_id:
+        incidents = [incident for incident in incidents if json.loads(incident.get('rawJSON', '{}')).get('EventID') !=
+                     last_run_latest_event_id]
     demisto.incidents(incidents)
     if len(incidents) == 0:
         demisto.setLastRun({'time': last_run, 'offset': 0})
     elif len(incidents) < FETCH_LIMIT:
-        latest_incident_fetched_time = get_latest_incident_time(incidents)
-        demisto.setLastRun({'time': latest_incident_fetched_time, 'offset': 0})
+        demisto.setLastRun(
+            {'time': latest_incident_fetched_time, 'offset': 0, 'latest_event_id': latest_incident_fetched_id})
     else:
         demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
 
