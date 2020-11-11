@@ -41,6 +41,7 @@ For example, the following triggers the webhook using cURL:
 The response is an array containing an object with the created incident metadata, such as the incident ID.
 
 ## Security
+- We recommend using the authorization header, as described below, to validate the requests sent from your app. Not using it may lead to exposure for incidents created from non expected requests.
 - To validate an incident request creation, you can use the Username/Password integration parameters for one of the following:
      * Basic authentication
      * Verification token given in a request header, by setting the username to `_header:<HEADER-NAME>` and the password to be the header value. 
