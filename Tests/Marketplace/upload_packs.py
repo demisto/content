@@ -625,8 +625,7 @@ def print_packs_summary(packs_list: list):
     successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
     skipped_packs = [pack for pack in packs_list if
                      pack.status == PackStatus.PACK_ALREADY_EXISTS.name
-                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-                     or pack.status == PackStatus.FAILED_DETECTING_MODIFIED_FILES.name]
+                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name]
     failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
 
     logging.info(
@@ -877,6 +876,7 @@ def main():
 
         task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
                                                               remote_previous_commit_hash)
+
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
