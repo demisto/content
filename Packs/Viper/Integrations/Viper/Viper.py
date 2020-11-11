@@ -21,13 +21,9 @@ class ViperClient(BaseClient):
         )
 
     def test_module(self):
-        return self._http_request(method='GET', url_suffix='/')
-
-    def sample_download(self, file_hash):
-        '''Download Sample from Viper'''
         return self._http_request(
             method='GET',
-            url_suffix=f'/malware/{file_hash}/download'
+            url_suffix='/'
         )
 
 
@@ -45,7 +41,7 @@ def test_module(client):
     return 'ok'
 
 
-def sample_download(file_hash):
+def sample_download_helper(file_hash):
     api_key = demisto.params().get('apikey')
     viper_project = demisto.params().get('viper_project')
     base_url = urljoin(demisto.params()['url'], f'/api/v3/project/{viper_project}')
@@ -56,7 +52,6 @@ def sample_download(file_hash):
         sample = requests.get(url, verify=verify_certificate, headers={'Authorization': authorization, 'Accept': 'application/json'})
 
     except Exception as e:
-        # demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
     return sample
@@ -65,21 +60,10 @@ def viper_download(client, args):
 
     file_hash = args.get('file_hash')
     if len(file_hash) == 64:
-        sample_info = client.sample_information(file_hash)
-        sample = client.sample_download(file_hash)
-
+        filename = viper_search(client, args)
+        sample = sample_download_helper(file_hash)
         if sample.status_code == 200:
-            filename = sample_info['data']['name']
-            viper_id = sample_info['data']['id']
-            mime = sample_info['data']['mime']
-            file_type = sample_info['data']['type']
-            size = sample_info['data']['size']
-
-            table_object = [{"File Name": filename, "File Hash": file_hash,"ViperID": viper_id, "MIME": mime, "File Type": file_type, "Size": size}]
-            context_object = {'Viper': {"Name": filename, "SHA256": file_hash,"ViperID": viper_id, "MIME": mime, "Type": file_type, "Size": size}}
-            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],'Contents': table_object, "EntryContext": context_object})
-            demisto.results(fileResult(filename, sample.content))
-			
+            return_results(fileResult(filename, sample.content))
         else:
             raise DemistoException('No valid sample found')
     else:
@@ -98,9 +82,20 @@ def viper_search(client, args):
             file_type = sample_info['data']['type']
             size = sample_info['data']['size']
 
-            table_object = [{"File Name": filename, "File Hash": file_hash,"ViperID": viper_id, "MIME": mime, "File Type": file_type, "Size": size}]
-            context_object = {'Viper': {"Name": filename, "SHA256": file_hash,"ViperID": viper_id, "MIME": mime, "Type": file_type, "Size": size}}
-            demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'],'Contents': table_object, "EntryContext": context_object})
+            viper_search_results = CommandResults(
+                 outputs_prefix='Viper',
+                 outputs_key_field='ViperID',
+                 outputs={
+                     'Name': filename,
+                     'SHA256': file_hash,
+                     'ViperID': viper_id,
+                    'MIME': mime,
+                    'Type': file_type,
+                    'Size': size
+                 }
+            )
+            return_results(viper_search_results)
+            return filename
         else:
             return_error('No valid sample found')
     else:
@@ -134,14 +129,13 @@ def main():
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            demisto.results(result)
+            return_results(test_module(client))
 
         elif demisto.command() == 'viper-download':
-            return_results(viper_download(client, demisto.args())
+            viper_download(client, demisto.args())
 
         elif demisto.command() == 'viper-search':
-           return_results(viper_search(client, demisto.args()))
+            viper_search(client, demisto.args())
 
     # Log exceptions
     except Exception as e:
