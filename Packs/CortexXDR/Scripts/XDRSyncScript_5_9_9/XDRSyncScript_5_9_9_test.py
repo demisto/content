@@ -699,6 +699,7 @@ def test_incident_was_modified_in_demisto(mocker):
 
     # - ensure incident severity in XDR is updated to be high
     is_called, xdr_update_args = get_execute_command_call(demisto.executeCommand, 'xdr-update-incident')
+
     assert is_called is True
     assert xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] == 'high'
 

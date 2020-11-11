@@ -221,7 +221,7 @@ def get_latest_incident_from_xdr(incident_id, return_only_updated=False):
                                                            {"incident_id": incident_id,
                                                             "return_only_updated_incident": return_only_updated})
     # If the incident wasn't changed then return empty dicts
-    if not latest_incident_in_xdr_result[0]["Contents"]:
+    if "The incident was not modified in XDR" in latest_incident_in_xdr_result[0]["Contents"]:
         return {}, {}, {}
     elif is_error(latest_incident_in_xdr_result):
         raise ValueError("Failed to execute xdr-get-incident-extra-data command. Error: {}".format(
