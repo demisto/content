@@ -86,8 +86,8 @@ def viper_search(client, args):
 			viper_id = sample_info['data']['id']
 			mime = sample_info['data']['mime']
 			file_type = sample_info['data']['type']
-			size = sample_info['data']['size']		
-            viper_search_results = CommandResults(
+			size = sample_info['data']['size']
+			viper_search_results = CommandResults(
 				outputs_prefix='Viper',
 				outputs_key_field='ViperID',
 				outputs={
