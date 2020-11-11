@@ -847,8 +847,7 @@ def get_packs_summary(packs_list):
     successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
     skipped_packs = [pack for pack in packs_list if
                      pack.status == PackStatus.PACK_ALREADY_EXISTS.name
-                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-                     or pack.status == PackStatus.FAILED_DETECTING_MODIFIED_FILES.name]
+                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name]
     failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
 
     return successful_packs, skipped_packs, failed_packs
