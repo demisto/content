@@ -65,20 +65,23 @@ script:
             completed_on :      'CompletedOn',
             score :             'Score',
             monitor :           'Monitor',
-            yara :              'Yara',
-            sha1 :              'SHA1',
-            name :              'Name',
-            type :              'Type',
-            sha256 :            'SHA256',
-            urls :              'URLs',
-            crc32 :             'CRC32',
-            path :              'Path',
-            ssdeep :            'Ssdeep',
-            size :              'Size',
-            sha512 :            'SHA512',
-            md5 :               'MD5'
-        }
+            FileInfo :          'FileInfo'
 
+        },
+        FileInfo: {
+            yara :              'yara',
+            sha1 :              'sha1',
+            name :              'name',
+            type :              'type',
+            sha256 :            'sha256',
+            urls :              'urls',
+            crc32 :             'crc32',
+            path :              'path',
+            ssdeep :            'ssdeep',
+            size :              'size',
+            sha512 :            'sha512',
+            md5 :               'md5'
+        }
 
     };
 
@@ -244,8 +247,6 @@ script:
             qParams['insecure'],
             qParams['proxy']
         );
-        console.log("*******************************")
-        console.log(JSON.stringify(res))
         return parseResponse(res);
     };
 
@@ -280,8 +281,9 @@ script:
         var md;
         var context = {};
 
-        context['Cuckoo.Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.info, entityMap.Task);
-        context['Cuckoo.Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.target.file, entityMap.Task);
+
+        context = jsonToEntity(result.info, entityMap.Task);
+        context[0]['FileInfo'] = jsonToEntity(result.target.file, entityMap.FileInfo)[0];
         md = tblToMdWithTransform('Task Target', result.target, undrscrToCamelCase);
         md += tblToMdWithTransform('Task Info', result.info, undrscrToCamelCase);
         md += tblToMdWithTransform('Task Metadata', result.metadata, undrscrToCamelCase);
@@ -295,7 +297,8 @@ script:
             Contents: result,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: context
+            EntryContext: {'Cuckoo.Task(val.ID && val.ID == obj.ID)': context[0]}
+
         };
     };
     var viewTasks = function(args, params){
