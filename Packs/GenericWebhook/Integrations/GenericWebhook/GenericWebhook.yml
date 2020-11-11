@@ -20,12 +20,12 @@ configuration:
   name: credentials
   required: false
   type: 9
-- display: Certificate
+- display: Certificate (Required for HTTPS)
   additionalinfo: Required for HTTPS, if not using server rerouting
   name: certificate
   required: false
   type: 12
-- display: Private Key
+- display: Private Key (Required for HTTPS)
   additionalinfo: Required for HTTPS, if not using server rerouting
   name: key
   required: false
