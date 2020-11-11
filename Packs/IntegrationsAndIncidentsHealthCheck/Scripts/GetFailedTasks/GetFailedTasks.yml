@@ -8,6 +8,9 @@ commonfields:
   id: GetFailedTasks
   version: -1
 enabled: true
+dependson:
+  must:
+  - Builtin|||demisto-rest-api
 name: GetFailedTasks
 runas: DBotWeakRole
 runonce: false
