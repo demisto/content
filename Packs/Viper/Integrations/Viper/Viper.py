@@ -50,14 +50,7 @@ def sample_download_helper(file_hash):
     url = f'{base_url}/malware/{file_hash}/download/'
     authorization = f'Token {api_key}'
     try:
-		sample = requests.get(
-			url,
-			verify=verify_certificate,
-			headers={
-				'Authorization': authorization,
-				'Accept': 'application/json'
-			}
-		)
+        sample = requests.get(url,verify=verify_certificate,headers={'Authorization': authorization,'Accept': 'application/json'})
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
