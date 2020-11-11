@@ -2001,6 +2001,12 @@ script:
       name: category
       required: false
       secret: false
+    - default: false
+      description: A profile setting group.
+      isArray: false
+      name: profile_setting
+      required: false
+      secret: false
     deprecated: false
     description: Creates a policy rule.
     execution: true
@@ -2047,6 +2053,9 @@ script:
       type: string
     - contextPath: Panorama.SecurityRules.Tags
       description: Rule tags.
+      type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: Profile setting group.
       type: String
   - arguments:
     - default: false
@@ -2149,6 +2158,9 @@ script:
     - contextPath: Panorama.SecurityRule.Tags
       description: Rule tags.
       type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: Profile setting group.
+      type: String
   - arguments:
     - default: false
       description: Name of the rule to move.
@@ -2215,7 +2227,7 @@ script:
       default: false
       description: Parameter in the security rule to change. Can be 'source', 'destination',
         'application', 'action', 'category', 'description', 'disabled', 'target',
-        'log-forwarding' or 'tag'.
+        'log-forwarding', 'tag' or 'group_profile'.
       isArray: false
       name: element_to_change
       predefined:
@@ -2229,6 +2241,7 @@ script:
       - target
       - log-forwarding
       - tag
+      - profile-setting
       required: true
       secret: false
     - default: false

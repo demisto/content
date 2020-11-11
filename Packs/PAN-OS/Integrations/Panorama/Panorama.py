@@ -84,7 +84,8 @@ SECURITY_RULE_ARGS = {
     'target': 'Target',
     'log_forwarding': 'LogForwarding',
     'log-setting': 'LogForwarding',
-    'tag': 'Tags'
+    'tag': 'Tags',
+    'profile-setting': 'ProfileSetting'
 }
 
 PAN_OS_ERROR_DICT = {
@@ -289,6 +290,13 @@ def add_argument_target(arg: Optional[str], field_name: str) -> str:
         return ''
 
 
+def add_argument_profile_setting(arg: Optional[str], field_name: str) -> str:
+    if not arg:
+        return ''
+    member_stringify_list = '<member>' + arg + '</member>'
+    return '<' + field_name + '>' + '<group>' + member_stringify_list + '</group>' + '</' + field_name + '>'
+
+
 def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
     """
     Setting template xpath relevant to panorama instances.
@@ -313,7 +321,8 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                                  disable: str = None, application: List[str] = None, source_user: str = None,
                                  category: List[str] = None, from_: str = None, to: str = None, description: str = None,
                                  target: str = None, log_forwarding: str = None,
-                                 disable_server_response_inspection: str = None, tags: List[str] = None) -> Dict:
+                                 disable_server_response_inspection: str = None, tags: List[str] = None,
+                                 profile_setting: str = None) -> Dict:
     if application is None or len(application) == 0:
         # application always must be specified and the default should be any
         application = ['any']
@@ -340,6 +349,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                 + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
                 + add_argument(log_forwarding, 'log-setting', False)
                 + add_argument_list(tags, 'tag', True)
+                + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
@@ -2797,6 +2807,7 @@ def panorama_create_rule_command():
     target = demisto.args().get('target')
     log_forwarding = demisto.args().get('log_forwarding', None)
     tags = argToList(demisto.args()['tags']) if 'tags' in demisto.args() else None
+    profile_setting = demisto.args()['profile_setting'] if 'profile_setting' in demisto.args() else None
 
     if not DEVICE_GROUP:
         if target:
@@ -2811,7 +2822,7 @@ def panorama_create_rule_command():
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
                                           log_forwarding=log_forwarding, tags=tags, category=categories,
-                                          from_=source_zone, to=destination_zone)
+                                          from_=source_zone, to=destination_zone, profile_setting=profile_setting)
     result = http_request(
         URL,
         'POST',
@@ -2877,7 +2888,6 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
         'action': 'edit',
         'key': API_KEY
     }
-
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
             raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
@@ -2948,6 +2958,8 @@ def panorama_edit_rule_command():
             params['element'] = add_argument_list(element_value, element_to_change, True)
         elif element_to_change == 'target':
             params['element'] = add_argument_target(element_value, 'target')
+        elif element_to_change == 'profile-setting':
+            params['element'] = add_argument_profile_setting(element_value, 'profile-setting')
         else:
             params['element'] = add_argument_yes_no(element_value, element_to_change)
 
