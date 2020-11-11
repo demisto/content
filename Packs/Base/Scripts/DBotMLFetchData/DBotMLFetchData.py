@@ -699,23 +699,8 @@ def return_json_entry(obj):
 
 
 def get_args_based_on_last_execution():
-    lst = demisto.executeCommand('getList', {'listName': LAST_EXECUTION_LIST_NAME})
-    if isError(lst):  # if first execution
-        return FIRST_EXECUTION_ARGUMENTS
-    try:
-        list_content = lst[0]['Contents']
-        last_execution_json_data = json.loads(list_content)
-        last_execution_time = last_execution_json_data[EXECUTION_JSON_FIELD]
-        last_execution_version = last_execution_json_data[VERSION_JSON_FIELD]
-        if last_execution_version != FETCH_DATA_VERSION:
-            return FIRST_EXECUTION_ARGUMENTS
-        last_execution_datetime = datetime.strptime(last_execution_time, DATETIME_FORMAT)
-        query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_QUERY_TIMEFORMAT))
-        return {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION,
-                'fromDate': FROM_DATA_PERIODIC_EXECUTION,
-                'query': query}
-    except Exception:
-        return FIRST_EXECUTION_ARGUMENTS
+    return {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION,
+            'fromDate': FROM_DATA_PERIODIC_EXECUTION}
 
 
 def update_last_execution_time():
@@ -790,7 +775,6 @@ def main():
             return_file_entry(res, len(data['X']))
         else:
             return_json_entry(res)
-    update_last_execution_time()
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
