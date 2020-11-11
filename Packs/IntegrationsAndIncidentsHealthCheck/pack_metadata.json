@@ -44,6 +44,10 @@
         "MailSenderNew": {
             "mandatory": false,
             "display_name": "Mail Sender (New)"
+        },
+        "Demisto REST API": {
+            "mandatory": false,
+            "display_name": "Demisto REST API"
         }
     }
 }
