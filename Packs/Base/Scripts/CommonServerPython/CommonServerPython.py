@@ -4188,7 +4188,7 @@ def set_integration_context(context, sync=True, version=-1):
     :rtype: ``dict``
     :return: The new integration context
     """
-    demisto.debug('Setting integration context {}:'.format(str(context)))
+    demisto.debug('Setting integration context')
     if is_versioned_context_available():
         demisto.debug('Updating integration context with version {}. Sync: {}'.format(version, sync))
         return demisto.setIntegrationContextVersioned(context, version, sync)
