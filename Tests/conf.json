@@ -3062,7 +3062,7 @@
             "integrations": "CrowdStrikeMalquery",
             "playbookID": "CrowdStrikeMalquery-Test",
             "fromversion": "5.0.0",
-            "timeout": 1500
+            "timeout": 2500
         },
         {
             "integrations": "Sixgill_Darkfeed",
