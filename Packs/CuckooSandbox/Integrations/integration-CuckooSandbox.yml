@@ -297,7 +297,7 @@ script:
             Contents: result,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: {'Cuckoo.Task(val.ID && val.ID == obj.ID)': context[0]}
+            EntryContext: {'Cuckoo.Task(val.ID && val.ID == obj.ID)': context}
 
         };
     };
@@ -592,27 +592,27 @@ script:
       description: Reported score of the the task
     - contextPath: Cuckoo.Task.Monitor
       description: Monitor of the reported task
-    - contextPath: Cuckoo.Task.sha1
+    - contextPath: Cuckoo.Task.FileInfo.sha1
       description: The file's SHA1 hash
-    - contextPath: Cuckoo.Task.name
+    - contextPath: Cuckoo.Task.FileInfo.name
       description: The file's name
-    - contextPath: Cuckoo.Task.type
+    - contextPath: Cuckoo.Task.FileInfo.type
       description: The file's type
-    - contextPath: Cuckoo.Task.sha256
+    - contextPath: Cuckoo.Task.FileInfo.sha256
       description: The file's SHA256 hash
-    - contextPath: Cuckoo.Task.urls
+    - contextPath: Cuckoo.Task.FileInfo.urls
       description: Related urls of the file
-    - contextPath: Cuckoo.Task.crc32
+    - contextPath: Cuckoo.Task.FileInfo.crc32
       description: The crc32 of the gfile
-    - contextPath: Cuckoo.Task.path
+    - contextPath: Cuckoo.Task.FileInfo.path
       description: The file's path
-    - contextPath: Cuckoo.Task.ssdeep
+    - contextPath: Cuckoo.Task.FileInfo.ssdeep
       description: The file's ssdeep
-    - contextPath: Cuckoo.Task.size
+    - contextPath: Cuckoo.Task.FileInfo.size
       description: The size of the file
-    - contextPath: Cuckoo.Task.sha512
+    - contextPath: Cuckoo.Task.FileInfo.sha512
       description: The file's SHA512 hash
-    - contextPath: Cuckoo.Task.md5
+    - contextPath: Cuckoo.Task.FileInfo.md5
       description: The file's MD5 hash
     description: commands.server.ckReport.description
   - name: ck-list
