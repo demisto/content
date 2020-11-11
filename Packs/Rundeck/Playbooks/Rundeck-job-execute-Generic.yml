@@ -1,7 +1,7 @@
 id: Rundeck-job-execute-Generic
 version: -1
 name: Rundeck-job-execute-Generic
-description: This playbook executes a job and exits when it was successfully finished.
+description: This playbook executes a job and exits when it successfully finishes.
 starttaskid: "0"
 tasks:
   "0":
