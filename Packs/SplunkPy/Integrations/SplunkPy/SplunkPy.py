@@ -191,7 +191,7 @@ def notable_to_incident(event):
         if "Error in" in event.message:
             raise ValueError(event.message)
         else:
-            demisto.debug(f'\n\n message in notable_to_incident is: {convert_to_str(event.message)}  \n\n')
+            demisto.debug('\n\n message in notable_to_incident is: {}  \n\n'.format(convert_to_str(event.message)))
 
     if demisto.get(event, 'rule_title'):
         rule_title = event['rule_title']
@@ -204,10 +204,10 @@ def notable_to_incident(event):
         incident["details"] = event["rule_description"]
     if demisto.get(event, "_time"):
         incident["occurred"] = event["_time"]
-        demisto.debug(f'\n\n occurred time in if: {incident["occurred"]} \n\n')
+        demisto.debug()
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
-        demisto.debug(f'\n\n occurred time in else: {incident["occurred"]} \n\n')
+        demisto.debug('\n\n occurred time in else: {} \n\n'.format(incident["occurred"]))
 
     event = replace_keys(event) if REPLACE_FLAG else event
     incident["rawJSON"] = json.dumps(event)
@@ -477,7 +477,7 @@ def get_latest_incident_time(incidents):
 
     latest_incident = max(incidents, key=get_incident_time_datetime)
     latest_incident_time = latest_incident["occurred"]
-    demisto.debug(f'\n\n latest incident time is:  {latest_incident_time}\n\n')
+    demisto.debug('\n\n latest incident time is:  {}\n\n'.format(latest_incident_time))
     return latest_incident_time
 
 
@@ -506,7 +506,7 @@ def fetch_incidents(service):
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
-    demisto.debug(f'\n\n last run time: {last_run}, now: {now} \n\n')
+    demisto.debug('\n\n last run time: {}, now: {} \n\n'.format(last_run, now))
 
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
@@ -525,12 +525,13 @@ def fetch_incidents(service):
 
     for item in reader:
         inc = notable_to_incident(item)
-        demisto.debug(f'\n\n inc after notable_to_incident: {inc} \n\n')
+        demisto.debug('\n\n inc after notable_to_incident: {} \n\n'.format(inc))
         incidents.append(inc)
 
-    demisto.debug(f'\n\n total number of incidents found: from {}\n to {}\n with '
-                  f'the query: {searchquery_oneshot} is: {len(incidents)}.\n  '
-                  f'incidents found: {incidents} \n\n')
+    debug_message = '\n\n total number of incidents found: from {}\n to {}\n with the ' \
+                    'query: {} is: {}.\n incidents found: {} \n\n'.format(last_run, now, searchquery_oneshot,
+                                                                          len(incidents), incidents)
+    demisto.debug(debug_message)
 
     demisto.incidents(incidents)
     if len(incidents) == 0:
