@@ -304,7 +304,6 @@ def create_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     params = handle_sysparms(RECORD_PARAMS, args)
 
     data = create_request_data(CREAT_RECORD_DATA_FIELDS, args)
-    print(data)
 
     response = client.create_record(class_name=class_name, params=params, data=str(data))
     result = response.get('result')
