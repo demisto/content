@@ -33,11 +33,11 @@ configuration:
 - display: Username
   name: username
   required: true
-  type: 4
+  type: 0
 - display: Password
   name: password
   required: true
-  type: 0
+  type: 4
 description: Respond Software Integration - fetches incidents with mirroring api enabled
 display: Respond Analyst
 name: Respond_Analyst
