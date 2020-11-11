@@ -3,6 +3,7 @@ import urllib3
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -217,7 +218,7 @@ def main():
         if demisto.command() == 'pan-dlp-get-report':
             args = demisto.args()
             report_id = args.get('report_id')
-            fetch_snippets = args.get('fetch_snippets', 'false') == 'true'
+            fetch_snippets = argToBoolean(args.get('fetch_snippets'))
             report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
             parse_dlp_report(report_json)
 
