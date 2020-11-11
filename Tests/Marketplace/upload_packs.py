@@ -578,6 +578,99 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
             update_index_folder(index_folder_path, d.name, d.path)
 
 
+def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
+                                   index_folder_path: str, pack_names: set, is_private_build: bool) \
+        -> Tuple[Union[list, list], str, Any]:
+    """ Updates index with priced packs and returns list of priced packs data.
+
+    Args:
+        private_storage_bucket (google.cloud.storage.bucket.Bucket): google storage private bucket.
+        extract_destination_path (str): full path to extract directory.
+        index_folder_path (str): downloaded index folder directory path.
+        pack_names (set): Collection of pack names.
+        is_private_build (bool): Indicates if the build is private.
+
+    Returns:
+        list: priced packs from private bucket.
+
+    """
+    private_index_path = ""
+    private_packs = []
+
+    try:
+        (private_index_path, private_index_blob, _) = \
+            download_and_extract_index(private_storage_bucket,
+                                       os.path.join(extract_destination_path,
+                                                    'private'))
+        logging.info("get_private_packs")
+        private_packs = get_private_packs(private_index_path, pack_names,
+                                          extract_destination_path)
+        logging.info("add_private_packs_to_index")
+        add_private_packs_to_index(index_folder_path, private_index_path)
+        logging.info("Finished updating index with priced packs")
+    except Exception:
+        logging.exception('Could not add private packs to the index.')
+    finally:
+        shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
+        return private_packs, private_index_path, private_index_blob
+
+
+def get_private_packs(private_index_path: str, pack_names: set = set(),
+                      extract_destination_path: str = '') -> list:
+    """
+    Gets a list of private packs.
+
+    :param private_index_path: Path to where the private index is located.
+    :param pack_names: Collection of pack names.
+    :param extract_destination_path: Path to where the files should be extracted to.
+    :return: List of dicts containing pack metadata information.
+    """
+    try:
+        metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
+    except Exception:
+        logging.exception(f'Could not find metadata files in {private_index_path}.')
+        return []
+
+    if not metadata_files:
+        logging.warning(f'No metadata files found in [{private_index_path}]')
+
+    private_packs = []
+    for metadata_file_path in metadata_files:
+        try:
+            with open(metadata_file_path, "r") as metadata_file:
+                metadata = json.load(metadata_file)
+            pack_id = metadata.get('id')
+            is_changed_private_pack = pack_id in pack_names
+            if is_changed_private_pack:  # Should take metadata from artifacts.
+                with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
+                          "r") as metadata_file:
+                    metadata = json.load(metadata_file)
+            if metadata:
+                private_packs.append({
+                    'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
+                    'price': metadata.get('price'),
+                    'vendorId': metadata.get('vendorId'),
+                    'vendorName': metadata.get('vendorName'),
+                })
+        except ValueError:
+            logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
+
+    return private_packs
+
+
+def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
+    """ Add the private packs to the index folder.
+
+    Args:
+        index_folder_path: The index folder path.
+        private_index_path: The path for the index of the private packs.
+
+    """
+    for d in os.scandir(private_index_path):
+        if os.path.isdir(d.path):
+            update_index_folder(index_folder_path, d.name, d.path)
+
+
 def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current_commit_hash: str,
                               previous_commit_hash: str, storage_bucket: Any):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
