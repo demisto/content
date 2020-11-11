@@ -538,7 +538,7 @@ def test_get_escalations_no_new(requests_mock, mocker):
         f'{BASE_URL}/graphql?tenantId=dev1',
         json=escalation_query_response
     )
-    args = {'tenant_id': 'Tenant 1', 'incident_id': '1'}
+    args = {'respond_tenant_id': 'Tenant 1', 'incident_id': '1'}
     rest_client = RestClient(
         base_url='https://localhost:6078',
         auth=('un', 'pw'),

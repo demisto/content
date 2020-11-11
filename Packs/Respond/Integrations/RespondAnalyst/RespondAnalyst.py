@@ -172,8 +172,8 @@ class RestClient(BaseClient):
 
     def construct_and_send_get_incident_ids_query(self, tenant_id, from_time_str):
         if from_time_str == '':
-            query = {"query": "query { incidents( statusFilters: [ { incidentStatus: Open } { "
-                              "incidentStatus: Closed } ] ){ id } }"}
+            query = {"query": "query { incidents( statusFilters: [ { incidentStatus: Open } "
+                              " ] ){ id } }"}
         else:
             query = {"query": "query { incidents( createdAfter:\"" + from_time_str + "\" ){ id } }"}
         res = self._http_request(

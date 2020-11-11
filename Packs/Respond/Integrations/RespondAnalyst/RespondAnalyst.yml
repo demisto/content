@@ -173,6 +173,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-defaultmapperin: Respond Analyst (mapper)
-defaultclassifier: Respond Analyst (classifier)
 fromversion: 5.0.0
