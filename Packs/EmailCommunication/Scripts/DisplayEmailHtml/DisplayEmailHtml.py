@@ -87,19 +87,28 @@ attachments = incident.get('attachment', {})
 files = demisto.context().get('File', [])
 
 
-if 'src="cid' in email_html_image:
-    entry_id_list = get_entry_id_list(attachments, files)
-    html_body = create_email_html(email_html, entry_id_list)
-    email_reply = set_email_reply(email_from, email_to, email_cc, email_subject, html_body, attachments)
-    demisto.executeCommand("setIncident", {'customFields': {"emailhtmlimage": email_reply}})
-    demisto.results({
-        'ContentsFormat': formats['html'],
-        'Type': entryTypes['note'],
-        'Contents': email_reply})
 
-else:
-    email_reply = set_email_reply(email_from, email_to, email_cc, email_subject, email_html, attachments)
-    demisto.results({
+if not email_html_image or 'src="cid' in email_html_image:
+    if 'src="cid' in email_html:
+        entry_id_list = get_entry_id_list(attachments, files)
+        html_body = create_email_html(email_html, entry_id_list)
+        email_reply = set_email_reply(email_from, email_to, email_cc, email_subject, html_body, attachments)
+        demisto.executeCommand("setIncident", {'customFields': {"emailhtmlimage": email_reply}})
+        demisto.results({
+            'ContentsFormat': formats['html'],
+            'Type': entryTypes['note'],
+            'Contents': email_reply
+        })
+    else:
+        email_reply = set_email_reply(email_from, email_to, email_cc, email_subject, email_html, attachments)
+        demisto.results({
         'ContentsFormat': formats['html'],
         'Type': entryTypes['note'],
-        'Contents': email_reply})
+        'Contents': email_reply
+        })
+else:
+        demisto.results({
+        'ContentsFormat': formats['html'],
+        'Type': entryTypes['note'],
+        'Contents': email_html_image
+    })
