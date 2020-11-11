@@ -3,7 +3,7 @@ commonfields:
   id: Rundeck
   version: -1
 configuration:
-- display: Server URL (e.g. https://soar.monstersofhack.com)
+- display: Server URL (e.g., https://soar.monstersofhack.com)
   name: url
   required: true
   type: 0
@@ -24,8 +24,8 @@ configuration:
   name: project_name
   required: false
   type: 0
-description: Rundeck is runbook automation for incident management, business continuity,
-  and self-service operations.
+description: Rundeck is a runbook automation for incident management, business continuity, and self-service operations. 
+The integration enables you to install software on a list of machines or perform a task periodically. Can be used when there is a new attack and you want to perform an update of the software to block the attack.
 display: Rundeck
 name: Rundeck
 script:
@@ -36,52 +36,48 @@ script:
     name: rundeck-projects-list
     outputs:
     - contextPath: Rundeck.Projects.name
-      description: Name of an existing project
+      description: Name of an existing project.
       type: String
     - contextPath: Rundeck.Projects.description
-      description: Description of an existing project
+      description: Description of an existing project.
       type: String
   - arguments:
     - default: false
-      description: A list of job IDs.
+      description: A comma-separated list of job IDs.
       isArray: true
       name: id_list
       required: false
       secret: false
     - default: false
-      description: A path for a specific group to include all jobs within that group
-        path.
+      description: A group or partial group path to include all jobs within that group path. 
       isArray: false
       name: group_path
       required: false
       secret: false
     - default: false
       description: |-
-        Specify a filter for a job Name, apply this command to any job name that contains this value.
-        Example: to find 'testJob' you can pass 'test'.
+        A filter for the job name. Matches any job name that contains this value. For example: To return 'testJob', set this argument to 'test'.
       isArray: false
       name: job_filter
       required: false
       secret: false
     - default: false
       description: |-
-        Specify an exact job name to match.
-        Example: to find 'testJob' you should pass 'testJob'.
+        An exact job name to match.
+        For example: To return 'testJob', set this argument to 'testJob'.
       isArray: false
       name: job_exact_filter
       required: false
       secret: false
     - default: false
-      description: 'Specify an exact group path to match. if not specified, default
-        is: "*".'
+      description: 'An exact group path to match. If not specified, default is: "*".'
       isArray: false
       name: group_path_exact
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: '''true'' to return only scheduled or ''false'' for only not scheduled
-        jobs.'
+      description: 'Whether to return only scheduled jobs or only unscheduled jobs. Specify "true" for scheduled jobs only, or "false" for unscheduled jobs only.'
       isArray: false
       name: scheduled_filter
       predefined:
@@ -90,7 +86,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A UUID for a selected server to return all jobs related to it.
+      description: A UUID. Used to select scheduled jobs assigned to the server with the given UUID.
       isArray: false
       name: server_node_uuid_filter
       predefined:
@@ -98,24 +94,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: maximum number of results to retun. The Default is 100.
+      description: The maximum number of results to return. Default is 100.
       isArray: false
       name: max_results
       required: false
       secret: false
     - default: false
-      description: The name of the project to list its jobs
+      description: The name of the project from which to list its jobs.
       isArray: false
       name: project_name
       required: false
       secret: false
     deprecated: false
-    description: Gets a list of all the jobs exist in a project
+    description: Gets a list of all the jobs that exist in a project.
     execution: false
     name: rundeck-jobs-list
     outputs:
     - contextPath: Rundeck.Jobs.id
-      description: UUID of the job
+      description: UUID of the job.
       type: String
     - contextPath: Rundeck.Jobs.name
       description: Name of the job.
@@ -128,21 +124,20 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Id for a job to execute
+      description: ID of the job to execute.
       isArray: false
       name: job_id
       required: true
       secret: false
     - default: false
-      description: 'Execution arguments for the selected job. for example: -opt1 value1
-        -opt2 value2'
+      description: 'Execution arguments for the selected job. For example: -opt1 value1 -opt2 value2'
       isArray: false
       name: arg_string
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: specifying the log level to use
+      description: 'The log level. Possible values are: "DEBUG", "VERBOSE", "INFO", "WARN", and "ERROR".'
       isArray: false
       name: log_level
       predefined:
@@ -154,14 +149,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Username for identifying the user who ran the job.
+      description: The name of the user who ran the job.
       isArray: false
       name: as_user
       required: false
       secret: false
     - default: false
       description: |-
-        node filter string, or .* for all nodes.
+        Node filter string, or .* for all nodes.
 
         Examples:
         To select a specific node by its name:
@@ -174,10 +169,10 @@ script:
         To use regular expressions:
         Hostname: dev(\d+).com
 
-        To use Regex syntex checking:
+        To use Regex syntax checking:
         attribute: /regex/
 
-        for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
+        For more information, see: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
       isArray: false
       name: node_filter
       required: false
@@ -185,9 +180,9 @@ script:
     - auto: PREDEFINED
       default: false
       description: |-
-        A time to run the job.
-        Can pass either run_at_time_raw, run_at_time or neither.
-        when passing both run_at_time_raw and run_at_time, the default is run_at_time.
+        The time to run the job. Possible values are: "1 hour", "1 day", and "1 week".
+        You can pass either the run_at_time_raw argument, the run_at_time argument, or neither argument.
+        When passing both the run_at_time_raw and run_at_time arguments, the default is the run_at_time argument.
       isArray: false
       name: run_at_time
       predefined:
@@ -199,55 +194,55 @@ script:
     - default: false
       description: |-
         Options for running the job.
-        For example, if you have a 'foo' and 'bar' options set for a job, you can pass values to them using the next syntax: 'foo=someValue,bar=someValue'
+        For example, if you have the 'foo' and 'bar' options set for a job, you can pass values to them using the syntax: 'foo=someValue,bar=someValue'.
       isArray: true
       name: options
       required: false
       secret: false
     - default: false
       description: |-
-        A time to run the job in a ISO-8601 date and time stamp with timezone, with optional milliseconds. e.g. 2019-10-12T12:20:55-0800 or 2019-10-12T12:20:55.123-0800.
+        A time to run the job in an ISO-8601 date and timestamp with the timezone. You can also optionally include milliseconds. For example, 2019-10-12T12:20:55-0800 or 2019-10-12T12:20:55.123-0800.
 
-        Can pass either run_at_time_raw, run_at_time or neither.
-        when passing both run_at_time_raw and run_at_time, the default is run_at_time.
+        You can pass either the run_at_time_raw argument, the run_at_time argument, or neither argument.
+        When passing both the run_at_time_raw and run_at_time arguments, the default is the run_at_time argument.
       isArray: false
       name: run_at_time_raw
       required: false
       secret: false
     deprecated: false
-    description: Executes a new job
+    description: Executes a new job.
     execution: false
     name: rundeck-job-execute
     outputs:
     - contextPath: Rundeck.ExecutedJobs.id
-      description: Id of the execution.
+      description: The ID of the execution.
       type: Number
     - contextPath: Rundeck.ExecutedJobs.status
-      description: Status of the executed job.
+      description: The status of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.project
       description: The project name of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.executionType
-      description: Type of execution
+      description: The type of execution.
       type: String
     - contextPath: Rundeck.ExecutedJobs.user
-      description: User executed the job.
+      description: The user who executed the job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.datestarted.unixtime
-      description: Date of the job execution in unix time.
+      description: The date of the job execution in Unix time.
       type: Number
     - contextPath: Rundeck.ExecutedJobs.datestarted.date
-      description: Date of the job execution.
+      description: The date of the job execution.
       type: Date
     - contextPath: Rundeck.ExecutedJobs.job.id
-      description: Id of the executed job.
+      description: The ID of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.job.averageDuration
-      description: Average time for the job's execution
+      description: The average time for the job's execution.
       type: Number
     - contextPath: Rundeck.ExecutedJobs.job.name
-      description: Name of the job
+      description: The name of the job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.job.group
       description: The job's group.
@@ -256,27 +251,26 @@ script:
       description: The project name of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.job.description
-      description: Description of the executed job.
+      description: A description of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.job.options
-      description: Options for the job's execution.
+      description: The options for the job's execution.
       type: String
     - contextPath: Rundeck.ExecutedJobs.description
-      description: Description for the execution.
+      description: A description of the execution.
       type: String
     - contextPath: Rundeck.ExecutedJobs.argstring
-      description: Arguments for the job's execution.
+      description: The arguments for the job's execution.
       type: String
   - arguments:
     - default: false
-      description: 'Execution arguments for the selected job. for example: -opt1 value1
-        -opt2 value2'
+      description: 'Execution arguments for the selected job. For example: -opt1 value1 -opt2 value2'
       isArray: false
       name: arg_string
       required: false
       secret: false
     - default: false
-      description: Id of the execution you want to retry execute.
+      description: ID of the execution you want to retry.
       isArray: false
       name: execution_id
       predefined:
@@ -285,7 +279,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: specifying the log level to use
+      description: 'The log level. Possible values are: "DEBUG", "VERBOSE", "INFO", "WARN", and "ERROR".'
       isArray: false
       name: log_level
       predefined:
@@ -297,15 +291,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Username for identifying the user who ran the job.
+      description: The name of the user who ran the job.
       isArray: false
       name: as_user
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: '''true'' for run all nodes and ''false'' for running only failed
-        nodes'
+      description: 'Whether to run all nodes or only failed notes. Specify "true" to run all nodes, or "false" to run only failed nodes.'
       isArray: false
       name: failed_nodes
       predefined:
@@ -314,51 +307,53 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Options for the job''s execution. For example: ''foo=someValue,bar=someValue'''
+      description:  |-
+        Options for running the job.
+        For example, if you have the 'foo' and 'bar' options set for a job, you can pass values to them using the syntax: 'foo=someValue,bar=someValue'.
       isArray: false
       name: options
       required: false
       secret: false
     - default: false
-      description: Id for a job to execute
+      description: The ID of the job to execute.
       isArray: false
       name: job_id
       required: true
       secret: false
     deprecated: false
-    description: Retry running a failed execution
+    description: Retry running a failed execution.
     execution: false
     name: rundeck-job-retry
     outputs:
     - contextPath: Rundeck.ExecutedJobs.id
-      description: Id of the execution.
+      description: The ID of the execution.
       type: Number
     - contextPath: Rundeck.ExecutedJobs.status
-      description: Status of the executed job.
+      description: The status of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.project
       description: The project name of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.executionType
-      description: Type of execution
+      description: The type of execution.
       type: String
     - contextPath: Rundeck.ExecutedJobs.user
-      description: User executed the job.
+      description: The user who executed the job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.datestarted.unixtime
-      description: Date of the job execution in unix time.
+      description: The date of the job execution in Unix time.
       type: Number
     - contextPath: Rundeck.ExecutedJobs.datestarted.date
-      description: Date of the job execution.
+      description: The date of the job execution.
       type: Date
     - contextPath: Rundeck.ExecutedJobs.job.id
-      description: Id of the executed job.
+      description: The ID of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.job.averageDuration
-      description: Average time for the job's execution
+      description: The average time for the job's executions
       type: Number
     - contextPath: Rundeck.ExecutedJobs.job.name
-      description: Name of the job
+      description: The name of the job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.job.group
       description: The job's group.
@@ -367,27 +362,27 @@ script:
       description: The project name of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.job.description
-      description: Description of the executed job.
+      description: A description of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.job.options
-      description: Options for the job's execution.
+      description: The options for the job's execution.
       type: String
     - contextPath: Rundeck.ExecutedJobs.description
-      description: Description for the execution.
+      description: A description of the execution.
       type: String
     - contextPath: Rundeck.ExecutedJobs.argstring
-      description: Arguments for the job's execution.
+      description: The arguments for the job's execution.
       type: String
   - arguments:
     - default: false
-      description: Name of the project to query its executions
+      description: Name of the project to query for its executions.
       isArray: false
       name: project_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Status of the execution
+      description: 'Status of the execution. Possible values are: "running", "succeeded", "failed", and "aborted".'
       isArray: false
       name: status_filter
       predefined:
@@ -398,30 +393,30 @@ script:
       required: false
       secret: false
     - default: false
-      description: Username of the person aborted to execution
+      description: The name of the person who aborted the execution.
       isArray: false
       name: aborted_by_filter
       required: false
       secret: false
     - default: false
-      description: Username of the person stated the execution
+      description: The name of the person who started the execution.
       isArray: false
       name: user_filter
       required: false
       secret: false
     - default: false
       description: |-
-        Specify when the execution has occur. The format is 'XY' when 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year.
-        Example: 2w returns executions that completed within the last two weeks.
+        A number and value used to filter executions that completed within the time period. The format is 'XY', where 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year.
+        For example: 2w returns executions that completed within the last two weeks.
       isArray: false
       name: recent_filter
       required: false
       secret: false
     - default: false
       description: |-
-        specify executions that completed before the specified relative period of time.
-        the format is 'XY' when 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year.
-        Example: 30d returns executions older than 30 days.
+        A number and value used to filter executions that completed after the specified period of time.
+        The format is 'XY', where 'X' is a number and 'Y' can be: h - hour, d - day, w - week, m - month, y - year.
+        For example: 30d returns executions older than 30 days.
       isArray: false
       name: older_filter
       required: false
@@ -440,7 +435,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: '''true'' for include Adhoc executions. ''false'' otherwise.'
+      description: Whether to return Adhoc executions. Specify "true" to include Adhoc executions.
       isArray: false
       name: adhoc
       predefined:
@@ -449,32 +444,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of job IDs to filter by
+      description: A comma-separated list of job IDs to filter by.
       isArray: false
       name: job_id_list_filter
       required: false
       secret: false
     - default: false
-      description: List of job IDs to exclude
+      description: A comma-separated list of job IDs to exclude.
       isArray: false
       name: exclude_job_id_list_filter
       required: false
       secret: false
     - default: false
-      description: List of full job group/name to include.
+      description: A comma-separated list of full job groups/names to include.
       isArray: false
       name: job_list_filter
       required: false
       secret: false
     - default: false
-      description: List of full job group/name to exclude.
+      description: A comma-separated list of full job group/name to exclude.
       isArray: false
       name: exclude_job_list_filter
       required: false
       secret: false
     - default: false
-      description: Full or partical group path to include all jobs within that group
-        path.
+      description: Full or partial group path to include all jobs within that group path.
       isArray: false
       name: group_path
       required: false
@@ -486,8 +480,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Full or partical group path to exclude all jobs within that group
-        path.
+      description: Full or partial group path to exclude all jobs within that group path.
       isArray: false
       name: exclude_group_path
       required: false
@@ -501,15 +494,15 @@ script:
     - default: false
       description: |-
         Filter for a job name. Include any job name that matches this value.
-        Example: to find 'testJob' you can pass 'test'.
+        For example: To return 'testJob', set this argument to 'test'.
       isArray: false
       name: job_filter
       required: false
       secret: false
     - default: false
       description: |-
-        Filter for the job Name. Exclude any job name that matches this value.
-        Example: to find 'testJob' you can pass 'test'.
+        Filter for the job name. Exclude any job name that matches this value.
+        For example: To exclude 'testJob', set this argument to 'test'.
       isArray: false
       name: exclude_job_filter
       required: false
@@ -517,7 +510,7 @@ script:
     - default: false
       description: |-
         Filter for an exact job name. Include any job name that matches this value.
-        Example: to find 'testJob' you should pass 'testJob'.
+        For example: To return 'testJob', set this argument to 'testJob'.
       isArray: false
       name: job_exact_filter
       required: false
@@ -525,14 +518,14 @@ script:
     - default: false
       description: |-
         Filter for an exact job name. Exclude any job name that matches this value.
-        Example: to find 'testJob' you should pass 'testJob'.
+        For example: To exclude 'testJob', set this argument to 'testJob'.
       isArray: false
       name: exclude_job_exact_filter
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of execution.
+      description: 'Type of execution. Possible values are: "scheduled", "user", "user-scheduled".'
       isArray: false
       name: execution_type_filter
       predefined:
@@ -542,69 +535,69 @@ script:
       required: false
       secret: false
     - default: false
-      description: maximum number of results to retun. The Default is 100.
+      description: The maximum number of results to return. Default is 100.
       isArray: false
       name: max_results
       required: false
       secret: false
     - default: false
-      description: 'Offset for first result to include. '
+      description: The offset for the first result to include.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Gets all exections base on job or execution details
+    description: Gets all executions based on the job or execution details.
     execution: false
     name: rundeck-job-executions-query
     outputs:
     - contextPath: Rundeck.ExecutionsQuery.paging.count
-      description: Number of results
+      description: The number of results returned
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.paging.total
-      description: Number of total executions
+      description: The number of total executions.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.paging.offset
-      description: 'Number of offset for first result to include. '
+      description: The number of the offset for the first result to include. 
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.paging.max
-      description: Maximum number of results to retun
+      description: The maximum number of results to return.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.executions.id
-      description: Id of the execution
+      description: The ID of the execution.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.executions.status
-      description: Status of the execution
+      description: The status of the execution.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.project
       description: The project name of the execution.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.executionType
-      description: Type of the execution
+      description: The type of the execution.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.user
-      description: Username of the person executing the job
+      description: The user name of the person executing the job.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.datestarted.unixtime
-      description: Date of the job execution in unix time.
+      description: The date of the job execution in Unix time.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.executions.datestarted.date
-      description: Date of the job execution.
+      description: The date of the job execution.
       type: Date
     - contextPath: Rundeck.ExecutionsQuery.executions.dateended.unixtime
-      description: Date of the end of job execution in unix time.
+      description: The date of the end of job execution in Unix time.
       type: Unknown
     - contextPath: Rundeck.ExecutionsQuery.executions.dateend.time
-      description: Date of the end of job execution.
+      description: The date of the end of job execution.
       type: Date
     - contextPath: Rundeck.ExecutionsQuery.executions.job.id
-      description: Id of the executed job.
+      description: The ID of the executed job.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.job.averageDuration
-      description: Average time for the job's execution
+      description: The average time for the job's execution.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.executions.job.name
-      description: Name of the job
+      description: The name of the job.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.job.group
       description: The job's group.
@@ -613,37 +606,35 @@ script:
       description: The project name of the executed job.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.job.description
-      description: Description of the job.
+      description: A description of the job.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.job.options
-      description: Options for the job's execution.
+      description: The options for the job's execution.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.description
-      description: Description of the execution.
+      description: A description of the execution.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.argstring
-      description: Arguments for the job's execution.
+      description: The arguments for the job's execution.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.executions.failedNodes
-      description: List of failed nodes
+      description: A list of the failed nodes.
       type: String
     - contextPath: Rundeck.ExecutionsQuery.paging.total
-      description: Indicate the total results that returned from the api
+      description: Indicates the total results that were returned from the API.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.paging.offset
-      description: Indicate the 0 indexed offset for the first result to return.
+      description: Indicates the 0 indexed offset for the first result to return.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.paging.max
-      description: Indicate the maximum number of results to return. If unspecified,
-        all results are returned.
+      description: Indicates the maximum number of results to return. If unspecified, all results are returned.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.paging.count
-      description: Indicates the number of results that accually retuned, after filter
-        them out using the 'offest' and 'max' parameters.
+      description: Indicates the number of results that were actually returned, after filtering them using the 'offest' and 'max' parameters.
       type: Number
   - arguments:
     - default: false
-      description: Id of the execution
+      description: The ID of the execution.
       isArray: false
       name: execution_id
       required: true
@@ -651,9 +642,9 @@ script:
     - auto: PREDEFINED
       default: false
       description: |-
-        If 'true' output saves in a returned file and not in Demisto context.
-        If 'false', the number of outputs is limited to 100 and the returned data save in context.
-        The default is 'false'.
+        Defines how to return the output. If 'true', the output is saved in a returned file and not in Cortex XSOAR context.
+        If 'false', the number of outputs is limited to 100 and the returned data is saved in Cortex XSOAR context.
+        Default is 'false'.
       isArray: false
       name: return_full_output
       predefined:
@@ -662,16 +653,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: maximum number of results to retun. The Default is 100.
+      description: The maximum number of results to return. Default is 100.
       isArray: false
       name: max_results
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: if 'true', all entries of type 'log' are saved in context under
-        'listEntry' in  ExecutionsOutput under the execution you selected to run this
-        command.
+      description: Whether all of type 'log' are saved in Cortex XSOAR context under 'listEntry' in  ExecutionsOutput under the execution you selected to run this command.
       isArray: false
       name: aggregate_log
       predefined:
@@ -680,120 +669,116 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the metadata associated with workflow step state
+    description: Gets the metadata associated with the workflow step state.
     execution: false
     name: rundeck-job-execution-output
     outputs:
     - contextPath: Rundeck.ExecutionsOutput.id
-      description: Id of the execution
+      description: ID of the execution
       type: Number
     - contextPath: Rundeck.ExecutionsOutput.offset
       description: Byte offset to read from in the file. 0 indicates the beginning.
       type: String
     - contextPath: Rundeck.ExecutionsOutput.completed
-      description: '''true'' if the current log entries or request parameters include
-        all of the available data, ''false'' otherwise.'
+      description: Whether to include all the available data."true" if the current log entries or request parameters include all of the available data. Otherwise, "false".
       type: Boolean
     - contextPath: Rundeck.ExecutionsOutput.execCompleted
-      description: '''true'' if execution has finished. ''false'' otherwise.'
+      description: Whether the execution finished. 
       type: Boolean
     - contextPath: Rundeck.ExecutionsOutput.hasFailedNodes
-      description: '''true'' if there are nodes that failed. ''false'' otherwise.'
+      description: Whether there are nodes that failed.
       type: Boolean
     - contextPath: Rundeck.ExecutionsOutput.execState
-      description: 'Execution state. can be: ''running'',''succeeded'',''failed'',
-        or ''aborted''.'
+      description: 'The execution state. Possible values are: "running", "succeeded", "failed", or "aborted".'
       type: String
     - contextPath: Rundeck.ExecutionsOutput.lastModified
-      description: Millisecond timestamp of the last modification of the log file.
+      description: The timestamp of the last modification of the log file in milliseconds.
       type: String
     - contextPath: Rundeck.ExecutionsOutput.execDuration
-      description: Millisecond duration of the execution
+      description: The duration of the execution in milliseconds.
       type: Number
     - contextPath: Rundeck.ExecutionsOutput.percentLoaded
-      description: Percentage of the output which has been loaded by the parameters
+      description: The percentage of the output that was loaded by the parameters.
       type: Number
     - contextPath: Rundeck.ExecutionsOutput.totalSize
-      description: Total bytes available in the output file
+      description: The total bytes available in the output file.
       type: Number
     - contextPath: Rundeck.ExecutionsOutput.retryBackoff
-      description: RetryBackoff number.
+      description: The maximum number of times to retry an execution when the job is directly invoked. 
       type: Number
     - contextPath: Rundeck.ExecutionsOutput.clusterExec
-      description: '''true'' is there was a cluster execution. ''false'' otherwise.'
+      description: Whether there was a cluster execution.
       type: Boolean
     - contextPath: Rundeck.ExecutionsOutput.compacted
-      description: '''true'' if compacted form was requested and is used. ''false''
-        otherwise.'
+      description: Whether a compacted form was requested and is used in the response.
       type: Boolean
     - contextPath: Rundeck.ExecutionsOutput.entries.node
-      description: Node name.
+      description: The name of the node.
       type: String
     - contextPath: Rundeck.ExecutionsOutput.entries.user
-      description: User name performed the execution.
+      description: The name of the user who performed the execution.
       type: String
     - contextPath: Rundeck.ExecutionsOutput.entries.time
-      description: Time of the output.
+      description: The time of the output.
       type: String
     - contextPath: Rundeck.ExecutionsOutput.entries.level
-      description: Log level
+      description: The log level.
       type: String
     - contextPath: Rundeck.ExecutionsOutput.entries.type
-      description: Output type
+      description: The output type.
       type: String
     - contextPath: Rundeck.ExecutionsOutput.entries.absolutetime
-      description: Absolute time of the output.
+      description: The absolute time of the output in the format "yyyy-MM-dd'T'HH:mm:ssZ".
       type: Date
     - contextPath: Rundeck.ExecutionsOutput.entries.log
-      description: Log message.
+      description: The log message.
       type: String
   - arguments:
     - default: false
-      description: Id of the execution you want to abort.
+      description: The ID of the execution you want to abort.
       isArray: false
       name: execution_id
       required: true
       secret: false
     deprecated: false
-    description: Aborts an active execution
+    description: Aborts an active execution.
     execution: false
     name: rundeck-job-execution-abort
     outputs:
     - contextPath: Rundeck.Aborted.abort.status
-      description: 'can be either: ''pending'', ''failed'' or ''aborted''.'
+      description: 'The status of the abort process. Possible values are: "pending", "failed", or "aborted".'
       type: String
     - contextPath: Rundeck.Aborted.abort.reason
-      description: Reason for the 'status'
+      description: The reason for the abort status.
       type: String
     - contextPath: Rundeck.Aborted.execution.id
-      description: Id of the aborted execution.
+      description: The ID of the aborted execution.
       type: String
     - contextPath: Rundeck.Aborted.execution.status
-      description: Execution's status.
+      description: The status of the execution.
       type: String
   - arguments:
     - default: false
-      description: Project name to execute the command
+      description: The name of the project in which to execute the command.
       isArray: false
       name: project_name
       required: false
       secret: false
     - default: false
-      description: Shell command to run
+      description: Shell command string to run. For example "echo hello".
       isArray: false
       name: exec_command
       required: true
       secret: false
     - default: false
-      description: Threadcount to use
+      description: The threadcount to use.
       isArray: false
       name: node_thread_count
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: '''true'' for continue executing on other nodes after a failure.
-        ''false'' otherwise.'
+      description: Whether to continue executing on other nodes after a failure.
       isArray: false
       name: node_keepgoing
       predefined:
@@ -802,14 +787,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Username identifying the user who ran the command.
+      description: The name of the user who ran the command.
       isArray: false
       name: as_user
       required: false
       secret: false
     - default: false
       description: |-
-        node filter string, or .* for all nodes.
+        Node filter string, or .* for all nodes.
 
         Examples:
         To select a specific node by its name:
@@ -822,66 +807,65 @@ script:
         To use regular expressions:
         Hostname: dev(\d+).com
 
-        To use Regex syntex checking:
+        To use Regex syntax checking:
         attribute: /regex/
 
-        for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
+        For more information, see: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
       isArray: false
       name: node_filter
       required: false
       secret: false
     deprecated: false
-    description: Executes shell commands in nodes
+    description: Executes shell commands in nodes.
     execution: false
     name: rundeck-adhoc-command-run
     outputs:
     - contextPath: Rundeck.ExecuteCommand.message
-      description: Message regarding the execution progress.
+      description: A message regarding the progress of the execution.
       type: String
     - contextPath: Rundeck.ExecuteCommand.execution.id
-      description: Execution id
+      description: The execution ID.
       type: String
   - arguments:
     - default: false
-      description: Demisto id for the uploaded script file.
+      description: Cortex XSOAR ID of the uploaded script file.
       isArray: false
       name: entry_id
       required: true
       secret: false
     - default: false
-      description: Project name to execute the script.
+      description: The name of the project in which to execute the script.
       isArray: false
       name: project_name
       required: false
       secret: false
     - default: false
-      description: Arguments to pass to the script when executed.
+      description: The arguments to pass to the script when executed.
       isArray: false
       name: arg_string
       required: false
       secret: false
     - default: false
-      description: threadcount to use
+      description: The threadcount to use.
       isArray: false
       name: node_thread_count
       required: false
       secret: false
     - default: false
-      description: '''true'' for continue executing on other nodes after a failure.
-        ''false'' otherwise.'
+      description: Whether to continue executing on other nodes after a failure.
       isArray: false
       name: node_keepgoing
       required: false
       secret: false
     - default: false
-      description: Username identifying the user who rans the script.
+      description: The name of the user who ran the script.
       isArray: false
       name: as_user
       required: false
       secret: false
     - default: false
       description: |-
-        node filter string, or .* for all nodes.
+        Node filter string, or .* for all nodes.
 
         Examples:
         To select a specific node by its name:
@@ -894,24 +878,23 @@ script:
         To use regular expressions:
         Hostname: dev(\d+).com
 
-        To use Regex syntex checking:
+        To use Regex syntax checking:
         attribute: /regex/
 
-        for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
+        For more information,: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
       isArray: false
       name: node_filter
       required: false
       secret: false
     - default: false
-      description: Command to use to run the script file
+      description: Command to use to run the script file.
       isArray: false
       name: script_interpreter
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: '''true'', the script file and arguments will be quoted as the
-        last argument to the script_interpreter. ''false'' otherwise.'
+      description: Whether the script file and arguments will be quoted as the last argument to the script_interpreter. 
       isArray: false
       name: interpreter_args_quoted
       predefined:
@@ -920,45 +903,44 @@ script:
       required: false
       secret: false
     - default: false
-      description: Extension of the script file
+      description: Extension of the script file.
       isArray: false
       name: file_extension
       required: false
       secret: false
     deprecated: false
-    description: Runs a script from file
+    description: Runs a script from a file.
     execution: false
     name: rundeck-adhoc-script-run
     outputs:
     - contextPath: Rundeck.ExecuteScriptFile.message
-      description: Message regarding the execution progress.
+      description: A message regarding the execution progress.
       type: String
     - contextPath: Rundeck.ExecuteScriptFile.execution.id
-      description: Execution id
+      description: The execution ID.
       type: String
   - arguments:
     - default: false
-      description: Project name to execute the script.
+      description: The name of the project from which to execute the script.
       isArray: false
       name: project_name
       required: false
       secret: false
     - default: false
-      description: Url for the script file
+      description: The URL of the script file.
       isArray: false
       name: script_url
       required: true
       secret: false
     - default: false
-      description: threadcount to use.
+      description: The threadcount to use.
       isArray: false
       name: node_thread_count
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: '''true'' for continue executing on other nodes after a failure.
-        ''false'' otherwise.'
+      description: Whether to continue executing on other nodes after a failure.
       isArray: false
       name: node_keepgoing
       predefined:
@@ -967,14 +949,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Username identifying the user who rans the script file.
+      description: The name of the user who ran the script file.
       isArray: false
       name: as_user
       required: false
       secret: false
     - default: false
       description: |-
-        node filter string, or .* for all nodes.
+        Node filter string, or .* for all nodes.
 
         Examples:
         To select a specific node by its name:
@@ -987,29 +969,32 @@ script:
         To use regular expressions:
         Hostname: dev(\d+).com
 
-        To use Regex syntex checking:
+        To use Regex syntax checking:
         attribute: /regex/
 
-        for more information: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
+        For more information, see: https://docs.rundeck.com/docs/api/rundeck-api.html#using-node-filters
       isArray: false
       name: node_filter
       required: false
       secret: false
     - default: false
-      description: Command to use to run the script file
+      description: Command to use to run the script file.
       isArray: false
       name: script_interpreter
       required: false
       secret: false
-    - default: false
-      description: '''true'', the script file and arguments will be quoted as the
-        last argument to the script_interpreter. ''false'' otherwise.'
+    - auto: PREDEFINED
+      default: false
+      description: Whether the script file and arguments will be quoted as the last argument to the script_interpreter. 
       isArray: false
       name: interpreter_args_quoted
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
-      description: Extension of the script file
+      description: Extension of the script file.
       isArray: false
       name: file_extension
       required: false
@@ -1021,93 +1006,93 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Runs a script from URL
+    description: Runs a script downloaded from a URL.
     execution: false
     name: rundeck-adhoc-script-run-from-url
   - arguments:
     - default: false
-      description: Name of the project to get its webhooks.
+      description: The name of the project for which to get its webhooks.
       isArray: false
       name: project_name
       required: false
       secret: false
     - default: false
-      description: maximum number of results to retun. The Default is 100.
+      description: The maximum number of results to return. Default is 100.
       isArray: false
       name: max_results
       required: false
       secret: false
     deprecated: false
-    description: Gets a list of all existing webhooks
+    description: Gets a list of all existing webhooks.
     execution: false
     name: rundeck-webhooks-list
     outputs:
     - contextPath: Rundeck.Webhooks.id
-      description: Id of the webhook.
+      description: The ID of the webhook.
       type: Number
     - contextPath: Rundeck.Webhooks.uuid
-      description: Uuid of the webhook.
+      description: The UUID of the webhook.
       type: String
     - contextPath: Rundeck.Webhooks.name
-      description: Name of the webhook.
+      description: The name of the webhook.
       type: String
     - contextPath: Rundeck.Webhooks.project
-      description: Name of the project the webhook relates to.
+      description: The name of the project the webhook relates to.
       type: String
     - contextPath: Rundeck.Webhooks.enabled
-      description: '''true'' if the webhook is enabled. ''false'' otherwise.'
+      description: Whether the webhook is enabled.
       type: String
     - contextPath: Rundeck.Webhooks.user
-      description: User name of the webhook user
+      description: The user name of the webhook user.
       type: String
     - contextPath: Rundeck.Webhooks.creator
-      description: User name of the webhook creator.
+      description: The user name of the webhook creator.
       type: String
     - contextPath: Rundeck.Webhooks.roles
-      description: Rolers of the webhooks
+      description: The roles of the webhooks.
       type: String
     - contextPath: Rundeck.Webhooks.authToken
-      description: Auth token of the webhook.
+      description: The auth token of the webhook.
       type: String
     - contextPath: Rundeck.Webhooks.eventPlugin
-      description: Plug in that is being used.
+      description: The plugin that is being used.
       type: String
     - contextPath: Rundeck.Webhooks.config.jobId
-      description: Id of the job related to the webhook
+      description: The ID of the job related to the webhook.
       type: String
   - arguments:
     - default: false
-      description: Auto token of the webhook
+      description: The auth token of the webhook.
       isArray: false
       name: auth_token
       required: true
       secret: false
     - default: false
       description: |-
-        Data you want to post to the webhook endpoint. example: 'op1=val1,op2=val2'.
-        can pass either 'options' or 'json'.
+        Data you want to post to the webhook endpoint. For example: 'op1=val1,op2=val2'.
+        You can pass either the 'options' or 'json' argument.
       isArray: false
       name: options
       required: false
       secret: false
     - default: false
       description: |-
-        Json you want to post to the webhook endpoint.
-        can pass either 'options' or 'json'.
+        JSON you want to post to the webhook endpoint.
+        You can pass either the 'options' or 'json' argument.
       isArray: false
       name: json
       required: false
       secret: false
     deprecated: false
-    description: Send webhook event
+    description: Send webhook event.
     execution: false
     name: rundeck-webhook-event-send
     outputs:
     - contextPath: Rundeck.WebhookEvent.jobId
-      description: Id of the executed job.
+      description: The ID of the executed job.
       type: String
     - contextPath: Rundeck.WebhookEvent.executionId
-      description: Id of the execution.
+      description: The ID of the execution.
       type: String
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
