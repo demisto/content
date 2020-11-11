@@ -85,7 +85,7 @@ SECURITY_RULE_ARGS = {
     'log_forwarding': 'LogForwarding',
     'log-setting': 'LogForwarding',
     'tag': 'Tags',
-    'profile-setting': 'ProfileSetting'
+    'profile-setting': 'ProfileSetting',
 }
 
 PAN_OS_ERROR_DICT = {
