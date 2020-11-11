@@ -1,5 +1,6 @@
 import pytest
 from typing import List
+import demistomock as demisto
 
 
 @pytest.mark.parametrize(argnames="phrase, norm_phrase",
@@ -90,3 +91,10 @@ def test_build_grid_command(datadir, mocker, keys: List[str], columns: List[str]
                                               unpack_nested_elements=unpack_nested_elements)
     expected_results = json.load(open(datadir[expected_results_path]))
     assert json.dumps(results) == json.dumps(expected_results)
+
+
+def test_grid_dont_exist_in_context(mocker):
+    import SetGridField
+    mocker.patch.object(demisto, 'incidents', return_value=[])
+
+    assert SetGridField.get_current_table('some_id') == []
