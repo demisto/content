@@ -161,6 +161,7 @@ class DBotScoreType(object):
     DBotScoreType.DOMAIN
     DBotScoreType.URL
     DBotScoreType.CVE
+    DBotScoreType.ACCOUNT
     :return: None
     :rtype: ``None``
     """
@@ -169,6 +170,7 @@ class DBotScoreType(object):
     DOMAIN = 'domain'
     URL = 'url'
     CVE = 'cve'
+    ACCOUNT = 'account'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -183,7 +185,8 @@ class DBotScoreType(object):
             DBotScoreType.FILE,
             DBotScoreType.DOMAIN,
             DBotScoreType.URL,
-            DBotScoreType.CVE
+            DBotScoreType.CVE,
+            DBotScoreType.ACCOUNT
         )
 
 
@@ -949,6 +952,19 @@ def aws_table_to_markdown(response, table_header):
     return human_readable
 
 
+def stringEscape(st):
+    """
+       Escape newline chars in the given string.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string.
+       :rtype: ``str``
+    """
+    return st.replace('\r', '\\r').replace('\n', '\\n').replace('\t', '\\t')
+
+
 def stringUnEscape(st):
     """
        Unescape newline chars in the given string.
@@ -1002,7 +1018,6 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
-            res = stringUnEscape(res)
         except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
@@ -1029,7 +1044,12 @@ class IntegrationLogger(object):
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
         '''
-        to_add = [self.encode(a) for a in args if a]
+        to_add = []
+        for a in args:
+            if a:
+                a = self.encode(a)
+                to_add.append(stringEscape(a))
+                to_add.append(stringUnEscape(a))
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -1359,7 +1379,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
-            def headerTransform(s): return s  # noqa
+            def headerTransform(s): return stringEscapeMD(s, True, True)  # noqa
         for header in headers:
             newHeaders.append(headerTransform(header))
         mdResult += '|'
@@ -1568,7 +1588,7 @@ def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
 
 
-MARKDOWN_CHARS = r"\`*_{}[]()#+-!"
+MARKDOWN_CHARS = r"\`*_{}[]()#+-!|"
 
 
 def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
@@ -2578,6 +2598,96 @@ class Common(object):
 
             return ret_value
 
+    class Account(Indicator):
+        """
+        Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards#account
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If account has reputation then create DBotScore object
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Account(val.id && val.id == obj.id)'
+
+        def __init__(self, id, type=None, username=None, display_name=None, groups=None,
+                     domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
+                     department=None, country=None, state=None, city=None, street=None, is_enabled=None,
+                     dbot_score=None):
+            self.id = id
+            self.type = type
+            self.username = username
+            self.display_name = display_name
+            self.groups = groups
+            self.domain = domain
+            self.email_address = email_address
+            self.telephone_number = telephone_number
+            self.office = office
+            self.job_title = job_title
+            self.department = department
+            self.country = country
+            self.state = state
+            self.city = city
+            self.street = street
+            self.is_enabled = is_enabled
+
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            account_context = {
+                'Id': self.id
+            }
+
+            if self.type:
+                account_context['Type'] = self.type
+
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id']
+            details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
+            for detail in details:
+                if self.__getattribute__(detail):
+                    if detail == 'email_address':
+                        account_context['Email'] = {
+                            'Address': self.email_address
+                        }
+                    else:
+                        Detail = camelize_string(detail, '_')
+                        account_context[Detail] = self.__getattribute__(detail)
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                account_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.Account.CONTEXT_PATH: account_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+
+def camelize_string(src_str, delim='_'):
+    """
+    Transform snake_case to CamelCase
+
+    :type src_str: ``str``
+    :param src_str: snake_case string to convert.
+
+    :type delim: ``str``
+    :param delim: indicator category.
+
+    :return: A CammelCase string.
+    :rtype: ``str``
+    """
+    components = src_str.split(delim)
+    return ''.join(map(lambda x: x.title(), components))
+
 
 class IndicatorsTimeline:
     """
@@ -2770,7 +2880,7 @@ def return_results(results):
 
     if results and isinstance(results, list) and len(results) > 0 and isinstance(results[0], CommandResults):
         for result in results:
-            demisto.results(result)
+            demisto.results(result.to_context())
         return
 
     if isinstance(results, CommandResults):
@@ -3443,10 +3553,15 @@ class DebugLogger(object):
         """
         Utility function to log start of debug mode logging
         """
-        msg = "debug-mode started.\nhttp client print found: {}.\nEnv {}.".format(self.http_client_print is not None,
-                                                                                  os.environ)
+        msg = "debug-mode started.\n#### http client print found: {}.\n#### Env {}.".format(self.http_client_print is not None,
+                                                                                            os.environ)
         if hasattr(demisto, 'params'):
-            msg += "\nParams: {}.".format(demisto.params())
+            msg += "\n#### Params: {}.".format(json.dumps(demisto.params(), indent=2))
+        callingContext = demisto.callingContext.get('context', {})
+        msg += "\n#### Docker image: [{}]".format(callingContext.get('DockerImage'))
+        brand = callingContext.get('IntegrationBrand')
+        if brand:
+            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, callingContext.get('IntegrationInstance'))
         self.int_logger.write(msg)
 
 
@@ -3921,9 +4036,9 @@ if 'requests' in sys.modules:
                 # Get originating Exception in Exception chain
                 error_class = str(exception.__class__)
                 err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-                err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                          'Verify that the server URL parameter' \
+                err_msg = 'Verify that the server URL parameter' \
                           ' is correct and that you have access to the server from your host.' \
+                          '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
                     .format(err_type, exception.errno, exception.strerror)
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.RetryError as exception:
@@ -4630,7 +4745,7 @@ class IAMVendorActionResult:
     """
 
     def __init__(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
-                 error_message=None, details=None, skip=False, skip_reason=None, action=None):
+                 error_message=None, details=None, skip=False, skip_reason=None, action=None, return_error=False):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
         :param success: (bool) whether or not the command succeeded.
@@ -4644,6 +4759,7 @@ class IAMVendorActionResult:
         :param skip: (bool) whether or not the command is skipped.
         :param skip_reason: (str) If the command is skipped, describes the reason.
         :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
+        :param return_error: (bool) Whether or not to return an error entry.
         """
         self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
         self._instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
@@ -4658,6 +4774,10 @@ class IAMVendorActionResult:
         self._skip = skip
         self._skip_reason = skip_reason
         self._action = action
+        self._return_error = return_error
+
+    def should_return_error(self):
+        return self._return_error
 
     def create_outputs(self):
         """ Sets the outputs in `_outputs` attribute.
@@ -4741,22 +4861,26 @@ class IAMUserProfile:
 
         entry_context = {
             'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
-            'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName && '
+            'IAM.Vendor(val.instanceName && val.instanceName == obj.instanceName && '
             'val.email && val.email == obj.email)': outputs
         }
 
         return_entry = {
-            'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': outputs,
-            'HumanReadable': readable_output,
             'EntryContext': entry_context
         }
+
+        if self._vendor_action_results[0].should_return_error():
+            return_entry['Type'] = EntryType.ERROR
+        else:
+            return_entry['Type'] = EntryType.NOTE
+            return_entry['HumanReadable'] = readable_output
 
         return return_entry
 
     def set_result(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
-                   error_message=None, details=None, skip=False, skip_reason=None, action=None):
+                   error_message=None, details=None, skip=False, skip_reason=None, action=None, return_error=False):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
         :param success: (bool) whether or not the command succeeded.
@@ -4770,6 +4894,7 @@ class IAMUserProfile:
         :param skip: (bool) whether or not the command is skipped.
         :param skip_reason: (str) If the command is skipped, describes the reason.
         :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
+        :param return_error: (bool) Whether or not to return an error entry.
         """
         if not email:
             email = self.get_attribute('email')
@@ -4785,7 +4910,8 @@ class IAMUserProfile:
             details=details,
             skip=skip,
             skip_reason=skip_reason if skip_reason else '',
-            action=action
+            action=action,
+            return_error=return_error
         )
 
         self._vendor_action_results.append(vendor_action_result)

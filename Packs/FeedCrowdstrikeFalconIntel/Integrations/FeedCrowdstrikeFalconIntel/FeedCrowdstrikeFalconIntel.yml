@@ -37,7 +37,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -63,10 +64,10 @@ configuration:
   required: false
   type: 1
 - additionalinfo: Incremental feeds pull only new or modified indicators that have
-    been sent from the integration. The determination if the indicator is new or
-    modified happens on the 3rd-party vendor's side, so only indicators that are
-    new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds
-    are labeled new or modified.
+    been sent from the integration. The determination if the indicator is new or modified
+    happens on the 3rd-party vendor's side, so only indicators that are new or modified
+    are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are
+    labeled new or modified.
   defaultvalue: 'true'
   display: Incremental feed
   hidden: true
@@ -103,27 +104,33 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- additionalinfo: 'A comma-separated list of the threat actor''s target industries. For example: Aerospace,Academic'
+- additionalinfo: 'A comma-separated list of the threat actor''s target industries.
+    For example: Aerospace,Academic'
   display: Filter by the threat actor's target industries.
   hidden: false
   name: target_industries
   required: false
   type: 0
-- additionalinfo: 'A comma-separated list of the threat actor''s target countries. For example: united states,canada'
+- additionalinfo: 'A comma-separated list of the threat actor''s target countries.
+    For example: united states,canada'
   display: Filter by threat actor's target countries.
   hidden: false
   name: target_countries
   required: false
   type: 0
-- additionalinfo: 'For more information about custom filters and their structure, see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
-  display: 'A custom filter by which to filter the indicators. If you pass the custom_filter argument it will override the custom_filter parameter from the integration instance configuration.'
+- additionalinfo: 'For more information about custom filters and their structure,
+    see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
+  display: 'A custom filter by which to filter the indicators. If you pass the custom_filter
+    argument it will override the custom_filter parameter from the integration instance
+    configuration.'
   hidden: false
   name: custom_filter
   required: false
   type: 0
 description: The CrowdStrike intelligence team tracks the activities of threat actor
   groups and advanced persistent threats (APTs) to understand as much as possible
-  about their known aliases, targets, methods, and more. This integration retrieves indicators from the Crowdstrike Falcon Intel Feed
+  about their known aliases, targets, methods, and more. This integration retrieves
+  indicators from the Crowdstrike Falcon Intel Feed
 display: Crowdstrike Falcon Intel Feed
 name: Crowdstrike Falcon Intel Feed
 script:
@@ -142,19 +149,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the threat actor's target industries by which to filter the indicators.
+      description: A comma-separated list of the threat actor's target industries
+        by which to filter the indicators.
       isArray: true
       name: target_industries
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the threat actor's target countries by which to filter the indicators.
+      description: A comma-separated list of the threat actor's target countries by
+        which to filter the indicators.
       isArray: true
       name: target_countries
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the indicators. If you pass the custom_filter argument it will override the custom_filter parameter from the integration instance configuration. For more information about custom filters and their structure, see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
+      description: 'A custom filter by which to filter the indicators. If you pass
+        the custom_filter argument it will override the custom_filter parameter from
+        the integration instance configuration. For more information about custom
+        filters and their structure, see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
       isArray: false
       name: custom_filter
       required: false
@@ -163,7 +175,7 @@ script:
     description: Gets indicators from Crowdstrike Falcon Intel Feed.
     execution: false
     name: crowdstrike-falcon-intel-get-indicators
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.12176
   feed: true
   isfetch: false
   longRunning: false

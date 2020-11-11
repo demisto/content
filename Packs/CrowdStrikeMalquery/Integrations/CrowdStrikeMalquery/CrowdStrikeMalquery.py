@@ -293,8 +293,7 @@ def get_file_metadata_command(client: Client, args: dict):
     files_ids = argToList(args.get('file'))
     raw_response = client.get_files_metadata(files_ids)
     files = raw_response.get('resources', [])
-    human_readable = ''
-    file_indicator_list = []
+    command_results: List[CommandResults] = []
 
     for file in files:
         file_label = file.get('label')
@@ -308,16 +307,15 @@ def get_file_metadata_command(client: Client, args: dict):
         file_entry = Common.File(sha256=sha256, dbot_score=dbot_score)
         table_name = f'{VENDOR_NAME} File reputation for: {sha256}'
         md = tableToMarkdown(table_name, file, removeNull=True)
-        human_readable += md
-        file_indicator_list.append(file_entry)
 
-    command_results = CommandResults(
-        outputs_prefix='Malquery.File',
-        outputs_key_field='sha256',
-        outputs=files,
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=file_indicator_list)
+        command_results.append(CommandResults(
+            outputs_prefix='Malquery.File',
+            outputs_key_field='sha256',
+            outputs=file,
+            readable_output=md,
+            raw_response=raw_response,
+            indicator=file_entry)
+        )
 
     return command_results
 
@@ -405,6 +403,7 @@ def main():
     LOG(f'Command being called is {command}')
 
     try:
+        handle_proxy()
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
