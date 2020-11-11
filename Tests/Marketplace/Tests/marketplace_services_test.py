@@ -3,7 +3,7 @@ import pytest
 import json
 import os
 import random
-from unittest.mock import mock_open
+from unittest.mock import mock_open, patch
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
@@ -1125,7 +1125,7 @@ class TestReleaseNotes:
         assert changelog == original_changelog_dict
         assert changelog_latest_rn_version == LooseVersion('2.0.0')
 
-    def test_create_local_changelog(self, mocker, dummy_pack):
+    def test_create_local_changelog(self, mocker, dummy_pack, mock):
         """
            Given:
                - Changelog file path of the given pack withing the index dir
@@ -1135,10 +1135,17 @@ class TestReleaseNotes:
                - Verify that the local changelog file has been created successfully
        """
         mocker.patch('os.path.exists', return_value=True)
-        mocker.patch('shutil.copyfile')
+        build_index_folder_path = 'fake_build_index_folder_path'
+        build_changelog_index_path = os.path.join(build_index_folder_path, dummy_pack.name, Pack.CHANGELOG_JSON)
+        pack_changelog_path = os.path.join(dummy_pack.path, Pack.CHANGELOG_JSON)
         mocker.patch('os.path.isfile', return_value=True)
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        task_status = dummy_pack.create_local_changelog('fake_path')
+        mocker.patch('Tests.Marketplace.marketplace_services.logging')
+        mocker.patch('shutil.copyfile')
+        task_status = dummy_pack.create_local_changelog(build_index_folder_path)
+        shutil_copyfile_call_count = shutil.copyfile.call_count
+        shutil_copyfile_call_args = shutil.copyfile.call_args_list[0][1]
+        assert shutil_copyfile_call_count == 1
+        assert shutil_copyfile_call_args == {'src': build_changelog_index_path, 'dst': pack_changelog_path}
         assert task_status
 
     def test_get_release_notes_lines_aggregate(self, mocker, dummy_pack):

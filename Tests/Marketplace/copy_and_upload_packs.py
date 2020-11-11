@@ -198,11 +198,8 @@ def get_successful_and_failed_packs(packs_results_file_path):
 
     """
     if os.path.exists(packs_results_file_path):
-        print(f'packs results file exists at path: {packs_results_file_path}')
         packs_results_file = load_json(packs_results_file_path)
-        print(f'packs result file: {str(packs_results_file)}')
         successful_packs_dict = packs_results_file.get('successful_packs', {})
-        print(f'successful_packs_dict: {successful_packs_dict}')
         failed_packs_dict = packs_results_file.get('failed_packs', {})
         return successful_packs_dict, failed_packs_dict
     return {}, {}
