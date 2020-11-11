@@ -3,7 +3,7 @@ import pytest
 import json
 import os
 import random
-from unittest.mock import mock_open, patch
+from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
