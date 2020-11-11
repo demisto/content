@@ -446,7 +446,7 @@ def fetch_samples(client, query_filter):
     samples = []
 
     try:
-        demisto.debug(f'Okta: Fetching sample logs.')
+        demisto.debug('Okta: Fetching sample logs.')
         params = {
             'filter': encode_string_results(query_filter),
             'limit': FETCH_SAMPLES_SIZE
