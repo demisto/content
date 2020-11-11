@@ -378,7 +378,7 @@ def test_get_assigned_user_for_app_command(mocker):
     assert 'Okta User App Assignment' in command_result.readable_output
 
 
-def test_fetch_incidents(mocker):
+def test_fetch_incidents_two_logs_batches(mocker):
     """
     Given:
         - An Okta IAM client object and fetch-relevant instance parameters
@@ -390,14 +390,39 @@ def test_fetch_incidents(mocker):
     """
     import json
     mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
-    events = fetch_incidents(mock_client(),
-                             'mock_query_filter',
-                             'mock_fetch_time',
-                             'mock_fetch_limit')
+    events = fetch_incidents(
+        client=mock_client(),
+        query_filter='mock_query_filter',
+        fetch_time='mock_fetch_time',
+        fetch_limit=5
+    )
+
     assert len(events) == 3
     assert json.loads(events[0]['rawJSON']).get('mock_log1') == 'mock_value1'
     assert json.loads(events[1]['rawJSON']).get('mock_log2') == 'mock_value2'
     assert json.loads(events[2]['rawJSON']).get('mock_log3') == 'mock_value3'
+
+
+def test_fetch_incidents_fetch_limit(mocker):
+    """
+    Given:
+        - An Okta IAM client object and fetch-relevant instance parameters
+    When:
+        - Calling function fetch_incidents
+        - Three events exist Okta logs.
+        - Fetch limit is 2.
+    Then:
+        - Ensure only two events are returned in incident the correct format.
+    """
+    mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
+    events = fetch_incidents(
+        client=mock_client(),
+        query_filter='mock_query_filter',
+        fetch_time='mock_fetch_time',
+        fetch_limit=2
+    )
+
+    assert len(events) == 2
 
 
 def mock_get_logs_batch(url_suffix='', params=None, full_url=''):
