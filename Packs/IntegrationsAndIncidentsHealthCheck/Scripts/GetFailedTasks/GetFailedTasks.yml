@@ -18,6 +18,9 @@ commonfields:
   id: GetFailedTasks
   version: -1
 enabled: true
+dependson:
+  must:
+  - Demisto REST API|||demisto-api-post
 name: GetFailedTasks
 script: '-'
 subtype: python3
