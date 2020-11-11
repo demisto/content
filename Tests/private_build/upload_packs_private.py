@@ -172,7 +172,8 @@ def should_upload_core_packs(storage_bucket_name: str) -> bool:
 
 
 def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bucket: Any, index_folder_path: str,
-                                       packs_dependencies_mapping: dict, private_storage_bucket: bool = None,
+                                       packs_dependencies_mapping: dict, private_bucket_name: str,
+                                       private_storage_bucket: bool = None,
                                        content_repo: bool = None, current_commit_hash: str = '',
                                        remote_previous_commit_hash: str = '', packs_statistic_df: Any = None)\
         -> Any:
@@ -284,7 +285,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                or pack_was_modified, pack_artifacts_path=packs_artifacts_dir,
                                private_content=True)
     if full_pack_path is not None:
-        bucket_path = 'https://console.cloud.google.com/storage/browser/marketplace-ci-build-private/'
+        bucket_path = f'https://console.cloud.google.com/storage/browser/{private_bucket_name}/'
         bucket_url = bucket_path + full_pack_path
     else:
         bucket_url = 'Pack was not uploaded.'
@@ -483,7 +484,7 @@ def main():
     upload_id_set(default_storage_bucket, id_set_path)
 
     # summary of packs status
-    print_packs_summary(packs_list)
+    print_packs_summary(packs_list, storage_bucket_name, private_bucket_name)
 
 
 if __name__ == '__main__':
