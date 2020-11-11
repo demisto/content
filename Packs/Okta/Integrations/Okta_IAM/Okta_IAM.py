@@ -129,11 +129,11 @@ class Client(BaseClient):
             'since': encode_string_results(last_run_time),
             'until': encode_string_results(time_now)
         }
-        batch, next_page = self.get_logs_batch(url_suffix=uri, params=params)
+        logs_batch, next_page = self.get_logs_batch(url_suffix=uri, params=params)
 
-        while batch:
-            logs.extend(batch)
-            batch, next_page = self.get_logs_batch(full_url=next_page)
+        while logs_batch:
+            logs.extend(logs_batch)
+            logs_batch, next_page = self.get_logs_batch(full_url=next_page)
         return logs
 
     def get_logs_batch(self, url_suffix='', params=None, full_url=''):
@@ -144,12 +144,9 @@ class Client(BaseClient):
                 full_url (str): The full url retrieved from the last API call.
 
             Return:
-                batch (dict): The logs batch.
+                logs_batch (dict): The logs batch.
                 next_page (str): URL for next API call (equals '' on last batch).
         """
-        if not url_suffix and not full_url:
-            return None, None
-
         res = self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -158,13 +155,10 @@ class Client(BaseClient):
             resp_type='response'
         )
 
-        batch = res.json()
-        if batch:
-            next_page = res.links.get('next', {}).get('url')
-        else:
-            next_page = ''
+        logs_batch = res.json()
+        next_page = res.links.get('next', {}).get('url')
 
-        return batch, next_page
+        return logs_batch, next_page
 
 
 '''HELPER FUNCTIONS'''
