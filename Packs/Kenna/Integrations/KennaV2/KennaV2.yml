@@ -608,7 +608,7 @@ script:
     - contextPath: Kenna.AssetGroup.TopFixes.Fix.Assets.Operating_System
       description: Operating system of asset
     description: Returns top fixes for an asset group ID
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   longRunning: false
   longRunningPort: false
