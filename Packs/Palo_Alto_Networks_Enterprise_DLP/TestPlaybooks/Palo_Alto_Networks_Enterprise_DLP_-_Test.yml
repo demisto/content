@@ -1,4 +1,5 @@
 id: Palo_Alto_Networks_Enterprise_DLP_test.py
+fromversion: 5.0.0
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Palo_Alto_Networks_Enterprise_DLP - Test
