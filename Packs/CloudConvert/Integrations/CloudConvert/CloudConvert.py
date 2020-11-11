@@ -12,10 +12,12 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
 
+    @logger
     def __init__(self, headers, verify=False, proxy=False):
         url = 'https://api.cloudconvert.com/v2'
         super().__init__(url, headers=headers, verify=verify, proxy=proxy)
-
+    
+    @logger
     def import_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
         Import the file given as url to the API's server, for later conversion
@@ -32,7 +34,8 @@ class Client(BaseClient):
             data=arguments,
             ok_codes=(422, 200, 201, 500, 401)
         )
-
+    
+    @logger
     def import_entry_id(self, file_path: str, file_name: str) -> Dict[str, Any]:
         """
         Import the file given as a war room entry id to the API's server, for later conversion
@@ -47,12 +50,14 @@ class Client(BaseClient):
             url_suffix='import/upload',
             headers=self._headers
         )
-        form = response_get_form.get('data').get('result').get('form')
-        port_url = form.get('url')
-        params = form.get('parameters')
+        form = response_get_form.get('data', {}).get('result', {}).get('form', {})
+        port_url = form['url'] # if no url field in form, we should have an exception
+        params = form['parameters']
 
         # Creating a temp file with the same data of the given file
         # This way the uploaded file has a path that the API can parse properly
+        # The reason is that the API asserts the file type by the file extension,
+        # and getFilePath returns a file name without that extension
         demisto.debug('creating a temp file for upload operation')
         with tempfile.TemporaryFile(suffix=file_name) as temp_file:
             with open(file_path, 'rb') as file:
@@ -74,7 +79,8 @@ class Client(BaseClient):
         response_get_form['data'].pop('message')
         response_get_form['data'].pop('result')
         return response_get_form
-
+    
+    @logger
     def convert(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
         Convert a file to desired format, given the file was priorly imported to the API's server
@@ -111,7 +117,8 @@ class Client(BaseClient):
             headers=self._headers,
             ok_codes=(422, 200, 201, 500)
         )
-
+    
+    @logger
     def export_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
         Export a converted file to a url
@@ -132,7 +139,7 @@ class Client(BaseClient):
             data=arguments,
             ok_codes=(422, 200, 201, 500)
         )
-
+    @logger
     def get_file_from_url(self, url: str):
         """
         Call a GET http request in order to get the file data given as url
