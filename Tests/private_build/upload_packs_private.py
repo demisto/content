@@ -460,7 +460,7 @@ def main():
     # starting iteration over packs
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
-                                           packs_dependencies_mapping,
+                                           packs_dependencies_mapping, private_bucket_name,
                                            private_storage_bucket=private_storage_bucket, content_repo=content_repo,
                                            current_commit_hash=current_commit_hash,
                                            remote_previous_commit_hash=remote_previous_commit_hash,
