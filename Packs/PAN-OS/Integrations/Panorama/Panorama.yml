@@ -16,15 +16,17 @@ configuration:
   name: key
   required: true
   type: 4
-- display: Device group - Panorama instances only (write shared for Shared location)
+- additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select the desired Device Group
+  display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
   type: 0
-- display: Vsys - Firewall instances only
+- additionalinfo: Located in the Firewall URL; by default of PAN-OS it is vsys1
+  display: Vsys - Firewall instances only
   name: vsys
   required: false
   type: 0
-- display: Template - Panorama instances only.
+- display: Template - Panorama instances only
   name: template
   required: false
   type: 0
