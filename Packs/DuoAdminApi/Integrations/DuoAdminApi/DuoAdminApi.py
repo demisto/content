@@ -330,6 +330,27 @@ def delete_u2f_token(token_id):
     demisto.results('Token with ID ' + token_id + ' deleted successfully')
 
 
+def set_user_status(username, status):
+    result = admin_api.get_users_by_name(username)
+    user_id = result[0]["user_id"]
+    res = admin_api.update_user(user_id, status=status)
+    demisto.results('User ' + username + 'was set to status ' + status)
+
+
+def get_duo_admin_by_name(name):
+    duo_administrators = admin_api.get_admins()
+    duo_administrator = next((admin for admin in duo_administrators if admin['name'] == name), None)
+
+    entry = get_entry_for_object(
+        'Information about admin ' + name, duo_administrator, duo_administrator,
+        {
+            'DuoAdmin.AdminDetail(val.name && val.name==obj.name)':
+                {'details': duo_administrator}
+        }
+    )
+    demisto.results(entry)
+
+
 # Execution
 try:
     admin_api = create_api_call()
@@ -361,6 +382,12 @@ try:
 
     if demisto.command() == 'duoadmin-delete-u2f-token':
         delete_u2f_token(demisto.getArg('token_id'))
+
+    if demisto.command() == 'duoadmin-set-user-status':
+        set_user_status(demisto.getArg('username'), demisto.getArg('status'))
+
+    if demisto.command() == 'duoadmin-get-admin-by-name':
+        get_duo_admin_by_name(demisto.getArg('name'))
 
 except Exception as e:
     demisto.error("Duo Admin failed on: {} on this command {}".format(e, demisto.command))

@@ -231,6 +231,27 @@ script:
     description: Associates a device to a user
     execution: false
     name: duoadmin-associate-device-to-user
+  - name: duoadmin-set-user-status
+    arguments:
+    - name: username
+      required: true
+    - name: status
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - active
+      - disabled
+      - bypass
+      defaultValue: active
+    execution: true
+  - name: duoadmin-get-admin-by-name
+    arguments:
+    - name: name
+      required: true
+      description: The name field of the administrator
+    outputs:
+    - contextPath: DuoAdmin.AdminDetail.details
   dockerimage: demisto/duoadmin:1.0.0.11989
   isfetch: false
   longRunning: false
