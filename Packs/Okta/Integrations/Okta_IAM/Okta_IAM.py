@@ -141,8 +141,15 @@ def handle_exception(user_profile, e, action):
         e (DemistoException): The exception error that holds the response json.
         action (IAMActions): An enum represents the current action (get, update, create, etc).
     """
-    error_code = e.res.get('errorCode')
-    error_message = get_error_details(e.res)
+    try:
+        resp = e.res.json()
+        error_code = resp.get('errorCode')
+        error_message = get_error_details(resp)
+    except ValueError:
+        resp = e.res.text
+        error_code = e.res.status_code
+        error_message = ''
+
     if error_code == USER_IS_DISABLED_ERROR:
         error_message = USER_IS_DISABLED_MSG
 
@@ -157,7 +164,7 @@ def handle_exception(user_profile, e, action):
                                 return_error=should_return_error,
                                 error_code=error_code,
                                 error_message=error_message,
-                                details=e.res)
+                                details=resp)
 
 
 def get_error_details(res):
