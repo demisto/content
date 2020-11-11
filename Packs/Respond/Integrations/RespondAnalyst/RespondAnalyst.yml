@@ -3,6 +3,17 @@ commonfields:
   id: Respond_Analyst
   version: -1
 configuration:
+- defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Both
+  required: false
+  type: 15
 - display: base url
   name: base_url
   required: true
@@ -27,17 +38,6 @@ configuration:
   name: username
   required: true
   type: 0
-- display: max fetch
-  defaultvalue: '50'
-  name: max_fetch
-  required: false
-  type: 0
-- defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
-  required: false
-  type: 0
-
 description: Respond Software Description
 display: Respond Analyst (Developer Contribution)
 name: Respond_Analyst
@@ -144,6 +144,21 @@ script:
     description: remove a user from a Respond incident
     execution: false
     name: respond-remove-user
+  - arguments:
+    - default: false
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: tenant_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get escalation data associated with incident
+    execution: false
+    name: respond-get-escalations
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
@@ -155,4 +170,6 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
+defaultmapperin: Respond Analyst (mapper)
+defaultclassifier: Respond Analyst (classifier)
 fromversion: 5.0.0

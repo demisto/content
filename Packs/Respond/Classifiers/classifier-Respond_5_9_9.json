@@ -1,0 +1,256 @@
+{
+ "brandName": "Respond Analyst",
+ "custom": true,
+ "fromVersion": "5.0.0",
+ "toVersion": "5.9.9",
+ "id": "745b2e2d-07c2-4d44-88b4-ad9a5baf1a5a",
+ "keyTypeMap": {
+  "Closed": "Respond Software Incident",
+  "Open": "Respond Software Incident"
+ },
+ "mapping": {
+  "Respond Software Incident": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Asset Criticality": {
+     "complex": null,
+     "simple": "assetCriticality"
+    },
+    "Assigned Users": {
+     "complex": null,
+     "simple": "assignedUsers"
+    },
+    "Attack Stage": {
+     "complex": null,
+     "simple": "attackStage"
+    },
+    "Attack Tactic": {
+     "complex": null,
+     "simple": "attackTactic"
+    },
+    "Close URL": {
+     "complex": null,
+     "simple": "closeURL"
+    },
+    "Escalation Reasons": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "escalationReasons",
+      "transformers": [
+       {
+        "args": {
+         "field": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "label"
+          }
+         }
+        },
+        "operator": "getField"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Feedback Comments": {
+     "complex": null,
+     "simple": "feedback.comments"
+    },
+    "Feedback Outcome": {
+     "complex": null,
+     "simple": "feedback.outcome"
+    },
+    "Feedback Time Updated": {
+     "complex": null,
+     "simple": "feedback.timeUpdated"
+    },
+    "Feedback User Id": {
+     "complex": null,
+     "simple": "feedback.userId"
+    },
+    "First Event Time": {
+     "complex": null,
+     "simple": "firstEventTime"
+    },
+    "Incident Id": {
+     "complex": null,
+     "simple": "incidentId"
+    },
+    "Internal Assets": {
+     "complex": null,
+     "simple": "internalSystems"
+    },
+    "Last Event Time": {
+     "complex": null,
+     "simple": "lastEventTime"
+    },
+    "Probability": {
+     "complex": null,
+     "simple": "probability"
+    },
+    "Respond Incident Asset Criticality": {
+     "complex": null,
+     "simple": "assetCriticality"
+    },
+    "Respond Incident Assigned Users": {
+     "complex": null,
+     "simple": "assignedUsers"
+    },
+    "Respond Incident Attack Stage": {
+     "complex": null,
+     "simple": "attackStage"
+    },
+    "Respond Incident Close URL": {
+     "complex": null,
+     "simple": "closeURL"
+    },
+    "Respond Incident Escalation Reasons": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "escalationReasons",
+      "transformers": [
+       {
+        "args": {
+         "field": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "label"
+          }
+         }
+        },
+        "operator": "getField"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Respond Incident Event Count": {
+     "complex": null,
+     "simple": "eventCount"
+    },
+    "Respond Incident Feedback Comments": {
+     "complex": null,
+     "simple": "feedback.comments"
+    },
+    "Respond Incident Feedback Outcome": {
+     "complex": null,
+     "simple": "feedback.outcome"
+    },
+    "Respond Incident Feedback Time Updated": {
+     "complex": null,
+     "simple": "feedback.timeUpdated"
+    },
+    "Respond Incident Feedback User Id": {
+     "complex": null,
+     "simple": "feedback.userId"
+    },
+    "Respond Incident First Event Time": {
+     "complex": null,
+     "simple": "firstEventTime"
+    },
+    "Respond Incident Last Event Time": {
+     "complex": null,
+     "simple": "lastEventTime"
+    },
+    "Respond Incident Probability": {
+     "complex": null,
+     "simple": "probability"
+    },
+    "Respond Incident Severity": {
+     "complex": null,
+     "simple": "severity"
+    },
+    "Respond Incident Tags": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "escalationReasons",
+      "transformers": [
+       {
+        "args": {
+         "field": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "label"
+          }
+         }
+        },
+        "operator": "getField"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Respond Incident Tenant Id": {
+     "complex": null,
+     "simple": "tenantId"
+    },
+    "Respond Incident Tenant Id Respond": {
+     "complex": null,
+     "simple": "tenantIdRespond"
+    },
+    "Respond Incident Time Generated": {
+     "complex": null,
+     "simple": "timeGenerated"
+    },
+    "Respond Incident Title": {
+     "complex": null,
+     "simple": "title"
+    },
+    "Respond Incident URL": {
+     "complex": null,
+     "simple": "URL"
+    },
+    "Respond Software ID": {
+     "complex": null,
+     "simple": "incidentId"
+    },
+    "Respond Tenant Id": {
+     "complex": null,
+     "simple": "tenantIdRespond"
+    },
+    "Tenant Id": {
+     "complex": null,
+     "simple": "tenantId"
+    },
+    "Time Generated": {
+     "complex": null,
+     "simple": "timeGenerated"
+    },
+    "Title": {
+     "complex": null,
+     "simple": "title"
+    },
+    "URL": {
+     "complex": null,
+     "simple": "URL"
+    }
+   }
+  }
+ },
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+
+   ],
+   "root": "status",
+   "transformers": [
+
+   ]
+  },
+  "simple": ""
+ },
+ "version": -1
+}
