@@ -30,12 +30,12 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Password
-  name: password
-  required: true
-  type: 4
 - display: Username
   name: username
+  required: true
+  type: 4
+- display: Password
+  name: password
   required: true
   type: 0
 description: Respond Software Integration - fetches incidents with mirroring api enabled
