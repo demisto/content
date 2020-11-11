@@ -323,7 +323,6 @@
       "serialNumber": "291e5ae79c6825af0c2795fe",
       "subjectAlternativeNames": [
         "incapsula.com",
-        "*.api.dev.crndev.chick-fil-a.com",
         "*.bigoption.com",
         "*.bwise.net",
         "*.careoregonadvantage.org",
@@ -373,7 +372,6 @@
       "serialNumber": "30b404c32089f5ea708dce54",
       "subjectAlternativeNames": [
         "incapsula.com",
-        "*.api.dev.crndev.chick-fil-a.com",
         "*.bigoption.com",
         "*.bwise.net",
         "*.careoregonadvantage.org",
@@ -2575,7 +2573,7 @@
           "state": "Delaware",
           "locale": "Dover"
         },
-        "subjectAlternativeNames": "incapsula.com, *.api.dev.crndev.chick-fil-a.com, *.bigoption.com, *.bwise.net, *.careoregonadvantage.org, *.corp.spotoption.com, *.creatingpurple.com, *.dinerolibre.com, *.dollargeneral.com, *.eros.com, *.healthrevelations.com, *.hsionline.com, *.myloanzone.com, *.nutritionandhealing.com, *.dummy.com, *.simplicate.nl, *.softbinary.com, *.verumoption.com, *.zulutrade.spotoption.com, creatingpurple.com, dinerolibre.com, dollargeneral.com, eros.com, healthrevelations.com, hsionline.com, myloanzone.com, nutritionandhealing.com, dummy.com, softbinary.com, timesheet.corp.spotoption.com, verumoption.com, zulutrade.spotoption.com",
+        "subjectAlternativeNames": "incapsula.com, *.bigoption.com, *.bwise.net, *.careoregonadvantage.org, *.corp.spotoption.com, *.creatingpurple.com, *.dinerolibre.com, *.dollargeneral.com, *.eros.com, *.healthrevelations.com, *.hsionline.com, *.myloanzone.com, *.nutritionandhealing.com, *.dummy.com, *.simplicate.nl, *.softbinary.com, *.verumoption.com, *.zulutrade.spotoption.com, creatingpurple.com, dinerolibre.com, dollargeneral.com, eros.com, healthrevelations.com, hsionline.com, myloanzone.com, nutritionandhealing.com, dummy.com, softbinary.com, timesheet.corp.spotoption.com, verumoption.com, zulutrade.spotoption.com",
         "publicKeyAlgorithm": "RSA",
         "certificateAuthority": false,
         "selfSigned": false
@@ -2604,7 +2602,7 @@
           "state": "Delaware",
           "locale": "Dover"
         },
-        "subjectAlternativeNames": "incapsula.com, *.api.dev.crndev.chick-fil-a.com, *.bigoption.com, *.bwise.net, *.careoregonadvantage.org, *.childmodelagency.net, *.corp.spotoption.com, *.creatingpurple.com, *.dinerolibre.com, *.dollargeneral.com, *.eros.com, *.healthrevelations.com, *.hsionline.com, *.myloanzone.com, *.nutritionandhealing.com, *.dummy.com, *.simplicate.nl, *.softbinary.com, *.verumoption.com, *.zulutrade.spotoption.com, childmodelagency.net, creatingpurple.com, dinerolibre.com, dollargeneral.com, eros.com, healthrevelations.com, hsionline.com, myloanzone.com, nutritionandhealing.com, dummy.com, softbinary.com, timesheet.corp.spotoption.com, verumoption.com, zulutrade.spotoption.com",
+        "subjectAlternativeNames": "incapsula.com, *.bigoption.com, *.bwise.net, *.careoregonadvantage.org, *.childmodelagency.net, *.corp.spotoption.com, *.creatingpurple.com, *.dinerolibre.com, *.dollargeneral.com, *.eros.com, *.healthrevelations.com, *.hsionline.com, *.myloanzone.com, *.nutritionandhealing.com, *.dummy.com, *.simplicate.nl, *.softbinary.com, *.verumoption.com, *.zulutrade.spotoption.com, childmodelagency.net, creatingpurple.com, dinerolibre.com, dollargeneral.com, eros.com, healthrevelations.com, hsionline.com, myloanzone.com, nutritionandhealing.com, dummy.com, softbinary.com, timesheet.corp.spotoption.com, verumoption.com, zulutrade.spotoption.com",
         "publicKeyAlgorithm": "RSA",
         "certificateAuthority": false,
         "selfSigned": false
@@ -2660,7 +2658,7 @@
           "state": "Delaware",
           "locale": "Dover"
         },
-        "subjectAlternativeNames": "incapsula.com, *.api.dev.crndev.chick-fil-a.com, *.bigoption.com, *.bwise.net, *.careoregonadvantage.org, *.childmodelagency.net, *.corp.spotoption.com, *.creatingpurple.com, *.dinerolibre.com, *.dollargeneral.com, *.empireoption.com, *.eros.com, *.healthrevelations.com, *.hsionline.com, *.myloanzone.com, *.nutritionandhealing.com, *.dummy.com, *.simplicate.nl, *.softbinary.com, *.verumoption.com, *.zulutrade.spotoption.com, childmodelagency.net, creatingpurple.com, dinerolibre.com, dollargeneral.com, empireoption.com, eros.com, healthrevelations.com, hsionline.com, myloanzone.com, nutritionandhealing.com, dummy.com, softbinary.com, timesheet.corp.spotoption.com, verumoption.com, zulutrade.spotoption.com",
+        "subjectAlternativeNames": "incapsula.com, *.bigoption.com, *.bwise.net, *.careoregonadvantage.org, *.childmodelagency.net, *.corp.spotoption.com, *.creatingpurple.com, *.dinerolibre.com, *.dollargeneral.com, *.empireoption.com, *.eros.com, *.healthrevelations.com, *.hsionline.com, *.myloanzone.com, *.nutritionandhealing.com, *.dummy.com, *.simplicate.nl, *.softbinary.com, *.verumoption.com, *.zulutrade.spotoption.com, childmodelagency.net, creatingpurple.com, dinerolibre.com, dollargeneral.com, empireoption.com, eros.com, healthrevelations.com, hsionline.com, myloanzone.com, nutritionandhealing.com, dummy.com, softbinary.com, timesheet.corp.spotoption.com, verumoption.com, zulutrade.spotoption.com",
         "publicKeyAlgorithm": "RSA",
         "certificateAuthority": false,
         "selfSigned": false
@@ -2689,7 +2687,7 @@
           "state": "Delaware",
           "locale": "Dover"
         },
-        "subjectAlternativeNames": "incapsula.com, *.api.dev.crndev.chick-fil-a.com, *.bigoption.com, *.bwise.net, *.careoregonadvantage.org, *.childmodelagency.net, *.corp.spotoption.com, *.creatingpurple.com, *.dinerolibre.com, *.dollargeneral.com, *.empireoption.com, *.eros.com, *.healthrevelations.com, *.hsionline.com, *.myloanzone.com, *.nutritionandhealing.com, *.dummy.com, *.simplicate.nl, *.softbinary.com, *.verumoption.com, *.zulutrade.spotoption.com, childmodelagency.net, creatingpurple.com, dinerolibre.com, dollargeneral.com, empireoption.com, eros.com, healthrevelations.com, hsionline.com, myloanzone.com, nutritionandhealing.com, dummy.com, softbinary.com, timesheet.corp.spotoption.com, verumoption.com, zulutrade.spotoption.com",
+        "subjectAlternativeNames": "incapsula.com, *.bigoption.com, *.bwise.net, *.careoregonadvantage.org, *.childmodelagency.net, *.corp.spotoption.com, *.creatingpurple.com, *.dinerolibre.com, *.dollargeneral.com, *.empireoption.com, *.eros.com, *.healthrevelations.com, *.hsionline.com, *.myloanzone.com, *.nutritionandhealing.com, *.dummy.com, *.simplicate.nl, *.softbinary.com, *.verumoption.com, *.zulutrade.spotoption.com, childmodelagency.net, creatingpurple.com, dinerolibre.com, dollargeneral.com, empireoption.com, eros.com, healthrevelations.com, hsionline.com, myloanzone.com, nutritionandhealing.com, dummy.com, softbinary.com, timesheet.corp.spotoption.com, verumoption.com, zulutrade.spotoption.com",
         "publicKeyAlgorithm": "RSA",
         "certificateAuthority": false,
         "selfSigned": false
@@ -2718,7 +2716,7 @@
           "state": "Delaware",
           "locale": "Dover"
         },
-        "subjectAlternativeNames": "incapsula.com, *.365dropship.com, *.api.dev.crndev.chick-fil-a.com, *.bigoption.com, *.bwise.net, *.careoregonadvantage.org, *.childmodelagency.net, *.corp.spotoption.com, *.creatingpurple.com, *.dinerolibre.com, *.dollargeneral.com, *.empireoption.com, *.eros.com, *.healthrevelations.com, *.hsionline.com, *.myloanzone.com, *.nutritionandhealing.com, *.dummy.com, *.simplicate.nl, *.softbinary.com, *.verumoption.com, *.zulutrade.spotoption.com, 365dropship.com, childmodelagency.net, creatingpurple.com, dinerolibre.com, dollargeneral.com, empireoption.com, eros.com, healthrevelations.com, hsionline.com, myloanzone.com, nutritionandhealing.com, dummy.com, softbinary.com, timesheet.corp.spotoption.com, verumoption.com, zulutrade.spotoption.com",
+        "subjectAlternativeNames": "incapsula.com, *.365dropship.com, *.bigoption.com, *.bwise.net, *.careoregonadvantage.org, *.childmodelagency.net, *.corp.spotoption.com, *.creatingpurple.com, *.dinerolibre.com, *.dollargeneral.com, *.empireoption.com, *.eros.com, *.healthrevelations.com, *.hsionline.com, *.myloanzone.com, *.nutritionandhealing.com, *.dummy.com, *.simplicate.nl, *.softbinary.com, *.verumoption.com, *.zulutrade.spotoption.com, 365dropship.com, childmodelagency.net, creatingpurple.com, dinerolibre.com, dollargeneral.com, empireoption.com, eros.com, healthrevelations.com, hsionline.com, myloanzone.com, nutritionandhealing.com, dummy.com, softbinary.com, timesheet.corp.spotoption.com, verumoption.com, zulutrade.spotoption.com",
         "publicKeyAlgorithm": "RSA",
         "certificateAuthority": false,
         "selfSigned": false

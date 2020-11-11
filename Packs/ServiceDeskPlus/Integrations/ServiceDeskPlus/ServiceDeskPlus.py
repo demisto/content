@@ -524,7 +524,7 @@ def assign_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         'input_data': f'{query}'
     }
     request_id = args.get('request_id')
-    result = client.http_request('PUT', url_suffix=f'requests/{request_id}/assign', params=params)
+    result = client.http_request('PUT', url_suffix=f'requests/{request_id}/_assign', params=params)
     markdown = f'### Service Desk Plus request {request_id} was successfully assigned'
     return markdown, {}, result
 
@@ -688,7 +688,7 @@ def close_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     params = {
         'input_data': f'{input_data}'
     }
-    result = client.http_request('PUT', url_suffix=f'requests/{request_id}/close', params=params)
+    result = client.http_request('PUT', url_suffix=f'requests/{request_id}/_close', params=params)
     hr = f'### Successfully closed request {request_id}'
     return hr, {}, result
 

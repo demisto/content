@@ -46,6 +46,7 @@ MARKET_PLACE_CONFIGURATION = {
     'marketplace.initial.sync.delay': '0',
     'content.pack.ignore.missing.warnings.contentpack': 'true'
 }
+ID_SET_PATH = './Tests/id_set.json'
 
 
 class Running(IntEnum):
@@ -93,7 +94,8 @@ class Server:
     @property
     def client(self):
         if self.__client is None:
-            self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name, password=self.password)
+            self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name,
+                                                     password=self.password)
         return self.__client
 
     def add_server_configuration(self, config_dict, error_msg, restart=False):
@@ -112,6 +114,16 @@ class Server:
                                       key_file_path=Build.key_file_path, user='ec2-user')
 
 
+def get_id_set(id_set_path) -> dict:
+    """
+    Used to collect the ID set so it can be passed to the Build class on init.
+
+    :return: ID set as a dict if it exists.
+    """
+    if os.path.isfile(id_set_path):
+        return get_json_file(id_set_path)
+
+
 class Build:
     # START CHANGE ON LOCAL RUN #
     content_path = '{}/project'.format(os.getenv('HOME'))
@@ -120,6 +132,7 @@ class Build:
     run_environment = Running.CIRCLECI_RUN
     env_results_path = './env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
+
     #  END CHANGE ON LOCAL RUN  #
 
     def __init__(self, options):
@@ -137,6 +150,44 @@ class Build:
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
         self.skipped_integrations_conf = conf['skipped_integrations']
+        id_set_path = options.id_set_path if options.id_set_path else ID_SET_PATH
+        self.id_set = get_id_set(id_set_path)
+        self.test_pack_path = options.test_pack_path if options.test_pack_path else None
+        self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
+        self.content_root = options.content_root
+        self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
+
+    @staticmethod
+    def fetch_tests_list(tests_to_run_path: str):
+        """
+        Fetches the test list from the filter.
+
+        :param tests_to_run_path: Path to location of test filter.
+        :return: List of tests if there are any, otherwise empty list.
+        """
+        tests_to_run = []
+        with open(tests_to_run_path, "r") as filter_file:
+            tests_from_file = filter_file.readlines()
+            for test_from_file in tests_from_file:
+                test_clean = test_from_file.rstrip()
+                tests_to_run.append(test_clean)
+        return tests_to_run
+
+    @staticmethod
+    def fetch_pack_ids_to_install(packs_to_install_path: str):
+        """
+        Fetches the test list from the filter.
+
+        :param packs_to_install_path: Path to location of pack IDs to install file.
+        :return: List of Pack IDs if there are any, otherwise empty list.
+        """
+        tests_to_run = []
+        with open(packs_to_install_path, "r") as filter_file:
+            tests_from_file = filter_file.readlines()
+            for test_from_file in tests_from_file:
+                test_clean = test_from_file.rstrip()
+                tests_to_run.append(test_clean)
+        return tests_to_run
 
     @staticmethod
     def get_servers(ami_env):
@@ -163,7 +214,15 @@ def options_handler():
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
-
+    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.',
+                        default='/home/runner/work/content-private/content-private/content/artifacts/packs')
+    parser.add_argument('--content_root', help='Path to the content root.',
+                        default='/home/runner/work/content-private/content-private/content')
+    parser.add_argument('--id_set_path', help='Path to the ID set.')
+    parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
+                        default='./Tests/filter_file.txt')
+    parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
+                        default='./Tests/content_packs_to_install.txt')
     options = parser.parse_args()
 
     return options
@@ -938,12 +997,13 @@ def restart_server_legacy(server):
         print(exc.output)
 
 
-def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, is_private=False):
+def get_tests(server_numeric_version, prints_manager, tests):
     if Build.run_environment == Running.CIRCLECI_RUN:
-        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
+        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests()
         if run_all_tests:
             # skip test button testing
-            skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT)
+            skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(
+                RUN_ALL_TESTS_FORMAT)
             prints_manager.add_print_job(skipped_instance_test_message, print_warning, 0)
             tests_for_iteration = []
         elif filter_configured and filtered_tests:
@@ -1037,7 +1097,8 @@ def install_packs(build, prints_manager, pack_ids=None):
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
-            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, prints_manager, build.is_private)
+            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client,
+                                                                      prints_manager)
             if not flag:
                 raise Exception('Failed to search and install packs.')
         except Exception as exc:
@@ -1048,7 +1109,8 @@ def install_packs(build, prints_manager, pack_ids=None):
     return installed_content_packs_successfully
 
 
-def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations, prints_manager):
+def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations,
+                               prints_manager):
     all_module_instances = []
     brand_new_integrations = []
     testing_client = build.servers[0].client
@@ -1077,17 +1139,18 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         integrations_to_configure = modified_integrations[:]
         integrations_to_configure.extend(unchanged_integrations)
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'], instance_names_conf,
+        new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'],
+                                                     instance_names_conf,
                                                      placeholders_map)
-        ints_to_configure_params_set = set_integration_params(integrations_to_configure, build.secret_conf['integrations'],
+        ints_to_configure_params_set = set_integration_params(integrations_to_configure,
+                                                              build.secret_conf['integrations'],
                                                               instance_names_conf, placeholders_map)
         if not new_ints_params_set:
             prints_manager.add_print_job(
                 'failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)), print_error, 0)
         if not ints_to_configure_params_set:
             prints_manager.add_print_job(
-                'failed setting parameters for integrations "{}"'.format('\n'.join(integrations_to_configure)),
-                print_error, 0)
+                'failed setting parameters for integrations\n "{}"'.format(integrations_to_configure), print_error, 0)
         if not (new_ints_params_set and ints_to_configure_params_set):
             continue
         prints_manager.execute_thread_prints(0)
@@ -1186,7 +1249,7 @@ def test_files(content_path):
 def get_test_playbooks_in_dir(path):
     playbooks = filter(lambda x: x.is_file(), os.scandir(path))
     for playbook in playbooks:
-        yield os.path.join(path, playbook), playbook
+        yield playbook.path, playbook
 
 
 def test_pack_metadata():
@@ -1281,8 +1344,7 @@ def main():
     else:
         installed_content_packs_successfully = True
 
-    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly,
-                                    build.is_private)
+    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests)
     new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
     all_module_instances, brand_new_integrations = \
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
@@ -1292,10 +1354,12 @@ def main():
         update_content_till_v6(build)
     elif not build.is_nightly:
         set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
-        installed_content_packs_successfully = install_packs(build, prints_manager) and installed_content_packs_successfully
+        installed_content_packs_successfully = install_packs(build,
+                                                             prints_manager) and installed_content_packs_successfully
 
     all_module_instances.extend(brand_new_integrations)
-    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager, pre_update=False)
+    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager,
+                                                                pre_update=False)
     disable_instances(build, all_module_instances, prints_manager)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,

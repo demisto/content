@@ -131,6 +131,9 @@ def hash_incident(fields_to_hash, un_populate_fields):
         if context_keys:
             incident['context'] = copy_key_from_context(get_context(incident['id']), context_keys)
 
+        # remove CustomFields
+        incident.pop('CustomFields', None)
+
         incident = hash_multiple(incident, fields_to_hash)
 
         # filter out fields

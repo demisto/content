@@ -53,11 +53,11 @@ def main():
                     else:
                         hours_per_user[username] = role_on_call_hours
 
-        line_widget = LineWidget()
+        bar_widget = BarColumnPieWidget()
         for user, number_of_hours in hours_per_user.items():
-            line_widget.add_category(name=user, number=number_of_hours, group=user)
+            bar_widget.add_category(name=user, number=number_of_hours)
 
-        return_results(line_widget)
+        return_results(bar_widget)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

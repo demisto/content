@@ -26,26 +26,19 @@ def http_request_without_approval_mock(req_type, suffix, params, data=None, file
 package_500_error = {
     'import_type': 'url',
     'import_value': 'www.demisto.com',
-    'ip_mapping': 'yes',
-    'md5_mapping': 'no'
 }
 
 expected_output_500 = {
     'Contents': {
         'data': {
             'classification': 'Private',
-            'confidence': '50',
-            'domain_mapping': False,
-            'email_mapping': False,
-            'ip_mapping': True,
-            'md5_mapping': False,
+            'confidence': 50,
             'severity': 'low',
             'threat_type': 'exploit',
-            'url_mapping': False
+            'url': 'www.demisto.com'
         },
         'import_session_id': {
             'api_key': None,
-            'datatext': 'www.demisto.com',
             'username': None
         },
         'success': True
@@ -82,7 +75,6 @@ def test_ioc_approval_500_error(mocker):
     results = demisto.results.call_args[0]
 
     assert results[0]['Contents']['data'] == expected_output_500['Contents']['data']
-    assert 'datatext' in results[0]['Contents']['import_session_id']
 
 
 def test_emoji_handling_in_file_name():

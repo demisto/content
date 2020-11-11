@@ -37,6 +37,7 @@ This integration was integrated and tested with Splunk v7.2.
 | hec_url | The HEC URL. For example, https://localhost:8088. | False |
 | fetch_time | The first timestamp to fetch in \<number\>\<time unit\> format. For example, "12 hours", "7 days", "3 months", "1 year". | False |
 | use_requests_handler | Use Python requests handler  | False |
+| type_field | Used only for Mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for Notable Events, however you may choose any custom field that suits the need. | False |
 
 The (!) `Earliest time to fetch` and `Latest time to fetch` are search parameters options. The search uses `All Time` as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as `earliest_time`, `index_earliest`, or `latest_time`.
 
@@ -67,6 +68,17 @@ Use the following naming convention: (demisto_fields_{type}).
 10. (Optional) Create custom fields.
 11. Build a playbook and assign it as the default for this incident type.
 
+### Mapping fetched incidents using Select Schema
+This integration supports the `Select Schema` feature of XSOAR 6.0 by providing the `get-mapping-fields` command. 
+When creating a new field Mapping for fetched incidents, the `Pull Instances` option retrieves current alerts which can be clicked to visually map fields.
+The `Select Schema` option retrieves possible objects, even if they are not the next objects to be fetched, or have not been triggered in the past 24 hours. 
+This enables you to map fields for an incident without having to generate a new alert or incident just for the sake of mapping.
+The `get-mapping-fields` command can be executed in the Playground to test and review the list of sample objects that are returned under the current configuration.
+
+To use this feature, you must set several integration instance parameters:
+ - `Fetch notable events ES query` - The query used for fetching new incidents. `Select Schema` will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
+ - `Event Type Field` - The name of the field that contains the type of the event or alert. The default value is `source` which for `Notable Events` will contains the rule name. However you may choose any custom field that suits this purpose.
+ - `First fetch timestamp` - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -187,7 +199,7 @@ There is no context output for this command.
 
 ### Update notable events
 ***
-Update an existing notable event in Splunk ES
+Update an existing notable event in Splunk ES.
 
 ##### Base Command
 
@@ -290,7 +302,7 @@ Sends events to an HTTP event collector using the Splunk platform JSON event pro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | event | The event payload key-value. An example string: "event": "Access log test message.". | Required |
-| fields | The fields for indexing that do not occur in the event payload itself. This accepts multiple comma separated fields. | Optional |
+| fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma separated, fields. | Optional |
 | index | The index name. | Optional |
 | host | The hostname. | Optional |
 | source_type | The user-defined event source type. | Optional |
@@ -339,6 +351,87 @@ Splank.JobStatus = {
 ##### Human Readable Output
 ![image](https://user-images.githubusercontent.com/50324325/77630707-2b24f600-6f54-11ea-94fe-4bf6c734aa29.png)
 
+### Get Mapping Fields
+***
+Gets one sample alert per alert type. Used only for creating a mapping with `Select Schema`. 
+##### Base Command
+
+`get-mapping-fields`
+##### Input
+
+There are no input arguments for this command.
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!get-mapping-fields using="SplunkPy_7.2" raw-response="true"```
+
+##### Human Readable Output
+```{
+    "Access - Brute Force Access Behavior Detected - Rule": {
+        "_bkt": "notable~712~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
+        "_cd": "712:21939",
+        "_indextime": "1598464820",
+        "_serial": "0",
+        "_si": [
+            "ip-1-1-1-1",
+            "notable"
+        ],
+        "_sourcetype": "stash",
+        "_time": "2020-08-26T11:00:20.000-07:00",
+        "host": "ip-1-1-1-1",
+        "host_risk_object_type": "system",
+        "host_risk_score": "0",
+        "index": "notable",
+        "linecount": "1",
+        "priority": "unknown",
+        "risk_score": "460",
+        "rule_description": "Access - Brute Force Access Behavior Detected - Rule",
+        "rule_name": "Access - Brute Force Access Behavior Detected - Rule",
+        "rule_title": "Access - Brute Force Access Behavior Detected - Rule",
+        "security_domain": "Access - Brute Force Access Behavior Detected - Rule",
+        "severity": "unknown",
+        "source": "Access - Brute Force Access Behavior Detected - Rule",
+        "sourcetype": "stash",
+        "splunk_server": "ip-1-1-1-1",
+        "src": "1.1.1.1",
+        "src_risk_object_type": "system",
+        "src_risk_score": "460",
+        "urgency": "low"
+    },
+    "Access - Excessive Failed Logins - Rule": {
+        "_bkt": "notable~712~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
+        "_cd": "712:21515",
+        "_indextime": "1598460945",
+        "_serial": "22",
+        "_si": [
+            "ip-1-1-1-1",
+            "notable"
+        ],
+        "_sourcetype": "stash",
+        "_time": "2020-08-26T09:55:45.000-07:00",
+        "host": "ip-1-1-1-1",
+        "host_risk_object_type": "system",
+        "host_risk_score": "0",
+        "index": "notable",
+        "linecount": "1",
+        "priority": "unknown",
+        "risk_score": "380",
+        "rule_description": "Access - Excessive Failed Logins - Rule",
+        "rule_name": "Access - Excessive Failed Logins - Rule",
+        "rule_title": "Access - Excessive Failed Logins - Rule",
+        "security_domain": "Access - Excessive Failed Logins - Rule",
+        "severity": "unknown",
+        "source": "Access - Excessive Failed Logins - Rule",
+        "sourcetype": "stash",
+        "splunk_server": "ip-1-1-1-1",
+        "src": "1.1.1.1",
+        "src_risk_object_type": "system",
+        "src_risk_score": "380",
+        "urgency": "low"
+=======
 ### splunk-kv-store-collection-create
 ***
 Creates a new KV store table.
@@ -534,7 +627,7 @@ Deletes all data within the specified KV store collection or collections.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | The name of the Splunk application that contains the KV store collection. in for example "search" | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. For example, "search"." | Required | 
 | kv_store_collection_name | A comma-separated list of KV store collections. | Required | 
 
 
@@ -623,6 +716,8 @@ Searches for specific objects in a store. Search can be basic key value or a ful
 }
 ```
 
+## Additional Information
+=======
 #### Human Readable Output
 
 >### list of collection values demisto_store
