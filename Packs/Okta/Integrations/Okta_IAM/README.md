@@ -19,8 +19,15 @@ For more information, please refer to the [Identity Lifecycle Management article
 | create-user-enabled | Create User Command Enabled | False |
 | update-user-enabled | Update User Command Enabled | False |
 | enable-disable-user-enabled | Enable/Disable User Commands Enabled | False |
+| create-if-not-exists | Automatically create user if not found in update and enable commands | False |
 | mapper-in | Incoming Mapper | True |
 | mapper-out | Outgoing Mapper | True |
+| fetch_samples | Fetch Samples | False |
+| max_fetch | Fetch Limit \(recommended less than 200\) | False |
+| isFetch | Fetch incidents | False |
+| incidentFetchInterval | Incidents Fetch Interval | False |
+| incidentType | Incident type | False |
+| fetch_query_filter | Fetch Query Filter | True |
 
 * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
 
@@ -84,7 +91,6 @@ Updates an existing user with the data passed in the user-profile argument.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator. | Required | 
-| create-if-not-exists | When true, the user will be created when the passed User Profile doesn't exist in Active Directory. Default is 'true'. | Optional | 
 
 
 #### Context Output
@@ -212,7 +218,6 @@ Enable a deprovisioned user.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator. | Required | 
-| create-if-not-exists | When true, the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
 
 
 #### Context Output
@@ -241,3 +246,40 @@ Enable a deprovisioned user.
 | Okta IAM | Okta IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | testdemisto2@paloaltonetworks.com | testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: DEPROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "Demisto-Test", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto2@paloaltonetworks.com"}<br/>credentials: {"provider": {"type": "OKTA", "name": "OKTA"}}<br/>_links: {"self": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7"}} |
 
 
+### okta-get-assigned-user-for-app
+***
+Gets a specific user assignment for an application by id.
+
+
+#### Base Command
+
+`okta-get-assigned-user-for-app`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user-id | ID of the user for which to get information. | Required | 
+| application-id | ID of the application for which to get information. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.UserAppAssignment.profile | unknown | App-specific profile for the user. | 
+| Okta.UserAppAssignment.created | date | Timestamp when app user was created. | 
+| Okta.UserAppAssignment.externalId | string | ID of user in target app. | 
+| Okta.UserAppAssignment.id | string | Unique ID of the user. | 
+| Okta.UserAppAssignment.status | string | Status of app user. | 
+| Okta.UserAppAssignment.credentials | unknown | Credentials for assigned app. | 
+| Okta.UserAppAssignment.credentials.userName | string | Username of the user. | 
+
+
+#### Command Example
+```!okta-get-assigned-user-for-app user-id=00uuv6y8t1iy8YXm94h7 application-id=0oae3ioe51sQ64Aui2h7```
+
+#### Human Readable Output
+### Okta User App Assignment
+|id|profile|created|credentials|status|
+|---|---|---|---|---|
+| 00uuv6y8t1iy8YXm94h7 | firstName: Test<br/>lastName: Demisto<br/>groupAdmin: false<br>resourceViewer: false<br/>admin: false<br/>licensedSheetCreator: false<br/>email: testdemisto2@paloaltonetworks.com | 2020-11-03T09:59:30.000Z | userName: testdemisto2@paloaltonetworks.com | ACTIVE |

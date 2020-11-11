@@ -405,6 +405,11 @@ def test_fetch_incidents(mocker):
 def mock_get_logs_batch(url_suffix='', params=None, full_url=''):
     first_batch = [{'mock_log1': 'mock_value'}, {'mock_log2': 'mock_value'}]
     second_batch = [{'mock_log3': 'mock_value'}]
-    if not url_suffix:
+    if url_suffix:
+        # first iteration
+        return first_batch, 'mock_next_page'
+    elif full_url:
+        # second iteration
         return second_batch, None
-    return first_batch, None
+    # third iteration - nothing is returned
+    return None, None
