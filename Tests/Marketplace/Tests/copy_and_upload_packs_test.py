@@ -157,7 +157,7 @@ class TestRegex:
          "TIM-wow_a/99.98.99/TIM-wow_a.zip")
     ])
     def test_latest_zip_regex(self, gcs_path, latest_zip_suffix):
-        """ Testing all of our corepacks paths to make sure we are not missing one of them, last test is for a 
+        """ Testing all of our corepacks paths to make sure we are not missing one of them, last test is for a
         generic bucket.
 
            Given:

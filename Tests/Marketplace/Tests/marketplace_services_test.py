@@ -1125,7 +1125,7 @@ class TestReleaseNotes:
         assert changelog == original_changelog_dict
         assert changelog_latest_rn_version == LooseVersion('2.0.0')
 
-    def test_create_local_changelog(self, mocker, dummy_pack, mock):
+    def test_create_local_changelog(self, mocker, dummy_pack):
         """
            Given:
                - Changelog file path of the given pack withing the index dir
