@@ -24,11 +24,16 @@ echo "Auth loaded successfully."
 
 GCS_MARKET_BUCKET="marketplace-dist-dev"
 GCS_BUILD_BUCKET="marketplace-ci-build"
-SOURCE_PATH="wow/content/packs"
+SOURCE_PATH="dev/content/packs"
 BUILD_BUCKET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM"
 TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
+
+echo "copying now"
+gsutil -m cp -r "gs://marketplace-dist/content/packs" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH"
+echo "finished copying"
+exit 1
 
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
