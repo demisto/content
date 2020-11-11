@@ -2,7 +2,7 @@
     "name": "CrowdStrike Falcon Intel",
     "description": "Threat intelligence service by CrowdStrike focused on delivering a technical feed to help organizations better defend themselves against adversary activity.",
     "support": "xsoar",
-    "currentVersion": "2.0.5",
+    "currentVersion": "2.0.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -1054,59 +1054,95 @@ def parse_incident_from_item(item, is_fetch):
     labels = []
 
     try:
-        incident['details'] = item.text_body or item.body
-    except AttributeError:
-        incident['details'] = item.body
-    incident['name'] = item.subject
-    labels.append({'type': 'Email/subject', 'value': item.subject})
-    incident['occurred'] = item.datetime_created.ewsformat()
+        try:
+            incident['details'] = item.text_body or item.body
+        except AttributeError:
+            incident['details'] = item.body
 
-    # handle recipients
-    if item.to_recipients:
-        for recipient in item.to_recipients:
-            labels.append({'type': 'Email', 'value': recipient.email_address})
+        incident['name'] = item.subject
+        labels.append({'type': 'Email/subject', 'value': item.subject})
+        incident['occurred'] = item.datetime_created.ewsformat()
 
-    # handle cc
-    if item.cc_recipients:
-        for recipient in item.cc_recipients:
-            labels.append({'type': 'Email/cc', 'value': recipient.email_address})
-    # handle email from
-    if item.sender:
-        labels.append({'type': 'Email/from', 'value': item.sender.email_address})
+        # handle recipients
+        if item.to_recipients:
+            for recipient in item.to_recipients:
+                labels.append({'type': 'Email', 'value': recipient.email_address})
 
-    # email format
-    email_format = ''
-    try:
-        if item.text_body:
-            labels.append({'type': 'Email/text', 'value': item.text_body})
-            email_format = 'text'
-    except AttributeError:
-        pass
-    if item.body:
-        labels.append({'type': 'Email/html', 'value': item.body})
-        email_format = 'HTML'
-    labels.append({'type': 'Email/format', 'value': email_format})
+        # handle cc
+        if item.cc_recipients:
+            for recipient in item.cc_recipients:
+                labels.append({'type': 'Email/cc', 'value': recipient.email_address})
+        # handle email from
+        if item.sender:
+            labels.append({'type': 'Email/from', 'value': item.sender.email_address})
 
-    # handle attachments
-    if item.attachments:
-        incident['attachment'] = []
-        for attachment in item.attachments:
-            if attachment is not None:
-                attachment.parent_item = item
-                file_result = None
-                label_attachment_type = None
-                label_attachment_id_type = None
-                if isinstance(attachment, FileAttachment):
-                    try:
-                        if attachment.content:
-                            # file attachment
-                            label_attachment_type = 'attachments'
-                            label_attachment_id_type = 'attachmentId'
+        # email format
+        email_format = ''
+        try:
+            if item.text_body:
+                labels.append({'type': 'Email/text', 'value': item.text_body})
+                email_format = 'text'
+        except AttributeError:
+            pass
+        if item.body:
+            labels.append({'type': 'Email/html', 'value': item.body})
+            email_format = 'HTML'
+        labels.append({'type': 'Email/format', 'value': email_format})
 
-                            # save the attachment
-                            file_name = get_attachment_name(attachment.name)
-                            file_result = fileResult(file_name, attachment.content)
+        # handle attachments
+        if item.attachments:
+            incident['attachment'] = []
+            for attachment in item.attachments:
+                if attachment is not None:
+                    attachment.parent_item = item
+                    file_result = None
+                    label_attachment_type = None
+                    label_attachment_id_type = None
+                    if isinstance(attachment, FileAttachment):
+                        try:
+                            if attachment.content:
+                                # file attachment
+                                label_attachment_type = 'attachments'
+                                label_attachment_id_type = 'attachmentId'
 
+                                # save the attachment
+                                file_name = get_attachment_name(attachment.name)
+                                file_result = fileResult(file_name, attachment.content)
+
+                                # check for error
+                                if file_result['Type'] == entryTypes['error']:
+                                    demisto.error(file_result['Contents'])
+                                    raise Exception(file_result['Contents'])
+
+                                # save attachment to incident
+                                incident['attachment'].append({
+                                    'path': file_result['FileID'],
+                                    'name': get_attachment_name(attachment.name)
+                                })
+                        except TypeError as e:
+                            if e.message != "must be string or buffer, not None":
+                                raise
+                            continue
+                    else:
+                        # other item attachment
+                        label_attachment_type = 'attachmentItems'
+                        label_attachment_id_type = 'attachmentItemsId'
+
+                        # save the attachment
+                        if hasattr(attachment, 'item') and attachment.item.mime_content:
+                            attached_email = email.message_from_string(attachment.item.mime_content)
+                            if attachment.item.headers:
+                                attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
+                                                          attached_email.items()]
+                                for header in attachment.item.headers:
+                                    if (header.name, header.value) not in attached_email_headers \
+                                            and header.name != 'Content-Type':
+                                        attached_email.add_header(header.name, header.value)
+
+                            file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
+                                                     attached_email.as_string())
+
+                        if file_result:
                             # check for error
                             if file_result['Type'] == entryTypes['error']:
                                 demisto.error(file_result['Contents'])
@@ -1115,81 +1151,54 @@ def parse_incident_from_item(item, is_fetch):
                             # save attachment to incident
                             incident['attachment'].append({
                                 'path': file_result['FileID'],
-                                'name': get_attachment_name(attachment.name)
+                                'name': get_attachment_name(attachment.name) + ".eml"
                             })
-                    except TypeError as e:
-                        if e.message != "must be string or buffer, not None":
-                            raise
-                        continue
-                else:
-                    # other item attachment
-                    label_attachment_type = 'attachmentItems'
-                    label_attachment_id_type = 'attachmentItemsId'
 
-                    # save the attachment
-                    if hasattr(attachment, 'item') and attachment.item.mime_content:
-                        attached_email = email.message_from_string(attachment.item.mime_content)
-                        if attachment.item.headers:
-                            attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
-                                                      attached_email.items()]
-                            for header in attachment.item.headers:
-                                if (header.name, header.value) not in attached_email_headers \
-                                        and header.name != 'Content-Type':
-                                    attached_email.add_header(header.name, header.value)
+                        else:
+                            incident['attachment'].append({
+                                'name': get_attachment_name(attachment.name) + ".eml"
+                            })
 
-                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
-                                                 attached_email.as_string())
+                    labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
+                    labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
-                    if file_result:
-                        # check for error
-                        if file_result['Type'] == entryTypes['error']:
-                            demisto.error(file_result['Contents'])
-                            raise Exception(file_result['Contents'])
+        # handle headers
+        if item.headers:
+            headers = []
+            for header in item.headers:
+                labels.append({'type': 'Email/Header/{}'.format(header.name), 'value': str(header.value)})
+                headers.append("{}: {}".format(header.name, header.value))
+            labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
 
-                        # save attachment to incident
-                        incident['attachment'].append({
-                            'path': file_result['FileID'],
-                            'name': get_attachment_name(attachment.name) + ".eml"
-                        })
+        # handle item id
+        if item.message_id:
+            labels.append({'type': 'Email/MessageId', 'value': str(item.message_id)})
 
-                    else:
-                        incident['attachment'].append({
-                            'name': get_attachment_name(attachment.name) + ".eml"
-                        })
+        if item.item_id:
+            labels.append({'type': 'Email/ID', 'value': item.item_id})
+            labels.append({'type': 'Email/itemId', 'value': item.item_id})
 
-                labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
-                labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
+        # handle conversion id
+        if item.conversation_id:
+            labels.append({'type': 'Email/ConversionID', 'value': item.conversation_id.id})
 
-    # handle headers
-    if item.headers:
-        headers = []
-        for header in item.headers:
-            labels.append({'type': 'Email/Header/{}'.format(header.name), 'value': str(header.value)})
-            headers.append("{}: {}".format(header.name, header.value))
-        labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
+        if MARK_AS_READ and is_fetch:
+            item.is_read = True
+            try:
+                item.save()
+            except ErrorIrresolvableConflict:
+                time.sleep(0.5)
+                item.save()
 
-    # handle item id
-    if item.message_id:
-        labels.append({'type': 'Email/MessageId', 'value': str(item.message_id)})
+        incident['labels'] = labels
+        incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
 
-    if item.item_id:
-        labels.append({'type': 'Email/ID', 'value': item.item_id})
-        labels.append({'type': 'Email/itemId', 'value': item.item_id})
-
-    # handle conversion id
-    if item.conversation_id:
-        labels.append({'type': 'Email/ConversionID', 'value': item.conversation_id.id})
-
-    if MARK_AS_READ and is_fetch:
-        item.is_read = True
-        try:
-            item.save()
-        except ErrorIrresolvableConflict:
-            time.sleep(0.5)
-            item.save()
-
-    incident['labels'] = labels
-    incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
+    except Exception as e:
+        if 'Message is not decoded yet' in str(e):
+            demisto.debug('EWS v2 - Skipped a protected message')
+            return None
+        else:
+            raise e
 
     return incident
 
@@ -1208,7 +1217,8 @@ def fetch_emails_as_incidents(account_email, folder_name):
             if item.message_id:
                 ids.append(item.message_id)
                 incident = parse_incident_from_item(item, True)
-                incidents.append(incident)
+                if incident:
+                    incidents.append(incident)
 
                 if len(incidents) >= MAX_FETCH:
                     break

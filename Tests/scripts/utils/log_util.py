@@ -63,15 +63,21 @@ def _add_logging_level(level_name: str, level_num: int, method_name: str = None)
     setattr(logging, method_name, logToRoot)
 
 
-def install_logging(log_file_name: str) -> str:
+def install_logging(log_file_name: str, include_process_name=False) -> str:
     """
     This method install the logging mechanism so that info level logs will be sent to the console and debug level logs
     will be sent to the log_file_name only.
     Args:
+        include_process_name: Whether to include the process name in the logs format, Should be used when
+            using multiprocessing
         log_file_name: The name of the file in which the debug logs will be saved
     """
-    _add_logging_level('SUCCESS', 25)
-    formatter = coloredlogs.ColoredFormatter(fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s',
+    if not hasattr(logging, 'success'):
+        _add_logging_level('SUCCESS', 25)
+    logging_format = '[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s'
+    if include_process_name:
+        logging_format = '[%(asctime)s] - [%(processName)s] - [%(threadName)s] - [%(levelname)s] - %(message)s'
+    formatter = coloredlogs.ColoredFormatter(fmt=logging_format,
                                              level_styles={
                                                  'critical': {'bold': True, 'color': 'red'},
                                                  'debug': {'color': 'cyan'},
