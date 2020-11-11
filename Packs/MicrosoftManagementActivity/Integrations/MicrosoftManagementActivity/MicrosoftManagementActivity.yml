@@ -51,7 +51,7 @@ configuration:
   - Audit.AzureActiveDirectory
   - Audit.Exchange
   - Audit.SharePoint
-  - Audit.General
+  - audit.general
   required: false
   type: 16
 - display: Fetch incidents
