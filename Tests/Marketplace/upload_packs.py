@@ -625,8 +625,7 @@ def print_packs_summary(packs_list: list):
     successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
     skipped_packs = [pack for pack in packs_list if
                      pack.status == PackStatus.PACK_ALREADY_EXISTS.name
-                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-                     or pack.status == PackStatus.FAILED_DETECTING_MODIFIED_FILES.name]
+                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name]
     failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
 
     logging.info(
@@ -881,7 +880,7 @@ def main():
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
-            sys.exit(1)
+            continue
 
         (task_status, skipped_pack_uploading, full_pack_path) = \
             pack.upload_to_storage(zip_pack_path, pack.latest_version,
