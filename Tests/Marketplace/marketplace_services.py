@@ -902,7 +902,6 @@ class Pack(object):
         # We check that the pack version was bumped by comparing the pack version in build bucket and production bucket
         successful_packs_list = [*successful_packs_dict]
         pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_list
-        pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
         if (existing_prod_version_files or pack_not_uploaded_in_prepare_content) and not override_pack:
             logging.warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
@@ -919,10 +918,15 @@ class Pack(object):
         self.public_storage_path = copied_blob.public_url
         task_status = task_status and copied_blob.exists()
 
+        pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
         if pack_uploaded_in_prepare_content:
-            print(f'aggregating {self._pack_name}')
-            self._aggregated = successful_packs_dict[self._pack_name].get('aggregated')
-            print(f'done aggregating {self._pack_name}')
+            agg_str = successful_packs_dict[self._pack_name].get('aggregated')
+            print(agg_str)
+            if agg_str:
+                self._aggregated = True
+                self._aggregation_str = agg_str
+            print('agg ' + str(self._aggregated))
+            print('agg str' + self._aggregation_str)
 
         if not task_status:
             logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
