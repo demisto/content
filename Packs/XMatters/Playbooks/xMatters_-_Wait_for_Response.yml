@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -168,10 +168,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 65e5eca6-98bb-4b9e-8ccc-1363aaf06944
+    taskid: 1c89f2ff-306c-443f-8c37-ebfeb76a06ca
     type: condition
     task:
-      id: 65e5eca6-98bb-4b9e-8ccc-1363aaf06944
+      id: 1c89f2ff-306c-443f-8c37-ebfeb76a06ca
       version: -1
       name: Is xMatters Enabled?
       description: 'Checks to see if the xMatters integration is enabled. '
@@ -179,6 +179,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "6"
       "yes":
       - "1"
     separatecontext: false
@@ -212,8 +214,33 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e86fa971-e711-483e-8006-cde144675991
+    type: title
+    task:
+      id: e86fa971-e711-483e-8006-cde144675991
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 385
         }
       }
     note: false
@@ -227,7 +254,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 910,
-        "width": 380,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -235,18 +262,21 @@ view: |-
   }
 inputs:
 - key: recipients
-  value: {}
+  value:
+    simple: ${incident.owner}
   required: false
   description: 'The targeted recipients in xMatters. Either the targetName or UUID.
     Can be comma separated list. '
   playbookInputQuery:
 - key: subject
-  value: {}
+  value:
+    simple: ${incident.name}
   required: false
   description: A short description of the incident.
   playbookInputQuery:
 - key: body
-  value: {}
+  value:
+    simple: ${incident.details}
   required: false
   description: A detailed description of the incident.
   playbookInputQuery:
