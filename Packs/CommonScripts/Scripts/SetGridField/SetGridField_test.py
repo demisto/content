@@ -95,6 +95,6 @@ def test_build_grid_command(datadir, mocker, keys: List[str], columns: List[str]
 
 def test_grid_dont_exist_in_context(mocker):
     import SetGridField
-    mocker.patch.object(demisto, 'incidents', return_value=[])
+    mocker.patch.object(demisto, 'incidents', return_value=[{}])
 
     assert SetGridField.get_current_table('some_id') == []
