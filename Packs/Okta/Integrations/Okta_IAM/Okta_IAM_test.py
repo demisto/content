@@ -360,14 +360,14 @@ def test_get_assigned_user_for_app_command(mocker):
         'application-id': 'mock_app_id'
     }
 
-    get_assignment_response = {
-        'id': 'mock_user_id',
-        'profile': {},
-        'created': '2020-11-03T09:59:30.000Z',
-        'credentials': {'userName': 'mock_username'},
-        'externalId': None,
-        'status': 'ACTIVE'
-    }
+    get_assignment_response = Response()
+    get_assignment_response.status_code = 200
+    get_assignment_response._content = b'{"id": "mock_user_id", ' \
+                                       b'"profile": {}, ' \
+                                       b'"created": "2020-11-03T09:59:30.000Z", ' \
+                                       b'"credentials": {"userName": "mock_username"}, ' \
+                                       b'"externalId": null, ' \
+                                       b'"status": "ACTIVE"}'
 
     mocker.patch.object(Session, 'request', return_value=get_assignment_response)
 
