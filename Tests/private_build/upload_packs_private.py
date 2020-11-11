@@ -11,8 +11,8 @@ from Tests.Marketplace.marketplace_services import init_storage_client, init_big
     get_packs_statistics_dataframe
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index,\
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config,\
-    upload_id_set, load_json, get_content_git_client,\
-    get_recent_commits_data, check_if_index_is_updated, print_packs_summary
+    upload_id_set, load_json, get_content_git_client, check_if_index_is_updated, print_packs_summary,\
+    get_packs_summary, get_recent_commits_data
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -414,10 +414,17 @@ def main():
     private_storage_bucket = storage_client.bucket(private_bucket_name)
     default_storage_bucket = private_storage_bucket if is_private_build else storage_bucket
 
+    # download and extract index from public bucket
+    index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
+                                                                                 extract_destination_path)
+
     # content repo client initialized
     if not is_private_build:
         content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-        current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo)
+        current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
+                                                                                   is_bucket_upload_flow=False,
+                                                                                   is_private_build=True,
+                                                                                   force_previous_commit="")
     else:
         current_commit_hash, remote_previous_commit_hash = "", ""
         content_repo = None
@@ -431,9 +438,6 @@ def main():
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
-    # download and extract index from public bucket
-    index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-                                                                                 extract_destination_path)
     if not is_private_build:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
                                   storage_bucket)
@@ -482,8 +486,11 @@ def main():
     # upload id_set.json to bucket
     upload_id_set(default_storage_bucket, id_set_path)
 
+    # get the lists of packs divided by their status
+    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+
     # summary of packs status
-    print_packs_summary(packs_list)
+    print_packs_summary(successful_packs, skipped_packs, failed_packs)
 
 
 if __name__ == '__main__':
