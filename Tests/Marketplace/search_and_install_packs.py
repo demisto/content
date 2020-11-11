@@ -515,27 +515,9 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
     prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(thread_index)
 
-    packs_to_install = []  # we save all the packs we want to install, to avoid duplications
-    installation_request_body = []  # the packs to install, in the request format
-
-    threads_list = []
-    lock = Lock()
-
-    for pack_id in pack_ids:
-        thread = Thread(target=search_pack_and_its_dependencies,
-                        kwargs={'client': client,
-                                'prints_manager': prints_manager,
-                                'pack_id': pack_id,
-                                'packs_to_install': packs_to_install,
-                                'installation_request_body': installation_request_body,
-                                'thread_index': thread_index,
-                                'lock': lock})
-        threads_list.append(thread)
-    run_threads_list(threads_list)
-
     install_packs_private(client, host, prints_manager, thread_index, pack_ids, test_pack_path)
 
-    return packs_to_install, SUCCESS_FLAG
+    return SUCCESS_FLAG
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list, client: demisto_client,
