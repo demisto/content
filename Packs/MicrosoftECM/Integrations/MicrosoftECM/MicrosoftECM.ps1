@@ -29,6 +29,8 @@ $SCRIPT_EXECUTION_STATUS = @{
 	"2" = "Failed"
 }
 
+$IPV4_REGEX = "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
+
 <#
 .DESCRIPTION
 This function converts a null or string variable to boolean
@@ -759,7 +761,7 @@ Function InvocationResults()
 	if ($InvocationResults)
 	{
 		$output = [PSCustomObject]@{
-			"MicrosoftECM.ScriptsInvocationResults(val.OperationId && val.OperationId === obj.OperationId)" = $InvocationResults | ForEach-Object {
+			"MicrosoftECM.ScriptsInvocationResults(val.OperationId === obj.OperationId && val.ResourceId === obj.ResourceId)" = $InvocationResults | ForEach-Object {
 				[PSCustomObject]@{
 					OperationId = $_.ClientOperationId
 					CollectionId = $_.CollectionId
@@ -783,13 +785,13 @@ Function InvocationResults()
 	else
 	{
 		$output = [PSCustomObject]@{
-			"MicrosoftECM.ScriptsInvocationResults(val.OperationId && val.OperationId === obj.OperationId)" = [PSCustomObject]@{
+			"MicrosoftECM.ScriptsInvocationResults(val.OperationId === obj.OperationId && val.ResourceId === obj.ResourceId)" = [PSCustomObject]@{
 				OperationId = $operationID
 				ScriptExecutionState = 'Pending'
 			}
 		}
 	}
-	$MDOutput = $output."MicrosoftECM.ScriptsInvocationResults(val.OperationId && val.OperationId === obj.OperationId)" | TableToMarkdown -Name "Script Invocation Results"
+	$MDOutput = $output."MicrosoftECM.ScriptsInvocationResults(val.OperationId === obj.OperationId && val.ResourceId === obj.ResourceId)" | TableToMarkdown -Name "Script Invocation Results"
 	ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $Devices | Out-Null
 }
 Function CreateDeviceCollection()
@@ -974,7 +976,8 @@ Function StartService()
 		[Parameter()] [bool]$ShouldPollResults,
 		[Parameter()] [Int32]$timeoutSeconds
 	)
-	$scriptText = "Get-Service $serviceName -ErrorAction Stop | Start-Service -PassThru -ErrorAction Stop"
+	$escapedServiceName = $serviceName.Replace("`'", "")
+	$scriptText = "Get-Service '$escapedServiceName' -ErrorAction Stop | Start-Service -PassThru -ErrorAction Stop"
 	$scriptName = "XSOAR StartService"
 	$result = ExecuteServiceScript $DeviceName $CollectionID $CollectionName $scriptText $scriptName
 	ParseScriptInvocationResults $result "StartService script Invocation Result" $ShouldPollResults $timeoutSeconds
@@ -991,7 +994,8 @@ Function RestartService()
 		[Parameter()] [bool]$ShouldPollResults,
 		[Parameter()] [Int32]$timeoutSeconds
 	)
-	$scriptText = "Get-Service $serviceName -ErrorAction Stop | Restart-Service -PassThru -ErrorAction Stop"
+	$escapedServiceName = $serviceName.Replace("`'", "")
+	$scriptText = "Get-Service '$escapedServiceName' -ErrorAction Stop | Restart-Service -PassThru -ErrorAction Stop"
 	$scriptName = "XSOAR RestartService"
 	$result = ExecuteServiceScript $DeviceName $CollectionID $CollectionName $scriptText $scriptName
 	ParseScriptInvocationResults $result "RestartService script Invocation Result" $ShouldPollResults $timeoutSeconds
@@ -1008,7 +1012,8 @@ Function StopService()
 		[Parameter()] [bool]$ShouldPollResults,
 		[Parameter()] [Int32]$timeoutSeconds
 	)
-	$scriptText = "Get-Service $serviceName -ErrorAction Stop | Stop-Service -PassThru -ErrorAction Stop"
+	$escapedServiceName = $serviceName.Replace("`'", "")
+	$scriptText = "Get-Service '$escapedServiceName' -ErrorAction Stop | Stop-Service -PassThru -ErrorAction Stop"
 	$scriptName = "XSOAR StopService"
 	$result = ExecuteServiceScript $DeviceName $CollectionID $CollectionName $scriptText $scriptName
 	ParseScriptInvocationResults $result "StopService script Invocation Result" $ShouldPollResults $timeoutSeconds
@@ -1195,7 +1200,8 @@ Function GetDeviceAsResource()
 					CPUType = $_.CPUType
 					DistinguishedName = $_.DistinguishedName
 					FullDomainName = $_.FullDomainName
-					IPAddresses = $_.IPAddresses
+					IPv4Addresses = $_.IPAddresses | Where-Object {$_ -match $IPV4_REGEX}
+					IPv6Addresses = $_.IPAddresses | Where-Object {$_ -notmatch $IPV4_REGEX}
 					NetbiosName = $_.NetbiosName
 					UserAccountControl = $_.UserAccountControl
 					LastLogonUserName = $_.LastLogonUserName
@@ -1220,7 +1226,8 @@ Function GetDeviceAsResource()
 				CPUType = $_.CPUType
 				DistinguishedName = $_.DistinguishedName
 				FullDomainName = $_.FullDomainName
-				IPAddresses = $_.IPAddresses
+				IPv4Addresses = $_.IPAddresses | Where-Object {$_ -match $IPV4_REGEX}
+				IPv6Addresses = $_.IPAddresses | Where-Object {$_ -notmatch $IPV4_REGEX}
 				NetbiosName = $_.NetbiosName
 				UserAccountControl = $_.UserAccountControl
 				LastLogonUserName = $_.LastLogonUserName

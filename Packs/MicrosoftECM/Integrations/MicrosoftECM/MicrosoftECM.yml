@@ -1103,8 +1103,13 @@ script:
     - contextPath: MicrosoftECM.Devices.ResourceDetails.FullDomainName
       description: The full name of the device's domain
       type: string
-    - contextPath: MicrosoftECM.Devices.ResourceDetails.IPAddresses
-      description: List of the IP addresses that are associated with the resource.
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.IPv4Addresses
+      description: List of the IPv4 addresses that are associated with the resource.
+        More than one address is listed if the resource has multiple network cards
+        installed.
+      type: string
+    - contextPath: MicrosoftECM.Devices.ResourceDetails.IPv6Addresses
+      description: List of the IPv6 addresses that are associated with the resource.
         More than one address is listed if the resource has multiple network cards
         installed.
       type: string

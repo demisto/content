@@ -10,6 +10,12 @@ If you configured the server to run Docker images with a non-root internal user 
 - PowerShell Remote sessions are created over port 5985 (Microsoft Web service management/WinRm). This port needs to be opened from XSOAR to the hosts on the local and network firewalls. 
 - Authentication is NTLM-based. 
 - The integration requires a valid domain user with the permission set needed to perform the required remote tasks.
+- Configuration Manager clients must be running the client from the 1706 release, or later in order to run scripts commands.
+- To use scripts, you must be a member of the appropriate Configuration Manager security role.
+- To use `ms-ecm-script-create` command - Your account must have Create permissions for SMS Scripts.
+- To use `ms-ecm-script-approve` - Your account must have Approve permissions for SMS Scripts.
+- To use `ms-ecm-script-invoke` - Your account must have Run Script permissions for Collections.
+- To use the commands `ms-ecm-service-stop`, `ms-ecm-service-start`, `ms-ecm-service-restart` - Your account must have permissions to use **all** scripts commands
 ## Configure Microsoft Endpoint Configuration Manager on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -1323,7 +1329,8 @@ Gets a Configuration Manager device By querying the SMS_R_System class. You can 
 | MicrosoftECM.Devices.ResourceDetails.CPUType | string | The CPU type, for example, StrongARM. Currently, only device clients report this value. | 
 | MicrosoftECM.Devices.ResourceDetails.DistinguishedName | string | The distinguished name of the account. | 
 | MicrosoftECM.Devices.ResourceDetails.FullDomainName | string | The full name of the device's domain | 
-| MicrosoftECM.Devices.ResourceDetails.IPAddresses | string | List of the IP addresses that are associated with the resource. More than one address is listed if the resource has multiple network cards installed. | 
+| MicrosoftECM.Devices.ResourceDetails.IPv4Addresses | string | List of the IPv4 addresses that are associated with the resource. More than one address is listed if the resource has multiple network cards installed. | 
+| MicrosoftECM.Devices.ResourceDetails.IPv6Addresses | string | List of the IPv6 addresses that are associated with the resource. More than one address is listed if the resource has multiple network cards installed. | 
 | MicrosoftECM.Devices.ResourceDetails.NetbiosName | string | Name used by the NetBIOS protocol. | 
 | MicrosoftECM.Devices.ResourceDetails.UserAccountControl | number | User account control value retrieved from Active Directory. | 
 | MicrosoftECM.Devices.ResourceDetails.LastLogonUserName | date | Name of the last logged-on user at the time the discovery agent ran. | 
@@ -1358,20 +1365,18 @@ Gets a Configuration Manager device By querying the SMS_R_System class. You can 
                     "ISR"
                 ],
                 "AgentTime": [
-                    "2020-11-05T00:00:01Z",
+                    "2020-11-12T06:10:01Z",
                     "2019-07-07T10:12:48Z",
-                    "2020-11-10T11:30:48Z"
+                    "2020-11-12T06:30:48Z"
                 ],
                 "CPUType": "Intel64 Family 6 Model 85 Stepping 4",
                 "DNSForestGuid": "E8AA1F36-33BE-41F2-ADCB-E40376F5B168",
                 "DistinguishedName": "CN=EC2AMAZ-2AKQ815,CN=Computers,DC=demisto,DC=local",
                 "FullDomainName": "DEMISTO.LOCAL",
                 "HardwareID": "2:387B42C549C5E7D718B68BC65959FA9041F7F2D0",
-                "IPAddresses": [
-                    "2.2.2.2",
-                    "fe80::81c5:1670:9363:a40b"
-                ],
-                "LastLogonTimestamp": "2020-11-02T05:34:01Z",
+                "IPv4Addresses": "172.31.32.170",
+                "IPv6Addresses": "fe80::81c5:1670:9363:a40b",
+                "LastLogonTimestamp": "2020-11-12T06:07:29Z",
                 "LastLogonUserDomain": null,
                 "LastLogonUserName": null,
                 "NetbiosName": "EC2AMAZ-2AKQ815",
@@ -1389,9 +1394,9 @@ Gets a Configuration Manager device By querying the SMS_R_System class. You can 
 #### Human Readable Output
 
 >### Device As Resource
->| AgentSite | VirtualMachineType | LastLogonUserName | AgentName | HardwareID | ADSiteName | NetbiosName | OperatingSystemNameandVersion | AgentTime | LastLogonTimestamp | ResourceID | CPUType | VirtualMachineHostName | UserAccountControl | IPAddresses | DNSForestGuid | FullDomainName | LastLogonUserDomain | DistinguishedName | DeviceName
->| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
->| \["ISR","ISR","ISR"\] | 0 |  | \["SMS\_AD\_SYSTEM\_DISCOVERY\_AGENT","MP\_ClientRegistration","Heartbeat Discovery"\] | 2:387B42C549C5E7D718B68BC65959FA9041F7F2D0 | Default\-First\-Site\-Name | EC2AMAZ\-2AKQ815 | Microsoft Windows NT Advanced Server 10.0 | \["2020\-11\-05T00:00:01Z","2019\-07\-07T10:12:48Z","2020\-11\-10T11:30:48Z"\] | 2020\-11\-02T05:34:01Z | 16777220 | Intel64 Family 6 Model 85 Stepping 4 |  | 4096 | \["2.2.2.2","fe80::81c5:1670:9363:a40b"\] | E8AA1F36\-33BE\-41F2\-ADCB\-E40376F5B168 | DEMISTO.LOCAL |  | CN=EC2AMAZ\-2AKQ815,CN=Computers,DC=demisto,DC=local | EC2AMAZ\-2AKQ815
+>| DistinguishedName | VirtualMachineHostName | AgentTime | OperatingSystemNameandVersion | IPv4Addresses | AgentSite | AgentName | ADSiteName | FullDomainName | VirtualMachineType | CPUType | UserAccountControl | NetbiosName | LastLogonTimestamp | HardwareID | DNSForestGuid | LastLogonUserName | IPv6Addresses | DeviceName | LastLogonUserDomain | ResourceID
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| CN=EC2AMAZ\-2AKQ815,CN=Computers,DC=demisto,DC=local |  | \["2020\-11\-12T06:10:01Z","2019\-07\-07T10:12:48Z","2020\-11\-12T06:30:48Z"\] | Microsoft Windows NT Advanced Server 10.0 | "172.31.32.170" | \["ISR","ISR","ISR"\] | \["SMS\_AD\_SYSTEM\_DISCOVERY\_AGENT","MP\_ClientRegistration","Heartbeat Discovery"\] | Default\-First\-Site\-Name | DEMISTO.LOCAL | 0 | Intel64 Family 6 Model 85 Stepping 4 | 4096 | EC2AMAZ\-2AKQ815 | 2020\-11\-12T06:07:29Z | 2:387B42C549C5E7D718B68BC65959FA9041F7F2D0 | E8AA1F36\-33BE\-41F2\-ADCB\-E40376F5B168 |  | "fe80::81c5:1670:9363:a40b" | EC2AMAZ\-2AKQ815 |  | 16777220
 
 
 ### ms-ecm-get-user-device-affinity
