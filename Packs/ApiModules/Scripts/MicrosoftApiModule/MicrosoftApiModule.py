@@ -382,7 +382,8 @@ class MicrosoftClient(BaseClient):
             data['refresh_token'] = refresh_token
         else:
             data['grant_type'] = DEVICE_CODE
-            data['code'] = integration_context.get('device_code')
+            if integration_context:
+                data['code'] = integration_context.get('device_code')
 
         response_json: dict = {}
         try:
@@ -529,4 +530,4 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             return_error(f'Error in Microsoft authorization: {str(e)}')
         demisto.setIntegrationContext({'device_code': response_json.get('device_code')})
-        return response_json.get('user_code')
+        return response_json.get('user_code', '')

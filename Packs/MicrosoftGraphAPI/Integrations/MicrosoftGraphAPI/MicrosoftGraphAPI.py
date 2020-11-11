@@ -32,7 +32,7 @@ class MsGraphClient:
             client_args['grant_type'] = DEVICE_CODE
             client_args['token_retrieval_url'] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
             client_args['scope'] = scope
-        self.ms_client = MicrosoftClient(**client_args)
+        self.ms_client = MicrosoftClient(**client_args)  # type: ignore[arg-type]
 
     def generic_request(
             self,
