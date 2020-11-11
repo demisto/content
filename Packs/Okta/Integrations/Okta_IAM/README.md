@@ -22,12 +22,12 @@ For more information, please refer to the [Identity Lifecycle Management article
 | create-if-not-exists | Automatically create user if not found in update and enable commands | False |
 | mapper-in | Incoming Mapper | True |
 | mapper-out | Outgoing Mapper | True |
-| fetch_samples | Fetch Samples | False |
 | max_fetch | Fetch Limit \(recommended less than 200\) | False |
 | isFetch | Fetch incidents | False |
 | incidentFetchInterval | Incidents Fetch Interval | False |
 | incidentType | Incident type | False |
 | fetch_query_filter | Fetch Query Filter | True |
+| fetch_time | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) | False |
 
 * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
 

@@ -13,7 +13,6 @@ requests.packages.urllib3.disable_warnings()
 
 '''CONSTANTS'''
 
-FETCH_SAMPLES_SIZE = 5
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
 USER_IS_DISABLED_MSG = 'Deactivation failed because the user is already disabled.'
@@ -121,7 +120,7 @@ class Client(BaseClient):
         )
         return res
 
-    def get_logs(self, query_filter, last_run_time=None, time_now=None, fetch_samples=False):
+    def get_logs(self, query_filter, last_run_time=None, time_now=None):
         logs = []
 
         uri = 'logs'
@@ -435,60 +434,44 @@ def get_assigned_user_for_app_command(client, args):
     )
 
 
-def fetch_samples(client, query_filter):
-    """
+def fetch_incidents(client, query_filter, fetch_time, fetch_limit):
+    """ If no events were saved from last run, returns new events from Okta's /log API. Otherwise,
+    returns the events from last run. In both cases, no more than `fetch_limit` incidents will be returned,
+    and the rest of them will be saved for next run.
+
         Args:
-            client: Okta client
-            query_filter: A query filter for okta logs API
+            client: (BaseClient) Okta client.
+            query_filter: (str) A query filter for okta logs API.
+            fetch_time: (str) First fetch time, in DATE_FORMAT format.
+            fetch_limit: (int) Maximum number of incidents to return.
         Returns:
-            samples: Sample incidents/events that will be created in Cortex XSOAR
+            incidents: (dict) Incidents/events that will be created in Cortex XSOAR
     """
-    samples = []
 
-    try:
-        demisto.debug('Okta: Fetching sample logs.')
-        params = {
-            'filter': encode_string_results(query_filter),
-            'limit': FETCH_SAMPLES_SIZE
-        }
-        events, _ = client.get_logs_batch(url_suffix='logs', params=params)
-        for entry in events:
-            # Set the raw JSON to the event. Mapping will be done at the classification and mapping
-            event = {'rawJSON': json.dumps(entry)}
-            samples.append(event)
-
-    except Exception as e:
-        demisto.error('Failed to fetch Okta sample log events.')
-        raise e
-
-    return samples
-
-
-def fetch_incidents(client, query_filter, last_run_time=None):
-    """
-        Args:
-            client: Okta client
-            query_filter: A query filter for okta logs API
-            last_run_time:
-        Returns:
-            events: Incidents/Events that will be created in Cortex XSOAR
-            time_now: Current time, used for last run.
-    """
-    events = []
+    last_run = demisto.getLastRun()
+    incidents = last_run.get('incidents')
+    last_run_time = last_run.get('last_run_time', fetch_time)  # if last_run_time is undefined, use fetch_time param
     time_now = datetime.now().strftime(DATE_FORMAT)
-    try:
-        demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
-        log_events = client.get_logs(query_filter, last_run_time, time_now)
-        for entry in log_events:
-            # Set the raw JSON to the event. Mapping will be done at the classification and mapping
-            event = {'rawJSON': json.dumps(entry)}
-            events.append(event)
 
-    except Exception as e:
-        demisto.error(f'Failed to fetch Okta log events from {last_run_time} to {time_now}.')
-        raise e
+    demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
+    if not incidents:
+        try:
+            log_events = client.get_logs(query_filter, last_run_time, time_now)
+            for entry in log_events:
+                # mapping will be done at the classification and mapping
+                incident = {'rawJSON': json.dumps(entry)}
+                incidents.append(incident)
 
-    return events, time_now
+        except Exception as e:
+            demisto.error(f'Failed to fetch Okta log events from {last_run_time} to {time_now}.')
+            raise e
+
+    demisto.setLastRun({
+        'incidents': incidents[fetch_limit:],
+        'last_run_time': time_now
+    })
+
+    return incidents[:fetch_limit]
 
 
 def main():
@@ -500,7 +483,6 @@ def main():
     mapper_out = params.get('mapper-out')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    fetch_query_filter = params.get('fetch_query_filter')
     command = demisto.command()
     args = demisto.args()
 
@@ -508,6 +490,10 @@ def main():
     is_enable_disable_enabled = params.get("enable-disable-user-enabled")
     is_update_enabled = demisto.params().get("update-user-enabled")
     create_if_not_exists = demisto.params().get("create-if-not-exists")
+
+    fetch_limit = int(params.get('max_fetch'))
+    fetch_query_filter = params.get('fetch_query_filter')
+    fetch_time = parse_date_range(params.get('fetch_time'), date_format=DATE_FORMAT)
 
     headers = {
         'Content-Type': 'application/json',
@@ -561,31 +547,7 @@ def main():
             return_results(get_assigned_user_for_app_command(client, args))
 
         elif command == 'fetch-incidents':
-            '''
-                Checks if there are events are stored in the integration context.
-                If yes, it gets it from there. Else, it makes a call to Workday to get a new report
-                Returns the first x events (x being the fetch limit) and stores the remaining in integration context
-            '''
-
-            if params.get('fetch_samples'):
-                sample_events = fetch_samples(client, fetch_query_filter)
-                demisto.incidents(sample_events)
-
-            else:
-                fetch_limit = int(params.get('max_fetch'))
-                last_run = demisto.getLastRun()
-                last_run_time = last_run.get('last_run_time')
-                events = last_run.get('events', [])
-                time_now = None
-
-                if not events:
-                    events, time_now = fetch_incidents(client, fetch_query_filter, last_run_time)
-
-                demisto.incidents(events[:fetch_limit])
-                demisto.setLastRun({
-                    'events': events[fetch_limit:],
-                    'last_run_time': time_now if time_now else last_run_time
-                })
+            demisto.incidents(fetch_incidents(client, fetch_query_filter, fetch_time, fetch_limit))
 
     except Exception:
         # For any other integration command exception, return an error

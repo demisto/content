@@ -381,30 +381,28 @@ def test_get_assigned_user_for_app_command(mocker):
 def test_fetch_incidents(mocker):
     """
     Given:
-        - An Okta IAM client object
-        - Fetch Query Filter parameter
-        - Last Run Time
+        - An Okta IAM client object and fetch-relevant instance parameters
     When:
         - Calling function fetch_incidents
         - Events should come in two batches of two events in the first batch, and one event in the second batch.
     Then:
         - Ensure three events are returned in incident the correct format.
     """
-    client = mock_client()
-    fetch_query_filter = 'mock_query_filter'
-    last_run_time = 'mock_last_run_time'
-
+    import json
     mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
-
-    events, _ = fetch_incidents(client, fetch_query_filter, last_run_time)
-
+    events = fetch_incidents(mock_client(),
+                             'mock_query_filter',
+                             'mock_fetch_time',
+                             'mock_fetch_limit')
     assert len(events) == 3
-    assert 'rawJSON' in events[2].keys()
+    assert json.loads(events[0]['rawJSON']).get('mock_log1') == 'mock_value1'
+    assert json.loads(events[1]['rawJSON']).get('mock_log2') == 'mock_value2'
+    assert json.loads(events[2]['rawJSON']).get('mock_log3') == 'mock_value3'
 
 
 def mock_get_logs_batch(url_suffix='', params=None, full_url=''):
-    first_batch = [{'mock_log1': 'mock_value'}, {'mock_log2': 'mock_value'}]
-    second_batch = [{'mock_log3': 'mock_value'}]
+    first_batch = [{'mock_log1': 'mock_value1'}, {'mock_log2': 'mock_value2'}]
+    second_batch = [{'mock_log3': 'mock_value3'}]
     if url_suffix:
         # first iteration
         return first_batch, 'mock_next_page'

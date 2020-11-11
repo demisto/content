@@ -49,13 +49,6 @@ configuration:
   name: mapper-out
   required: true
   type: 0
-- display: Fetch Samples
-  name: fetch_samples
-  defaultvalue: "false"
-  type: 8
-  required: false
-  additionalinfo: If checked, the fetch incidents command will sample (at most) five
-    incidents.     Use only to sample incidents for classification & mapping.
 - display: Fetch Limit (recommended less than 200)
   name: max_fetch
   defaultvalue: "50"
@@ -80,6 +73,11 @@ configuration:
   required: true
   additionalinfo: Generate a query filter for okta logs API to retrieve only applications
     configured in XSOAR.
+- defaultvalue: 1 month
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
 description: Integrate with Okta's Identity Access Management service to execute CRUD
   operations to employee lifecycle processes.
 display: Okta IAM
