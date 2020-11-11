@@ -1228,9 +1228,9 @@ def list_check_runs(owner_name, repository_name, run_id, commit_id):
     url_suffix = None
 
     if run_id:
-        url_suffix = f"/orgs/{owner_name}/{repository_name}/check-runs/{run_id}"
+        url_suffix = f"/repos/{owner_name}/{repository_name}/check-runs/{run_id}"
     elif commit_id:
-        url_suffix = f"/orgs/{owner_name}/{repository_name}/commits/{commit_id}/check-runs"
+        url_suffix = f"/repos/{owner_name}/{repository_name}/commits/{commit_id}/check-runs"
     else:
         return_error("You have to specify either the check run id of the head commit refernce")
 
@@ -1255,24 +1255,36 @@ def get_github_get_check_run():
 
     for check_run in check_runs:
             check_run_id = check_run.get('id', '')
+            check_external_id = check_run.get('id', '')
+            check_run_name = check_run.get('name', '')
+            check_run_app_name = check_run['app'].get('name', '')
+            check_run_pr = check_run['pull_requests']
             check_run_status = check_run.get('status', '')
             check_run_conclusion = check_run.get('conclusion', '')
-
+            check_run_started_at = check_run.get('started_at', '')
+            check_run_completed_at = check_run.get('completed_at', '')
+            check_run_output = check_run.get('output', '')
 
             check_run_result.append({
-                'WorkflowName': workflow_name,
-                'WorkflowID': workflow_id,
-                'RepositoryName': repository_name,
-                'WorkflowUsage': workflow_usage,
+                'CheckRunID': check_run_id,
+                'CheckExternalID': check_external_id,
+                'CheckRunName': check_run_name,
+                'CheckRunAppName': check_run_app_name,
+                'CheckRunPR': check_run_pr,
+                'CheckRunStatus': check_run_status,
+                'CheckRunConclusion': check_run_conclusion,
+                'CheckRunStartedAt': check_run_started_at,
+                'CheckRunCompletedAt': check_run_completed_at,
+                'CheckRunOutPut': check_run_output
             })
 
     ec = {
-        'GitHub.ActionsUsage': usage_result
+        'GitHub.CheckRuns(val.ID == obj.CheckRunID)': check_run_result
     }
-    human_readable = tableToMarkdown('Github Actions Usage', usage_result,
+    human_readable = tableToMarkdown('Check Run Details', check_run_result,
                                      headerTransform=string_to_table_header)
 
-    return_outputs(readable_output=human_readable, outputs=ec, raw_response=usage_result)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=check_run_result)
 
 
 def fetch_incidents_command():

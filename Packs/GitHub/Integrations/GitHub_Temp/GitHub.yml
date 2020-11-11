@@ -2647,6 +2647,25 @@ script:
     description: Get a check run details
     execution: false
     name: Github-get-check-run
+    outputs:
+    - contextPath: GitHub.CheckRuns.CheckRunConclusion
+      description: Check Run Conculsion
+      type: Unknown
+    - contextPath: GitHub.CheckRuns.CheckRunAppName
+      description: Check Run App Name
+      type: Unknown
+    - contextPath: GitHub.CheckRuns.CheckExternalID
+      description: Check Run External ID
+      type: Unknown
+    - contextPath: GitHub.CheckRuns.CheckRunName
+      description: Check Run Name
+      type: Unknown
+    - contextPath: GitHub.CheckRuns.CheckRunStatus
+      description: Check Run Status
+      type: Unknown
+    - contextPath: GitHub.CheckRuns.CheckRunID
+      description: Check Run ID
+      type: Unknown
   dockerimage: demisto/pyjwt3:1.0.0.13142
   feed: false
   isfetch: true
