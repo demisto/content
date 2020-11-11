@@ -10,7 +10,7 @@ commonfields:
 enabled: true
 dependson:
   must:
-  - Builtin|||demisto-rest-api
+  - Demisto REST API|||demisto-api-post
 name: GetFailedTasks
 runas: DBotWeakRole
 runonce: false
