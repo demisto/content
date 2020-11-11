@@ -22,11 +22,26 @@ class TestGetPackNames:
         ("pack1,pack2,pack1", {"pack1", "pack2"}),
         ("pack1, pack2,  pack3", {"pack1", "pack2", "pack3"})
     ])
-    def test_get_packs_names_specific(self, packs_names_input, expected_result):
+    def test_get_pack_names_specific(self, packs_names_input, expected_result):
         from Tests.Marketplace.copy_and_upload_packs import get_pack_names
         modified_packs = get_pack_names(packs_names_input)
 
         assert modified_packs == expected_result
+
+    def test_get_pack_names_all(self):
+        """
+           Given:
+               - content repo path, packs folder path, ignored files list
+           When:
+               - Trying to get the pack names of all packs in content repo
+           Then:
+               - Verify that we got all packs in content repo
+       """
+        from Tests.Marketplace.marketplace_services import CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES
+        from Tests.Marketplace.copy_and_upload_packs import get_pack_names
+        packs_full_path = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
+        expected_pack_names = {p for p in os.listdir(packs_full_path) if p not in IGNORED_FILES}
+        assert get_pack_names('all') == expected_pack_names
 
 
 class TestHelperFunctions:
@@ -142,7 +157,9 @@ class TestRegex:
          "TIM-wow_a/99.98.99/TIM-wow_a.zip")
     ])
     def test_latest_zip_regex(self, gcs_path, latest_zip_suffix):
-        """
+        """ Testing all of our corepacks paths to make sure we are not missing one of them, last test is for a 
+        generic bucket.
+
            Given:
                - A path of latest version pack in a gcs bucket
            When:

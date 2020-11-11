@@ -869,7 +869,7 @@ class Pack(object):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
         The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
-        In case that zip pack artifact already exist at constructed path above (the path in the production bucket,
+        In case that zip pack artifact already exist at the constructed path above (the path in the production bucket),
         the copy will be skipped.
         If flag override_pack is set to True, pack will forced to copy.
 
@@ -886,8 +886,6 @@ class Pack(object):
              otherwise returned False.
 
         """
-        task_status = True
-
         build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, latest_version)
 
         # Verifying that the latest version of the pack has been uploaded to the build bucket
@@ -916,7 +914,7 @@ class Pack(object):
         )
         copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
         self.public_storage_path = copied_blob.public_url
-        task_status = task_status and copied_blob.exists()
+        task_status = copied_blob.exists()
 
         pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
         if pack_uploaded_in_prepare_content:
