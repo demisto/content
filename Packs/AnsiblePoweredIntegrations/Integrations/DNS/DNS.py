@@ -1,6 +1,6 @@
 import json
 import traceback
-from typing import Dict
+from typing import Dict, cast
 
 import ansible_runner
 import demistomock as demisto  # noqa: F401
@@ -81,8 +81,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
     fork_count = 1   # default to executing against 1 host at a time
 
     if args.get('concurrency'):
-        if isinstance(args.get('concurrency'), (str, int, float)):
-            fork_count = int(args.get('concurrency'))
+        fork_count = cast(int, args.get('concurrency'))
 
     inventory: Dict[str, dict] = {}
     inventory['all'] = {}
