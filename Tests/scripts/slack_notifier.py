@@ -69,7 +69,7 @@ def options_handler():
     parser.add_argument('-t', '--test_type', help='unittests or test_playbooks or sdk_unittests or sdk_faild_steps'
                                                   'or bucket_upload')
     parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address')
-    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True)
+    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True, type=str2bool)
     parser.add_argument('-ca', '--circle_artifacts', help="The path to the circle artifacts directory")
     parser.add_argument('-j', '--job_name', help='The job name that is running the slack notifier')
     options = parser.parse_args()
@@ -315,21 +315,21 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
 
 def main():
     options = options_handler()
-    if options.nightly:
-        env_results_file_name = options.env_results_file_name
-        slack_notifier(options.url,
-                       options.slack,
-                       options.test_type,
-                       env_results_file_name=env_results_file_name)
-    elif options.bucket_upload:
-        job_name = options.job_name
-        circle_artifacts_path = options.circle_artifacts
-        slack_notifier(options.url, options.slack, options.test_type,
-                       packs_results_file=os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE),
-                       job_name=job_name)
-    elif options.test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, BUCKET_UPLOAD_TYPE,
-                               SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
-        slack_notifier(options.url, options.slack, options.test_type)
+    nightly = options.nightly
+    url = options.url
+    slack = options.slack
+    test_type = options.test_type
+    env_results_file_name = options.env_results_file_name
+    bucket_upload = options.bucket_upload
+    circle_artifacts_path = options.circle_artifacts
+    job_name = options.job_name
+    if nightly:
+        slack_notifier(url, slack, test_type, env_results_file_name)
+    elif bucket_upload:
+        slack_notifier(url, slack, test_type,
+                       packs_results_file=os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), job_name=job_name)
+    elif test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
+        slack_notifier(url, slack, test_type)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 

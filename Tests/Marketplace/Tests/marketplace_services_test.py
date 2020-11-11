@@ -318,11 +318,13 @@ class TestHelperFunctions:
     def test_is_integration_image(self, file_name, result):
         """
            Given:
-               - Integration image name.
-           When:
-               - When the integration name is an integration image.
-               - When the integration name is an author image.
+               - Image name of an author.
+               - Image name of integration.
+               - Image name of integration with the wrong extension.
+            When:
+            - Checking whether the image in integration image or not
            Then:
+               - Validate that the answer is False
                - Validate that the answer is True
                - Validate that the answer is False
        """
@@ -671,7 +673,7 @@ class TestImagesUpload:
            Given:
                - Integration image.
            When:
-               - When integration image exists in index.
+               - Performing copy and upload of all the pack's integration images
            Then:
                - Validate that the image has been copied from build bucket to prod bucket
        """
@@ -690,7 +692,7 @@ class TestImagesUpload:
            Given:
                - Author image.
            When:
-               - When author image exists in index.
+               - Performing copy and upload of the pack's author image
            Then:
                - Validate that the image has been copied from build bucket to prod bucket
        """
@@ -717,11 +719,11 @@ class TestCopyAndUploadToStorage:
     def test_copy_and_upload_to_storage_not_found(self, mocker, dummy_pack):
         """
            Given:
-               - Build and production bucket
+               - A pack with latest version that is missing from the build bucket.
            When:
-               - When the latest version zip of the pack is missing in the build bucket
+               - Checking the latest version in the build bucket before copying it to the production bucket.
            Then:
-               - Validate that the task fails and that the pack isn't skipped
+               - Validate that the upload task had failed and that the pack isn't skipped
        """
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
@@ -737,11 +739,12 @@ class TestCopyAndUploadToStorage:
     def test_copy_and_upload_to_storage_skip(self, mocker, dummy_pack):
         """
            Given:
-               - Build and production bucket
+               - A pack with latest version that exists both in build and production bucket.
            When:
-               - When the latest version zip of the pack exists in both buckets
+               - Checking the latest version in the production bucket before copying the latest one from the build
+                bucket
            Then:
-               - Validate that the task succeeds and that the pack is skipped
+               - Validate that the upload task succeeded and that the pack was skipped (it already existed)
        """
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
@@ -757,9 +760,9 @@ class TestCopyAndUploadToStorage:
     def test_copy_and_upload_to_storage_upload(self, mocker, dummy_pack):
         """
            Given:
-               - Build and production bucket
+               - A pack with latest version that exists in the build bucket but not in the production bucket.
            When:
-               - When the latest version zip of the pack exists only in build bucket
+               - Copying the pack from the build bucket to the production bucket.
            Then:
                - Validate that the task succeeds and that the pack isn't skipped
        """
@@ -1085,12 +1088,12 @@ class TestReleaseNotes:
     def test_get_changelog_latest_rn(self, mocker, dummy_pack):
         """
            Given:
-               - Changelog file path of the given pack withing the index dir
+               - Changelog file with two release notes
            When:
                - Getting the latest version in the changelog file
            Then:
-               - Verify that the changelog file contents is what we expect
-               - Verify that the latest release notes version is what we expect
+               - Verify that the changelog file content is as expected
+               - Verify that the latest release notes version is 2.0.0 (the latest)
        """
         original_changelog = '''{
                     "1.0.0": {
@@ -1117,6 +1120,7 @@ class TestReleaseNotes:
             }
         }
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
+        mocker.patch('os.path.exists', return_value=True)
         changelog, changelog_latest_rn_version = dummy_pack.get_changelog_latest_rn('fake_path')
         assert changelog == original_changelog_dict
         assert changelog_latest_rn_version == LooseVersion('2.0.0')
@@ -1140,11 +1144,11 @@ class TestReleaseNotes:
     def test_get_release_notes_lines_aggregate(self, mocker, dummy_pack):
         """
            Given:
-               - 3 release notes files, 1.0.0 is the latest rn, 1.0.1 and 1.0.2 are new rn files
+               - 3 release notes files, 1.0.0 is the latest rn, 1.1.0 and 2.0.0 are new rn files
            When:
-               - Creating the release notes for the new version (1.0.2)
+               - Creating the release notes for the new version (2.0.0)
            Then:
-               - Verify that the rn of 1.0.1 and 1.0.2 are aggregated
+               - Verify that the rn of 1.1.0 and 2.0.0 are aggregated
        """
         rn_one = '''
 #### Integrations
@@ -1158,18 +1162,18 @@ class TestReleaseNotes:
         '''
         aggregated_rn = "\n#### Integrations\n##### CrowdStrike Falcon Intel v2\n- wow1\n- wow2\n"
         open_mocker = MockOpen()
-        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md', '1_0_2.md'])
-        open_mocker['rn_dir_fake_path/1_0_1.md'].read_data = rn_one
-        open_mocker['rn_dir_fake_path/1_0_2.md'].read_data = rn_two
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_1_0.md', '2_0_0.md'])
+        open_mocker['rn_dir_fake_path/1_1_0.md'].read_data = rn_one
+        open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
         rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'))
-        assert latest_rn == '1.0.2'
+        assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
 
     def test_get_release_notes_lines_updated_rn(self, mocker, dummy_pack):
         """
            Given:
-               - 2 release notes files, 1.0.1 is the latest rn and exists in the changelog
+               - 2 release notes files, 1.0.0 and 1.0.1 which is the latest rn and exists in the changelog
            When:
                - Creating the release notes for version 1.0.1
            Then:
@@ -1185,3 +1189,27 @@ class TestReleaseNotes:
         rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'))
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
+
+    FAILED_PACKS_DICT = {
+        'TestPack': {'status': 'wow1'},
+        'TestPack2': {'status': 'wow2'}
+    }
+
+    @pytest.mark.parametrize('failed_packs_dict, task_status, status', [
+        ({'TestPack': {'status': 'wow1'}, 'TestPack2': {'status': 'wow2'}}, True, 'wow1'),
+        ({'TestPack2': {'status': 'wow2'}}, False, str())
+    ])
+    def test_is_failed_to_upload(self, failed_packs_dict, task_status, status, dummy_pack):
+        """
+           Given:
+               - A dict of failed packs and a pack which is in the failed packs dict
+               - A dict of failed packs and a pack which is not in the failed packs dict
+           When:
+               - Checking if the pack is in the failed packs dict
+           Then:
+               - The pack is in the dict, task status is True and right status is returned
+               - The pack is not in the dict, task status is False and the empty status is returned
+       """
+        task_stat, pack_stat = dummy_pack.is_failed_to_upload(failed_packs_dict)
+        assert task_stat == task_status
+        assert pack_stat == status
