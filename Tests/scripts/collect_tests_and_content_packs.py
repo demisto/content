@@ -211,6 +211,7 @@ def collect_tests_and_content_packs(
         test_playbook_name = test_playbook_data.get('name')
 
         # skip non xsoar and non supported packs.
+        # TODO: check if this is still relevant
         if not should_test_content_pack(test_playbook_data.get('pack')):
             continue
 
