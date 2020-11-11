@@ -1,6 +1,6 @@
 from requests import Response, Session
-from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, \
-    enable_user_command, disable_user_command, get_mapping_fields_command, get_assigned_user_for_app_command
+from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, enable_user_command, \
+    disable_user_command, get_mapping_fields_command, get_assigned_user_for_app_command, fetch_incidents, DATE_FORMAT
 from CommonServerPython import IAMErrors, IAMUserProfile, IAMActions, EntryType
 
 
@@ -376,3 +376,35 @@ def test_get_assigned_user_for_app_command(mocker):
     assert command_result.outputs.get('id') == 'mock_user_id'
     assert command_result.outputs.get('credentials').get('userName') == 'mock_username'
     assert 'Okta User App Assignment' in command_result.readable_output
+
+
+def test_fetch_incidents(mocker):
+    """
+    Given:
+        - An Okta IAM client object
+        - Fetch Query Filter parameter
+        - Last Run Time
+    When:
+        - Calling function fetch_incidents
+        - Events should come in two batches of two events in the first batch, and one event in the second batch.
+    Then:
+        - Ensure three events are returned in incident the correct format.
+    """
+    client = mock_client()
+    fetch_query_filter = 'mock_query_filter'
+    last_run_time = 'mock_last_run_time'
+
+    mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
+
+    events, _ = fetch_incidents(client, fetch_query_filter, last_run_time)
+
+    assert len(events) == 3
+    assert 'rawJSON' in events[2].keys()
+
+
+def mock_get_logs_batch(url_suffix='', params=None, full_url=''):
+    first_batch = [{'mock_log1': 'mock_value'}, {'mock_log2': 'mock_value'}]
+    second_batch = [{'mock_log3': 'mock_value'}]
+    if not url_suffix:
+        return second_batch, None
+    return first_batch, None
