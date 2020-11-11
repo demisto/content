@@ -41,6 +41,11 @@ class ServiceNowClient(BaseClient):
         ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
+            if self.use_oauth:  # add a valid access token to the headers when using OAuth
+                access_token = self.get_access_token()
+                self._headers.update({
+                    'Authorization': 'Bearer ' + access_token
+                })
             res = super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, resp_type='response',
                                         headers=headers, json_data=json_data, params=params, data=data, files=files,
                                         ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
@@ -65,7 +70,7 @@ class ServiceNowClient(BaseClient):
                         err_msg = f'Unauthorized request: \n{str(res)}'
                     raise DemistoException(err_msg)
                 else:
-                    raise Exception(f'Authentication failed. Please verify that the username and password are correct.'
+                    raise Exception(f'Authorization failed. Please verify that the username and password are correct.'
                                     f'\n{res}')
 
         except Exception as e:
@@ -89,14 +94,17 @@ class ServiceNowClient(BaseClient):
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-            res = self.http_request('POST', url_suffix=OAUTH_URL, data=data, headers=headers)
+            res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
+                                        data=data)
+            try:
+                res = res.json()
+            except ValueError as exception:
+                raise DemistoException('Failed to parse json object from response: {}'.format(res.content), exception)
             if 'error' in res:
                 return_error(
                     f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
                     f'and that the given username and password are correct.\n{res}')
-            if res.get('access_token'):
-                expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
-                expiry_time += res.get('expires_in') * 1000 - 10
+            if res.get('refresh_token'):
                 refresh_token = {
                     'refresh_token': res.get('refresh_token')
                 }
@@ -113,7 +121,7 @@ class ServiceNowClient(BaseClient):
 
         # Check if there is an existing valid access token
         if previous_token.get('access_token') and previous_token.get('expiry_time') > date_to_timestamp(datetime.now()):
-            access_token = previous_token.get('access_token')
+            return previous_token.get('access_token')
         else:
             data = {'client_id': self.client_id,
                     'client_secret': self.client_secret}
@@ -130,11 +138,17 @@ class ServiceNowClient(BaseClient):
                 headers = {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-                res = self.http_request('POST', url_suffix=OAUTH_URL, data=data, headers=headers)
+                res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
+                                            data=data)
+                try:
+                    res = res.json()
+                except ValueError as exception:
+                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content),
+                                           exception)
                 if 'error' in res:
                     return_error(
                         f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
-                        f'and try to run again the !servicenow-login command to generate a new refresh token as it '
+                        f'and try to run again the login command to generate a new refresh token as it '
                         f'might have expired.\n{res}')
                 if res.get('access_token'):
                     expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
@@ -145,8 +159,7 @@ class ServiceNowClient(BaseClient):
                         'expiry_time': expiry_time
                     }
                     set_integration_context(new_token)
-                    access_token = res.get('access_token')
+                    return res.get('access_token')
             except Exception as e:
                 return_error(f'Error occurred while creating an access token. Please check the instance configuration.'
                              f'\n\n{e.args[0]}')
-        return access_token
