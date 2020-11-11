@@ -29,7 +29,7 @@ configuration:
   display: Validate Certs
   name: validate_certs
   required: true
-  type: 8
+  type: 4
 description: Manage Kubernetes
 display: Kubernetes
 name: Kubernetes

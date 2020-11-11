@@ -30,7 +30,7 @@ configuration:
   display: Validate Certs
   name: validate_certs
   required: true
-  type: 8
+  type: 4
 description: Manage VMware vSphere Server, Guests, and ESXi Hosts
 display: VMware v2
 name: VMwareV2
