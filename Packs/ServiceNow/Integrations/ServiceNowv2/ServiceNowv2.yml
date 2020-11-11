@@ -11,7 +11,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Check this box if you would like to use OAuth 2.0 authentication.
+- additionalinfo: Select this checkbox if to use OAuth 2.0 authentication.
     See (?) for more information.
   display: Use OAuth
   hidden: false
@@ -2345,24 +2345,24 @@ script:
     name: get-remote-data
   - arguments:
     - default: false
-      description: The username that should be used for login.
+      description: The username to use for login.
       isArray: false
       name: username
       required: true
       secret: true
     - default: false
-      description: The password that should be used for login.
+      description: The password to use for login.
       isArray: false
       name: password
       required: true
       secret: true
     deprecated: false
     description: This function should be used once before running any command when
-      using OAuth authentication.
+      using OAuth2 authentication.
     execution: false
     name: servicenow-login
   - deprecated: false
-    description: Test the instance configuration when using OAuth authorization.
+    description: Test the instance configuration when using OAuth2 authentication.
     execution: false
     name: servicenow-test
   dockerimage: demisto/python3:3.8.6.12176
