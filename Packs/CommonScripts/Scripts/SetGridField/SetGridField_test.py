@@ -97,4 +97,4 @@ def test_grid_dont_exist_in_context(mocker):
     import SetGridField
     mocker.patch.object(demisto, 'incidents', return_value=[{}])
 
-    assert SetGridField.get_current_table('some_id') == []
+    assert SetGridField.get_current_table('some_id').empty
