@@ -2,16 +2,16 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-         {
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
             "fromversion": "5.0.0"
         },
         {
-              "integrations": "GoogleCalendar",
-              "playbookID": "GoogleCalendar-Test",
-              "fromversion": "5.0.0"
-         },
+            "integrations": "GoogleCalendar",
+            "playbookID": "GoogleCalendar-Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
@@ -3241,7 +3241,8 @@
         "Test - CrowdStrike Falcon": "Issue 30068",
         "TestEmailRepPlaybook": "Issue 30070",
         "CounterCraft - Test": "Issue 30069",
-        "Test-BPA": "Issue 28406"
+        "Test-BPA": "Issue 28406",
+        "SymantecEndpointProtection_Test": "Issue 30157"
     },
     "skipped_integrations": {
         
@@ -3338,7 +3339,7 @@
         "SNDBOX": "Issue 28826",
         "illuminate": "Will be replaced by analyst1 - Issue 9401",
         "Workday": "License expired Issue: 29590, 29595",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
