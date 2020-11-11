@@ -73,7 +73,7 @@ def viper_download(client, args):
         else:
             raise DemistoException('No valid sample found')
     else:
-		return_error('Hash length is invalid.')
+        return_error('Hash length is invalid.')
 
 
 def viper_search(client, args):
