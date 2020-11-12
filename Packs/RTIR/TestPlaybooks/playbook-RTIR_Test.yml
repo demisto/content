@@ -56,7 +56,7 @@ tasks:
       requestor: {}
       status: {}
       subject:
-        simple: TestTicket
+        simple: TestTicket - שלום
       text: {}
     separatecontext: false
     view: |-
