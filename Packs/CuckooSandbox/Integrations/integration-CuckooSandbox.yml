@@ -593,27 +593,27 @@ script:
     - contextPath: Cuckoo.Task.Monitor
       description: Monitor of the reported task
     - contextPath: Cuckoo.Task.FileInfo.sha1
-      description: The file's SHA1 hash
+      description: The SHA1 hash of the file.
     - contextPath: Cuckoo.Task.FileInfo.name
-      description: The file's name
+      description: The file name.
     - contextPath: Cuckoo.Task.FileInfo.type
-      description: The file's type
+      description: The file type.
     - contextPath: Cuckoo.Task.FileInfo.sha256
-      description: The file's SHA256 hash
+      description: The SHA256 hash of the file.
     - contextPath: Cuckoo.Task.FileInfo.urls
-      description: Related urls of the file
+      description: Related URLs of the file.
     - contextPath: Cuckoo.Task.FileInfo.crc32
-      description: The crc32 of the gfile
+      description: The CRC32 of the file.
     - contextPath: Cuckoo.Task.FileInfo.path
-      description: The file's path
+      description: The file path.
     - contextPath: Cuckoo.Task.FileInfo.ssdeep
-      description: The file's ssdeep
+      description: The ssdeep of the file.
     - contextPath: Cuckoo.Task.FileInfo.size
-      description: The size of the file
+      description: The size of the file.
     - contextPath: Cuckoo.Task.FileInfo.sha512
-      description: The file's SHA512 hash
+      description: The SHA512 hash of the file.
     - contextPath: Cuckoo.Task.FileInfo.md5
-      description: The file's MD5 hash
+      description: The MD5 hash file.
     description: commands.server.ckReport.description
   - name: ck-list
     deprecated: true
