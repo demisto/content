@@ -1039,4 +1039,4 @@ def mapObject(obj, mapper, mapper_type):
 
 
 def getModules():
-    return None
+    return {}

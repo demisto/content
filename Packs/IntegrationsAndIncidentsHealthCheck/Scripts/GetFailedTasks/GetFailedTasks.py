@@ -4,30 +4,24 @@ from CommonServerPython import *  # noqa: F401
 BRAND = "Demisto REST API"
 
 
-def get_rest_api_instance_to_use(rest_api_instance_from_arg):
+def get_rest_api_instance_to_use():
     """
         This function checks if there are more than one instance of demisto rest api.
-        Args:
-            rest_api_instance_from_arg (str) : rest api instance name
 
         Returns:
             Demisto Rest Api instance to use
     """
-    allInstances = demisto.getModules()
+    all_instances = demisto.getModules()
     number_of_rest_api_instances = 0
     rest_api_instance_to_use = None
-    for instance_name in allInstances:
-        if allInstances[instance_name]['brand'] == BRAND:
+    for instance_name in all_instances:
+        if all_instances[instance_name]['brand'] == BRAND and all_instances[instance_name]['state'] == 'active':
             rest_api_instance_to_use = instance_name
             number_of_rest_api_instances += 1
-    if number_of_rest_api_instances > 1:
-        return_error("GetFailedTasks: This script can only run with a single instance of the Demisto REST API. "
-                     "Specify the instance name in the 'rest_api_instance' argument.")
-    elif number_of_rest_api_instances == 1:
-        return rest_api_instance_to_use
-    else:
-        # in there are no rest api instances
-        return rest_api_instance_from_arg
+        if number_of_rest_api_instances > 1:
+            return_error("GetFailedTasks: This script can only run with a single instance of the Demisto REST API. "
+                         "Specify the instance name in the 'rest_api_instance' argument.")
+    return rest_api_instance_to_use
 
 
 def main():
@@ -35,7 +29,7 @@ def main():
     query = args.get("query")
     tenant_name = args.get("tenant_name", '')
     rest_api_instance = args.get("rest_api_instance")
-    rest_api_instance_to_use = get_rest_api_instance_to_use(rest_api_instance)
+    rest_api_instance_to_use = get_rest_api_instance_to_use() if not rest_api_instance else rest_api_instance
 
     page_number = 0
     number_of_failed = 0
