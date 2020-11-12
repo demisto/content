@@ -1001,7 +1001,6 @@ def get_tests(server_numeric_version, prints_manager, build):
     tests = build.tests
     if Build.run_environment == Running.CIRCLECI_RUN:
         filtered_tests = extract_filtered_tests()
-        # TODO: see if this is still needed
         if build.is_nightly:
             # skip test button testing
             skipped_instance_test_message = 'Not running instance tests in nightly flow'
