@@ -3,6 +3,12 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "FireEye Detection on Demand",
+            "playbookID": "FireEye-Detection-on-Demand-Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "Microsoft Endpoint Configuration Manager",
             "playbookID": "Microsoft ECM - Test",
             "fromversion": "5.5.0"
