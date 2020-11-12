@@ -187,7 +187,7 @@ def import_command(client: Client, arguments: Dict[str, Any]):
             raise ValueError(results.get('message'))
         else:
             raise ValueError(
-                'No response from server, check your request')
+                'Failed to import the requested file. Please verify the input.')
 
     readable_output = tableToMarkdown('Import Results', remove_empty_elements(results_data),
                                       headers=('created_at', 'id', 'operation', 'status'),
