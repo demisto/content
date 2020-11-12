@@ -1071,7 +1071,7 @@ def install_packs(build, pack_ids=None):
 
 
 def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations):
-    all_module_instances = []
+    old_module_instances = []
     brand_new_integrations = []
     testing_client = build.servers[0].client
     for test in tests_for_iteration:
@@ -1107,21 +1107,18 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
             logging.error(f'failed setting parameters for integrations: {integrations_to_configure}')
         if not (new_ints_params_set and ints_to_configure_params_set):
             continue
-        module_instances = []
         for integration in integrations_to_configure:
             placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
             module_instance = configure_integration_instance(integration, testing_client, placeholders_map)
             if module_instance:
-                module_instances.append(module_instance)
+                old_module_instances.append(module_instance)
 
-        all_module_instances.extend(module_instances)
         for integration in new_integrations:
             placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
             module_instance = configure_integration_instance(integration, testing_client, placeholders_map)
             if module_instance:
-                module_instances.append(module_instance)
-        brand_new_integrations.extend(module_instances)
-    return all_module_instances, brand_new_integrations
+                brand_new_integrations.append(module_instance)
+    return old_module_instances, brand_new_integrations
 
 
 def instance_testing(build: Build, all_module_instances, pre_update):
