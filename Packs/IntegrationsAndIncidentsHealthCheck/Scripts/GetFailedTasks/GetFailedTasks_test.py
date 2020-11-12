@@ -4,7 +4,7 @@ from GetFailedTasks import main, get_rest_api_instance_to_use
 from test_data.constants import INCIDENTS_RESULT, TASKS_RESULT
 
 
-@pytest.mark.parametrize('modules,expected_output,num_of_instances', [({}, "Demisto REST API_instance_1", 0),
+@pytest.mark.parametrize('modules,expected_output,num_of_instances', [({}, None, 0),
                                                                       ({"Demisto REST API_instance_1": {
                                                                           "brand": "Demisto REST API",
                                                                           "category": "Utilities",
@@ -43,10 +43,10 @@ def test_get_rest_api_instance_to_use(mocker, modules, expected_output, num_of_i
     mocker.patch.object(demisto, 'getModules', return_value=modules)
     mocker.patch.object(demisto, 'results')
     if num_of_instances <= 1:
-        assert get_rest_api_instance_to_use("Demisto REST API_instance_1") == expected_output
+        assert get_rest_api_instance_to_use() == expected_output
     else:
         with pytest.raises(SystemExit):
-            get_rest_api_instance_to_use(None)
+            get_rest_api_instance_to_use()
         contents = demisto.results.call_args[0][0]
         assert contents['Contents'] == expected_output
 
