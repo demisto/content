@@ -1,6 +1,7 @@
 id: playbook-PAN-OS_-_Lookup_Zone_Test
 version: 6
 name: playbook-PAN-OS_-_Lookup_Zone_Test
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
