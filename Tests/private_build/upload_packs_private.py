@@ -484,7 +484,7 @@ def main():
     upload_id_set(default_storage_bucket, id_set_path)
 
     # summary of packs status
-    print_packs_summary(packs_list, storage_bucket_name, private_bucket_name)
+    print_packs_summary(packs_list)
 
 
 if __name__ == '__main__':
