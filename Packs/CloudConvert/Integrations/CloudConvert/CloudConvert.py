@@ -30,7 +30,6 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix='import/url',
-            headers=self._headers,
             data=arguments,
             ok_codes=(422, 200, 201, 500, 401)
         )
@@ -47,8 +46,7 @@ class Client(BaseClient):
         """
         response_get_form = self._http_request(
             method='POST',
-            url_suffix='import/upload',
-            headers=self._headers
+            url_suffix='import/upload'
         )
         form = response_get_form.get('data', {}).get('result', {}).get('form', {})
         port_url = form['url']  # if no url field in form, we should have an exception
@@ -69,7 +67,6 @@ class Client(BaseClient):
                 method='POST',
                 url_suffix=None,
                 full_url=port_url,
-                headers=self._headers,
                 files=file_dict,
                 empty_valid_codes=[201, 204],
                 return_empty_response=True,
@@ -95,7 +92,6 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix='convert',
-            headers=self._headers,
             data=arguments,
             ok_codes=(422, 200, 201, 500)
         )
@@ -114,7 +110,6 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix=f'/tasks/{task_id}',
-            headers=self._headers,
             ok_codes=(422, 200, 201, 500)
         )
 
@@ -135,7 +130,6 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix='/export/url',
-            headers=self._headers,
             data=arguments,
             ok_codes=(422, 200, 201, 500)
         )
