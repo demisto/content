@@ -24,12 +24,27 @@ def get_rest_api_instance_to_use():
     return rest_api_instance_to_use
 
 
+def get_tenant_name():
+    """
+        Gets the tenant name from the server url.
+        :return: tenant name.
+        :rtype: ``str``
+    """
+    server_url = demisto.executeCommand("GetServerURL", {})[0].get('Contents')
+    tenant_name = ''
+    if '/acc_' in server_url:
+        tenant_name = server_url.split('acc_')[-1]
+
+    return tenant_name
+
+
 def main():
     args = demisto.args()
     query = args.get("query")
-    tenant_name = args.get("tenant_name", '')
     rest_api_instance = args.get("rest_api_instance")
     rest_api_instance_to_use = get_rest_api_instance_to_use() if not rest_api_instance else rest_api_instance
+
+    tenant_name = get_tenant_name()
 
     page_number = 0
     number_of_failed = 0
