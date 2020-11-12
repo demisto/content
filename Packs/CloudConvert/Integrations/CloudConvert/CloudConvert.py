@@ -72,9 +72,16 @@ class Client(BaseClient):
                 return_empty_response=True,
                 data=params
             )
-
-        response_get_form['data'].pop('message')
-        response_get_form['data'].pop('result')
+        
+        # As shown, this operation has two requests
+        # The data about the operation is within the first request's response,
+        # So in order to keep the operation's data, we should return the first request's response, 
+        # But first we should remove fields that are no longer true, such as ones that indictes that 
+        # The second request has not been done yet
+        if response_get_form.get('data'):
+            response_get_form.get('data').pop('message', None)
+            response_get_form.get('data').pop('result', None)
+        
         return response_get_form
 
     @logger
