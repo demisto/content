@@ -1739,14 +1739,14 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         # a MIMEMultipart object of type `alternative` which contains
         # the 2 MIMEText objects for each body part and the relevant Mime<type> object for the attachments.
         message = MIMEMultipart('mixed')  # type: ignore
-        alt = MIMEMultipart('alternative')  # type: ignore
-        message.attach(alt)  # type: ignore
+        alt = MIMEMultipart('alternative')
+        message.attach(alt)
         attach_body_to = alt
     else:
         message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
 
     if not attach_body_to:
-        attach_body_to = message
+        attach_body_to = message  # type: ignore
 
     message['to'] = header(','.join(emailto))
     message['cc'] = header(','.join(cc))
@@ -1764,14 +1764,14 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     # if there are any attachments to the mail or both body and htmlBody were given
     if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
         msg = MIMEText(body, 'plain', 'utf-8')
-        attach_body_to.attach(msg)
+        attach_body_to.attach(msg)  # type: ignore
         htmlAttachments = []  # type: list
         inlineAttachments = []  # type: list
 
         if htmlBody:
             htmlBody, htmlAttachments = handle_html(htmlBody)
             msg = MIMEText(htmlBody, 'html', 'utf-8')
-            attach_body_to.attach(msg)
+            attach_body_to.attach(msg)  # type: ignore
             if attach_cid:
                 inlineAttachments = collect_inline_attachments(attach_cid)
 
