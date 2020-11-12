@@ -1,7 +1,7 @@
 import demistomock as demisto
 import pytest
 from GetFailedTasks import main, get_rest_api_instance_to_use
-from test_data.constants import INCIDENTS_RESULT, TASKS_RESULT
+from test_data.constants import INCIDENTS_RESULT, TASKS_RESULT, SERVER_URL
 
 
 @pytest.mark.parametrize('modules,expected_output,num_of_instances', [({}, None, 0),
@@ -67,6 +67,8 @@ def mock_execute_command(command_name, args):
         return INCIDENTS_RESULT
     elif command_name == 'demisto-api-post':
         return TASKS_RESULT
+    elif command_name == 'GetServerURL':
+        return SERVER_URL
 
 
 def test_get_failed_tasks(mocker):
