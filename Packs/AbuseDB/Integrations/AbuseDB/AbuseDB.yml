@@ -34,7 +34,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Central repository to report and identify IP addresses that have been associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration.
+description: Central repository to report and identify IP addresses that have been
+  associated with malicious activity online. Check the Detailed Information section
+  for more information on how to configure the integration.
 display: AbuseIPDB
 name: AbuseIPDB
 script:
@@ -44,36 +46,23 @@ script:
       description: The IP address to check (CSV supported).
       isArray: true
       name: ip
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
+      required: true
+    - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
-      isArray: false
       name: days
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
-      description: The length of the report. "true" returns the full report, "false" does not return reported categories. Default is "true".
-      isArray: false
+      description: The length of the report. "true" returns the full report, "false"
+        does not return reported categories. Default is "true".
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '80'
-      description: The minimum score from AbuseIPDB to consider whether the IP address is malicious (must be greater than 20). Default is 80.
-      isArray: false
+    - defaultValue: '80'
+      description: The minimum score from AbuseIPDB to consider whether the IP address
+        is malicious (must be greater than 20). Default is 80.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the specified IP address against the AbuseIP database.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -128,36 +117,20 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: String
   - arguments:
-    - default: false
-      description: IPv4 Address Block in CIDR notation.
-      isArray: false
+    - description: IPv4 Address Block in CIDR notation.
       name: network
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
-      isArray: false
       name: days
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '40'
+    - defaultValue: '40'
       description: The maximum number of IPs to check. Default is 40.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '80'
-      description: The minimum score from AbuseIPDB to consider whether the IP address is malicious (must be greater than 20). Default is 80.
-      isArray: false
+    - defaultValue: '80'
+      description: The minimum score from AbuseIPDB to consider whether the IP address
+        is malicious (must be greater than 20). Default is 80.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Queries a block of IP addresses to check against the database.
-    execution: false
     name: abuseipdb-check-cidr-block
     outputs:
     - contextPath: IP.Address
@@ -209,71 +182,46 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: String
   - arguments:
-    - default: false
-      description: The IP address to report.
-      isArray: false
+    - description: The IP address to report.
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: A CSV list of category IDs. For more information, see https://www.abuseipdb.com/categories.
-      isArray: false
+    - description: A CSV list of category IDs. For more information, see https://www.abuseipdb.com/categories.
       name: categories
       required: true
-      secret: false
-    deprecated: false
     description: Reports an IP address to AbuseIPDB.
-    execution: false
     name: abuseipdb-report-ip
   - arguments:
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
-      isArray: false
       name: days
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The maximum number of IPs to retrieve. Default is 50. '
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Whether to save a list of blacklisted IPs in the Context Data in Demisto. Default is false.
-      isArray: false
+      description: Whether to save a list of blacklisted IPs in the Context Data in
+        Demisto. Default is false.
       name: saveToContext
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of the most reported IP addresses.
-    execution: false
     name: abuseipdb-get-blacklist
     outputs:
     - contextPath: AbuseIPDB.Blacklist
       description: A list of blacklisted IP addresses.
       type: Unknown
-  - deprecated: false
+  - arguments: []
     description: Returns a list of report categories from AbuseIPDB.
-    execution: false
     name: abuseipdb-get-categories
     outputs:
     - contextPath: AbuseIPDB.Categories
       description: The list of AbuseIPDB categories.
       type: string
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python2
   type: python
+fromversion: 6.0.0
 tests:
-- AbuseIPDB Test
-fromversion: 5.0.0
+- No tests (auto formatted)

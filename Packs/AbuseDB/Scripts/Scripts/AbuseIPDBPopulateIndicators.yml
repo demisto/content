@@ -1,0 +1,29 @@
+args:
+- defaultValue: '30'
+  description: Time range to return reports for (in days), default is 30
+  name: days
+- defaultValue: '200'
+  description: 'Maximum number of IPs to retrieve, default is 50 '
+  name: limit
+comment: Extracts blacklisted IP addresses from AbuseIPDB, and Populates Indicators
+  accordingly.
+commonfields:
+  id: AbuseIPDBPopulateIndicators
+  version: -1
+dependson:
+  must:
+  - '|||abuseipdb-get-blacklist'
+  - Builtin|||createNewIndicator
+enabled: true
+name: AbuseIPDBPopulateIndicators
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags: []
+timeout: 900ns
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
