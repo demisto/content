@@ -65,7 +65,7 @@ def create_layout(path: Path, layout_name: str) -> str:
         'id': layout_name,
         'name': layout_name
     })
-    layout_path = dest_layout / f'layout-{layout_name.replace(" ", "_")}.json'
+    layout_path = dest_layout / f'layoutscontainer-{layout_name.replace(" ", "_")}.json'
     with open(layout_path, 'w+') as stream:
         json.dump(layout, stream, indent=4)
     return str(layout_path)
