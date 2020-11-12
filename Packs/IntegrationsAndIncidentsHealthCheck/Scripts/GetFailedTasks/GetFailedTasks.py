@@ -33,7 +33,7 @@ def get_rest_api_instance_to_use(rest_api_instance_from_arg):
 def main():
     args = demisto.args()
     query = args.get("query")
-    account = args.get("account_name", '')
+    tenant_name = args.get("tenant_name", '')
     rest_api_instance = args.get("rest_api_instance")
     rest_api_instance_to_use = get_rest_api_instance_to_use(rest_api_instance)
 
@@ -59,8 +59,8 @@ def main():
             break
 
     for incident in total_incidents:
-        if account:
-            uri = f'acc_{account}/investigation/{str(incident["id"])}/workplan/tasks'
+        if tenant_name:
+            uri = f'acc_{tenant_name}/investigation/{str(incident["id"])}/workplan/tasks'
         else:
             uri = f'investigation/{str(incident["id"])}/workplan/tasks'
 
