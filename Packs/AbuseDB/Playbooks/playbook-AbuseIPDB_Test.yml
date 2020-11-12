@@ -1,0 +1,302 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 0ecd8bea-7d25-44c0-8be6-5e6f46b7932e
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: AbuseIPDB Test
+inputs: []
+name: AbuseIPDB Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a43dcec2-36f9-4b07-8f85-1de1b8225a34
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: a43dcec2-36f9-4b07-8f85-1de1b8225a34
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 96fe65fe-6255-4be8-897f-7e083b6e1d89
+      iscommand: false
+      name: delete context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 96fe65fe-6255-4be8-897f-7e083b6e1d89
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      days:
+        simple: "10"
+      fullResponse: {}
+      ip:
+        simple: ' 178.62.60.225'
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      verbose:
+        simple: "true"
+      wait: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AbuseIPDB
+      id: 8f400a90-dad3-4539-89c9-ffde4cb91ac5
+      iscommand: true
+      name: check IP
+      script: AbuseIPDB|||ip
+      type: regular
+      version: -1
+    taskid: 8f400a90-dad3-4539-89c9-ffde4cb91ac5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+  "3":
+    continueonerror: true
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      categories:
+        simple: "18"
+      ip:
+        simple: 127.0.0.2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a64a21f5-5241-4a26-8dc1-bb749dba81c8
+      iscommand: true
+      name: report IP
+      script: '|||abuseipdb-report-ip'
+      type: regular
+      version: -1
+    taskid: a64a21f5-5241-4a26-8dc1-bb749dba81c8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      days:
+        simple: "30"
+      limit: {}
+      network:
+        simple: 127.0.0.2/24
+      threshold: {}
+      verbose:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d91b7691-93d6-494c-8ad7-d259d5e71bcd
+      iscommand: true
+      name: check IPs CIDR
+      script: '|||abuseipdb-check-cidr-block'
+      type: regular
+      version: -1
+    taskid: d91b7691-93d6-494c-8ad7-d259d5e71bcd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      days: {}
+      limit:
+        simple: "5"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bd5b965b-155e-4447-8832-45d89519fe7e
+      iscommand: true
+      name: blacklist
+      script: '|||abuseipdb-get-blacklist'
+      type: regular
+      version: -1
+    taskid: bd5b965b-155e-4447-8832-45d89519fe7e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1255
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: b4ee3ab1-95f4-4f5d-8d8d-47e0e29b1bb7
+      iscommand: false
+      name: Sleep
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: b4ee3ab1-95f4-4f5d-8d8d-47e0e29b1bb7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      days:
+        simple: "10"
+      fullResponse: {}
+      ip:
+        simple: 178.62.60.225,8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      verbose:
+        simple: "true"
+      wait: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AbuseIPDB
+      id: fc6cdce7-a3de-4d73-867b-e33c0f8fb1fb
+      iscommand: true
+      name: check IP with CSV
+      script: AbuseIPDB|||ip
+      type: regular
+      version: -1
+    taskid: fc6cdce7-a3de-4d73-867b-e33c0f8fb1fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1440
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1485,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
