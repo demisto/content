@@ -5,7 +5,6 @@ name: Google Chronicle Backstory List IOCs - Test
 description: This playbook uses the Google Chronicle Backstory integration and tests
   the various scenarios of the "gcb-list-iocs" command.
 starttaskid: "0"
-fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
@@ -17,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -236,6 +236,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -550,3 +551,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
