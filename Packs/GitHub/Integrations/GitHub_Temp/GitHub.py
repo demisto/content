@@ -1255,7 +1255,7 @@ def get_github_get_check_run():
 
     for check_run in check_runs:
             check_run_id = check_run.get('id', '')
-            check_external_id = check_run.get('id', '')
+            check_external_id = check_run.get('external_id', '')
             check_run_name = check_run.get('name', '')
             check_run_app_name = check_run['app'].get('name', '')
             check_run_pr = check_run['pull_requests']
