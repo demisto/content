@@ -1,8 +1,7 @@
 id: Tanium - Ask Question
 version: -1
-fromversion: "5.0.0"
 name: Tanium - Ask Question
-description: 'This playbook used generic polling to gets question result.'
+description: This playbook used generic polling to gets question result.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,7 +17,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
     separatecontext: false
     view: |-
       {
@@ -30,6 +29,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 22bd1506-813b-4c50-8d9d-9d1b019f2908
@@ -58,12 +59,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 28bd0645-0f75-4f9c-84bb-3caf5f6a40f5
@@ -109,16 +112,19 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: a45adf8d-4f2a-492c-8a1d-11118c892a5d
@@ -140,18 +146,58 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 64138c6e-357f-4258-8f0e-cf7ba9442825
+    type: regular
+    task:
+      id: 64138c6e-357f-4258-8f0e-cf7ba9442825
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Tanium.Question
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 765,
         "width": 380,
         "x": 50,
         "y": 50
@@ -163,14 +209,18 @@ inputs:
   value: {}
   required: false
   description: ""
+  playbookInputQuery:
 - key: parameters
   value: {}
   required: false
   description: ""
+  playbookInputQuery:
 outputs:
 - contextPath: Tanium.QuestionResult.Results
   description: The question results.
 - contextPath: Tanium.Question.ID
   description: The unique ID of the question object
 tests:
+- Tanium Test Playbook
 - Tanium v2 - Test
+fromversion: 5.0.0
