@@ -972,7 +972,7 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
 
     Args:
         tests (set): Tests set to remove the tests to ignore from
-        content_packs (set): Content packs from which to check if test should be ignored
+        id_set (dict): The id set object
 
     Return:remove_ignored_tests
          set: The filtered tests set
@@ -980,7 +980,8 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
     ignored_tests_set = set()
     content_packs = get_content_pack_name_of_test(tests, id_set)
     for pack in content_packs:
-        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+        a = tools.get_ignore_pack_skipped_tests(pack)
+        ignored_tests_set.update(a)
 
     if ignored_tests_set:
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
@@ -1015,7 +1016,7 @@ def filter_tests(tests: set, id_set: json) -> set:
     :param id_set: dict. The ID set.
     :return: set. Set of tests without ignored and non supported tests.
     """
-    tests_without_ignored = (tests, id_set)
+    tests_without_ignored = remove_ignored_tests(tests, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     return tests_without_non_supported

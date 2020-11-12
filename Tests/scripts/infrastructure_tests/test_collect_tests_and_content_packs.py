@@ -1,6 +1,9 @@
 import copy
 import json
 import os
+
+import pytest
+
 import Tests
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
 from ruamel.yaml import YAML
@@ -9,7 +12,7 @@ from demisto_sdk.commands.common.constants import PACKS_PACK_META_FILE_NAME, PAC
 from Tests.scripts.collect_tests_and_content_packs import (
     TestConf, create_filter_envs_file,
     get_test_list_and_content_packs_to_install, collect_content_packs_to_install,
-    get_from_version_and_to_version_bounderies, PACKS_DIR, filter_tests)
+    get_from_version_and_to_version_bounderies, PACKS_DIR, filter_tests, remove_ignored_tests)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -1141,6 +1144,30 @@ def test_collect_test_playbooks_no_results():
     test_conf = TestConf(MOCK_CONF)
     content_packs = test_conf.get_packs_of_collected_tests(['TestCommonPython'], MOCK_ID_SET)
     assert set() == content_packs
+
+
+@pytest.mark.parametrize('tests_to_filter, ignored_tests, expected_result', [
+    ({'fake_test_playbook'}, {'fake_test_playbook'}, set()),
+    ({'fake_test_playbook'}, set(), {'fake_test_playbook'}),
+    ({'fake_test_playbook'}, {'fake_test_playbook2'}, {'fake_test_playbook'}),
+])
+def test_remove_ignored_tests(tests_to_filter, ignored_tests, expected_result, mocker):
+    """
+    Given:
+        - Case a: test playbook set containing a test that is ignored in the .pack_ignore file.
+        - Case b: test playbook set containing a test that is not ignored in its .pack_ignore file.
+        - Case c: test playbook set containing a test from a pack with a different ignored test.
+    When:
+        Filtering out ignored tests from a given set of tests.
+    Then:
+        - Case a: Ensure that the given test was removed from result list
+        - Case b: Ensure that the given appears in the result list
+        - Case c: Ensure that the given appears in the result list
+    """
+    mocker.patch.object(Tests.scripts.collect_tests_and_content_packs.tools, 'get_ignore_pack_skipped_tests',
+                        return_value=ignored_tests)
+    res = remove_ignored_tests(tests_to_filter, MOCK_ID_SET)
+    assert res == expected_result
 
 
 def test_filter_tests():
