@@ -347,16 +347,16 @@ def main() -> None:
         }
         client = Client(headers, verify, proxy)
 
-        if demisto.command() == 'CloudConvert-import':
+        if demisto.command() == 'cloudconvert-import':
             return_results(import_command(client, demisto.args()))
 
-        elif demisto.command() == 'CloudConvert-convert':
+        elif demisto.command() == 'cloudconvert-convert':
             return_results(convert_command(client, demisto.args()))
 
-        elif demisto.command() == 'CloudConvert-checkstatus':
+        elif demisto.command() == 'cloudconvert-checkstatus':
             return_results(check_status_command(client, demisto.args()))
 
-        elif demisto.command() == 'CloudConvert-export':
+        elif demisto.command() == 'cloudconvert-export':
             return_results(export_command(client, demisto.args()))
 
         elif demisto.command() == 'test-module':

@@ -37,7 +37,7 @@ script:
     deprecated: false
     description: Import a file for later conversion
     execution: false
-    name: CloudConvert-import
+    name: cloudconvert-import
     outputs:
     - contextPath: CloudConvert.Task.id
       description: Unique task id of scanned file
@@ -195,7 +195,7 @@ script:
     deprecated: false
     description: Convert a priorly uploaded file to desired format
     execution: false
-    name: CloudConvert-convert
+    name: cloudconvert-convert
     outputs:
     - contextPath: CloudConvert.Task.id
       description: Unique task id of scanned file
@@ -261,7 +261,7 @@ script:
       also create a war room entry of the file when checking on an export to war room
       entry operation
     execution: false
-    name: CloudConvert-checkstatus
+    name: cloudconvert-checkstatus
     outputs:
     - contextPath: CloudConvert.Task.id
       description: Unique task id of scanned file
@@ -325,7 +325,7 @@ script:
     deprecated: false
     description: Export a converted file to a url or a war room entry
     execution: false
-    name: CloudConvert-export
+    name: cloudconvert-export
     outputs:
     - contextPath: CloudConvert.Task.id
       description: Unique task id of scanned file
