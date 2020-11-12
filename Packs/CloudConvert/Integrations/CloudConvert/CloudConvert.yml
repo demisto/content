@@ -23,13 +23,13 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The file's url
+      description: The file's url. If an entry id is supplied, do not use this argument
       isArray: false
       name: url
       required: false
       secret: false
     - default: false
-      description: The file's war room entry ID
+      description: The file's war room entry ID. If a url is supplied, do not use this argument
       isArray: false
       name: entry_id
       required: false
