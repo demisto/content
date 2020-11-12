@@ -16,6 +16,7 @@ urllib3.disable_warnings()
 MIN_MAJOR_VERSION = 1
 MIN_MINOR_VERSION = 38
 FULL_INCIDENTS_SECONDS = 86400
+ONE_WEEK_IN_SECONDS = 604800
 
 DEFAULT_TIME_ID = 'timeAgo_days_7'
 PREVIOUS_DEFAULT_TIME_ID = 'timeAgo_days_7'
@@ -266,13 +267,16 @@ class XM:
 
         return data
 
-    def _create_event_for_risk_score(self, events):
+    def _create_event_for_risk_score(self, events, run_data):
         risk_score = self.risk_score()
         trend = risk_score["trend"]
         if self.ignore_trend or (trend is not None and trend != '' and trend < 0):
-            events.append(self.create_xm_event(EVENT_NAME.RiskScore, risk_score["current_score"], risk_score))
+            score = risk_score["current_score"]
+            name = f"risk_score_{score}"
+            if should_create_xm_event(name, run_data):
+                events.append(self.create_xm_event(EVENT_NAME.RiskScore, risk_score["current_score"], risk_score))
 
-    def _create_events_from_top_dashboard(self, events_array, top_list, event_name, trend_negative):
+    def _create_events_from_top_dashboard(self, events_array, top_list, event_name, trend_negative, run_data):
         for top in top_list:
             trend = top["trend"]
             if trend is None or trend == '':
@@ -281,7 +285,10 @@ class XM:
                 trend = int(trend)
 
             if self.ignore_trend or (trend_negative and trend < 0) or (not trend_negative and trend > 0):
-                events_array.append(self.create_xm_event(event_name, top["displayName"], top))
+                displayName = top["displayName"]
+                name = f"{event_name}_{displayName}_{trend}"
+                if should_create_xm_event(name, run_data):
+                    events_array.append(self.create_xm_event(event_name, displayName, top))
 
     def _get_technique_best_practices_and_remediation(self, technique):
         advices = []
@@ -294,7 +301,7 @@ class XM:
 
         return advices
 
-    def _create_events_from_top_techniques(self, events_array, current_techniques, previous_techniques):
+    def _create_events_from_top_techniques(self, events_array, current_techniques, previous_techniques, run_data):
         for current_tech in current_techniques:
             previous_tech = None
             for previous_tech_iteratee in previous_techniques:
@@ -309,28 +316,32 @@ class XM:
                 if previous_tech is not None:
                     critical_asset_trend = criticalAssets - int(previous_tech["criticalAssets"])
                 current_tech["criticalAssets_trend"] = critical_asset_trend
-                events_array.append(self.create_xm_event(EVENT_NAME.TopTechnique, current_tech["displayName"], current_tech))
 
-    def get_fetch_incidents_events(self):
+                display_name = current_tech["displayName"]
+                name = f"{display_name}_{criticalAssets}"
+                if should_create_xm_event(name, run_data):
+                    events_array.append(self.create_xm_event(EVENT_NAME.TopTechnique, display_name, current_tech))
+
+    def get_fetch_incidents_events(self, run_data: Dict[str, Any]):
         events: List = []
 
         writeLog("risk score")
         # risk score
-        self._create_event_for_risk_score(events)
+        self._create_event_for_risk_score(events, run_data)
 
         writeLog("assets at risk")
         # top assets at risk
-        self._create_events_from_top_dashboard(events, self.top_assets_at_risk(), EVENT_NAME.AssetAtRisk, True)
+        self._create_events_from_top_dashboard(events, self.top_assets_at_risk(), EVENT_NAME.AssetAtRisk, True, run_data)
 
         writeLog("choke point")
         # top choke points
-        self._create_events_from_top_dashboard(events, self.top_choke_points(), EVENT_NAME.ChokePoint, False)
+        self._create_events_from_top_dashboard(events, self.top_choke_points(), EVENT_NAME.ChokePoint, False, run_data)
 
         writeLog("top techniques")
         # top techniques
         current_techniques = self.get_techniques(DEFAULT_TIME_ID, TOP_ENTITIES, 1)
         previous_techniques = self.get_techniques(PREVIOUS_DEFAULT_TIME_ID, TOP_ENTITIES, 1)
-        self._create_events_from_top_techniques(events, current_techniques, previous_techniques)
+        self._create_events_from_top_techniques(events, current_techniques, previous_techniques, run_data)
 
         return events
 
@@ -342,6 +353,20 @@ class LogLevel(enum.Enum):
     Debug = 0,
     Info = 1,
     Error = 2,
+
+
+def should_create_xm_event(name, run_data):
+    if name not in run_data:
+        run_data[name] = datetime.now().isoformat()
+        return True
+    return False
+
+
+def is_seconds_diff_passed(date_in_iso, diff_in_seconds):
+    now = datetime.now()
+    start_time = datetime.fromisoformat(date_in_iso)
+    diff = dates_diff_seconds(now, start_time)
+    return diff > diff_in_seconds
 
 
 def writeLog(msg, logLevel=LogLevel.Info):
@@ -520,28 +545,35 @@ def affected_entities_list_command(xm: XM, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def _fetch_incidents_internal(xm: XM, args: Dict[str, Any]) -> List:
+def _fetch_incidents_internal(xm: XM, args: Dict[str, Any], run_data: Dict[str, Any]) -> List:
     events = []
     should_run = True
 
     if xm.is_fetch_incidents:
-        last_run = demisto.getLastRun()
-        if len(last_run) > 0:
-            now = datetime.now()
-            start_time = datetime.fromisoformat(last_run["start_time"])
-            diff = dates_diff_seconds(now, start_time)
-            if diff < FULL_INCIDENTS_SECONDS:
-                should_run = False
+        if len(run_data) > 0 and not is_seconds_diff_passed(run_data["start_time"], FULL_INCIDENTS_SECONDS):
+            should_run = False
 
     if should_run:
-        events = xm.get_fetch_incidents_events()
+        events = xm.get_fetch_incidents_events(run_data)
 
     writeLog(f'Found {len(events)} events')
     return events
 
 
+# Fetch incidents
+# This function runs every 3 seconds. In each run, we check if 24 hours passed since the last ran. If not, we just exit
+# Otherwise, we fetch 4 type of XM's incidents (Security score, Assets at risk, Choke points and techniques)
+# Each incident can be created only one time in each week (in order to avoid spamming the incidents page)
 def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    events = _fetch_incidents_internal(xm, args)
+    run_data = demisto.getLastRun()
+    # Clean the dict key with old values
+    for key in run_data.keys():
+        if key == "start_time" or key == "lastRun":
+            continue
+        if is_seconds_diff_passed(run_data[key], ONE_WEEK_IN_SECONDS):
+            del run_data[key]
+
+    events = _fetch_incidents_internal(xm, args, run_data)
 
     if xm.is_fetch_incidents:
         incidents = []
@@ -558,9 +590,8 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
 
         writeLog(f'Finish incidents: {len(incidents)}')
         if len(incidents) > 0:
-            demisto.setLastRun({
-                'start_time': datetime.now().isoformat()
-            })
+            run_data['start_time'] = datetime.now().isoformat()
+            demisto.setLastRun(run_data)
 
         demisto.incidents(incidents)
 
