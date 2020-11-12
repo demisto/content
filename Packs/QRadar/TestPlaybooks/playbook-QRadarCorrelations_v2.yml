@@ -89,9 +89,9 @@ tasks:
       - '3'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -103,8 +103,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2'
-      - - operator: isEqualString
+              simple: "1"
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -116,7 +116,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2'
+              simple: "1"
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
     note: false
     timertriggers: []
