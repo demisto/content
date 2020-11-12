@@ -980,8 +980,7 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
     ignored_tests_set = set()
     content_packs = get_content_pack_name_of_test(tests, id_set)
     for pack in content_packs:
-        a = tools.get_ignore_pack_skipped_tests(pack)
-        ignored_tests_set.update(a)
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
 
     if ignored_tests_set:
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
@@ -1003,7 +1002,7 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict):
                 tests_that_should_not_be_tested.add(test)
 
     if tests_that_should_not_be_tested:
-        logging.info('The following test playbooks are not supported and will not be tested: \n{} '.format(
+        logging.debug('The following test playbooks are not supported and will not be tested: \n{} '.format(
             '\n'.join(tests_that_should_not_be_tested)))
         tests.difference_update(tests_that_should_not_be_tested)
     return tests

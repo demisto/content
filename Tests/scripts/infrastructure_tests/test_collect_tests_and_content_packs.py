@@ -1,5 +1,6 @@
 import copy
 import json
+import logging
 import os
 
 import pytest
@@ -12,7 +13,8 @@ from demisto_sdk.commands.common.constants import PACKS_PACK_META_FILE_NAME, PAC
 from Tests.scripts.collect_tests_and_content_packs import (
     TestConf, create_filter_envs_file,
     get_test_list_and_content_packs_to_install, collect_content_packs_to_install,
-    get_from_version_and_to_version_bounderies, PACKS_DIR, filter_tests, remove_ignored_tests)
+    get_from_version_and_to_version_bounderies, PACKS_DIR, filter_tests, remove_ignored_tests,
+    remove_tests_for_non_supported_packs)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -1161,14 +1163,40 @@ def test_remove_ignored_tests(tests_to_filter, ignored_tests, expected_result, m
         Filtering out ignored tests from a given set of tests.
     Then:
         - Case a: Ensure that the given test was removed from result list
-        - Case b: Ensure that the given appears in the result list
-        - Case c: Ensure that the given appears in the result list
+        - Case b: Ensure that the given test appears in the result list
+        - Case c: Ensure that the given test appears in the result list
     """
     mocker.patch.object(Tests.scripts.collect_tests_and_content_packs.tools, 'get_ignore_pack_skipped_tests',
                         return_value=ignored_tests)
+    mocker.patch('logging.debug')
     res = remove_ignored_tests(tests_to_filter, MOCK_ID_SET)
     assert res == expected_result
+    if ignored_tests:
+        logging.debug.assert_called_once_with("Skipping tests that were ignored via .pack-ignore:\n{}".format(
+            '\n'.join(ignored_tests)))
 
 
-def test_filter_tests():
-    filter_tests()
+@pytest.mark.parametrize('tests_to_filter, should_test_content, expected_result', [
+    ({'fake_test_playbook'}, False, set()),
+    ({'fake_test_playbook'}, True, {'fake_test_playbook'})
+])
+def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_content, expected_result, mocker):
+    """
+        Given:
+            - Case a: test playbook set containing a test that its pack is un-supported and should not be tested.
+            - Case b: test playbook set containing a test that its pack is supported and should  be tested.
+        When:
+            Filtering out un-supported pack-tests from a given set of tests.
+        Then:
+            - Case a: Ensure that the given test was removed from result list
+            - Case b: Ensure that the given test appears in the result list
+        """
+    mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
+                        return_value=should_test_content)
+    mocker.patch('logging.debug')
+    filtered_tests = copy.deepcopy(tests_to_filter)
+    res = remove_tests_for_non_supported_packs(tests_to_filter, MOCK_ID_SET)
+    assert res == expected_result
+    if not should_test_content:
+        logging.debug.assert_called_once_with('The following test playbooks are not supported and will not be tested: \n{} '.format(
+            '\n'.join(filtered_tests)))
