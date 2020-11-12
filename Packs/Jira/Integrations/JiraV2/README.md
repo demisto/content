@@ -204,7 +204,7 @@ Creates a new issue in Jira.
 | priority | The priority name, for example: "High" or "Medium". | Optional | 
 | dueDate | The due date for the issue (in the format: 2018-03-11). | Optional | 
 | assignee | The name of the assignee. | Optional | 
-| reporter | The ID of the reporter. | Optional | 
+| reporter | The account ID of the reporter. | Optional | 
 | parentIssueKey | The parent issue key (if you create a sub-task). | Optional | 
 | parentIssueId | The parent issue ID (if you create a sub-task). | Optional | 
 

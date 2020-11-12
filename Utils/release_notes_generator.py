@@ -20,8 +20,9 @@ PACKS_RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
 
 EMPTY_LINES_REGEX = re.compile(r'\s*-\s*\n')
 IGNORED_LINES_REGEX = re.compile(r'<!-[\W\w]*?-->')
-ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### (\w+)$\n([\w\W]*?)(?=^#### )|^#### (\w+)$\n([\w\W]*)', re.M)
-ENTITY_SECTION_REGEX = re.compile(r'^##### (.+)$\n([\w\W]*?)(?=^##### )|^##### (.+)$\n([\w\W]*)', re.M)
+ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### ([\w ]+)$\n([\w\W]*?)(?=^#### )|^#### ([\w ]+)$\n([\w\W]*)', re.M)
+ENTITY_SECTION_REGEX = re.compile(r'^##### (.+)$\n([\w\W]*?)(?=^##### )|^##### (.+)$\n([\w\W]*)|'
+                                  r'^- \*\*(.+)\*\*$\n([\w\W]*)', re.M)
 
 LAYOUT_TYPE_TO_NAME = {
     "details": "Summary",
@@ -90,12 +91,12 @@ def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
     return name, description
 
 
-def construct_entities_block(entities_data: dict):
+def construct_entities_block(entities_data: dict) -> str:
     """
     convert entities information to a pack release note block
 
     Args:
-        entities_data: dictionary of the form:
+        entities_data (dict): dictionary of the form:
             {
                 Integrations: {
                     Integration1: <description>,
@@ -117,10 +118,11 @@ def construct_entities_block(entities_data: dict):
         pretty_entity_type = re.sub(r'(\w)([A-Z])', r'\1 \2', entity_type)
         release_notes += f'#### {pretty_entity_type}\n'
         for name, description in entities_description.items():
-            if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields'):
-                release_notes += f'- **{name}**\n'
+            if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields',
+                               'Incident Types', 'Indicator Types', 'Incident Fields'):
+                release_notes += f'- **{name}**\n{description}\n'
             else:
-                release_notes += f'##### {name}  \n{description}\n'
+                release_notes += f'##### {name}\n{description}\n'
 
     return release_notes
 
@@ -250,16 +252,52 @@ def get_release_notes_dict(release_notes_files):
     return release_notes_dict, packs_metadata_dict
 
 
-def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict):
+def aggregate_release_notes_for_marketplace(pack_versions_dict: dict):
+    """
+    merge several pack release note versions into a single block - marketplace format.
+
+    Args:
+        pack_versions_dict: a mapping from a pack version to a release notes file content.
+
+    Returns:
+        a single pack release note block
+
+    """
+    pack_release_notes, _ = merge_version_blocks(pack_versions_dict)
+    pack_release_notes = f'{pack_release_notes}\n' if not pack_release_notes.endswith('\n') else pack_release_notes
+    pack_release_notes = f'\n{pack_release_notes}' if not pack_release_notes.startswith('\n') else pack_release_notes
+    return pack_release_notes
+
+
+def aggregate_release_notes(pack_name: str, pack_versions_dict: dict, pack_metadata: dict):
     """
     merge several pack release note versions into a single block.
 
     Args:
         pack_name: pack name
         pack_versions_dict: a mapping from a pack version to a release notes file content.
+        pack_metadata: the pack metadata contents
 
     Returns:
         a single pack release note block
+
+    """
+    pack_release_notes, latest_version = merge_version_blocks(pack_versions_dict)
+    partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
+    return (f'### {pack_name} Pack v{latest_version}{partner}\n'
+            f'{pack_release_notes}')
+
+
+def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
+    """
+    merge several pack release note versions into a single block.
+
+    Args:
+        pack_versions_dict: a mapping from a pack version to a release notes file content.
+
+    Returns:
+        str: a single pack release note block
+        str: the pack's latest version
 
     """
     latest_version = '1.0.0'
@@ -283,20 +321,18 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata
             entity_comments = ENTITY_SECTION_REGEX.findall(entity_section)
             for entity in entity_comments:
                 # name of the script, integration, playbook, etc...
-                entity_name = entity[0] or entity[2]
+                entity_name = entity[0] or entity[2] or entity[4]
                 entity_name = entity_name.replace('__', '')
                 # release notes of the entity
-                entity_comment = entity[1] or entity[3]
+                entity_comment = entity[1] or entity[3] or entity[5]
                 if entity_name in entities_data[entity_type]:
                     entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
                 else:
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
 
-    pack_release_notes = construct_entities_block(entities_data)
+    pack_release_notes = construct_entities_block(entities_data).strip()
 
-    partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
-    return (f'### {pack_name} Pack v{latest_version}{partner}\n'
-            f'{pack_release_notes.strip()}')
+    return pack_release_notes, latest_version
 
 
 def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, packs_metadata_dict, version,
@@ -327,7 +363,7 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
 
     for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
         pack_metadata = packs_metadata_dict[pack_name]
-        pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict, pack_metadata))
+        pack_rn_blocks.append(aggregate_release_notes(pack_name, pack_versions_dict, pack_metadata))
         # for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
         #                                                key=lambda pack_item: LooseVersion(pack_item[0])):
         #     pack_rn_blocks.append(f'### {pack_name} Pack v{pack_version}\n'

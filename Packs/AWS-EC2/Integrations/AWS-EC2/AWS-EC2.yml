@@ -89,7 +89,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -100,7 +102,8 @@ script:
     name: aws-ec2-describe-instances
     outputs:
     - contextPath: AWS.EC2.Instances.AmiLaunchIndex
-      description: The AMI launch index, which can be used to find this instance in the launch group.
+      description: The AMI launch index, which can be used to find this instance in
+        the launch group.
       type: number
     - contextPath: AWS.EC2.Instances.ImageId
       description: The ID of the AMI used to launch the instance.
@@ -115,13 +118,15 @@ script:
       description: The kernel associated with this instance, if applicable.
       type: string
     - contextPath: AWS.EC2.Instances.KeyName
-      description: The name of the key pair, if this instance was launched with an associated key pair.
+      description: The name of the key pair, if this instance was launched with an
+        associated key pair.
       type: string
     - contextPath: AWS.EC2.Instances.LaunchTime
       description: The time the instance was launched.
       type: date
     - contextPath: AWS.EC2.Instances.Monitoring.State
-      description: Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled.
+      description: Indicates whether detailed monitoring is enabled. Otherwise, basic
+        monitoring is enabled.
       type: string
     - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
       description: The Availability Zone of the instance.
@@ -130,7 +135,8 @@ script:
       description: The affinity setting for the instance on the Dedicated Host.
       type: string
     - contextPath: AWS.EC2.Instances.Placement.GroupName
-      description: The name of the placement group the instance is in (for cluster compute instances).
+      description: The name of the placement group the instance is in (for cluster
+        compute instances).
       type: string
     - contextPath: AWS.EC2.Instances.Placement.HostId
       description: he ID of the Dedicated Host on which the instance resides.
@@ -142,7 +148,9 @@ script:
       description: The value is Windows for Windows instances; otherwise blank.
       type: string
     - contextPath: AWS.EC2.Instances.PrivateDnsName
-      description: (IPv4 only) The private DNS hostname name assigned to the instance. This DNS hostname can only be used inside the Amazon EC2 network. This name is not available until the instance enters the running state.
+      description: (IPv4 only) The private DNS hostname name assigned to the instance.
+        This DNS hostname can only be used inside the Amazon EC2 network. This name
+        is not available until the instance enters the running state.
       type: string
     - contextPath: AWS.EC2.Instances.PrivateIpAddress
       description: The private IPv4 address assigned to the instance.
@@ -154,7 +162,8 @@ script:
       description: The type of product code.
       type: string
     - contextPath: AWS.EC2.Instances.PublicDnsName
-      description: (IPv4 only) The public DNS name assigned to the instance. This name is not available until the instance enters the running state.
+      description: (IPv4 only) The public DNS name assigned to the instance. This
+        name is not available until the instance enters the running state.
       type: string
     - contextPath: AWS.EC2.Instances.PublicIpAddress
       description: The public IPv4 address assigned to the instance, if applicable.
@@ -169,7 +178,8 @@ script:
       description: The current state of the instance.
       type: string
     - contextPath: AWS.EC2.Instances.StateTransitionReason
-      description: The reason for the most recent state transition. This might be an empty string.
+      description: The reason for the most recent state transition. This might be
+        an empty string.
       type: string
     - contextPath: AWS.EC2.Instances.SubnetId
       description: The ID of the subnet in which the instance is running.
@@ -196,7 +206,8 @@ script:
       description: The ID of the EBS volume.
       type: string
     - contextPath: AWS.EC2.Instances.ClientToken
-      description: The idempotency token you provided when you launched the instance, if applicable.
+      description: The idempotency token you provided when you launched the instance,
+        if applicable.
       type: string
     - contextPath: AWS.EC2.Instances.EbsOptimized
       description: Indicates whether the instance is optimized for Amazon EBS I/O.
@@ -223,7 +234,8 @@ script:
       description: The ID of the association.
       type: string
     - contextPath: AWS.EC2.Instances.ElasticGpuAssociations.ElasticGpuAssociationState
-      description: The state of the association between the instance and the Elastic GPU.
+      description: The state of the association between the instance and the Elastic
+        GPU.
       type: string
     - contextPath: AWS.EC2.Instances.ElasticGpuAssociations.ElasticGpuAssociationTime
       description: The time the Elastic GPU was associated with the instance.
@@ -235,7 +247,8 @@ script:
       description: The public DNS name.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Association.PublicIp
-      description: The public IP address or Elastic IP address bound to the network interface.
+      description: The public IP address or Elastic IP address bound to the network
+        interface.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment.AttachTime
       description: The time stamp when the attachment initiated.
@@ -244,10 +257,12 @@ script:
       description: The ID of the network interface attachment.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment.DeleteOnTermination
-      description: Indicates whether the network interface is deleted when the instance is terminated.
+      description: Indicates whether the network interface is deleted when the instance
+        is terminated.
       type: boolean
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment.DeviceIndex
-      description: The index of the device on the instance for the network interface attachment.
+      description: The index of the device on the instance for the network interface
+        attachment.
       type: number
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment.Status
       description: The attachment state.
@@ -286,10 +301,12 @@ script:
       description: The public DNS name.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses.Association.PublicIp
-      description: The public IP address or Elastic IP address bound to the network interface.
+      description: The public IP address or Elastic IP address bound to the network
+        interface.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses.Primary
-      description: Indicates whether this IPv4 address is the primary private IP address of the network interface.
+      description: Indicates whether this IPv4 address is the primary private IP address
+        of the network interface.
       type: boolean
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses.PrivateDnsName
       description: The private IPv4 DNS name.
@@ -298,7 +315,8 @@ script:
       description: The private IPv4 address of the network interface.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck
-      description: Indicates whether to validate network traffic to or from this network interface.
+      description: Indicates whether to validate network traffic to or from this network
+        interface.
       type: boolean
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Status
       description: The status of the network interface.
@@ -313,7 +331,8 @@ script:
       description: The device name of the root device volume (for example, /dev/sda1).
       type: string
     - contextPath: AWS.EC2.Instances.RootDeviceType
-      description: The root device type used by the AMI. The AMI can use an EBS volume or an instance store volume.
+      description: The root device type used by the AMI. The AMI can use an EBS volume
+        or an instance store volume.
       type: string
     - contextPath: AWS.EC2.Instances.SecurityGroups.GroupName
       description: The name of the security group.
@@ -322,13 +341,15 @@ script:
       description: The ID of the security group.
       type: string
     - contextPath: AWS.EC2.Instances.SourceDestCheck
-      description: Specifies whether to enable an instance launched in a VPC to perform NAT.
+      description: Specifies whether to enable an instance launched in a VPC to perform
+        NAT.
       type: boolean
     - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
       description: If the request is a Spot Instance request, the ID of the request.
       type: string
     - contextPath: AWS.EC2.Instances.SriovNetSupport
-      description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
+      description: Specifies whether enhanced networking with the Intel 82599 Virtual
+        Function interface is enabled.
       type: string
     - contextPath: AWS.EC2.Instances.StateReason.Code
       description: The reason code for the state change.
@@ -359,13 +380,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership.
+      description: Filters the images by the owner. Specify an AWS account ID, self
+        (owner is the sender of the request), or an AWS owner alias (valid values
+        are amazon | aws-marketplace | microsoft ). Omitting this option returns all
+        images for which you have launch permissions, regardless of ownership.
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs).
+      description: Scopes the images by users with explicit launch permissions. Specify
+        an AWS account ID, self (the sender of the request), or all (public AMIs).
       isArray: false
       name: executableUsers
       required: false
@@ -389,13 +414,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Describes one or more of the images (AMIs, AKIs, and ARIs) available to you. Images available to you include public images, private images that you own, and private images owned by other AWS accounts but for which you have explicit launch permissions.
+    description: Describes one or more of the images (AMIs, AKIs, and ARIs) available
+      to you. Images available to you include public images, private images that you
+      own, and private images owned by other AWS accounts but for which you have explicit
+      launch permissions.
     execution: false
     name: aws-ec2-describe-images
     outputs:
@@ -415,10 +445,13 @@ script:
       description: The type of image.
       type: string
     - contextPath: AWS.EC2.Images.Public
-      description: Indicates whether the image has public launch permissions. The value is true if this image has public launch permissions or false if it has only implicit and explicit launch permissions.
+      description: Indicates whether the image has public launch permissions. The
+        value is true if this image has public launch permissions or false if it has
+        only implicit and explicit launch permissions.
       type: boolean
     - contextPath: AWS.EC2.Images.KernelId
-      description: The kernel associated with the image, if any. Only applicable for machine images.
+      description: The kernel associated with the image, if any. Only applicable for
+        machine images.
       type: string
     - contextPath: AWS.EC2.Images.OwnerId
       description: The AWS account ID of the image owner.
@@ -433,10 +466,12 @@ script:
       description: The type of product code.
       type: string
     - contextPath: AWS.EC2.Images.RamdiskId
-      description: The RAM disk associated with the image, if any. Only applicable for machine images.
+      description: The RAM disk associated with the image, if any. Only applicable
+        for machine images.
       type: string
     - contextPath: AWS.EC2.Images.State
-      description: The current state of the AMI. If the state is available , the image is successfully registered and can be used to launch an instance.
+      description: The current state of the AMI. If the state is available , the image
+        is successfully registered and can be used to launch an instance.
       type: string
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.DeviceName
       description: The device name (for example, /dev/sdh or xvdh).
@@ -451,10 +486,12 @@ script:
       description: Indicates whether the EBS volume is deleted on instance termination.
       type: boolean
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops
-      description: The number of I/O operations per second (IOPS) that the volume supports.
+      description: The number of I/O operations per second (IOPS) that the volume
+        supports.
       type: number
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId
-      description: Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted.
+      description: Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed
+        CMK under which the EBS volume is encrypted.
       type: string
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.SnapshotId
       description: The ID of the snapshot.
@@ -466,7 +503,8 @@ script:
       description: The volume type.
       type: string
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.NoDevice
-      description: Suppresses the specified device included in the block device mapping of the AMI.
+      description: Suppresses the specified device included in the block device mapping
+        of the AMI.
       type: string
     - contextPath: AWS.EC2.Images.Description
       description: The description of the AMI that was provided during image creation.
@@ -478,7 +516,8 @@ script:
       description: The hypervisor type of the image.
       type: string
     - contextPath: AWS.EC2.Images.ImageOwnerAlias
-      description: The AWS account alias (for example, amazon , self ) or the AWS account ID of the AMI owner.
+      description: The AWS account alias (for example, amazon , self ) or the AWS
+        account ID of the AMI owner.
       type: string
     - contextPath: AWS.EC2.Images.Name
       description: The name of the AMI that was provided during image creation.
@@ -487,10 +526,12 @@ script:
       description: The device name of the root device volume (for example, /dev/sda1).
       type: string
     - contextPath: AWS.EC2.Images.RootDeviceType
-      description: The type of root device used by the AMI. The AMI can use an EBS volume or an instance store volume.
+      description: The type of root device used by the AMI. The AMI can use an EBS
+        volume or an instance store volume.
       type: string
     - contextPath: AWS.EC2.Images.SriovNetSupport
-      description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
+      description: Specifies whether enhanced networking with the Intel 82599 Virtual
+        Function interface is enabled.
       type: string
     - contextPath: AWS.EC2.Images.StateReason.Code
       description: The reason code for the state change.
@@ -533,7 +574,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -587,7 +630,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -598,19 +643,23 @@ script:
     name: aws-ec2-describe-addresses
     outputs:
     - contextPath: AWS.EC2.ElasticIPs.InstanceId
-      description: The ID of the instance that the address is associated with (if any).
+      description: The ID of the instance that the address is associated with (if
+        any).
       type: string
     - contextPath: AWS.EC2.ElasticIPs.PublicIp
       description: The Elastic IP address.
       type: string
     - contextPath: AWS.EC2.ElasticIPs.AllocationId
-      description: The ID representing the allocation of the address for use with EC2-VPC.
+      description: The ID representing the allocation of the address for use with
+        EC2-VPC.
       type: string
     - contextPath: AWS.EC2.ElasticIPs.AssociationId
-      description: The ID representing the association of the address with an instance in a VPC.
+      description: The ID representing the association of the address with an instance
+        in a VPC.
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Domain
-      description: dicates whether this Elastic IP address is for use with instances in EC2-Classic (standard) or instances in a VPC.
+      description: dicates whether this Elastic IP address is for use with instances
+        in EC2-Classic (standard) or instances in a VPC.
       type: string
     - contextPath: AWS.EC2.ElasticIPs.NetworkInterfaceId
       description: The ID of the network interface.
@@ -638,7 +687,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns the snapshots owned by the specified owner. Multiple owners can be specified.
+      description: Returns the snapshots owned by the specified owner. Multiple owners
+        can be specified.
       isArray: false
       name: ownerIds
       required: false
@@ -674,7 +724,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -694,7 +746,9 @@ script:
       description: Indicates whether the snapshot is encrypted.
       type: boolean
     - contextPath: AWS.EC2.Snapshots.KmsKeyId
-      description: The full ARN of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the parent volume.
+      description: The full ARN of the AWS Key Management Service (AWS KMS) customer
+        master key (CMK) that was used to protect the volume encryption key for the
+        parent volume.
       type: string
     - contextPath: AWS.EC2.Snapshots.OwnerId
       description: The AWS account ID of the EBS snapshot owner.
@@ -712,7 +766,8 @@ script:
       description: The snapshot state.
       type: string
     - contextPath: AWS.EC2.Snapshots.StateMessage
-      description: this field displays error state details to help you diagnose why the error occurred.
+      description: this field displays error state details to help you diagnose why
+        the error occurred.
       type: string
     - contextPath: AWS.EC2.Snapshots.VolumeId
       description: The ID of the volume that was used to create the snapshot.
@@ -770,7 +825,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -839,7 +896,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -850,7 +909,10 @@ script:
     name: aws-ec2-describe-key-pairs
     outputs:
     - contextPath: AWS.EC2.KeyPairs.KeyFingerprint
-      description: If you used CreateKeyPair to create the key pair, this is the SHA-1 digest of the DER encoded private key. If you used ImportKeyPair to provide AWS the public key, this is the MD5 public key fingerprint as specified in section 4 of RFC4716.
+      description: If you used CreateKeyPair to create the key pair, this is the SHA-1
+        digest of the DER encoded private key. If you used ImportKeyPair to provide
+        AWS the public key, this is the MD5 public key fingerprint as specified in
+        section 4 of RFC4716.
       type: Unknown
     - contextPath: AWS.EC2.KeyPairs.KeyName
       description: The name of the key pair.
@@ -890,7 +952,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -910,7 +974,8 @@ script:
       description: Indicates whether the volume will be encrypted.
       type: boolean
     - contextPath: AWS.EC2.Volumes.KmsKeyId
-      description: The full ARN of the AWS Key Management Service customer master key that was used to protect the volume encryption key for the volume.
+      description: The full ARN of the AWS Key Management Service customer master
+        key that was used to protect the volume encryption key for the volume.
       type: string
     - contextPath: AWS.EC2.Volumes.Size
       description: The snapshot from which the volume was created, if applicable.
@@ -922,10 +987,13 @@ script:
       description: The ID of the volume.
       type: string
     - contextPath: AWS.EC2.Volumes.Iops
-      description: The number of I/O operations per second (IOPS) that the volume supports.
+      description: The number of I/O operations per second (IOPS) that the volume
+        supports.
       type: number
     - contextPath: AWS.EC2.Volumes.VolumeType
-      description: The volume type. This can be gp2 for General Purpose SSD, io1 for Provisioned IOPS SSD, st1 for Throughput Optimized HDD, sc1 for Cold HDD, or standard for Magnetic volumes.
+      description: The volume type. This can be gp2 for General Purpose SSD, io1 for
+        Provisioned IOPS SSD, st1 for Throughput Optimized HDD, sc1 for Cold HDD,
+        or standard for Magnetic volumes.
       type: string
     - contextPath: AWS.EC2.Volumes.Tags.Key
       description: The key of the tag.
@@ -983,7 +1051,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -997,7 +1067,8 @@ script:
       description: The primary IPv4 CIDR block for the VPC.
       type: string
     - contextPath: AWS.EC2.Vpcs.DhcpOptionsId
-      description: The ID of the set of DHCP options you have associated with the VPC.
+      description: The ID of the set of DHCP options you have associated with the
+        VPC.
       type: string
     - contextPath: AWS.EC2.Vpcs.State
       description: The current state of the VPC.
@@ -1073,7 +1144,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -1087,16 +1160,19 @@ script:
       description: The Availability Zone of the subnet.
       type: string
     - contextPath: AWS.EC2.Subnets.AvailableIpAddressCount
-      description: The number of unused private IPv4 addresses in the subnet. Note that the IPv4 addresses for any stopped instances are considered unavailable.
+      description: The number of unused private IPv4 addresses in the subnet. Note
+        that the IPv4 addresses for any stopped instances are considered unavailable.
       type: number
     - contextPath: AWS.EC2.Subnets.CidrBlock
       description: The IPv4 CIDR block assigned to the subnet.
       type: string
     - contextPath: AWS.EC2.Subnets.DefaultForAz
-      description: Indicates whether this is the default subnet for the Availability Zone.
+      description: Indicates whether this is the default subnet for the Availability
+        Zone.
       type: boolean
     - contextPath: AWS.EC2.Subnets.MapPublicIpOnLaunch
-      description: Indicates whether instances launched in this subnet receive a public IPv4 address.
+      description: Indicates whether instances launched in this subnet receive a public
+        IPv4 address.
       type: boolean
     - contextPath: AWS.EC2.Subnets.State
       description: The current state of the subnet.
@@ -1108,7 +1184,8 @@ script:
       description: The ID of the VPC the subnet is in.
       type: string
     - contextPath: AWS.EC2.Subnets.AssignIpv6AddressOnCreation
-      description: Indicates whether a network interface created in this subnet (including a network interface created by RunInstances) receives an IPv6 address.
+      description: Indicates whether a network interface created in this subnet (including
+        a network interface created by RunInstances) receives an IPv6 address.
       type: boolean
     - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.AssociationId
       description: The association ID for the CIDR block.
@@ -1136,7 +1213,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: One or more security group IDs. Required for security groups in a nondefault VPC. Sepereted by comma.
+      description: One or more security group IDs. Required for security groups in
+        a nondefault VPC. Sepereted by comma.
       isArray: false
       name: groupIds
       required: false
@@ -1166,7 +1244,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -1183,7 +1263,8 @@ script:
       description: The name of the security group.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.FromPort
-      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of -1 indicates all ICMP/ICMPv6 types.
+      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        type number. A value of -1 indicates all ICMP/ICMPv6 types.
       type: number
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpProtocol
       description: The IP protocol name (tcp , udp , icmp ) or number.
@@ -1192,25 +1273,30 @@ script:
       description: The IPv4 CIDR range.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpRanges.Description
-      description: A description for the security group rule that references this IPv4 address range.
+      description: A description for the security group rule that references this
+        IPv4 address range.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.Ipv6Ranges.CidrIpv6
       description: The IPv6 CIDR range.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.Ipv6Ranges.Description
-      description: A description for the security group rule that references this IPv6 address range.
+      description: A description for the security group rule that references this
+        IPv6 address range.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.PrefixListIds.Description
-      description: A description for the security group rule that references this prefix list ID.
+      description: A description for the security group rule that references this
+        prefix list ID.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.PrefixListIds.PrefixListId
       description: The ID of the prefix.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.ToPort
-      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code.
+      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        code.
       type: number
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.Description
-      description: A description for the security group rule that references this user ID group pair.
+      description: A description for the security group rule that references this
+        user ID group pair.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.GroupId
       description: The ID of the security group.
@@ -1237,7 +1323,8 @@ script:
       description: The ID of the security group.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.FromPort
-      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number.
+      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        type number.
       type: number
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpProtocol
       description: The IP protocol name (tcp , udp , icmp) or number.
@@ -1246,25 +1333,30 @@ script:
       description: The IPv4 CIDR range.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpRanges.Description
-      description: A description for the security group rule that references this IPv4 address range.
+      description: A description for the security group rule that references this
+        IPv4 address range.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.Ipv6Ranges.CidrIpv6
       description: The IPv6 CIDR range.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.Ipv6Ranges.Description
-      description: A description for the security group rule that references this IPv6 address range.
+      description: A description for the security group rule that references this
+        IPv6 address range.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.PrefixListIds.Description
-      description: A description for the security group rule that references this prefix list ID.
+      description: A description for the security group rule that references this
+        prefix list ID.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.PrefixListIds.PrefixListId
       description: The ID of the prefix.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.ToPort
-      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code.
+      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        code.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.Description
-      description: A description for the security group rule that references this user ID group pair.
+      description: A description for the security group rule that references this
+        user ID group pair.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.GroupId
       description: The ID of the security group.
@@ -1313,7 +1405,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -1327,10 +1421,12 @@ script:
       description: The Elastic IP address.
       type: Unknown
     - contextPath: AWS.EC2.ElasticIPs.AllocationId
-      description: The ID that AWS assigns to represent the allocation of the Elastic IP address for use with instances in a VPC.
+      description: The ID that AWS assigns to represent the allocation of the Elastic
+        IP address for use with instances in a VPC.
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Domain
-      description: Indicates whether this Elastic IP address is for use with instances in EC2-Classic (standard ) or instances in a VPC (vpc).
+      description: Indicates whether this Elastic IP address is for use with instances
+        in EC2-Classic (standard ) or instances in a VPC (vpc).
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Region
       description: The aws region where the elastic IP is located.
@@ -1343,7 +1439,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the instance. For EC2-VPC, you can specify either the instance ID or the network interface ID, but not both. The operation fails if you specify an instance ID unless exactly one network interface is attached.
+      description: The ID of the instance. For EC2-VPC, you can specify either the
+        instance ID or the network interface ID, but not both. The operation fails
+        if you specify an instance ID unless exactly one network interface is attached.
       isArray: false
       name: instanceId
       required: false
@@ -1351,7 +1449,12 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For a VPC in an EC2-Classic account, specify true to allow an Elastic IP address that is already associated with an instance or network interface to be reassociated with the specified instance or network interface. Otherwise, the operation fails. In a VPC in an EC2-VPC-only account, reassociation is automatic, therefore you can specify false to ensure the operation fails if the Elastic IP address is already associated with another resource.
+      description: For a VPC in an EC2-Classic account, specify true to allow an Elastic
+        IP address that is already associated with an instance or network interface
+        to be reassociated with the specified instance or network interface. Otherwise,
+        the operation fails. In a VPC in an EC2-VPC-only account, reassociation is
+        automatic, therefore you can specify false to ensure the operation fails if
+        the Elastic IP address is already associated with another resource.
       isArray: false
       name: allowReassociation
       predefined:
@@ -1360,13 +1463,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the network interface. If the instance has more than one network interface, you must specify a network interface ID.
+      description: The ID of the network interface. If the instance has more than
+        one network interface, you must specify a network interface ID.
       isArray: false
       name: networkInterfaceId
       required: false
       secret: false
     - default: false
-      description: The primary or secondary private IP address to associate with the Elastic IP address. If no private IP address is specified, the Elastic IP address is associated with the primary private IP address.
+      description: The primary or secondary private IP address to associate with the
+        Elastic IP address. If no private IP address is specified, the Elastic IP
+        address is associated with the primary private IP address.
       isArray: false
       name: privateIpAddress
       required: false
@@ -1390,7 +1496,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -1401,7 +1509,8 @@ script:
     name: aws-ec2-associate-address
     outputs:
     - contextPath: AWS.EC2.ElasticIPs.AssociationId
-      description: The ID that represents the association of the Elastic IP address with an instance.
+      description: The ID that represents the association of the Elastic IP address
+        with an instance.
       type: string
   - arguments:
     - default: false
@@ -1441,13 +1550,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
+    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You
+      can use snapshots for backups, to make copies of EBS volumes, and to save data
+      before shutting down an instance.
     execution: true
     name: aws-ec2-create-snapshot
     outputs:
@@ -1461,7 +1574,9 @@ script:
       description: Indicates whether the snapshot is encrypted.
       type: number
     - contextPath: AWS.EC2.Snapshots.KmsKeyId
-      description: The full ARN of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the parent volume.
+      description: The full ARN of the AWS Key Management Service (AWS KMS) customer
+        master key (CMK) that was used to protect the volume encryption key for the
+        parent volume.
       type: string
     - contextPath: AWS.EC2.Snapshots.OwnerId
       description: The AWS account ID of the EBS snapshot owner.
@@ -1479,7 +1594,8 @@ script:
       description: The snapshot state.
       type: string
     - contextPath: AWS.EC2.Snapshots.StateMessage
-      description: this field displays error state details to help you diagnose why the error occurred.
+      description: this field displays error state details to help you diagnose why
+        the error occurred.
       type: string
     - contextPath: AWS.EC2.Snapshots.VolumeId
       description: The ID of the volume that was used to create the snapshot.
@@ -1522,7 +1638,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -1552,7 +1670,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image. If the noReboot option is set, Amazon EC2 wont shut down the instance before creating the image. When this option is used, file system integrity on the created image cant be guaranteed.
+      description: By default, Amazon EC2 attempts to shut down and reboot the instance
+        before creating the image. If the noReboot option is set, Amazon EC2 wont
+        shut down the instance before creating the image. When this option is used,
+        file system integrity on the created image cant be guaranteed.
       isArray: false
       name: noReboot
       predefined:
@@ -1579,13 +1700,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance that is either running or stopped.
+    description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
+      that is either running or stopped.
     execution: true
     name: aws-ec2-create-image
     outputs:
@@ -1627,7 +1751,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -1650,7 +1776,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Target EBS volume type of the volume to be modified  The API does not support modifications for volume type standard . You also cannot change the type of a volume to standard .
+      description: Target EBS volume type of the volume to be modified  The API does
+        not support modifications for volume type standard . You also cannot change
+        the type of a volume to standard .
       isArray: false
       name: volumeType
       required: false
@@ -1680,13 +1808,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+    description: You can modify several parameters of an existing EBS volume, including
+      volume size, volume type, and IOPS capacity.
     execution: true
     name: aws-ec2-modify-volume
     outputs:
@@ -1694,7 +1825,8 @@ script:
       description: ID of the volume being modified.
       type: string
     - contextPath: AWS.EC2.Volumes.Modification.ModificationState
-      description: Current state of modification. Modification state is null for unmodified. volumes.
+      description: Current state of modification. Modification state is null for unmodified.
+        volumes.
       type: string
     - contextPath: AWS.EC2.Volumes.Modification.StatusMessage
       description: Generic status message on modification progress or failure.
@@ -1758,13 +1890,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources.
+    description: Adds or overwrites one or more tags for the specified Amazon EC2
+      resource or resources.
     execution: true
     name: aws-ec2-create-tags
   - arguments:
@@ -1793,13 +1928,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Disassociates an Elastic IP address from the instance or network interface its associated with.
+    description: Disassociates an Elastic IP address from the instance or network
+      interface its associated with.
     execution: true
     name: aws-ec2-disassociate-address
   - arguments:
@@ -1828,7 +1966,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -1863,7 +2003,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -1898,7 +2040,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -1933,18 +2077,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Shuts down one or more instances. This operation is idempotent; if you terminate an instance more than once, each call succeeds.
+    description: Shuts down one or more instances. This operation is idempotent; if
+      you terminate an instance more than once, each call succeeds.
     execution: true
     name: aws-ec2-terminate-instances
   - arguments:
     - default: false
-      description: The Availability Zone in which to create the volume. Use DescribeAvailabilityZones to list the Availability Zones that are currently available to you.
+      description: The Availability Zone in which to create the volume. Use DescribeAvailabilityZones
+        to list the Availability Zones that are currently available to you.
       isArray: false
       name: availabilityZone
       required: true
@@ -1960,13 +2108,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of I/O operations per second (IOPS) to provision for the volume, with a maximum ratio of 50 IOPS/GiB. Range is 100 to 32000 IOPS for volumes in most regions.
+      description: The number of I/O operations per second (IOPS) to provision for
+        the volume, with a maximum ratio of 50 IOPS/GiB. Range is 100 to 32000 IOPS
+        for volumes in most regions.
       isArray: false
       name: iops
       required: false
       secret: false
     - default: false
-      description: An identifier for the AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. This parameter is only required if you want to use a non-default CMK; if this parameter is not specified, the default CMK for EBS is used. If a KmsKeyId is specified, the Encrypted flag must also be set.
+      description: An identifier for the AWS Key Management Service (AWS KMS) customer
+        master key (CMK) to use when creating the encrypted volume. This parameter
+        is only required if you want to use a non-default CMK; if this parameter is
+        not specified, the default CMK for EBS is used. If a KmsKeyId is specified,
+        the Encrypted flag must also be set.
       isArray: false
       name: kmsKeyId
       required: false
@@ -2021,13 +2175,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+    description: Creates an EBS volume that can be attached to an instance in the
+      same Availability Zone.
     execution: true
     name: aws-ec2-create-volume
     outputs:
@@ -2041,7 +2198,9 @@ script:
       description: Indicates whether the volume will be encrypted.
       type: boolean
     - contextPath: AWS.EC2.Volumes.KmsKeyId
-      description: The full ARN of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the volume.
+      description: The full ARN of the AWS Key Management Service (AWS KMS) customer
+        master key (CMK) that was used to protect the volume encryption key for the
+        volume.
       type: string
     - contextPath: AWS.EC2.Volumes.Size
       description: The size of the volume, in GiBs.
@@ -2056,10 +2215,13 @@ script:
       description: The ID of the volume.
       type: string
     - contextPath: AWS.EC2.Volumes.Iops
-      description: The number of I/O operations per second (IOPS) that the volume supports.
+      description: The number of I/O operations per second (IOPS) that the volume
+        supports.
       type: number
     - contextPath: AWS.EC2.Volumes.VolumeType
-      description: The volume type. This can be gp2 for General Purpose SSD, io1 for Provisioned IOPS SSD, st1 for Throughput Optimized HDD, sc1 for Cold HDD, or standard for Magnetic volumes.
+      description: The volume type. This can be gp2 for General Purpose SSD, io1 for
+        Provisioned IOPS SSD, st1 for Throughput Optimized HDD, sc1 for Cold HDD,
+        or standard for Magnetic volumes.
       type: string
     - contextPath: AWS.EC2.Volumes.Tags.Key
       description: The key of the tag.
@@ -2081,7 +2243,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the EBS volume. The volume and instance must be within the same Availability Zone.
+      description: The ID of the EBS volume. The volume and instance must be within
+        the same Availability Zone.
       isArray: false
       name: volumeId
       required: true
@@ -2105,13 +2268,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+    description: Attaches an EBS volume to a running or stopped instance and exposes
+      it to the instance with the specified device name.
     execution: true
     name: aws-ec2-attach-volume
     outputs:
@@ -2141,7 +2307,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Forces detachment if the previous detachment attempt did not occur cleanly. This option can lead to data loss or a corrupted file system. Use this option only as a last resort to detach a volume from a failed instance.
+      description: Forces detachment if the previous detachment attempt did not occur
+        cleanly. This option can lead to data loss or a corrupted file system. Use
+        this option only as a last resort to detach a volume from a failed instance.
       isArray: false
       name: force
       required: false
@@ -2177,7 +2345,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -2231,13 +2401,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+    description: Deletes the specified EBS volume. The volume must be in the available
+      state (not attached to an instance).
     execution: true
     name: aws-ec2-delete-volume
   - arguments:
@@ -2249,7 +2422,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the AMI, which you can get by calling DescribeImages . An AMI is required to launch an instance and must be specified here or in a launch template.
+      description: The ID of the AMI, which you can get by calling DescribeImages
+        . An AMI is required to launch an instance and must be specified here or in
+        a launch template.
       isArray: false
       name: imageId
       required: false
@@ -2267,7 +2442,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: One or more security group names. For a nondefault VPC, you must use security group IDs instead.
+      description: One or more security group names. For a nondefault VPC, you must
+        use security group IDs instead.
       isArray: false
       name: securityGroups
       required: false
@@ -2279,14 +2455,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user data to make available to the instance.This value will be base64 encoded automatically. Do not base64 encode this value prior to performing the operation.
+      description: The user data to make available to the instance.This value will
+        be base64 encoded automatically. Do not base64 encode this value prior to
+        performing the operation.
       isArray: false
       name: userData
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If you set this parameter to true , you cant terminate the instance using the Amazon EC2 console, CLI, or API.
+      description: If you set this parameter to true , you cant terminate the instance
+        using the Amazon EC2 console, CLI, or API.
       isArray: false
       name: disableApiTermination
       predefined:
@@ -2295,19 +2474,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Amazon Resource Name (ARN) of the instance profile. Both iamInstanceProfileArn and iamInstanceProfile are required if you would like to associate an instance profile.
+      description: The Amazon Resource Name (ARN) of the instance profile. Both iamInstanceProfileArn
+        and iamInstanceProfile are required if you would like to associate an instance
+        profile.
       isArray: false
       name: iamInstanceProfileArn
       required: false
       secret: false
     - default: false
-      description: The name of the instance profile. Both iamInstanceProfileArn and iamInstanceProfile are required if you would like to associate an instance profile.
+      description: The name of the instance profile. Both iamInstanceProfileArn and
+        iamInstanceProfile are required if you would like to associate an instance
+        profile.
       isArray: false
       name: iamInstanceProfileName
       required: false
       secret: false
     - default: false
-      description: The name of the key pair. Warning - If you do not specify a key pair, you cant connect to the instance unless you choose an AMI that is configured to allow users another way to log in.
+      description: The name of the key pair. Warning - If you do not specify a key
+        pair, you cant connect to the instance unless you choose an AMI that is configured
+        to allow users another way to log in.
       isArray: false
       name: keyName
       required: false
@@ -2348,7 +2533,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of I/O operations per second (IOPS) that the volume supports.
+      description: The number of I/O operations per second (IOPS) that the volume
+        supports.
       isArray: false
       name: ebsIops
       required: false
@@ -2364,7 +2550,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted.
+      description: Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed
+        CMK under which the EBS volume is encrypted.
       isArray: false
       name: ebsKmsKeyId
       required: false
@@ -2382,13 +2569,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the launch template. The launch template to use to launch the instances. Any parameters that you specify in RunInstances override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both.
+      description: The ID of the launch template. The launch template to use to launch
+        the instances. Any parameters that you specify in RunInstances override the
+        same parameters in the launch template. You can specify either the name or
+        ID of a launch template, but not both.
       isArray: false
       name: launchTemplateId
       required: false
       secret: false
     - default: false
-      description: The name of the launch template. The launch template to use to launch the instances. Any parameters that you specify in RunInstances override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both.
+      description: The name of the launch template. The launch template to use to
+        launch the instances. Any parameters that you specify in RunInstances override
+        the same parameters in the launch template. You can specify either the name
+        or ID of a launch template, but not both.
       isArray: false
       name: launchTemplateName
       required: false
@@ -2424,18 +2617,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Launches the specified number of instances using an AMI for which you have permissions. You can create a launch template , which is a resource that contains the parameters to launch an instance. When you launch an instance using RunInstances , you can specify the launch template instead of specifying the launch parameters. An instance is ready for you to use when its in the running state. You can check the state of your instance using DescribeInstances.
+    description: Launches the specified number of instances using an AMI for which
+      you have permissions. You can create a launch template , which is a resource
+      that contains the parameters to launch an instance. When you launch an instance
+      using RunInstances , you can specify the launch template instead of specifying
+      the launch parameters. An instance is ready for you to use when its in the running
+      state. You can check the state of your instance using DescribeInstances.
     execution: true
     name: aws-ec2-run-instances
     outputs:
     - contextPath: AWS.EC2.Instances.AmiLaunchIndex
-      description: The AMI launch index, which can be used to find this instance in the launch group.
+      description: The AMI launch index, which can be used to find this instance in
+        the launch group.
       type: number
     - contextPath: AWS.EC2.Instances.ImageId
       description: The ID of the AMI used to launch the instance.
@@ -2450,13 +2651,15 @@ script:
       description: The kernel associated with this instance, if applicable.
       type: string
     - contextPath: AWS.EC2.Instances.KeyName
-      description: The name of the key pair, if this instance was launched with an associated key pair.
+      description: The name of the key pair, if this instance was launched with an
+        associated key pair.
       type: string
     - contextPath: AWS.EC2.Instances.LaunchTime
       description: The time the instance was launched.
       type: date
     - contextPath: AWS.EC2.Instances.Monitoring.State
-      description: Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled.
+      description: Indicates whether detailed monitoring is enabled. Otherwise, basic
+        monitoring is enabled.
       type: string
     - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
       description: The Availability Zone of the instance.
@@ -2465,7 +2668,8 @@ script:
       description: The affinity setting for the instance on the Dedicated Host.
       type: string
     - contextPath: AWS.EC2.Instances.Placement.GroupName
-      description: The name of the placement group the instance is in (for cluster compute instances).
+      description: The name of the placement group the instance is in (for cluster
+        compute instances).
       type: string
     - contextPath: AWS.EC2.Instances.Placement.HostId
       description: he ID of the Dedicated Host on which the instance resides.
@@ -2477,7 +2681,9 @@ script:
       description: The value is Windows for Windows instances; otherwise blank.
       type: string
     - contextPath: AWS.EC2.Instances.PrivateDnsName
-      description: (IPv4 only) The private DNS hostname name assigned to the instance. This DNS hostname can only be used inside the Amazon EC2 network. This name is not available until the instance enters the running state.
+      description: (IPv4 only) The private DNS hostname name assigned to the instance.
+        This DNS hostname can only be used inside the Amazon EC2 network. This name
+        is not available until the instance enters the running state.
       type: string
     - contextPath: AWS.EC2.Instances.PrivateIpAddress
       description: The private IPv4 address assigned to the instance.
@@ -2489,7 +2695,8 @@ script:
       description: The type of product code.
       type: string
     - contextPath: AWS.EC2.Instances.PublicDnsName
-      description: (IPv4 only) The public DNS name assigned to the instance. This name is not available until the instance enters the running state.
+      description: (IPv4 only) The public DNS name assigned to the instance. This
+        name is not available until the instance enters the running state.
       type: string
     - contextPath: AWS.EC2.Instances.PublicIpAddress
       description: The public IPv4 address assigned to the instance, if applicable.
@@ -2504,7 +2711,8 @@ script:
       description: The current state of the instance.
       type: string
     - contextPath: AWS.EC2.Instances.StateTransitionReason
-      description: The reason for the most recent state transition. This might be an empty string.
+      description: The reason for the most recent state transition. This might be
+        an empty string.
       type: string
     - contextPath: AWS.EC2.Instances.SubnetId
       description: The ID of the subnet in which the instance is running.
@@ -2531,7 +2739,8 @@ script:
       description: The ID of the EBS volume.
       type: string
     - contextPath: AWS.EC2.Instances.ClientToken
-      description: The idempotency token you provided when you launched the instance, if applicable.
+      description: The idempotency token you provided when you launched the instance,
+        if applicable.
       type: string
     - contextPath: AWS.EC2.Instances.EbsOptimized
       description: Indicates whether the instance is optimized for Amazon EBS I/O.
@@ -2558,7 +2767,8 @@ script:
       description: The ID of the association.
       type: string
     - contextPath: AWS.EC2.Instances.ElasticGpuAssociations.ElasticGpuAssociationState
-      description: The state of the association between the instance and the Elastic GPU.
+      description: The state of the association between the instance and the Elastic
+        GPU.
       type: string
     - contextPath: AWS.EC2.Instances.ElasticGpuAssociations.ElasticGpuAssociationTime
       description: The time the Elastic GPU was associated with the instance.
@@ -2570,7 +2780,8 @@ script:
       description: The public DNS name.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Association.PublicIp
-      description: The public IP address or Elastic IP address bound to the network interface.
+      description: The public IP address or Elastic IP address bound to the network
+        interface.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment.AttachTime
       description: The time stamp when the attachment initiated.
@@ -2579,10 +2790,12 @@ script:
       description: The ID of the network interface attachment.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment.DeleteOnTermination
-      description: Indicates whether the network interface is deleted when the instance is terminated.
+      description: Indicates whether the network interface is deleted when the instance
+        is terminated.
       type: boolean
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment.DeviceIndex
-      description: The index of the device on the instance for the network interface attachment.
+      description: The index of the device on the instance for the network interface
+        attachment.
       type: number
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment.Status
       description: The attachment state.
@@ -2621,10 +2834,12 @@ script:
       description: The public DNS name.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses.Association.PublicIp
-      description: The public IP address or Elastic IP address bound to the network interface.
+      description: The public IP address or Elastic IP address bound to the network
+        interface.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses.Primary
-      description: Indicates whether this IPv4 address is the primary private IP address of the network interface.
+      description: Indicates whether this IPv4 address is the primary private IP address
+        of the network interface.
       type: boolean
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses.PrivateDnsName
       description: The private IPv4 DNS name.
@@ -2633,7 +2848,8 @@ script:
       description: The private IPv4 address of the network interface.
       type: string
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck
-      description: Indicates whether to validate network traffic to or from this network interface.
+      description: Indicates whether to validate network traffic to or from this network
+        interface.
       type: boolean
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Status
       description: The status of the network interface.
@@ -2648,7 +2864,8 @@ script:
       description: The device name of the root device volume (for example, /dev/sda1).
       type: string
     - contextPath: AWS.EC2.Instances.RootDeviceType
-      description: The root device type used by the AMI. The AMI can use an EBS volume or an instance store volume.
+      description: The root device type used by the AMI. The AMI can use an EBS volume
+        or an instance store volume.
       type: string
     - contextPath: AWS.EC2.Instances.SecurityGroups.GroupName
       description: The name of the security group.
@@ -2657,13 +2874,15 @@ script:
       description: The ID of the security group.
       type: string
     - contextPath: AWS.EC2.Instances.SourceDestCheck
-      description: Specifies whether to enable an instance launched in a VPC to perform NAT.
+      description: Specifies whether to enable an instance launched in a VPC to perform
+        NAT.
       type: boolean
     - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
       description: If the request is a Spot Instance request, the ID of the request.
       type: string
     - contextPath: AWS.EC2.Instances.SriovNetSupport
-      description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
+      description: Specifies whether enhanced networking with the Intel 82599 Virtual
+        Function interface is enabled.
       type: string
     - contextPath: AWS.EC2.Instances.StateReason.Code
       description: The reason code for the state change.
@@ -2694,7 +2913,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
       isArray: false
       name: waiterDelay
       required: false
@@ -2724,13 +2944,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: A waiter function that runs every 15  seconds until a successful state is reached.
+    description: A waiter function that runs every 15  seconds until a successful
+      state is reached.
     execution: false
     name: aws-ec2-waiter-instance-running
   - arguments:
@@ -2747,7 +2970,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
       isArray: false
       name: waiterDelay
       required: false
@@ -2777,13 +3001,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: A waiter function that runs every 15  seconds until a successful state is reached
+    description: A waiter function that runs every 15  seconds until a successful
+      state is reached
     execution: false
     name: aws-ec2-waiter-instance-status-ok
   - arguments:
@@ -2800,7 +3027,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
       isArray: false
       name: waiterDelay
       required: false
@@ -2830,13 +3058,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: A waiter function that runs every 15  seconds until a successful state is reached
+    description: A waiter function that runs every 15  seconds until a successful
+      state is reached
     execution: false
     name: aws-ec2-waiter-instance-stopped
   - arguments:
@@ -2853,7 +3084,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
       isArray: false
       name: waiterDelay
       required: false
@@ -2883,13 +3115,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: A waiter function that runs every 15  seconds until a successful state is reached
+    description: A waiter function that runs every 15  seconds until a successful
+      state is reached
     execution: false
     name: aws-ec2-waiter-instance-terminated
   - arguments:
@@ -2906,19 +3141,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership.
+      description: Filters the images by the owner. Specify an AWS account ID, self
+        (owner is the sender of the request), or an AWS owner alias (valid values
+        are amazon | aws-marketplace | microsoft ). Omitting this option returns all
+        images for which you have launch permissions, regardless of ownership.
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs).
+      description: Scopes the images by users with explicit launch permissions. Specify
+        an AWS account ID, self (the sender of the request), or all (public AMIs).
       isArray: false
       name: executableUsers
       required: false
       secret: false
     - default: false
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
       isArray: false
       name: waiterDelay
       required: false
@@ -2948,7 +3188,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -2965,7 +3207,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns the snapshots owned by the specified owner. Multiple owners can be specified. Sperated by comma.
+      description: Returns the snapshots owned by the specified owner. Multiple owners
+        can be specified. Sperated by comma.
       isArray: false
       name: ownerIds
       required: false
@@ -2983,7 +3226,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
       isArray: false
       name: waiterDelay
       required: false
@@ -3013,7 +3257,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -3030,13 +3276,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership.
+      description: Filters the images by the owner. Specify an AWS account ID, self
+        (owner is the sender of the request), or an AWS owner alias (valid values
+        are amazon | aws-marketplace | microsoft ). Omitting this option returns all
+        images for which you have launch permissions, regardless of ownership.
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs).
+      description: Scopes the images by users with explicit launch permissions. Specify
+        an AWS account ID, self (the sender of the request), or all (public AMIs).
       isArray: false
       name: executableUsers
       required: false
@@ -3060,7 +3310,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -3086,10 +3338,13 @@ script:
       description: The type of image.
       type: string
     - contextPath: AWS.EC2.Images.Public
-      description: Indicates whether the image has public launch permissions. The value is true if this image has public launch permissions or false if it has only implicit and explicit launch permissions.
+      description: Indicates whether the image has public launch permissions. The
+        value is true if this image has public launch permissions or false if it has
+        only implicit and explicit launch permissions.
       type: boolean
     - contextPath: AWS.EC2.Images.KernelId
-      description: The kernel associated with the image, if any. Only applicable for machine images.
+      description: The kernel associated with the image, if any. Only applicable for
+        machine images.
       type: string
     - contextPath: AWS.EC2.Images.OwnerId
       description: The AWS account ID of the image owner.
@@ -3104,10 +3359,12 @@ script:
       description: The type of product code.
       type: string
     - contextPath: AWS.EC2.Images.RamdiskId
-      description: The RAM disk associated with the image, if any. Only applicable for machine images.
+      description: The RAM disk associated with the image, if any. Only applicable
+        for machine images.
       type: string
     - contextPath: AWS.EC2.Images.State
-      description: The current state of the AMI. If the state is available , the image is successfully registered and can be used to launch an instance.
+      description: The current state of the AMI. If the state is available , the image
+        is successfully registered and can be used to launch an instance.
       type: string
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.DeviceName
       description: The device name (for example, /dev/sdh or xvdh ).
@@ -3122,10 +3379,12 @@ script:
       description: Indicates whether the EBS volume is deleted on instance termination.
       type: boolean
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops
-      description: The number of I/O operations per second (IOPS) that the volume supports.
+      description: The number of I/O operations per second (IOPS) that the volume
+        supports.
       type: number
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId
-      description: Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted.
+      description: Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed
+        CMK under which the EBS volume is encrypted.
       type: string
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.SnapshotId
       description: The ID of the snapshot.
@@ -3137,7 +3396,8 @@ script:
       description: The volume type
       type: string
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.NoDevice
-      description: Suppresses the specified device included in the block device mapping of the AMI.
+      description: Suppresses the specified device included in the block device mapping
+        of the AMI.
       type: string
     - contextPath: AWS.EC2.Images.Description
       description: The description of the AMI that was provided during image creation.
@@ -3149,7 +3409,8 @@ script:
       description: The hypervisor type of the image.
       type: string
     - contextPath: AWS.EC2.Images.ImageOwnerAlias
-      description: The AWS account alias (for example, amazon , self ) or the AWS account ID of the AMI owner.
+      description: The AWS account alias (for example, amazon , self ) or the AWS
+        account ID of the AMI owner.
       type: string
     - contextPath: AWS.EC2.Images.Name
       description: The name of the AMI that was provided during image creation.
@@ -3158,10 +3419,12 @@ script:
       description: The device name of the root device volume (for example, /dev/sda1).
       type: string
     - contextPath: AWS.EC2.Images.RootDeviceType
-      description: The type of root device used by the AMI. The AMI can use an EBS volume or an instance store volume.
+      description: The type of root device used by the AMI. The AMI can use an EBS
+        volume or an instance store volume.
       type: string
     - contextPath: AWS.EC2.Images.SriovNetSupport
-      description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
+      description: Specifies whether enhanced networking with the Intel 82599 Virtual
+        Function interface is enabled.
       type: string
     - contextPath: AWS.EC2.Images.StateReason.Code
       description: The reason code for the state change.
@@ -3216,7 +3479,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -3246,7 +3511,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: default VPC only.  The name of the security group. You can specify either the security group name or the security group ID.
+      description: default VPC only.  The name of the security group. You can specify
+        either the security group name or the security group ID.
       isArray: false
       name: groupName
       required: false
@@ -3270,7 +3536,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -3281,7 +3549,9 @@ script:
     name: aws-ec2-delete-security-group
   - arguments:
     - default: false
-      description: The ID of the security group. You must specify either the security group ID or the security group name in the request. For security groups in a nondefault VPC, you must specify the security group ID.
+      description: The ID of the security group. You must specify either the security
+        group ID or the security group name in the request. For security groups in
+        a nondefault VPC, you must specify the security group ID.
       isArray: false
       name: groupId
       required: true
@@ -3294,8 +3564,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The end of port range for the TCP and UDP protocols. In case
-        ipProtocol is specified, this argument will be ignored.
+      description: The end of port range for the TCP and UDP protocols. In case ipProtocol
+        is specified, this argument will be ignored.
       isArray: false
       name: toPort
       required: false
@@ -3307,13 +3577,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify all protocols.
+      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify
+        all protocols.
       isArray: false
       name: ipProtocol
       required: false
       secret: false
     - default: false
-      description: The name of the source security group. The source security group must be in the same VPC.
+      description: The name of the source security group. The source security group
+        must be in the same VPC.
       isArray: false
       name: sourceSecurityGroupName
       required: false
@@ -3337,13 +3609,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     - default: false
-      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes.
+      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify
+        all ICMP/ICMPv6 types, you must specify all codes.
       isArray: false
       name: IpPermissionsfromPort
       required: false
@@ -3355,13 +3631,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all codes.
+      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6
+        types, you must specify all codes.
       isArray: false
       name: IpPermissionsToPort
       required: false
       secret: false
     - default: false
-      description: The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length.
+      description: The IPv4 CIDR range. You can either specify a CIDR range or a source
+        security group, not both. To specify a single IPv4 address, use the /32 prefix
+        length.
       isArray: false
       name: IpRangesCidrIp
       required: false
@@ -3376,7 +3656,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length.
+      description: The IPv6 CIDR range. You can either specify a CIDR range or a source
+        security group, not both. To specify a single IPv6 address, use the /128 prefix
+        length.
       isArray: false
       name: Ipv6RangesCidrIp
       required: false
@@ -3421,7 +3703,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the security group. In a request, use this parameter for a security group in EC2-Classic or a default VPC only. For a security group in a nondefault VPC, use the security group ID.
+      description: The name of the security group. In a request, use this parameter
+        for a security group in EC2-Classic or a default VPC only. For a security
+        group in a nondefault VPC, use the security group ID.
       isArray: false
       name: UserIdGroupPairsGroupName
       required: false
@@ -3469,8 +3753,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The end of port range for the TCP and UDP protocols. In case
-        ipProtocol is specified, this argument will be ignored.
+      description: The end of port range for the TCP and UDP protocols. In case ipProtocol
+        is specified, this argument will be ignored.
       isArray: false
       name: toPort
       required: false
@@ -3482,13 +3766,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IP protocol name (tcp , udp , icmp) or number. Use -1 to specify all protocols.
+      description: The IP protocol name (tcp , udp , icmp) or number. Use -1 to specify
+        all protocols.
       isArray: false
       name: ipProtocol
       required: false
       secret: false
     - default: false
-      description: The name of the source security group. The source security group must be in the same VPC.
+      description: The name of the source security group. The source security group
+        must be in the same VPC.
       isArray: false
       name: sourceSecurityGroupName
       required: false
@@ -3512,13 +3798,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
+    description: Removes egress rule from a security group. To remove a rule, the
+      values that you specify (for example, ports) must match the existing rule's
+      values exactly.
     execution: true
     name: aws-ec2-revoke-security-group-ingress-rule
   - arguments:
@@ -3548,7 +3838,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether the destination snapshots of the copied image should be encrypted. The default CMK for EBS is used unless a non-default AWS Key Management Service (AWS KMS) CMK is specified with KmsKeyId .
+      description: Specifies whether the destination snapshots of the copied image
+        should be encrypted. The default CMK for EBS is used unless a non-default
+        AWS Key Management Service (AWS KMS) CMK is specified with KmsKeyId .
       isArray: false
       name: encrypted
       predefined:
@@ -3557,13 +3849,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: An identifier for the AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. This parameter is only required if you want to use a non-default CMK; if this parameter is not specified, the default CMK for EBS is used. If a KmsKeyId is specified, the Encrypted flag must also be set.
+      description: An identifier for the AWS Key Management Service (AWS KMS) customer
+        master key (CMK) to use when creating the encrypted volume. This parameter
+        is only required if you want to use a non-default CMK; if this parameter is
+        not specified, the default CMK for EBS is used. If a KmsKeyId is specified,
+        the Encrypted flag must also be set.
       isArray: false
       name: kmsKeyId
       required: false
       secret: false
     - default: false
-      description: nique, case-sensitive identifier you provide to ensure idempotency of the request.
+      description: nique, case-sensitive identifier you provide to ensure idempotency
+        of the request.
       isArray: false
       name: clientToken
       required: false
@@ -3587,13 +3884,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Initiates the copy of an AMI from the specified source region to the current region.
+    description: Initiates the copy of an AMI from the specified source region to
+      the current region.
     execution: true
     name: aws-ec2-copy-image
     outputs:
@@ -3623,13 +3923,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' Specifies whether the destination snapshot should be encrypted. You can encrypt a copy of an unencrypted snapshot using this flag, but you cannot use it to create an unencrypted copy from an encrypted snapshot. Your default CMK for EBS is used unless a non-default AWS Key Management Service (AWS KMS) CMK is specified with KmsKeyId .'
+      description: ' Specifies whether the destination snapshot should be encrypted.
+        You can encrypt a copy of an unencrypted snapshot using this flag, but you
+        cannot use it to create an unencrypted copy from an encrypted snapshot. Your
+        default CMK for EBS is used unless a non-default AWS Key Management Service
+        (AWS KMS) CMK is specified with KmsKeyId .'
       isArray: false
       name: encrypted
       required: false
       secret: false
     - default: false
-      description: An identifier for the AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. This parameter is only required if you want to use a non-default CMK; if this parameter is not specified, the default CMK for EBS is used. If a KmsKeyId is specified, the Encrypted flag must also be set.
+      description: An identifier for the AWS Key Management Service (AWS KMS) customer
+        master key (CMK) to use when creating the encrypted volume. This parameter
+        is only required if you want to use a non-default CMK; if this parameter is
+        not specified, the default CMK for EBS is used. If a KmsKeyId is specified,
+        the Encrypted flag must also be set.
       isArray: false
       name: kmsKeyId
       required: false
@@ -3653,13 +3961,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy the snapshot within the same region or from one region to another.
+    description: Copies a point-in-time snapshot of an EBS volume and stores it in
+      Amazon S3. You can copy the snapshot within the same region or from one region
+      to another.
     execution: true
     name: aws-ec2-copy-snapshot
     outputs:
@@ -3711,7 +4023,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -3755,7 +4069,9 @@ script:
       description: The usage price of the Reserved Instance, per hour.
       type: number
     - contextPath: AWS.EC2.ReservedInstances.CurrencyCode
-      description: The currency of the Reserved Instance. It's specified using ISO 4217 standard currency codes. At this time, the only supported currency is USD .
+      description: The currency of the Reserved Instance. It's specified using ISO
+        4217 standard currency codes. At this time, the only supported currency is
+        USD .
       type: string
     - contextPath: AWS.EC2.ReservedInstances.InstanceTenancy
       description: The tenancy of the instance.
@@ -3810,7 +4126,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -3824,7 +4142,8 @@ script:
       description: The ID of the instance.
       type: string
     - contextPath: AWS.EC2.Instances.Monitoring.State
-      description: Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled.
+      description: Indicates whether detailed monitoring is enabled. Otherwise, basic
+        monitoring is enabled.
       type: string
   - arguments:
     - default: false
@@ -3852,7 +4171,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -3866,7 +4187,8 @@ script:
       description: The ID of the instance.
       type: Unknown
     - contextPath: AWS.EC2.Instances.Monitoring.State
-      description: Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled.
+      description: Indicates whether detailed monitoring is enabled. Otherwise, basic
+        monitoring is enabled.
       type: Unknown
   - arguments:
     - default: false
@@ -3894,13 +4216,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances. The operation succeeds if the instances are valid and belong to you. Requests to reboot terminated instances are ignored. If an instance does not cleanly shut down within four minutes, Amazon EC2 performs a hard reboot.
+    description: Requests a reboot of one or more instances. This operation is asynchronous;
+      it only queues a request to reboot the specified instances. The operation succeeds
+      if the instances are valid and belong to you. Requests to reboot terminated
+      instances are ignored. If an instance does not cleanly shut down within four
+      minutes, Amazon EC2 performs a hard reboot.
     execution: true
     name: aws-ec2-reboot-instances
   - arguments:
@@ -3929,18 +4257,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Retrieves the encrypted administrator password for a running Windows instance.
+    description: Retrieves the encrypted administrator password for a running Windows
+      instance.
     execution: true
     name: aws-ec2-get-password-data
     outputs:
     - contextPath: AWS.EC2.Instances.PasswordData.PasswordData
-      description: The password of the instance. Returns an empty string if the password is not available.
+      description: The password of the instance. Returns an empty string if the password
+        is not available.
       type: string
     - contextPath: AWS.EC2.Instances.PasswordData.Timestamp
       description: The time the data was last updated.
@@ -3953,14 +4285,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: Changes the security groups for the network interface. The new set of groups you specify replaces the current set. You must specify at least one group, even if it's just the default security group in the VPC. You must specify the ID of the security group, not the name.
+      description: Changes the security groups for the network interface. The new
+        set of groups you specify replaces the current set. You must specify at least
+        one group, even if it's just the default security group in the VPC. You must
+        specify the ID of the security group, not the name.
       isArray: false
       name: groups
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicates whether source/destination checking is enabled. A value of true means checking is enabled, and false means checking is disabled. This value must be false for a NAT instance to perform NAT.
+      description: Indicates whether source/destination checking is enabled. A value
+        of true means checking is enabled, and false means checking is disabled. This
+        value must be false for a NAT instance to perform NAT.
       isArray: false
       name: sourceDestCheck
       predefined:
@@ -3975,14 +4312,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the network interface attachment. Information about the interface attachment. If modifying the 'delete on termination' attribute, you must specify the ID of the interface attachment.
+      description: The ID of the network interface attachment. Information about the
+        interface attachment. If modifying the 'delete on termination' attribute,
+        you must specify the ID of the interface attachment.
       isArray: false
       name: attachmentId
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicates whether the network interface is deleted when the instance is terminated. Information about the interface attachment. If modifying the 'delete on termination' attribute, you must specify the ID of the interface attachment.
+      description: Indicates whether the network interface is deleted when the instance
+        is terminated. Information about the interface attachment. If modifying the
+        'delete on termination' attribute, you must specify the ID of the interface
+        attachment.
       isArray: false
       name: deleteOnTermination
       predefined:
@@ -4009,13 +4351,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Modifies the specified network interface attribute. You can specify only one attribute at a time.
+    description: Modifies the specified network interface attribute. You can specify
+      only one attribute at a time.
     execution: true
     name: aws-ec2-modify-network-interface-attribute
   - arguments:
@@ -4027,7 +4372,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether source/destination checking is enabled. A value of true means that checking is enabled, and false means that checking is disabled. This value must be false for a NAT instance to perform NAT.
+      description: Specifies whether source/destination checking is enabled. A value
+        of true means that checking is enabled, and false means that checking is disabled.
+        This value must be false for a NAT instance to perform NAT.
       isArray: false
       name: sourceDestCheck
       predefined:
@@ -4037,7 +4384,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If the value is true , you can't terminate the instance using the Amazon EC2 console, CLI, or API; otherwise, you can. You cannot use this parameter for Spot Instances.
+      description: If the value is true , you can't terminate the instance using the
+        Amazon EC2 console, CLI, or API; otherwise, you can. You cannot use this parameter
+        for Spot Instances.
       isArray: false
       name: disableApiTermination
       predefined:
@@ -4047,7 +4396,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether the instance is optimized for Amazon EBS I/O. This optimization provides dedicated throughput to Amazon EBS and an optimized configuration stack to provide optimal EBS I/O performance. This optimization isn't available with all instance types. Additional usage charges apply when using an EBS Optimized instance.
+      description: Specifies whether the instance is optimized for Amazon EBS I/O.
+        This optimization provides dedicated throughput to Amazon EBS and an optimized
+        configuration stack to provide optimal EBS I/O performance. This optimization
+        isn't available with all instance types. Additional usage charges apply when
+        using an EBS Optimized instance.
       isArray: false
       name: ebsOptimized
       predefined:
@@ -4057,7 +4410,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to true to enable enhanced networking with ENA for the instance.  This option is supported only for HVM instances. Specifying this option with a PV instance can make it unreachable.
+      description: Set to true to enable enhanced networking with ENA for the instance.  This
+        option is supported only for HVM instances. Specifying this option with a
+        PV instance can make it unreachable.
       isArray: false
       name: enaSupport
       predefined:
@@ -4073,7 +4428,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown)
+      description: Specifies whether an instance stops or terminates when you initiate
+        shutdown from the instance (using the operating system command for system
+        shutdown)
       isArray: false
       name: instanceInitiatedShutdownBehavior
       predefined:
@@ -4082,7 +4439,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: '[EC2-VPC] Changes the security groups of the instance. You must specify at least one security group, even if it''s just the default security group for the VPC. You must specify the security group ID, not the security group name.'
+      description: '[EC2-VPC] Changes the security groups of the instance. You must
+        specify at least one security group, even if it''s just the default security
+        group for the VPC. You must specify the security group ID, not the security
+        group name.'
       isArray: false
       name: groups
       required: false
@@ -4106,19 +4466,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Modifies the specified attribute of the specified instance. You can specify only one attribute at a time. Using this action to change the security groups associated with an elastic network interface (ENI) attached to an instance in a VPC can result in an error if the instance has more than one ENI. To change the security groups associated with an ENI attached to an instance that has multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute action.
+    description: Modifies the specified attribute of the specified instance. You can
+      specify only one attribute at a time. Using this action to change the security
+      groups associated with an elastic network interface (ENI) attached to an instance
+      in a VPC can result in an error if the instance has more than one ENI. To change
+      the security groups associated with an ENI attached to an instance that has
+      multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute
+      action.
     execution: true
     name: aws-ec2-modify-instance-attribute
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+      description: Checks whether you have the required permissions for the action,
+        without actually making the request, and provides an error response.
       isArray: false
       name: DryRun
       predefined:
@@ -4151,13 +4520,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Creates a network ACL in a VPC. Network ACLs provide an optional layer of security (in addition to security groups) for the instances in your VPC.
+    description: Creates a network ACL in a VPC. Network ACLs provide an optional
+      layer of security (in addition to security groups) for the instances in your
+      VPC.
     execution: false
     name: aws-ec2-create-network-acl
     outputs:
@@ -4174,10 +4547,12 @@ script:
       description: The IPv4 network range to allow or deny, in CIDR notation.
       type: String
     - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.Egress
-      description: Indicates whether the rule is an egress rule (applied to traffic leaving the subnet).
+      description: Indicates whether the rule is an egress rule (applied to traffic
+        leaving the subnet).
       type: Boolean
     - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.IcmpTypeCode.Code
-      description: The ICMP code. A value of -1 means all codes for the specified ICMP type.
+      description: The ICMP code. A value of -1 means all codes for the specified
+        ICMP type.
       type: Number
     - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.IcmpTypeCode.Type
       description: The ICMP type. A value of -1 means all types.
@@ -4195,10 +4570,12 @@ script:
       description: The protocol number. A value of "-1" means all protocols.
       type: String
     - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.RuleAction
-      description: Indicates whether to allow or deny the traffic that matches the rule.
+      description: Indicates whether to allow or deny the traffic that matches the
+        rule.
       type: String
     - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.RuleNumber
-      description: The rule number for the entry. ACL entries are processed in ascending order by rule number.
+      description: The rule number for the entry. ACL entries are processed in ascending
+        order by rule number.
       type: Number
     - contextPath: AWS.EC2.VpcId.NetworkAcl.NetworkAclId
       description: The ID of the network ACL.
@@ -4217,14 +4594,16 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The IPv4 network range to allow or deny, in CIDR notation (for example 172.16.0.0/24 ).
+      description: The IPv4 network range to allow or deny, in CIDR notation (for
+        example 172.16.0.0/24 ).
       isArray: false
       name: CidrBlock
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+      description: Checks whether you have the required permissions for the action,
+        without actually making the request, and provides an error response.
       isArray: false
       name: DryRun
       predefined:
@@ -4234,7 +4613,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicates whether this is an egress rule (rule is applied to traffic leaving the subnet).
+      description: Indicates whether this is an egress rule (rule is applied to traffic
+        leaving the subnet).
       isArray: false
       name: Egress
       predefined:
@@ -4243,7 +4623,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ICMP code. A value of -1 means all codes for the specified ICMP type.
+      description: The ICMP code. A value of -1 means all codes for the specified
+        ICMP type.
       isArray: false
       name: Code
       required: false
@@ -4255,7 +4636,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IPv6 network range to allow or deny, in CIDR notation (for example 2001:db8:1234:1a00::/64 ). # disable-secrets-detection
+      description: The IPv6 network range to allow or deny, in CIDR notation (for
+        example 2001:db8:1234:1a00::/64 ).                                                                           # disable-secrets-detection
       isArray: false
       name: Ipv6CidrBlock
       required: false
@@ -4279,19 +4661,27 @@ script:
       required: false
       secret: false
     - default: false
-      description: The protocol number. A value of "-1" means all protocols. If you specify "-1" or a protocol number other than "6" (TCP), "17" (UDP), or "1" (ICMP), traffic on all ports is allowed, regardless of any ports or ICMP types or codes that you specify. If you specify protocol "58" (ICMPv6) and specify an IPv4 CIDR block, traffic for all ICMP types and codes allowed, regardless of any that you specify. If you specify protocol "58" (ICMPv6) and specify an IPv6 CIDR block, you must specify an ICMP type and code.
+      description: The protocol number. A value of "-1" means all protocols. If you
+        specify "-1" or a protocol number other than "6" (TCP), "17" (UDP), or "1"
+        (ICMP), traffic on all ports is allowed, regardless of any ports or ICMP types
+        or codes that you specify. If you specify protocol "58" (ICMPv6) and specify
+        an IPv4 CIDR block, traffic for all ICMP types and codes allowed, regardless
+        of any that you specify. If you specify protocol "58" (ICMPv6) and specify
+        an IPv6 CIDR block, you must specify an ICMP type and code.
       isArray: false
       name: Protocol
       required: true
       secret: false
     - default: false
-      description: Indicates whether to allow or deny the traffic that matches the rule.
+      description: Indicates whether to allow or deny the traffic that matches the
+        rule.
       isArray: false
       name: RuleAction
       required: true
       secret: false
     - default: false
-      description: The rule number for the entry (for example, 100). ACL entries are processed in ascending order by rule number.
+      description: The rule number for the entry (for example, 100). ACL entries are
+        processed in ascending order by rule number.
       isArray: false
       name: RuleNumber
       required: true
@@ -4315,13 +4705,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Creates an entry (a rule) in a network ACL with the specified rule number.
+    description: Creates an entry (a rule) in a network ACL with the specified rule
+      number.
     execution: false
     name: aws-ec2-create-network-acl-entry
   - arguments:
@@ -4344,14 +4737,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+      description: Checks whether you have the required permissions for the action,
+        without actually making the request, and provides an error response.
       isArray: false
       name: DryRun
       predefined:
@@ -4360,13 +4756,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Unique, case-sensitive identifier you provide to ensure the idempotency of the request.
+      description: Unique, case-sensitive identifier you provide to ensure the idempotency
+        of the request.
       isArray: false
       name: ClientToken
       required: false
       secret: false
     - default: false
-      description: Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request.
+      description: Indicates how to allocate the target capacity across the Spot pools
+        specified by the Spot Fleet request.
       isArray: false
       name: SpotAllocationStrategy
       required: false
@@ -4378,14 +4776,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of Spot pools across which to allocate your target Spot capacity.
+      description: The number of Spot pools across which to allocate your target Spot
+        capacity.
       isArray: false
       name: InstancePoolsToUseCount
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicates that the fleet uses a single instance type to launch all Spot Instances in the fleet.
+      description: Indicates that the fleet uses a single instance type to launch
+        all Spot Instances in the fleet.
       isArray: false
       name: SpotSingleInstanceType
       predefined:
@@ -4395,7 +4795,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicates that the fleet launches all Spot Instances into a single Availability Zone.
+      description: Indicates that the fleet launches all Spot Instances into a single
+        Availability Zone.
       isArray: false
       name: SpotSingleInstanceType
       predefined:
@@ -4404,37 +4805,44 @@ script:
       required: false
       secret: false
     - default: false
-      description: The minimum target capacity for Spot Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
+      description: The minimum target capacity for Spot Instances in the fleet. If
+        the minimum target capacity is not reached, the fleet launches no instances.
       isArray: false
       name: SpotMinTargetCapacity
       required: false
       secret: false
     - default: false
-      description: The order of the launch template overrides to use in fulfilling On-Demand capacity.
+      description: The order of the launch template overrides to use in fulfilling
+        On-Demand capacity.
       isArray: false
       name: OnDemandAllocationStrategy
       required: false
       secret: false
     - default: false
-      description: Indicates that the fleet uses a single instance type to launch all On-Demand Instances in the fleet.
+      description: Indicates that the fleet uses a single instance type to launch
+        all On-Demand Instances in the fleet.
       isArray: false
       name: OnDemandSingleInstanceType
       required: false
       secret: false
     - default: false
-      description: Indicates that the fleet launches all On-Demand Instances into a single Availability Zone.
+      description: Indicates that the fleet launches all On-Demand Instances into
+        a single Availability Zone.
       isArray: false
       name: OnDemandSingleAvailabilityZone
       required: false
       secret: false
     - default: false
-      description: The minimum target capacity for On-Demand Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
+      description: The minimum target capacity for On-Demand Instances in the fleet.
+        If the minimum target capacity is not reached, the fleet launches no instances.
       isArray: false
       name: OnDemandMinTargetCapacity
       required: false
       secret: false
     - default: false
-      description: ' Indicates whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.'
+      description: ' Indicates whether running instances should be terminated if the
+        total target capacity of the EC2 Fleet is decreased below the current size
+        of the EC2 Fleet.'
       isArray: false
       name: ExcessCapacityTerminationPolicy
       required: false
@@ -4464,7 +4872,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      description: The maximum price per unit hour that you are willing to pay for
+        a Spot Instance.
       isArray: false
       name: OverrideMaxPrice
       required: false
@@ -4494,7 +4903,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of units to request, filled using DefaultTargetCapacityType .
+      description: The number of units to request, filled using DefaultTargetCapacityType
+        .
       isArray: false
       name: TotalTargetCapacity
       required: true
@@ -4512,7 +4922,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The default TotalTargetCapacity, which is either Spot or On-Demand .
+      description: The default TotalTargetCapacity, which is either Spot or On-Demand
+        .
       isArray: false
       name: DefaultTargetCapacityType
       required: true
@@ -4524,13 +4935,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The start date and time of the request, in UTC format (for example, YYYY -MM -DD T*HH* :MM :SS Z).
+      description: The start date and time of the request, in UTC format (for example,
+        YYYY -MM -DD T*HH* :MM :SS Z).
       isArray: false
       name: ValidFrom
       required: false
       secret: false
     - default: false
-      description: The end date and time of the request, in UTC format (for example, YYYY -MM -DD T*HH* :MM :SS Z).
+      description: The end date and time of the request, in UTC format (for example,
+        YYYY -MM -DD T*HH* :MM :SS Z).
       isArray: false
       name: ValidUntil
       required: false
@@ -4556,22 +4969,27 @@ script:
       description: The ID of the EC2 Fleet.
       type: String
     - contextPath: AWS.EC2.Fleet.Errors
-      description: Information about the instances that could not be launched by the fleet. Valid only when Type is set to instant.
+      description: Information about the instances that could not be launched by the
+        fleet. Valid only when Type is set to instant.
       type: String
     - contextPath: AWS.EC2.Fleet.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateId
-      description: The ID of the launch template. You must specify either a template ID or a template name.
+      description: The ID of the launch template. You must specify either a template
+        ID or a template name.
       type: String
     - contextPath: AWS.EC2.Fleet.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateName
-      description: The name of the launch template. You must specify either a template name or a template ID.
+      description: The name of the launch template. You must specify either a template
+        name or a template ID.
       type: String
     - contextPath: AWS.EC2.Fleet.LaunchTemplateAndOverrides.LaunchTemplateSpecification.Version
-      description: The version number of the launch template. You must specify a version number.
+      description: The version number of the launch template. You must specify a version
+        number.
       type: String
     - contextPath: AWS.EC2.Fleet.LaunchTemplateAndOverrides.Overrides.InstanceType
       description: The instance type.
       type: String
     - contextPath: AWS.EC2.Fleet.LaunchTemplateAndOverrides.Overrides.MaxPrice
-      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      description: The maximum price per unit hour that you are willing to pay for
+        a Spot Instance.
       type: String
     - contextPath: AWS.EC2.Fleet.LaunchTemplateAndOverrides.Overrides.SubnetId
       description: The ID of the subnet in which to launch the instances.
@@ -4589,28 +5007,34 @@ script:
       description: The name of the placement group the instance is in.
       type: String
     - contextPath: AWS.EC2.Fleet.LaunchTemplateAndOverrides.Lifecycle
-      description: Indicates if the instance that could not be launched was a Spot Instance or On-Demand Instance.
+      description: Indicates if the instance that could not be launched was a Spot
+        Instance or On-Demand Instance.
       type: String
     - contextPath: AWS.EC2.Fleet.LaunchTemplateAndOverrides.ErrorCode
       description: 'The error code that indicates why the instance could not be launched. '
       type: String
     - contextPath: AWS.EC2.Fleet.LaunchTemplateAndOverrides.ErrorMessage
-      description: The error message that describes why the instance could not be launched.
+      description: The error message that describes why the instance could not be
+        launched.
       type: String
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateId
-      description: The ID of the launch template. You must specify either a template ID or a template name.
+      description: The ID of the launch template. You must specify either a template
+        ID or a template name.
       type: String
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateName
-      description: The name of the launch template. You must specify either a template name or a template ID.
+      description: The name of the launch template. You must specify either a template
+        name or a template ID.
       type: String
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.Version
-      description: The version number of the launch template. You must specify a version number.
+      description: The version number of the launch template. You must specify a version
+        number.
       type: String
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.InstanceType
       description: The instance type.
       type: String
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.MaxPrice
-      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      description: The maximum price per unit hour that you are willing to pay for
+        a Spot Instance.
       type: String
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.SubnetId
       description: The ID of the subnet in which to launch the instances.
@@ -4628,7 +5052,8 @@ script:
       description: The name of the placement group the instance is in.
       type: String
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.Lifecycle
-      description: Indicates if the instance that was launched is a Spot Instance or On-Demand Instance.
+      description: Indicates if the instance that was launched is a Spot Instance
+        or On-Demand Instance.
       type: String
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.InstanceIds
       description: The IDs of the instances.
@@ -4659,13 +5084,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     - default: false
-      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+      description: Checks whether you have the required permissions for the action,
+        without actually making the request, and provides an error response.
       isArray: false
       name: DryRun
       required: false
@@ -4677,7 +5105,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Indicates whether to terminate instances for an EC2 Fleet if it is deleted successfully.
+      description: Indicates whether to terminate instances for an EC2 Fleet if it
+        is deleted successfully.
       isArray: false
       name: TerminateInstances
       required: true
@@ -4725,7 +5154,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -4743,7 +5174,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      description: The maximum number of results to return in a single call. Specify
+        a value between 1 and 1000.
       isArray: false
       name: MaxResults
       required: false
@@ -4763,7 +5195,8 @@ script:
       description: The token for the next set of results.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.ActivityStatus
-      description: 'The progress of the EC2 Fleet. If there is an error, the status is error . '
+      description: 'The progress of the EC2 Fleet. If there is an error, the status
+        is error . '
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.CreateTime
       description: The creation date and time of the EC2 Fleet.
@@ -4775,31 +5208,40 @@ script:
       description: The state of the EC2 Fleet.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.ClientToken
-      description: Unique, case-sensitive identifier you provide to ensure the idempotency of the request.
+      description: Unique, case-sensitive identifier you provide to ensure the idempotency
+        of the request.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.ExcessCapacityTerminationPolicy
-      description: Indicates whether running instances should be terminated if the target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      description: Indicates whether running instances should be terminated if the
+        target capacity of the EC2 Fleet is decreased below the current size of the
+        EC2 Fleet.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.FulfilledCapacity
-      description: The number of units fulfilled by this request compared to the set target capacity.
+      description: The number of units fulfilled by this request compared to the set
+        target capacity.
       type: number
     - contextPath: AWS.EC2.Fleet.Fleets.FulfilledOnDemandCapacity
-      description: The number of units fulfilled by this request compared to the set target On-Demand capacity.
+      description: The number of units fulfilled by this request compared to the set
+        target On-Demand capacity.
       type: number
     - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.LaunchTemplateId
-      description: The ID of the launch template. You must specify either a template ID or a template name.
+      description: The ID of the launch template. You must specify either a template
+        ID or a template name.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.LaunchTemplateName
-      description: The name of the launch template. You must specify either a template name or a template ID.
+      description: The name of the launch template. You must specify either a template
+        name or a template ID.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Version
-      description: The version number of the launch template. You must specify a version number.
+      description: The version number of the launch template. You must specify a version
+        number.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.InstanceType
       description: The instance type.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.MaxPrice
-      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      description: The maximum price per unit hour that you are willing to pay for
+        a Spot Instance.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification.Overrides.SubnetId
       description: The ID of the subnet in which to launch the instances.
@@ -4817,7 +5259,8 @@ script:
       description: The name of the placement group the instance is in.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.TargetCapacitySpecification.TotalTargetCapacity
-      description: The number of units to request, filled using DefaultTargetCapacityType .
+      description: The number of units to request, filled using DefaultTargetCapacityType
+        .
       type: number
     - contextPath: AWS.EC2.Fleet.Fleets.TargetCapacitySpecification.OnDemandTargetCapacity
       description: The number of On-Demand units to request.
@@ -4829,46 +5272,58 @@ script:
       description: The default TotalTargetCapacity , which is either Spot or On-Demand.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.TerminateInstancesWithExpiration
-      description: Indicates whether running instances should be terminated when the EC2 Fleet expires.
+      description: Indicates whether running instances should be terminated when the
+        EC2 Fleet expires.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.Type
-      description: The type of request. Indicates whether the EC2 Fleet only requests the target capacity, or also attempts to maintain it.
+      description: The type of request. Indicates whether the EC2 Fleet only requests
+        the target capacity, or also attempts to maintain it.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.ValidFrom
-      description: The start date and time of the request, in UTC format (for example, YYYY -MM -DD T*HH* :MM :SS Z).
+      description: The start date and time of the request, in UTC format (for example,
+        YYYY -MM -DD T*HH* :MM :SS Z).
       type: date
     - contextPath: AWS.EC2.Fleet.Fleets.ValidUntil
-      description: The end date and time of the request, in UTC format (for example, YYYY -MM -DD T*HH* :MM :SS Z).
+      description: The end date and time of the request, in UTC format (for example,
+        YYYY -MM -DD T*HH* :MM :SS Z).
       type: date
     - contextPath: AWS.EC2.Fleet.Fleets.ReplaceUnhealthyInstances
       description: Indicates whether EC2 Fleet should replace unhealthy instances.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.AllocationStrategy
-      description: Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request.
+      description: Indicates how to allocate the target capacity across the Spot pools
+        specified by the Spot Fleet request.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.InstanceInterruptionBehavior
-      description: The behavior when a Spot Instance is interrupted. The default is terminate.
+      description: The behavior when a Spot Instance is interrupted. The default is
+        terminate.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.InstancePoolsToUseCount
-      description: The number of Spot pools across which to allocate your target Spot capacity.
+      description: The number of Spot pools across which to allocate your target Spot
+        capacity.
       type: number
     - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.SingleInstanceType
-      description: Indicates that the fleet uses a single instance type to launch all Spot Instances in the fleet.
+      description: Indicates that the fleet uses a single instance type to launch
+        all Spot Instances in the fleet.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.SingleAvailabilityZone
-      description: Indicates that the fleet launches all Spot Instances into a single Availability Zone.
+      description: Indicates that the fleet launches all Spot Instances into a single
+        Availability Zone.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.SpotOptions.MinTargetCapacity
       description: The minimum target capacity for Spot Instances in the fleet.
       type: number
     - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.AllocationStrategy
-      description: The order of the launch template overrides to use in fulfilling On-Demand capacity.
+      description: The order of the launch template overrides to use in fulfilling
+        On-Demand capacity.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.SingleInstanceType
-      description: Indicates that the fleet uses a single instance type to launch all On-Demand Instances in the fleet.
+      description: Indicates that the fleet uses a single instance type to launch
+        all On-Demand Instances in the fleet.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.SingleAvailabilityZone
-      description: Indicates that the fleet launches all On-Demand Instances into a single Availability Zone.
+      description: Indicates that the fleet launches all On-Demand Instances into
+        a single Availability Zone.
       type: boolean
     - contextPath: AWS.EC2.Fleet.Fleets.OnDemandOptions.MinTargetCapacity
       description: 'The minimum target capacity for On-Demand Instances in the fleet. '
@@ -4880,19 +5335,23 @@ script:
       description: The value of the tag.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Errors.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateId
-      description: The ID of the launch template. You must specify either a template ID or a template name.
+      description: The ID of the launch template. You must specify either a template
+        ID or a template name.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Errors.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateName
-      description: The name of the launch template. You must specify either a template name or a template ID.
+      description: The name of the launch template. You must specify either a template
+        name or a template ID.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Errors.LaunchTemplateAndOverrides.LaunchTemplateSpecification.Version
-      description: The version number of the launch template. You must specify a version number.
+      description: The version number of the launch template. You must specify a version
+        number.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Errors.Overrides.InstanceType
       description: The instance type.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Errors.Overrides.MaxPrice
-      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      description: The maximum price per unit hour that you are willing to pay for
+        a Spot Instance.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Errors.Overrides.SubnetId
       description: The ID of the subnet in which to launch the instances.
@@ -4910,28 +5369,34 @@ script:
       description: The name of the placement group the instance is in.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Errors.Lifecycle
-      description: Indicates if the instance that could not be launched was a Spot Instance or On-Demand Instance.
+      description: Indicates if the instance that could not be launched was a Spot
+        Instance or On-Demand Instance.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Errors.ErrorCode
       description: The error code that indicates why the instance could not be launched.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Errors.ErrorMessage
-      description: The error message that describes why the instance could not be launched.
+      description: The error message that describes why the instance could not be
+        launched.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateId
-      description: The ID of the launch template. You must specify either a template ID or a template name.
+      description: The ID of the launch template. You must specify either a template
+        ID or a template name.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.LaunchTemplateName
-      description: The name of the launch template. You must specify either a template name or a template ID.
+      description: The name of the launch template. You must specify either a template
+        name or a template ID.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Instances.LaunchTemplateAndOverrides.LaunchTemplateSpecification.Version
-      description: The version number of the launch template. You must specify a version number.
+      description: The version number of the launch template. You must specify a version
+        number.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Instances.LaunchTemplateAndOverrides.Overrides.InstanceType
       description: The instance type.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Instances.LaunchTemplateAndOverrides.Overrides.MaxPrice
-      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      description: The maximum price per unit hour that you are willing to pay for
+        a Spot Instance.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Instances.LaunchTemplateAndOverrides.Overrides.SubnetId
       description: The ID of the subnet in which to launch the instances.
@@ -4949,7 +5414,8 @@ script:
       description: The name of the placement group the instance is in.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Instances.Lifecycle
-      description: Indicates if the instance that was launched is a Spot Instance or On-Demand Instance.
+      description: Indicates if the instance that was launched is a Spot Instance
+        or On-Demand Instance.
       type: string
     - contextPath: AWS.EC2.Fleet.Fleets.Instances.InstanceIds
       description: The IDs of the instances.
@@ -4980,13 +5446,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     - default: false
-      description: A filter name and value pair that is used to return a more specific list of results from a describe operation.
+      description: A filter name and value pair that is used to return a more specific
+        list of results from a describe operation.
       isArray: false
       name: filters
       required: false
@@ -4998,7 +5467,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      description: The maximum number of results to return in a single call. Specify
+        a value between 1 and 1000.
       isArray: false
       name: MaxResults
       required: false
@@ -5052,7 +5522,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -5111,13 +5583,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     - default: false
-      description: Unique, case-sensitive identifier you provide to ensure the idempotency of the request.
+      description: Unique, case-sensitive identifier you provide to ensure the idempotency
+        of the request.
       isArray: false
       name: ClientToken
       required: false
@@ -5169,7 +5644,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The virtual device name (ephemeralN). Instance store volumes are numbered starting from 0.
+      description: The virtual device name (ephemeralN). Instance store volumes are
+        numbered starting from 0.
       isArray: false
       name: VirtualName
       required: false
@@ -5195,13 +5671,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of I/O operations per second (IOPS) that the volume supports.
+      description: The number of I/O operations per second (IOPS) that the volume
+        supports.
       isArray: false
       name: ebsIops
       required: false
       secret: false
     - default: false
-      description: The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption.
+      description: The ARN of the AWS Key Management Service (AWS KMS) CMK used for
+        encryption.
       isArray: false
       name: ebsKmsKeyId
       required: false
@@ -5225,7 +5703,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Suppresses the specified device included in the block device mapping of the AMI.
+      description: Suppresses the specified device included in the block device mapping
+        of the AMI.
       isArray: false
       name: NoDevice
       required: false
@@ -5242,7 +5721,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicates whether the network interface is deleted when the instance is terminated.
+      description: Indicates whether the network interface is deleted when the instance
+        is terminated.
       isArray: false
       name: NetworkInterfacesDeleteOnTermination
       predefined:
@@ -5275,7 +5755,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet.
+      description: One or more specific IPv6 addresses from the IPv6 CIDR block range
+        of your subnet.
       isArray: false
       name: Ipv6Addresses
       required: false
@@ -5318,7 +5799,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify true to enable detailed monitoring. Otherwise, basic monitoring is enabled.
+      description: Specify true to enable detailed monitoring. Otherwise, basic monitoring
+        is enabled.
       isArray: false
       name: Monitoring
       predefined:
@@ -5370,7 +5852,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If set to true , you can't terminate the instance using the Amazon EC2 console, CLI, or API.
+      description: If set to true , you can't terminate the instance using the Amazon
+        EC2 console, CLI, or API.
       isArray: false
       name: DisableApiTermination
       predefined:
@@ -5379,7 +5862,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Indicates whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown).
+      description: Indicates whether an instance stops or terminates when you initiate
+        shutdown from the instance (using the operating system command for system
+        shutdown).
       isArray: false
       name: InstanceInitiatedShutdownBehavior
       required: false
@@ -5403,7 +5888,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The type of elastic inference accelerator. The possible values are eia1.medium, eia1.large, and eia1.xlarge.
+      description: The type of elastic inference accelerator. The possible values
+        are eia1.medium, eia1.large, and eia1.xlarge.
       isArray: false
       name: ElasticInferenceAcceleratorsType
       required: false
@@ -5433,7 +5919,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The required duration for the Spot Instances (also known as Spot blocks), in minutes. This value must be a multiple of 60 (60, 120, 180, 240, 300, or 360).
+      description: The required duration for the Spot Instances (also known as Spot
+        blocks), in minutes. This value must be a multiple of 60 (60, 120, 180, 240,
+        300, or 360).
       isArray: false
       name: BlockDurationMinutes
       required: false
@@ -5445,7 +5933,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The behavior when a Spot Instance is interrupted. The default is terminate.
+      description: The behavior when a Spot Instance is interrupted. The default is
+        terminate.
       isArray: false
       name: SpotInstanceInterruptionBehavior
       required: false
@@ -5457,7 +5946,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a launch template. A launch template contains the parameters to launch an instance.
+    description: Creates a launch template. A launch template contains the parameters
+      to launch an instance.
     execution: false
     name: aws-ec2-create-launch-template
     outputs:
@@ -5505,7 +5995,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -5523,7 +6015,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Deletes a launch template. Deleting a launch template deletes all of its versions.
+    description: Deletes a launch template. Deleting a launch template deletes all
+      of its versions.
     execution: false
     name: aws-ec2-delete-launch-template
     outputs:
@@ -5565,13 +6058,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     - default: false
-      description: The name of the attribute to modify. The valid values are description, launchPermission, and productCodes.
+      description: The name of the attribute to modify. The valid values are description,
+        launchPermission, and productCodes.
       isArray: false
       name: Attribute
       required: false
@@ -5619,25 +6115,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: One or more DevPay product codes. After you add a product code to an AMI, it can't be removed.
+      description: One or more DevPay product codes. After you add a product code
+        to an AMI, it can't be removed.
       isArray: false
       name: ProductCodes
       required: false
       secret: false
     - default: false
-      description: One or more user groups. This parameter can be used only when the Attribute parameter is launchPermission.
+      description: One or more user groups. This parameter can be used only when the
+        Attribute parameter is launchPermission.
       isArray: false
       name: UserGroups
       required: false
       secret: false
     - default: false
-      description: One or more AWS account IDs. This parameter can be used only when the Attribute parameter is launchPermission.
+      description: One or more AWS account IDs. This parameter can be used only when
+        the Attribute parameter is launchPermission.
       isArray: false
       name: UserIds
       required: false
       secret: false
     - default: false
-      description: The value of the attribute being modified. This parameter can be used only when the Attribute parameter is description or productCodes.
+      description: The value of the attribute being modified. This parameter can be
+        used only when the Attribute parameter is description or productCodes.
       isArray: false
       name: Value
       required: false
@@ -5666,7 +6166,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -5678,7 +6180,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
+    description: Deletes the specified subnet. You must terminate all running instances
+      in the subnet before you can delete the subnet.
     execution: false
     name: aws-ec2-delete-subnet
   - arguments:
@@ -5701,7 +6204,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -5713,7 +6218,11 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes the specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it. For example, you must terminate all instances running in the VPC, delete all security groups associated with the VPC (except the default one), delete all route tables associated with the VPC (except the default one), and so on.
+    description: Deletes the specified VPC. You must detach or delete all gateways
+      and resources that are associated with the VPC before you can delete it. For
+      example, you must terminate all instances running in the VPC, delete all security
+      groups associated with the VPC (except the default one), delete all route tables
+      associated with the VPC (except the default one), and so on.
     execution: false
     name: aws-ec2-delete-vpc
   - arguments:
@@ -5736,7 +6245,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -5748,7 +6259,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
+    description: Deletes the specified internet gateway. You must detach the internet
+      gateway from the VPC before you can delete it.
     execution: false
     name: aws-ec2-delete-internet-gateway
   - arguments:
@@ -5771,7 +6283,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -5828,7 +6342,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -5846,7 +6362,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC. The VPC must not contain any running instances with Elastic IP addresses or public IPv4 addresses.
+    description: Detaches an internet gateway from a VPC, disabling connectivity between
+      the internet and the VPC. The VPC must not contain any running instances with
+      Elastic IP addresses or public IPv4 addresses.
     execution: false
     name: aws-ec2-detach-internet-gateway
   - arguments:
@@ -5875,7 +6393,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The session number determines the order in which sessions are evaluated when an interface is used by multiple sessions.
+      description: The session number determines the order in which sessions are evaluated
+        when an interface is used by multiple sessions.
       isArray: false
       name: SessionNumber
       required: true
@@ -5899,13 +6418,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+      description: Checks whether you have the required permissions for the action,
+        without actually making the request, and provides an error response.
       isArray: false
       name: DryRun
       required: false
       secret: false
     - default: false
-      description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+      description: Unique, case-sensitive identifier that you provide to ensure the
+        idempotency of the request.
       isArray: false
       name: ClientToken
       required: false
@@ -5934,7 +6455,8 @@ script:
       description: The number of bytes in each packet to mirror.
       type: Number
     - contextPath: AWS.EC2.TrafficMirrorSession.SessionNumber
-      description: The session number determines the order in which sessions are evaluated when an interface is used by multiple sessions.
+      description: The session number determines the order in which sessions are evaluated
+        when an interface is used by multiple sessions.
       type: Number
     - contextPath: AWS.EC2.TrafficMirrorSession.VirtualNetworkId
       description: The virtual network ID associated with the Traffic Mirror session.
@@ -5949,9 +6471,10 @@ script:
       description: The value of the tag.
       type: String
     - contextPath: AWS.EC2.TrafficMirrorSession.ClientToken
-      description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+      description: Unique, case-sensitive identifier that you provide to ensure the
+        idempotency of the request.
       type: String
-  dockerimage: demisto/boto3:1.9.55
+  dockerimage: demisto/boto3:2.0.0.13188
   isfetch: false
   longRunning: false
   longRunningPort: false

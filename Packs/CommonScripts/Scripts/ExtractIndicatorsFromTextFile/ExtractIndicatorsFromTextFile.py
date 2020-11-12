@@ -1,15 +1,15 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 try:
     maxFileSize = int(demisto.args().get('maxFileSize'))
 except Exception:
-    maxFileSize = 1024**2
+    maxFileSize = 1024 ** 2
 
 res = demisto.executeCommand('getFilePath', {
     'id': demisto.args()['entryID']
 })
-
 
 try:
     filePath = res[0]['Contents']['path']
@@ -22,7 +22,7 @@ with open(filePath, mode='r') as f:
         data = data.decode('unicode_escape').encode('utf-8')
     # unicode_escape might throw UnicodeDecodeError for strings that contain \ char followed by ascii characters
     except UnicodeDecodeError:
-        data = data.encode('utf-8')
+        data = data.decode('iso-8859-1').encode('utf-8')
 
     # Extract indicators (omitting context output, letting auto-extract work)
     indicators_hr = demisto.executeCommand("extractIndicators", {
