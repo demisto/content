@@ -1,9 +1,9 @@
 category: IT Services
 commonfields:
-  id: F5 WAF
+  id: F5 ASM
   version: -1
 configuration:
-- display: Server URL (e.g. 8.8.8.8)
+- display: Server URL (e.g., 8.8.8.8)
   name: url
   required: true
   type: 0
@@ -21,7 +21,7 @@ configuration:
   type: 8
 description: Manages F5 firewall
 display: F5 Application Security Manager (WAF)
-name: F5 WAF
+name: F5 ASM
 script:
   commands:
   - arguments:
@@ -44,7 +44,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: list all policies
+    description: Lists all F5 Application Security Manager (ASM) policies.
     execution: false
     name: f5-asm-policy-list
     outputs:
@@ -52,19 +52,19 @@ script:
       description: Display name of the policy.
       type: String
     - contextPath: f5.Policy.active
-      description: Indicates if the policy is active
+      description: Indicates if the policy is active.
       type: Boolean
     - contextPath: f5.Policy.creatorName
-      description: Indicates the user that created the policy
+      description: The name of the user who created the policy.
       type: String
     - contextPath: f5.Policy.createdTime
-      description: Indicated the time that the policy was created
+      description: The time that the policy was created.
       type: String
     - contextPath: f5.Policy.enforcementMode
-      description: Indicates if the policy is in enforcement mode
+      description: Indicates if the policy is in enforcement mode.
       type: Boolean
     - contextPath: f5.Policy.type
-      description: policy type
+      description: The policy type.
       type: String
   - arguments:
     - default: false
@@ -74,7 +74,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Optional description for the policy
+      description: Optional description for the policy.
       isArray: false
       name: description
       required: false
@@ -82,7 +82,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: parent
-      description: Is the policy a parent or child policy
+      description: 'The type of the policy. Possible values are: "parent" and "child". Default is "parent".'
       isArray: false
       name: kind
       predefined:
@@ -92,8 +92,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the policy is a security policy, optionally specify the parent
-        path.
+      description: The parent path if the policy is a security policy.
       isArray: false
       name: parent
       required: false
@@ -101,7 +100,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: transparent
-      description: Choose the enforcement mode of the policy
+      description: 'The enforcement mode of the policy. Possible values are: "transparent" and "blocking". Default is "transparent".'
       isArray: false
       name: enforcement_mode
       predefined:
@@ -112,7 +111,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Is the policy protocol independent
+      description: Whether the policy is protocol independent. Default is "true".
       isArray: false
       name: protocol_independent
       predefined:
@@ -141,7 +140,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create a new ASM policy
+    description: Creates a new ASM policy.
     execution: false
     name: f5-asm-policy-create
     outputs:
@@ -149,59 +148,59 @@ script:
       description: Display name of the policy.
       type: String
     - contextPath: f5.Policy.id
-      description: ID for the policy
+      description: ID of the policy.
       type: String
     - contextPath: f5.Policy.fullPath
-      description: Full path of the policy
+      description: Full path of the policy.
       type: String
     - contextPath: f5.Policy.description
-      description: Description of the policy
+      description: Description of the policy.
       type: String
     - contextPath: f5.Policy.type
-      description: Type of the policy
+      description: Type of the policy.
       type: String
     - contextPath: f5.Policy.versionDatetime
-      description: Policy creation time
+      description: The creation time of the policy.
       type: String
     - contextPath: f5.Policy.selfLink
       description: Policy self link
       type: String
   - arguments:
     - default: false
-      description: link to the policy the user wish to apply
+      description: Link to the policy to apply.
       isArray: false
       name: policy_reference_link
       required: true
       secret: false
     deprecated: false
-    description: Applying a policy in application security manager
+    description: Applies a policy in the application security manager.
     execution: false
     name: f5-asm-policy-apply
     outputs:
     - contextPath: f5.Policy.id
-      description: Policy ID
+      description: The policy ID.
       type: String
     - contextPath: f5.Policy.kind
-      description: Policy kind
+      description: The type of the policy.
       type: String
     - contextPath: f5.Policy.policyReference
-      description: policy reference link
+      description: The policy reference link.
       type: String
     - contextPath: f5.Policy.status
-      description: policy status
+      description: The status of the policy.
       type: String
     - contextPath: f5.Policy.startTime
-      description: Policy start time
+      description: The start time of the policy.
       type: String
   - arguments:
     - default: false
-      description: name of the file to export to
+      description: The name of the file to export the policy to.
       isArray: false
       name: filename
       required: true
       secret: false
     - default: false
-      description: link to policy user wishes to export
+      description: The link to the policy to export.
       isArray: false
       name: policy_reference_link
       required: true
@@ -209,7 +208,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Indicates whether to export only custom settings.
+      description: Indicates whether to export only custom settings. Default is "true".
       isArray: false
       name: minimal
       predefined:
@@ -218,34 +217,34 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: export policy file
+    description: Exports a policy file.
     execution: false
     name: f5-asm-policy-export-file
     outputs:
     - contextPath: f5.Policy.kind
-      description: policy kind
+      description: The type of the policy.
       type: String
     - contextPath: f5.Policy.format
-      description: policy format
+      description: The format of the policy.
       type: String
     - contextPath: f5.Policy.filename
-      description: filename of the file exported
+      description: The filename of the exported file.
       type: String
     - contextPath: f5.Policy.policyReference
-      description: policy reference link
+      description: The reference link to the policy.
       type: String
     - contextPath: f5.Policy.id
-      description: policy id
+      description: The ID of the policy.
       type: String
     - contextPath: f5.Policy.startTime
-      description: policy start time
+      description: The start time of the policy.
       type: String
     - contextPath: f5.Policy.status
-      description: policy status
+      description: The status of the policy.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 hash using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
@@ -256,69 +255,68 @@ script:
     name: f5-asm-policy-methods-list
     outputs:
     - contextPath: f5.PolicyMethods.name
-      description: Method name
+      description: The name of the method.
       type: String
     - contextPath: f5.PolicyMethods.actAsMethod
-      description: The functionality of the method
+      description: The functionality of the method.
       type: String
     - contextPath: f5.PolicyMethods.id
-      description: Method ID
+      description: The ID of the method.
       type: String
     - contextPath: f5.PolicyMethods.selfLink
-      description: Self link
+      description: The self link to the method.
       type: String
     - contextPath: f5.PolicyMethods.kind
-      description: Endpoint kind
+      description: The type of endpoint.
       type: String
     - contextPath: f5.PolicyMethods.lastUpdateMicros
-      description: Last update time
+      description: The datetime the policy method was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 hash using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: Lists the file types that are allowed or disallowed in the security
-      policy.
+    description: Lists the file types that are allowed or not allowed in the security policy.
     execution: false
     name: f5-asm-policy-file-types-list
     outputs:
     - contextPath: f5.FileType.name
-      description: Method name
+      description: The name of the file type.
       type: String
     - contextPath: f5.FileType.id
-      description: Method ID
+      description: The ID of the file type.
       type: String
     - contextPath: f5.FileType.selfLink
-      description: Self link
+      description: The self link to the file type.
       type: String
     - contextPath: f5.FileType.kind
-      description: Endpoint kind
+      description: The type of endpoint.
       type: String
     - contextPath: f5.FileType.lastUpdateMicros
-      description: Last update time
+      description: The datetime the file type was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
     - contextPath: f5.FileType.queryStringLength
-      description: Length of the query
+      description: The length of the query string.
       type: String
     - contextPath: f5.FileType.checkRequestLength
-      description: Request length
+      description: The length of the request.
       type: String
     - contextPath: f5.FileType.allowed
-      description: Indicates if the file type allowed
+      description: Indicates if the file type is allowed.
       type: Boolean
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy to which to add the method. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
-      description: Display name of the new method.
+      description: The display name of the new method.
       isArray: false
       name: new_method_name
       required: true
@@ -326,7 +324,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: GET
-      description: Functionality of the new method. default is GET.
+      description: 'Functionality of the new method. Possible values are: "GET" and "POST". Default is "GET".'
       isArray: false
       name: act_as_method
       predefined:
@@ -335,50 +333,49 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: add new allowed method
+    description: Adds a new allowed method.
     execution: false
     name: f5-asm-policy-methods-add
     outputs:
     - contextPath: f5.PolicyMethods.name
-      description: The name of the new method
+      description: The name of the new method.
       type: String
     - contextPath: f5.PolicyMethods.id
-      description: ID of the new method
+      description: The ID of the new method.
       type: String
     - contextPath: f5.PolicyMethods.actAsMethod
-      description: Functionality of the new method.
+      description: The functionality of the new method.
       type: String
     - contextPath: f5.PolicyMethods.selfLink
-      description: self link
+      description: The self link to the method.
       type: String
     - contextPath: f5.PolicyMethods.kind
-      description: kind
+      description: The type of method.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5.
+      description: The MD5 hash of the policy in which to update the method. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the method. ID or display name must be filled.
+      description: The ID of the method to update. The method_ID or method_name arguments must be filled. Default is "None".
       isArray: false
       name: method_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the method. Method ID or method display name must
-        be filled.
+      description: Display name of the method to update. The method_ID or method_name argument must be filled. Default is "None".
       isArray: false
       name: method_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Functionality of the new method.
+      description: 'Functionality of the updated method. Possible values are: "GET" and "POST".'
       isArray: false
       name: act_as_method
       predefined:
@@ -387,70 +384,69 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: update a policy method
+    description: Updates a policy method.
     execution: false
     name: f5-asm-policy-methods-update
     outputs:
     - contextPath: f5.PolicyMethods.name
-      description: The name of the new method
+      description: The name of the updated method.
       type: String
     - contextPath: f5.PolicyMethods.id
-      description: ID of the new method
+      description: The ID of the updated method.
       type: String
     - contextPath: f5.PolicyMethods.actAsMethod
-      description: Functionality of the new method.
+      description: The functionality of the updated method.
       type: String
     - contextPath: f5.PolicyMethods.selfLink
-      description: self link
+      description: The self link to the updated method.
       type: String
     - contextPath: f5.PolicyMethods.kind
-      description: kind
+      description: The type of method.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5.
+      description: The MD5 hash of the policy from which to delete the method. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the method. ID or display name must be filled.
+      description: The ID of the method to delete. The method_ID or method_name argument must be filled. Default is "None".
       isArray: false
       name: method_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the method. Method ID or method display name must
-        be filled.
+      description: The display name of the method to delete. The method_ID or method_name argument must be filled. Default is "None".
       isArray: false
       name: method_name
       required: false
       secret: false
     deprecated: false
-    description: Delete a method from a certain policy
+    description: Deletes a method from a given policy.
     execution: false
     name: f5-asm-policy-methods-delete
     outputs:
     - contextPath: f5.PolicyMethods.name
-      description: The name of the new method
+      description: The name of the deleted method.
       type: String
     - contextPath: f5.PolicyMethods.id
-      description: ID of the new method
+      description: The ID of the deleted method.
       type: String
     - contextPath: f5.PolicyMethods.actAsMethod
-      description: Functionality of the new method.
+      description: The functionality of the deleted method.
       type: String
     - contextPath: f5.PolicyMethods.selfLink
-      description: self link
+      description: The self link to the deleted method.
       type: String
     - contextPath: f5.PolicyMethods.kind
-      description: kind
+      description: The type of the deleted method.
       type: String
   - arguments:
     - default: false
-      description: The MD5 hash of the policy.
+      description: The MD5 hash of the policy to which you want to add the new file type. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
@@ -463,7 +459,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Query string length.
+      description: The length of the query string. Default is "100".
       isArray: false
       name: query_string_length
       required: false
@@ -471,8 +467,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: indicates if the user wishes check the length of data in post method.
-        default is True.
+      description: Whether to check the length of the data in the post method. Default is "true".
       isArray: false
       name: check_post_data_length
       predefined:
@@ -483,7 +478,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Indicates if the user wishes to check the response.
+      description: Whether to check the response. Default is "true".
       isArray: false
       name: response_check
       predefined:
@@ -494,7 +489,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Indicates if the user wishes to check the request length.
+      description: Whether to check the length of the request. Default is "true".
       isArray: false
       name: check_request_length
       predefined:
@@ -504,7 +499,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: post data length.
+      description: The post data length. Default is "100".
       isArray: false
       name: post_data_length
       required: false
@@ -512,7 +507,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Indicates if the user wishes the new file type to be at staging.
+      description: Whether to stage the new file type. Default is "false".
       isArray: false
       name: perform_staging
       predefined:
@@ -526,73 +521,72 @@ script:
     name: f5-asm-policy-file-types-add
     outputs:
     - contextPath: f5.FileType.name
-      description: Method name
+      description: The name of the file type.
       type: String
     - contextPath: f5.FileType.id
-      description: Method ID
+      description: The ID of the file type.
       type: String
     - contextPath: f5.FileType.queryStringLength
-      description: Indicates the query string length
+      description: The length of the query string.
       type: Number
     - contextPath: f5.FileType.selfLink
-      description: self link
+      description: The self link to the file type.
       type: String
     - contextPath: f5.FileType.lastUpdateMicros
-      description: Last update time
+      description: The datetime the file type was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
     - contextPath: f5.FileType.responseCheck
-      description: Indicates if user wished to check response
+      description: Indicates if user wanted to check the response.
       type: Boolean
     - contextPath: f5.FileType.checkRequestLength
-      description: Request length
+      description: The length of the request.
       type: String
     - contextPath: f5.FileType.allowed
-      description: Indicates if the file type allowed
+      description: Indicates if the file type is allowed.
       type: Boolean
     - contextPath: f5.FileType.check-url-length
-      description: Indicates if user wishes to check url length
+      description: Indicates whether to check the URL length.
       type: Boolean
     - contextPath: f5.FileType.postDataLength
-      description: Length od the post data
+      description: The length of the post data.
       type: Number
     - contextPath: f5.FileType.urlLength
-      description: Indicates the url length
+      description: The length of the URL.
       type: Number
-    - contextPath: f5.FileType..performStaging
-      description: Indicates if staging was performed.
+    - contextPath: f5.FileType.performStaging
+      description: Indicates whether the file type should be staged.
       type: Boolean
   - arguments:
     - default: false
-      description: The MD5 hash of the policy.
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the file type. ID or display name must be filled.
+      description: ID of the file type. The ID or display name must be filled. Default is "None".
       isArray: false
       name: file_type_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the file type. ID or display name must be filled.
+      description: Display name of the file type. The ID or display name must be filled. Default is "None".
       isArray: false
       name: file_type_name
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: Query string length.
+      description: The length of the query string. Default is "100".
       isArray: false
       name: query_string_length
       required: false
       secret: false
     - default: false
       defaultValue: 'true'
-      description: indicates if the user wishes check the length of data in post method.
-        default is True.
+      description: Whether to check the length of the data in the post method. Default is "True".
       isArray: false
       name: check_post_data_length
       predefined:
@@ -603,7 +597,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Indicates if the user wishes to check the response.
+      description: Whether to check the response. Default is "true".
       isArray: false
       name: response_check
       predefined:
@@ -614,7 +608,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Indicates if the user wishes to check the request length.
+      description: Whether to check the length of the request. Default is "true".
       isArray: false
       name: check_request_length
       predefined:
@@ -624,7 +618,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: post data length.
+      description: The post data length. Default is "100".
       isArray: false
       name: post_data_length
       required: false
@@ -632,7 +626,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Indicates if the user wishes the new file type to be at staging.
+      description: Whether to stage the updated file type. Default is "false".
       isArray: false
       name: perform_staging
       predefined:
@@ -641,69 +635,69 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: update policy file type
+    description: Updates the policy file type.
     execution: false
     name: f5-asm-policy-file-types-update
     outputs:
     - contextPath: f5.FileType.name
-      description: Method name
+      description: The name of the file type.
       type: String
     - contextPath: f5.FileType.id
-      description: Method ID
+      description: The ID of the file type.
       type: String
     - contextPath: f5.FileType.queryStringLength
-      description: Indicates the query string length
+      description: The length of the query string.
       type: Number
     - contextPath: f5.FileType.selfLink
-      description: self link
+      description: The self link to the file type.
       type: String
     - contextPath: f5.FileType.lastUpdateMicros
-      description: Last update time.
+      description: The datetime the file type was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
     - contextPath: f5.FileType.responseCheck
-      description: Indicates if user wished to check response
+      description: Indicates whether the user wanted to check the response.
       type: Boolean
     - contextPath: f5.FileType.checkRequestLength
-      description: Request length
+      description: The length of the request.
       type: String
     - contextPath: f5.FileType.allowed
-      description: Indicates if the file type allowed
+      description: Indicates if the file type is allowed.
       type: Boolean
     - contextPath: f5.FileType.check-url-length
-      description: Indicates if user wishes to check url length
+      description: Indicates whether the user wanted to check the URL length.
       type: Boolean
     - contextPath: f5.FileType.postDataLength
-      description: Length od the post data
+      description: The length of the post data.
       type: Number
     - contextPath: f5.FileType.urlLength
-      description: Indicates the url length
+      description: The length of the URL.
       type: Number
-    - contextPath: f5.FileType..performStaging
-      description: Indicates if staging was performed.
+    - contextPath: f5.FileType.performStaging
+      description: Indicates whether the file type should be staged.
       type: Boolean
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5.
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the file type. ID or display name must be filled.
+      description: ID of the file type. The ID or display name must be filled. Default is "None".
       isArray: false
       name: file_type_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the file type. ID or display name must be filled.
+      description: Display name of the file type. The ID or display name must be filled. Default is "None".
       isArray: false
       name: file_type_name
       required: false
       secret: false
     deprecated: false
-    description: Delete policy file type
+    description: Deletes the policy file type.
     execution: false
     name: f5-asm-policy-file-types-delete
     outputs:
@@ -718,13 +712,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: Delete policy
+    description: Deletes a policy.
     execution: false
     name: f5-asm-policy-delete
     outputs:
@@ -735,47 +729,47 @@ script:
       description: ID of the deleted policy.
       type: String
     - contextPath: f5.Policy.selfLink
-      description: Self link of the deleted policy.
+      description: The self link to the deleted policy.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: List policy hostnames
+    description: Lists the hostnames of the policy.
     execution: false
     name: f5-asm-policy-hostnames-list
     outputs:
     - contextPath: f5.Hostname.name
-      description: Policy hostname
+      description: The hostname of the policy.
       type: String
     - contextPath: f5.Hostname.id
-      description: Policy ID
+      description: The ID of the hostname.
       type: String
     - contextPath: f5.Hostname.createdBy
-      description: Interface used to create the hostname
+      description: The interface used to create the hostname.
       type: String
     - contextPath: f5.Hostname.selfLink
-      description: URI of specific hostname
+      description: The self link to the specific hostname.
       type: String
     - contextPath: f5.Hostname.includeSubdomains
-      description: Whether or not to include subdomains
+      description: Indicates whether to include subdomains.
       type: Boolean
     - contextPath: f5.Hostname.lastUpdateMicros
-      description: Time of last update
+      description: The datetime the hostname was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
-      description: Host name to add
+      description: The hostname to add to the policy.
       isArray: false
       name: name
       required: true
@@ -783,7 +777,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether or not to include subdomains
+      description: Whether to include subdomains in the policy. Default is "false".
       isArray: false
       name: include_subdomains
       predefined:
@@ -792,52 +786,52 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add a new hostname to a policy
+    description: Adds a new hostname to a policy.
     execution: false
     name: f5-asm-policy-hostnames-add
     outputs:
     - contextPath: f5.Hostname.name
-      description: Policy hostname
+      description: The policy hostname.
       type: String
     - contextPath: f5.Hostname.id
-      description: Policy ID
+      description: The policy ID.
       type: String
     - contextPath: f5.Hostname.createdBy
-      description: Interface used to create the hostname
+      description: The interface used to create the hostname.
       type: String
     - contextPath: f5.Hostname.selfLink
-      description: URI of specific hostname
+      description: The self link to the specific hostname.
       type: String
     - contextPath: f5.Hostname.includeSubdomains
-      description: Whether or not to include subdomains
+      description: Indicates whether to include subdomains.
       type: Boolean
     - contextPath: f5.Hostname.lastUpdateMicros
-      description: Time of last update
+      description: The datetime the hostname was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the hostname. ID or display name must be filled.
+      description: ID of the hostname. ID or display name must be filled. Default is "None".
       isArray: false
       name: hostname_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the hostname. ID or display name must be filled.
+      description: Display name of the hostname. ID or display name must be filled. Default is "None".
       isArray: false
       name: hostname_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to include subdomains
+      description: Whether to include subdomains.
       isArray: false
       name: include_subdomains
       predefined:
@@ -846,118 +840,118 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update an existing policy hostname
+    description: Updates an existing policy hostname.
     execution: false
     name: f5-asm-policy-hostnames-update
     outputs:
     - contextPath: f5.Hostname.name
-      description: Policy hostname
+      description: The policy hostname.
       type: String
     - contextPath: f5.Hostname.id
-      description: Policy ID
+      description: The policy ID.
       type: String
     - contextPath: f5.Hostname.createdBy
-      description: Interface used to create the hostname
+      description: The interface used to create the hostname.
       type: String
     - contextPath: f5.Hostname.selfLink
-      description: URI of specific hostname
+      description: The self link to the specific hostname.
       type: String
     - contextPath: f5.Hostname.includeSubdomains
-      description: Whether or not to include subdomains
+      description: Indicates whether subdomains are included.
       type: Boolean
     - contextPath: f5.Hostname.lastUpdateMicros
-      description: Time of last update
+      description: The datetime the hostname was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the hostname. ID or display name must be filled.
+      description: The ID of the hostname. The ID or display name must be filled. Default is "None".
       isArray: false
       name: hostname_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the hostname. ID or display name must be filled.
+      description: The display name of the hostname. The ID or display name must be filled. Default is "None".
       isArray: false
       name: hostname_name
       required: false
       secret: false
     deprecated: false
-    description: Delete a hostname from a policy
+    description: Deletes a hostname from a policy.
     execution: false
     name: f5-asm-policy-hostnames-delete
     outputs:
     - contextPath: f5.Hostname.name
-      description: Policy hostname
+      description: The policy hostname.
       type: String
     - contextPath: f5.Hostname.id
-      description: Policy ID
+      description: The policy ID.
       type: String
     - contextPath: f5.Hostname.createdBy
-      description: Interface used to create the hostname
+      description: The interface used to create the hostname.
       type: String
     - contextPath: f5.Hostname.selfLink
-      description: URI of specific hostname
+      description: The self link to the specific hostname.
       type: String
     - contextPath: f5.Hostname.includeSubdomains
-      description: Whether or not to include subdomains
+      description: Whether to include subdomains.
       type: Boolean
     - contextPath: f5.Hostname.lastUpdateMicros
-      description: Time of last update
+      description: The datetime the hostname was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: List all cookies of a given policy
+    description: Lists all cookies of a given policy.
     execution: false
     name: f5-asm-policy-cookies-list
     outputs:
     - contextPath: f5.Cookies.name
-      description: Cookies name
+      description: The name of the cookie.
       type: String
     - contextPath: f5.Cookies.id
-      description: Cookie ID
+      description: The ID of the cookie.
       type: String
     - contextPath: f5.Cookies.selfLink
-      description: Cookie self link
+      description: The self link to the specific cookie.
       type: String
     - contextPath: f5.Cookies.enforcementType
-      description: Enforcement type
+      description: The enforcement type of the cookie.
       type: String
-    - contextPath: f5.Cookies..performStaging
-      description: Indicates if perform staging
+    - contextPath: f5.Cookies.performStaging
+      description: Indicates whether the cookie should be staged.
       type: Boolean
     - contextPath: f5.Cookies.kind
-      description: Object kind
+      description: The cookie type.
       type: String
     - contextPath: f5.Cookies.isBase64
-      description: Indicated if base 64
+      description: Indicates if the cookie is encoded in base64.
       type: Boolean
     - contextPath: f5.Cookies.createdBy
       description: Indicates which user created this cookie.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5.
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sub-path of the blocking- settings element
+      description: 'Sub-path of the blocking- settings element. Possible values are: "violations", "evasions", "http-protocols", and "web-services-securities".'
       isArray: false
       name: endpoint
       predefined:
@@ -968,53 +962,53 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retreive a blocking- settings list from a selected policy.
+    description: Retrieves a blocking-settings list from a selected policy.
     execution: false
     name: f5-asm-policy-blocking-settings-list
     outputs:
     - contextPath: f5.BlockingSettings.description
-      description: Element description
+      description: Description of the element.
       type: String
     - contextPath: f5.BlockingSettings.learn
-      description: Is the element learning
+      description: Indicates whether the element is learning.
       type: Boolean
     - contextPath: f5.BlockingSettings.id
-      description: Element ID
+      description: The element ID.
       type: String
     - contextPath: f5.BlockingSettings.kind
-      description: Kind of element
+      description: The type of element.
       type: String
     - contextPath: f5.BlockingSettings.enabled
-      description: Is the element enabled
+      description: Whether the element is enabled.
       type: Boolean
     - contextPath: f5.BlockingSettings.selfLink
-      description: Link to the element
+      description: The self link to the specific element.
       type: String
     - contextPath: f5.BlockingSettings.reference
-      description: Reference to the element
+      description: Reference to the element.
       type: String
     - contextPath: f5.BlockingSettings.lastUpdateMicros
-      description: Time when the resource was last updated
+      description: The datetime the element was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
     - contextPath: f5.BlockingSettings.section-reference
-      description: Section reference to the element
+      description: Section reference to the element.
       type: String
     - contextPath: f5.BlockingSettings.alarm
-      description: Should the element alarm
+      description: Whether the system records requests that trigger the violation.
       type: Boolean
     - contextPath: f5.BlockingSettings.block
-      description: Should the element block
+      description: Whether the element blocks the request that triggers the violation.
       type: Boolean
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sub-path of the blocking- settings element
+      description: 'Sub-path of the blocking- settings element. Possible values are: "violations", "evasions", "http-protocols", and "web-services-securities".'
       isArray: false
       name: endpoint
       predefined:
@@ -1032,7 +1026,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the element learn
+      description: Whether the element should learn.
       isArray: false
       name: learn
       predefined:
@@ -1042,7 +1036,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the element alarm
+      description: Whether the system records requests that trigger the violation.
       isArray: false
       name: alarm
       predefined:
@@ -1052,7 +1046,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the element block
+      description: Whether the element blocks the request that triggers the violation.
       isArray: false
       name: block
       predefined:
@@ -1062,7 +1056,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the element be enabled
+      description: Whether the element should be enabled.
       isArray: false
       name: enabled
       predefined:
@@ -1071,94 +1065,94 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update a blocking-settings element
+    description: Updates a blocking-settings element.
     execution: false
     name: f5-asm-policy-blocking-settings-update
     outputs:
     - contextPath: f5.BlockingSettings.description
-      description: Element description
+      description: The description of the element.
       type: String
     - contextPath: f5.BlockingSettings.learn
-      description: Is the element learning
+      description: Whether the element is learning.
       type: Boolean
     - contextPath: f5.BlockingSettings.id
-      description: Element ID
+      description: The ID of the element.
       type: String
     - contextPath: f5.BlockingSettings.kind
-      description: Kind of element
+      description: The type of element.
       type: String
     - contextPath: f5.BlockingSettings.enabled
-      description: Is the element enabled
+      description: Whether the element is enabled.
       type: Boolean
     - contextPath: f5.BlockingSettings.selfLink
-      description: Link to the element
+      description: The self link to the specific element.
       type: String
     - contextPath: f5.BlockingSettings.reference
-      description: Reference to the element
+      description: The reference to the element.
       type: String
     - contextPath: f5.BlockingSettings.lastUpdateMicros
-      description: Time when the resource was last updated
+      description: The datetime the resource was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
     - contextPath: f5.BlockingSettings.section-reference
-      description: Section reference to the element
+      description: The section reference to the element.
       type: String
     - contextPath: f5.BlockingSettings.alarm
-      description: Should the element alarm
+      description: Whether the system records requests that trigger the violation.
       type: Boolean
     - contextPath: f5.BlockingSettings.block
-      description: Should the element block
+      description: Whether the element blocks the request that triggers the violation.
       type: Boolean
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: List all policy URLs
+    description: Lists all policy URLs.
     execution: false
     name: f5-asm-policy-urls-list
     outputs:
     - contextPath: f5.Url.id
-      description: URL ID
+      description: The ID of the URL.
       type: String
     - contextPath: f5.Url.name
-      description: URL name
+      description: The name of the URL.
       type: String
     - contextPath: f5.Url.description
-      description: Description of the URL
+      description: A description of the URL.
       type: String
     - contextPath: f5.Url.protocol
-      description: Protocol the URL uses.
+      description: The protocol the URL uses.
       type: String
     - contextPath: f5.Url.type
-      description: Is the URL explicit or wildcard
+      description: Whether the URL is explicit or a wildcard.
       type: String
     - contextPath: f5.Url.method
-      description: Allowed method (or all)
+      description: The allowed method (or all methods) of the URL.
       type: String
     - contextPath: f5.Url.isAllowed
-      description: Is the URL allowed.
+      description: Whether the URL is allowed.
       type: Boolean
     - contextPath: f5.Url.clickjackingProtection
-      description: Is clickjacking protection enabled in the URL.
+      description: Whether clickjacking protection is enabled in the URL.
       type: Boolean
-    - contextPath: f5.Url..performStaging
-      description: Is the URL in staging.
+    - contextPath: f5.Url.performStaging
+      description: Indicates whether the URL should be staged.
       type: Boolean
     - contextPath: f5.Url.mandatoryBody
-      description: Is a body mandatory
+      description: Whether a request body is mandatory.
       type: Boolean
     - contextPath: f5.Url.selfLink
-      description: Path the the URL in the api.
+      description: The self link to the URL in the API.
       type: String
     - contextPath: f5.Url.lastUpdateMicros
-      description: Time of last update committed to the URL
+      description: The datetime the last update was committed to the URL represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
@@ -1172,7 +1166,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Indicates if the user wishes the new file type to be at staging.
+      description: Whether to stage the new cookie. Default is "false".
       isArray: false
       name: perform_staging
       predefined:
@@ -1183,7 +1177,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: explicit
-      description: Type of the new parameter.
+      description: 'Type of the new parameter. Possible values are: "explicit" and "wildcard". Default is "explicit".'
       isArray: false
       name: parameter_type
       predefined:
@@ -1194,7 +1188,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: allow
-      description: Enforcement type
+      description: 'The enforcement type. Possible values are: "allow" and "enforce". Default is "allow".'
       isArray: false
       name: enforcement_type
       predefined:
@@ -1205,8 +1199,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Should attack signatures be checked. If enforcement type is set
-        to ''enforce'', this field will not get any value.  '
+      description: Whether attack signatures should be checked. Default is "true". If the enforcement type is set to "enforce", this field will not get any value.
       isArray: false
       name: attack_signatures_check
       predefined:
@@ -1215,44 +1208,44 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add new cookie to a specific policy
+    description: Adds a new cookie to a specific policy.
     execution: false
     name: f5-asm-policy-cookies-add
     outputs:
     - contextPath: f5.Cookies.name
-      description: Cookie name
+      description: The name of the cookie.
       type: String
     - contextPath: f5.Cookies.id
-      description: Cookie ID
+      description: The ID of the cookie.
       type: String
     - contextPath: f5.Cookies.selfLink
-      description: Cookie self link
+      description: The self link to the specific cookie.
       type: String
     - contextPath: f5.Cookies.enforcementType
-      description: Enforcement type
+      description: The enforcement type.
       type: String
     - contextPath: f5.Cookies.performStaging
-      description: Indicates if the user wishes to perform staging
+      description: Indicates whether the cookie should be staged.
       type: Boolean
     - contextPath: f5.Cookies.type
-      description: Type
+      description: The type of the cookie.
       type: String
     - contextPath: f5.Cookies.isBase64
-      description: Indicates if base 64
+      description: Indicates if the cookie is encoded in base64.
       type: Boolean
     - contextPath: f5.Cookies.createdBy
-      description: Indicates the user created the cookie
+      description: Indicates who created the cookie.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Communication protocol (HTTP/S)
+      description: 'The communication protocol. Possible values are: "http" and "https".'
       isArray: false
       name: protocol
       predefined:
@@ -1261,13 +1254,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Display name of the new URL
+      description: Display name of the new URL.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: Optional description for the URL
+      description: An optional description for the URL.
       isArray: false
       name: description
       required: false
@@ -1275,7 +1268,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: explicit
-      description: Type of URL (explicit or wildcard)
+      description: 'The type of URL. Possible values are: "explicit" and "wildcard".'
       isArray: false
       name: url_type
       predefined:
@@ -1286,7 +1279,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether or not the URL is allowed
+      description: Whether the URL is allowed. Default is "true".
       isArray: false
       name: is_allowed
       predefined:
@@ -1295,14 +1288,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: What method to use in the URL
+      description: The method to use in the URL.
       isArray: false
       name: method
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is clickjacking protection enabled in the URL.
+      description: Whether clickjacking protection is enabled in the URL.
       isArray: false
       name: clickjacking_protection
       predefined:
@@ -1312,7 +1305,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Wheter or not to stage the URL
+      description: Whether to stage the URL.
       isArray: false
       name: perform_staging
       predefined:
@@ -1321,70 +1314,70 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add a new URL to a policy
+    description: Adds a new URL to a policy.
     execution: false
     name: f5-asm-policy-urls-add
     outputs:
     - contextPath: f5.Url.id
-      description: URL ID
+      description: The ID of the URL.
       type: String
     - contextPath: f5.Url.name
-      description: URL name
+      description: The name of the URL.
       type: String
     - contextPath: f5.Url.description
-      description: Description of the URL
+      description: A description of the URL.
       type: String
     - contextPath: f5.Url.protocol
-      description: Protocol the URL uses.
+      description: The protocol the URL uses.
       type: String
     - contextPath: f5.Url.type
-      description: Is the URL explicit or wildcard
+      description: Whether the URL is explicit or wildcard.
       type: String
     - contextPath: f5.Url.method
-      description: Allowed method (or all)
+      description: The allowed method (or all) of the URL.
       type: String
     - contextPath: f5.Url.isAllowed
-      description: Is the URL allowed.
+      description: Whether the URL is allowed.
       type: Boolean
     - contextPath: f5.Url.clickjackingProtection
-      description: Is clickjacking protection enabled in the URL.
+      description: Whether clickjacking protection is enabled in the URL.
       type: Boolean
-    - contextPath: f5.Url..performStaging
-      description: Is the URL in staging.
+    - contextPath: f5.Url.performStaging
+      description: Indicates whether the URL should be staged.
       type: Boolean
     - contextPath: f5.Url.mandatoryBody
-      description: Is a body mandatory
+      description: Whether a request body is mandatory.
       type: Boolean
     - contextPath: f5.Url.selfLink
-      description: Path the the URL in the api.
+      description: The self link to the specific URL in the API.
       type: String
     - contextPath: f5.Url.lastUpdateMicros
-      description: Time of last update committed to the URL
+      description: The datetime the last update was committed to the URL represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the url. ID or display name must be filled.
+      description: The ID of the URL. The ID or display name must be filled. Default is "None".
       isArray: false
       name: url_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the url. ID or display name must be filled.
+      description: The display name of the URL. The ID or display name must be filled. Default is "None".
       isArray: false
       name: url_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to stage the URL
+      description: Whether to stage the URL.
       isArray: false
       name: perform_staging
       predefined:
@@ -1393,14 +1386,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Optional new description for the URL
+      description: Optional new description for the URL.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to have a mandatory body
+      description: Whether a body is mandatory.
       isArray: false
       name: mandatory_body
       predefined:
@@ -1410,7 +1403,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not the URL is a referrer.
+      description: Whether the URL is a referrer.
       isArray: false
       name: url_isreferrer
       predefined:
@@ -1419,132 +1412,132 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update an existing policy URL
+    description: Updates an existing policy URL.
     execution: false
     name: f5-asm-policy-urls-update
     outputs:
     - contextPath: f5.Url.id
-      description: URL ID
+      description: the ID of the URL.
       type: String
     - contextPath: f5.Url.name
-      description: URL name
+      description: The name of the URL.
       type: String
     - contextPath: f5.Url.description
-      description: Description of the URL
+      description: A description of the URL.
       type: String
     - contextPath: f5.Url.protocol
-      description: Protocol the URL uses.
+      description: The protocol the URL uses.
       type: String
     - contextPath: f5.Url.type
-      description: Is the URL explicit or wildcard
+      description: Whether the URL is explicit or wildcard.
       type: String
     - contextPath: f5.Url.method
-      description: Allowed method (or all)
+      description: The allowed method (or all) of the URL.
       type: String
     - contextPath: f5.Url.isAllowed
-      description: Is the URL allowed.
+      description: Whether the URL is allowed.
       type: Boolean
     - contextPath: f5.Url.clickjackingProtection
-      description: Is clickjacking protection enabled in the URL.
+      description: Whether clickjacking protection is enabled in the URL.
       type: Boolean
-    - contextPath: f5.Url..performStaging
-      description: Is the URL in staging.
+    - contextPath: f5.Url.performStaging
+      description: Indicates whether the URL should be staged.
       type: Boolean
     - contextPath: f5.Url.mandatoryBody
-      description: Is a body mandatory
+      description: Whether a request body is mandatory.
       type: Boolean
     - contextPath: f5.Url.selfLink
-      description: Path the the URL in the api.
+      description: The self link to the specific URL in the API.
       type: String
     - contextPath: f5.Url.lastUpdateMicros
-      description: Time of last update committed to the URL
+      description: The datetime the last update was committed to the URL represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5.
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the url. ID or display name must be filled.
+      description: The ID of the URL. The ID or display name must be filled. Default is "None".
       isArray: false
       name: url_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the url. ID or display name must be filled.
+      description: The display name of the URL. The ID or display name must be filled. Default is "None".
       isArray: false
       name: url_name
       required: false
       secret: false
     deprecated: false
-    description: Delete a URL from a policy
+    description: Deletes a URL from a policy.
     execution: false
     name: f5-asm-policy-urls-delete
     outputs:
     - contextPath: f5.Url.id
-      description: URL ID
+      description: The ID of the URL.
       type: String
     - contextPath: f5.Url.name
-      description: URL name
+      description: The name of the URL.
       type: String
     - contextPath: f5.Url.description
-      description: Description of the URL
+      description: A description of the URL.
       type: String
     - contextPath: f5.Url.protocol
-      description: Protocol the URL uses.
+      description: The protocol the URL uses.
       type: String
     - contextPath: f5.Url.type
-      description: Is the URL explicit or wildcard
+      description: Whether the URL is explicit or wildcard.
       type: String
     - contextPath: f5.Url.method
-      description: Allowed method (or all)
+      description: The allowed method (or all) of the URL.
       type: String
     - contextPath: f5.Url.isAllowed
-      description: Is the URL allowed.
+      description: Whether the URL is allowed.
       type: Boolean
     - contextPath: f5.Url.clickjackingProtection
-      description: Is clickjacking protection enabled in the URL.
+      description: Whether clickjacking protection is enabled in the URL.
       type: Boolean
     - contextPath: f5.Url.performStaging
-      description: Is the URL in staging.
+      description: Indicates whether the URL should be staged.
       type: Boolean
     - contextPath: f5.Url.mandatoryBody
-      description: Is a body mandatory
+      description: Whether a request body is mandatory.
       type: Boolean
     - contextPath: f5.Url.selfLink
-      description: Path the the URL in the api.
+      description: The self link to the specific URL in the API.
       type: String
     - contextPath: f5.Url.lastUpdateMicros
-      description: Time of last update committed to the URL
+      description: The datetime the last update was committed to the URL represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the cookie. ID or display name must be filled.
+      description: The ID of the cookie. The ID or display name must be filled. Default is "None".
       isArray: false
       name: cookie_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the cookie. ID or display name must be filled.
+      description: The display name of the cookie. The ID or display name must be filled. Default is "None".
       isArray: false
       name: cookie_name
       required: false
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Indicates if the user wishes the new file type to be at staging.
+      description: Whether to stage the updated cookie. Default is "false".
       isArray: false
       name: perform_staging
       predefined:
@@ -1555,7 +1548,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: wildcard
-      description: Type of the new parameter.
+      description: 'The type of the new parameter. Possible values are: "wildcard" and "explicit". Default is "wildcard".'
       isArray: false
       name: parameter_type
       predefined:
@@ -1566,7 +1559,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: allow
-      description: Enforcement type.
+      description: 'The enforcement type. Possible values are: "allow" and "enforce".Default is "allow".'
       isArray: false
       name: enforcement_type
       predefined:
@@ -1577,8 +1570,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Should attack signatures be checked. If enforcement type is set
-        to 'enforce', this field will not get any value.
+      description: Whether attack signatures should be checked. Default is "true". If the enforcement type is set to "enforce", this field will not get any value.
       isArray: false
       name: attack_signatures_check
       predefined:
@@ -1587,151 +1579,151 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update a cookie object
+    description: Updates a cookie object.
     execution: false
     name: f5-asm-policy-cookies-update
     outputs:
     - contextPath: f5.Cookies.name
-      description: Cookie name
+      description: The name of the cookie.
       type: String
     - contextPath: f5.Cookies.id
-      description: Cookie ID
+      description: The ID of the cookie.
       type: String
     - contextPath: f5.Cookies.selfLink
-      description: Cookie self link
+      description: The self link to the specific cookie.
       type: String
     - contextPath: f5.Cookies.enforcementType
-      description: Enforcement type
+      description: The enforcement type.
       type: String
-    - contextPath: f5.Cookies..performStaging
-      description: Indicates if the user wishes to perform staging
+    - contextPath: f5.Cookies.performStaging
+      description: Indicates whether the cookie should be staged.
       type: Boolean
     - contextPath: f5.Cookies.type
-      description: Type
+      description: The type of the cookie.
       type: String
     - contextPath: f5.Cookies.isBase64
-      description: Indicates if base 64
+      description: Indicates if the cookie is encoded in base64.
       type: Boolean
     - contextPath: f5.Cookies.createdBy
-      description: Indicates the user created the cookie
+      description: Indicates who created the cookie.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the cookie. ID or display name must be filled.
+      description: The ID of the cookie. The ID or display name must be filled. Default is "None".
       isArray: false
       name: cookie_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the cookie. ID or display name must be filled.
+      description: The display name of the cookie. The ID or display name must be filled. Default is "None".
       isArray: false
       name: cookie_name
       required: false
       secret: false
     deprecated: false
-    description: Delete cookie
+    description: Deletes a cookie.
     execution: false
     name: f5-asm-policy-cookies-delete
     outputs:
     - contextPath: f5.Cookies.name
-      description: Cookie name
+      description: The name of the cookie.
       type: String
     - contextPath: f5.Cookies.id
-      description: Cookie ID
+      description: The ID of the cookie.
       type: String
     - contextPath: f5.Cookies.selfLink
-      description: Cookie self link
+      description: The self link to the specific cookie.
       type: String
     - contextPath: f5.Cookies.enforcementType
-      description: Enforcement type
+      description: The enforcement type.
       type: String
-    - contextPath: f5.Cookies..performStaging
-      description: Indicates if the user wishes to perform staging
+    - contextPath: f5.Cookies.performStaging
+      description: Indicates whether the cookie should be staged.
       type: Boolean
     - contextPath: f5.Cookies.type
-      description: Type
+      description: The type of the cookie.
       type: String
     - contextPath: f5.Cookies.isBase64
-      description: Indicates if base 64
+      description: Indicates if the cookie is encoded in base64.
       type: Boolean
     - contextPath: f5.Cookies.createdBy
-      description: Indicates the user created the cookie
+      description: Indicates who created the cookie.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: List all whitelisted IPs for a policy
+    description: Lists all whitelisted IP addresses for a policy.
     execution: false
     name: f5-asm-policy-whitelist-ips-list
     outputs:
     - contextPath: f5.WhitelistIP.id
-      description: ID of the whitelisted IP
+      description: The ID of the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.ipAddress
-      description: The whitelisted IP address
+      description: The whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.ipMask
-      description: Subnet mask of the whitelisted IP address
+      description: The subnet mask of the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.description
-      description: Description for the whitelisted IP
+      description: The description for the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.blockRequests
-      description: How or if the IP blocks requests
+      description: How or if the IP blocks requests.
       type: String
     - contextPath: f5.WhitelistIP.ignoreAnomalies
-      description: Whether or not to ignore anomalies
+      description: Whether to ignore anomalies.
       type: Boolean
     - contextPath: f5.WhitelistIP.neverLogRequests
-      description: Whether or not to never log requests
+      description: Whether to never log requests.
       type: Boolean
     - contextPath: f5.WhitelistIP.neverLearnRequests
-      description: Whether or not to never learn requests
+      description: Whether to never learn requests.
       type: Boolean
     - contextPath: f5.WhitelistIP.trustedByPolicyBuilder
-      description: Whether or not the IP is trusted by the builder.
+      description: Whether the IP is trusted by the builder.
       type: Boolean
     - contextPath: f5.WhitelistIP.selfLink
-      description: Link to the whitelisted IP.
+      description: The self link to the specific whitelisted IP.
       type: String
     - contextPath: f5.WhitelistIP.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
-      description: The new IP address
+      description: The new IP address.
       isArray: false
       name: ip_address
       required: true
       secret: false
     - default: false
-      description: Subnet mask for the new IP
+      description: Subnet mask for the new IP address.
       isArray: false
       name: ip_mask
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not the IP is trusted by the policy builder.
+      description: Whether the IP address is trusted by the policy builder.
       isArray: false
       name: trusted_by_builder
       predefined:
@@ -1741,7 +1733,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to ignore detections of brute force.
+      description: Whether to ignore detections of brute force.
       isArray: false
       name: ignore_brute_detection
       predefined:
@@ -1750,7 +1742,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Optional description for the new IP.
+      description: Optional description for the new IP address.
       isArray: false
       name: description
       required: false
@@ -1758,7 +1750,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: policy-default
-      description: Method of blocking requests.
+      description: 'The method of blocking requests. Possible values are: "policy-default", "never", and "always". Default is "policy-default".'
       isArray: false
       name: block_requests
       predefined:
@@ -1769,7 +1761,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to ignore learning suggestions.
+      description: Whether to ignore learning suggestions.
       isArray: false
       name: ignore_learning
       predefined:
@@ -1779,7 +1771,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to never log from the IP.
+      description: Whether to never log from the IP address.
       isArray: false
       name: never_log
       predefined:
@@ -1789,7 +1781,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to ignore intelligence gathered on the IP.
+      description: Whether to ignore intelligence gathered on the IP address.
       isArray: false
       name: ignore_intelligence
       predefined:
@@ -1798,53 +1790,53 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add a new whitelisted IP to a policy.
+    description: Adds a new whitelisted IP address to a policy.
     execution: false
     name: f5-asm-policy-whitelist-ips-add
     outputs:
     - contextPath: f5.WhitelistIP.id
-      description: ID of the whitelisted IP
+      description: ID of the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.ipAddress
-      description: The whitelisted IP address
+      description: The whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.ipMask
-      description: Subnet mask of the whitelisted IP address
+      description: The subnet mask of the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.description
-      description: Description for the whitelisted IP
+      description: A description for the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.blockRequests
-      description: How or if the IP blocks requests
+      description: How or if the IP blocks requests.
       type: String
     - contextPath: f5.WhitelistIP.ignoreAnomalies
-      description: Whether or not to ignore anomalies
+      description: Whether to ignore anomalies.
       type: Boolean
     - contextPath: f5.WhitelistIP.neverLogRequests
-      description: Whether or not to never log requests
+      description: Whether to never log requests.
       type: Boolean
     - contextPath: f5.WhitelistIP.neverLearnRequests
-      description: Whether or not to never learn requests
+      description: Whether to never learn requests.
       type: Boolean
     - contextPath: f5.WhitelistIP.trustedByPolicyBuilder
-      description: Whether or not the IP is trusted by the builder.
+      description: Whether the IP address is trusted by the builder.
       type: Boolean
     - contextPath: f5.WhitelistIP.selfLink
-      description: Link to the whitelisted IP.
+      description: The self link to the specific whitelisted IP.
       type: String
     - contextPath: f5.WhitelistIP.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the IP. ID or display name must be filled.
+      description: The ID of the IP address. The ID or display name must be filled. Default is "None".
       isArray: false
       name: ip_id
       required: false
@@ -1857,8 +1849,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not the IP is trusted by the policy builder. ID or display
-        name must be filled.
+      description: Whether the IP address is trusted by the policy builder. The ID or display name must be filled.
       isArray: false
       name: trusted_by_builder
       predefined:
@@ -1868,7 +1859,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to ignore detections of brute force.
+      description: Whether to ignore detections of brute force.
       isArray: false
       name: ignore_brute_detection
       predefined:
@@ -1877,7 +1868,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Optional description for the new IP.
+      description: Optional description for the new IP address.
       isArray: false
       name: description
       required: false
@@ -1885,7 +1876,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: policy-default
-      description: Method of blocking requests.
+      description: 'The method of blocking requests. Possible values are: "policy-default", "never", and "always". Default is "policy-default".'
       isArray: false
       name: block_requests
       predefined:
@@ -1896,7 +1887,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to ignore learning suggestions.
+      description: Whether to ignore learning suggestions.
       isArray: false
       name: ignore_learning
       predefined:
@@ -1906,7 +1897,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to never log from the IP.
+      description: Whether to never log from the IP address.
       isArray: false
       name: never_log
       predefined:
@@ -1916,7 +1907,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to ignore intelligence gathered on the IP.
+      description: Whether to ignore intelligence gathered on the IP address.
       isArray: false
       name: ignore_intelligence
       predefined:
@@ -1925,53 +1916,53 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update an existing whitelisted IP.
+    description: Updates an existing whitelisted IP address.
     execution: false
     name: f5-asm-policy-whitelist-ips-update
     outputs:
     - contextPath: f5.WhitelistIP.id
-      description: ID of the whitelisted IP
+      description: The ID of the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.ipAddress
-      description: The whitelisted IP address
+      description: The whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.ipMask
-      description: Subnet mask of the whitelisted IP address
+      description: The subnet mask of the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.description
-      description: Description for the whitelisted IP
+      description: A description for the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.blockRequests
-      description: How or if the IP blocks requests
+      description: How or if the IP address blocks requests.
       type: String
     - contextPath: f5.WhitelistIP.ignoreAnomalies
-      description: Whether or not to ignore anomalies
+      description: Whether to ignore anomalies.
       type: Boolean
     - contextPath: f5.WhitelistIP.neverLogRequests
-      description: Whether or not to never log requests
+      description: Whether to never log requests.
       type: Boolean
     - contextPath: f5.WhitelistIP.neverLearnRequests
-      description: Whether or not to never learn requests
+      description: Whether to never learn requests.
       type: Boolean
     - contextPath: f5.WhitelistIP.trustedByPolicyBuilder
-      description: Whether or not the IP is trusted by the builder.
+      description: Whether the IP address is trusted by the builder.
       type: Boolean
     - contextPath: f5.WhitelistIP.selfLink
-      description: Link to the whitelisted IP.
+      description: The self link to the specific whitelisted IP.
       type: String
     - contextPath: f5.WhitelistIP.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the IP. ID or display name must be filled.
+      description: The ID of the IP address. The ID or display name must be filled. Default is "None".
       isArray: false
       name: ip_id
       required: false
@@ -1983,128 +1974,128 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete an existing whitelisted IP from a policy.
+    description: Deletes an existing whitelisted IP address from a policy.
     execution: false
     name: f5-asm-policy-whitelist-ips-delete
     outputs:
     - contextPath: f5.WhitelistIP.id
-      description: ID of the whitelisted IP
+      description: The ID of the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.ipAddress
-      description: The whitelisted IP address
+      description: The whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.ipMask
-      description: Subnet mask of the whitelisted IP address
+      description: The subnet mask of the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.description
-      description: Description for the whitelisted IP
+      description: A description for the whitelisted IP address.
       type: String
     - contextPath: f5.WhitelistIP.blockRequests
-      description: How or if the IP blocks requests
+      description: How or if the IP address blocks requests.
       type: String
     - contextPath: f5.WhitelistIP.ignoreAnomalies
-      description: Whether or not to ignore anomalies
+      description: Whether to ignore anomalies.
       type: Boolean
     - contextPath: f5.WhitelistIP.neverLogRequests
-      description: Whether or not to never log requests
+      description: Whether to never log requests.
       type: Boolean
     - contextPath: f5.WhitelistIP.neverLearnRequests
-      description: Whether or not to never learn requests
+      description: Whether to never learn requests.
       type: Boolean
     - contextPath: f5.WhitelistIP.trustedByPolicyBuilder
-      description: Whether or not the IP is trusted by the builder.
+      description: Whether the IP address is trusted by the builder.
       type: Boolean
     - contextPath: f5.WhitelistIP.selfLink
-      description: Link to the whitelisted IP.
+      description: The self link to the specific whitelisted IP.
       type: String
     - contextPath: f5.WhitelistIP.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: List all signatures for a certain policy.
+    description: Lists all signatures for a specified policy.
     execution: false
     name: f5-asm-policy-signatures-list
     outputs:
     - contextPath: f5.Signatures.id
-      description: ID of the signature.
+      description: The ID of the signature.
       type: String
     - contextPath: f5.Signatures.selfLink
-      description: Self link to the signature
+      description: The self link to the specific signature.
       type: String
     - contextPath: f5.Signatures.performStaging
-      description: Indicates whether staging was perform
+      description: Indicates whether the signature should be staged.
       type: Boolean
     - contextPath: f5.Signatures.lastUpdateMicros
-      description: Last update time
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: 'MD5 hash of the policy. to get '
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: List all policy parameters
+    description: Lists all policy parameters.
     execution: false
     name: f5-asm-policy-parameters-list
     outputs:
     - contextPath: f5.Parameter.id
-      description: ID of the parameter
+      description: The ID of the parameter.
       type: String
     - contextPath: f5.Parameter.name
-      description: Display name of the parameter
+      description: The display name of the parameter.
       type: String
     - contextPath: f5.Parameter.type
-      description: Type of parameter (explicit / wildcard)
+      description: The type of parameter (explicit / wildcard).
       type: String
     - contextPath: f5.Parameter.selfLink
-      description: Link to the parameter
+      description: The self link to the specific parameter.
       type: String
     - contextPath: f5.Parameter.isBase64
-      description: Is the parameter encoded in base64
+      description: Indicates if the parameter is encoded in base64.
       type: Boolean
     - contextPath: f5.Parameter.performStaging
-      description: Should the parameter be staged
+      description: Indicates whether the parameter should be staged.
       type: Boolean
     - contextPath: f5.Parameter.dataType
-      description: Type of data given in the parameter
+      description: The type of data given in the parameter.
       type: String
     - contextPath: f5.Parameter.valueType
-      description: Type of values given in the parameter
+      description: The type of values given in the parameter.
       type: String
     - contextPath: f5.Parameter.mandatory
-      description: Is the parameter mandatory
+      description: Whether the parameter is mandatory.
       type: Boolean
     - contextPath: f5.Parameter.isCookie
-      description: Is the parmeter located in the cookie
+      description: Whether the parameter is located in the cookie.
       type: Boolean
     - contextPath: f5.Parameter.isHeader
-      description: Is the parameter located in the header
+      description: Whether the parameter is located in the header.
       type: Boolean
     - contextPath: f5.Parameter.createdBy
-      description: Where was the parameter created
+      description: Indicates who created the parameter.
       type: String
     - contextPath: f5.Parameter.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of the new parameter
+      description: 'The type of the new parameter. Possible values are: "wildcard" and "explicit".'
       isArray: false
       name: param_type
       predefined:
@@ -2113,14 +2104,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Display name of new parameter
+      description: The display name of the new parameter.
       isArray: false
       name: name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of value passed to the parameter
+      description: 'The type of value passed to the parameter. Possible values are: "user-input", "json", "static-content", "auto-detect", and "xml".'
       isArray: false
       name: value_type
       predefined:
@@ -2133,7 +2124,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Location of the parameter
+      description: 'The location of the parameter. Possible values are: "any", "query", "form-data", "path", "header",  and "cookie".'
       isArray: false
       name: param_location
       predefined:
@@ -2147,7 +2138,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is the parameter mandatory
+      description: Whether the parameter is mandatory.
       isArray: false
       name: mandatory
       predefined:
@@ -2157,7 +2148,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the parameter be staged
+      description: Whether to stage the parameter.
       isArray: false
       name: perform_staging
       predefined:
@@ -2167,7 +2158,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is the parameter sensitive (should values be masked in logs)
+      description: Whether the parameter is sensitive. (Whether values should be masked in logs.)
       isArray: false
       name: sensitive
       predefined:
@@ -2177,7 +2168,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the parameter allow empty values
+      description: Whether the parameter allows empty values.
       isArray: false
       name: allow_empty
       predefined:
@@ -2187,7 +2178,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the parameter allow repeated values
+      description: Whether the parameter allows repeated values.
       isArray: false
       name: allow_repeated
       predefined:
@@ -2196,72 +2187,72 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add a new parameter to a policy
+    description: Adds a new parameter to a policy.
     execution: false
     name: f5-asm-policy-parameters-add
     outputs:
     - contextPath: f5.Parameter.id
-      description: ID of the parameter
+      description: The ID of the parameter.
       type: String
     - contextPath: f5.Parameter.name
-      description: Display name of the parameter
+      description: The display name of the parameter.
       type: String
     - contextPath: f5.Parameter.type
-      description: Type of parameter (explicit / wildcard)
+      description: The type of parameter (explicit / wildcard).
       type: String
     - contextPath: f5.Parameter.selfLink
-      description: Link to the parameter
+      description: The self link to the specific parameter.
       type: String
     - contextPath: f5.Parameter.isBase64
-      description: Is the parameter encoded in base64
+      description: Indicates if the parameter is encoded in base64.
       type: Boolean
     - contextPath: f5.Parameter.performStaging
-      description: Should the parameter be staged
+      description: Indicates whether the parameter should be staged.
       type: Boolean
     - contextPath: f5.Parameter.dataType
-      description: Type of data given in the parameter
+      description: The type of data given in the parameter.
       type: String
     - contextPath: f5.Parameter.valueType
-      description: Type of values given in the parameter
+      description: The type of values given in the parameter.
       type: String
     - contextPath: f5.Parameter.mandatory
-      description: Is the parameter mandatory
+      description: Whether the parameter is mandatory.
       type: Boolean
     - contextPath: f5.Parameter.isCookie
-      description: Is the parmeter located in the cookie
+      description: Whether the parameter is located in the cookie.
       type: Boolean
     - contextPath: f5.Parameter.isHeader
-      description: Is the parameter located in the header
+      description: Whether the parameter is located in the header.
       type: Boolean
     - contextPath: f5.Parameter.createdBy
-      description: Where was the parameter created
+      description: Indicates who created the parameter.
       type: String
     - contextPath: f5.Parameter.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the parameter. ID or display name must be filled.
+      description: The ID of the parameter. The ID or display name must be filled. Default is "None".
       isArray: false
       name: parameter_id
       required: false
       secret: false
     - default: false
-      description: Display name of the parameter. ID or display name must be filled.
+      description: The display name of the parameter. The ID or display name must be filled.
       isArray: false
       name: parameter_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of value passed to the parameter
+      description: 'The type of value passed to the parameter. Possible values are: "user-input", "array", "dynamic", "ignore", "json", "static", "auto", and "xml".'
       isArray: false
       name: value_type
       predefined:
@@ -2277,7 +2268,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Location of the parameter
+      description: 'The location of the parameter. Possible values are: "any", "query", "form-data", "path", "header",  and "cookie".'
       isArray: false
       name: param_location
       predefined:
@@ -2291,7 +2282,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is the parameter mandatory
+      description: Whether the parameter is mandatory.
       isArray: false
       name: mandatory
       predefined:
@@ -2301,7 +2292,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the parameter be staged
+      description: Whether to stage the parameter.
       isArray: false
       name: perform_staging
       predefined:
@@ -2311,7 +2302,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is the parameter sensitive (should values be masked in logs)
+      description: Whether the parameter is sensitive. (Whether values should be masked in logs.)
       isArray: false
       name: sensitive
       predefined:
@@ -2321,7 +2312,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the parameter allow empty values
+      description: Whether the parameter allows empty values.
       isArray: false
       name: allow_empty
       predefined:
@@ -2331,7 +2322,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the parameter allow repeated values
+      description: Whether the parameter allows repeated values.
       isArray: false
       name: allow_repeated
       predefined:
@@ -2340,182 +2331,182 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update an existing policy parameter
+    description: Updates an existing policy parameter.
     execution: false
     name: f5-asm-policy-parameters-update
     outputs:
     - contextPath: f5.Parameter.id
-      description: ID of the parameter
+      description: The ID of the parameter.
       type: String
     - contextPath: f5.Parameter.name
-      description: Display name of the parameter
+      description: The display name of the parameter.
       type: String
     - contextPath: f5.Parameter.type
-      description: Type of parameter (explicit / wildcard)
+      description: The type of parameter (explicit / wildcard).
       type: String
     - contextPath: f5.Parameter.selfLink
-      description: Link to the parameter
+      description: The self link to the specific parameter.
       type: String
     - contextPath: f5.Parameter.isBase64
-      description: Is the parameter encoded in base64
+      description: Indicates if the parameter is encoded in base64.
       type: Boolean
     - contextPath: f5.Parameter.performStaging
-      description: Should the parameter be staged
+      description: Indicates whether the parameter should be staged.
       type: Boolean
     - contextPath: f5.Parameter.dataType
-      description: Type of data given in the parameter
+      description: The type of data given in the parameter.
       type: String
     - contextPath: f5.Parameter.valueType
-      description: Type of values given in the parameter
+      description: The type of values given in the parameter.
       type: String
     - contextPath: f5.Parameter.mandatory
-      description: Is the parameter mandatory
+      description: Whether the parameter is mandatory.
       type: Boolean
     - contextPath: f5.Parameter.isCookie
-      description: Is the parmeter located in the cookie
+      description: Whether the parameter is located in the cookie.
       type: Boolean
     - contextPath: f5.Parameter.isHeader
-      description: Is the parameter located in the header
+      description: Whether the parameter is located in the header.
       type: Boolean
     - contextPath: f5.Parameter.createdBy
-      description: Where was the parameter created
+      description: Indicates who created the parameter.
       type: String
     - contextPath: f5.Parameter.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the parameter. ID or display name must be filled.
+      description: The ID of the parameter. The ID or display name must be filled. Default is "None".
       isArray: false
       name: parameter_id
       required: false
       secret: false
     - default: false
-      description: Display name of the parameter. ID or display name must be filled.
+      description: The display name of the parameter. ID or display name must be filled.
       isArray: false
       name: parameter_name
       required: true
       secret: false
     deprecated: false
-    description: Delete an existing policy parameter
+    description: Deletes an existing policy parameter.
     execution: false
     name: f5-asm-policy-parameters-delete
     outputs:
     - contextPath: f5.Parameter.id
-      description: ID of the parameter
+      description: The ID of the parameter.
       type: String
     - contextPath: f5.Parameter.name
-      description: Display name of the parameter
+      description: The display name of the parameter.
       type: String
     - contextPath: f5.Parameter.type
-      description: Type of parameter (explicit / wildcard)
+      description: The type of parameter (explicit / wildcard).
       type: String
     - contextPath: f5.Parameter.selfLink
-      description: Link to the parameter
+      description: The self link to the specific parameter.
       type: String
     - contextPath: f5.Parameter.isBase64
-      description: Is the parameter encoded in base64
+      description: Indicates if the parameter is encoded in base64.
       type: Boolean
     - contextPath: f5.Parameter.performStaging
-      description: Should the parameter be staged
+      description: Indicates whether the parameter should be staged.
       type: Boolean
     - contextPath: f5.Parameter.dataType
-      description: Type of data given in the parameter
+      description: The type of data given in the parameter.
       type: String
     - contextPath: f5.Parameter.valueType
-      description: Type of values given in the parameter
+      description: The type of values given in the parameter.
       type: String
     - contextPath: f5.Parameter.mandatory
-      description: Is the parameter mandatory
+      description: Whether the parameter is mandatory.
       type: Boolean
     - contextPath: f5.Parameter.isCookie
-      description: Is the parmeter located in the cookie
+      description: Whether the parameter is located in the cookie.
       type: Boolean
     - contextPath: f5.Parameter.isHeader
-      description: Is the parameter located in the header
+      description: Whether the parameter is located in the header.
       type: Boolean
     - contextPath: f5.Parameter.createdBy
-      description: Where was the parameter created
+      description: Indicates who created the parameter.
       type: String
     - contextPath: f5.Parameter.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: List all GWT profiles in a policy
+    description: Lists all GWT profiles in a policy.
     execution: false
     name: f5-asm-policy-gwt-profiles-list
     outputs:
     - contextPath: f5.GWTProfile.id
-      description: ID of the GWT profile
+      description: The ID of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.name
-      description: Display name of the GWT profile
+      description: The display name of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.description
-      description: Description of the GWT profile
+      description: A description of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.isDefault
-      description: Is the GWT profile default
+      description: Whether the GWT profile is the default profile.
       type: Boolean
     - contextPath: f5.GWTProfile.attackSignaturesCheck
-      description: Should attack signatures be checked
+      description: Whether the GWT profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.GWTProfile.isReferenced
-      description: Is the profile referenced
+      description: Whether the GWT profile is referenced.
       type: Boolean
     - contextPath: f5.GWTProfile.metacharElementCheck
-      description: Should metachar elements be checked
+      description: Whether the GWT profile should check for metachar elements.
       type: Boolean
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
-      description: Display name of the profile
+      description: The display name of the profile.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: Optional description for the profile
+      description: Optional description for the profile.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maximum length for a value in the profile
+      description: The maximum length for a value in the profile. Default is "any".
       isArray: false
       name: maximum_value_len
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maximum length of all GWT data
+      description: The maximum length of all GWT data. Default is "any".
       isArray: false
       name: maximum_total_len
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to tolerate parsing warnings
+      description: Whether the profile should tolerate parsing warnings.
       isArray: false
       name: tolerate_parsing_warnings
       predefined:
@@ -2525,7 +2516,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to check attack signatures
+      description: Whether the profile should check for attack signatures.
       isArray: false
       name: check_signatures
       predefined:
@@ -2535,7 +2526,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to check metachar elements
+      description: Whether the profile should check for metachar elements.
       isArray: false
       name: check_metachars
       predefined:
@@ -2544,74 +2535,74 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add a new GWT profile to a policy
+    description: Adds a new GWT profile to a policy.
     execution: false
     name: f5-asm-policy-gwt-profiles-add
     outputs:
     - contextPath: f5.GWTProfile.id
-      description: ID of the GWT profile
+      description: The ID of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.name
-      description: Display name of the GWT profile
+      description: The display name of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.description
-      description: Description of the GWT profile
+      description: A description of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.isDefault
-      description: Is the GWT profile default
+      description: Whether the GWT profile is the default profile.
       type: Boolean
     - contextPath: f5.GWTProfile.attackSignaturesCheck
-      description: Should attack signatures be checked
+      description: Whether the GWT profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.GWTProfile.isReferenced
-      description: Is the profile referenced
+      description: Whether the GWT profile is referenced.
       type: Boolean
     - contextPath: f5.GWTProfile.metacharElementCheck
-      description: Should metachar elements be checked
+      description: Whether the GWT profile should check for metachar elements.
       type: Boolean
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the GWT profile. ID or display name must be filled.
+      description: The ID of the GWT profile. The ID or display name must be filled. Default is "None".
       isArray: false
       name: gwt_profile_id
       required: false
       secret: false
     - default: false
-      description: Display name of the GWT profile. ID or display name must be filled.
+      description: The display name of the GWT profile. The ID or display name must be filled.
       isArray: false
       name: gwt_profile_name
-      required: false
+      required: true
       secret: false
     - default: false
-      description: Optional description for the profile
+      description: Optional description for the profile.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maximum length for a value in the profile
+      description: The maximum length for a value in the profile. Default is "any".
       isArray: false
       name: maximum_value_len
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maximum length of all GWT data
+      description: The maximum length of all GWT data. Default is "any".
       isArray: false
       name: maximum_total_len
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to tolerate parsing warnings
+      description: Whether to tolerate parsing warnings.
       isArray: false
       name: tolerate_parsing_warnings
       predefined:
@@ -2621,7 +2612,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to check attack signatures
+      description: Whether the profile should check for attack signatures.
       isArray: false
       name: check_signatures
       predefined:
@@ -2631,7 +2622,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to check metachar elements
+      description: Whether the profile should check for metachar elements.
       isArray: false
       name: check_metachars
       predefined:
@@ -2640,169 +2631,169 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update an existing GWT profile
+    description: Updates an existing GWT profile
     execution: false
     name: f5-asm-policy-gwt-profiles-update
     outputs:
     - contextPath: f5.GWTProfile.id
-      description: ID of the GWT profile
+      description: The ID of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.name
-      description: Display name of the GWT profile
+      description: The display name of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.description
-      description: Description of the GWT profile
+      description: A description of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.isDefault
-      description: Is the GWT profile default
+      description: Whether the GWT profile is the default profile.
       type: Boolean
     - contextPath: f5.GWTProfile.attackSignaturesCheck
-      description: Should attack signatures be checked
+      description: Whether the GWT profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.GWTProfile.isReferenced
-      description: Is the profile referenced
+      description: Whether the GWT profile is referenced.
       type: Boolean
     - contextPath: f5.GWTProfile.metacharElementCheck
-      description: Should metachar elements be checked
+      description: Whether the GWT profile should check for metachar elements.
       type: Boolean
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the GWT profile. ID or display name must be filled.
+      description: The ID of the GWT profile. The ID or display name must be filled. Default is "None".
       isArray: false
       name: gwt_profile_id
       required: false
       secret: false
     - default: false
-      description: Display name of the GWT profile. ID or display name must be filled.
+      description: The display name of the GWT profile. The ID or display name must be filled.
       isArray: false
       name: gwt_profile_name
       required: true
       secret: false
     deprecated: false
-    description: Delete an existing GWT profile.
+    description: Deletes an existing GWT profile.
     execution: false
     name: f5-asm-policy-gwt-profiles-delete
     outputs:
     - contextPath: f5.GWTProfile.id
-      description: ID of the GWT profile
+      description: The ID of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.name
-      description: Display name of the GWT profile
+      description: The display name of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.description
-      description: Description of the GWT profile
+      description: A description of the GWT profile.
       type: String
     - contextPath: f5.GWTProfile.isDefault
-      description: Is the GWT profile default
+      description: Whether the GWT profile is the default profile.
       type: Boolean
     - contextPath: f5.GWTProfile.attackSignaturesCheck
-      description: Should attack signatures be checked
+      description: Whether the GWT profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.GWTProfile.isReferenced
-      description: Is the profile referenced
+      description: Whether the GWT profile is referenced.
       type: Boolean
     - contextPath: f5.GWTProfile.metacharElementCheck
-      description: Should metachar elements be checked
+      description: Whether the GWT profile should check for metachar elements.
       type: Boolean
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: List all JSON profiles in a policy
+    description: Lists all JSON profiles in a policy.
     execution: false
     name: f5-asm-policy-json-profiles-list
     outputs:
     - contextPath: f5.JSONProfile.id
-      description: ID of JSON profile
+      description: The ID of JSON profile.
       type: String
     - contextPath: f5.JSONProfile.name
-      description: Display name of JSON profile
+      description: The display name of the JSON profile.
       type: String
     - contextPath: f5.JSONProfile.description
-      description: Description of JSON profile
+      description: A description of he JSON profile.
       type: String
     - contextPath: f5.JSONProfile.isDefault
-      description: Is the JSON profile default
+      description: Whether the JSON profile is the default profile.
       type: Boolean
     - contextPath: f5.JSONProfile.attackSignaturesCheck
-      description: Should the JSON profile check for attack signatures
+      description: Whether the JSON profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.JSONProfile.isReferenced
-      description: Is the JSON profile referenced somewhere
+      description: Whether the JSON profile is referenced.
       type: Boolean
     - contextPath: f5.JSONProfile.metacharElementCheck
-      description: Should the JSON profile check for metachar elements
+      description: Whether the JSON profile should check for metachar elements.
       type: Boolean
     - contextPath: f5.JSONProfile.hasValidationFiles
-      description: Does the JSON profile have validation files
+      description: Whether the JSON profile has validation files.
       type: Boolean
     - contextPath: f5.JSONProfile.selfLink
-      description: Link to the profile
+      description: The self link to the specific profile.
       type: String
     - contextPath: f5.JSONProfile.lastUpdate
-      description: Time of last update made to the profile
+      description: The time the last update was made to the profile.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
-      description: Display name of new profile
+      description: The display name of the new profile.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: Optional description for the JSON profile
+      description: Optional description for the JSON profile.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maximum total length of JSON data
+      description: The maximum total length of the JSON data. Default is "any".
       isArray: false
       name: maximum_total_len
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maximum length for a single value
+      description: The maximum length for a single value. Default is "any".
       isArray: false
       name: maximum_value_len
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maxmimum structure depth
+      description: The maximum structure depth. Default is "any".
       isArray: false
       name: max_structure_depth
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maximum JSON array length
+      description: The maximum JSON array length. Default is "any".
       isArray: false
       name: max_array_len
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the profile tolerate JSON parsing warnings
+      description: Whether the profile should tolerate JSON parsing warnings.
       isArray: false
       name: tolerate_parsing_warnings
       predefined:
@@ -2812,7 +2803,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the profile handle JSON values as parameters
+      description: Whether the profile should handle JSON values as parameters.
       isArray: false
       name: parse_parameters
       predefined:
@@ -2822,7 +2813,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the profile check for attack signatures
+      description: Whether the profile should check for attack signatures.
       isArray: false
       name: check_signatures
       predefined:
@@ -2832,7 +2823,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the profile check for metachar elements
+      description: Whether the profile should check for metachar elements.
       isArray: false
       name: check_metachars
       predefined:
@@ -2841,56 +2832,56 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add a new JSON profile to a policy
+    description: Adds a new JSON profile to a policy.
     execution: false
     name: f5-asm-policy-json-profiles-add
     outputs:
     - contextPath: f5.JSONProfile.id
-      description: ID of JSON profile
+      description: The ID of the JSON profile.
       type: String
     - contextPath: f5.JSONProfile.name
-      description: Display name of JSON profile
+      description: The display name of the JSON profile.
       type: String
     - contextPath: f5.JSONProfile.description
-      description: Description of JSON profile
+      description: A description of the JSON profile.
       type: String
     - contextPath: f5.JSONProfile.isDefault
-      description: Is the JSON profile default
+      description: Whether the JSON profile is the default profile.
       type: Boolean
     - contextPath: f5.JSONProfile.attackSignaturesCheck
-      description: Should the JSON profile check for attack signatures
+      description: Whether the JSON profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.JSONProfile.isReferenced
-      description: Is the JSON profile referenced somewhere
+      description: Whether the JSON profile is referenced.
       type: Boolean
     - contextPath: f5.JSONProfile.metacharElementCheck
-      description: Should the JSON profile check for metachar elements
+      description: Whether the JSON profile should check for metachar elements.
       type: Boolean
     - contextPath: f5.JSONProfile.hasValidationFiles
-      description: Does the JSON profile have validation files
+      description: Whether the JSON profile has validation files.
       type: Boolean
     - contextPath: f5.JSONProfile.selfLink
-      description: Link to the profile
+      description: The self link to the specific profile.
       type: String
     - contextPath: f5.JSONProfile.lastUpdate
-      description: Time of last update made to the profile
+      description: The time the last update was made to the profile.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the JSON profile. ID or display name must be filled.
+      description: The ID of the JSON profile. The ID or display name must be filled. Default is "None".
       isArray: false
       name: json_id
       required: false
       secret: false
     - default: false
-      description: Display name of the JSON profile. ID or display name must be filled.
+      description: The display name of the JSON profile. The ID or display name must be filled.
       isArray: false
       name: json_name
       required: true
@@ -2903,35 +2894,35 @@ script:
       secret: false
     - default: false
       defaultValue: any
-      description: Maximum total length of JSON data
+      description: The maximum total length of JSON data. Default is "any".
       isArray: false
       name: maximum_total_len
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maximum length for a single value
+      description: The maximum length for a single value. Default is "any".
       isArray: false
       name: maximum_value_len
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maxmimum structure depth
+      description: The maximum structure depth. Default is "any".
       isArray: false
       name: max_structure_depth
       required: false
       secret: false
     - default: false
       defaultValue: any
-      description: Maximum JSON array length
+      description: The maximum JSON array length. Default is "any".
       isArray: false
       name: max_array_len
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the profile tolerate JSON parsing warnings
+      description: Whether the profile should tolerate JSON parsing warnings.
       isArray: false
       name: tolerate_parsing_warnings
       predefined:
@@ -2941,7 +2932,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the profile handle JSON values as parameters
+      description: Whether the profile should handle JSON values as parameters.
       isArray: false
       name: parse_parameters
       predefined:
@@ -2951,7 +2942,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the profile check for attack signatures
+      description: Whether the profile should check for attack signatures.
       isArray: false
       name: check_signatures
       predefined:
@@ -2961,7 +2952,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the profile check for metachar elements
+      description: Whether the profile should check for metachar elements.
       isArray: false
       name: check_metachars
       predefined:
@@ -2970,168 +2961,168 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update an existing JSON profile
+    description: Updates an existing JSON profile.
     execution: false
     name: f5-asm-policy-json-profiles-update
     outputs:
     - contextPath: f5.JSONProfile.id
-      description: ID of JSON profile
+      description: The ID of the JSON profile.
       type: String
     - contextPath: f5.JSONProfile.name
-      description: Display name of JSON profile
+      description: The display name of the JSON profile.
       type: String
     - contextPath: f5.JSONProfile.description
-      description: Description of JSON profile
+      description: A description of the JSON profile.
       type: String
     - contextPath: f5.JSONProfile.isDefault
-      description: Is the JSON profile default
+      description: Whether the JSON profile is the default profile.
       type: Boolean
     - contextPath: f5.JSONProfile.attackSignaturesCheck
-      description: Should the JSON profile check for attack signatures
+      description: Whether the JSON profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.JSONProfile.isReferenced
-      description: Is the JSON profile referenced somewhere
+      description: Whether the JSON profile is referenced.
       type: Boolean
     - contextPath: f5.JSONProfile.metacharElementCheck
-      description: Should the JSON profile check for metachar elements
+      description: Whether the JSON profile should check for metachar elements.
       type: Boolean
     - contextPath: f5.JSONProfile.hasValidationFiles
-      description: Does the JSON profile have validation files
+      description: Whether the JSON profile has validation files.
       type: Boolean
     - contextPath: f5.JSONProfile.selfLink
-      description: Link to the profile
+      description: The self link to the specific profile.
       type: String
     - contextPath: f5.JSONProfile.lastUpdate
-      description: Time of last update made to the profile
+      description: The time the last update was made to the profile.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the JSON profile. ID or display name must be filled.
+      description: The ID of the JSON profile. The ID or display name must be filled. Default is "None".
       isArray: false
       name: json_id
       required: false
       secret: false
     - default: false
-      description: Display name of the JSON profile. ID or display name must be filled.
+      description: The display name of the JSON profile. The ID or display name must be filled.
       isArray: false
       name: json_name
       required: true
       secret: false
     deprecated: false
-    description: Delete an existing JSON profile from a policy
+    description: Deletes an existing JSON profile from a policy
     execution: false
     name: f5-asm-policy-json-profiles-delete
     outputs:
     - contextPath: f5.JSONProfile.id
-      description: ID of JSON profile
+      description: The ID of the JSON profile.
       type: String
     - contextPath: f5.JSONProfile.name
-      description: Display name of JSON profile
+      description: The display name of the JSON profile.
       type: String
     - contextPath: f5.JSONProfile.description
-      description: Description of JSON profile
+      description: A description of the JSON profile.
       type: String
     - contextPath: f5.JSONProfile.isDefault
-      description: Is the JSON profile default
+      description: Whether the JSON profile is the default profile.
       type: Boolean
     - contextPath: f5.JSONProfile.attackSignaturesCheck
-      description: Should the JSON profile check for attack signatures
+      description: Whether the JSON profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.JSONProfile.isReferenced
-      description: Is the JSON profile referenced somewhere
+      description: Whether the JSON profile is referenced.
       type: Boolean
     - contextPath: f5.JSONProfile.metacharElementCheck
-      description: Should the JSON profile check for metachar elements
+      description: Whether the JSON profile should check for metachar elements.
       type: Boolean
     - contextPath: f5.JSONProfile.hasValidationFiles
-      description: Does the JSON profile have validation files
+      description: Whether the JSON profile has validation files.
       type: Boolean
     - contextPath: f5.JSONProfile.selfLink
-      description: Link to the profile
+      description: The self link to the specific profile.
       type: String
     - contextPath: f5.JSONProfile.lastUpdate
-      description: Time of last update made to the profile
+      description: The time the last update was made to the profile.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: List all XML profiles in a policy.
+    description: Lists all XML profiles in a policy.
     execution: false
     name: f5-asm-policy-xml-profiles-list
     outputs:
     - contextPath: f5.XMLProfile.id
-      description: ID of the XML profile
+      description: The ID of the XML profile
       type: String
     - contextPath: f5.XMLProfile.name
-      description: Display name of the XML profile
+      description: The display name of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.description
-      description: Description of the XML profile
+      description: A description of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.isDefault
-      description: Is the profile the default one
+      description: Whether the XML profile is the default profile.
       type: Boolean
     - contextPath: f5.XMLProfile.attackSignaturesCheck
-      description: Should the profile check for attack signatures
+      description: Whether the XML profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.XMLProfile.followSchemaLinks
-      description: Should the profile follow schema links
+      description: Whether the profile should follow schema links.
       type: Boolean
     - contextPath: f5.XMLProfile.metacharElementCheck
-      description: Should the profile check for metachar elements
+      description: Whether the XML profile should check for metachar elements.
       type: Boolean
     - contextPath: f5.XMLProfile.metacharAttributeCheck
-      description: Should the profile check for metachar attributes
+      description: Whether the profile should check for metachar attributes.
       type: Boolean
     - contextPath: f5.XMLProfile.isReferenced
-      description: Is the profile referenced somewhere
+      description: Whether the XML profile is referenced.
       type: Boolean
     - contextPath: f5.XMLProfile.enableWSS
-      description: Should web service security be enabled
+      description: Whether the web service security should be enabled.
       type: Boolean
     - contextPath: f5.XMLProfile.hasValidationFiles
-      description: Does the profile have validation files
+      description: Whether the XML profile has validation files.
       type: Boolean
     - contextPath: f5.XMLProfile.selfLink
-      description: Self link to the profile
+      description: The self link to the specific profile.
       type: String
     - contextPath: f5.XMLProfile.lastUpdate
-      description: Time of last update to the profile
+      description: The time the last update was made to the profile.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
-      description: Display name of the profile to add
+      description: The display name of the profile to add.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: Optional description for the profile
+      description: Optional description for the profile.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to check for signatures
+      description: Whether the profile should check for attack signatures.
       isArray: false
       name: check_signatures
       predefined:
@@ -3141,7 +3132,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to check for metachar elements
+      description: Whether to check for metachar elements.
       isArray: false
       name: check_metachar_elements
       predefined:
@@ -3151,7 +3142,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to check for metachar attributes
+      description: Whether to check for metachar attributes.
       isArray: false
       name: check_metachar_attributes
       predefined:
@@ -3161,7 +3152,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to enable web services securities
+      description: Whether to enable web services securities.
       isArray: false
       name: enable_wss
       predefined:
@@ -3171,7 +3162,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to inspect SOAP attachments
+      description: Whether to inspect SOAP attachments.
       isArray: false
       name: inspect_soap
       predefined:
@@ -3181,7 +3172,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to follow schema links
+      description: Whether to follow schema links.
       isArray: false
       name: follow_links
       predefined:
@@ -3191,7 +3182,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to use the XML response page
+      description: Whether to use the XML response page.
       isArray: false
       name: use_xml_response
       predefined:
@@ -3201,7 +3192,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to allow CDATA
+      description: Whether to allow CDATA.
       isArray: false
       name: allow_cdata
       predefined:
@@ -3211,7 +3202,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to allow DTDs
+      description: Whether to allow DTDs.
       isArray: false
       name: allow_dtds
       predefined:
@@ -3221,7 +3212,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to allow external references
+      description: Whether to allow external references.
       isArray: false
       name: allow_external_ref
       predefined:
@@ -3231,7 +3222,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to allow processing instructions.
+      description: Whether to allow processing instructions.
       isArray: false
       name: allow_processing_instructions
       predefined:
@@ -3240,78 +3231,78 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add a new XML profile to a policy
+    description: Adds a new XML profile to a policy.
     execution: false
     name: f5-asm-policy-xml-profiles-add
     outputs:
     - contextPath: f5.XMLProfile.id
-      description: ID of the XML profile
+      description: The ID of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.name
-      description: Display name of the XML profile
+      description: The display name of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.description
-      description: Description of the XML profile
+      description: A description of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.isDefault
-      description: Is the profile the default one
+      description: Whether the XML profile is the default profile.
       type: Boolean
     - contextPath: f5.XMLProfile.attackSignaturesCheck
-      description: Should the profile check for attack signatures
+      description: Whether the XML profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.XMLProfile.followSchemaLinks
-      description: Should the profile follow schema links
+      description: Whether the profile should follow schema links.
       type: Boolean
     - contextPath: f5.XMLProfile.metacharElementCheck
-      description: Should the profile check for metachar elements
+      description: Whether the XML profile should check for metachar elements.
       type: Boolean
     - contextPath: f5.XMLProfile.metacharAttributeCheck
-      description: Should the profile check for metachar attributes
+      description: Whether the profile should check for metachar attributes.
       type: Boolean
     - contextPath: f5.XMLProfile.isReferenced
-      description: Is the profile referenced somewhere
+      description: Whether the XML profile is referenced.
       type: Boolean
     - contextPath: f5.XMLProfile.enableWSS
-      description: Should web service security be enabled
+      description: Whether the web service security should be enabled.
       type: Boolean
     - contextPath: f5.XMLProfile.hasValidationFiles
-      description: Does the profile have validation files
+      description: Whether the XML profile has validation files.
       type: Boolean
     - contextPath: f5.XMLProfile.selfLink
-      description: Self link to the profile
+      description: The self link to the specific profile.
       type: String
     - contextPath: f5.XMLProfile.lastUpdate
-      description: Time of last update to the profile
+      description: The time the last update was made to the profile.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the XML profile. ID or display name must be filled.
+      description: The ID of the XML profile. The ID or display name must be filled. Default is "None".
       isArray: false
       name: xml_id
       required: false
       secret: false
     - default: false
-      description: Display name of the XML profile. ID or display name must be filled.
+      description: The display name of the XML profile. The ID or display name must be filled.
       isArray: false
       name: xml_name
       required: true
       secret: false
     - default: false
-      description: Optional description for the profile
+      description: Optional description for the profile.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to check for signatures
+      description: Whether the profile should check for attack signatures.
       isArray: false
       name: check_signatures
       predefined:
@@ -3321,7 +3312,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to check for metachar elements
+      description: Whether to check for metachar elements.
       isArray: false
       name: check_metachar_elements
       predefined:
@@ -3331,7 +3322,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to check for metachar attributes
+      description: Whether to check for metachar attributes.
       isArray: false
       name: check_metachar_attributes
       predefined:
@@ -3341,7 +3332,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to enable web services securities
+      description: Whether to enable web services securities.
       isArray: false
       name: enable_wss
       predefined:
@@ -3351,7 +3342,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to inspect SOAP attachments
+      description: Whether to inspect SOAP attachments.
       isArray: false
       name: inspect_soap
       predefined:
@@ -3361,7 +3352,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to follow schema links
+      description: Whether to follow schema links.
       isArray: false
       name: follow_links
       predefined:
@@ -3371,7 +3362,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to use the XML response page
+      description: Whether to use the XML response page.
       isArray: false
       name: use_xml_response
       predefined:
@@ -3381,7 +3372,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to allow CDATA
+      description: Whether to allow CDATA.
       isArray: false
       name: allow_cdata
       predefined:
@@ -3391,7 +3382,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to allow DTDs
+      description: Whether to allow DTDs.
       isArray: false
       name: allow_dtds
       predefined:
@@ -3401,7 +3392,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to allow external references
+      description: Whether to allow external references.
       isArray: false
       name: allow_external_ref
       predefined:
@@ -3411,7 +3402,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to allow processing instructions.
+      description: Whether to allow processing instructions.
       isArray: false
       name: allow_processing_instructions
       predefined:
@@ -3420,153 +3411,153 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update an XML profile in a policy
+    description: Updates an XML profile in a policy
     execution: false
     name: f5-asm-policy-xml-profiles-update
     outputs:
     - contextPath: f5.XMLProfile.id
-      description: ID of the XML profile
+      description: The ID of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.name
-      description: Display name of the XML profile
+      description: The display name of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.description
-      description: Description of the XML profile
+      description: A description of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.isDefault
-      description: Is the profile the default one
+      description: Whether the XML profile is the default profile.
       type: Boolean
     - contextPath: f5.XMLProfile.attackSignaturesCheck
-      description: Should the profile check for attack signatures
+      description: Whether the XML profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.XMLProfile.followSchemaLinks
-      description: Should the profile follow schema links
+      description: Whether the profile should follow schema links.
       type: Boolean
     - contextPath: f5.XMLProfile.metacharElementCheck
-      description: Should the profile check for metachar elements
+      description: Whether the XML profile should check for metachar elements.
       type: Boolean
     - contextPath: f5.XMLProfile.metacharAttributeCheck
-      description: Should the profile check for metachar attributes
+      description: Whether the profile should check for metachar attributes.
       type: Boolean
     - contextPath: f5.XMLProfile.isReferenced
-      description: Is the profile referenced somewhere
+      description: Whether the XML profile is referenced.
       type: Boolean
     - contextPath: f5.XMLProfile.enableWSS
-      description: Should web service security be enabled
+      description: Whether the web service security should be enabled.
       type: Boolean
     - contextPath: f5.XMLProfile.hasValidationFiles
-      description: Does the profile have validation files
+      description: Whether the XML profile has validation files.
       type: Boolean
     - contextPath: f5.XMLProfile.selfLink
-      description: Self link to the profile
+      description: The self link to the specific profile.
       type: String
     - contextPath: f5.XMLProfile.lastUpdate
-      description: Time of last update to the profile
+      description: The time the last update was made to the profile.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the XML profile. ID or display name must be filled.
+      description: The ID of the XML profile. The ID or display name must be filled. Default is "None".
       isArray: false
       name: xml_id
       required: false
       secret: false
     - default: false
-      description: Display name of the XML profile. ID or display name must be filled.
+      description: The display name of the XML profile. The ID or display name must be filled.
       isArray: false
       name: xml_name
       required: true
       secret: false
     deprecated: false
-    description: Delete an existing XML profile from a policy
+    description: Deletes an existing XML profile from a policy
     execution: false
     name: f5-asm-policy-xml-profiles-delete
     outputs:
     - contextPath: f5.XMLProfile.id
-      description: ID of the XML profile
+      description: The ID of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.name
-      description: Display name of the XML profile
+      description: The display name of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.description
-      description: Description of the XML profile
+      description: A description of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.isDefault
-      description: Is the profile the default one
+      description: Whether the XML profile is the default profile.
       type: Boolean
     - contextPath: f5.XMLProfile.attackSignaturesCheck
-      description: Should the profile check for attack signatures
+      description: Whether the XML profile should check for attack signatures.
       type: Boolean
     - contextPath: f5.XMLProfile.followSchemaLinks
-      description: Should the profile follow schema links
+      description: Whether the profile should follow schema links.
       type: Boolean
     - contextPath: f5.XMLProfile.metacharElementCheck
-      description: Should the profile check for metachar elements
+      description: Whether the XML profile should check for metachar elements.
       type: Boolean
     - contextPath: f5.XMLProfile.metacharAttributeCheck
-      description: Should the profile check for metachar attributes
+      description: Whether the profile should check for metachar attributes.
       type: Boolean
     - contextPath: f5.XMLProfile.isReferenced
-      description: Is the profile referenced somewhere
+      description: Whether the XML profile is referenced.
       type: Boolean
     - contextPath: f5.XMLProfile.enableWSS
-      description: Should web service security be enabled
+      description: Whether the web service security should be enabled.
       type: Boolean
     - contextPath: f5.XMLProfile.hasValidationFiles
-      description: Does the profile have validation files
+      description: Whether the XML profile has validation files.
       type: Boolean
     - contextPath: f5.XMLProfile.selfLink
-      description: Self link to the profile
+      description: The self link to the specific profile.
       type: String
     - contextPath: f5.XMLProfile.lastUpdate
-      description: Time of last update to the profile
+      description: The time the last update was made to the profile.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     deprecated: false
-    description: List all server technologies in a policy
+    description: Lists all server technologies in a policy.
     execution: false
     name: f5-asm-policy-server-technologies-list
     outputs:
     - contextPath: f5.ServerTechnology.id
-      description: ID of the server technology
+      description: The ID of the server technology.
       type: String
     - contextPath: f5.ServerTechnology.selfLink
-      description: Link to the server technology
+      description: The self link to the specific server technology.
       type: String
     - contextPath: f5.ServerTechnology.serverTechnologyName
-      description: Display name of the server technology
+      description: The display name of the server technology.
       type: String
     - contextPath: f5.ServerTechnology.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the server technology. ID or display name must be filled.
+      description: The ID of the server technology. The ID or display name must be filled. Default is "None".
       isArray: false
       name: technology_id
       required: false
       secret: false
     - default: false
-      description: Display name of the server technology. ID or display name must
+      description: The display name of the server technology. The ID or display name must
         be filled.
       isArray: false
       name: technology_name
@@ -3578,70 +3569,69 @@ script:
     name: f5-asm-policy-server-technologies-add
     outputs:
     - contextPath: f5.ServerTechnology.id
-      description: ID of the server technology
+      description: The ID of the server technology.
       type: String
     - contextPath: f5.ServerTechnology.selfLink
-      description: Link to the server technology
+      description: The self link to the specific server technology.
       type: String
     - contextPath: f5.ServerTechnology.serverTechnologyName
-      description: Display name of the server technology
+      description: The display name of the server technology.
       type: String
     - contextPath: f5.ServerTechnology.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5
+      description: The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command.
       isArray: false
       name: policy_md5
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: ID of the server technology. ID or display name must be filled.
+      description: The ID of the server technology. The ID or display name must be filled. Default is "None".
       isArray: false
       name: technology_id
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Display name of the server technology. ID or display name must
-        be filled.
+      description: The display name of the server technology. The ID or display name must be filled. Default is "None".
       isArray: false
       name: technology_name
       required: false
       secret: false
     deprecated: false
-    description: Delete a server technology from a policy.
+    description: Deletes a server technology from a policy.
     execution: false
     name: f5-asm-policy-server-technologies-delete
     outputs:
     - contextPath: f5.ServerTechnology.id
-      description: ID of the server technology
+      description: The ID of the server technology.
       type: String
     - contextPath: f5.ServerTechnology.selfLink
-      description: Link to the server technology
+      description: The self link to the specific server technology.
       type: String
     - contextPath: f5.ServerTechnology.serverTechnologyName
-      description: Display name of the server technology
+      description: The display name of the server technology.
       type: String
     - contextPath: f5.ServerTechnology.lastUpdateMicros
-      description: Time of last update
+      description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
       type: String
   - arguments:
     - default: false
-      description: Display name of the policy to get a hash for.
+      description: The display name of the policy to get a hash for.
       isArray: false
       name: policy_name
       required: true
       secret: false
     deprecated: false
-    description: Get the MD5 hash of a policy that can be accessed in the API.
+    description: Gets the MD5 hash of a policy that can be accessed in the API.
     execution: false
     name: f5-asm-get-policy-md5
     outputs:
     - contextPath: f5.Policy.md5
-      description: MD5 hash of the policy
+      description: The MD5 hash of the policy.
       type: String
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
