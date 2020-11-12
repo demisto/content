@@ -87,7 +87,7 @@ def login():
         'pass': PASSWORD
     }
     res = SESSION.post(SERVER, data=data)  # type: ignore
-    response_text = str(res.text)
+    response_text = res.text.encode('utf-8')
     are_credentials_wrong = 'Your username or password is incorrect' in response_text
     if are_credentials_wrong:
         return_error("Error: login failed. please check your credentials.")
@@ -148,7 +148,8 @@ def create_ticket_attachments_request(encoded, files_data):
 
 
 def create_ticket():
-    args = {arg: value.encode('utf-8') for arg, value in demisto.args().items()}
+    args = dict(demisto.args())
+    args = {arg: value.encode('utf-8') for arg, value in args.items() if isinstance(value, unicode)}
 
     queue = args.get('queue')
     data = 'id: ticket/new\nQueue: {}\n'.format(queue)
@@ -266,7 +267,8 @@ def fix_query_suffix(query):
 
 def build_search_query():
     raw_query = ''
-    args = {arg: value.encode('utf-8') for arg, value in demisto.args().items()}
+    args = dict(demisto.args())
+    args = {arg: value.encode('utf-8') for arg, value in args.items() if isinstance(value, unicode)}
     ticket_id = args.get('ticket-id')
     if ticket_id:
         raw_query += 'id={}{}{}+AND+'.format(apostrophe, ticket_id, apostrophe)
