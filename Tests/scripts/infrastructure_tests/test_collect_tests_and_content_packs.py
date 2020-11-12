@@ -13,7 +13,7 @@ from demisto_sdk.commands.common.constants import PACKS_PACK_META_FILE_NAME, PAC
 from Tests.scripts.collect_tests_and_content_packs import (
     TestConf, create_filter_envs_file,
     get_test_list_and_content_packs_to_install, collect_content_packs_to_install,
-    get_from_version_and_to_version_bounderies, PACKS_DIR, filter_tests, remove_ignored_tests,
+    get_from_version_and_to_version_bounderies, PACKS_DIR, remove_ignored_tests,
     remove_tests_for_non_supported_packs)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 
@@ -1198,5 +1198,6 @@ def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_conte
     res = remove_tests_for_non_supported_packs(tests_to_filter, MOCK_ID_SET)
     assert res == expected_result
     if not should_test_content:
-        logging.debug.assert_called_once_with('The following test playbooks are not supported and will not be tested: \n{} '.format(
-            '\n'.join(filtered_tests)))
+        logging.debug.assert_called_once_with(
+            'The following test playbooks are not supported and will not be tested: \n{} '.format(
+                '\n'.join(filtered_tests)))
