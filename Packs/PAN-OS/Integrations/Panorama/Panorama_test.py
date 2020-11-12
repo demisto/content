@@ -192,6 +192,9 @@ def test_panorama_get_interfaces(patched_requests_mocker):
     Given the interface XML from <show><interface>all, expects 5 interfaces to be returned
     """
     from Panorama import panorama_get_interfaces
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/api/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
     r = panorama_get_interfaces()
     assert len(r['response']['result']['ifnet']['entry']) == 5
 
@@ -200,7 +203,8 @@ def test_panorama_route_lookup(patched_requests_mocker):
     """
     Test the route lookup
     """
-    from Panorama import panorama_route_lookup_command
+    from Panorama import panorama_route_lookup_command, initialize_instance
+    initialize_instance(mock_demisto_args, integration_params)
     r = panorama_route_lookup_command()
     assert r['interface'] == 'ae1.3'
 
