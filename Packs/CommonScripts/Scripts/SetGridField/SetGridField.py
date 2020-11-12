@@ -111,6 +111,7 @@ def get_current_table(grid_id: str) -> List[Dict[Any, Any]]:
     """
     current_table: Optional[List[dict]] = demisto.incidents()[0].get("CustomFields", {}).get(grid_id)
     if current_table is None:
+        demisto.info('SetGridField - Did not find existing table, creating a new one.')
         return pd.DataFrame()
 
     return pd.DataFrame(current_table)

@@ -94,6 +94,16 @@ def test_build_grid_command(datadir, mocker, keys: List[str], columns: List[str]
 
 
 def test_grid_dont_exist_in_context(mocker):
+    """
+    Given:
+     - grid_id to update, which doesn't exist in context.
+
+    When:
+     - Updating a grid.
+
+    Then:
+     - Return an empty table instead of an error.
+    """
     import SetGridField
     mocker.patch.object(demisto, 'incidents', return_value=[{}])
 
