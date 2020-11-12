@@ -468,20 +468,42 @@ def splunk_results_command(service):
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
+def occurred_to_datetime(incident_ocurred_time):
+    incident_time_without_timezone = incident_ocurred_time.split('.')[0]
+    incident_time_datetime = datetime.strptime(incident_time_without_timezone, SPLUNK_TIME_FORMAT)
+    return incident_time_datetime
+
+
 def get_latest_incident_time(incidents):
     def get_incident_time_datetime(incident):
         incident_time = incident["occurred"]
-        incident_time_without_timezone = incident_time.split('.')[0]
-        incident_time_datetime = datetime.strptime(incident_time_without_timezone, SPLUNK_TIME_FORMAT)
+        incident_time_datetime = occurred_to_datetime(incident_time)
         return incident_time_datetime
 
     latest_incident = max(incidents, key=get_incident_time_datetime)
     latest_incident_time = latest_incident["occurred"]
-    last_incident_json = json.loads(latest_incident.get('rawJSON'))
-    last_incident_id = last_incident_json.get('EventID')
-    demisto.debug('\n\n last_incident_id found is: {} \n\n'.format(last_incident_id))
-    demisto.debug('\n\n latest incident time is:  {}\n\n'.format(latest_incident_time))
-    return latest_incident_time, last_incident_id
+    return latest_incident_time
+
+
+def get_next_start_time(last_run, fetches_with_same_start_time_count):
+    last_run_datetime = occurred_to_datetime(last_run)
+    last_run_milliseconds_and_tz = last_run.split('.')[1]
+
+    # keep last time max 20 mins before current time, to avoid timeout
+    if fetches_with_same_start_time_count >= 20:
+        last_run_datetime = last_run_datetime + timedelta(minutes=1)
+
+    next_run_without_miliseconds_and_tz = last_run_datetime.strftime(SPLUNK_TIME_FORMAT)
+    next_run = next_run_without_miliseconds_and_tz + '.' + last_run_milliseconds_and_tz
+    return next_run
+
+
+def create_incident_id(incident):
+    incident_raw_data = json.loads(incident['rawJSON'])['_raw']
+    incident_occurred = incident['occurred']
+    incident_raw_start = incident_raw_data if len(incident_raw_data) < 100 else incident_raw_data[:100]
+    incident_id = incident_occurred + incident_raw_start
+    return incident_id
 
 
 def fetch_incidents(service):
@@ -526,30 +548,40 @@ def fetch_incidents(service):
     oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
 
+    fetched_incidents_custom_ids = {}
+    last_run_fetched_ids = demisto.getLastRun().get('found_incidents_ids', {})
+
     for item in reader:
         inc = notable_to_incident(item)
         demisto.debug('\n\n inc after notable_to_incident: {} \n\n'.format(inc))
-        incidents.append(inc)
+        incident_id = create_incident_id(inc)
+        fetched_incidents_custom_ids[incident_id] = 'dummy'
+        if incident_id not in last_run_fetched_ids:
+            incidents.append(inc)
 
-    debug_message = '\n\n total number of incidents found: from {}\n to {}\n with the ' \
-                    'query: {} is: {}.\n incidents found: {} \n\n'.format(last_run, now, searchquery_oneshot,
-                                                                          len(incidents), incidents)
-    demisto.debug(debug_message)
-    latest_incident_fetched_time, latest_incident_fetched_id = get_latest_incident_time(incidents)
-    last_run_latest_event_id = demisto.getLastRun().get('latest_event_id')
+    # debug_message = '\n\n total number of incidents found: from {}\n to {}\n with the ' \
+    #                 'query: {} is: {}.\n incidents found: {} \n\n'.format(last_run, now, searchquery_oneshot,
+    #                                                                       len(incidents), incidents)
+    # demisto.debug(debug_message)
+    latest_incident_fetched_time = None if len(incidents) == 0 else get_latest_incident_time(incidents)
 
-    if latest_incident_fetched_id and last_run_latest_event_id and latest_incident_fetched_id == \
-            last_run_latest_event_id:
-        incidents = [incident for incident in incidents if json.loads(incident.get('rawJSON', '{}')).get('EventID') !=
-                     last_run_latest_event_id]
+    fetches_with_same_start_time_count = demisto.getLastRun().get('fetch_start_update_count', 0) + 1
+
     demisto.incidents(incidents)
     if len(incidents) == 0:
-        demisto.setLastRun({'time': last_run, 'offset': 0})
+        next_run = get_next_start_time(last_run, fetches_with_same_start_time_count)
+        demisto.debug('\n\n next run time with 00000 incidents: {}\n\n'.format(next_run))
+        demisto.setLastRun({'time': next_run, 'offset': 0, 'found_incidents_ids': fetched_incidents_custom_ids,
+                            'fetch_start_update_count': fetches_with_same_start_time_count})
     elif len(incidents) < FETCH_LIMIT:
+        next_run = get_next_start_time(latest_incident_fetched_time, fetches_with_same_start_time_count)
+        demisto.debug('\n\n next run time with some incidents:  {}\n\n \n\n'.format(next_run))
         demisto.setLastRun(
-            {'time': latest_incident_fetched_time, 'offset': 0, 'latest_event_id': latest_incident_fetched_id})
+            {'time': next_run, 'offset': 0, 'found_incidents_ids': fetched_incidents_custom_ids,
+             'fetch_start_update_count': 0})
     else:
-        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
+        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT,
+                            'fetch_start_update_count': 0, 'found_incidents_ids': fetched_incidents_custom_ids})
 
 
 def parse_time_to_minutes():
