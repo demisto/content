@@ -9,7 +9,7 @@ from demisto_sdk.commands.common.constants import PACKS_PACK_META_FILE_NAME, PAC
 from Tests.scripts.collect_tests_and_content_packs import (
     TestConf, create_filter_envs_file,
     get_test_list_and_content_packs_to_install, collect_content_packs_to_install,
-    get_from_version_and_to_version_bounderies, PACKS_DIR)
+    get_from_version_and_to_version_bounderies, PACKS_DIR, filter_tests)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -1141,3 +1141,7 @@ def test_collect_test_playbooks_no_results():
     test_conf = TestConf(MOCK_CONF)
     content_packs = test_conf.get_packs_of_collected_tests(['TestCommonPython'], MOCK_ID_SET)
     assert set() == content_packs
+
+
+def test_filter_tests():
+    filter_tests()

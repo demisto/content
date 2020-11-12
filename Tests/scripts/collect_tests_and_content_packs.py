@@ -974,7 +974,7 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
         tests (set): Tests set to remove the tests to ignore from
         content_packs (set): Content packs from which to check if test should be ignored
 
-    Return:
+    Return:remove_ignored_tests
          set: The filtered tests set
     """
     ignored_tests_set = set()
@@ -990,7 +990,7 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
     return tests
 
 
-def remove_tests_for_non_supported_packs(tests: set, id_set: json):
+def remove_tests_for_non_supported_packs(tests: set, id_set: dict):
     tests_that_should_not_be_tested = set()
     for test in tests:
         content_pack_name_list = list(get_content_pack_name_of_test({test}, id_set))
@@ -1009,7 +1009,13 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: json):
 
 
 def filter_tests(tests: set, id_set: json) -> set:
-    tests_without_ignored = remove_ignored_tests(tests, id_set)
+    """
+    Filter tests out from the test set if they are a.Ignored b.Non XSOAR and non-supported packs;
+    :param tests: Set. Set of tests collected so far.
+    :param id_set: dict. The ID set.
+    :return: set. Set of tests without ignored and non supported tests.
+    """
+    tests_without_ignored = (tests, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     return tests_without_non_supported
