@@ -283,7 +283,9 @@ script:
 
 
         context = jsonToEntity(result.info, entityMap.Task);
-        context[0]['FileInfo'] = jsonToEntity(result.target.file, entityMap.FileInfo)[0];
+        if ('file' in result.target) {
+            context[0]['FileInfo'] = jsonToEntity(result.target.file, entityMap.FileInfo)[0];
+        }
         md = tblToMdWithTransform('Task Target', result.target, undrscrToCamelCase);
         md += tblToMdWithTransform('Task Info', result.info, undrscrToCamelCase);
         md += tblToMdWithTransform('Task Metadata', result.metadata, undrscrToCamelCase);
