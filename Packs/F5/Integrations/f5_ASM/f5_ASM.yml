@@ -705,10 +705,10 @@ script:
       description: Display name of the policy.
       type: String
     - contextPath: f5.FileType.id
-      description: ID of the policy that was deleted
+      description: ID of the policy that was deleted.
       type: String
     - contextPath: f5.FileType.selfLink
-      description: Self link of the policy that was deleted
+      description: The self link to the deleted policy.
       type: String
   - arguments:
     - default: false
