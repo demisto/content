@@ -70,6 +70,7 @@ else
     REMOVE_PBS=false
     OVERRIDE_ALL_PACKS=true
     BUCKET_UPLOAD_FLOW=false
+    PACKS_LIST="all"
   elif [ -n "${BUCKET_UPLOAD}" ]; then
       REMOVE_PBS=true
       BUCKET_UPLOAD_FLOW=true
