@@ -1,4 +1,3 @@
-import requests
 from typing import Optional, List
 import demistomock as demisto
 from CommonServerPython import *
@@ -7,27 +6,28 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-LIST_FIELDS = ['name', 'id', 'type', 'protocol', 'method', 'actAsMethod', 'serverTechnologyName',
-               'selfLink', 'checkRequestLength', 'enforcementType',
-               'ipAddress', 'ipMask', 'blockRequests', 'ignoreAnomalies', 'neverLogRequests',
+LIST_FIELDS = ['name', 'id', 'ipAddress', 'type', 'protocol', 'method', 'actAsMethod',
+               'serverTechnologyName', 'checkRequestLength', 'enforcementType',
+               'ipMask', 'blockRequests', 'ignoreAnomalies', 'neverLogRequests',
                'neverLearnRequests', 'trustedByPolicyBuilder', 'includeSubdomains',
                'description', 'mandatoryBody', 'clickjackingProtection', 'attackSignaturesCheck',
                'metacharElementCheck', 'hasValidationFiles', 'followSchemaLinks', 'isBase64',
                'enableWSS', 'dataType', 'valueType', 'mandatory', 'isCookie', 'isHeader',
-               'performStaging', 'active', 'allowed', 'isAllowed', 'createdBy', 'lastUpdateMicros']
+               'performStaging', 'active', 'allowed', 'isAllowed', 'createdBy', 'lastUpdateMicros',
+               'selfLink']
 
-OBJECT_FIELDS = ['name', 'id', 'type', 'protocol', 'method', 'actAsMethod',
-                 'serverTechnologyName', 'selfLink',
+OBJECT_FIELDS = ['name', 'id', 'ipAddress', 'type', 'protocol', 'method', 'actAsMethod',
+                 'serverTechnologyName',
                  'queryStringLength', 'checkRequestLength', 'responseCheck', 'urlLength',
                  'checkUrlLength', 'postDataLength', 'enforcementType', 'isBase64',
                  'description', 'includeSubdomains', 'clickjackingProtection',
-                 'ipAddress', 'ipMask', 'blockRequests', 'ignoreAnomalies',
+                 'ipMask', 'blockRequests', 'ignoreAnomalies',
                  'neverLogRequests', 'neverLearnRequests', 'trustedByPolicyBuilder',
                  'dataType', 'attackSignaturesCheck', 'metacharElementCheck',
                  'hasValidationFiles', 'followSchemaLinks', 'isBase64',
                  'enableWSS', 'valueType', 'mandatory', 'isCookie', 'isHeader',
                  'includeSubdomains', 'createdBy', 'performStaging', 'allowed', 'isAllowed',
-                 'createdBy', 'lastUpdateMicros']
+                 'createdBy', 'lastUpdateMicros', 'selfLink']
 
 BLOCKING_SETTINGS_REFERENCE = {'evasions': 'evasionReference', 'violations': 'violationReference',
                                'web-services-securities': 'webServicesSecurityReference',
@@ -41,7 +41,7 @@ class Client(BaseClient):
           base_url (str): f5 server url.
           token (str): f5 user token.
           use_ssl (bool): specifies whether to verify the SSL certificate or not.
-          use_proxy (bool): specifies if to use Demisto proxy settings.
+          use_proxy (bool): specifies if to use XSOAR proxy settings.
     """
 
     def __init__(self, base_url: str, token: str, use_ssl: bool, use_proxy: bool, **kwargs):
@@ -131,15 +131,20 @@ class Client(BaseClient):
 
     def create_policy(self, name: str, kind: str, enforcement_mode: str,
                       protocol_independent: bool, parent: Optional[str],
-                      description: Optional[str]):
-        body = {'name': name, 'description': description, 'enforcementMode': enforcement_mode,
-                'protocolIndependent': protocol_independent}
-        if kind == 'parent':
-            body.update({'type': 'parent'})
+                      description: Optional[str], allow: bool, active: bool):
+        body = {'name': name,
+                'description': description,
+                'enforcementMode': enforcement_mode,
+                'protocolIndependent': protocol_independent,
+                'allow': allow,
+                'active': active
+                }
+        if kind != 'child':
+            body.update({'type': kind})
         else:
             body.update({'parentPolicyName': parent})
         return self._http_request(method='POST', url_suffix='asm/policies',
-                                  headers=self.headers, json_data=body)
+                                  headers=self.headers, json_data=remove_empty_elements(body))
 
     def apply_policy(self, policy_reference_link: str):
         body = {'policyReference': {'link': policy_reference_link}}
@@ -198,7 +203,8 @@ class Client(BaseClient):
                 'postDataLength': post_data_length,
                 'performStaging': perform_staging}
 
-        return self._http_request(method='POST', headers=self.headers, json_data=body,
+        return self._http_request(method='POST', headers=self.headers,
+                                  json_data=remove_empty_elements(body),
                                   url_suffix=f'asm/policies/{policy_md5}/filetypes')
 
     def update_policy_file_type(self, policy_md5: str, file_type_id: str,
@@ -279,7 +285,8 @@ class Client(BaseClient):
 
         Args:
             policy_md5 (str): MD5 hash of the policy.
-            name (str): Host name to delete.
+            hostname_id (str): Host id to delete.
+            hostname_name (str): Host name to delete.
         """
         hostname_id = self.set_id(policy_md5, hostname_id, hostname_name, 'host-names')
         url_suffix = f'asm/policies/{policy_md5}/host-names/{hostname_id}'
@@ -593,18 +600,18 @@ class Client(BaseClient):
 
 
 def test_module(client: Client):
-    """Returning 'ok' indicates that the integration works like it is supposed to."""
+    """Returning 'ok' indicates the integration works like it is supposed to."""
     try:
-        response = client.list_policies("", "", None)
-        return 'ok' if response else 'Something went wrong.'
-    except DemistoException as e:
-        if 'F5 Authorization Required' in str(e):
-            return_error(f'Authorization Error: please check your credentials.\n\nError: {e}')
-        elif 'HTTPSConnectionPool' in str(e):
-            return_error(f'Connection Error: please check your server ip address.\n\nError: {e}')
+        client.list_policies("", "", None)
+    except DemistoException as exception:
+        if 'Authorization Required' or 'Authentication failed' in str(exception):
+            return f'Authorization Error: please check your credentials.\n\nError:\n{exception}'
+        if 'HTTPSConnectionPool' in str(exception):
+            return f'Connection Error: please check your server ip address.\n\nError: {exception}'
         else:
-            return_error(f'Something went Wrong! Please check the credentials and IP address'
-                         f' you provided\n\nError: {e}')
+            return (f'Something went Wrong! Please check the credentials and IP address'
+                    f' you provided\n\nError: {exception}')
+    return 'ok'
 
 
 def login(server_ip: str, username: str, password: str, verify_certificate: bool) -> str:
@@ -613,36 +620,48 @@ def login(server_ip: str, username: str, password: str, verify_certificate: bool
                              verify=verify_certificate,
                              json={'username': username, 'password': password,
                                    'loginProviderName': 'tmos'}).json()
-    if response:
-        token = response.get('token')
-        if token:
-            response = token.get('token')
-    return response
+    try:
+        if response:
+            token = response.get('token')
+            if token:
+                return token.get('token')
+    except DemistoException as exception:
+        return f'Authorization Error: please check your credentials. \n\nError\n:{exception}'
 
 
 def f5_get_policy_md5_command(client: Client, policy_name: str) -> CommandResults:
     """
-    Formats f5 policy md5 to Demisto's outputs.
+    Formats f5 policy md5 to XSOAR outputs.
 
     Args:
         client (Client): f5 client.
         policy_name (str): policy name.
     """
     result = client.get_policy_md5()
+    if result:
+        result = result.get('items')
+    readable_output = ''
     md5_dict = {}
     index = -1
+
     if result:
-        for element in result.get('items'):
+        for element in result:
             if element.get('name') == policy_name:
-                index = result.get('items').index(element)
-        response = (result.get('items')[index].get('plainTextProfileReference').get('link'))
+                index = result.index(element)
+
+        response = (result[index].get('plainTextProfileReference').get('link'))
         if index >= 0:
             md5 = response.partition('policies/')[2].partition('/')[0]
             md5_dict = {'md5': md5}
+            table_name = 'f5 policy md5:'
+        else:
+            table_name = f'No data for policy: {policy_name}'
+        readable_output = tableToMarkdown(table_name, md5_dict)
 
     command_results = CommandResults(
         outputs_prefix='f5.Policy',
         outputs_key_field='id',
+        readable_output=readable_output,
         outputs=md5_dict,
         raw_response=result
     )
@@ -669,8 +688,8 @@ def f5_list_policies_command(client: Client, self_link: str = "", kind: str = ""
     printable_result = []
     readable_output = 'No results'
 
-    headers = ['name', 'id', 'type', 'enforcementMode', 'selfLink', 'creatorName', 'active',
-               'createdTime']
+    headers = ['name', 'id', 'type', 'enforcementMode', 'creatorName', 'active', 'createdTime',
+               'selfLink']
     result = result.get('items')
     if result:
         for element in result:
@@ -683,7 +702,7 @@ def f5_list_policies_command(client: Client, self_link: str = "", kind: str = ""
                                           headers, removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='f5.ListPolicies',
+        outputs_prefix='f5.Policy',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=printable_result,
@@ -694,7 +713,8 @@ def f5_list_policies_command(client: Client, self_link: str = "", kind: str = ""
 
 def f5_create_policy_command(client: Client, name: str, kind: str, enforcement_mode: str,
                              protocol_independent: bool, parent: str = None,
-                             description: str = None) -> CommandResults:
+                             description: str = None, allow: bool=None,
+                             active: bool= None) -> CommandResults:
     """
     Creates a new ASM policy.
 
@@ -706,16 +726,18 @@ def f5_create_policy_command(client: Client, name: str, kind: str, enforcement_m
         protocol_independent(bool): Is the policy independent from protocols.
         parent(str): If child, specify the parent.
         description (str): Optional description.
+        allow (bool): indicates if to allow the new policy.
+        active (bool): indicates if to activate the new policy.
     """
     result = client.create_policy(name, kind, enforcement_mode, protocol_independent, parent,
-                                  description)
-    headers = ['name', 'id', 'fullPath', 'type', 'description', 'versionDatetime']
+                                  description, allow, active)
+    headers = ['name', 'id', 'fullPath', 'type', 'description', 'versionDatetime', 'selfLink']
     outputs, headers = build_output(headers, result)
     readable_output = tableToMarkdown('f5 data for creating policy:', outputs, headers,
                                       removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='f5.CreatePolicy',
+        outputs_prefix='f5.Policy',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=outputs,
@@ -739,7 +761,7 @@ def f5_apply_policy_command(client: Client, policy_reference_link: str) -> Comma
                                       removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='f5.ApplyPolicy',
+        outputs_prefix='f5.Policy',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=outputs,
@@ -767,7 +789,7 @@ def f5_export_policy_command(client: Client, filename: str, policy_reference_lin
                                       removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='f5.ExportPolicy',
+        outputs_prefix='f5.Policy',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=outputs,
@@ -792,7 +814,7 @@ def f5_delete_policy_command(client: Client, policy_md5: str) -> CommandResults:
                                       removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='f5.DeletePolicy',
+        outputs_prefix='f5.Policy',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=outputs,
@@ -844,7 +866,7 @@ def f5_add_policy_method_command(client: Client, policy_md5: str, new_method_nam
         outputs_prefix='f5.PolicyMethods',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -871,7 +893,7 @@ def f5_update_policy_method_command(client: Client, policy_md5: str, method_id: 
         outputs_prefix='f5.PolicyMethods',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -896,7 +918,7 @@ def f5_delete_policy_method_command(client: Client, policy_md5: str, method_id: 
         outputs_prefix='f5.PolicyMethods',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -955,7 +977,7 @@ def f5_add_policy_file_type_command(client: Client, policy_md5: str, new_file_ty
         outputs_prefix='f5.FileType',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -994,7 +1016,7 @@ def f5_update_policy_file_type_command(client: Client, policy_md5: str, file_typ
         outputs_prefix='f5.FileType',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1020,7 +1042,7 @@ def f5_delete_policy_file_type_command(client: Client, policy_md5: str, file_typ
         outputs_prefix='f5.FileType',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1073,7 +1095,7 @@ def f5_add_policy_cookie_command(client: Client, policy_md5: str, new_cookie_nam
         outputs_prefix='f5.Cookies',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1101,13 +1123,13 @@ def f5_update_policy_cookie_command(client: Client, policy_md5: str, cookie_id: 
     result = client.update_policy_cookie(policy_md5, cookie_id, cookie_name, perform_staging,
                                          parameter_type, enforcement_type, attack_signatures_check)
     outputs, headers = build_output(OBJECT_FIELDS, result)
-    readable_output = tableToMarkdown(f'f5 data for updating cookie: {cookie_name}',
+    readable_output = tableToMarkdown('f5 data for updating cookie:',
                                       outputs, headers, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.Cookies',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1132,7 +1154,7 @@ def f5_delete_policy_cookie_command(client: Client, policy_md5: str, cookie_id: 
         outputs_prefix='f5.Cookies',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1180,7 +1202,7 @@ def f5_add_policy_hostname_command(client: Client, policy_md5: str, name: str,
         outputs_prefix='f5.Hostname',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1208,7 +1230,7 @@ def f5_update_policy_hostname_command(client: Client, policy_md5: str, hostname_
         outputs_prefix='f5.Hostname',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1233,7 +1255,7 @@ def f5_delete_policy_hostname_command(client: Client, policy_md5: str,
         outputs_prefix='f5.Hostname',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1276,7 +1298,7 @@ def f5_add_policy_url_command(client: Client, policy_md5: str, name: str, protoc
         protocol(str): HTTP or HTTPS
         url_type(str): Explicit or wildcard.
         is_allowed(bool): Whether or not the URL is allowed.
-        description (str): Optional descrption for the URL.
+        description (str): Optional description for the URL.
         perform_staging (bool): Whether or not to stage the URL.
         clickjacking_protection(bool): Whether or not to enable clickjacking protection.
         method(str): Method to be used in the.
@@ -1290,7 +1312,7 @@ def f5_add_policy_url_command(client: Client, policy_md5: str, name: str, protoc
         outputs_prefix='f5.Url',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1325,7 +1347,7 @@ def f5_update_policy_url_command(client: Client, policy_md5: str, url_id: str, u
         outputs_prefix='f5.Url',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1355,7 +1377,7 @@ def f5_delete_policy_url_command(client: Client, policy_md5: str, url_id: str,
         outputs_prefix='f5.Url',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=remove_empty_elements(outputs),
         raw_response=result
     )
     return command_results
@@ -1543,7 +1565,7 @@ def f5_add_policy_parameter_command(client, policy_md5: str, name: str, param_ty
         policy_md5 (str): MD5 hash of the policy.
         param_type(str): Type of parameter.
         name (str): Name of parameter.
-        value_type(str): Type of value the parameter recieves.
+        value_type(str): Type of value the parameter receives.
         param_location (str): Where the parameter sits.
         perform_staging (bool): Whether or not to stage the parameter.
         mandatory (bool): Is the parameter mandatory.
@@ -1581,7 +1603,7 @@ def f5_update_policy_parameter_command(client, policy_md5: str, parameter_id: st
         policy_md5 (str): MD5 hash of the policy.
         parameter_id (str): ID of parameter.
         parameter_name (str): Display name of parameter.
-        value_type(str): Type of value the parameter recieves.
+        value_type(str): Type of value the parameter receives.
         param_location(str): Where the parameter sits.
         perform_staging (bool): Whether or not to stage the parameter.
         mandatory(bool): Is the parameter mandatory.
@@ -1731,7 +1753,7 @@ def f5_update_policy_gwt_profile_command(client, policy_md5: str, gwt_profile_id
 def f5_delete_policy_gwt_profile_command(client, policy_md5: str, gwt_profile_id: str,
                                          gwt_profile_name: str) -> CommandResults:
     """
-    Delete an exisiting GWT profile from a policy.
+    Delete an existing GWT profile from a policy.
 
     Args:
         client (Client): f5 client.
@@ -1792,7 +1814,7 @@ def f5_add_policy_json_profile_command(client, policy_md5: str, name: str, maxim
         description (str): Optional profile description.
         maximum_total_len(str): Maximum total length of JSON data.
         maximum_value_len(str): Maximum length for a single value.
-        max_structure_depth(str): Maxmimum structure depth.
+        max_structure_depth(str): Maximum structure depth.
         max_array_len(str): Maximum JSON array length.
         tolerate_parsing_warnings(bool): Should the profile tolerate JSON parsing warnings.
         parse_parameters(bool): Should the profile handle JSON values as parameters.
@@ -1835,7 +1857,7 @@ def f5_update_policy_json_profile_command(client, policy_md5: str, json_id: str,
         description (str): Optional profile description.
         maximum_total_len(str): Maximum total length of JSON data.
         maximum_value_len(str): Maximum length for a single value.
-        max_structure_depth(str): Maxmimum structure depth.
+        max_structure_depth(str): Maximum structure depth.
         max_array_len(str): Maximum JSON array length.
         tolerate_parsing_warnings(bool): Should the profile tolerate JSON parsing warnings.
         parse_parameters(bool): Should the profile handle JSON values as parameters.
@@ -1982,11 +2004,11 @@ def f5_update_policy_xml_profile_command(client, policy_md5: str, xml_id: str, x
         allow_external_ref (bool): Whether or not to allow external references.
         allow_processing_instructions (bool): Whether or not to allow processing instructions.
     """
-    result = client.update_policy_xml_profile(policy_md5, xml_id, xml_name, description, check_signatures,
-                                              check_metachar_elements, check_metachar_attributes,
-                                              enable_wss, inspect_soap, follow_links,
-                                              use_xml_response,
-                                              allow_cdata, allow_dtds, allow_external_ref,
+    result = client.update_policy_xml_profile(policy_md5, xml_id, xml_name, description,
+                                              check_signatures, check_metachar_elements,
+                                              check_metachar_attributes, enable_wss, inspect_soap,
+                                              follow_links, use_xml_response, allow_cdata,
+                                              allow_dtds, allow_external_ref,
                                               allow_processing_instructions)
     printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for updating XML profile:',
@@ -2139,7 +2161,7 @@ def f5_list_policy_blocking_settings_command(client: Client, policy_md5: str,
                                                'section-reference', 'lastUpdateMicros'],
                                       removeNull=True)
     command_results = CommandResults(
-        outputs_prefix=f'f5.{endpoint}',
+        outputs_prefix='f5.BlockingSettings',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=printable_result,
@@ -2193,7 +2215,7 @@ def f5_update_policy_blocking_settings_command(client: Client, policy_md5: str, 
                                                'section-reference', 'lastUpdateMicros'],
                                       removeNull=True)
     command_results = CommandResults(
-        outputs_prefix=f'f5.{endpoint}',
+        outputs_prefix='f5.BlockingSettings',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=printable_result,
@@ -2203,7 +2225,7 @@ def f5_update_policy_blocking_settings_command(client: Client, policy_md5: str, 
 
 
 def format_date(date):
-    """formats date according to Demisto date format"""
+    """formats date according to XSOAR date format"""
     date = int(date / 1000000)
     return time.strftime(DATE_FORMAT, time.localtime(date))
 
@@ -2443,12 +2465,12 @@ def main():
         elif 'HTTPSConnectionPool' in str(e):
             return_error(f'Connection Error: please check your server url address.\n\nError: {e}')
         elif 'already exists' in str(e):
-            return_error(f'The object name already exists in your f5 server.\nError: {e}')
+            return_error(f'The object name already exists in your f5 server.\n\nError: {e}')
         else:
-            raise e
+            raise
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command. \n\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
