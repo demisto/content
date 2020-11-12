@@ -1114,7 +1114,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1198,7 +1199,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1227,7 +1229,8 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1259,7 +1262,8 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1403,7 +1407,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_indicator_timeline_with_list_of_indicators(self):
