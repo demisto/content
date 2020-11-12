@@ -16,6 +16,8 @@ def get_rest_api_instance_to_use(rest_api_instance_from_arg):
     allInstances = demisto.getModules()
     number_of_rest_api_instances = 0
     rest_api_instance_to_use = None
+    if rest_api_instance_from_arg is not None:
+        return rest_api_instance_from_arg
     for instance_name in allInstances:
         if allInstances[instance_name]['brand'] == BRAND:
             rest_api_instance_to_use = instance_name
@@ -25,9 +27,7 @@ def get_rest_api_instance_to_use(rest_api_instance_from_arg):
                      "Specify the instance name in the 'rest_api_instance' argument.")
     elif number_of_rest_api_instances == 1:
         return rest_api_instance_to_use
-    else:
-        # in there are no rest api instances
-        return rest_api_instance_from_arg
+    return rest_api_instance_from_arg
 
 
 def main():

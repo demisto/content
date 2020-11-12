@@ -46,7 +46,7 @@ def test_get_rest_api_instance_to_use(mocker, modules, expected_output, num_of_i
         assert get_rest_api_instance_to_use("Demisto REST API_instance_1") == expected_output
     else:
         with pytest.raises(SystemExit):
-            get_rest_api_instance_to_use("Demisto REST API_instance_1")
+            get_rest_api_instance_to_use(None)
         contents = demisto.results.call_args[0][0]
         assert contents['Contents'] == expected_output
 
