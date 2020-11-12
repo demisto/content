@@ -272,10 +272,15 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         file_name = results_info.get('filename')
         file_data = client.get_file_from_url(url)
         war_room_file = fileResult(filename=file_name, data=file_data)
+        readable_output = tableToMarkdown('Check Status Results', remove_empty_elements(results_data),
+                                  headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
+                                           'status'),
+                                  headerTransform=string_to_table_header)
         return_results(CommandResults(
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
             raw_response = results,
+            readable_output=readable_output,
             outputs=results_data
         ))
         return war_room_file
@@ -360,26 +365,27 @@ def main() -> None:
             'Authorization': f'Bearer {api_key}'
         }
         client = Client(headers, verify, proxy)
-
-        if demisto.command() == 'cloudconvert-import':
+        command = demisto.command()
+        
+        if command == 'cloudconvert-import':
             return_results(import_command(client, demisto.args()))
 
-        elif demisto.command() == 'cloudconvert-convert':
+        elif command == 'cloudconvert-convert':
             return_results(convert_command(client, demisto.args()))
 
-        elif demisto.command() == 'cloudconvert-checkstatus':
+        elif command == 'cloudconvert-checkstatus':
             return_results(check_status_command(client, demisto.args()))
 
-        elif demisto.command() == 'cloudconvert-export':
+        elif command == 'cloudconvert-export':
             return_results(export_command(client, demisto.args()))
 
-        elif demisto.command() == 'test-module':
+        elif command == 'test-module':
             return_results(test_module(client))
 
     except Exception as e:
         err_msg = 'Task id not found or expired' if 'No query results for model' in str(e) else \
             ('No more conversion minutes for today for this user' if 'Payment Required' in str(e) else str(e))
-        return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}', error=traceback.format_exc())
+        return_error(f'Failed to execute {command} command. Error: {err_msg}', error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
