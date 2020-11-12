@@ -22,19 +22,17 @@ echo "$GCS_MARKET_KEY" > "$KF"
 gcloud auth activate-service-account --key-file="$KF" > auth.out 2>&1
 echo "Auth loaded successfully."
 
-GCS_MARKET_BUCKET="marketplace-dist-dev"
+# ====== BUILD CONFIGURATION ======
+
 GCS_BUILD_BUCKET="marketplace-ci-build"
-SOURCE_PATH="dev/content/packs"
 BUILD_BUCKET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM"
 TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
-echo "copying now"
-gsutil -m rm -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH"
-gsutil -m cp -r "gs://marketplace-dist/content/packs" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH"
-echo "finished copying"
-exit 1
+# ====== PRODUCTION CONFIGURATION ======
+GCS_MARKET_BUCKET="marketplace-dist-dev"
+SOURCE_PATH="dev/content/packs"
 
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
@@ -56,20 +54,27 @@ if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
     fi
   fi
 else
+  
   if [ -n "${NIGHTLY}" ]; then
     echo "Updating all content packs for nightly build..."
+    # In content nightly we include test-pbs in the zipped packs, we override all packs and we test all packs in the repo
     REMOVE_PBS=false
     OVERRIDE_ALL_PACKS=true
     BUCKET_UPLOAD_FLOW=false
+    PACKS_LIST="all"
   elif [ -n "${BUCKET_UPLOAD}" ]; then
+      # In bucket upload flow, we exclude test-pbs in the zipped packs
       REMOVE_PBS=true
       BUCKET_UPLOAD_FLOW=true
       GCS_PRIVATE_BUCKET="marketplace-dist-private"
     if [ -n "${FORCE_PACK_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
+      # In case the workflow is force upload, we override the forced packs
       echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"
       OVERRIDE_ALL_PACKS=true
       PACKS_LIST="${PACKS_TO_UPLOAD}"
     else
+      # In case of a regular upload flow, the upload_packs script will decide which pack to upload or not, thus it is
+      # given with all the packs, we don't override packs to not force upload a pack
       echo "Updating all content packs for upload packs to production..."
       OVERRIDE_ALL_PACKS=false
       PACKS_LIST="all"
@@ -78,10 +83,6 @@ else
   python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -bu $BUCKET_UPLOAD_FLOW -fc "$FORCE_PREVIOUS_COMMIT" -pb "$GCS_PRIVATE_BUCKET" -c $CIRCLE_BRANCH
   echo "Finished updating content packs successfully."
 fi
-
-#echo "Normalizing images paths to build bucket ..."
-#python3 ./Tests/Marketplace/normalize_gcs_paths.py -sb $TARGET_PATH -b $GCS_BUILD_BUCKET -s $KF
-#echo "Finished normalizing images paths successfully."
 
 echo -e "\nBrowse to the build bucket with this address:"
 echo -e "https://console.cloud.google.com/storage/browser/$BUCKET_FULL_TARGET_PATH\n"

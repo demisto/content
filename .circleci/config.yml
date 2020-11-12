@@ -416,17 +416,52 @@ references:
     - Demisto SDK Nightly - Run against Cortex XSOAR:
         context: sdk_nightly_env
 
+  nightly_jobs: &nightly_jobs
+    - Setup Environment:
+        context: nightly_env
+    - Create Instances:
+        context: nightly_env
+    - Run Unit Testing And Lint:
+        context: nightly_env
+        requires:
+          - Setup Environment
+    - Run Validations:
+        requires:
+          - Setup Environment
+    - Server Master:
+        requires:
+          - Create Instances
+        context: nightly_env
+
   bucket_upload_jobs: &bucket_upload_jobs
     - Setup Environment:
         context: bucket_upload_env
-    - Create Instances:
+    - Run Unit Testing And Lint:
         context: bucket_upload_env
         requires:
           - Setup Environment
-    - Upload Packs To Marketplace:
+    - Run Validations:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
+    - Create Instances:
+        context: bucket_upload_env
+        requires:
+          - Run Unit Testing And Lint
+          - Run Validations
+    - Install Packs in Demisto 6_0:
         context: bucket_upload_env
         requires:
           - Create Instances
+    - Install Packs in Demisto Marketplace - Master:
+        context: bucket_upload_env
+        requires:
+          - Create Instances
+    - Upload Packs To Marketplace:
+        context: bucket_upload_env
+        requires:
+          - Install Packs in Demisto 6_0
+          - Install Packs in Demisto Marketplace - Master
 
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
@@ -941,6 +976,7 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
+      - *check_user_permissions_to_upload_packs
       - run:
           name: Force Upload Packs To Marketplace Storage
           command: |
@@ -970,6 +1006,7 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
+      - *check_user_permissions_to_upload_packs
       - when:
           condition:
             equal:
@@ -1207,6 +1244,7 @@ workflows:
           - << pipeline.parameters.force_pack_upload >>
           - << pipeline.parameters.bucket_upload >>
           - << pipeline.parameters.demisto_sdk_nightly >>
+          - << pipeline.parameters.nightly >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -1298,21 +1336,13 @@ workflows:
               only:
                 - master
     jobs:
-      - Setup Environment:
-          context: nightly_env
-      - Create Instances:
-          context: nightly_env
-      - Run Unit Testing And Lint:
-          context: nightly_env
-          requires:
-            - Setup Environment
-      - Run Validations:
-          requires:
-            - Setup Environment
-      - Server Master:
-          requires:
-            - Create Instances
-          context: nightly_env
+      *nightly_jobs
+
+  nightly_trigger:
+    # will initiate when using the trigger script.
+    when: << pipeline.parameters.nightly >>
+    jobs:
+      *nightly_jobs
 
   sdk_nightly:
     triggers:
@@ -1336,7 +1366,7 @@ workflows:
     triggers:
       - schedule:
           # should trigger every day at 9 PM UTC (00:00 AM Israel Time)
-          cron: "0 21 * * *"
+          cron: "0 22 * * *"
           filters:
             branches:
               only:
