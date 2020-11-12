@@ -253,7 +253,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
 
     # If checking on an export to entry operation, manually change the operation name
     # For other operations, the operation matches the operation field in the API's response, so no change is needed
-    if arguments.get('is_entry'):
+    if argToBoolean(arguments.get('is_entry')):
         results['data']['operation'] = 'export/entry'
     results_data = results.get('data')
 
