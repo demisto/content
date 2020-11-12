@@ -111,7 +111,7 @@ class ServiceNowClient(BaseClient):
                 set_integration_context(refresh_token)
         except Exception as e:
             return_error(f'Login failed. Please check the instance configuration and the given username and password.\n'
-                         '{e.args[0]}')
+                         f'{e.args[0]}')
 
     def get_access_token(self):
         """
@@ -132,8 +132,8 @@ class ServiceNowClient(BaseClient):
                 data['refresh_token'] = previous_token.get('refresh_token')
                 data['grant_type'] = 'refresh_token'
             else:
-                raise Exception('Could not create an access token. Maybe the user is not logged in. Try running the'
-                                ' login command.')
+                raise Exception('Could not create an access token. User might be not logged in. Try running the'
+                                ' oauth-login command first.')
 
             try:
                 headers = {

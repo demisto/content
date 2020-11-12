@@ -11,9 +11,9 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Select this checkbox if to use OAuth 2.0 authentication.
-    See (?) for more information.
-  display: Use OAuth
+- additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?)
+    for more information.
+  display: Use OAuth Login
   hidden: false
   name: use_oauth
   required: false
@@ -2360,11 +2360,11 @@ script:
     description: This function should be used once before running any command when
       using OAuth2 authentication.
     execution: false
-    name: servicenow-login
+    name: servicenow-oauth-login
   - deprecated: false
     description: Test the instance configuration when using OAuth2 authentication.
     execution: false
-    name: servicenow-test
+    name: servicenow-oauth-test
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
@@ -2376,4 +2376,5 @@ script:
   type: python
 tests:
 - servicenow_test_v2
+- ServiceNow_OAuth_Test
 fromversion: 5.0.0
