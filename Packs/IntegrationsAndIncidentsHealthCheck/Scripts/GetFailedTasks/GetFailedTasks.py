@@ -15,7 +15,7 @@ def get_rest_api_instance_to_use():
     number_of_rest_api_instances = 0
     rest_api_instance_to_use = None
     for instance_name in all_instances:
-        if all_instances[instance_name]['brand'] == BRAND:
+        if all_instances[instance_name]['brand'] == BRAND and all_instances[instance_name]['state'] == 'active':
             rest_api_instance_to_use = instance_name
             number_of_rest_api_instances += 1
         if number_of_rest_api_instances > 1:

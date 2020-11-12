@@ -27,6 +27,17 @@ from test_data.constants import INCIDENTS_RESULT, TASKS_RESULT
                                                                             "Specify the instance name in "
                                                                             "the 'rest_api_"
                                                                             "instance' argument.", 2),
+                                                                      ({"Demisto REST API_instance_1": {
+                                                                          "brand": "Demisto REST API",
+                                                                          "category": "Utilities",
+                                                                          "defaultIgnored": "false",
+                                                                          "state": "active"
+                                                                      }, "Demisto REST API_instance_2": {
+                                                                          "brand": "Demisto REST API",
+                                                                          "category": "Utilities",
+                                                                          "defaultIgnored": "false",
+                                                                          "state": "disabled"
+                                                                      }, }, "Demisto REST API_instance_1", 1)
                                                                       ])
 def test_get_rest_api_instance_to_use(mocker, modules, expected_output, num_of_instances):
     """
