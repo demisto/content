@@ -138,4 +138,4 @@ inputs:
 outputs: []
 fromversion: 6.0.0
 tests:
-- ConcentricAI Demo Playbook
+- No tests

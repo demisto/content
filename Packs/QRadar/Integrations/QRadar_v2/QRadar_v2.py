@@ -196,6 +196,10 @@ class QRadarClient:
         self.lock = Lock()
 
     @property
+    def server(self):
+        return self._server
+
+    @property
     def offenses_per_fetch(self):
         return self._offenses_per_fetch
 
@@ -955,7 +959,7 @@ def is_reset_triggered(lock, handle_reset=False):
         if ctx and RESET_KEY in ctx:
             if handle_reset:
                 print_debug_msg("Reset fetch-incidents.")
-                set_to_integration_context_with_retries(
+                set_integration_context(
                     {"samples": ctx.get("samples", [])}, sync=SYNC_CONTEXT
                 )
             lock.release()
@@ -1016,7 +1020,7 @@ def fetch_incidents_long_running_events(
     )
 
     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
-    set_to_integration_context_with_retries(context, sync=SYNC_CONTEXT)
+    set_integration_context(context, sync=SYNC_CONTEXT)
 
 
 def create_incidents(enriched_offenses, incident_type):
@@ -1061,7 +1065,7 @@ def fetch_incidents_long_running_no_events(
     )
 
     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
-    set_to_integration_context_with_retries(context, sync=SYNC_CONTEXT)
+    set_integration_context(context, sync=SYNC_CONTEXT)
 
 
 def create_incident_from_offense(offense, incident_type):
@@ -1127,6 +1131,7 @@ def enrich_offense_result(
     * Rule id -> name
     * IP id -> value
     * IP value -> Asset
+    * Add offense link
     """
     domain_ids = set()
     rule_ids = set()
@@ -1136,6 +1141,8 @@ def enrich_offense_result(
             include_deleted=True, include_reserved=True
         )
         for offense in response:
+            offense["LinkToOffense"] = f"{client.server}/console/do/sem/offensesummary?" \
+                                       f"appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}"
             enrich_offense_timestamps_and_closing_reason(
                 client, offense, type_dict, closing_reason_dict
             )
@@ -1776,10 +1783,11 @@ def update_reference_set_value_command(
         values = [
             date_to_timestamp(v, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for v in values
         ]
-    if len(values) > 1:
+    if len(values) > 1 and not source:
         raw_ref = client.upload_indicators_list_request(ref_name, values)
-    elif len(values) == 1:
-        raw_ref = client.update_reference_set_value(ref_name, values[0], source)
+    elif len(values) >= 1:
+        for value in values:
+            raw_ref = client.update_reference_set_value(ref_name, value, source)
     else:
         raise DemistoException(
             "Expected at least a single value, cant create or update an empty value"
@@ -2037,7 +2045,7 @@ def long_running_main(
 def reset_fetch_incidents():
     ctx = get_integration_context(SYNC_CONTEXT)
     ctx[RESET_KEY] = True
-    set_to_integration_context_with_retries(ctx, sync=SYNC_CONTEXT)
+    set_integration_context(ctx, sync=SYNC_CONTEXT)
     return "fetch-incidents was reset successfully."
 
 

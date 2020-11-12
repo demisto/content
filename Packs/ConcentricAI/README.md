@@ -20,6 +20,3 @@ ConcentricAI Security Event :
    3) Calculates the severity of the incident.
    
 For more information please visit concentric.ai 
-
-
-

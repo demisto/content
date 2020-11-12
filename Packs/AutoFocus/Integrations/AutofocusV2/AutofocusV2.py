@@ -1307,10 +1307,7 @@ def search_ip_command(ip):
     indicator_type = 'IP'
     ip_list = argToList(ip)
 
-    ip_indicators = []
-    outputs = []
-    raw_response = []
-    human_readable = ''
+    command_results = []
 
     for ip_address in ip_list:
         raw_res = search_indicator('ipv4_address', ip_address)
@@ -1346,21 +1343,14 @@ def search_ip_command(ip):
         else:
             md = tableToMarkdown(table_name, autofocus_ip_output)
 
-        human_readable += md
-
-        ip_indicators.append(ip)
-        outputs.append(autofocus_ip_output)
-        raw_response.append(raw_res)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.IP',
-        outputs_key_field='IndicatorValue',
-        outputs=outputs,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=ip_indicators
-    )
+        command_results.append(CommandResults(
+            outputs_prefix='AutoFocus.IP',
+            outputs_key_field='IndicatorValue',
+            outputs=autofocus_ip_output,
+            readable_output=md,
+            raw_response=raw_res,
+            indicator=ip
+        ))
 
     return command_results
 
@@ -1369,10 +1359,7 @@ def search_domain_command(args):
     indicator_type = 'Domain'
     domain_name_list = argToList(args.get('domain'))
 
-    domain_indicator_list = []
-    autofocus_domain_list = []
-    raw_response = []
-    human_readable = ''
+    command_results = []
 
     for domain_name in domain_name_list:
         raw_res = search_indicator('domain', domain_name)
@@ -1419,21 +1406,14 @@ def search_domain_command(args):
         else:
             md = tableToMarkdown(table_name, autofocus_domain_output)
 
-        human_readable += md
-
-        domain_indicator_list.append(domain)
-        raw_response.append(raw_res)
-        autofocus_domain_list.append(autofocus_domain_output)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.Domain',
-        outputs_key_field='IndicatorValue',
-        outputs=autofocus_domain_list,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=domain_indicator_list
-    )
+        command_results.append(CommandResults(
+            outputs_prefix='AutoFocus.Domain',
+            outputs_key_field='IndicatorValue',
+            outputs=autofocus_domain_output,
+            readable_output=md,
+            raw_response=raw_res,
+            indicator=domain
+        ))
 
     return command_results
 
@@ -1442,10 +1422,7 @@ def search_url_command(url):
     indicator_type = 'URL'
     url_list = argToList(url)
 
-    url_indicator_list = []
-    autofocus_url_list = []
-    raw_response = []
-    human_readable = ''
+    command_results = []
 
     for url_name in url_list:
 
@@ -1482,21 +1459,15 @@ def search_url_command(url):
         else:
             md = tableToMarkdown(table_name, autofocus_url_output)
 
-        human_readable += md
+        command_results.append(CommandResults(
+            outputs_prefix='AutoFocus.URL',
+            outputs_key_field='IndicatorValue',
+            outputs=autofocus_url_output,
 
-        url_indicator_list.append(url)
-        raw_response.append(raw_res)
-        autofocus_url_list.append(autofocus_url_output)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.URL',
-        outputs_key_field='IndicatorValue',
-        outputs=autofocus_url_list,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=url_indicator_list
-    )
+            readable_output=md,
+            raw_response=raw_res,
+            indicator=url
+        ))
 
     return command_results
 
@@ -1505,10 +1476,7 @@ def search_file_command(file):
     indicator_type = 'File'
     file_list = argToList(file)
 
-    file_indicator_list = []
-    autofocus_file_list = []
-    raw_response = []
-    human_readable = ''
+    command_results = []
 
     for sha256 in file_list:
         raw_res = search_indicator('sha256', sha256.lower())
@@ -1543,21 +1511,15 @@ def search_file_command(file):
         else:
             md = tableToMarkdown(table_name, autofocus_file_output)
 
-        human_readable += md
+        command_results.append(CommandResults(
+            outputs_prefix='AutoFocus.File',
+            outputs_key_field='IndicatorValue',
+            outputs=autofocus_file_output,
 
-        file_indicator_list.append(file)
-        raw_response.append(raw_res)
-        autofocus_file_list.append(autofocus_file_output)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.File',
-        outputs_key_field='IndicatorValue',
-        outputs=autofocus_file_list,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=file_indicator_list
-    )
+            readable_output=md,
+            raw_response=raw_res,
+            indicator=file
+        ))
 
     return command_results
 
