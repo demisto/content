@@ -148,50 +148,52 @@ def create_ticket_attachments_request(encoded, files_data):
 
 
 def create_ticket():
-    queue = demisto.args().get('queue')
+    args = {arg: value.encode('utf-8') for arg, value in demisto.args().items()}
+
+    queue = args.get('queue')
     data = 'id: ticket/new\nQueue: {}\n'.format(queue)
 
-    subject = demisto.args().get('subject')
+    subject = args.get('subject')
     if subject:
         data += "Subject: {}\n".format(subject)
 
-    requestor = demisto.args().get('requestor')
+    requestor = args.get('requestor')
     if requestor:
         data += "Requestor: {}\n".format(requestor)
 
-    cc = demisto.args().get('cc', '')
+    cc = args.get('cc', '')
     if cc:
         data += "Cc: {}\n".format(cc)
 
-    admin_cc = demisto.args().get('admin-cc', '')
+    admin_cc = args.get('admin-cc', '')
     if admin_cc:
         data += "AdminCc: {}\n".format(admin_cc)
 
-    owner = demisto.args().get('owner')
+    owner = args.get('owner')
     if owner:
         data += "Owner: {}\n".format(owner)
 
-    status = demisto.args().get('status')
+    status = args.get('status')
     if status:
         data += "Status: {}\n".format(status)
 
-    priority = demisto.args().get('priority')
+    priority = args.get('priority')
     if priority:
         data += "Priority: {}\n".format(priority)
 
-    initial_priority = demisto.args().get('initial-priority')
+    initial_priority = args.get('initial-priority')
     if initial_priority:
         data += "Initial-priority: {}\n".format(initial_priority)
 
-    final_priority = demisto.args().get('final-priority')
+    final_priority = args.get('final-priority')
     if final_priority:
         data += "FinalPriority: {}\n".format(final_priority)
 
-    text = demisto.args().get('text')
+    text = args.get('text')
     if text:
-        data += "Text: {}\n".format(unicode(text).encode('utf-8'))
+        data += "Text: {}\n".format(text)
 
-    customfields = demisto.args().get('customfields')
+    customfields = args.get('customfields')
     if customfields:
         cf_list = customfields.split(',')
         for cf in cf_list:
@@ -200,7 +202,7 @@ def create_ticket():
             value = cf[equal_index + 1:]
             data = data + key + value + '\n'
 
-    attachments = demisto.args().get('attachment')
+    attachments = args.get('attachment')
     if attachments:
         files_data = {}
         if isinstance(attachments, list):  # Given as list
@@ -264,7 +266,7 @@ def fix_query_suffix(query):
 
 def build_search_query():
     raw_query = ''
-    args = demisto.args()
+    args = {arg: value.encode('utf-8') for arg, value in demisto.args().items()}
     ticket_id = args.get('ticket-id')
     if ticket_id:
         raw_query += 'id={}{}{}+AND+'.format(apostrophe, ticket_id, apostrophe)
@@ -481,7 +483,7 @@ def edit_ticket():
             content = content + key + value + '\n'
 
     if arguments_given:
-        encoded = "content=" + urllib.quote_plus(content)
+        encoded = "content=" + urllib.quote_plus(content.encode('utf-8'))
         edited_ticket = edit_ticket_request(ticket_id, encoded)
         if "200 Ok" in edited_ticket.content:
             ticket_context = ({
