@@ -1116,7 +1116,6 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
 
         old_module_instances.extend(old_module_instances_for_test)
         new_module_instances.extend(new_module_instances_for_test)
-
     return old_module_instances, new_module_instances
 
 
