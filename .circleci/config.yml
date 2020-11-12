@@ -1374,7 +1374,7 @@ workflows:
     triggers:
       - schedule:
           # should trigger every day at 9 PM UTC (00:00 AM Israel Time)
-          cron: "0 21 * * *"
+          cron: "0 22 * * *"
           filters:
             branches:
               only:
