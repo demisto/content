@@ -1,6 +1,6 @@
 {
     "name": "Asset",
-    "description": "Base pack for any packs using Assets.",
+    "description": "Base pack for any packs using asset fields.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
