@@ -3,7 +3,7 @@ args:
   description: The query by which to retrieve failed tasks. Optional. The default value is "-status:closed"
   name: query
 comment: Gets failed tasks details for incidents based on a query.
-dockerimage: demisto/python3:3.8.5.11789
+dockerimage: demisto/python3:3.8.6.12176
 commonfields:
   id: GetFailedTasks
   version: -1

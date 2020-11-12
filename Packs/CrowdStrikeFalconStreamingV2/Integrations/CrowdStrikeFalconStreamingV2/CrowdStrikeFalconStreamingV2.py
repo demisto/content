@@ -52,7 +52,7 @@ class Client(BaseClient):
         demisto.debug('Set access token successfully')
 
     def set_auth_headers(self, token: str) -> None:
-        self._headers = {'Authorization': f'Bearer {token}'}
+        self._headers.update({'Authorization': f'Bearer {token}'})
         demisto.debug('Set auth headers successfully')
 
     def discover_stream(self) -> Dict:
@@ -64,7 +64,7 @@ class Client(BaseClient):
         )
 
     def refresh_stream_session(self) -> None:
-        demisto.debug('Sending request to refresh stream')
+        demisto.debug(f'Sending request to refresh stream to {self.refresh_stream_url}')
         self._http_request(
             method='POST',
             url_suffix='',
@@ -238,6 +238,7 @@ class RefreshToken:
         self.expiry_time: int = 0
 
     async def set_access_token(self, client: Client) -> None:
+        demisto.debug('Setting access token')
         self.client = client
         if not self.token:
             token = await self.get_access_token()
@@ -255,6 +256,7 @@ class RefreshToken:
         Raises:
             RuntimeError: An error occurred (json.decoder.JSONDecodeError) trying to deserialize the API response.
         """
+        demisto.debug('Sending request to get access token')
         token = None
         body = None
         max_retries = 3
@@ -298,10 +300,12 @@ class RefreshToken:
             self.expiry_time = body.get('expires_in', MINUTES_30) - TIME_BUFFER_1_MINUTE
         if not token:
             raise RuntimeError('Failed to retrieve token')
+        demisto.debug('Got access token successfully')
         return token
 
     async def refresh_token_loop(self) -> None:
         while True:
+            demisto.debug(f'Starting refresh token loop iteration, going to sleep for {self.expiry_time}')
             await sleep(self.expiry_time)
             token = await self.get_access_token()
             self.token = token
@@ -371,6 +375,7 @@ async def long_running_loop(
         sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
         async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
             stream.set_refresh_token(refresh_token)
+            demisto.debug('Finished initializing refresh token, starting fetch events loop')
             async for event in stream.fetch_event(
                     first_fetch_time=first_fetch_time, initial_offset=offset, event_type=event_type
             ):
@@ -407,7 +412,7 @@ async def long_running_loop(
     except Exception as e:
         demisto.error(f'An error occurred in the long running loop: {e}')
     finally:
-        # store latest fetched event offset in case the loop crashes and we did not reach the 1 minute to store it
+        # store latest fetched event offset in case the loop crashes and we did not store it
         set_to_integration_context_with_retries({'offset': offset_to_store})
 
 
@@ -453,6 +458,27 @@ def get_sample_events(store_samples: bool = False) -> None:
         demisto.results(output)
 
 
+def merge_integration_context() -> None:
+    """Checks whether offset is of type int and sample_events is of type list in the integration context and
+    casts them to string
+
+    Returns:
+        None: No data returned.
+    """
+    integration_context, version = get_integration_context_with_version()
+    should_update_integration_context = False
+    offset = integration_context.get('offset')
+    if isinstance(offset, int):
+        integration_context['offset'] = str(offset)
+        should_update_integration_context = True
+    sample_events = integration_context.get('sample_events')
+    if isinstance(sample_events, list):
+        integration_context['sample_events'] = json.dumps(sample_events)
+        should_update_integration_context = True
+    if should_update_integration_context:
+        set_integration_context(integration_context, version)
+
+
 def main():
     params: Dict = demisto.params()
     base_url: str = params.get('base_url', '')
@@ -475,6 +501,7 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
+        merge_integration_context()
         if demisto.command() == 'test-module':
             run(test_module(base_url, client_id, client_secret, verify_ssl, proxy))
         elif demisto.command() == 'long-running-execution':
