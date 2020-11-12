@@ -49,8 +49,14 @@ class Client(BaseClient):
             url_suffix='import/upload'
         )
         form = response_get_form.get('data', {}).get('result', {}).get('form', {})
-        port_url = form['url']  # if no url field in form, we should have an exception
-        params = form['parameters']
+        
+        
+        port_url = form.get('url') 
+        params = form.get('parameters')
+        
+        if port_url is None or params is None:
+               raise ValueError('Failed to initiate an import operation')
+                
 
         # Creating a temp file with the same data of the given file
         # This way the uploaded file has a path that the API can parse properly
@@ -214,7 +220,8 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
     # No 'data' field was returned from the request, meaning the input was invalid
     if results_data is None:
         if results.get('message'):
-            raise ValueError(results.get('message'))
+            
+            ValueError(results.get('message'))
         else:
             raise ValueError('No response from server')
 
@@ -258,8 +265,9 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     # Check if an export to war room entry operation is finished
     # If it did - create the entry
     if results.get('data', [{}]).get('status') == 'finished' and argToBoolean(arguments.get('is_entry', 'False')):
-        url = results.get('data', {}).get('result', {}).get('files', [{}])[0].get('url')
-        file_name = results.get('data', {}).get('result', {}).get('files', [{}])[0].get('filename')
+        results_info = results.get('data', {}).get('result', {}).get('files', [{}])[0]
+        url = results_info.get('url')
+        file_name = results_info.get('filename')
         file_data = client.get_file_from_url(url)
         war_room_file = fileResult(filename=file_name, data=file_data)
         return_results(CommandResults(
