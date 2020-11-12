@@ -351,19 +351,15 @@ def get_reports_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
         report = client.report_status(report_id=report_id, extended=extended)
         if screenshot.lower() == "true":
             screenshot = client.report_artifact(report_id=report_id, artifact_type="screenshot")
-            stored_artifacts = fileResult('artifacts.zip', artifacts, entryTypes['image'])
-            demisto.results(stored_artifacts)
-            # stored_img = fileResult('screenshot.gif', screenshot)
-            # demisto.results({'Type': entryTypes['image'], 'ContentsFormat': formats['text'],
-            #                  'File': stored_img['File'], 'FileID': stored_img['FileID'], 'Contents': ''})
+            stored_img = fileResult('screenshot.gif', screenshot)
+            demisto.results({'Type': entryTypes['image'], 'ContentsFormat': formats['text'],
+                             'File': stored_img['File'], 'FileID': stored_img['FileID'], 'Contents': ''})
 
         if artifact != "":
             artifacts = client.report_artifact(report_id=report_id, artifact_type=artifact)
-            stored_artifacts = fileResult('artifacts.zip', artifacts, entryTypes['entryInfoFile'])
-            demisto.results(stored_artifacts)
-            # stored_artifacts = fileResult('artifacts.zip', artifacts)
-            # demisto.results({'Type': entryTypes['file'], 'ContentsFormat': formats['text'],
-            #                  'File': stored_artifacts['File'], 'FileID': stored_artifacts['FileID'], 'Contents': ''})
+            stored_artifacts = fileResult('artifacts.zip', artifacts)
+            demisto.results({'Type': entryTypes['file'], 'ContentsFormat': formats['text'],
+                             'File': stored_artifacts['File'], 'FileID': stored_artifacts['FileID'], 'Contents': ''})
 
         report_list.append(report)
 
