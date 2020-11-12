@@ -1,0 +1,1 @@
+!graphql-query query=`{country(code: "BR"){name}}`
