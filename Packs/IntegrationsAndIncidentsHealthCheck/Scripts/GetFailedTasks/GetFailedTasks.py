@@ -1,11 +1,32 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+BRAND = "Demisto REST API"
+
+
+def get_rest_api_instance_to_use(rest_api_instance_from_arg):
+    allInstances = demisto.getModules()
+    number_of_rest_api_instances = 0
+    rest_api_instance_to_use = None
+    for instance_name in allInstances:
+        if allInstances[instance_name]['brand'] == BRAND:
+            rest_api_instance_to_use = instance_name
+            number_of_rest_api_instances += 1
+    if number_of_rest_api_instances > 1:
+        return_error("GetFailedTasks: This script can only run with a single instance of the Demisto REST API. "
+                     "Specify the instance name in the 'rest_api_instance' argument.")
+    elif number_of_rest_api_instances == 1:
+        return rest_api_instance_to_use
+    else:
+        return rest_api_instance_from_arg
+
 
 def main():
     args = demisto.args()
     query = args.get("query")
     account = args.get("account_name", '')
+    rest_api_instance = args.get("rest_api_instance")
+    rest_api_instance_to_use = get_rest_api_instance_to_use(rest_api_instance)
 
     page_number = 0
     number_of_failed = 0
@@ -41,7 +62,8 @@ def main():
                 "body": {
                     "states": ["Error"],
                     "types": ["regular", "condition", "collection"]
-                }
+                },
+                "using": rest_api_instance_to_use
             }
         )[0]["Contents"]["response"]
 
@@ -77,7 +99,8 @@ def main():
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown("GetFailedTasks:", incidents_output,
-                                         ["Incident Created Date", "Incident ID", "Task Name", "Task ID", "Playbook Name",
+                                         ["Incident Created Date", "Incident ID", "Task Name", "Task ID",
+                                          "Playbook Name",
                                           "Command Name", "Error Entry ID"]),
         'EntryContext': {
             "GetFailedTasks": incidents_output,
