@@ -266,6 +266,9 @@ script:
     - contextPath: LGTM.code_review_result.languages.alerts.fixed
       description: The number of alerts fixed by the patch for this query.
       type: Number
+    - contextPath: LGTM.code_review_result.languages.alerts.query.properties.id
+      description: LGTM Alert Query ID
+      type: Unknown
   - arguments:
     - default: false
       description: The numeric project identifier
