@@ -1255,6 +1255,7 @@ workflows:
           - << pipeline.parameters.force_pack_upload >>
           - << pipeline.parameters.bucket_upload >>
           - << pipeline.parameters.demisto_sdk_nightly >>
+          - << pipeline.parameters.nightly >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -1346,6 +1347,7 @@ workflows:
       *nightly_jobs
 
   nightly_trigger:
+    # will initiate when using the trigger script.
     when: << pipeline.parameters.nightly >>
     jobs:
       *nightly_jobs
