@@ -4426,3 +4426,132 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The profile test was created successfully.
+
+### panorama-lookup-route
+***
+Lookup a given IP address in the Firewall routing table
+
+
+#### Base Command
+
+`panorama-lookup-route`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| dest_ip | Desintation IP to lookup | Required |
+| virtual_router | virtual router to check against | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.RouteLookup.dest_ip | String | The IP address tested |
+| Panorama.RouteLookup.dp | String | Firewall dataplane |
+| Panorama.RouteLookup.interface | String | Outgoing interface |
+| Panorama.RouteLookup.ip | String | The next hop IP address |
+| Panorama.RouteLookup.metric | String | Route metric |
+| Panorama.RouteLookup.nh | String | next hop type |
+| Panorama.RouteLookup.src | String | Outgoing interface IP |
+
+
+#### Command Example
+```!panorama-lookup-route dest_ip=8.8.8.8 virtual_router=default```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "RouteLookup": {
+            "dest_ip": "8.8.8.8",
+            "dp": "dp0",
+            "interface": "ethernet1/1",
+            "ip": "192.168.1.1",
+            "metric": "10",
+            "nh": "ip",
+            "src": "192.168.1.139"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Route Lookup Results
+>|dest_ip|dp|interface|ip|metric|nh|src|
+>|---|---|---|---|---|---|---|
+>| 8.8.8.8 | dp0 | ethernet1/1 | 192.168.1.1 | 10 | ip | 192.168.1.139 |
+
+### panorama-lookup-zone
+***
+Given an IP address, returns the matching zone based on the device routing table
+
+
+#### Base Command
+
+`panorama-lookup-zone`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| dest_ip | Destination IP to lookup | Required |
+| virtual_router | Virtual Router to lookup against | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ZoneLookup.name | String | Outgoing Interface Name |
+| Panorama.ZoneLookup.zone | String | Outgoing Zone Name |
+| Panorama.ZoneLookup.fwd | String | Forwarding Virtual Router |
+| Panorama.ZoneLookup.dyn-addr | String | Outgoing interface dynamic addresses |
+| Panorama.ZoneLookup.addr6.member | String | Outgoing interface IPv6 addresses |
+| Panorama.ZoneLookup.tag | String | Outgoing interface VLAN tag |
+| Panorama.ZoneLookup.ip | String | Outgoing interface IP |
+| Panorama.ZoneLookup.id | String | Outgoing interface ID |
+| Panorama.ZoneLookup.addr.member | String | Outgoing interface IPv4 addresses |
+| Panorama.ZoneLookup.nh | String | Next hop type |
+| Panorama.ZoneLookup.src | String | Outgoing interface IP |
+| Panorama.ZoneLookup.metric | String | Route metric |
+| Panorama.ZoneLookup.interface | String | Outgoing interface |
+| Panorama.ZoneLookup.dp | String | Firewall Dataplane |
+| Panorama.ZoneLookup.dest_ip | String | Destination IP |
+
+
+#### Command Example
+```!panorama-lookup-zone dest_ip=8.8.8.8 virtual_router=default```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ZoneLookup": {
+            "addr": null,
+            "addr6": null,
+            "dest_ip": "8.8.8.8",
+            "dp": "dp0",
+            "dyn-addr": null,
+            "fwd": "vr:default",
+            "id": "16",
+            "interface": "ethernet1/1",
+            "ip": "192.168.1.1",
+            "metric": "10",
+            "name": "ethernet1/1",
+            "nh": "ip",
+            "src": "192.168.1.139",
+            "tag": "0",
+            "vsys": "1",
+            "zone": "OUTSIDE"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zone Lookup Results
+>|addr|addr6|dest_ip|dp|dyn-addr|fwd|id|interface|ip|metric|name|nh|src|tag|vsys|zone|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  |  | 8.8.8.8 | dp0 |  | vr:default | 16 | ethernet1/1 | 192.168.1.1 | 10 | ethernet1/1 | ip | 192.168.1.139 | 0 | 1 | OUTSIDE |
