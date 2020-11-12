@@ -6,6 +6,8 @@ description: Detonate one or more files using the FireEye Detection on Demand in
   data.
 fromversion: 6.0.0
 starttaskid: "0"
+tests:
+  - No tests
 tasks:
   "0":
     id: "0"
