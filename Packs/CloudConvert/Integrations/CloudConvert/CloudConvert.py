@@ -250,11 +250,6 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
      and its readable output OR if the argument is_entry is set to True, then a war room entry is returned
     """
     results = client.check_status(arguments)
-
-    # If checking on an export to entry operation, manually change the operation name
-    # For other operations, the operation matches the operation field in the API's response, so no change is needed
-    if argToBoolean(arguments.get('is_entry')):
-        results['data']['operation'] = 'export/entry'
     results_data = results.get('data')
 
     # Check if no 'data' field was returned from the request, meaning the input was invalid
@@ -264,9 +259,14 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         else:
             raise ValueError('No response from server, check your request')
 
+    # If checking on an export to entry operation, manually change the operation name
+    # For other operations, the operation matches the operation field in the API's response, so no change is needed
+    if argToBoolean(arguments.get('is_entry')):
+        results['data']['operation'] = 'export/entry'
+        
     # Check if an export to war room entry operation is finished
     # If it did - create the entry
-    if results.get('data', [{}]).get('status') == 'finished' and argToBoolean(arguments.get('is_entry', 'False')):
+    if results.get('data', {}).get('status') == 'finished' and argToBoolean(arguments.get('is_entry', 'False')):
         results_info = results.get('data', {}).get('result', {}).get('files', [{}])[0]
         url = results_info.get('url')
         file_name = results_info.get('filename')
@@ -352,9 +352,10 @@ def test_module(client: Client):
 
 def main() -> None:
     try:
-        api_key = demisto.params().get('apikey')
-        verify = not demisto.params().get('insecure', False)
-        proxy = demisto.params().get('proxy', False)
+        params = demisto.params()
+        api_key = params.get('apikey')
+        verify = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
         headers = {
             'Authorization': f'Bearer {api_key}'
         }
