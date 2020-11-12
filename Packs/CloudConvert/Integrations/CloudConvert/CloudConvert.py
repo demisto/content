@@ -379,7 +379,7 @@ def main() -> None:
     except Exception as e:
         err_msg = 'Task id not found or expired' if 'No query results for model' in str(e) else \
             ('No more conversion minutes for today for this user' if 'Payment Required' in str(e) else str(e))
-        return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
+        return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}', error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
