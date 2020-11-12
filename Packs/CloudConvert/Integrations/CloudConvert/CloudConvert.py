@@ -202,6 +202,7 @@ def import_command(client: Client, arguments: Dict[str, Any]):
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
+        raw_response = results,
         outputs=results_data
     )
 
@@ -232,6 +233,7 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
+        raw_response = results,
         outputs=results_data
     )
 
@@ -273,6 +275,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         return_results(CommandResults(
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
+            raw_response = results,
             outputs=results_data
         ))
         return war_room_file
@@ -286,6 +289,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
             readable_output=readable_output,
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
+            raw_response = results,
             outputs=results_data
         )
 
@@ -325,6 +329,7 @@ def export_command(client: Client, arguments: Dict[str, Any]):
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
+        raw_response = results,
         outputs=results_data
     )
 
