@@ -318,7 +318,8 @@ exampleUsers = [
         "File": "",
         "FileID": "",
         "FileMetadata": None,
-        "HumanReadable": "## Users\nUsername|Email|Name|Phone|Roles\n-|-|-|-|-\nadmin|admintest@demisto.com|Admin Dude|\\+650-123456|demisto: \\[Administrator\\]\n",
+        "HumanReadable": "## Users\nUsername|Email|Name|Phone|Roles\n-|-|-|-|-\nadmin|admintest@demisto.com|Admin Dude|"
+                         "\\+650-123456|demisto: \\[Administrator\\]\n",
         # noqa E501
         "ID": "",
         "IgnoreAutoExtract": False,
