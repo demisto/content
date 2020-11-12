@@ -29,6 +29,17 @@ from test_data.constants import INCIDENTS_RESULT, TASKS_RESULT
                                                                             "instance' argument.", 2),
                                                                       ])
 def test_get_rest_api_instance_to_use(mocker, modules, expected_output, num_of_instances):
+    """
+    Given:
+        all modules that are configured
+
+    When:
+        Execute this script
+
+    Then:
+        return error if there are more than one demisto rest api instance.
+        Otherwise, return name of instance to use.
+    """
     mocker.patch.object(demisto, 'getModules', return_value=modules)
     mocker.patch.object(demisto, 'results')
     if num_of_instances <= 1:

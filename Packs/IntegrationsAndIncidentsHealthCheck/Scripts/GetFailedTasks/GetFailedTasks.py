@@ -5,6 +5,14 @@ BRAND = "Demisto REST API"
 
 
 def get_rest_api_instance_to_use(rest_api_instance_from_arg):
+    """
+        This function checks if there are more than one instance of demisto rest api.
+        Args:
+            rest_api_instance_from_arg (str) : rest api instance name
+
+        Returns:
+            Demisto Rest Api instance to use
+    """
     allInstances = demisto.getModules()
     number_of_rest_api_instances = 0
     rest_api_instance_to_use = None
@@ -18,6 +26,7 @@ def get_rest_api_instance_to_use(rest_api_instance_from_arg):
     elif number_of_rest_api_instances == 1:
         return rest_api_instance_to_use
     else:
+        # in there are no rest api instances
         return rest_api_instance_from_arg
 
 
