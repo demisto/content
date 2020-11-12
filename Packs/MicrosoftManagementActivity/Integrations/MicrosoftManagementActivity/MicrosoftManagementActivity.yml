@@ -51,7 +51,7 @@ configuration:
   - Audit.AzureActiveDirectory
   - Audit.Exchange
   - Audit.SharePoint
-  - Audit.General
+  - audit.general
   required: false
   type: 16
 - display: Fetch incidents
@@ -235,7 +235,7 @@ script:
     - contextPath: MicrosoftManagement.ContentRecord.UserID
       description: The ID of the record's user.
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.10828
+  dockerimage: demisto/pyjwt3:1.0.0.13142
   feed: false
   isfetch: true
   longRunning: false

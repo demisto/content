@@ -839,7 +839,7 @@ def get_token_request():
         'client_secret': SECRET
     }
     headers = {
-        'Authorization': HEADERS['Authorization']
+        'Content-Type': 'application/x-www-form-urlencoded'
     }
     token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True,
                              get_token_flag=False)
