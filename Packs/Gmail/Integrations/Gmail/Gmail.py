@@ -1738,9 +1738,9 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         # a MimeMultipart object of type 'mixed' which contains
         # a MIMEMultipart object of type `alternative` which contains
         # the 2 MIMEText objects for each body part and the relevant Mime<type> object for the attachments.
-        message = MIMEMultipart('mixed')
-        alt = MIMEMultipart('alternative')
-        message.attach(alt)
+        message = MIMEMultipart('mixed')  # type: ignore
+        alt = MIMEMultipart('alternative')  # type: ignore
+        message.attach(alt)  # type: ignore
         attach_body_to = alt
     else:
         message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
