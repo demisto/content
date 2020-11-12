@@ -51,13 +51,13 @@ tasks:
       GetOnlyCREEvents:
         simple: All
       ID:
-        simple: '311'
+        simple: '475'
       MaxCorrelationCount:
         simple: '100'
       MaxLogsCount:
         simple: '20'
       StartTime:
-        simple: '1585502808393'
+        simple: '1595502808393'
     separatecontext: true
     loop:
       iscommand: false
