@@ -11,13 +11,13 @@ def run_command(cmd: str) -> Tuple[str, str]:
     return subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8').communicate()
 
 
-def create_incident_field(path: Path, layout_name: str) -> str:
+def create_incident_field(path: Path, incident_to_associate: str) -> str:
     """
     Creates an incident field
 
     Args:
         path: A path of the pack
-        layout_name: a layout to associate the incident field
+        incident_to_associate: an incident type to associate the incident field
 
     Returns:
         The path to the incident field
@@ -31,7 +31,7 @@ def create_incident_field(path: Path, layout_name: str) -> str:
         'name': name,
         'cliName': cliname,
         'id': f'incident_{cliname}',
-        'associatedTypes': [layout_name]
+        'associatedTypes': [incident_to_associate]
     })
     dest_incident = path / 'IncidentFields'
 
@@ -111,7 +111,7 @@ def main():
     layout_name = 'Hello World Test Layout'
     uploaded_entities = [
         create_layout(pack_path, layout_name),
-        create_incident_field(pack_path, layout_name),
+        create_incident_field(pack_path, 'Hello World Alert Test'),
         create_incident_type(pack_path, layout_name)
     ]
     print("Created entities:")
