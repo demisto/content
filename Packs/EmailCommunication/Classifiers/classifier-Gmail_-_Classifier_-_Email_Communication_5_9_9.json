@@ -76,6 +76,10 @@
      "complex": null,
      "simple": "Subject"
     },
+    "Email Labels": {
+     "complex": null,
+     "simple": "Labels"
+    },
     "Email To": {
      "complex": null,
      "simple": "To"
