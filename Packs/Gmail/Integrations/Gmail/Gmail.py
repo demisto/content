@@ -1719,14 +1719,34 @@ def attachment_handler(message, attachments):
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
               transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
               templateParams, inReplyTo=None, references=None):
+    if templateParams:
+        templateParams = template_params(templateParams)
+        if body:
+            body = body.format(**templateParams)
+        if htmlBody:
+            htmlBody = htmlBody.format(**templateParams)
+
+    attach_body_to = None
     if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body]):
         # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
         message = MIMEText(htmlBody, 'html')  # type: ignore
     elif body and not any([entry_ids, file_names, attach_cid, manualAttachObj, htmlBody]):
         # if there is only body and no attachments to the mail , we would like to send it without attaching every part
         message = MIMEText(body, 'plain', 'utf-8')  # type: ignore
+    elif htmlBody and body and any([entry_ids, file_names, attach_cid, manualAttachObj]):
+        # if all these exist - htmlBody, body and one of the attachment's items, the message object will be:
+        # a MimeMultipart object of type 'mixed' which contains
+        # a MIMEMultipart object of type `alternative` which contains
+        # the 2 MIMEText objects for each body part and the relevant Mime<type> object for the attachments.
+        message = MIMEMultipart('mixed')
+        alt = MIMEMultipart('alternative')
+        message.attach(alt)
+        attach_body_to = alt
     else:
         message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
+
+    if not attach_body_to:
+        attach_body_to = message
 
     message['to'] = header(','.join(emailto))
     message['cc'] = header(','.join(cc))
@@ -1741,25 +1761,17 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     if references:
         message['References'] = header(' '.join(references))
 
-    # if there are any attachments to the mail
+    # if there are any attachments to the mail or both body and htmlBody were given
     if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
-        templateParams = template_params(templateParams)
-        if templateParams is not None:
-            if body is not None:
-                body = body.format(**templateParams)
-
-            if htmlBody is not None:
-                htmlBody = htmlBody.format(**templateParams)
-
         msg = MIMEText(body, 'plain', 'utf-8')
-        message.attach(msg)
+        attach_body_to.attach(msg)
         htmlAttachments = []  # type: list
         inlineAttachments = []  # type: list
 
-        if htmlBody is not None:
+        if htmlBody:
             htmlBody, htmlAttachments = handle_html(htmlBody)
             msg = MIMEText(htmlBody, 'html', 'utf-8')
-            message.attach(msg)
+            attach_body_to.attach(msg)
             if attach_cid:
                 inlineAttachments = collect_inline_attachments(attach_cid)
 
@@ -1774,7 +1786,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
         attachment_handler(message, attachments)
 
-    if additional_headers is not None and len(additional_headers) > 0:
+    if additional_headers:
         for h in additional_headers:
             header_name, header_value = h.split('=')
             message[header_name] = header(header_value)
@@ -2066,5 +2078,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins"):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
