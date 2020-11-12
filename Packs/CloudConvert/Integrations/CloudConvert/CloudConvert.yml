@@ -251,6 +251,9 @@ script:
         entry operation, so an entry will be created if the operation is finished
       isArray: false
       name: is_entry
+      predefined:
+      - True
+      - False
       required: false
       secret: false
     deprecated: false
