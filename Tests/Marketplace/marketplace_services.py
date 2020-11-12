@@ -18,12 +18,15 @@ from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
+from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
+from typing import Tuple
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
+PACKS_RESULTS_FILE = "packs_results.json"
 
 
 class GCPConfig(object):
@@ -32,10 +35,15 @@ class GCPConfig(object):
     """
     STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
+    BUILD_PATH_PREFIX = "content/builds"
+    BUILD_BASE_PATH = ""
+    PRIVATE_BASE_PATH = "content/packs"
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     PRODUCTION_BUCKET = "marketplace-dist"
+    TESTING_BUCKET = "marketplace-dist-dev"
+    CI_BUILD_BUCKET = "marketplace-ci-build"
     PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
     CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
@@ -167,6 +175,8 @@ class Pack(object):
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
+        self._aggregated = False  # weather the pack's rn was aggregated or not.
+        self._aggregation_str = ""  # the aggregation string msg when the pack versions are aggregated
 
     @property
     def name(self):
@@ -319,6 +329,18 @@ class Pack(object):
         """ str: pack bucket_url.
         """
         self._bucket_url = bucket_url
+
+    @property
+    def aggregated(self):
+        """ str: pack aggregated release notes or not.
+        """
+        return self._aggregated
+
+    @property
+    def aggregation_str(self):
+        """ str: pack aggregated release notes or not.
+        """
+        return self._aggregation_str
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -737,7 +759,7 @@ class Pack(object):
         finally:
             return task_status, zip_pack_path
 
-    def detect_modified(self, content_repo, index_folder_path, current_commit_hash, remote_previous_commit_hash):
+    def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
         """ Detects pack modified files.
 
         The diff is done between current commit and previous commit that was saved in metadata that was downloaded from
@@ -748,7 +770,7 @@ class Pack(object):
             content_repo (git.repo.base.Repo): content repo object.
             index_folder_path (str): full path to downloaded index folder.
             current_commit_hash (str): last commit hash of head.
-            remote_previous_commit_hash (str): previous commit of origin/master (origin/master~1)
+            previous_commit_hash (str): the previous commit to diff with.
 
         Returns:
             bool: whether the operation succeeded.
@@ -768,7 +790,7 @@ class Pack(object):
             with open(pack_index_metadata_path, 'r') as metadata_file:
                 downloaded_metadata = json.load(metadata_file)
 
-            previous_commit_hash = downloaded_metadata.get('commit', remote_previous_commit_hash)
+            previous_commit_hash = downloaded_metadata.get('commit', previous_commit_hash)
             # set 2 commits by hash value in order to check the modified files of the diff
             current_commit = content_repo.commit(current_commit_hash)
             previous_commit = content_repo.commit(previous_commit_hash)
@@ -819,9 +841,10 @@ class Pack(object):
                 logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                 return task_status, True, None
 
-            pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
+            pack_full_path = os.path.join(version_pack_path, f"{self._pack_name}.zip")
             blob = storage_bucket.blob(pack_full_path)
             blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
             if private_content:
@@ -842,6 +865,165 @@ class Pack(object):
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status, True, None
 
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack, latest_version,
+                                   successful_packs_dict):
+        """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
+        The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
+        the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
+        In case that zip pack artifact already exist at the constructed path above (the path in the production bucket),
+        the copy will be skipped.
+        If flag override_pack is set to True, pack will forced to copy.
+
+        Args:
+            production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
+            build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
+            override_pack (bool): whether to override existing pack.
+            latest_version (str): the pack's latest version.
+            successful_packs_dict (dict): the list of all packs were uploaded in prepare content step
+
+        Returns:
+            bool: Status - whether the operation succeeded.
+            bool: Skipped pack - true in case of pack existence at the targeted path and the copy process was skipped,
+             otherwise returned False.
+
+        """
+        build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, latest_version)
+
+        # Verifying that the latest version of the pack has been uploaded to the build bucket
+        existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
+        if not existing_bucket_version_files:
+            logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
+                          f"path {build_version_pack_path}.")
+            return False, False
+
+        prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
+        existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
+        # We check that the pack version was bumped by comparing the pack version in build bucket and production bucket
+        successful_packs_list = [*successful_packs_dict]
+        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_list
+        if (existing_prod_version_files or pack_not_uploaded_in_prepare_content) and not override_pack:
+            logging.warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
+            logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
+            return True, True
+
+        # We upload the pack zip object taken from the build bucket into the production bucket
+        prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
+        build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
+        build_file_blob = build_bucket.blob(build_pack_zip_path)
+        copied_blob = build_bucket.copy_blob(
+            blob=build_file_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
+        )
+        copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+        self.public_storage_path = copied_blob.public_url
+        task_status = copied_blob.exists()
+
+        pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
+        if pack_uploaded_in_prepare_content:
+            agg_str = successful_packs_dict[self._pack_name].get('aggregated')
+            if agg_str:
+                self._aggregated = True
+                self._aggregation_str = agg_str
+
+        if not task_status:
+            logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
+        else:
+            logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
+
+        return task_status, False
+
+    def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion]:
+        """
+        Returns the changelog file contents and the last version of rn in the changelog file
+        Args:
+            changelog_index_path (str): the changelog.json file path in the index
+
+        Returns: the changelog file contents and the last version of rn in the changelog file
+
+        """
+        logging.info(f"Found Changelog for: {self._pack_name}")
+        if os.path.exists(changelog_index_path):
+            try:
+                with open(changelog_index_path, "r") as changelog_file:
+                    changelog = json.load(changelog_file)
+            except json.JSONDecodeError:
+                changelog = {}
+        else:
+            changelog = {}
+        # get the latest rn version in the changelog.json file
+        changelog_rn_versions = [LooseVersion(ver) for ver in changelog]
+        # no need to check if changelog_rn_versions isn't empty because changelog file exists
+        changelog_latest_rn_version = max(changelog_rn_versions)
+
+        return changelog, changelog_latest_rn_version
+
+    def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion) -> \
+            Tuple[str, str]:
+        """
+        Prepares the release notes contents for the new release notes entry
+        Args:
+            release_notes_dir (str): the path to the release notes dir
+            changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
+
+        Returns: The release notes contents and the latest release notes version (in the release notes directory)
+
+        """
+        found_versions: list = list()
+        pack_versions_dict: dict = dict()
+
+        for filename in sorted(os.listdir(release_notes_dir)):
+            _version = filename.replace('.md', '')
+            version = _version.replace('_', '.')
+
+            # Aggregate all rn files that are bigger than what we have in the changelog file
+            if LooseVersion(version) > changelog_latest_rn_version:
+                with open(os.path.join(release_notes_dir, filename), 'r') as rn_file:
+                    rn_lines = rn_file.read()
+                pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
+
+            found_versions.append(LooseVersion(version))
+
+        latest_release_notes_version = max(found_versions)
+        latest_release_notes = latest_release_notes_version.vstring
+        logging.info(f"Latest ReleaseNotes version is: {latest_release_notes}")
+
+        if len(pack_versions_dict) > 1:
+            # In case that there is more than 1 new release notes file, wrap all release notes together for one
+            # changelog entry
+            aggregation_str = f"{[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} => " \
+                              f"{latest_release_notes}"
+            logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
+            release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
+            self._aggregated = True
+            self._aggregation_str = aggregation_str
+        else:
+            # In case where there is only one new release notes file, OR
+            # In case where the pack is up to date, i.e. latest changelog is latest rn file
+            latest_release_notes_suffix = f"{latest_release_notes.replace('.', '_')}.md"
+            with open(os.path.join(release_notes_dir, latest_release_notes_suffix), 'r') as rn_file:
+                release_notes_lines = self._clean_release_notes(rn_file.read())
+
+        return release_notes_lines, latest_release_notes
+
+    def assert_upload_bucket_version_matches_release_notes_version(self,
+                                                                   changelog: dict,
+                                                                   latest_release_notes: str) -> None:
+        """
+        Sometimes there is a the current bucket is not merged from master there could be another version in the upload
+        bucket, that does not exist in the current branch.
+        This case can cause unpredicted behavior and we want to fail the build.
+        This method validates that this is not the case in the current build, and if it does - fails it with an
+        assertion error.
+        Args:
+            changelog: The changelog from the production bucket.
+            latest_release_notes: The latest release notes version string in the current branch
+        """
+        changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))
+        assert LooseVersion(latest_release_notes) >= LooseVersion(changelog_latest_release_notes), \
+            f'{self._pack_name}: Version mismatch detected between upload bucket and current branch\n' \
+            f'Upload bucket version: {changelog_latest_release_notes}\n' \
+            f'current branch version: {latest_release_notes}\n' \
+            'Please Merge from master and rebuild'
+
     def prepare_release_notes(self, index_folder_path, build_number):
         """
         Handles the creation and update of the changelog.json files.
@@ -857,35 +1039,17 @@ class Pack(object):
         not_updated_build = False
 
         try:
-            if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
-                logging.info(f"Found Changelog for: {self._pack_name}")
-                # load changelog from downloaded index
-                changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
-                with open(changelog_index_path, "r") as changelog_file:
-                    changelog = json.load(changelog_file)
-
+            # load changelog from downloaded index
+            changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+            if os.path.exists(changelog_index_path):
+                changelog, changelog_latest_rn_version = self.get_changelog_latest_rn(changelog_index_path)
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
                 if os.path.exists(release_notes_dir):
-                    found_versions = []
-                    for filename in os.listdir(release_notes_dir):
-                        _version = filename.replace('.md', '')
-                        version = _version.replace('_', '.')
-                        found_versions.append(LooseVersion(version))
-                    found_versions.sort(reverse=True)
-                    latest_release_notes = found_versions[0].vstring
-
-                    logging.info(f"Latest ReleaseNotes version is: {latest_release_notes}")
-                    self.assert_production_bucket_version_matches_release_notes_version(changelog,
-                                                                                        latest_release_notes)
-
-                    # load latest release notes
-                    latest_rn_file = latest_release_notes.replace('.', '_')
-                    latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
-
-                    with open(latest_rn_path, 'r') as changelog_md:
-                        release_notes_lines = changelog_md.read()
-                    release_notes_lines = self._clean_release_notes(release_notes_lines)
+                    release_notes_lines, latest_release_notes = self.get_release_notes_lines(
+                        release_notes_dir, changelog_latest_rn_version
+                    )
+                    self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
@@ -946,32 +1110,42 @@ class Pack(object):
 
             task_status = True
             logging.success(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}")
-        except AssertionError:
-            logging.exception(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.")
-        except Exception:
-            logging.exception(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.")
+        except Exception as e:
+            logging.error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
+                          f"Additional info: {e}")
         finally:
             return task_status, not_updated_build
 
-    def assert_production_bucket_version_matches_release_notes_version(self,
-                                                                       changelog: dict,
-                                                                       latest_release_notes: str) -> None:
-        """
-        Sometimes there is a the current bucket is not merged from master there could be another version in production
-        bucket, that does not exist in the current branch.
-        This case can cause unpredicted behavior and we want to fail the build.
-        This method validates that this is not the case in the current build, and if it does - fails it with an
-        assertion error.
+    def create_local_changelog(self, build_index_folder_path):
+        """ Copies the pack index changelog.json file to the pack path
+
         Args:
-            changelog: The changelog from the production bucket.
-            latest_release_notes: The latest release notes version string in the current branch
+            build_index_folder_path: The path to the build index folder
+
+        Returns:
+            bool: whether the operation succeeded.
+
         """
-        changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))
-        assert LooseVersion(latest_release_notes) >= LooseVersion(changelog_latest_release_notes), \
-            f'{self._pack_name}: Version mismatch detected between production bucket and current branch\n' \
-            f'Production bucket version: {changelog_latest_release_notes}\n' \
-            f'current branch version: {latest_release_notes}\n' \
-            'Please Merge from master and rebuild'
+        task_status = True
+
+        build_changelog_index_path = os.path.join(build_index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+        pack_changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
+
+        if os.path.exists(build_changelog_index_path):
+            try:
+                shutil.copyfile(src=build_changelog_index_path, dst=pack_changelog_path)
+                logging.success(f"Successfully copied pack index changelog.json file from {build_changelog_index_path}"
+                                f" to {pack_changelog_path}.")
+            except shutil.Error as e:
+                task_status = False
+                logging.error(f"Failed copying changelog.json file from {build_changelog_index_path} to "
+                              f"{pack_changelog_path}. Additional info: {str(e)}")
+                return task_status
+        else:
+            task_status = False
+            logging.error(f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
+
+        return task_status and self.is_changelog_exists()
 
     def collect_content_items(self):
         """ Iterates over content items folders inside pack and collects content items data.
@@ -1038,7 +1212,8 @@ class Pack(object):
                     if current_directory not in PackFolders.pack_displayed_items():
                         continue  # skip content items that are not displayed in contentItems
 
-                    logging.debug(f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
+                    logging.debug(
+                        f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
                     # updated min server version from current content item
                     self._sever_min_version = get_higher_server_version(self._sever_min_version, content_item,
                                                                         self._pack_name)
@@ -1441,6 +1616,44 @@ class Pack(object):
         finally:
             return task_status, uploaded_integration_images
 
+    def copy_integration_images(self, production_bucket, build_bucket):
+        """ Copies all pack's integration images from the build bucket to the production bucket
+
+        Args:
+            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
+            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+
+        Returns:
+            bool: Whether the operation succeeded.
+
+        """
+        task_status = True
+
+        build_integration_images_blobs = [f for f in
+                                          build_bucket.list_blobs(
+                                              prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
+                                          )
+                                          if is_integration_image(os.path.basename(f.name))]
+        for integration_image_blob in build_integration_images_blobs:
+            image_name = os.path.basename(integration_image_blob.name)
+            logging.info(f"Uploading {self._pack_name} pack integration image: {image_name}")
+            # We upload each image object taken from the build bucket into the production bucket
+            copied_blob = build_bucket.copy_blob(
+                blob=integration_image_blob, destination_bucket=production_bucket,
+                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
+            )
+            task_status = task_status and copied_blob.exists()
+            if not task_status:
+                logging.error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
+                              f"{copied_blob.name} blob failed.")
+
+        if not task_status:
+            logging.error(f"Failed to upload {self._pack_name} pack integration images.")
+        else:
+            logging.success(f"Uploaded {len(build_integration_images_blobs)} images for {self._pack_name} pack.")
+
+        return task_status
+
     def upload_author_image(self, storage_bucket):
         """ Uploads pack author image to gcs.
 
@@ -1486,9 +1699,9 @@ class Pack(object):
                                                              author_image_storage_path)
                     # disable-secrets-detection-end
                 logging.info((f"Skipping uploading of {self._pack_name} pack author image "
-                             f"and use default {GCPConfig.BASE_PACK} pack image"))
+                              f"and use default {GCPConfig.BASE_PACK} pack image"))
             else:
-                logging.info(f"Skipping uploading of {self._pack_name} pack. "
+                logging.info(f"Skipping uploading of {self._pack_name} pack author image. "
                              f"The pack is defined as {self.support_type} support type")
 
         except Exception:
@@ -1498,6 +1711,47 @@ class Pack(object):
         finally:
             return task_status, author_image_storage_path
 
+    def copy_author_image(self, production_bucket, build_bucket):
+        """ Copies pack's author image from the build bucket to the production bucket
+
+        Searches for `Author_image.png`, In case no such image was found, default Base pack image path is used and
+        it's gcp path is returned.
+
+        Args:
+            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
+            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+
+        Returns:
+            bool: Whether the operation succeeded.
+
+        """
+        task_status = True
+
+        build_author_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+        build_author_image_blob = build_bucket.blob(build_author_image_path)
+
+        if build_author_image_blob.exists():
+            copied_blob = build_bucket.copy_blob(
+                blob=build_author_image_blob, destination_bucket=production_bucket,
+                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+            )
+            task_status = task_status and copied_blob.exists()
+        elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
+            logging.info((f"Skipping uploading of {self._pack_name} pack author image "
+                          f"and use default {GCPConfig.BASE_PACK} pack image"))
+            return task_status
+        else:
+            logging.info(f"Skipping uploading of {self._pack_name} pack author image. The pack is defined as "
+                         f"{self.support_type} support type")
+            return task_status
+
+        if not task_status:
+            logging.error(f"Failed uploading {self._pack_name} pack author image.")
+        else:
+            logging.success(f"Uploaded successfully {self._pack_name} pack author image")
+
+        return task_status
+
     def cleanup(self):
         """ Finalization action, removes extracted pack folder.
 
@@ -1506,8 +1760,46 @@ class Pack(object):
             shutil.rmtree(self._pack_path)
             logging.info(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
 
+    def is_changelog_exists(self):
+        """ Indicates whether the local changelog of a given pack exists or not
+
+        Returns:
+            bool: The answer
+
+        """
+        return os.path.isfile(os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
+
+    def is_failed_to_upload(self, failed_packs_dict):
+        """
+        Checks if the pack was failed to upload in Prepare Content step in Create Instances job
+        Args:
+            failed_packs_dict (dict): The failed packs file
+
+        Returns:
+            bool: Whether the operation succeeded.
+            str: The pack's failing status
+
+        """
+        if self._pack_name in failed_packs_dict:
+            return True, failed_packs_dict[self._pack_name].get('status')
+        else:
+            return False, str()
+
 
 # HELPER FUNCTIONS
+
+def is_integration_image(file_name):
+    """ Indicates whether a file_name in pack directory (in the bucket) is an integration image or not
+
+    Args:
+        file_name (str): The file name
+
+    Returns:
+        bool: True if the file is an integration image or False otherwise
+
+    """
+    return file_name.endswith('.png') and 'author' not in file_name.lower()
+
 
 def init_storage_client(service_account=None):
     """Initialize google cloud storage client.

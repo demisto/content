@@ -14,15 +14,14 @@ from zipfile import ZipFile
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe
+    get_packs_statistics_dataframe, PACKS_RESULTS_FILE
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
 
 
-def get_packs_names(target_packs: str) -> set:
-    """
-    Detects and returns packs names to upload.
+def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
+    """Detects and returns packs names to upload.
 
     In case that `Modified` is passed in target_packs input, checks the git difference between two commits,
     current and previous and greps only ones with prefix Packs/.
@@ -31,6 +30,7 @@ def get_packs_names(target_packs: str) -> set:
     Args:
         target_packs (str): csv packs names or `All` for all available packs in content
                             or `Modified` for only modified packs (currently not in use).
+        previous_commit_hash (str): the previous commit to diff with.
 
     Returns:
         set: unique collection of packs names to upload.
@@ -43,10 +43,10 @@ def get_packs_names(target_packs: str) -> set:
             # return all available packs names
             return all_packs
         else:
-            logging.error((f"Folder {PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}"))
+            logging.error(f"Folder {PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}")
             sys.exit(1)
     elif target_packs.lower() == "modified":
-        cmd = "git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
+        cmd = f"git diff --name-only HEAD..{previous_commit_hash} | grep 'Packs/'"
         modified_packs_path = run_command(cmd).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
         logging.info(f"Number of modified packs is: {len(modified_packs)}")
@@ -87,7 +87,10 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         str: downloaded index generation.
 
     """
-    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
+        index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    else:
+        index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -98,8 +101,8 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         os.mkdir(extract_destination_path)
 
     if not index_blob.exists():
-        logging.error("The blob does not exist.")
         os.mkdir(index_folder_path)
+        logging.error(f"{storage_bucket.name} index blob does not exists")
         return index_folder_path, index_blob, index_generation
 
     index_blob.reload()
@@ -116,7 +119,8 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
             sys.exit(1)
 
         os.remove(download_index_path)
-        logging.info(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to {extract_destination_path}")
+        logging.success(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to "
+                        f"{extract_destination_path}")
 
         return index_folder_path, index_blob, index_generation
     else:
@@ -198,7 +202,8 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     """
     if ('CI' not in os.environ) or (
             os.environ.get('CIRCLE_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
-            os.environ.get('CIRCLE_BRANCH') == 'master' and storage_bucket.name != GCPConfig.PRODUCTION_BUCKET):
+            os.environ.get('CIRCLE_BRANCH') == 'master' and storage_bucket.name not in
+            (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET, GCPConfig.TESTING_BUCKET)):
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
 
@@ -236,7 +241,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
 
 def upload_index_to_storage(index_folder_path: str, extract_destination_path: str, index_blob: Any,
                             build_number: str, private_packs: list, current_commit_hash: str,
-                            index_generation: str, is_private: bool = False):
+                            index_generation: int, is_private: bool = False):
     """
     Upload updated index zip to cloud storage.
 
@@ -349,7 +354,7 @@ def upload_id_set(storage_bucket: Any, id_set_local_path: str = None):
         logging.info("Skipping upload of id set to gcs.")
         return
 
-    id_set_gcs_path = os.path.join(GCPConfig.STORAGE_CONTENT_PATH, 'id_set.json')
+    id_set_gcs_path = os.path.join(os.path.dirname(GCPConfig.STORAGE_BASE_PATH), 'id_set.json')
     blob = storage_bucket.blob(id_set_gcs_path)
 
     with open(id_set_local_path, mode='r') as f:
@@ -362,22 +367,24 @@ def _build_summary_table(packs_input_list: list, include_pack_status: bool = Fal
 
     Args:
         packs_input_list (list): list of Packs
+        include_pack_status (bool): whether pack includes status
 
     Returns:
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status",
-                    "Pack Bucket URL"] if include_pack_status \
-        else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Aggregated Pack Versions"]
+    if include_pack_status:
+        table_fields.append("Status")
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message,
-               pack.bucket_url] if include_pack_status \
-            else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
+        row = [index, pack.name, pack.display_name, pack.latest_version,
+               pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"]
+        if include_pack_status:
+            row.append(pack_status_message)
         table.add_row(row)
 
     return table
@@ -394,9 +401,8 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
         Markdown table: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status",
-                    "Pack Bucket URL"] if include_pack_status \
-        else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
 
     table = ['|', '|']
 
@@ -407,9 +413,8 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
     for index, pack in enumerate(packs_input_list):
         pack_status_message = PackStatus[pack.status].value if include_pack_status else ''
 
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message,
-               pack.bucket_url] if include_pack_status \
-            else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version]
 
         row_hr = '|'
         for _value in row:
@@ -429,12 +434,15 @@ def load_json(file_path: str) -> dict:
         dict: loaded json file.
 
     """
-    if file_path:
-        with open(file_path, 'r') as json_file:
-            result = json.load(json_file)
-    else:
-        result = {}
-    return result
+    try:
+        if file_path:
+            with open(file_path, 'r') as json_file:
+                result = json.load(json_file)
+        else:
+            result = {}
+        return result
+    except json.decoder.JSONDecodeError:
+        return {}
 
 
 def get_content_git_client(content_repo_path: str):
@@ -450,21 +458,38 @@ def get_content_git_client(content_repo_path: str):
     return git.Repo(content_repo_path)
 
 
-def get_recent_commits_data(content_repo: Any):
+def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket_upload_flow: bool,
+                            force_previous_commit: str, is_private_build: bool = False, circle_branch: str = "master"):
     """ Returns recent commits hashes (of head and remote master)
 
     Args:
         content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path (str): the path to the local index folder
+        is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
+        is_private_build (bool): indicates whether its a run of private build or not
+        force_previous_commit (str): if exists, this should be the commit to diff with
+        circle_branch (str): CircleCi branch of current build
 
     Returns:
         str: last commit hash of head.
-        str: previous commit of origin/master (origin/master~1)
+        str: previous commit depending on the flow the script is running
     """
-    return content_repo.head.commit.hexsha, content_repo.commit('origin/master~1').hexsha
+    head_commit = content_repo.head.commit.hexsha
+    if force_previous_commit:
+        try:
+            previous_commit = content_repo.commit(force_previous_commit).hexsha
+            logging.info(f"Using force commit hash {previous_commit} to diff with.")
+            return head_commit, previous_commit
+        except Exception as e:
+            logging.critical(f'Force commit {force_previous_commit} does not exist in content repo. Additional '
+                             f'info:\n {e}')
+            sys.exit(1)
+    return head_commit, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build,
+                                            circle_branch)
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
-                                   index_folder_path: str, pack_names: set, is_private_build: bool) \
+                                   index_folder_path: str, pack_names: set) \
         -> Tuple[Union[list, list], str, Any]:
     """ Updates index with priced packs and returns list of priced packs data.
 
@@ -473,7 +498,6 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         extract_destination_path (str): full path to extract directory.
         index_folder_path (str): downloaded index folder directory path.
         pack_names (set): Collection of pack names.
-        is_private_build (bool): Indicates if the build is private.
 
     Returns:
         list: priced packs from private bucket.
@@ -557,23 +581,24 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
 
 
 def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current_commit_hash: str,
-                              remote_previous_commit_hash: str, storage_bucket: Any):
-    """ Checks stored at index.json commit hash and compares it to current commit hash. In case no
-    packs folders were added/modified/deleted, all other steps are not performed.
+                              previous_commit_hash: str, storage_bucket: Any):
+    """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
+    added/modified/deleted, all other steps are not performed.
 
     Args:
         index_folder_path (str): index folder full path.
         content_repo (git.repo.base.Repo): content repo object.
         current_commit_hash (str): last commit hash of head.
-        remote_previous_commit_hash (str): previous commit of origin/master (origin/master~1)
+        previous_commit_hash (str): the previous commit to diff with
         storage_bucket: public storage bucket.
 
     """
     skipping_build_task_message = "Skipping Upload Packs To Marketplace Storage Step."
 
     try:
-        if storage_bucket.name != GCPConfig.PRODUCTION_BUCKET:
-            logging.info("Skipping index update check in non production bucket")
+        if storage_bucket.name not in (GCPConfig.CI_BUILD_BUCKET, GCPConfig.PRODUCTION_BUCKET,
+                                       GCPConfig.TESTING_BUCKET):
+            logging.info("Skipping index update check in non production/build bucket")
             return
 
         if not os.path.exists(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")):
@@ -584,7 +609,7 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
         with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as index_file:
             index_json = json.load(index_file)
 
-        index_commit_hash = index_json.get('commit', remote_previous_commit_hash)
+        index_commit_hash = index_json.get('commit', previous_commit_hash)
 
         try:
             index_commit = content_repo.commit(index_commit_hash)
@@ -615,23 +640,21 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
         sys.exit(1)
 
 
-def print_packs_summary(packs_list: list):
+def print_packs_summary(successful_packs: list, skipped_packs: list, failed_packs: list,
+                        fail_build: bool = True):
     """Prints summary of packs uploaded to gcs.
 
     Args:
-        packs_list (list): list of initialized packs.
+        successful_packs (list): list of packs that were successfully uploaded.
+        skipped_packs (list): list of packs that were skipped during upload.
+        failed_packs (list): list of packs that were failed during upload.
+        fail_build (bool): indicates whether to fail the build upon failing pack to upload or not
 
     """
-    successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
-    skipped_packs = [pack for pack in packs_list if
-                     pack.status == PackStatus.PACK_ALREADY_EXISTS.name
-                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name]
-    failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
-
     logging.info(
         f"""\n
 ------------------------------------------ Packs Upload Summary ------------------------------------------
-Total number of packs: {len(packs_list)}
+Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
 ----------------------------------------------------------------------------------------------------------""")
 
     if successful_packs:
@@ -641,14 +664,16 @@ Total number of packs: {len(packs_list)}
         with open('pack_list.txt', 'w') as f:
             f.write(successful_packs_table.get_string())
     if skipped_packs:
-        skipped_packs_table = _build_summary_table(skipped_packs)
+        skipped_packs_table = _build_summary_table(skipped_packs, include_pack_status=True)
         logging.warning(f"Number of skipped packs: {len(skipped_packs)}")
         logging.warning(f"Skipped packs:\n{skipped_packs_table}")
     if failed_packs:
         failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
         logging.critical(f"Number of failed packs: {len(failed_packs)}")
         logging.critical(f"Failed packs:\n{failed_packs_table}")
-        sys.exit(1)
+        if fail_build:
+            # We don't want the bucket upload flow to fail in Prepare Content step if a pack has failed to upload.
+            sys.exit(1)
 
     # for external pull requests -  when there is no failed packs, add the build summary to the pull request
     branch_name = os.environ.get('CIRCLE_BRANCH')
@@ -697,14 +722,17 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        default=False, action='store_true', required=False)
+                        type=str2bool, default=False, required=True)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
-    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
                         required=False)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
+    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
+    parser.add_argument('-fc', '--force_previous_commit', help='A commit to be used as the previous commit to diff with')
+    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-c', '--circle_branch', help="CircleCi branch of current build", required=True)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -750,6 +778,131 @@ def handle_github_response(response: json) -> dict:
     return res_dict
 
 
+def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build, circle_branch):
+    """ If running in bucket upload workflow we want to get the commit in the index which is the index
+    We've last uploaded to production bucket. Otherwise, we are in a commit workflow and the diff should be from the
+    head of origin/master
+
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path (str): the path to the local index folder
+        is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
+        is_private_build (bool): indicates whether its a run of private build or not
+        circle_branch (str): CircleCi branch of current build
+
+    Returns:
+        str: previous commit depending on the flow the script is running
+
+    """
+    if is_bucket_upload_flow:
+        return get_last_upload_commit_hash(content_repo, index_folder_path)
+    elif is_private_build:
+        previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
+        logging.info(f"Using origin/master HEAD~1 commit hash {previous_master_head_commit} to diff with.")
+        return previous_master_head_commit
+    else:
+        if circle_branch == 'master':
+            head_str = "HEAD~1"
+            # if circle branch is master than current commit is origin/master HEAD, so we need to diff with HEAD~1
+            previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
+        else:
+            head_str = "HEAD"
+            # else we are on a regular branch and the diff should be done with origin/master HEAD
+            previous_master_head_commit = content_repo.commit('origin/master').hexsha
+        logging.info(f"Using origin/master {head_str} commit hash {previous_master_head_commit} to diff with.")
+        return previous_master_head_commit
+
+
+def get_last_upload_commit_hash(content_repo, index_folder_path):
+    """
+    Returns the last origin/master commit hash that was uploaded to the bucket
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path: The path to the index folder
+
+    Returns:
+        The commit hash
+    """
+
+    inner_index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    if not os.path.exists(inner_index_json_path):
+        logging.critical(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
+        sys.exit(1)
+    else:
+        inner_index_json_file = load_json(inner_index_json_path)
+        if 'commit' in inner_index_json_file:
+            last_upload_commit_hash = inner_index_json_file['commit']
+            logging.info(f"Retrieved the last commit that was uploaded to production: {last_upload_commit_hash}")
+        else:
+            logging.critical(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
+            sys.exit(1)
+
+    try:
+        last_upload_commit = content_repo.commit(last_upload_commit_hash).hexsha
+        logging.info(f"Using commit hash {last_upload_commit} from index.json to diff with.")
+        return last_upload_commit
+    except Exception as e:
+        logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
+                         f'repo. Additional info:\n {e}')
+        sys.exit(1)
+
+
+def get_packs_summary(packs_list):
+    """ Returns the packs list divided into 3 lists by their status
+
+    Args:
+        packs_list (list): The full packs list
+
+    Returns: 3 lists of packs - successful_packs, skipped_packs & failed_packs
+
+    """
+    successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
+    skipped_packs = [pack for pack in packs_list if
+                     pack.status == PackStatus.PACK_ALREADY_EXISTS.name
+                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name]
+    failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
+
+    return successful_packs, skipped_packs, failed_packs
+
+
+def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, successful_packs, failed_packs):
+    """ Saves successful and failed packs to circle ci env - to be used in Upload Packs To Marketplace job (Bucket Upload flow)
+
+    Args:
+        circle_artifacts_path (str): The path to the circle artifacts dir path
+        failed_packs: The list of all failed packs
+        successful_packs: The list of all successful packs
+
+    """
+    packs_results = dict()
+
+    if failed_packs:
+        failed_packs_dict = {
+            "failed_packs": {
+                pack.name: {
+                    "status": PackStatus[pack.status].value,
+                    "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
+                } for pack in failed_packs
+            }
+        }
+        packs_results.update(failed_packs_dict)
+
+    if successful_packs:
+        successful_packs_dict = {
+            "successful_packs": {
+                pack.name: {
+                    "status": PackStatus[pack.status].value,
+                    "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
+                } for pack in successful_packs
+            }
+        }
+        packs_results.update(successful_packs_dict)
+
+    if packs_results:
+        with open(os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), "w") as f:
+            f.write(json.dumps(packs_results, indent=4))
+
+
 def main():
     install_logging('Prepare Content Packs For Testing.log')
     option = option_handler()
@@ -765,31 +918,36 @@ def main():
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
     storage_base_path = option.storage_base_path
     remove_test_playbooks = option.remove_test_playbooks
+    is_bucket_upload_flow = option.bucket_upload
+    force_previous_commit = option.force_previous_commit
     private_bucket_name = option.private_bucket_name
+    circle_branch = option.circle_branch
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
-    # content repo client initialized
-    content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo)
-
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
-
-    # detect packs to upload
-    pack_names = get_packs_names(target_packs)
-    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
-                  if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
 
+    # content repo client initialized
+    content_repo = get_content_git_client(CONTENT_ROOT_PATH)
+    current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
+                                                                        is_bucket_upload_flow, force_previous_commit,
+                                                                        circle_branch)
+
+    # detect packs to upload
+    pack_names = get_packs_names(target_packs, previous_commit_hash)
+    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
+                  if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+
     if not option.override_all_packs:
-        check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
+        check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket)
 
     # google cloud bigquery client initialized
@@ -799,8 +957,7 @@ def main():
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs, _, _ = update_index_with_priced_packs(private_storage_bucket,
                                                              extract_destination_path,
-                                                             index_folder_path, pack_names,
-                                                             is_private_build=False)
+                                                             index_folder_path, pack_names)
     else:  # skipping private packs
         logging.debug("Skipping index update of priced packs")
         private_packs = []
@@ -875,8 +1032,7 @@ def main():
             continue
 
         task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                              remote_previous_commit_hash)
-
+                                                              previous_commit_hash)
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
@@ -886,17 +1042,9 @@ def main():
             pack.upload_to_storage(zip_pack_path, pack.latest_version,
                                    storage_bucket, override_all_packs
                                    or pack_was_modified)
-        if full_pack_path is not None:
-            branch_name = os.environ['CIRCLE_BRANCH']
-            build_num = os.environ['CIRCLE_BUILD_NUM']
-            bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                          f'marketplace-ci-build/{branch_name}/{build_num}'
-            bucket_url = bucket_path.join(full_pack_path)
-        else:
-            bucket_url = 'Pack was not uploaded.'
+
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
-            pack.bucket_url = bucket_url
             pack.cleanup()
             continue
 
@@ -938,8 +1086,15 @@ def main():
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
 
+    # get the lists of packs divided by their status
+    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+
+    # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
+    store_successful_and_failed_packs_in_ci_artifacts(os.path.dirname(packs_artifacts_path), successful_packs,
+                                                      failed_packs)
+
     # summary of packs status
-    print_packs_summary(packs_list)
+    print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
 
 
 if __name__ == '__main__':
