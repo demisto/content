@@ -155,6 +155,7 @@ script:
 
         return {
             follow: response.follow,
+            more: response.more,
             content: response.alerts,
             threats: response.threats
         }
@@ -293,17 +294,36 @@ script:
                 return String(exc);
             }
         case 'fetch-incidents':
-            var follow = parseFollow();
-            var alerts = getAlerts(follow);
-
+            var more = true;
             var incidents = [];
-            if (alerts && alerts.content) {
-                for (var i = 0; i < alerts.content.length; i++) {
-                    appendIncidentsFromAlert(incidents, alerts.content[i], alerts.threats);
+            var follow = parseFollow();
+
+            try {
+                while (more) {
+                    var alerts = getAlerts(follow);
+
+                    if (alerts) {
+                        if (alerts.content) {
+                            for (var i = 0; i < alerts.content.length; i++) {
+                                appendIncidentsFromAlert(incidents, alerts.content[i], alerts.threats);
+                            }
+                        }
+
+                        more = alerts.more;
+                        follow = alerts.follow;
+                    } else {
+                        more = false;
+                    }
+
+                }
+            } catch (exc) {
+                if (incidents.length === 0) {
+                    // Throw, if it failed during the first fetch
+                    throw exc;
                 }
             }
 
-            saveFollow(alerts.follow);
+            saveFollow(follow);
             return JSON.stringify(incidents);
     }
   type: javascript
