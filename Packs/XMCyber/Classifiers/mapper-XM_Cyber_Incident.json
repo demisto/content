@@ -73,11 +73,11 @@
 					"complex": null,
 					"simple": "entityType"
 				},
-				"XM Cyber Average Complexity": {
+				"Average Complexity of Compromise": {
 					"complex": null,
 					"simple": "value"
 				},
-				"XM Cyber Average Complexity Level": {
+				"Average Complexity Level": {
 					"complex": null,
 					"simple": "level"
 				},
@@ -164,11 +164,11 @@
 					"complex": null,
 					"simple": "entityType"
 				},
-				"XM Cyber Average Complexity": {
+				"Average Complexity of Compromise": {
 					"complex": null,
 					"simple": "value"
 				},
-				"XM Cyber Average Complexity Level": {
+				"Average Complexity Level": {
 					"complex": null,
 					"simple": "level"
 				},
@@ -238,15 +238,15 @@
 					"complex": null,
 					"simple": "displayName"
 				},
-				"XM Cyber Technique Best Practice": {
+				"Technique Best Practice": {
 					"complex": null,
 					"simple": "bestPractice"
 				},
-				"XM Cyber Technique Description": {
+				"Technique Description": {
 					"complex": null,
 					"simple": "description"
 				},
-				"XM Cyber Technique Report": {
+				"Technique Report": {
 					"complex": null,
 					"simple": "linkToReport"
 				},

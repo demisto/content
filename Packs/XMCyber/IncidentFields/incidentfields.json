@@ -37,9 +37,12 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -87,9 +90,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Technique"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -164,9 +169,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Technique"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -214,9 +221,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Technique"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -264,9 +273,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Technique"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -314,9 +325,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Technique"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -391,9 +404,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Technique"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -442,7 +457,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -494,7 +510,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -573,7 +590,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -625,7 +643,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -676,9 +695,12 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": [],
+			"associatedTypes": [
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -756,7 +778,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -808,7 +831,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -860,7 +884,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -911,9 +936,12 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": [],
+			"associatedTypes": [
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -1002,9 +1030,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Security Score"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -1016,7 +1046,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcyberdisplayname",
+			"id": "incident_xmcyberentityname",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-27T18:11:33.813524494Z",
@@ -1029,12 +1059,12 @@
 			"vcShouldKeepItemLegacyProdMachine": false,
 			"commitMessage": "",
 			"shouldCommit": false,
-			"name": "XM Cyber Display Name",
-			"prevName": "XM Cyber Display Name",
+			"name": "XM Cyber Entity Name",
+			"prevName": "XM Cyber Entity Name",
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcyberdisplayname",
+			"cliName": "xmcyberentityname",
 			"type": "shortText",
 			"closeForm": false,
 			"editForm": true,
@@ -1053,9 +1083,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident",
-				"XM Cyber Risk Score",
-				"XM Cyber Technique"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -1107,7 +1136,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -1159,7 +1189,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -1211,7 +1242,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -1226,7 +1258,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcyberipaddress",
+			"id": "incident_entityipaddress",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T22:37:31.091239488Z",
@@ -1239,12 +1271,12 @@
 			"vcShouldKeepItemLegacyProdMachine": false,
 			"commitMessage": "",
 			"shouldCommit": false,
-			"name": "XM Cyber IP Address",
-			"prevName": "XM Cyber IP Address",
+			"name": "Entity IP Address",
+			"prevName": "Entity IP Address",
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcyberipaddress",
+			"cliName": "entityipaddress",
 			"type": "shortText",
 			"closeForm": false,
 			"editForm": true,
@@ -1263,7 +1295,8 @@
 			"mergeStrategy": "",
 			"hidden": false,
 			"associatedTypes": [
-				"XM Cyber Incident"
+				"XM Cyber Critical Asset",
+				"XM Cyber Choke Point"
 			],
 			"systemAssociatedTypes": null,
 			"associatedToAll": false,
@@ -1278,7 +1311,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcybertechnique",
+			"id": "incident_xmcybertechniquereport",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-25T16:25:14.951273619Z",
@@ -1291,12 +1324,12 @@
 			"vcShouldKeepItemLegacyProdMachine": false,
 			"commitMessage": "",
 			"shouldCommit": false,
-			"name": "XM Cyber Technique",
-			"prevName": "XM Cyber Technique",
+			"name": "XM Cyber Technique Report",
+			"prevName": "XM Cyber Technique Report",
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcybertechnique",
+			"cliName": "xmcybertechniquereport",
 			"type": "url",
 			"closeForm": false,
 			"editForm": true,
@@ -1314,9 +1347,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Technique"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -1364,9 +1399,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Technique"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -1414,9 +1451,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Technique"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -1428,7 +1467,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcybertechqniuechoke",
+			"id": "incident_xmcybertechniquechoke",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-25T11:28:17.814519819Z",
@@ -1441,12 +1480,12 @@
 			"vcShouldKeepItemLegacyProdMachine": false,
 			"commitMessage": "",
 			"shouldCommit": false,
-			"name": "XM Cyber Techqniue Choke",
-			"prevName": "XM Cyber Techqniue Choke",
+			"name": "XM Cyber Technique Choke",
+			"prevName": "XM Cyber Technique Choke",
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcybertechqniuechoke",
+			"cliName": "xmcybertechniquechoke",
 			"type": "shortText",
 			"closeForm": false,
 			"editForm": true,
@@ -1464,9 +1503,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Technique"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -1514,9 +1555,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Security Score"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -1564,9 +1607,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Security Score"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,
@@ -1614,9 +1659,11 @@
 			"group": 0,
 			"mergeStrategy": "",
 			"hidden": false,
-			"associatedTypes": null,
+			"associatedTypes": [
+				"XM Cyber Security Score"
+			],
 			"systemAssociatedTypes": null,
-			"associatedToAll": true,
+			"associatedToAll": false,
 			"unmapped": false,
 			"unsearchable": false,
 			"caseInsensitive": true,

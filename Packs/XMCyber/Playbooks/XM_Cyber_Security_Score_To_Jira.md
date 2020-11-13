@@ -21,12 +21,12 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| XMRiskScore | XM risk score | '' | Optional |
-| XMRiskScoreTrend | XM risk score trend from previous value | '' | Optional |
+| Project Name | Name of the project in Jira to add tasks from XM Cyber | '' | Mandatory |
+| Project Key | The key with which to associate this issue | XM Security Score Trend | Optional |
 
 ## Playbook Outputs
 ---
 
 ## Playbook Image
 ---
-![XM Cyber Enrich](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/XM_Cyber_Risk_Score_To_Jira.png)
+![XM Cyber Security Score To Jira](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/XM_Cyber_Risk_Score_To_Jira.png)
