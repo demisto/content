@@ -1,0 +1,64 @@
+{
+    "responseCode": 0,
+    "limit": 0,
+    "offset": 0,
+    "count": 0,
+    "size": 0,
+    "metaData": {},
+    "messages": [
+        {
+            "message": "string",
+            "messageTemplate": "string",
+            "type": "FIELD_ERROR",
+            "field": "string",
+            "parameter": {},
+            "timestamp": 0
+        }
+    ],
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "addedTimestamp": 0,
+        "addedByUser": {
+            "id": 0,
+            "customerID": 0,
+            "customer": {
+                "id": 0,
+                "name": "string",
+                "shortName": "string",
+                "domain": {
+                    "id": 0,
+                    "name": "string"
+                }
+            },
+            "domain": {
+                "id": 0,
+                "name": "string"
+            },
+            "userName": "string",
+            "name": "string",
+            "type": "user"
+        },
+        "comment": "string",
+        "flags": [
+            "DELETED"
+        ],
+        "lastUpdatedTimestamp": 0,
+        "status": "pendingCustomer",
+        "priority": "low",
+        "originEmailAddress": "string",
+        "associatedAttachments": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "name": "string"
+            }
+        ],
+        "references": [
+            {
+                "type": "replacedBy",
+                "commentID": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "lastUpdatedTime": "string",
+        "addedTime": "string"
+    }
+}

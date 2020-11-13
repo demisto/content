@@ -7,6 +7,10 @@ TAG_ID = "some-long-hash"
 TAG_KEY = "test_key"
 TAG_VALUE = "test_value"
 ATTACHMENT_ID = "some-long-hash"
+EVENT_TYPE = "NIDS"
+TIMESTAMP = "some-timestamp"
+CUSTOMER_ID = 5381
+EVENT_ID = "some-hash"
 
 
 def test_argus_priority_to_demisto_severity():
@@ -104,19 +108,17 @@ def test_test_module_command(requests_mock):
     method_url = "/currentuser/v1/user"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     assert test_module_command() != "ok"
-    data['responseCode'] = 200
+    data["responseCode"] = 200
     assert test_module_command() == "ok"
 
 
 def test_fetch_incidents(requests_mock):
     from ArgusManagedDefence import fetch_incidents
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_search.json") as json_file:
+        data = json.load(json_file)
     method_url = "/cases/v2/case/search"
-
-    requests_mock.post(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_SEARCH_RESULT
-    )
+    requests_mock.post(f"{BASE_URL}{method_url}", json=data)
     last_run = {"start_time": 1603372183576}
     next_run, incidents = fetch_incidents(last_run, "-1 day")
     assert len(incidents) == 1
@@ -126,14 +128,14 @@ def test_fetch_incidents(requests_mock):
 
 def test_fetch_incidents_increment_timestamp(requests_mock):
     from ArgusManagedDefence import fetch_incidents
-    from argus_json import argus_case_data
 
     method_url = "/cases/v2/case/search"
     timestamp = 327645
-    json = argus_case_data.ARGUS_CASE_SEARCH_RESULT
-    json["data"][0]["createdTimestamp"] = timestamp
+    with open("argus_json/argus_case_search.json") as json_file:
+        data = json.load(json_file)
+    data["data"][0]["createdTimestamp"] = timestamp
 
-    requests_mock.post(f"{BASE_URL}{method_url}", json=json)
+    requests_mock.post(f"{BASE_URL}{method_url}", json=data)
 
     next_run, incidents = fetch_incidents({}, "-1 day")
     assert len(incidents) == 1
@@ -142,65 +144,58 @@ def test_fetch_incidents_increment_timestamp(requests_mock):
 
 def test_add_case_tag_command(requests_mock):
     from ArgusManagedDefence import add_case_tag_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/tags"
-
-    requests_mock.post(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_TAGS)
+    requests_mock.post(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID, "key": "test_key", "value": "test_value"}
     result = add_case_tag_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
+    assert result.raw_response == data
 
 
 def test_add_comment_command(requests_mock):
     from ArgusManagedDefence import add_comment_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_comment.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/comments"
-
-    requests_mock.post(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_COMMENT
-    )
+    requests_mock.post(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID, "comment": "test_comment"}
     result = add_comment_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENT
+    assert result.raw_response == data
 
 
 def test_advanced_case_search_command(requests_mock):
     from ArgusManagedDefence import advanced_case_search_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_search.json") as json_file:
+        data = json.load(json_file)
     method_url = "/cases/v2/case/search"
-
-    requests_mock.post(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_SEARCH_RESULT
-    )
+    requests_mock.post(f"{BASE_URL}{method_url}", json=data)
     result = advanced_case_search_command({})
-    assert result.raw_response == argus_case_data.ARGUS_CASE_SEARCH_RESULT
+    assert result.raw_response == data
 
 
 def test_close_case_command(requests_mock):
     from ArgusManagedDefence import close_case_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/close"
-    requests_mock.put(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA
-    )
+    requests_mock.put(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID}
     result = close_case_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
+    assert result.raw_response == data
 
 
 def test_create_case_command(requests_mock):
     from ArgusManagedDefence import create_case_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        data = json.load(json_file)
     method_url = "/cases/v2/case"
-
-    requests_mock.post(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA
-    )
+    requests_mock.post(f"{BASE_URL}{method_url}", json=data)
     args = {
         "subject": "test subject",
         "description": "test description",
@@ -209,45 +204,39 @@ def test_create_case_command(requests_mock):
         "tags": "test_key,test_value",
     }
     result = create_case_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
+    assert result.raw_response == data
 
 
 def test_delete_case_command(requests_mock):
     from ArgusManagedDefence import delete_case_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}"
-
-    requests_mock.delete(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA
-    )
+    requests_mock.delete(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID}
     result = delete_case_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
+    assert result.raw_response == data
 
 
 def test_delete_comment_command(requests_mock):
     from ArgusManagedDefence import delete_comment_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_comment.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/comments/{COMMENT_ID}"
-
-    requests_mock.delete(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_COMMENT
-    )
+    requests_mock.delete(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID, "comment_id": COMMENT_ID}
     result = delete_comment_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENT
+    assert result.raw_response == data
 
 
 def test_download_attachment_command(requests_mock):
     from ArgusManagedDefence import download_attachment_command
 
-    with open("argus_json/argus_case_data.py", "rb") as file:
+    with open("argus_json/argus_case_attachment.json", "rb") as file:
         content = file.read()
-
     method_url = f"/cases/v2/case/{CASE_ID}/attachments/{ATTACHMENT_ID}/download"
-
     requests_mock.get(f"{BASE_URL}{method_url}", content=content)
     args = {"case_id": CASE_ID, "attachment_id": ATTACHMENT_ID}
     result = download_attachment_command(args)
@@ -256,296 +245,263 @@ def test_download_attachment_command(requests_mock):
 
 def test_edit_comment_command(requests_mock):
     from ArgusManagedDefence import edit_comment_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_comment.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/comments/{COMMENT_ID}"
-
-    requests_mock.put(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_COMMENT
-    )
+    requests_mock.put(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID, "comment_id": COMMENT_ID, "comment": "test comment"}
     result = edit_comment_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENT
+    assert result.raw_response == data
 
 
 def test_get_attachment_command(requests_mock):
     from ArgusManagedDefence import get_attachment_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_attachment.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/attachments/{ATTACHMENT_ID}"
-
-    requests_mock.get(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_ATTACHMENT
-    )
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID, "attachment_id": ATTACHMENT_ID}
     result = get_attachment_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_ATTACHMENT
+    assert result.raw_response == data
 
 
 def test_get_case_metadata_by_id_command(requests_mock):
     from ArgusManagedDefence import get_case_metadata_by_id_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}"
-
-    requests_mock.get(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA
-    )
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID}
     result = get_case_metadata_by_id_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
+    assert result.raw_response == data
 
 
 def test_list_case_attachments_command(requests_mock):
     from ArgusManagedDefence import list_case_attachments_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_attachments.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/attachments"
-
-    requests_mock.get(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_ATTACHMENTS
-    )
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID}
     result = list_case_attachments_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_ATTACHMENTS
+    assert result.raw_response == data
 
 
 def test_list_case_tags_command(requests_mock):
     from ArgusManagedDefence import list_case_tags_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_tags.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/tags"
-
-    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_TAGS)
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID}
     result = list_case_tags_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
+    assert result.raw_response == data
 
 
 def test_list_case_comments_command(requests_mock):
     from ArgusManagedDefence import list_case_comments_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_comments.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/comments"
-
-    requests_mock.get(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_COMMENTS_LIST
-    )
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID}
     result = list_case_comments_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_COMMENTS_LIST
+    assert result.raw_response == data
 
 
 def test_remove_case_tag_by_id_command(requests_mock):
     from ArgusManagedDefence import remove_case_tag_by_id_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_tags.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/tags/{TAG_ID}"
-
-    requests_mock.delete(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_TAGS
-    )
+    requests_mock.delete(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID, "tag_id": TAG_ID}
     result = remove_case_tag_by_id_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
+    assert result.raw_response == data
 
 
 def test_remove_case_tag_by_key_value_command(requests_mock):
     from ArgusManagedDefence import remove_case_tag_by_key_value_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_tags.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/tags/{TAG_KEY}/{TAG_VALUE}"
-
-    requests_mock.delete(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_TAGS
-    )
+    requests_mock.delete(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID, "key": TAG_KEY, "value": TAG_VALUE}
     result = remove_case_tag_by_key_value_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_TAGS
+    assert result.raw_response == data
 
 
 def test_update_case_command(requests_mock):
     from ArgusManagedDefence import update_case_command
-    from argus_json import argus_case_data
 
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}"
-
-    requests_mock.put(
-        f"{BASE_URL}{method_url}", json=argus_case_data.ARGUS_CASE_METADATA
-    )
+    requests_mock.put(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID}
     result = update_case_command(args)
-    assert result.raw_response == argus_case_data.ARGUS_CASE_METADATA
+    assert result.raw_response == data
 
 
 def test_get_events_for_case_command(requests_mock):
     from ArgusManagedDefence import get_events_for_case_command
-    from argus_json import argus_event_data
 
+    with open("argus_json/argus_events.json") as json_file:
+        data = json.load(json_file)
     method_url = f"/events/v1/case/{CASE_ID}"
-
-    requests_mock.get(
-        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE
-    )
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     args = {"case_id": CASE_ID}
     result = get_events_for_case_command(args)
-    assert result.raw_response == argus_event_data.ARGUS_EVENTS_FOR_CASE
+    assert result.raw_response == data
 
 
 def test_find_aggregated_events_command(requests_mock):
     from ArgusManagedDefence import find_aggregated_events_command
-    from argus_json import argus_event_data
 
+    with open("argus_json/argus_events.json") as json_file:
+        data = json.load(json_file)
     method_url = "/events/v1/aggregated/search"
-
-    requests_mock.post(
-        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE
-    )
+    requests_mock.post(f"{BASE_URL}{method_url}", json=data)
     result = find_aggregated_events_command({})
-    assert result.raw_response == argus_event_data.ARGUS_EVENTS_FOR_CASE
+    assert result.raw_response == data
 
 
 def test_list_aggregated_events_command(requests_mock):
     from ArgusManagedDefence import list_aggregated_events_command
-    from argus_json import argus_event_data
 
+    with open("argus_json/argus_events.json") as json_file:
+        data = json.load(json_file)
     method_url = "/events/v1/aggregated"
-
-    requests_mock.get(
-        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENTS_FOR_CASE
-    )
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     result = list_aggregated_events_command({})
-    assert result.raw_response == argus_event_data.ARGUS_EVENTS_FOR_CASE
+    assert result.raw_response == data
 
 
 def test_get_event(requests_mock):
     from ArgusManagedDefence import get_event_command
-    from argus_json import argus_event_data
 
-    event_type = "NIDS"
-    timestamp = "some-timestamp"
-    customer_id = 5381
-    event_id = "some-hash"
-    method_url = f"/events/v1/{event_type}/{timestamp}/{customer_id}/{event_id}"
+    with open("argus_json/argus_event.json") as json_file:
+        data = json.load(json_file)
 
-    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT)
+    method_url = f"/events/v1/{EVENT_TYPE}/{TIMESTAMP}/{CUSTOMER_ID}/{EVENT_ID}"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     args = {
-        "type": event_type,
-        "timestamp": timestamp,
-        "customer_id": customer_id,
-        "event_id": event_id,
+        "type": EVENT_TYPE,
+        "timestamp": TIMESTAMP,
+        "customer_id": CUSTOMER_ID,
+        "event_id": EVENT_ID,
     }
     result = get_event_command(args)
-    assert result.raw_response == argus_event_data.ARGUS_EVENT
+    assert result.raw_response == data
 
 
 def test_get_payload_command(requests_mock):
     from ArgusManagedDefence import get_payload_command
-    from argus_json import argus_event_data
 
-    event_type = "NIDS"
-    timestamp = "some-timestamp"
-    customer_id = 5381
-    event_id = "some-hash"
-    method_url = f"/events/v1/{event_type}/{timestamp}/{customer_id}/{event_id}/payload"
+    with open("argus_json/argus_event_payload.json") as json_file:
+        data = json.load(json_file)
 
-    requests_mock.get(
-        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_PAYLOAD
-    )
+    method_url = f"/events/v1/{EVENT_TYPE}/{TIMESTAMP}/{CUSTOMER_ID}/{EVENT_ID}/payload"
+
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     args = {
-        "type": event_type,
-        "timestamp": timestamp,
-        "customer_id": customer_id,
-        "event_id": event_id,
+        "type": EVENT_TYPE,
+        "timestamp": TIMESTAMP,
+        "customer_id": CUSTOMER_ID,
+        "event_id": EVENT_ID,
     }
     result = get_payload_command(args)
-    assert result.raw_response == argus_event_data.ARGUS_EVENT_PAYLOAD
+    assert result.raw_response == data
 
 
 def test_get_pcap_command(requests_mock):
     from ArgusManagedDefence import get_pcap_command
 
-    with open("argus_json/argus_case_data.py", "rb") as file:
+    with open("argus_json/argus_event.json", "rb") as file:
         content = file.read()
 
-    event_type = "NIDS"
-    timestamp = "some-timestamp"
-    customer_id = 5381
-    event_id = "some-hash"
-    method_url = f"/events/v1/{event_type}/{timestamp}/{customer_id}/{event_id}/pcap"
+    method_url = f"/events/v1/{EVENT_TYPE}/{TIMESTAMP}/{CUSTOMER_ID}/{EVENT_ID}/pcap"
 
     requests_mock.get(f"{BASE_URL}{method_url}", content=content)
     args = {
-        "type": event_type,
-        "timestamp": timestamp,
-        "customer_id": customer_id,
-        "event_id": event_id,
+        "type": EVENT_TYPE,
+        "timestamp": TIMESTAMP,
+        "customer_id": CUSTOMER_ID,
+        "event_id": EVENT_ID,
     }
     result = get_pcap_command(args)
-    assert result["File"] == f"{event_id}_pcap"
+    assert result["File"] == f"{EVENT_ID}_pcap"
 
 
 def test_search_records_command(requests_mock):
     from ArgusManagedDefence import search_records_command
-    from argus_json import argus_event_data
+
+    with open("argus_json/argus_event_pdns.json") as json_file:
+        data = json.load(json_file)
 
     query = "mnemonic.no"
     method_url = "/pdns/v3/search"
 
-    requests_mock.post(
-        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_PDNS
-    )
+    requests_mock.post(f"{BASE_URL}{method_url}", json=data)
     result = search_records_command({"query": query})
-    assert result.raw_response == argus_event_data.ARGUS_EVENT_PDNS
+    assert result.raw_response == data
 
 
 def test_fetch_observations_for_domain_command(requests_mock):
     from ArgusManagedDefence import fetch_observations_for_domain_command
-    from argus_json import argus_event_data
 
+    with open("argus_json/argus_event_obs_domain.json") as json_file:
+        data = json.load(json_file)
     fqdn = "domain.test"
     method_url = f"/reputation/v1/observation/domain/{fqdn}"
 
-    requests_mock.get(
-        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_OBSERVATION_DOMAIN
-    )
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     result = fetch_observations_for_domain_command({"fqdn": fqdn})
-    assert result.raw_response == argus_event_data.ARGUS_EVENT_OBSERVATION_DOMAIN
+    assert result.raw_response == data
 
 
 def test_fetch_observations_for_i_p_command(requests_mock):
     from ArgusManagedDefence import fetch_observations_for_i_p_command
-    from argus_json import argus_event_data
+
+    with open("argus_json/argus_event_obs_ip.json") as json_file:
+        data = json.load(json_file)
 
     ip = "0.0.0.0"
     method_url = f"/reputation/v1/observation/ip/{ip}"
 
-    requests_mock.get(
-        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_EVENT_OBSERVATION_IP
-    )
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     result = fetch_observations_for_i_p_command({"ip": ip})
-    assert result.raw_response == argus_event_data.ARGUS_EVENT_OBSERVATION_IP
+    assert result.raw_response == data
 
 
 def test_find_nids_events(requests_mock):
     from ArgusManagedDefence import find_nids_events_command
-    from argus_json import argus_event_data
 
+    with open("argus_json/argus_event_nids.json") as json_file:
+        data = json.load(json_file)
     method_url = "/events/v1/nids/search"
 
-    requests_mock.post(
-        f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_NIDS_EVENT
-    )
+    requests_mock.post(f"{BASE_URL}{method_url}", json=data)
     result = find_nids_events_command({})
-    assert result.raw_response == argus_event_data.ARGUS_NIDS_EVENT
+    assert result.raw_response == data
 
 
 def test_list_nids_events(requests_mock):
     from ArgusManagedDefence import list_nids_events_command
-    from argus_json import argus_event_data
 
+    with open("argus_json/argus_event_nids.json") as json_file:
+        data = json.load(json_file)
     method_url = "/events/v1/nids"
 
-    requests_mock.get(f"{BASE_URL}{method_url}", json=argus_event_data.ARGUS_NIDS_EVENT)
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     result = list_nids_events_command({})
-    assert result.raw_response == argus_event_data.ARGUS_NIDS_EVENT
+    assert result.raw_response == data
