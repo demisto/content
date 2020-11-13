@@ -345,7 +345,7 @@ def bulk_dismiss_alert_command(client: Client, args: dict):
     except Exception as e:
         if 'alertsNotFound' in str(e):
             raise DemistoException('Error: This alert id is already dismissed or does not exist.')
-    number_of_dismissed_alerts = dismissed_alerts_data['dismissed']
+    number_of_dismissed_alerts = dismissed_alerts_data['closed_false_positive']
     return CommandResults(
         readable_output=f'{number_of_dismissed_alerts} alerts dismissed',
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
@@ -359,7 +359,7 @@ def bulk_resolve_alert_command(client: Client, args: dict):
     comment = args.get('comment')
     request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comment)
     resolve_alerts = client.resolve_bulk_alerts(request_data)
-    number_of_resolved_alerts = resolve_alerts['resolved']
+    number_of_resolved_alerts = resolve_alerts['closed_true_positive']
     return CommandResults(
         readable_output=f'{number_of_resolved_alerts} alerts resolved',
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
