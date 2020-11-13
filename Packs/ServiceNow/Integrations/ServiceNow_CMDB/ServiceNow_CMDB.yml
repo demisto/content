@@ -435,7 +435,7 @@ script:
     description: Test the instance configuration when using OAuth authorization.
     execution: false
     name: servicenow-cmdb-oauth-test
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: false
@@ -446,4 +446,6 @@ script:
   type: python
 defaultmapperin: HelloWorld-mapper
 defaultclassifier: HelloWorld
+tests:
+- ServiceNow_CMDB_Test
 fromversion: 5.0.0
