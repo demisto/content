@@ -4486,7 +4486,7 @@ script:
     - contextPath: Panorama.ZoneLookup.dest_ip
       description: 'Destination IP'
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: false
