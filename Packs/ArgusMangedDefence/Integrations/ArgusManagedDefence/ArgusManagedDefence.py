@@ -269,7 +269,7 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
         asReplyTo=args.get("as_reply_to", None),
         internal=args.get("internal", None),
         originEmailAddress=args.get("origin_email_address", None),
-        associatedAttachmentID=args.get("associated_attachement_id", None),
+        associatedAttachmentID=args.get("associated_attachment_id", None),
     )
 
     return CommandResults(
