@@ -731,7 +731,7 @@ def get_user(user: str) -> list:
         '$filter': f"displayName eq '{user}' or mail eq '{user}' or userPrincipalName eq '{user}'",
         '$select': 'id'
     }
-    users: dict = http_request('GET', url, params=params)
+    users = cast(Dict[Any, Any], http_request('GET', url, params=params))
     return users.get('value', [])
 
 
