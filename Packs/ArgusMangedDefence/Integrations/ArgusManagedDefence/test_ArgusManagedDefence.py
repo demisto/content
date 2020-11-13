@@ -1,3 +1,5 @@
+import json
+
 BASE_URL = "https://api.mnemonic.no"
 CASE_ID = 1337
 COMMENT_ID = "some-long-hash"
@@ -5,6 +7,31 @@ TAG_ID = "some-long-hash"
 TAG_KEY = "test_key"
 TAG_VALUE = "test_value"
 ATTACHMENT_ID = "some-long-hash"
+
+
+def test_argus_priority_to_demisto_severity():
+    from ArgusManagedDefence import argus_priority_to_demisto_severity
+
+    mapping = {"low": 1, "medium": 2, "high": 3, "critical": 4, "not valid value": 0}
+    for key, value in mapping.items():
+        assert argus_priority_to_demisto_severity(key) == value
+
+
+def test_argus_status_to_demisto_status():
+    from ArgusManagedDefence import argus_status_to_demisto_status
+
+    mapping = {
+        "pendingCustomer": 0,
+        "pendingSoc": 0,
+        "pendingVendor": 0,
+        "pendingClose": 0,
+        "workingSoc": 1,
+        "workingCustomer": 1,
+        "closed": 2,
+        "not valid value": 0,
+    }
+    for key, value in mapping.items():
+        assert argus_status_to_demisto_status(key) == value
 
 
 def test_build_argus_priority_from_min_severity():
@@ -23,13 +50,62 @@ def test_build_argus_priority_from_min_severity():
     ]
     assert build_argus_priority_from_min_severity("high") == ["high", "critical"]
     assert build_argus_priority_from_min_severity("critical") == ["critical"]
+    assert build_argus_priority_from_min_severity("not valid") == [
+        "low",
+        "medium",
+        "high",
+        "critical",
+    ]
+
+
+def test_build_tags_from_list():
+    from ArgusManagedDefence import build_tags_from_list
+
+    assert build_tags_from_list(None) == []
+    assert build_tags_from_list([]) == []
+    assert build_tags_from_list(["list must be divisible by two"]) == []
+    assert build_tags_from_list(["foo", "bar"]) == [{"key": "foo", "value": "bar"}]
+
+
+def test_str_to_list():
+    from ArgusManagedDefence import str_to_list
+
+    assert str_to_list(None) == []
+    assert str_to_list("") == []
+    assert str_to_list("one_value") == ["one_value"]
+    assert str_to_list("one space sep value") == ["one space sep value"]
+    assert str_to_list("two,values") == ["two", "values"]
+    assert str_to_list("two, values") == ["two", "values"]
+
+
+def test_str_to_dict():
+    from ArgusManagedDefence import str_to_dict
+
+    assert str_to_dict(None) == {}
+    assert str_to_dict("") == {}
+    assert str_to_dict("one_value") == {}
+    assert str_to_dict("foo,bar") == {"foo": "bar"}
+    assert str_to_dict("foo,bar,key,value") == {"foo": "bar", "key": "value"}
 
 
 def test_parse_first_fetch():
     from ArgusManagedDefence import parse_first_fetch
+
     assert parse_first_fetch("some string") == "-some string"
     assert parse_first_fetch("-some string") == "-some string"
     assert parse_first_fetch(123) == 123
+
+
+def test_test_module_command(requests_mock):
+    from ArgusManagedDefence import test_module_command
+
+    with open("argus_json/argus_currentuser.json") as json_file:
+        data = json.load(json_file)
+    method_url = "/currentuser/v1/user"
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
+    assert test_module_command() != "ok"
+    data['responseCode'] = 200
+    assert test_module_command() == "ok"
 
 
 def test_fetch_incidents(requests_mock):
@@ -55,7 +131,7 @@ def test_fetch_incidents_increment_timestamp(requests_mock):
     method_url = "/cases/v2/case/search"
     timestamp = 327645
     json = argus_case_data.ARGUS_CASE_SEARCH_RESULT
-    json['data'][0]['createdTimestamp'] = timestamp
+    json["data"][0]["createdTimestamp"] = timestamp
 
     requests_mock.post(f"{BASE_URL}{method_url}", json=json)
 

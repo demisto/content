@@ -110,6 +110,8 @@ def parse_first_fetch(first_fetch: Any) -> Any:
 def build_tags_from_list(lst: list) -> List[Dict]:
     if not lst:
         return []
+    if len(lst) % 2 != 0:
+        return []
     tags = []
     for i in range(0, len(lst), 2):
         tags.append({"key": lst[i], "value": lst[i + 1]})
@@ -117,19 +119,19 @@ def build_tags_from_list(lst: list) -> List[Dict]:
 
 
 def str_to_list(string: str) -> list:
-    return string.strip().split(",") if string else []
+    return list(i.strip() for i in string.split(",")) if string else []
 
 
 def str_to_dict(string: str) -> dict:
     if not string:
         return {}
     lst = str_to_list(string)
+    if len(lst) % 2 != 0:
+        return {}
     return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
 
 
-def pretty_print_case_metadata(
-    result: dict, title: str = None
-) -> str:  # TODO improve: markdownify
+def pretty_print_case_metadata(result: dict, title: str = None) -> str:
     data = result["data"]
     string = title if title else f"# #{data['id']}: {data['subject']}\n"
     string += "_Priority: {}, status: {}, last updated: {}_\n".format(
@@ -138,7 +140,7 @@ def pretty_print_case_metadata(
     string += "Reported by {} at {}\n\n".format(
         data["publishedByUser"]["name"], data["publishedTime"]
     )
-    string += data["description"]  # TODO DisplayHTML playbook# ?
+    string += data["description"]
     return string
 
 
@@ -209,7 +211,7 @@ def fetch_incidents(last_run: dict, first_fetch_period: str):
                 "occurred": case["createdTime"],
                 "severity": argus_priority_to_demisto_severity(case["priority"]),
                 "status": argus_status_to_demisto_status(case["status"]),
-                "details": case["description"],  # TODO markdownify
+                "details": case["description"],
                 "customFields": {
                     "argus_id": str(case["id"]),
                     "type": case["type"],

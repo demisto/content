@@ -1,11 +1,11 @@
 {
-    "name": "ArgusMangedDefence",
+    "name": "ArgusManagedDefence",
     "description": "Incident response from mnemonic.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "mnemonic",
-    "url": "",
-    "email": "konrad@mnemonic.no",
+    "url": "https://mnemonic.no",
+    "email": "msi-dev@mnemonic.no",
     "created": "2020-10-01T14:15:52Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
