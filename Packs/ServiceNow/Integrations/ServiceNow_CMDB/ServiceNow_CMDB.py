@@ -3,11 +3,9 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 '''IMPORTS'''
-import json
 import urllib3
-import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict, Tuple, List
 from _collections import defaultdict
 import ast
 from operator import itemgetter
@@ -17,20 +15,9 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 API_VERSION = '/api/now/cmdb/instance/'
-SYSPARMS = {
-    'query': 'sysparm_query',
-    'limit': 'sysparm_limit',
-    'offset': 'sysparm_offset',
-    'fields': 'sysparm_fields',
-    'relation_limit': 'sysparm_relation_limit',
-    'relation_offset': 'sysparm_relation_offset'
-}
-RECORDS_LIST_PARAMS = ['query', 'limit', 'offset']
-RECORD_PARAMS = ['fields', 'relation_limit', 'relation_offset']
 CREAT_RECORD_DATA_FIELDS = ['attributes', 'inbound_relations', 'outbound_relations', 'source']
 UPDATE_RECORD_DATA_FIELDS = ['attributes', 'source']
 ADD_RELATION_DATA_FIELDS = ['inbound_relations', 'outbound_relations', 'source']
-RESULT_FIELDS = ['attributes', 'inbound_relations', 'outbound_relations']
 FIELD_TO_OUTPUT = {
     'inbound_relations': 'Inbound Relations',
     'outbound_relations': 'Outbound Relations'
@@ -92,32 +79,6 @@ class Client:
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def handle_sysparms(sys_parms: List, args: dict) -> dict:
-    """
-    This function converts the query parameters given by the user to the format required for the http request.
-
-    Args:
-        sys_parms: A list with the sysparms that should be added to the query.
-        args: The arguments that were filled by the user.
-
-    Returns:
-        A dictionary representing the url params that should be sent in the http request.
-    """
-    params = {}
-    for parm in sys_parms:
-        val = args.get(parm)
-        if val:
-            params[SYSPARMS.get(parm)] = val
-
-    # If the user defined the fields param, verify that sys_id and name were added so they can be shown in the output
-    if params.get('sysparm_fields'):
-        if 'sys_id' not in params.get('sysparm_fields'):
-            params['sysparm_fields'] += ',sys_id'
-        if 'name' not in params.get('sysparm_fields'):
-            params['sysparm_fields'] += ',name'
-    return params
 
 
 def create_request_data(data_fields: List, args: dict) -> dict:
@@ -197,8 +158,8 @@ def create_human_readable(title: str, result: dict) -> str:
     """
     md = f'{title}\n'
     attributes_outputs = {
-        'SysID': result.get('attributes').get('sys_id'),
-        'Name': result.get('attributes').get('name')
+        'SysID': result.get('attributes', {}).get('sys_id'),
+        'Name': result.get('attributes', {}).get('name')
     }
     md += tableToMarkdown('Attributes', t=attributes_outputs, removeNull=True)
 
@@ -208,9 +169,9 @@ def create_human_readable(title: str, result: dict) -> str:
             relation_output = {
                 'SysID': list(map(itemgetter('sys_id'), relations)),
                 'Target Display Value': list(
-                    map(itemgetter('display_value'), list(map(itemgetter('target'), result.get(relation_type))))),
+                    map(itemgetter('display_value'), list(map(itemgetter('target'), result.get(relation_type))))),  # type: ignore
                 'Type Display Value': list(
-                    map(itemgetter('display_value'), list(map(itemgetter('type'), result.get(relation_type))))),
+                    map(itemgetter('display_value'), list(map(itemgetter('type'), result.get(relation_type))))),  # type: ignore
             }
             md += f' {tableToMarkdown(FIELD_TO_OUTPUT.get(relation_type), t=relation_output)}'
     return md
@@ -232,7 +193,13 @@ def records_list_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     """
     context: dict = defaultdict(list)
     class_name = args.get('class')
-    params = handle_sysparms(RECORDS_LIST_PARAMS, args)
+    params = {}
+    if args.get('query'):
+        params['sysparm_query'] = args.get('query')
+    if args.get('limit'):
+        params['sysparm_limit'] = args.get('limit')
+    if args.get('offset'):
+        params['sysparm_offset'] = args.get('offset')
 
     outputs = {
         'Class': class_name
@@ -264,7 +231,18 @@ def get_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     context: dict = defaultdict(list)
     class_name = args.get('class')
     sys_id = args.get('sys_id')
-    params = handle_sysparms(RECORD_PARAMS, args)
+    params: dict = {}
+    if args.get('fields'):
+        params['sysparm_fields'] = args.get('fields')
+        # Verify that sys_id and name were added so they can be used in the output of the command:
+        if 'sys_id' not in params.get('sysparm_fields', ''):
+            params['sysparm_fields'] += ',sys_id'
+        if 'name' not in params.get('sysparm_fields', ''):
+            params['sysparm_fields'] += ',name'
+    if args.get('relation_limit'):
+        params['sysparm_relation_limit'] = args.get('relation_limit')
+    if args.get('relation_offset'):
+        params['sysparm_relation_offset'] = args.get('relation_offset')
 
     response = client.get_record(class_name=class_name, sys_id=sys_id, params=params)
     result = response.get('result')
@@ -300,8 +278,19 @@ def create_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     context: dict = defaultdict(list)
-    class_name = args.get('class')
-    params = handle_sysparms(RECORD_PARAMS, args)
+    class_name = args.get('class', '')
+    params: dict = {}
+    if args.get('fields'):
+        params['sysparm_fields'] = args.get('fields')
+        # Verify that sys_id and name were added so they can be used in the output of the command:
+        if 'sys_id' not in params.get('sysparm_fields', ''):
+            params['sysparm_fields'] += ',sys_id'
+        if 'name' not in params.get('sysparm_fields', ''):
+            params['sysparm_fields'] += ',name'
+    if args.get('relation_limit'):
+        params['sysparm_relation_limit'] = args.get('relation_limit')
+    if args.get('relation_offset'):
+        params['sysparm_relation_offset'] = args.get('relation_offset')
 
     data = create_request_data(CREAT_RECORD_DATA_FIELDS, args)
 
@@ -330,10 +319,20 @@ def update_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     context: dict = defaultdict(list)
-    class_name = args.get('class')
-    sys_id = args.get('sys_id')
-
-    params = handle_sysparms(RECORD_PARAMS, args)
+    class_name = args.get('class', '')
+    sys_id = args.get('sys_id', '')
+    params: dict = {}
+    if args.get('fields'):
+        params['sysparm_fields'] = args.get('fields')
+        # Verify that sys_id and name were added so they can be used in the output of the command:
+        if 'sys_id' not in params.get('sysparm_fields', ''):
+            params['sysparm_fields'] += ',sys_id'
+        if 'name' not in params.get('sysparm_fields', ''):
+            params['sysparm_fields'] += ',name'
+    if args.get('relation_limit'):
+        params['sysparm_relation_limit'] = args.get('relation_limit')
+    if args.get('relation_offset'):
+        params['sysparm_relation_offset'] = args.get('relation_offset')
 
     data = create_request_data(UPDATE_RECORD_DATA_FIELDS, args)
 
@@ -361,10 +360,20 @@ def add_relation_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     context: dict = defaultdict(list)
-    class_name = args.get('class')
-    sys_id = args.get('sys_id')
-
-    params = handle_sysparms(RECORD_PARAMS, args)
+    class_name = args.get('class', '')
+    sys_id = args.get('sys_id', '')
+    params: dict = {}
+    if args.get('fields'):
+        params['sysparm_fields'] = args.get('fields')
+        # Verify that sys_id and name were added so they can be used in the output of the command:
+        if 'sys_id' not in params.get('sysparm_fields', ''):
+            params['sysparm_fields'] += ',sys_id'
+        if 'name' not in params.get('sysparm_fields', ''):
+            params['sysparm_fields'] += ',name'
+    if args.get('relation_limit'):
+        params['sysparm_relation_limit'] = args.get('relation_limit')
+    if args.get('relation_offset'):
+        params['sysparm_relation_offset'] = args.get('relation_offset')
 
     data = create_request_data(ADD_RELATION_DATA_FIELDS, args)
 
@@ -392,11 +401,21 @@ def delete_relation_command(client: Client, args: dict) -> Tuple[str, dict, Any]
         Demisto Outputs.
     """
     context: dict = defaultdict(list)
-    class_name = args.get('class')
-    sys_id = args.get('sys_id')
-    rel_sys_id = args.get('relation_sys_id')
-
-    params = handle_sysparms(RECORD_PARAMS, args)
+    class_name = args.get('class', '')
+    sys_id = args.get('sys_id', '')
+    rel_sys_id = args.get('relation_sys_id', '')
+    params: dict = {}
+    if args.get('fields'):
+        params['sysparm_fields'] = args.get('fields')
+        # Verify that sys_id and name were added so they can be used in the output of the command:
+        if 'sys_id' not in params.get('sysparm_fields', ''):
+            params['sysparm_fields'] += ',sys_id'
+        if 'name' not in params.get('sysparm_fields', ''):
+            params['sysparm_fields'] += ',name'
+    if args.get('relation_limit'):
+        params['sysparm_relation_limit'] = args.get('relation_limit')
+    if args.get('relation_offset'):
+        params['sysparm_relation_offset'] = args.get('relation_offset')
 
     response = client.delete_relation(class_name=class_name, sys_id=sys_id, rel_sys_id=rel_sys_id, params=params)
     result = response.get('result')
@@ -425,8 +444,8 @@ def test_module(client: Client) -> str:
     """
     # Notify the user that test button can't be used when using OAuth 2.0:
     if client.use_oauth:
-        return_error('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-cmdb-login command '
-                     'followed by the !servicenow-cmdb-test command to test the instance.')
+        return_error('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-cmdb-oauth-login '
+                     'command followed by the !servicenow-cmdb-oauth-test command to test the instance.')
 
     try:
         client.records_list(class_name='cmdb_ci_linux_server')
@@ -437,14 +456,17 @@ def test_module(client: Client) -> str:
 
 def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """
-    Test the instance configurations when using OAuth authentication.
+    Test the instance configurations when using OAuth authorization.
     """
+    if not client.use_oauth:
+        return_error('!servicenow-cmdb-oauth-test command should be used only when using OAuth 2.0 authorization.\n '
+                     'Please select the `Use OAuth Login` checkbox in the instance configuration before running this '
+                     'command.')
     try:
         client.records_list(class_name='cmdb_ci_linux_server')
     except Exception as e:
         raise e
-    hr = '### Instance Configured Successfully.\n' \
-         'A refresh token was generated successfully and will be used to produce new access tokens as they expire.'
+    hr = '### Instance Configured Successfully.\n'
     return hr, {}, {}
 
 
@@ -458,15 +480,18 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
     Returns:
         Demisto Outputs.
     """
-    # Verify that the user checked the `Use OAuth` checkbox:
+    # Verify that the user selected the `Use OAuth Login` checkbox:
     if not client.use_oauth:
-        return_error('Please check the `Use OAuth` checkbox before running the login command.')
+        return_error('!servicenow-cmdb-oauth-login command can be used only when using OAuth 2.0 authorization.\n '
+                     'Please select the `Use OAuth Login` checkbox in the instance configuration before running this '
+                     'command.')
 
     username = args.get('username', '')
     password = args.get('password', '')
     try:
         client.snow_client.login(username, password)
-        hr = '### Logged in successfully and an access token was generated.'
+        hr = '### Logged in successfully.\n A refresh token was saved to the integration context and will be ' \
+             'used to generate a new access token once the current one expires.'
     except Exception as e:
         return_error(f'Failed to login. Please verify that the provided username and password are correct, and that you'
                      f' entered the correct client id and client secret in the instance configuration (see ? for'
@@ -497,8 +522,8 @@ def main() -> None:
                     client_secret=client_secret, url=url, verify=verify, proxy=proxy)
 
     commands = {
-        'servicenow-cmdb-login': login_command,
-        'servicenow-cmdb-test': oauth_test_module,
+        'servicenow-cmdb-oauth-login': login_command,
+        'servicenow-cmdb-oauth-test': oauth_test_module,
         'servicenow-cmdb-records-list': records_list_command,
         'servicenow-cmdb-record-get-by-id': get_record_command,
         'servicenow-cmdb-record-create': create_record_command,
@@ -516,7 +541,7 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands[command](client, demisto.args()))  # type: ignore
         else:
             return_error('Command not found.')
 

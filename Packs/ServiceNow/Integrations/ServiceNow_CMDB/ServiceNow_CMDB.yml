@@ -14,7 +14,7 @@ configuration:
   type: 9
 - additionalinfo: Check this box if you would like to use OAuth 2.0 authentication.
     See (?) for more information.
-  display: Use OAuth
+  display: Use OAuth Login
   hidden: false
   name: use_oauth
   required: false
@@ -42,7 +42,7 @@ script:
       secret: false
     - default: false
       description: An encoded query string used to filter the results. For more information
-        about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+        about querying in ServiceNow, see https://docs.servicenow.com/bundle/paris-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       isArray: false
       name: query
       required: false
@@ -430,11 +430,11 @@ script:
     description: This function should be used once before running any command when
       using OAuth authorization.
     execution: false
-    name: servicenow-cmdb-login
+    name: servicenow-cmdb-oauth-login
   - deprecated: false
     description: Test the instance configuration when using OAuth authorization.
     execution: false
-    name: servicenow-cmdb-test
+    name: servicenow-cmdb-oauth-test
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false

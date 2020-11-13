@@ -683,6 +683,11 @@
             "timeout": 500
         },
         {
+            "integrations": "ServiceNow_CMDB",
+            "playbookID": "ServiceNow_CMDB_Test",
+            "instance_names": "snow_cmdb_basic_auth"
+        },
+        {
             "integrations": "ExtraHop v2",
             "playbookID": "ExtraHop_v2-Test"
         },
