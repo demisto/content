@@ -1,7 +1,7 @@
-id: ServiceNow_CMDB_Test
-version: -1
+id: ServiceNow_CMDB_OAuth_Test
+version: 2
 vcShouldKeepItemLegacyProdMachine: false
-name: ServiceNow_CMDB_Test
+name: ServiceNow_CMDB_OAuth_Test
 starttaskid: "0"
 tasks:
   "0":
@@ -16,7 +16,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "19"
     separatecontext: false
     view: |-
       {
@@ -53,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 545
         }
       }
     note: false
@@ -88,7 +88,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -124,7 +124,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -163,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 720
         }
       }
     note: false
@@ -201,7 +201,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 895
         }
       }
     note: false
@@ -240,7 +240,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -280,7 +280,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -315,7 +315,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -353,7 +353,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
@@ -388,7 +388,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2470
         }
       }
     note: false
@@ -412,7 +412,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -450,7 +450,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -488,7 +488,71 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: bfd9b2d3-8de6-4d5d-8c18-2f27d96b969d
+    type: regular
+    task:
+      id: bfd9b2d3-8de6-4d5d-8c18-2f27d96b969d
+      version: -1
+      name: servicenow-cmdb-oauth-login
+      description: This function should be used once before running any command when
+        using OAuth authorization.
+      script: ServiceNow_CMDB|||servicenow-cmdb-oauth-login
+      type: regular
+      iscommand: true
+      brand: ServiceNow_CMDB
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      password:
+        simple: xXavk8J@G9dr
+      username:
+        simple: admin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: be173038-d233-4d0a-8d3a-d55efb3b3e7e
+    type: regular
+    task:
+      id: be173038-d233-4d0a-8d3a-d55efb3b3e7e
+      version: -1
+      name: servicenow-cmdb-oauth-test
+      description: Test the instance configuration when using OAuth authorization.
+      script: ServiceNow_CMDB|||servicenow-cmdb-oauth-test
+      type: regular
+      iscommand: true
+      brand: ServiceNow_CMDB
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -501,7 +565,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2660,
         "width": 380,
         "x": 50,
         "y": 50
@@ -510,4 +574,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+sourceplaybookid: ServiceNow_CMDB_Test

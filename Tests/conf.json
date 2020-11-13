@@ -688,6 +688,11 @@
             "instance_names": "snow_cmdb_basic_auth"
         },
         {
+            "integrations": "ServiceNow_CMDB",
+            "playbookID": "ServiceNow_CMDB_OAuth_Test",
+            "instance_names": "snow_cmdb_oauth"
+        },
+        {
             "integrations": "ExtraHop v2",
             "playbookID": "ExtraHop_v2-Test"
         },
