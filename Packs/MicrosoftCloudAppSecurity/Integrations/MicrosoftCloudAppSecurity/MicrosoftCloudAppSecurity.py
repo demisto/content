@@ -104,7 +104,7 @@ class Client(BaseClient):
     def dismiss_bulk_alerts(self, request_data: dict):
         data = self._http_request(
             method='POST',
-            url_suffix='/alerts/dismiss_bulk/',
+            url_suffix='/alerts/close_false_positive/',
             json_data=request_data
         )
         return data
@@ -112,7 +112,7 @@ class Client(BaseClient):
     def resolve_bulk_alerts(self, request_data: dict):
         data = self._http_request(
             method='POST',
-            url_suffix='/alerts/resolve/',
+            url_suffix='/alerts/close_true_positive/',
             json_data=request_data
         )
         return data
