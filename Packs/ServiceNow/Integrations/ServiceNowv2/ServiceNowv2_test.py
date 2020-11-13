@@ -388,20 +388,17 @@ def test_not_authenticated_retry_negative(requests_mock, mocker):
 def test_oauth_authentication(mocker, requests_mock):
     """
     Given:
-     - Integration instance, once initialized with client id and client secret for OAuth2 and once without.
+     - Integration instance, initialized with the `Use OAuth Login` checkbox selected.
 
     When:
-     - Clicking on Test button (running test-module).
+     - Clicking on running the !servicenow-oauth-test command.
 
     Then:
-     - Verify that oauth authorization flow is used by checking that the get_access_token is called when client_id and
-       client_secret are given.
-     - Verify that basic authentication is used when client_id and client_secret are missing by asserting that the
-       get_access_token function is NOT called.
+     - Verify that oauth authorization flow is used by checking that the get_access_token is called.
     """
     from unittest.mock import MagicMock
     url = 'https://test.service-now.com'
-    mocker.patch.object(demisto, 'command', return_value='servicenow-test')
+    mocker.patch.object(demisto, 'command', return_value='servicenow-oauth-test')
     mocker.patch.object(ServiceNowClient, 'get_access_token')
     requests_mock.get(
         f'{url}/api/now/table/incident?sysparm_limit=1',
@@ -412,7 +409,7 @@ def test_oauth_authentication(mocker, requests_mock):
         }
     )
 
-    # Assert that get_access_token is called when `Use OAuth` checkbox is selected:
+    # Assert that get_access_token is called when `Use OAuth Login` checkbox is selected:
     mocker.patch.object(
         demisto,
         'params',
@@ -428,22 +425,6 @@ def test_oauth_authentication(mocker, requests_mock):
     ServiceNowClient.get_access_token = MagicMock()
     main()
     assert ServiceNowClient.get_access_token.called
-
-    # Assert that get_access_token is NOT called when `Use OAuth` checkbox is NOT selected:
-    mocker.patch.object(
-        demisto,
-        'params',
-        return_value={
-            'url': url,
-            'credentials': {
-                'identifier': 'identifier',
-                'password': 'password',
-            }
-        }
-    )
-    ServiceNowClient.get_access_token = MagicMock()
-    main()
-    assert not ServiceNowClient.get_access_token.called
 
 
 def test_test_module(mocker):

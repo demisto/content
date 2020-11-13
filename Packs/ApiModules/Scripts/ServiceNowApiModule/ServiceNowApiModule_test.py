@@ -33,11 +33,11 @@ def test_get_access_token(mocker):
         'refresh_token': 'refresh_token',
         'expiry_time': -1
     }
-    create_new_token_response = {
-        'access_token': 'new_token',
-        'refresh_token': 'refresh_token',
-        'expires_in': 1
-    }
+
+    from requests.models import Response
+    new_token_response = Response()
+    new_token_response._content = b'{"access_token": "new_token", "refresh_token": "refresh_token", "expires_in": 1}'
+    new_token_response.status_code = 200
 
     mocker.patch('ServiceNowApiModule.date_to_timestamp', return_value=0)
     client = ServiceNowClient(credentials=PARAMS.get('credentials', {}), use_oauth=PARAMS.get('use_oauth', False),
@@ -50,10 +50,9 @@ def test_get_access_token(mocker):
     assert client.get_access_token() == 'previous_token'
 
     # Validate that a new access token is returned when the previous has expired
-    # mocker.patch.object(demisto, 'getIntegrationContext', return_value=expired_access_token)
-    # mocker.patch.object(ServiceNowClient, '_http_request', return_value=create_new_token_response)
-    # mocker.patch('ServiceNowClient.BaseClient._http_request', return_value=create_new_token_response)
-    # assert client.get_access_token() == 'new_token'
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=expired_access_token)
+    mocker.patch.object(BaseClient, '_http_request', return_value=new_token_response)
+    assert client.get_access_token() == 'new_token'
 
     # Validate that an error is returned in case the user didn't run the login command first
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={})

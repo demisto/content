@@ -1948,8 +1948,8 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     """
     # Notify the user that test button can't be used when using OAuth 2.0:
     if client.use_oauth:
-        return_error('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-login command '
-                     'followed by the !servicenow-test command to test the instance.')
+        return_error('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login command '
+                     'followed by the !servicenow-oauth-test command to test the instance.')
 
     test_instance(client)
     return 'ok', {}, {}, True
@@ -1959,9 +1959,12 @@ def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any
     """
     Test the instance configurations when using OAuth authentication.
     """
+    if not client.use_oauth:
+        return_error('!servicenow-oauth-test command should be used only when using OAuth 2.0 authorization.\n Please '
+                     'select the `Use OAuth Login` checkbox in the instance configuration before running this command.')
+
     test_instance(client)
-    hr = '### Instance Configured Successfully.\n' \
-         'A refresh token was generated successfully and will be used to produce new access tokens as they expire.'
+    hr = '### Instance Configured Successfully.\n'
     return hr, {}, {}, True
 
 
@@ -1977,13 +1980,15 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
     """
     # Verify that the user checked the `Use OAuth` checkbox:
     if not client.use_oauth:
-        return_error('Please check the `Use OAuth` checkbox before running the login command.')
+        return_error('!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization.\n Please '
+                     'select the `Use OAuth Login` checkbox in the instance configuration before running this command.')
 
     username = args.get('username', '')
     password = args.get('password', '')
     try:
         client.snow_client.login(username, password)
-        hr = '### Logged in successfully and an access token was generated.'
+        hr = '### Logged in successfully.\n A refresh token was saved to the integration context. This token will be ' \
+             'used to generate a new access token once the current one expires.'
     except Exception as e:
         return_error(f'Failed to login. Please verify that the provided username and password are correct, and that you '
                      f'entered the correct client id and client secret in the instance configuration (see ? for'
@@ -2267,8 +2272,8 @@ def main():
                         incident_name=incident_name, oauth_params=oauth_params)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
-            'servicenow-test': oauth_test_module,
-            'servicenow-login': login_command,
+            'servicenow-oauth-test': oauth_test_module,
+            'servicenow-oauth-login': login_command,
             'servicenow-update-ticket': update_ticket_command,
             'servicenow-create-ticket': create_ticket_command,
             'servicenow-delete-ticket': delete_ticket_command,
