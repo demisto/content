@@ -1,6 +1,6 @@
-id: XM Cyber Security Score To Jira
+id: Create Jira Ticket - XM Cyber
 version: -1
-name: XM Cyber Security Score To Jira
+name: Create Jira Ticket - XM Cyber
 description: XM Cyber generates a Jira ticket based on the trend in the Security Score
 fromversion: 6.0.0
 starttaskid: "0"
