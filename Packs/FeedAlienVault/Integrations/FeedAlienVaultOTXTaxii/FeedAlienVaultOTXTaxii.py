@@ -580,7 +580,12 @@ def get_indicators_command(client: Client, args: Dict):
         str,dict,dict. The human readable, and rawJSON from the command - no context created.
     """
     limit = int(args.get('limit', 50))
-    begin_date, _ = parse_date_range(args.get('begin_date')) if args.get('begin_date') else None, None
+
+    if args.get('begin_date'):
+        begin_date, _ = parse_date_range(args.get('begin_date'))
+    else:
+        begin_date = None
+
     indicator_list, _ = fetch_indicators_command(client, limit=limit, begin_date=begin_date)
 
     human_readable = tableToMarkdown("Indicators from AlienVault OTX TAXII:", indicator_list, removeNull=True)
