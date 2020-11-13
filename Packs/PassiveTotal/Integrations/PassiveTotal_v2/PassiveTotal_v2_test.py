@@ -291,27 +291,27 @@ def test_get_components_command_domain_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_components_command
 
     # Fetch the expected response from file
-    with open('TestData/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successDomain')
     mocker_http_request.return_value = expected_res
 
     # Fetch the expected custom entry context from file
-    with open('TestData/HostAttribute/Component/component_ec.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Component/component_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successDomain')
 
     # Fetch the expected human readable details from file
-    with open('TestData/HostAttribute/Component/component_domain_hr.md') as f:
+    with open('test_data/HostAttribute/Component/component_domain_hr.md') as f:
         expected_hr = f.read()
 
     result = get_components_command(client, HOST_ATTRIBUTE_ARGS['component_by_domain'])
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ''
-    assert result.outputs_prefix == 'PassiveTotal.Component'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ''
+    assert result[0].outputs_prefix == 'PassiveTotal.Component'
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -322,27 +322,27 @@ def test_get_components_command_ip_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_components_command
 
     # Fetch the expected response from file
-    with open('TestData/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successIP')
     mocker_http_request.return_value = expected_res
 
     # Fetch the expected custom entry context from file
-    with open('TestData/HostAttribute/Component/component_ec.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Component/component_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successIP')
 
     # Fetch the expected human readable details from file
-    with open('TestData/HostAttribute/Component/component_ip_hr.md') as f:
+    with open('test_data/HostAttribute/Component/component_ip_hr.md') as f:
         expected_hr = f.read()
 
     result = get_components_command(client, HOST_ATTRIBUTE_ARGS['component_by_ip'])
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ''
-    assert result.outputs_prefix == 'PassiveTotal.Component'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ''
+    assert result[0].outputs_prefix == 'PassiveTotal.Component'
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -353,7 +353,7 @@ def test_get_components_command_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import get_components_command
 
     # Fetch the expected response from file
-    with open('TestData/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('emptyContent')
     mocker_http_request.return_value = expected_res
@@ -383,27 +383,27 @@ def test_get_trackers_command_domain_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_trackers_command
 
     # Fetch the expected response from file
-    with open('TestData/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successDomain')
     mocker_http_request.return_value = expected_res
 
     # Fetch the expected custom entry context from file
-    with open('TestData/HostAttribute/Tracker/tracker_ec.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Tracker/tracker_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successDomain')
 
     # Fetch the expected human readable details from file
-    with open('TestData/HostAttribute/Tracker/tracker_domain_hr.md') as f:
+    with open('test_data/HostAttribute/Tracker/tracker_domain_hr.md') as f:
         expected_hr = f.read()
 
     result = get_trackers_command(client, HOST_ATTRIBUTE_ARGS['tracker_by_domain'])
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ''
-    assert result.outputs_prefix == 'PassiveTotal.Tracker'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ''
+    assert result[0].outputs_prefix == 'PassiveTotal.Tracker'
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -414,27 +414,27 @@ def test_get_trackers_command_ip_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_trackers_command
 
     # Fetch the expected response from file
-    with open('TestData/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successIP')
     mocker_http_request.return_value = expected_res
 
     # Fetch the expected custom entry context from file
-    with open('TestData/HostAttribute/Tracker/tracker_ec.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Tracker/tracker_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successIP')
 
     # Fetch the expected human readable details from file
-    with open('TestData/HostAttribute/Tracker/tracker_ip_hr.md') as f:
+    with open('test_data/HostAttribute/Tracker/tracker_ip_hr.md') as f:
         expected_hr = f.read()
 
     result = get_trackers_command(client, HOST_ATTRIBUTE_ARGS['tracker_by_ip'])
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ''
-    assert result.outputs_prefix == 'PassiveTotal.Tracker'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ''
+    assert result[0].outputs_prefix == 'PassiveTotal.Tracker'
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -445,7 +445,7 @@ def test_get_trackers_command_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import get_trackers_command
 
     # Fetch the expected response from file
-    with open('TestData/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('emptyContent')
     mocker_http_request.return_value = expected_res
@@ -475,18 +475,18 @@ def test_get_host_pairs_command_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_host_pairs_command
 
     # Fetch the expected response from file
-    with open('TestData/HostAttribute/Host_Pair/host_pair_resp.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Host_Pair/host_pair_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('success')
     mocker_http_request.return_value = expected_res
 
     # Fetch the expected custom entry context from file
-    with open('TestData/HostAttribute/Host_Pair/host_pair_ec.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Host_Pair/host_pair_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('success')
 
     # Fetch the expected human readable details from file
-    with open('TestData/HostAttribute/Host_Pair/host_pair_hr.md') as f:
+    with open('test_data/HostAttribute/Host_Pair/host_pair_hr.md') as f:
         expected_hr = f.read()
 
     result = get_host_pairs_command(client, HOST_ATTRIBUTE_ARGS['host_pair'])
@@ -506,7 +506,7 @@ def test_get_host_pairs_command_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import get_host_pairs_command
 
     # Fetch the expected response from file
-    with open('TestData/HostAttribute/Host_Pair/host_pair_resp.json', encoding='utf-8') as f:
+    with open('test_data/HostAttribute/Host_Pair/host_pair_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('emptyContent')
     mocker_http_request.return_value = expected_res
@@ -613,12 +613,14 @@ def test_pt_whois_search_command_success(request_mocker, mock_cr, client):
         'query': 'test-query@test.com',
         'field': 'email'
     }
-    with open('TestData/whois_command/whois_command_response.json', 'rb') as f:
+    with open('test_data/whois_command/whois_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
-    with open('TestData/whois_command/whois_custom_context.json', 'rb') as f:
+    with open('test_data/whois_command/whois_custom_context.json', 'rb') as f:
         dummy_custom_context = json.load(f)
-    with open('TestData/whois_command/whois_command_readable_output.md', 'r') as f:
+    with open('test_data/whois_command/whois_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
+    with open('test_data/whois_command/whois_command_standard_domain_readable_output.md', 'r') as f:
+        dummy_standard_domain_readable_output = f.read()
     request_mocker.return_value = dummy_response
 
     # Execute
@@ -634,12 +636,13 @@ def test_pt_whois_search_command_success(request_mocker, mock_cr, client):
     assert readable_output == dummy_readable_output
     # asserts the custom context
     assert custom_context == dummy_custom_context
+    # assert the standard domain readable output
+    assert dummy_standard_domain_readable_output == mock_cr.call_args_list[0][1]['readable_output']
     # assert overall command output
-    mock_cr.assert_called_once_with(
+    mock_cr.assert_called_with(
         outputs_prefix='PassiveTotal.WHOIS',
         outputs_key_field='domain',
         outputs=dummy_custom_context,
-        indicators=mock.ANY,
         readable_output=dummy_readable_output,
         raw_response=dummy_response
     )
@@ -677,17 +680,17 @@ def test_ssl_cert_search_command_success(mocker_http_request, client):
     from PassiveTotal_v2 import ssl_cert_search_command
 
     # Fetching expected raw response from file
-    with open('./TestData/SSL/ssl_cert_resp.json', encoding='utf-8') as f:
+    with open('test_data/SSL/ssl_cert_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('success')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open("./TestData/SSL/ssl_cert_ec.json", encoding='utf-8') as f:
+    with open("test_data/SSL/ssl_cert_ec.json", encoding='utf-8') as f:
         expected_ec = json.load(f)
 
     # Fetching expected entry context details from file
-    with open("./TestData/SSL/ssl_cert_hr.md") as f:
+    with open("test_data/SSL/ssl_cert_hr.md") as f:
         expected_hr = f.read()
 
     result = ssl_cert_search_command(client, SSL_ARGS)
@@ -707,7 +710,7 @@ def test_ssl_cert_search_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import ssl_cert_search_command
 
     # Fetching expected raw response from file
-    with open("./TestData/SSL/ssl_cert_resp.json", encoding='utf-8') as f:
+    with open("test_data/SSL/ssl_cert_resp.json", encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
@@ -724,26 +727,26 @@ def test_get_pdns_details_command_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_pdns_details_command
 
     # Fetching expected raw response from file
-    with open('./TestData/PDNS/get_pdns_resp.json', encoding='utf-8') as f:
+    with open('test_data/PDNS/get_pdns_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('success')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open("./TestData/PDNS/get_pdns_ec.json", encoding='utf-8') as f:
+    with open("test_data/PDNS/get_pdns_ec.json", encoding='utf-8') as f:
         expected_ec = json.load(f)
 
     # Fetching expected entry context details from file
-    with open("./TestData/PDNS/get_pdns_hr.md") as f:
+    with open("test_data/PDNS/get_pdns_hr.md") as f:
         expected_hr = f.read()
 
     result = get_pdns_details_command(client, PDNS_ARGS)
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_prefix == 'PassiveTotal.PDNS(val.resolve == obj.resolve && val.recordType == obj.recordType' \
-                                    ' && val.resolveType == obj.resolveType)'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_prefix == 'PassiveTotal.PDNS(val.resolve == obj.resolve && val.recordType == obj.recordType' \
+                                       ' && val.resolveType == obj.resolveType)'
 
 
 @patch("PassiveTotal_v2.Client.http_request")
@@ -754,7 +757,7 @@ def test_get_pdns_details_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import get_pdns_details_command
 
     # Fetching expected raw response from file
-    with open("./TestData/PDNS/get_pdns_resp.json", encoding='utf-8') as f:
+    with open("test_data/PDNS/get_pdns_resp.json", encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
@@ -926,11 +929,11 @@ def test_domain_reputatoin_command_success(request_mocker, mock_cr, client):
     args = {
         'domain': 'somedomain.com'
     }
-    with open('TestData/domain_reputatoin/domain_reputatoin_response.json', 'rb') as f:
+    with open('test_data/domain_reputatoin/domain_reputatoin_response.json', 'rb') as f:
         dummy_response = json.load(f)
-    with open('TestData/domain_reputatoin/domain_reputatoin_context.json', 'rb') as f:
+    with open('test_data/domain_reputatoin/domain_reputatoin_context.json', 'rb') as f:
         dummy_custom_context = json.load(f)
-    with open('TestData/domain_reputatoin/domain_reputatoin_command_readable_output.md', 'r') as f:
+    with open('test_data/domain_reputatoin/domain_reputatoin_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
     request_mocker.return_value = dummy_response
 
@@ -942,7 +945,7 @@ def test_domain_reputatoin_command_success(request_mocker, mock_cr, client):
         is_reputation_command=True
     )
     # get custom context via dummy response
-    custom_context = get_context_for_whois_commands(domains)[1]
+    standard_commands, custom_context = get_context_for_whois_commands(domains)
     domain_reputation_command(client, args)
 
     # Assert
@@ -951,18 +954,17 @@ def test_domain_reputatoin_command_success(request_mocker, mock_cr, client):
     # asserts the custom context
     assert custom_context == dummy_custom_context
     # assert overall command output
-    mock_cr.assert_called_once_with(
+    mock_cr.assert_called_with(
         outputs_prefix='PassiveTotal.Domain',
         outputs_key_field='domain',
         outputs=dummy_custom_context,
-        indicators=mock.ANY,
         readable_output=dummy_readable_output
     )
 
 
 @patch('PassiveTotal_v2.CommandResults')
 @patch('PassiveTotal_v2.Client.http_request')
-def test_domain_reputatoin_command_empty_response(request_mocker, mock_cr, client):
+def test_domain_reputatin_command_empty_response(request_mocker, mock_cr, client):
     """
         Proper message should be display in case of empty response from whois-search API endpoint
     """
@@ -981,10 +983,9 @@ def test_domain_reputatoin_command_empty_response(request_mocker, mock_cr, clien
     domain_reputation_command(client, args)
 
     # Assert
-    mock_cr.assert_called_once_with(
+    mock_cr.assert_called_with(
         outputs_prefix='PassiveTotal.Domain',
         outputs_key_field='domain',
         outputs=[],
-        indicators=mock.ANY,
         readable_output='### Domain(s)\n**No entries.**\n'
     )
