@@ -756,7 +756,7 @@ def add_user_to_channel_command():
     team_name: str = demisto.args().get('team', '')
     member = demisto.args().get('member', '')
     user: list = get_user(member)
-    if not (user or user[0].get('id')):
+    if not (user and user[0].get('id')):
         raise ValueError(f'User {member} was not found')
 
     team_aad_id = get_team_aad_id(team_name)
@@ -1544,7 +1544,7 @@ def ring_user():
     # get user to call name and id
     username_to_call = demisto.args().get('username')
     user: list = get_user(username_to_call)
-    if not (user or user[0].get('id')):
+    if not (user and user[0].get('id')):
         raise ValueError(f'User {username_to_call} was not found')
 
     call_request_data = {
