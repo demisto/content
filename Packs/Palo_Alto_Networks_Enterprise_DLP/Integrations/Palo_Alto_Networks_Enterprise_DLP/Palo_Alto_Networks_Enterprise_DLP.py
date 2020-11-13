@@ -188,7 +188,7 @@ def parse_dlp_report(report_json):
     data_patterns = parse_data_patterns(report_json)
     results = CommandResults(
         outputs_prefix='DLP.Report',
-        outputs_key_field='DataProfile',
+        outputs_key_field='DataPatternName',
         outputs=data_patterns,
         readable_output=convert_to_human_readable(data_patterns),
         raw_response=report_json
