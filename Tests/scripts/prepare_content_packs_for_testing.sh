@@ -53,7 +53,6 @@ if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
     fi
   fi
 else
-  
   if [ -n "${NIGHTLY}" ]; then
     echo "Updating all content packs for nightly build..."
     # In content nightly we include test-pbs in the zipped packs, we override all packs and we test all packs in the repo
