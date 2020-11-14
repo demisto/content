@@ -131,7 +131,7 @@ class Client(BaseClient):
 
     def create_policy(self, name: str, kind: str, enforcement_mode: str,
                       protocol_independent: bool, parent: Optional[str],
-                      description: Optional[str], allow: bool, active: bool):
+                      description: Optional[str], allow: Optional[bool], active: Optional[bool]):
         body = {'name': name,
                 'description': description,
                 'enforcementMode': enforcement_mode,
@@ -606,11 +606,12 @@ def test_module(client: Client):
     except DemistoException as exception:
         if 'Authorization Required' or 'Authentication failed' in str(exception):
             return f'Authorization Error: please check your credentials.\n\nError:\n{exception}'
+
         if 'HTTPSConnectionPool' in str(exception):
             return f'Connection Error: please check your server ip address.\n\nError: {exception}'
-        else:
-            return (f'Something went Wrong! Please check the credentials and IP address'
-                    f' you provided\n\nError: {exception}')
+
+        return (f'Something went Wrong! Please check the credentials and IP address'
+                f' you provided\n\nError: {exception}')
     return 'ok'
 
 
@@ -713,8 +714,8 @@ def f5_list_policies_command(client: Client, self_link: str = "", kind: str = ""
 
 def f5_create_policy_command(client: Client, name: str, kind: str, enforcement_mode: str,
                              protocol_independent: bool, parent: str = None,
-                             description: str = None, allow: bool=None,
-                             active: bool= None) -> CommandResults:
+                             description: str = None, allow: bool = None,
+                             active: bool = None) -> CommandResults:
     """
     Creates a new ASM policy.
 

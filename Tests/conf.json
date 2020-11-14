@@ -3137,7 +3137,7 @@
             "fromversion": "4.5.0"
         },
 		{
-            "integrations": "F5 WAF",
+            "integrations": "F5 ASM",
             "playbookID": "playbook-F5_ASM-Test",
             "timeout": 600,
             "fromversion": "5.0.0",
@@ -3351,7 +3351,7 @@
         "SNDBOX": "Issue 28826",
         "illuminate": "Will be replaced by analyst1 - Issue 9401",
         "Workday": "License expired Issue: 29590, 29595",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
