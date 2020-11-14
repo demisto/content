@@ -500,9 +500,7 @@ script:
         It can be either 'root' or another folder.
         Passing a folder Id retrieves files from a specified folder.
         The default is 'root': retrieve content in the root of the drive.
-
         In order to get the required folder id you can use this command and leave this argument empty in order to get a list of folders that are located in the root.
-
         If your folder is nested inside another folder, pass the parent id found when running this commant without 'item_id', to this argument to get the required folder id.
       isArray: false
       name: item_id
