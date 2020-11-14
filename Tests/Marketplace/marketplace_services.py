@@ -865,17 +865,14 @@ class Pack(object):
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status, True, None
 
-    def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack, latest_version,
-                                   successful_packs_dict):
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, latest_version, successful_packs_dict):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
         The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
-        If flag override_pack is set to True, pack will forced to copy.
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
-            override_pack (bool): whether to override existing pack.
             latest_version (str): the pack's latest version.
             successful_packs_dict (dict): the dict of all packs were uploaded in prepare content step
 
@@ -895,7 +892,7 @@ class Pack(object):
             return False, False
 
         pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
-        if pack_not_uploaded_in_prepare_content and not override_pack:
+        if pack_not_uploaded_in_prepare_content:
             logging.warning(f"The following packs already exist at storage.")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True

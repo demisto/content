@@ -12,7 +12,6 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, Pa
     IGNORED_FILES, PACKS_FOLDER, PACKS_RESULTS_FILE
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, load_json, \
     get_packs_summary
-from demisto_sdk.commands.common.tools import str2bool
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_]+/\d+\.\d+\.\d+/'
                               r'[A-Za-z0-9-_]+\.zip$)')
@@ -277,8 +276,6 @@ def options_handler():
                         help="CircleCi build number (will be used as hash revision at index file)", required=True)
     parser.add_argument('-c', '--circle_branch',
                         help="CircleCi branch of current build", required=True)
-    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        type=str2bool, default=False, required=True)
     parser.add_argument('-pbp', '--production_base_path', help="Production base path of the directory to upload to.",
                         required=False)
     # disable-secrets-detection-end
@@ -295,7 +292,6 @@ def main():
     service_account = options.service_account
     build_number = options.ci_build_number
     circle_branch = options.circle_branch
-    override_all_packs = options.override_all_packs
     production_base_path = options.production_base_path
     target_packs = options.pack_names
 
@@ -360,7 +356,7 @@ def main():
             continue
 
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
-                                                                              override_all_packs, pack.latest_version,
+                                                                              pack.latest_version,
                                                                               pc_successful_packs_dict)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
