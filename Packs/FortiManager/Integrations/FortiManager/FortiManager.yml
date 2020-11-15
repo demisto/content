@@ -28,13 +28,14 @@ configuration:
   type: 8
 description: FortiManager is a single console central management system that manages
   Fortinet devices.
-display: FortiManager (Beta)
+display: FortiManager
 name: FortiManager
 script:
   commands:
   - arguments:
     - default: false
-      description: The FortiManager Administrative Domain (ADOM) from which to fetch the devices. Leave empty to use the instance ADOM.
+      description: The FortiManager Administrative Domain (ADOM) from which to fetch
+        the devices. Leave empty to use the instance ADOM.
       isArray: false
       name: adom
       required: false
@@ -465,8 +466,8 @@ script:
       description: The type of address.
       type: String
     - contextPath: FortiManager.Address.uuid
-      description: Universally Unique Identifier (UUID). This is automatically assigned but
-        can be manually reset.
+      description: Universally Unique Identifier (UUID). This is automatically assigned
+        but can be manually reset.
       type: String
     - contextPath: FortiManager.Address.visibility
       description: Enable/disable address visibility in the GUI.
@@ -493,7 +494,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of address. Possible values are: "ipmask", "iprange", "fqdn", "wildcard", "geography", "wildcard-fqdn", and "dynamic".'
+      description: 'The type of address. Possible values are: "ipmask", "iprange",
+        "fqdn", "wildcard", "geography", "wildcard-fqdn", and "dynamic".'
       isArray: false
       name: type
       predefined:
@@ -525,8 +527,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The fully qualified domain name (fqdn) address. Required for fqdn address
-        type.
+      description: The fully qualified domain name (fqdn) address. Required for fqdn
+        address type.
       isArray: false
       name: fqdn
       required: false
@@ -560,7 +562,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The address SDN. Required for dynamic address type. Possible values are: "aci", "aws", "nsx", "nuage", and "azure".'
+      description: 'The address SDN. Required for dynamic address type. Possible values
+        are: "aci", "aws", "nsx", "nuage", and "azure".'
       isArray: false
       name: sdn
       predefined:
@@ -579,15 +582,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The fully qualified domain name (fqdn) with wildcard characters. Required
-        for wildcard-fqdn address type.
+      description: The fully qualified domain name (fqdn) with wildcard characters.
+        Required for wildcard-fqdn address type.
       isArray: false
       name: wildcard_fqdn
       required: false
       secret: false
     - default: false
-      description: 'The two letter abbreviation representing a country associated with an IP address (for
-        example: "us"). Required for geography address type. '
+      description: 'The two letter abbreviation representing a country associated
+        with an IP address (for example: "us"). Required for geography address type. '
       isArray: false
       name: country
       required: false
@@ -612,7 +615,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of address. Possible values are: "ipmask", "iprange", "fqdn", "wildcard", "geography", "wildcard-fqdn", and "dynamic".'
+      description: 'Type of address. Possible values are: "ipmask", "iprange", "fqdn",
+        "wildcard", "geography", "wildcard-fqdn", and "dynamic".'
       isArray: false
       name: type
       predefined:
@@ -644,8 +648,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The fully qualified domain name (fqdn) address. Required for fqdn address
-        type.
+      description: The fully qualified domain name (fqdn) address. Required for fqdn
+        address type.
       isArray: false
       name: fqdn
       required: false
@@ -679,7 +683,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The address SDN. Required for dynamic address type. Possible values are: "aci", "aws", "nsx", "nuage", and "azure".'
+      description: 'The address SDN. Required for dynamic address type. Possible values
+        are: "aci", "aws", "nsx", "nuage", and "azure".'
       isArray: false
       name: sdn
       predefined:
@@ -698,15 +703,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The fully qualified domain name (fqdn) with wildcard characters. Required
-        for wildcard-fqdn address type.
+      description: The fully qualified domain name (fqdn) with wildcard characters.
+        Required for wildcard-fqdn address type.
       isArray: false
       name: wildcard_fqdn
       required: false
       secret: false
     - default: false
-      description: 'The two letter abbreviation representing a country associated with an IP address (for
-        example: "us"). Required for geography address type. '
+      description: 'The two letter abbreviation representing a country associated
+        with an IP address (for example: "us"). Required for geography address type. '
       isArray: false
       name: country
       required: false
@@ -838,8 +843,8 @@ script:
       description: The tags.
       type: String
     - contextPath: FortiManager.AddressGroup.uuid
-      description: Universally Unique Identifier (UUID). This is automatically assigned but
-        can be manually reset.
+      description: Universally Unique Identifier (UUID). This is automatically assigned
+        but can be manually reset.
       type: String
     - contextPath: FortiManager.AddressGroup.visibility
       description: Enable/disable address visibility in the GUI.
@@ -859,8 +864,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the address or address group objects contained within
-        the group.
+      description: A comma-separated list of the address or address group objects
+        contained within the group.
       isArray: false
       name: member
       required: true
@@ -890,8 +895,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the address or address group objects contained within
-        the group.
+      description: A comma-separated list of the address or address group objects
+        contained within the group.
       isArray: false
       name: member
       required: false
@@ -1044,7 +1049,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of service objects to be contained within the group.
+      description: A comma-separated list of service objects to be contained within
+        the group.
       isArray: false
       name: member
       required: true
@@ -1084,7 +1090,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-sperated list of service objects to be contained within the group.
+      description: A comma-sperated list of service objects to be contained within
+        the group.
       isArray: false
       name: member
       required: false
@@ -1134,8 +1141,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of a specific custom service to fetch.  If not specified, will
-        get all custom services.
+      description: Name of a specific custom service to fetch.  If not specified,
+        will get all custom services.
       isArray: false
       name: custom_service
       required: false
@@ -1211,7 +1218,8 @@ script:
       description: Multiple TCP port ranges.
       type: String
     - contextPath: FortiManager.CustomService.tcp-timewait-timer
-      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec. Default is 0.).
+      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec.
+        Default is 0.).
       type: Number
     - contextPath: FortiManager.CustomService.udp-idle-timer
       description: UDP half close timeout (0 - 86400 sec. Default is 0.).
@@ -1245,7 +1253,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: 'Application service type. Possible values are: "app-id", "disable", and "app-category". Default is "disable".'
+      description: 'Application service type. Possible values are: "app-id", "disable",
+        and "app-category". Default is "disable".'
       isArray: false
       name: app_service_type
       predefined:
@@ -1268,7 +1277,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Configure the type of ICMP error message verification. Possible values are: "disable", "default", and "strict".'
+      description: 'Configure the type of ICMP error message verification. Possible
+        values are: "disable", "default", and "strict".'
       isArray: false
       name: check_reset_range
       predefined:
@@ -1337,7 +1347,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Protocol type based on IANA numbers. Possible values are: "ICMP", "IP", "TCP/UDP/SCTP", "ICMP6", "HTTP", "FTP", "CONNECT", "SOCKS", "ALL", "SOCKS-TCP", and "SOCKS-UDP".'
+      description: 'Protocol type based on IANA numbers. Possible values are: "ICMP",
+        "IP", "TCP/UDP/SCTP", "ICMP6", "HTTP", "FTP", "CONNECT", "SOCKS", "ALL", "SOCKS-TCP",
+        and "SOCKS-UDP".'
       isArray: false
       name: protocol
       predefined:
@@ -1401,7 +1413,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec). Default is 0.
+      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec).
+        Default is 0.
       isArray: false
       name: tcp_timewait_timer
       required: false
@@ -1446,7 +1459,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: disable
-      description: 'Application service type. Possible values are: "app-id", "disable", and "app-category". Default is "disable".'
+      description: 'Application service type. Possible values are: "app-id", "disable",
+        and "app-category". Default is "disable".'
       isArray: false
       name: app_service_type
       predefined:
@@ -1469,7 +1483,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Configure the type of ICMP error message verification. Possible values are: "disable", "default", and "strict".'
+      description: 'Configure the type of ICMP error message verification. Possible
+        values are: "disable", "default", and "strict".'
       isArray: false
       name: check_reset_range
       predefined:
@@ -1538,7 +1553,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Protocol type based on IANA numbers. Possible values are: "ICMP", "IP", "TCP/UDP/SCTP", "ICMP6", "HTTP", "FTP", "CONNECT", "SOCKS", "ALL", "SOCKS-TCP", and "SOCKS-UDP".'
+      description: 'Protocol type based on IANA numbers. Possible values are: "ICMP",
+        "IP", "TCP/UDP/SCTP", "ICMP6", "HTTP", "FTP", "CONNECT", "SOCKS", "ALL", "SOCKS-TCP",
+        and "SOCKS-UDP".'
       isArray: false
       name: protocol
       predefined:
@@ -1602,7 +1619,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec). Default is 0.
+      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec).
+        Default is 0.
       isArray: false
       name: tcp_timewait_timer
       required: false
@@ -1789,7 +1807,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: proxy
-      description: 'Package inspection mode. Possible values are: "proxy" and "flow". Default is "proxy".'
+      description: 'Package inspection mode. Possible values are: "proxy" and "flow".
+        Default is "proxy".'
       isArray: false
       name: inspection_mode
       predefined:
@@ -1800,7 +1819,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: profile-based
-      description: 'Package NGFW mode. Possible values are: "profile-based" and "policy-based". Default is "profile-based".'
+      description: 'Package NGFW mode. Possible values are: "profile-based" and "policy-based".
+        Default is "profile-based".'
       isArray: false
       name: ngfw_mode
       predefined:
@@ -1965,8 +1985,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: An ID for the specific policy to fetch. If not specified, will get
-        all policies.
+      description: An ID for the specific policy to fetch. If not specified, will
+        get all policies.
       isArray: false
       name: policy_id
       required: false
@@ -2103,8 +2123,8 @@ script:
       description: Name of identity-based routing rule.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.inbound
-      description: 'Policy-based IPsec VPN. Only traffic from the remote network can
-        initiate a VPN.'
+      description: Policy-based IPsec VPN. Only traffic from the remote network can
+        initiate a VPN.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service
       description: Enable/disable use of internet services for this policy. If enabled,
@@ -2117,8 +2137,8 @@ script:
       description: Internet service ID.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-negate
-      description: When enabled, internet service specifies what the service must NOT
-        be.
+      description: When enabled, internet service specifies what the service must
+        NOT be.
       type: String
     - contextPath: FortiManager.PolicyPackage.Policy.internet-service-src
       description: Enable/disable use of internet services in source for this policy.
@@ -2411,7 +2431,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The policy action. Possible values are: "deny", "accept", "ipsec", and "ssl-vpn".'
+      description: 'The policy action. Possible values are: "deny", "accept", "ipsec",
+        and "ssl-vpn".'
       isArray: false
       name: action
       predefined:
@@ -2488,7 +2509,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of additional params and their values. For example: Field1=Value1,Field2=Value2.'
+      description: 'A comma-separated list of additional params and their values.
+        For example: Field1=Value1,Field2=Value2.'
       isArray: false
       name: additional_params
       required: false
@@ -2564,7 +2586,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The policy action. Possible values are: "deny", "accept", "ipsec", and "ssl-vpn".'
+      description: 'The policy action. Possible values are: "deny", "accept", "ipsec",
+        and "ssl-vpn".'
       isArray: false
       name: action
       predefined:
@@ -2639,7 +2662,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of additional params and their values. exmaple: Field1=Value1,Field2=Value2.'
+      description: 'A comma-separated list of additional params and their values.
+        exmaple: Field1=Value1,Field2=Value2.'
       isArray: false
       name: additional_params
       required: false
@@ -2734,13 +2758,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The policy we want to move.
+      description: The ID of the policy we want to move.
       isArray: false
       name: policy
       required: true
       secret: false
     - default: false
-      description: The target policy by which we want to move the policy.
+      description: The ID of the target policy by which we want to move the policy.
       isArray: false
       name: target
       required: true
@@ -2748,7 +2772,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: before
-      description: 'Whether to move the policy before or after the target policy. Possible values are: "before" and "after". Default is "before".'
+      description: 'Whether to move the policy before or after the target policy.
+        Possible values are: "before" and "after". Default is "before".'
       isArray: false
       name: option
       predefined:
@@ -2987,8 +3012,7 @@ script:
     - contextPath: FortiManager.Installation.user
       description: The installation task user.
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
-  feed: false
+  dockerimage: demisto/python3:3.8.6.13358
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -2999,4 +3023,3 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
-beta: true

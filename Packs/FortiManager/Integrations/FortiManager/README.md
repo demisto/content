@@ -258,8 +258,8 @@ List all devices in the ADOM instance.
 >### ADOM adom/root Devices
 >|Name|Ip|Hostname|Os Type|Adm Usr|Vdom|Ha Mode|
 >|---|---|---|---|---|---|---|
->| device_name | 1.2.3.4 |  | 0 |  | {'comments': None, 'devid': 'device_name', 'ext_flags': 1, 'flags': 0, 'name': 'root', 'node_flags': 0, 'oid': 3, 'opmode': 1, 'rtm_prof_id': 0, 'status': None, 'tab_status': None, 'vpn_id': 0},<br/>{'comments': None, 'devid': 'device_name', 'ext_flags': 0, 'flags': 0, 'name': 'mgmt-vdom', 'node_flags': 0, 'oid': 101, 'opmode': 1, 'rtm_prof_id': 0, 'status': None, 'tab_status': None, 'vpn_id': 0} | 0 |
->| Another_device | 2.3.4.5 | Another_device | 4 | admin | {'comments': None, 'devid': 'Another_device', 'ext_flags': 1, 'flags': 0, 'name': 'root', 'node_flags': 0, 'oid': 3, 'opmode': 1, 'rtm_prof_id': 0, 'status': None, 'tab_status': None, 'vpn_id': 0} | 0 |
+>| device_name | 1.2.3.4 |  | 0 |  | root, mgmt-vdom | 0 |
+>| Another_device | 2.3.4.5 | Another_device | 4 | admin | root | 0 |
 
 ### fortimanager-device-groups-list
 ***
@@ -1813,8 +1813,8 @@ Move a policy in the package.
 | --- | --- | --- |
 | adom | The ADOM from which to move the policy. Leave empty to use the default integration ADOM. | Optional | 
 | package | The policy package from which we want to move the policy. | Required | 
-| policy | The policy we want to move. | Required | 
-| target | The target policy by which we want to move the policy. | Required | 
+| policy | The ID of the policy we want to move. | Required | 
+| target | The ID of the target policy by which we want to move the policy. | Required | 
 | option | Whether to move the policy before or after the target policy. Possible values are: "before" and "after". Default is "before". | Required | 
 
 

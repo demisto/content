@@ -22,6 +22,13 @@ ADDRESS_TYPE_MAPPING = {
     6: 'wildcard-fqdn'
 }
 
+PROTOCOL_MAPPING = {
+    1: 'ICMP',
+    2: 'IP',
+    5: 'TCP/UDP/SCTP',
+    6: 'ICMP6',
+}
+
 ''' CLIENT CLASS '''
 
 
@@ -152,11 +159,30 @@ def list_adom_devices_command(client, args):
 
     headers = ['name', 'ip', 'hostname', 'os_type', 'adm_usr', 'app_ver', 'vdom', 'ha_mode']
 
+    # Only show vdom names in human readable
+    hr_devices_data = devices_data
+
+    if type(devices_data) == list:
+        for device in devices_data:
+            vdom_names = []
+            for vdom in device.get('vdom', []):
+                if vdom.get('name'):
+                    vdom_names.append(vdom.get('name'))
+            hr_devices_data[devices_data.index(device)]['vdom'] = vdom_names
+
+    else:
+        vdom_names = []
+        for vdom in devices_data.get('vdom', []):
+            if vdom.get('name'):
+                vdom_names.append(vdom.get('name'))
+
+        hr_devices_data['vdom'] = vdom_names
+
     return CommandResults(
         outputs_prefix='FortiManager.Device',
         outputs_key_field='name',
         outputs=devices_data,
-        readable_output=tableToMarkdown(f"ADOM {get_global_or_adom(client, args)} Devices", devices_data,
+        readable_output=tableToMarkdown(f"ADOM {get_global_or_adom(client, args)} Devices", hr_devices_data,
                                         removeNull=True, headerTransform=string_to_table_header, headers=headers),
         raw_response=devices_data,
     )
@@ -185,7 +211,8 @@ def list_firewall_addresses_command(client, args):
                                                              f"{get_specific_entity(args.get('address'))}",
                                                       range_info=get_range_for_list_command(args))
 
-    headers = ['name', 'type', 'subnet', 'start-ip', 'end-ip', 'fqdkn', 'wildcard', 'country', 'wildcard-fqdn', 'sdn']
+    headers = ['name', 'type', 'subnet', 'start-ip', 'end-ip', 'fqdkn', 'wildcard', 'country', 'wildcard-fqdn', 'sdn',
+               'comment'] if not args.get('address') else None
 
     # change address type from number to text
     if type(firewall_addresses) == list:
@@ -233,7 +260,7 @@ def list_address_groups_command(client, args):
                                                                   f"/obj/firewall/addrgrp{address_group}",
                                                            range_info=get_range_for_list_command(args))
 
-    headers = ['name', 'member', 'tagging', 'allow-routing']
+    headers = ['name', 'member', 'tagging', 'allow-routing', 'comment'] if not args.get('address_group') else None
 
     return CommandResults(
         outputs_prefix='FortiManager.AddressGroup',
@@ -294,7 +321,7 @@ def list_service_groups_command(client, args):
                                                          f"{get_specific_entity(args.get('service_group'))}",
                                                   range_info=get_range_for_list_command(args))
 
-    headers = ['name', 'member', 'proxy', 'comment']
+    headers = ['name', 'member', 'proxy', 'comment'] if not args.get('service_group') else None
 
     return CommandResults(
         outputs_prefix='FortiManager.ServiceGroup',
@@ -337,7 +364,15 @@ def list_custom_service_command(client, args):
                                                           f"{get_specific_entity(args.get('custom_service'))}",
                                                    range_info=get_range_for_list_command(args))
 
-    headers = ['name', 'category', 'protocol', 'iprange', 'fqdn']
+    headers = ['name', 'category', 'protocol', 'iprange', 'fqdn', 'comment'] if not args.get('custom_service') else None
+
+    # change service protocal and category from number to text
+    if type(custom_services) == list:
+        for service in custom_services:
+            service['protocol'] = PROTOCOL_MAPPING.get(service['protocol'], service['protocol'])
+
+    else:
+        custom_services['protocol'] = PROTOCOL_MAPPING.get(custom_services['protocol'], custom_services['protocol'])
 
     return CommandResults(
         outputs_prefix='FortiManager.CustomService',
@@ -378,9 +413,9 @@ def list_policy_packages_command(client, args):
         policy_packages = policy_packages[from_val:]
 
     else:
-        policy_packages = policy_packages[from_val:int(to_val) + 1]
+        policy_packages = policy_packages[from_val:int(to_val)]
 
-    headers = ['name', 'obj_ver', 'type', 'scope_member']
+    headers = ['name', 'obj_ver', 'type', 'scope_member'] if not args.get('policy_package') else None
 
     return CommandResults(
         outputs_prefix='FortiManager.PolicyPackage',
