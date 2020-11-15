@@ -146,6 +146,13 @@ Describe 'Check-UtilityFunctions' {
         It "Check with a list of hashtables"{
              $HashTableWithOneEntry | TableToMarkdown | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n"
         }
+        It "Check with False boolean that is not $null" {
+            @{test=$false} | TableToMarkdown | Should -Be "| test`n| ---`n| False`n"
+        }
+        It "Check with PSObject that nested list" {
+            $OneElementObject += New-Object PSObject -Property @{Index=1;Name=@('test1';'test2')}
+            $OneElementObject | TableToMarkdown | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n| 1 | \[`"test1`",`"test2`"\]`n"
+        }
         
     }
     Context "Test stringEscapeMD" {
