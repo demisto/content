@@ -148,7 +148,6 @@ def handle_exception(user_profile, e, action):
             error_code = resp.get('errorCode')
             error_message = get_error_details(resp)
         except ValueError:
-            resp = e.res.text
             error_code = e.res.status_code
             error_message = str(e)
     else:
@@ -168,8 +167,7 @@ def handle_exception(user_profile, e, action):
                                 success=False,
                                 return_error=should_return_error,
                                 error_code=error_code,
-                                error_message=error_message,
-                                details=resp)
+                                error_message=error_message)
 
 
 def get_error_details(res):
