@@ -2425,7 +2425,8 @@ def retrieve_file_details_command(client: Client, args):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': {},
-        'HumanReadable': f'### Action id : {action_id} \nRetrieved {retrived_files_count} files from {endpoints_count} endpoints. ',
+        'HumanReadable': f'### Action id : {action_id} \nRetrieved {retrived_files_count} files from {endpoints_count} '
+                         f'endpoints. ',
         'ReadableContentsFormat': formats['markdown'],
         'EntryContext': {}
     }

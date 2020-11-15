@@ -1912,8 +1912,8 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: "true"
-      description: If set to true the retrieved files will be saved in the war room otherwise a link to download the file 
-      will be retrieved. Default value - true.
+      description: "If set to true the retrieved files will be saved in the war room otherwise a link to download the
+      file will be retrieved. Default value - true."
       name: attach_files
       predefined:
       - "true"
