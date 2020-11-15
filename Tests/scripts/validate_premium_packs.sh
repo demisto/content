@@ -26,7 +26,7 @@ echo "Auth loaded successfully."
 
 GCS_BUILD_BUCKET="marketplace-ci-build"
 BUILD_BUCKET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM"
-TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
+TARGET_PATH="$BUILD_BUCKET_PATH/content/packs/index.zip"
 INDEX_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
@@ -49,8 +49,10 @@ else
 fi
 echo "Finished copying successfully."
 
+# TODO: INDEX_PATH is invalid. look where you can get the zipped file from.
 if [ ! -f "./$INDEX_PATH" ]; then
   echo "Could not find file ./$INDEX_PATH"
+  exit 1
 else
   echo "Testing premium packs in against index file ./$INDEX_PATH"
   python3 ./Tests/scripts/validate_premium_packs.py --index_zip_path ./$INDEX_PATH -s "$SECRET_CONF_PATH" --ami_env "$1"
