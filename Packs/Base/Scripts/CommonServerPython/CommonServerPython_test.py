@@ -1114,7 +1114,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1198,7 +1199,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1227,7 +1229,8 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1259,7 +1262,8 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1403,7 +1407,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_indicator_timeline_with_list_of_indicators(self):
@@ -1538,6 +1543,33 @@ class TestCommandResults:
                 indicators=[ip]
             )
         assert e.value.args[0] == 'indicators is DEPRECATED, use only indicator'
+
+    def test_indicator_with_no_auto_extract(self):
+        """
+       Given:
+           - a list of an indicator
+           - ignore_auto_extract set to True
+       When
+           - creating a CommandResults object with an indicator
+           - using Ignore Auto Extract
+
+       Then
+           - the IgnoreAutoExtract field is set to True
+       """
+        from CommonServerPython import CommandResults
+
+        indicators = ['8.8.8.8']
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=None,
+            ignore_auto_extract=True
+        )
+
+        assert results.to_context().get('IgnoreAutoExtract') == True
 
 
 class TestBaseClient:

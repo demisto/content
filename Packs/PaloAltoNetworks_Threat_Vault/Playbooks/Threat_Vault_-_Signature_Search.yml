@@ -1,0 +1,482 @@
+id: PANW Threat Vault - Signature Search
+version: -1
+name: PANW Threat Vault - Signature Search
+fromversion: 5.0.0
+description: Initiates a Signature Search in Palo Alto Networks threat Vault.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 856560a3-41b9-4425-89cc-96d007af0fab
+    type: start
+    task:
+      id: 856560a3-41b9-4425-89cc-96d007af0fab
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e1fd0e2d-a2f8-4aa5-8f34-6f2a151146aa
+    type: condition
+    task:
+      id: e1fd0e2d-a2f8-4aa5-8f34-6f2a151146aa
+      version: -1
+      name: Is Threat Vault enabled?
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto Networks Threat Vault
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b63ea57d-f681-4779-84da-1d02b9cf4950
+    type: regular
+    task:
+      id: b63ea57d-f681-4779-84da-1d02b9cf4950
+      version: -1
+      name: Initiate antivirus signature search
+      description: Initiate antivirus signature search.
+      script: '|||threatvault-antivirus-signature-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      from:
+        complex:
+          root: inputs.from
+      signature_name:
+        complex:
+          root: inputs.signature_name
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 63360ee7-19a6-4c2c-8f7d-8d154870d257
+    type: playbook
+    task:
+      id: 63360ee7-19a6-4c2c-8f7d-8d154870d257
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: search_type
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.search_type
+      Ids:
+        complex:
+          root: ThreatVault.Search
+          accessor: search_request_id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: search_request_id
+      PollingCommandName:
+        simple: threatvault-signature-search-results
+      Timeout:
+        simple: "15"
+      dt:
+        simple: ThreatVault.Search(val.status != 'completed').search_request_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d6ff5b12-fb03-4985-8deb-9a02e1d40b9a
+    type: title
+    task:
+      id: d6ff5b12-fb03-4985-8deb-9a02e1d40b9a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 816f327b-ee10-45e2-8ed7-120e5c2c830f
+    type: regular
+    task:
+      id: 816f327b-ee10-45e2-8ed7-120e5c2c830f
+      version: -1
+      name: Get signature search results
+      description: Initiate anti spyware signature search.
+      script: '|||threatvault-signature-search-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      search_request_id:
+        complex:
+          root: ThreatVault.Search
+          accessor: search_request_id
+      search_type:
+        complex:
+          root: inputs.search_type
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 26619887-5c49-4908-89b2-2e1b93f42365
+    type: condition
+    task:
+      id: 26619887-5c49-4908-89b2-2e1b93f42365
+      version: -1
+      name: Which search type to perform?
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      anti spyware search:
+      - "8"
+      antivirus search:
+      - "2"
+      dns search:
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: antivirus search
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.search_type
+            iscontext: true
+          right:
+            value:
+              simple: panav
+    - label: anti spyware search
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.search_type
+            iscontext: true
+          right:
+            value:
+              simple: ips
+    - label: dns search
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.search_type
+            iscontext: true
+          right:
+            value:
+              simple: dns
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f80dec56-3643-441f-8bf8-e661ac2b16f9
+    type: regular
+    task:
+      id: f80dec56-3643-441f-8bf8-e661ac2b16f9
+      version: -1
+      name: Initiate anti spyware signature search
+      description: Initiate anti spyware signature search.
+      script: '|||threatvault-antispyware-signature-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      cve:
+        complex:
+          root: inputs.cve
+      from:
+        complex:
+          root: inputs.from
+      signature_name:
+        complex:
+          root: inputs.signature_name
+      to:
+        complex:
+          root: inputs.to
+      vendor:
+        complex:
+          root: inputs.vendor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 5dc89c61-e06a-4b74-84fe-4577ec191add
+    type: regular
+    task:
+      id: 5dc89c61-e06a-4b74-84fe-4577ec191add
+      version: -1
+      name: Initiate dns signature search
+      description: Initiate DNS signature search.
+      script: '|||threatvault-dns-signature-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain_name:
+        complex:
+          root: inputs.domain_name
+      from:
+        complex:
+          root: inputs.from
+      signature_name:
+        complex:
+          root: inputs.signature_name
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: signature_name
+  value: {}
+  required: false
+  description: Signature name to search.
+  playbookInputQuery:
+- key: domain_name
+  value: {}
+  required: false
+  description: Domain name to search.
+  playbookInputQuery:
+- key: vendor
+  value: {}
+  required: false
+  description: Vendor name to search.
+  playbookInputQuery:
+- key: cve
+  value: {}
+  required: false
+  description: CVE name to search.
+  playbookInputQuery:
+- key: from
+  value:
+    simple: "0"
+  required: false
+  description: From which signature to return results(used for paging). Default is
+    0.
+  playbookInputQuery:
+- key: to
+  value:
+    simple: "10"
+  required: false
+  description: To which signature to return results. Default is from plus 10.
+  playbookInputQuery:
+- key: search_type
+  value: {}
+  required: true
+  description: Search type. ips for antispyware, dns for DNS and panav for antivirus.
+  playbookInputQuery:
+outputs:
+- contextPath: ThreatVault.Search.search_request_id
+  description: Search request ID.
+  type: String
+- contextPath: ThreatVault.Search.status
+  description: Search status.
+  type: String
+- contextPath: ThreatVault.Search.page_count
+  description: How many results returned in this specific search.
+  type: Number
+- contextPath: ThreatVault.Search.total_count
+  description: How many results are available for this specific search.
+  type: Number
+- contextPath: ThreatVault.Search.search_type
+  description: Search type. can be wither ips, dns or panav.
+  type: String
+- contextPath: ThreatVault.Search.signatures
+  description: A list of all the found signatures for this specific search.
+  type: Unknown
+tests:
+- PANW Threat Vault - Signature Search - Test
