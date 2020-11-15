@@ -1,9 +1,9 @@
 This integration supports both Palo Alto Networks Panorama and Palo Alto Networks Firewall. You can create separate instances of each integration, and they are not necessarily related or dependent on one another.
-Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
-This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama
+The integration manages Palo Alto Networks Firewall and Panorama. For more information see the Panorama documentation.
+This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama.
 
 ## Panorama Playbook
-* **PanoramaCommitConfiguration** : Based on the playbook input, the Playbook will commit the configuration to Palo Alto Firewall, or push the configuration from Panorama to predefined device groups of firewalls. The integration is available from Demisto v3.0, but playbook uses the GenericPooling sub-playbook, which is only available from Demisto v4.0.
+* **PanoramaCommitConfiguration** : Based on the playbook input, the playbook will commit the configuration to Palo Alto Firewall, or push the configuration from Panorama to predefined device groups of firewalls. The integration is available from Demisto v3.0, but the playbook uses the GenericPooling sub-playbook, which is only available from Demisto v4.0.
 * **Panorama Query Logs** : Wraps several commands (listed below) with genericPolling to enable a complete flow to query the following log types: traffic, threat, URL, data-filtering, and Wildfire.
    * [panorama-query-logs](#panorama-query-logs)
    * [panorama-check-logs-status](#panorama-check-logs-status)
@@ -16,7 +16,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 * Creating and updating address objects, address-groups, custom URL categories, URL filtering objects.
 * Get URL Filtering category information from Palo Alto - Request Change is a known Palo Alto limitation.
 * Add URL filtering objects including overrides to Palo Alto Panorama and Firewall.
-* Committing configuration to Palo Alto FW and to Panorama, and pushing configuration from Panorama to Pre-Defined Device-Groups of Firewalls.
+* Committing configuration to Palo Alto Firewall and to Panorama, and pushing configuration from Panorama to Pre-Defined Device-Groups of Firewalls.
 * Block IP addresses using registered IP tags from PAN-OS without committing the PAN-OS instance. First you have to create a registered IP tag, DAG, and security rule, and commit the instance. You can then register additional IP addresses to the tag without committing the instance.
 
    i. Create a registered IP tag and add the necessary IP addresses by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command.
@@ -27,10 +27,10 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    
    iv. Commit the PAN-OS instance by running the PanoramaCommitConfiguration playbook.
    
-   v. You can now register IP addresses to, or unregister IP addresses from, the IP tag by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command, or [panorama-unregister-ip-tag command](#panorama-unregister-ip-tag), respectively, without committing the PAN-OS instance.
+   v. You can now register IP addresses to, or unregister IP addresses from the IP tag by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command, or [panorama-unregister-ip-tag command](#panorama-unregister-ip-tag), respectively, without committing the PAN-OS instance.
 
 * Create a predefined security profiles with the best practices by Palo Alto Networks.
-* Get security profiles best practices as defined by Palo Alto Networks. For more inforamtion about Palo Alto Networks best practices, visit [Palo Alto Networks best practices](https://docs.paloaltonetworks.com/best-practices/9-0/internet-gateway-best-practices/best-practice-internet-gateway-security-policy/create-best-practice-security-profiles).
+* Get security profiles best practices as defined by Palo Alto Networks. For more information about Palo Alto Networks best practices, visit [Palo Alto Networks best practices](https://docs.paloaltonetworks.com/best-practices/9-0/internet-gateway-best-practices/best-practice-internet-gateway-security-policy/create-best-practice-security-profiles).
 * Apply security profiles to specific rule.
 * Set default categories to block in the URL filtering profile.
 * Enforce WildFire best practice.
@@ -41,7 +41,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 
 ## Known Limitations
 * Maximum commit queue length is 3. Running numerous Panorama commands simultaneously might cause errors.
-* After you run `panorama-create-` commands and the object is not committed, then the `panorama-edit` commands or `panorama-get` commands might not run correctly.
+* After you run the ***panorama-create-*** commands and the object is not committed, then the ***panorama-edit*** commands or ***panorama-get*** commands might not run correctly.
 * URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the https://urlfiltering.paloaltonetworks.com website.
 * If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute certain commands.
    * [panorama-get-url-category](#panorama-get-url-category)
@@ -62,7 +62,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | server | Server URL \(e.g., https://192.168.0.1\) | True |
-| port | Port \(e.g 443\) | False |
+| port | Port \(e.g., 443\) | False |
 | key | API Key | True |
 | device_group | Device group - Panorama instances only \(write shared for Shared location\) | False |
 | vsys | Vsys - Firewall instances only | False |
@@ -77,7 +77,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Run any command supported in the Panorama API: panorama](#panorama)
@@ -192,7 +192,7 @@ Run any command supported in the API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. | Optional | 
+| action | Action to be taken. Possible values are: "show", "get", "set", "edit", "delete", "rename", "clone", "move", "override", "multi-move", "multi-clone", and "complete". | Optional | 
 | category | Category parameter. For example, when exporting a configuration file, use "category=configuration". | Optional | 
 | cmd | Specifies the xml structure that defines the command. Used for operation commands. | Optional | 
 | command | Run a command. For example, command =&lt;show&gt;&lt;arp&gt;&lt;entry name='all'/&gt;&lt;/arp&gt;&lt;/show&gt; | Optional | 
@@ -933,7 +933,7 @@ Creates a service.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name for the new service. | Required | 
-| protocol | Protocol for the new service. | Required | 
+| protocol | Protocol for the new service. Possible values are: "tcp", "udp", and "sctp". | Required | 
 | destination_port | Destination port  for the new service. | Required | 
 | source_port | Source port  for the new service. | Optional | 
 | description | Description for the new service. | Optional | 
@@ -1376,9 +1376,9 @@ Adds or removes sites to and from a custom URL category.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the custom URL category to add or remove sites. | Required | 
-| sites | A comma separated list of sites to add to the custom URL category. | Optional | 
+| sites | A comma-separated list of sites to add to the custom URL category. | Optional | 
 | action | Adds or removes sites or categories. Can be "add",or "remove". | Required | 
-| categories | A comma separated list of categories to add to the custom URL category. | Optional | 
+| categories | A comma-separated list of categories to add to the custom URL category. | Optional | 
 
 
 #### Context Output
@@ -1605,7 +1605,7 @@ Creates a URL filtering rule.
 | --- | --- | --- |
 | name | Name of the URL filter to create. | Required | 
 | url_category | URL categories. | Required | 
-| action | Action for the URL categories. Can be "allow", "block", "alert", "continue", or "override". | Required | 
+| action | Action for the URL categories. Possible values are: "allow", "block", "alert", "continue", and override". | Required | 
 | override_allow_list | CSV list of URLs to exclude from the allow list. | Optional | 
 | override_block_list | CSV list of URLs to exclude from the blocked list. | Optional | 
 | description | URL Filter description. | Optional | 
@@ -1662,7 +1662,7 @@ Edit a URL filtering rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the URL filter to edit. | Required | 
-| element_to_change | Element to change. Can be "override_allow_list", or "override_block_list" | Required | 
+| element_to_change | Element to change. Possible values are: "override_allow_list", and "override_block_list". | Required | 
 | element_value | Element value. Limited to one value. | Required | 
 | add_remove_element | Add or remove an element from the Allow List or Block List fields. Default is to 'add' the element_value to the list. | Optional | 
 
@@ -1864,8 +1864,8 @@ Creates an external dynamic list.
 | --- | --- | --- |
 | name | Name of the EDL. | Required | 
 | url | URL from which to pull the EDL. | Required | 
-| type | The type of EDL. | Required | 
-| recurring | Time interval for pulling and updating the EDL. | Required | 
+| type | The type of EDL. Possible values are: "ip", "url", and "domain". | Required | 
+| recurring | Time interval for pulling and updating the EDL. Possible values are: "five-minute" and "hourly". | Required | 
 | certificate_profile | Certificate Profile name for the URL that was previously uploaded. to PAN OS. | Optional | 
 | description | Description of the EDL. | Optional | 
 | device-group | The device group for which to return addresses for the EDL (Panorama instances). | Optional | 
@@ -1918,7 +1918,7 @@ Modifies an element of an external dynamic list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the external dynamic list to edit. | Required | 
-| element_to_change | The element to change (“url”, “recurring”, “certificate_profile”, “description”). | Required | 
+| element_to_change | The element to change. Possible values are: "url", "recurring", "certificate_profile", and "description". | Required | 
 | element_value | The element value. | Required | 
 
 
@@ -2009,7 +2009,7 @@ Refreshes the specified external dynamic list.
 | --- | --- | --- |
 | name | Name of the EDL | Required | 
 | device-group | The device group for which to return addresses for the EDL (Panorama instances). | Optional | 
-| edl_type | The type of the EDL. Required when refreshing an EDL object which is configured on Panorama. | Optional | 
+| edl_type | The type of the EDL. Required when refreshing an EDL object which is configured on Panorama. Possible values are: "ip", "url", and "domain". | Optional | 
 | location | The location of the EDL. Required when refreshing an EDL object which is configured on Panorama. | Optional | 
 | vsys | The Vsys of the EDL. Required when refreshing an EDL object which is configured on Panorama. | Optional | 
 
@@ -2039,7 +2039,7 @@ Creates a policy rule.
 | --- | --- | --- |
 | rulename | Name of the rule to create. | Optional | 
 | description | Description of the rule to create. | Optional | 
-| action | Action for the rule. Can be "allow", "deny", or "drop". | Required | 
+| action | Action for the rule. Possible values are: "allow", "deny", and "drop". | Required | 
 | source | A comma-separated list of address object names, address group object names, or EDL object names. | Optional | 
 | destination | A comma-separated list of address object names, address group object names, or EDL object names. | Optional | 
 | source_zone | A comma-separated list of source zones. | Optional | 
@@ -2048,9 +2048,9 @@ Creates a policy rule.
 | negate_destination | Whether to negate the destination (address, address group). Can be "Yes" or "No". | Optional | 
 | service | Service object names for the rule (service object) to create. | Optional | 
 | disable | Whether to disable the rule. Can be "Yes" or "No" (default is "No"). | Optional | 
-| application | A comma-separated list of application object namesfor the rule to create. | Optional | 
+| application | A comma-separated list of application object names for the rule to create. | Optional | 
 | source_user | Source user for the rule to create. | Optional | 
-| pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
+| pre_post | Pre rule or Post rule (Panorama instances). Possible values are: "pre-rulebase" and "post-rulebase". | Optional | 
 | target | Specifies a target firewall for the rule (Panorama instances). | Optional | 
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
@@ -2114,10 +2114,10 @@ Creates a custom block policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the custom block policy rule to create. | Optional | 
-| object_type | Object type to block in the policy rule. Can be "ip", "address-group", "edl", or "custom-url-category". | Required | 
+| object_type | Object type to block in the policy rule. Possible values are: "ip", "address-group", "edl", and custom-url-category". | Required | 
 | object_value | A comma-separated list of object values for the object_type argument. | Required | 
-| direction | Direction to block. Can be "to", "from", or "both". Default is "both". This argument is not applicable to the "custom-url-category" object_type. | Optional | 
-| pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
+| direction | Direction to block. Possible values are: "to", "from", and "both". Default is "both". This argument is not applicable to the "custom-url-category" object_type. | Optional | 
+| pre_post | Pre rule or Post rule (Panorama instances). Possible values are: "pre-rulebase" and "post-rulebase". | Optional | 
 | target | Specifies a target firewall for the rule (Panorama instances). | Optional | 
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
@@ -2173,9 +2173,9 @@ Changes the location of a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to move. | Required | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Required | 
+| where | Where to move the rule. Possible values are: "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Required | 
 | dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional | 
-| pre_post | Rule location. Mandatory for Panorama instances. | Optional | 
+| pre_post | Rule location. Mandatory for Panorama instances. Possible values are: "pre-rulebase" and "post-rulebase". | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 
 
@@ -2207,9 +2207,9 @@ Edits a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to edit. | Required | 
-| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding' or 'tag'. | Required | 
+| element_to_change | Parameter in the security rule to change. Possible values are: "source", "destination", "application", "action", "category", "description", "disabled", "target", "log-forwarding" and "tag". | Required | 
 | element_value | The new value for the parameter. | Required | 
-| pre_post | Pre-rule or post-rule (Panorama instances). | Optional | 
+| pre_post | Pre-rule or post-rule (Panorama instances). Possible values are: "pre-rulebase" and "post-rulebase". | Optional | 
 | behaviour | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
 
 
@@ -2264,7 +2264,7 @@ Deletes a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to delete. | Required | 
-| pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
+| pre_post | Pre rule or Post rule (Panorama instances). Possible values are: "pre-rulebase" and "post-rulebase". | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 
 
@@ -2422,15 +2422,15 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pcapType | Type of Packet Capture. | Required | 
+| pcapType | Type of packet capture. Possible values are: "application-pcap", "filter-pcap", "threat-pcap", and "dlp-pcap". | Required | 
 | from | The file name for the PCAP type ('dlp-pcap', 'filters-pcap', or 'application-pcap'). | Optional | 
 | localName | The new name for the PCAP file after downloading. If this argument is not specified, the file name is the PCAP file name set in the firewall. | Optional | 
 | serialNo | Serial number for the request. For further information, see the Panorama XML API Documentation. | Optional | 
 | searchTime | The Search time for the request. For example: "2019/12/26 00:00:00", "2020/01/10". For more information, see the Panorama XML API documentation. | Optional | 
 | pcapID | The ID of the PCAP for the request. For further information, see the Panorama XML API Documentation. | Optional | 
 | password | Password for Panorama, needed for the 'dlp-pcap' PCAP type only. | Optional | 
-| deviceName | The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation. | Optional | 
-| sessionID | The Session ID of the PCAP. For further information, see the Panorama XML API Documentation. | Optional | 
+| deviceName | The Device Name on which the PCAP is stored. For further information, see the Panorama XML API documentation. | Optional | 
+| sessionID | The Session ID of the PCAP. For further information, see the Panorama XML API documentation. | Optional | 
 
 
 #### Context Output
@@ -2466,7 +2466,7 @@ Returns a list of all PCAP files by PCAP type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pcapType | Type of Packet Capture. | Required | 
+| pcapType | Type of packet capture. Possible values are: "application-pcap", "filter-pcap", "threat-pcap", and "dlp-pcap". | Required | 
 | password | Password for Panorama. Relevant for the 'dlp-pcap' PCAP type. | Optional | 
 
 
@@ -2726,7 +2726,7 @@ Returns a list of predefined Security Rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pre_post | Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
+| pre_post | Rules location. Possible values are: "pre-rulebase" and "post-rulebase". Mandatory for Panorama instances. | Optional | 
 | device-group | The device group for which to return addresses (Panorama instances). | Optional | 
 | tag | Tag for which to filter the rules. | Optional | 
 
@@ -2849,7 +2849,7 @@ Query logs in Panorama.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log-type | The log type. Can be "threat", "traffic", "wildfire", "url", or "data". | Required | 
+| log-type | The log type. Possible values are: "threat", "traffic", "wildfire", "url", and "data". | Required | 
 | query | The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. | Optional | 
 | time-generated | The time that the log was generated from the timestamp and prior to it.<br/>e.g "2019/08/11 01:10:44". | Optional | 
 | addr-src | Source address. | Optional | 
@@ -3234,7 +3234,7 @@ Adds a static route.
 | virtual_router | Virtual Router to which the routes will be added. | Required | 
 | static_route | The name of the static route to add. The argument is limited to a maximum of 31 characters, is case-sensitive, and supports letters, numbers, spaces, hyphens, and underscores. | Required | 
 | destination | The IP address and network mask in Classless Inter-domain Routing (CIDR) notation: ip_address/mask. For example, 192.168.0.1/24 for IPv4 or 2001:db8::/32 for IPv6). | Required | 
-| nexthop_type | The type for the nexthop. Can be: "ip-address", "next-vr", "fqdn" or "discard". | Required | 
+| nexthop_type | The type for the next hop. Possible values are: "ip-address", "next-vr", "fqdn", and "discard". | Required | 
 | nexthop_value | The next hop value. | Required | 
 | metric | The metric port for the static route (1-65535). | Optional | 
 | interface | The interface name in which to add the static route. | Optional | 
@@ -3800,7 +3800,7 @@ Gets information for the specified security profile.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| security_profile | The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis". | Optional | 
+| security_profile | The security profile for which to get information. Possible values are: "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis". | Optional | 
 
 
 #### Context Output
@@ -3876,7 +3876,7 @@ Apply a security profile to specific rules or rules with a specific tag.
 | profile_type | Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.' | Required | 
 | rule_name | The rule name to apply. | Required | 
 | profile_name | The profile name to apply to the rule. | Required | 
-| pre_post | The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
+| pre_post | The location of the rules. Possible values are: "pre-rulebase" or "post-rulebase". Mandatory for Panorama instances. | Optional | 
 
 
 #### Context Output
@@ -3902,7 +3902,7 @@ Get SSL decryption rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pre_post | The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
+| pre_post | The location of the rules. Possible values are: "pre-rulebase" or "post-rulebase". Mandatory for Panorama instances. | Optional | 
 
 
 #### Context Output
@@ -4426,3 +4426,132 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The profile test was created successfully.
+
+### panorama-lookup-route
+***
+Lookup a given IP address in the Firewall routing table
+
+
+#### Base Command
+
+`panorama-lookup-route`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| dest_ip | Destination IP address to look up in the firewall routing table. | Required |
+| virtual_router | Virtual router to check against. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.RouteLookup.dest_ip | String | The destination IP address tested. |
+| Panorama.RouteLookup.dp | String | Firewall data plane. |
+| Panorama.RouteLookup.interface | String | Outgoing interface. |
+| Panorama.RouteLookup.ip | String | The next hop IP address in the routing table. |
+| Panorama.RouteLookup.metric | String | Router metric, |
+| Panorama.RouteLookup.nh | String | The next hop type, |
+| Panorama.RouteLookup.src | String | Outgoing interface IP address. |
+
+
+#### Command Example
+```!panorama-lookup-route dest_ip=8.8.8.8 virtual_router=default```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "RouteLookup": {
+            "dest_ip": "8.8.8.8",
+            "dp": "dp0",
+            "interface": "ethernet1/1",
+            "ip": "192.168.1.1",
+            "metric": "10",
+            "nh": "ip",
+            "src": "192.168.1.139"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Route Lookup Results
+>|dest_ip|dp|interface|ip|metric|nh|src|
+>|---|---|---|---|---|---|---|
+>| 8.8.8.8 | dp0 | ethernet1/1 | 192.168.1.1 | 10 | ip | 192.168.1.139 |
+
+### panorama-lookup-zone
+***
+Given an IP address, returns the matching zone based on the device routing table
+
+
+#### Base Command
+
+`panorama-lookup-zone`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| dest_ip | Destination IP address to look up in the firewall routing table. | Required |
+| virtual_router | Virtual Router to look up against. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ZoneLookup.name | String | Outgoing interface name. |
+| Panorama.ZoneLookup.zone | String | Outgoing zone name. |
+| Panorama.ZoneLookup.fwd | String | Forwarding virtual router. |
+| Panorama.ZoneLookup.dyn-addr | String | Outgoing interface dynamic addresses. |
+| Panorama.ZoneLookup.addr6.member | String | Outgoing interface IPv6 addresses. |
+| Panorama.ZoneLookup.tag | String | Outgoing interface VLAN tag. |
+| Panorama.ZoneLookup.ip | String | Outgoing interface IP addresses. |
+| Panorama.ZoneLookup.id | String | Outgoing interface ID. |
+| Panorama.ZoneLookup.addr.member | String | Outgoing interface IPv4 addresses |
+| Panorama.ZoneLookup.nh | String | Next hop type. |
+| Panorama.ZoneLookup.src | String | Outgoing interface IP address. |
+| Panorama.ZoneLookup.metric | String | Router metric. |
+| Panorama.ZoneLookup.interface | String | Outgoing interface. |
+| Panorama.ZoneLookup.dp | String | Firewall data plane. |
+| Panorama.ZoneLookup.dest_ip | String | Destination IP address. |
+
+
+#### Command Example
+```!panorama-lookup-zone dest_ip=8.8.8.8 virtual_router=default```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ZoneLookup": {
+            "addr": null,
+            "addr6": null,
+            "dest_ip": "8.8.8.8",
+            "dp": "dp0",
+            "dyn-addr": null,
+            "fwd": "vr:default",
+            "id": "16",
+            "interface": "ethernet1/1",
+            "ip": "192.168.1.1",
+            "metric": "10",
+            "name": "ethernet1/1",
+            "nh": "ip",
+            "src": "192.168.1.139",
+            "tag": "0",
+            "vsys": "1",
+            "zone": "OUTSIDE"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zone Lookup Results
+>|addr|addr6|dest_ip|dp|dyn-addr|fwd|id|interface|ip|metric|name|nh|src|tag|vsys|zone|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  |  | 8.8.8.8 | dp0 |  | vr:default | 16 | ethernet1/1 | 192.168.1.1 | 10 | ethernet1/1 | ip | 192.168.1.139 | 0 | 1 | OUTSIDE |

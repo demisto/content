@@ -4459,6 +4459,9 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
               'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
 
+    if VSYS:
+        params["vsys"] = VSYS
+
     result = http_request(
         URL,
         'GET',
@@ -4782,6 +4785,114 @@ def panorama_override_vulnerability(threatid: str, vulnerability_profile: str, d
         'POST',
         body=params,
     )
+
+
+def panorama_get_interfaces():
+    """
+    Retrieve the routing table from the given device
+    """
+    params = {
+        'type': 'op',
+        'key': API_KEY,
+        'cmd': "<show><interface>all</interface></show>"
+    }
+
+    return http_request(
+        URL,
+        'GET',
+        params=params)
+
+
+def panorama_route_lookup(dest_ip: str, virtual_router=None):
+    """
+    Runs a test-routing fib-lookup to determine the outgoing interface of a given IP address.
+    """
+    params = {
+        'type': 'op',
+        'key': API_KEY,
+        'cmd': f"<test><routing><fib-lookup><ip>{dest_ip}</ip><virtual-router>{virtual_router}</virtual-router>"
+               + "</fib-lookup></routing></test>"
+    }
+
+    r = http_request(
+        URL,
+        'GET',
+        params=params)
+
+    if r.get("response").get("result"):
+        r = r.get("response").get("result")
+        if r.get("interface"):
+            return r
+        else:
+            raise DemistoException(f"Failed to test FIB to {dest_ip}")
+    else:
+        raise DemistoException(f"Failed to test FIB to {dest_ip}")
+
+
+def panorama_route_lookup_command():
+    """
+    Gets the outgoing interface from the Palo Alto Firewall route table
+    Must be run against a firewall instance
+    """
+    if not VSYS:
+        raise DemistoException("The 'panorama-route-lookup' command is only relevant for a Firewall instance.")
+
+    dest_ip = demisto.args().get("dest_ip")
+    vr = demisto.args().get("virtual_router", "default")
+    r = panorama_route_lookup(dest_ip, vr)
+
+    r["dest_ip"] = dest_ip
+    markdown = tableToMarkdown('Route Lookup Results', r)
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='Panorama.RouteLookup',
+        outputs_key_field='dest_ip',
+        outputs=r
+    )
+    return_results(results)
+    return r
+
+
+def panorama_zone_lookup_command():
+    """
+    Gets the outgoing interface from the PAN Firewall using "test routing fib-lookup", and the interfaces
+    from "show interfaces", then joins the two to determine the outgoing zone.
+    """
+    if not VSYS:
+        raise DemistoException("The 'panorama-route-lookup' command is only relevant for a Firewall instance.")
+
+    dest_ip = demisto.args().get("dest_ip")
+    vr = demisto.args().get("virtual_router", "default")
+    route = panorama_route_lookup(dest_ip, vr)
+    if not route:
+        return_results(f"Could find a matching route to {dest_ip}.")
+        return
+
+    interface = route.get("interface")
+    interfaces = panorama_get_interfaces()
+
+    r = {}
+    if "ifnet" in interfaces["response"].get("result"):
+        for entry in interfaces["response"]["result"]["ifnet"]["entry"]:
+            if entry.get("name") == interface:
+                if "zone" in entry:
+                    r = {**entry, **route}
+
+    if r:
+        # add the given dest_ip as another item int the object for simplicity
+        r["dest_ip"] = dest_ip
+        markdown = tableToMarkdown('Zone Lookup Results', r)
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix='Panorama.ZoneLookup',
+            outputs_key_field='dest_ip',
+            outputs=r
+        )
+        return_results(results)
+        return r
+    else:
+        return_results(f"Could not map {dest_ip} to zone.")
+        return {}
 
 
 @logger
@@ -5689,7 +5800,7 @@ def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, pro
         'action': 'set',
         'type': 'config',
         'xpath': f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"
-        f"profiles/{profile_type}",
+                 f"profiles/{profile_type}",
         'key': API_KEY,
         'element': f'<member>{profile_name}</member>'
     }
@@ -5866,7 +5977,6 @@ def get_anti_spyware_best_practice() -> Dict:
 
 
 def get_anti_spyware_best_practice_command():
-
     result = get_anti_spyware_best_practice()
     spyware_profile = result.get('response', {}).get('result', {}).get('spyware').get('entry', [])
     strict_profile = next(item for item in spyware_profile if item['@name'] == 'strict')
@@ -5921,7 +6031,6 @@ def get_file_blocking_best_practice() -> Dict:
 
 
 def get_file_blocking_best_practice_command():
-
     results = get_file_blocking_best_practice()
     file_blocking_profile = results.get('response', {}).get('result', {}).get('file-blocking', {}).get('entry', [])
 
@@ -5959,7 +6068,6 @@ def get_antivirus_best_practice() -> Dict:
 
 
 def get_antivirus_best_practice_command():
-
     results = get_antivirus_best_practice()
     antivirus_profile = results.get('response', {}).get('result', {}).get('virus', {})
     strict_profile = antivirus_profile.get('entry', {})
@@ -5996,7 +6104,6 @@ def get_vulnerability_protection_best_practice() -> Dict:
 
 
 def get_vulnerability_protection_best_practice_command():
-
     results = get_vulnerability_protection_best_practice()
     vulnerability_protection = results.get('response', {}).get('result', {}).get('vulnerability', {}).get('entry', [])
     strict_profile = next(item for item in vulnerability_protection if item['@name'] == 'strict')
@@ -6072,7 +6179,6 @@ def prettify_wildfire_rules(rules: Dict) -> List:
 
 
 def get_wildfire_best_practice_command():
-
     result = get_wildfire_best_practice()
     wildfire_profile = result.get('response', {}).get('result', {}).get('wildfire-analysis', {})
     best_practice = wildfire_profile.get('entry', {}).get('rules', {}).get('entry', {})
@@ -6124,7 +6230,7 @@ def set_xpath_wildfire(template: str = None) -> str:
     """
     if template:
         xpath_wildfire = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=" \
-            f"'{template}']/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting/wildfire"
+                         f"'{template}']/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting/wildfire"
 
     else:
         xpath_wildfire = "/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting"
@@ -6133,7 +6239,6 @@ def set_xpath_wildfire(template: str = None) -> str:
 
 @logger
 def get_wildfire_system_config(template: str) -> Dict:
-
     params = {
         'action': 'get',
         'type': 'config',
@@ -6151,7 +6256,7 @@ def get_wildfire_update_schedule(template: str) -> Dict:
         'action': 'get',
         'type': 'config',
         'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']"
-        f"/config/devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
+                 f"/config/devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
         'key': API_KEY
     }
     result = http_request(URL, 'GET', params=params)
@@ -6204,7 +6309,7 @@ def enforce_wildfire_system_config(template: str) -> Dict:
         'action': 'set',
         'type': 'config',
         'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']/"
-        f"config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting",
+                 f"config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting",
         'key': API_KEY,
         'element': '<wildfire><file-size-limit><entry name="pe"><size-limit>10</size-limit></entry>'
                    '<entry name="apk"><size-limit>30</size-limit></entry><entry name="pdf">'
@@ -6226,7 +6331,7 @@ def enforce_wildfire_schedule(template: str) -> Dict:
         'action': 'set',
         'type': 'config',
         'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']/config/"
-        f"devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
+                 f"devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
         'key': API_KEY,
         'element': '<recurring><every-min><action>download-and-install</action></every-min></recurring>'
     }
@@ -6248,7 +6353,6 @@ def enforce_wildfire_best_practice_command(template: str):
 
 @logger
 def url_filtering_block_default_categories(profile_name: str) -> Dict:
-
     params = {
         'action': 'set',
         'type': 'config',
@@ -6271,7 +6375,6 @@ def url_filtering_block_default_categories_command(profile_name: str):
 
 
 def get_url_filtering_best_practice_command():
-
     best_practice = {
         '@name': 'best-practice', 'credential-enforcement': {
             'mode': {'disabled': False},
@@ -6363,7 +6466,6 @@ def create_antivirus_best_practice_profile_command(profile_name: str):
 
 @logger
 def create_anti_spyware_best_practice_profile(profile_name: str) -> Dict:
-
     params = {
         'action': 'set',
         'type': 'config',
@@ -6393,7 +6495,6 @@ def create_anti_spyware_best_practice_profile_command(profile_name: str):
 
 @logger
 def create_vulnerability_best_practice_profile(profile_name: str) -> Dict:
-
     params = {
         'action': 'set',
         'type': 'config',
@@ -6447,7 +6548,6 @@ def create_vulnerability_best_practice_profile_command(profile_name: str):
 
 @logger
 def create_url_filtering_best_practice_profile(profile_name: str) -> Dict:
-
     params = {
         'action': 'set',
         'type': 'config',
@@ -6979,6 +7079,12 @@ def main():
 
         elif demisto.command() == 'panorama-create-file-blocking-best-practice-profile':
             create_file_blocking_best_practice_profile_command(**args)
+
+        elif demisto.command() == 'panorama-lookup-route':
+            panorama_route_lookup_command()
+
+        elif demisto.command() == 'panorama-lookup-zone':
+            panorama_zone_lookup_command()
 
         elif demisto.command() == 'panorama-create-wildfire-best-practice-profile':
             create_wildfire_best_practice_profile_command(**args)

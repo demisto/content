@@ -10,7 +10,8 @@ integration_params = {
 
 mock_demisto_args = {
     'threat_id': "11111",
-    'vulnerability_profile': "mock_vuln_profile"
+    'vulnerability_profile': "mock_vuln_profile",
+    'dest_ip': "10.20.20.20",
 }
 
 
@@ -45,7 +46,203 @@ def patched_requests_mocker(requests_mock):
     </response>
     """
     requests_mock.post(base_url, text=mock_response_xml, status_code=200)
+    # Mock a show routing route request
+    mock_route_xml = """
+    <response status="success">
+    <result>
+        <flags>flags: A:active</flags>
+        <entry>
+            <virtual-router>CORE</virtual-router>
+            <destination>0.0.0.0/0</destination>
+            <nexthop>192.168.255.1</nexthop>
+            <metric>100</metric>
+            <flags>A O2  </flags>
+            <age>4072068</age>
+            <interface>ae1.1</interface>
+            <route-table>unicast</route-table>
+        </entry>
+        <entry>
+            <virtual-router>CORE</virtual-router>
+            <destination>10.10.0.0/16</destination>
+            <nexthop>192.168.1.1</nexthop>
+            <metric>130</metric>
+            <flags>A O1  </flags>
+            <age>4072068</age>
+            <interface>ae1.2</interface>
+            <route-table>unicast</route-table>
+        </entry>
+        <entry>
+            <virtual-router>CORE</virtual-router>
+            <destination>10.0.0.0/8</destination>
+            <nexthop>192.168.2.1</nexthop>
+            <metric>130</metric>
+            <flags>A O1  </flags>
+            <age>4072068</age>
+            <interface>ae1.3</interface>
+            <route-table>unicast</route-table>
+        </entry>
+        <entry>
+            <virtual-router>CORE</virtual-router>
+            <destination>2000::/16</destination>
+            <nexthop>fe80::1234</nexthop>
+            <metric>130</metric>
+            <flags>A O1  </flags>
+            <age>4172303</age>
+            <interface>ae1.4</interface>
+            <route-table>unicast</route-table>
+        </entry>
+    </result>
+    </response>
+    """
+    route_path = "{}{}{}{}".format(base_url, "?type=op&key=", integration_params['key'],
+                                   "&cmd=<show><routing><route></route></routing></show>")
+    requests_mock.get(route_path, text=mock_route_xml, status_code=200)
+
+    mock_interface_xml = """
+    <response status="success">
+    <result>
+        <ifnet>
+            <entry>
+                <name>ethernet1/24</name>
+                <zone>MONITOR</zone>
+                <fwd>tap</fwd>
+                <vsys>2</vsys>
+                <dyn-addr/>
+                <addr6/>
+                <tag>0</tag>
+                <ip>N/A</ip>
+                <id>87</id>
+                <addr/>
+            </entry>
+            <entry>
+                <name>ethernet2/1</name>
+                <zone/>
+                <fwd>logfwd</fwd>
+                <vsys>0</vsys>
+                <dyn-addr/>
+                <addr6/>
+                <tag>0</tag>
+                <ip>N/A</ip>
+                <id>128</id>
+                <addr/>
+            </entry>
+            <entry>
+                <name>ae1.1</name>
+                <zone>OUTSIDE</zone>
+                <fwd>vr:CORE</fwd>
+                <dyn-addr/>
+                <addr6/>
+                <tag>3</tag>
+                <ip>192.168.255.2</ip>
+                <id>999</id>
+                <addr/>
+            </entry>
+            <entry>
+                <name>ae1.2</name>
+                <zone>INSIDE</zone>
+                <fwd>vr:CORE</fwd>
+                <dyn-addr/>
+                <addr6/>
+                <tag>34</tag>
+                <ip>192.168.1.2</ip>
+                <id>998</id>
+                <addr/>
+            </entry>
+            <entry>
+                <name>ae1.3</name>
+                <zone>DMZ</zone>
+                <fwd>vr:CORE</fwd>
+                <dyn-addr/>
+                <addr6/>
+                <tag>34</tag>
+                <ip>192.168.2.2</ip>
+                <id>997</id>
+                <addr/>
+            </entry>
+        </ifnet>
+    </result>
+    </response>
+    """
+    interface_path = "{}{}{}{}".format(base_url, "?type=op&key=", integration_params['key'],
+                                       "&cmd=<show><interface>all</interface></show>")
+    requests_mock.get(interface_path, text=mock_interface_xml, status_code=200)
+
+    mock_test_routing = """
+    <response status="success">
+    <result>
+        <nh>ip</nh>
+        <src>192.168.2.1</src>
+        <ip>192.168.2.2</ip>
+        <metric>10</metric>
+        <interface>ae1.3</interface>
+        <dp>s2dp0</dp>
+    </result>
+    </response>
+    """
+    test_route_path = "{}{}{}{}".format(base_url, "?type=op&key=", integration_params['key'],
+                                        "&cmd=<test><routing><fib-lookup><ip>10.20.20.20</ip>"
+                                        + "<virtual-router>default</virtual-router>"
+                                        + "</fib-lookup></routing></test>")
+    requests_mock.get(test_route_path, text=mock_test_routing, status_code=200)
     return requests_mock
+
+
+def test_panorama_get_interfaces(patched_requests_mocker):
+    """
+    Given the interface XML from <show><interface>all, expects 5 interfaces to be returned
+    """
+    from Panorama import panorama_get_interfaces
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/api/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    r = panorama_get_interfaces()
+    assert len(r['response']['result']['ifnet']['entry']) == 5
+
+
+def test_panorama_route_lookup(patched_requests_mocker):
+    """
+    Test the route lookup
+    """
+    from Panorama import panorama_route_lookup_command, initialize_instance
+    initialize_instance(mock_demisto_args, integration_params)
+    r = panorama_route_lookup_command()
+    assert r['interface'] == 'ae1.3'
+
+
+def test_panorama_route_lookup_bad(patched_requests_mocker, mocker):
+    """
+    Test a route lookup where there is no resolved next hop
+    Should raise DemistoException
+    """
+    from Panorama import panorama_route_lookup_command, DemistoException
+
+    dargs = {
+        "dest_ip": "8.8.8.8"
+    }
+    mocker.patch.object(demisto, 'args', return_value=dargs)
+
+    mock_test_routing_noresult = """
+    <response status="success">
+    <result>
+        <dp>s2dp0</dp>
+    </result>
+    </response>
+    """
+    base_url = "{}:{}/api/".format(integration_params['server'], integration_params['port'])
+    test_route_path = "{}{}{}{}".format(base_url, "?type=op&key=", integration_params['key'],
+                                        "&cmd=<test><routing><fib-lookup><ip>8.8.8.8</ip>"
+                                        + "<virtual-router>default</virtual-router>"
+                                        + "</fib-lookup></routing></test>")
+    patched_requests_mocker.get(test_route_path, text=mock_test_routing_noresult, status_code=200)
+
+    with pytest.raises(DemistoException):
+        panorama_route_lookup_command()
+
+
+def test_panorama_zone_lookup(patched_requests_mocker):
+    from Panorama import panorama_zone_lookup_command
+    r = panorama_zone_lookup_command()
+    assert r['zone'] == 'DMZ'
 
 
 def test_panoram_get_os_version(patched_requests_mocker):
@@ -61,7 +258,8 @@ def test_panoram_override_vulnerability(patched_requests_mocker):
     from Panorama import panorama_override_vulnerability
     import Panorama
     Panorama.URL = 'https://1.1.1.1:443/api/'
-    r = panorama_override_vulnerability(mock_demisto_args['threat_id'], mock_demisto_args['vulnerability_profile'], 'reset-both')
+    r = panorama_override_vulnerability(mock_demisto_args['threat_id'], mock_demisto_args['vulnerability_profile'],
+                                        'reset-both')
     assert r['response']['@status'] == 'success'
 
 
