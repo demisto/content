@@ -16,14 +16,14 @@ This integration was integrated and tested with version xx of CloudConvert
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### CloudConvert-import
+### cloudconvert-import
 ***
 Import a file for later conversion
 
 
 #### Base Command
 
-`CloudConvert-import`
+`cloudconvert-import`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,20 +52,20 @@ Import a file for later conversion
 
 
 #### Command Example
-``` ```
+`cloudconvert-import entry_id=@123`
 
 #### Human Readable Output
 
 
 
-### CloudConvert-convert
+### cloudconvert-convert
 ***
 Convert a priorly uploaded file to desired format
 
 
 #### Base Command
 
-`CloudConvert-convert`
+`cloudconvert-convert`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -95,19 +95,20 @@ Convert a priorly uploaded file to desired format
 
 
 #### Command Example
-'cloudconvert-import url=URL'
+`cloudconvert-convert task_id=1 output_format=pdf`
+
 #### Human Readable Output
 
 
 
-### CloudConvert-checkstatus
+### cloudconvert-checkstatus
 ***
 Check the status of an operation. Use the 'is_entry' argument to also create a war room entry of the file when checking on an export to war room entry operation
 
 
 #### Base Command
 
-`CloudConvert-checkstatus`
+`cloudconvert-checkstatus`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -137,20 +138,20 @@ Check the status of an operation. Use the 'is_entry' argument to also create a w
 
 
 #### Command Example
-``` ```
+`cloudconvert-checkstatus task_id=1`
 
 #### Human Readable Output
 
 
 
-### CloudConvert-export
+### cloudconvert-export
 ***
 Export a converted file to a url or a war room entry
 
 
 #### Base Command
 
-`CloudConvert-export`
+`cloudconvert-export`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -180,7 +181,7 @@ Export a converted file to a url or a war room entry
 
 
 #### Command Example
-``` ```
+`cloudconvert-export task_id=1 export_as=url`
 
 #### Human Readable Output
 
