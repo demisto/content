@@ -1,0 +1,580 @@
+{
+    "_kind": "tm:asm:policies:policycollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/asm/policies?_kind=&selfLink=&ver=15.1.0",
+    "totalItems": 2,
+    "items": [
+        {
+            "plainTextProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/plain-text-profiles",
+                "isSubCollection": true
+            },
+            "enablePassiveMode": false,
+            "behavioralEnforcementReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/behavioral-enforcement"
+            },
+            "dataGuardReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/data-guard"
+            },
+            "createdDatetime": "2020-07-29T14:32:21Z",
+            "databaseProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/database-protection"
+            },
+            "cookieSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/cookie-settings"
+            },
+            "csrfUrlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/csrf-urls",
+                "isSubCollection": true
+            },
+            "versionLastChange": "Cookie Yum [delete] { audit: policy = /Common/Test_Policy, username = admin, client IP = 192.168.30.99 }",
+            "name": "Test_Policy",
+            "caseInsensitive": false,
+            "headerSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/header-settings"
+            },
+            "sectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/sections",
+                "isSubCollection": true
+            },
+            "flowReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/flows",
+                "isSubCollection": true
+            },
+            "loginPageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/login-pages",
+                "isSubCollection": true
+            },
+            "description": "Test stuff with the integration",
+            "fullPath": "/Common/Test_Policy",
+            "policyBuilderParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/policy-builder-parameter"
+            },
+            "hasParent": false,
+            "threatCampaignReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/threat-campaigns",
+                "isSubCollection": true
+            },
+            "partition": "Common",
+            "managedByBewaf": false,
+            "csrfProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/csrf-protection"
+            },
+            "policyAntivirusReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/antivirus"
+            },
+            "_kind": "tm:asm:policies:policystate",
+            "virtualServers": [
+
+            ],
+            "policyBuilderCookieReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/policy-builder-cookie"
+            },
+            "ipIntelligenceReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/ip-intelligence"
+            },
+            "protocolIndependent": false,
+            "sessionAwarenessSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/session-tracking"
+            },
+            "policyBuilderUrlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/policy-builder-url"
+            },
+            "policyBuilderServerTechnologiesReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/policy-builder-server-technologies"
+            },
+            "policyBuilderFiletypeReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/policy-builder-filetype"
+            },
+            "signatureSetReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/signature-sets",
+                "isSubCollection": true
+            },
+            "parameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/parameters",
+                "isSubCollection": true
+            },
+            "applicationLanguage": "utf-8",
+            "enforcementMode": "blocking",
+            "loginEnforcementReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/login-enforcement"
+            },
+            "openApiFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/open-api-files",
+                "isSubCollection": true
+            },
+            "navigationParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/navigation-parameters",
+                "isSubCollection": true
+            },
+            "gwtProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/gwt-profiles",
+                "isSubCollection": true
+            },
+            "webhookReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/webhooks",
+                "isSubCollection": true
+            },
+            "whitelistIpReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/whitelist-ips",
+                "isSubCollection": true
+            },
+            "historyRevisionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/history-revisions",
+                "isSubCollection": true
+            },
+            "policyBuilderReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/policy-builder"
+            },
+            "responsePageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/response-pages",
+                "isSubCollection": true
+            },
+            "vulnerabilityAssessmentReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/vulnerability-assessment"
+            },
+            "serverTechnologyReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/server-technologies",
+                "isSubCollection": true
+            },
+            "cookieReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/cookies",
+                "isSubCollection": true
+            },
+            "blockingSettingReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/blocking-settings",
+                "isSubCollection": true
+            },
+            "hostNameReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/host-names",
+                "isSubCollection": true
+            },
+            "versionDeviceName": "f5asm.qmasters.co",
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/1234",
+            "threatCampaignSettingReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/threat-campaign-settings?ver=15.1.0 "
+            },
+            "signatureReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/signatures",
+                "isSubCollection": true
+            },
+            "policyBuilderRedirectionProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/policy-builder-redirection-protection"
+            },
+            "filetypeReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/filetypes",
+                "isSubCollection": true
+            },
+            "id": "1234",
+            "modifierName": "",
+            "manualVirtualServers": [
+
+            ],
+            "versionDatetime": "2020-07-29T12:54:41Z",
+            "subPath": "/Common",
+            "sessionTrackingStatusReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/session-tracking-statuses",
+                "isSubCollection": true
+            },
+            "active": false,
+            "auditLogReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/audit-logs",
+                "isSubCollection": true
+            },
+            "disallowedGeolocationReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/disallowed-geolocations",
+                "isSubCollection": true
+            },
+            "redirectionProtectionDomainReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/redirection-protection-domains",
+                "isSubCollection": true
+            },
+            "type": "security",
+            "signatureSettingReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/signature-settings"
+            },
+            "deceptionResponsePageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/deception-response-pages",
+                "isSubCollection": true
+            },
+            "websocketUrlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/websocket-urls",
+                "isSubCollection": true
+            },
+            "xmlProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/xml-profiles",
+                "isSubCollection": true
+            },
+            "methodReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/methods",
+                "isSubCollection": true
+            },
+            "vulnerabilityReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/vulnerabilities",
+                "isSubCollection": true
+            },
+            "redirectionProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/redirection-protection"
+            },
+            "policyBuilderSessionsAndLoginsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/policy-builder-sessions-and-logins"
+            },
+            "templateReference": {
+                "link": "https://localhost/mgmt/tm/asm/policy-templates/KGO8Jk0HA4ipQRG8Bfd_Dw",
+                "title": "Fundamental"
+            },
+            "policyBuilderHeaderReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/policy-builder-header"
+            },
+            "creatorName": "admin",
+            "urlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/urls",
+                "isSubCollection": true
+            },
+            "headerReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/headers",
+                "isSubCollection": true
+            },
+            "actionItemReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/action-items",
+                "isSubCollection": true
+            },
+            "microserviceReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/microservices",
+                "isSubCollection": true
+            },
+            "xmlValidationFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/xml-validation-files",
+                "isSubCollection": true
+            },
+            "lastUpdateMicros": 0,
+            "jsonProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/json-profiles",
+                "isSubCollection": true
+            },
+            "bruteForceAttackPreventionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/brute-force-attack-preventions",
+                "isSubCollection": true
+            },
+            "disabledActionItemReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/disabled-action-items",
+                "isSubCollection": true
+            },
+            "jsonValidationFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/json-validation-files",
+                "isSubCollection": true
+            },
+            "extractionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/extractions",
+                "isSubCollection": true
+            },
+            "characterSetReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/character-sets",
+                "isSubCollection": true
+            },
+            "suggestionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/suggestions",
+                "isSubCollection": true
+            },
+            "deceptionSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/deception-settings"
+            },
+            "isModified": false,
+            "sensitiveParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/sensitive-parameters",
+                "isSubCollection": true
+            },
+            "generalReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/general"
+            },
+            "versionPolicyName": "/Common/Test_Policy",
+            "policyBuilderCentralConfigurationReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/1234/policy-builder-central-configuration"
+            }
+        },
+        {
+            "plainTextProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/plain-text-profiles",
+                "isSubCollection": true
+            },
+            "enablePassiveMode": false,
+            "behavioralEnforcementReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/behavioral-enforcement"
+            },
+            "dataGuardReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/data-guard"
+            },
+            "createdDatetime": "2020-07-29T14:32:20Z",
+            "databaseProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/database-protection"
+            },
+            "cookieSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/cookie-settings"
+            },
+            "csrfUrlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/csrf-urls",
+                "isSubCollection": true
+            },
+            "versionLastChange": " Security Policy /Common/MyPolicy [add]: Parent Policy was set to empty value.\nType was set to Security.\nEncoding Selected was set to true.\nApplication Language was set to utf-8.\nActive was set to false.\nPolicy Name was set to /Common/MyPolicy. {audit: policy = /Common/MyPolicy, component = tsconfd}",
+            "name": "Common_copy_2",
+            "caseInsensitive": false,
+            "headerSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/header-settings"
+            },
+            "sectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/sections",
+                "isSubCollection": true
+            },
+            "flowReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/flows",
+                "isSubCollection": true
+            },
+            "loginPageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/login-pages",
+                "isSubCollection": true
+            },
+            "description": "Fundamental Policy",
+            "fullPath": "/Common/Common_MyPolicy_copy_2",
+            "policyBuilderParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/policy-builder-parameter"
+            },
+            "hasParent": false,
+            "threatCampaignReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/threat-campaigns",
+                "isSubCollection": true
+            },
+            "partition": "Common",
+            "managedByBewaf": false,
+            "csrfProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/csrf-protection"
+            },
+            "policyAntivirusReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/antivirus"
+            },
+            "_kind": "tm:asm:policies:policystate",
+            "virtualServers": [
+
+            ],
+            "policyBuilderCookieReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/policy-builder-cookie"
+            },
+            "ipIntelligenceReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/ip-intelligence"
+            },
+            "protocolIndependent": false,
+            "sessionAwarenessSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/session-tracking"
+            },
+            "policyBuilderUrlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/policy-builder-url"
+            },
+            "policyBuilderServerTechnologiesReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/policy-builder-server-technologies"
+            },
+            "policyBuilderFiletypeReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/policy-builder-filetype"
+            },
+            "signatureSetReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/signature-sets",
+                "isSubCollection": true
+            },
+            "parameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/parameters",
+                "isSubCollection": true
+            },
+            "applicationLanguage": "utf-8",
+            "enforcementMode": "blocking",
+            "loginEnforcementReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/login-enforcement"
+            },
+            "openApiFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/open-api-files",
+                "isSubCollection": true
+            },
+            "navigationParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/navigation-parameters",
+                "isSubCollection": true
+            },
+            "gwtProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/gwt-profiles",
+                "isSubCollection": true
+            },
+            "webhookReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/webhooks",
+                "isSubCollection": true
+            },
+            "whitelistIpReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/whitelist-ips",
+                "isSubCollection": true
+            },
+            "historyRevisionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/history-revisions",
+                "isSubCollection": true
+            },
+            "policyBuilderReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/policy-builder"
+            },
+            "responsePageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/response-pages",
+                "isSubCollection": true
+            },
+            "vulnerabilityAssessmentReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/vulnerability-assessment"
+            },
+            "serverTechnologyReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/server-technologies",
+                "isSubCollection": true
+            },
+            "cookieReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/cookies",
+                "isSubCollection": true
+            },
+            "blockingSettingReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/blocking-settings",
+                "isSubCollection": true
+            },
+            "hostNameReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/host-names",
+                "isSubCollection": true
+            },
+            "versionDeviceName": "f5asm.qmasters.co",
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/9876",
+            "threatCampaignSettingReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/threat-campaign-settings"
+            },
+            "signatureReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/signatures",
+                "isSubCollection": true
+            },
+            "filetypeReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/filetypes",
+                "isSubCollection": true
+            },
+            "id": "9876",
+            "modifierName": "",
+            "manualVirtualServers": [
+
+            ],
+            "versionDatetime": "2020-07-02T21:09:26Z",
+            "subPath": "/Common",
+            "sessionTrackingStatusReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/session-tracking-statuses",
+                "isSubCollection": true
+            },
+            "active": false,
+            "auditLogReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/audit-logs",
+                "isSubCollection": true
+            },
+            "disallowedGeolocationReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/disallowed-geolocations",
+                "isSubCollection": true
+            },
+            "redirectionProtectionDomainReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/redirection-protection-domains",
+                "isSubCollection": true
+            },
+            "type": "security",
+            "signatureSettingReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/signature-settings"
+            },
+            "deceptionResponsePageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/deception-response-pages",
+                "isSubCollection": true
+            },
+            "websocketUrlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/websocket-urls",
+                "isSubCollection": true
+            },
+            "xmlProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/xml-profiles",
+                "isSubCollection": true
+            },
+            "methodReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/methods",
+                "isSubCollection": true
+            },
+            "vulnerabilityReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/vulnerabilities",
+                "isSubCollection": true
+            },
+            "redirectionProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/redirection-protection"
+            },
+            "policyBuilderSessionsAndLoginsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/policy-builder-sessions-and-logins"
+            },
+            "templateReference": {
+                "link": "https://localhost/mgmt/tm/asm/policy-templates/KGO8Jk0HA4ipQRG8Bfd_Dw",
+                "title": "Fundamental"
+            },
+            "policyBuilderHeaderReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/policy-builder-header"
+            },
+            "creatorName": "admin",
+            "urlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/urls",
+                "isSubCollection": true
+            },
+            "headerReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/headers",
+                "isSubCollection": true
+            },
+            "actionItemReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/action-items",
+                "isSubCollection": true
+            },
+            "microserviceReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/microservices",
+                "isSubCollection": true
+            },
+            "xmlValidationFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/xml-validation-files",
+                "isSubCollection": true
+            },
+            "lastUpdateMicros": 0,
+            "jsonProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/json-profiles",
+                "isSubCollection": true
+            },
+            "bruteForceAttackPreventionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/brute-force-attack-preventions",
+                "isSubCollection": true
+            },
+            "disabledActionItemReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/disabled-action-items",
+                "isSubCollection": true
+            },
+            "jsonValidationFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/json-validation-files",
+                "isSubCollection": true
+            },
+            "extractionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/extractions",
+                "isSubCollection": true
+            },
+            "characterSetReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/character-sets",
+                "isSubCollection": true
+            },
+            "suggestionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/suggestions",
+                "isSubCollection": true
+            },
+            "deceptionSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/deception-settings"
+            },
+            "isModified": false,
+            "sensitiveParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/sensitive-parameters",
+                "isSubCollection": true
+            },
+            "generalReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/general"
+            },
+            "versionPolicyName": "/Common/MyPolicy",
+            "policyBuilderCentralConfigurationReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/9876/policy-builder-central-configuration"
+            }
+        }
+    ]
+}
