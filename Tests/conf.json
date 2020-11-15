@@ -3247,7 +3247,9 @@
         "TestEmailRepPlaybook": "Issue 30070",
         "CounterCraft - Test": "Issue 30069",
         "Test-BPA": "Issue 28406",
-        "SymantecEndpointProtection_Test": "Issue 30157"
+        "SymantecEndpointProtection_Test": "Issue 30157",
+        "forcepoint test": "Issue 28043",
+        "Test-BPA_Integration": "Issue 28236"
     },
     "skipped_integrations": {
         
