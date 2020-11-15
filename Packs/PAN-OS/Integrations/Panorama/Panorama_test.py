@@ -54,7 +54,7 @@ def patched_requests_mocker(requests_mock):
         <entry>
             <virtual-router>CORE</virtual-router>
             <destination>0.0.0.0/0</destination>
-            <nexthop>192.168.255.1</nexthop>
+            <nexthop>10.0.0.1</nexthop>
             <metric>100</metric>
             <flags>A O2  </flags>
             <age>4072068</age>
@@ -133,7 +133,7 @@ def patched_requests_mocker(requests_mock):
                 <dyn-addr/>
                 <addr6/>
                 <tag>3</tag>
-                <ip>192.168.255.2</ip>
+                <ip>10.10.10.10</ip>
                 <id>999</id>
                 <addr/>
             </entry>
@@ -155,7 +155,7 @@ def patched_requests_mocker(requests_mock):
                 <dyn-addr/>
                 <addr6/>
                 <tag>34</tag>
-                <ip>192.168.2.2</ip>
+                <ip>10.10.10.10</ip>
                 <id>997</id>
                 <addr/>
             </entry>
@@ -172,7 +172,7 @@ def patched_requests_mocker(requests_mock):
     <result>
         <nh>ip</nh>
         <src>192.168.2.1</src>
-        <ip>192.168.2.2</ip>
+        <ip>10.10.10.10</ip>
         <metric>10</metric>
         <interface>ae1.3</interface>
         <dp>s2dp0</dp>
