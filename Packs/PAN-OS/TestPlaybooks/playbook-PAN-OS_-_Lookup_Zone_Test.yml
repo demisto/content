@@ -1,6 +1,6 @@
-id: playbook-PAN-OS_-_Lookup_Zone_Test
-version: 6
-name: playbook-PAN-OS_-_Lookup_Zone_Test
+id: PAN-OS - Lookup Zone Test
+version: -1
+name: PAN-OS - Lookup Zone Test
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:

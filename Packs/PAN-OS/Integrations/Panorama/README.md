@@ -178,6 +178,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 96. [Creates a URL filtering best practice profile: panorama-create-url-filtering-best-practice-profile](#panorama-create-url-filtering-best-practice-profile)
 97. [Creates a file blocking best practice profile: panorama-create-file-blocking-best-practice-profile](#panorama-create-file-blocking-best-practice-profile)
 98. [Creates a WildFire analysis best practice profile: panorama-create-wildfire-best-practice-profile](#panorama-create-wildfire-best-practice-profile)
+99. [Given an IP address, returns the matching zone based on the device routing table: panorama-lookup-zone](#panorama-lookup-zone)
+100. [Look up a given IP address in the firewall routing table: panorama-lookup-route](#panorama-lookup-route)
 
 
 ### panorama
@@ -2055,7 +2057,8 @@ Creates a policy rule.
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 | tags | Rule tags to create. | Optional | 
-| category | A comma-separated list of URL categories. | Optional | 
+| category | A comma-separated list of URL categories. | Optional |
+| profile_setting | A profile setting group. | Optional | 
 
 
 #### Context Output
@@ -2075,7 +2078,8 @@ Creates a policy rule.
 | Panorama.SecurityRule.Target | string | Target firewall \(Panorama instances\). | 
 | Panorama.SecurityRule.LogForwarding | string | Log forwarding profile \(Panorama instances\). | 
 | Panorama.SecurityRule.DeviceGroup | string | Device group for the rule \(Panorama instances\). | 
-| Panorama.SecurityRules.Tags | String | Rule tags. | 
+| Panorama.SecurityRules.Tags | String | Rule tags. |
+| Panorama.SecurityRules.ProfileSetting | String | Profile setting group. | 
 
 
 #### Command Example
@@ -2207,7 +2211,7 @@ Edits a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to edit. | Required | 
-| element_to_change | Parameter in the security rule to change. Possible values are: "source", "destination", "application", "action", "category", "description", "disabled", "target", "log-forwarding" and "tag". | Required | 
+| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag' or 'profile-setting'. | Required | 
 | element_value | The new value for the parameter. | Required | 
 | pre_post | Pre-rule or post-rule (Panorama instances). Possible values are: "pre-rulebase" and "post-rulebase". | Optional | 
 | behaviour | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
@@ -2230,7 +2234,7 @@ Edits a policy rule.
 | Panorama.SecurityRule.Target | string | Target firewall \(Panorama instances\). | 
 | Panorama.SecurityRule.DeviceGroup | string | Device group for the rule \(Panorama instances\). | 
 | Panorama.SecurityRule.Tags | String | Tags for the rule. | 
-
+| Panorama.SecurityRules.ProfileSetting | String | Profile setting group. |
 
 #### Command Example
 ```!panorama-edit-rule rulename="block_bad_application" element_to_change=action element_value=drop```
@@ -4467,10 +4471,10 @@ Lookup a given IP address in the Firewall routing table
             "dest_ip": "8.8.8.8",
             "dp": "dp0",
             "interface": "ethernet1/1",
-            "ip": "192.168.1.1",
+            "ip": "10.10.10.10",
             "metric": "10",
             "nh": "ip",
-            "src": "192.168.1.139"
+            "src": "10.10.10.10"
         }
     }
 }
@@ -4481,7 +4485,7 @@ Lookup a given IP address in the Firewall routing table
 >### Route Lookup Results
 >|dest_ip|dp|interface|ip|metric|nh|src|
 >|---|---|---|---|---|---|---|
->| 8.8.8.8 | dp0 | ethernet1/1 | 192.168.1.1 | 10 | ip | 192.168.1.139 |
+>| 8.8.8.8 | dp0 | ethernet1/1 | 10.10.10.10 | 10 | ip | 10.10.10.10 |
 
 ### panorama-lookup-zone
 ***
@@ -4536,11 +4540,11 @@ Given an IP address, returns the matching zone based on the device routing table
             "fwd": "vr:default",
             "id": "16",
             "interface": "ethernet1/1",
-            "ip": "192.168.1.1",
+            "ip": "10.10.10.10",
             "metric": "10",
             "name": "ethernet1/1",
             "nh": "ip",
-            "src": "192.168.1.139",
+            "src": "10.10.10.10",
             "tag": "0",
             "vsys": "1",
             "zone": "OUTSIDE"
@@ -4554,4 +4558,4 @@ Given an IP address, returns the matching zone based on the device routing table
 >### Zone Lookup Results
 >|addr|addr6|dest_ip|dp|dyn-addr|fwd|id|interface|ip|metric|name|nh|src|tag|vsys|zone|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  |  | 8.8.8.8 | dp0 |  | vr:default | 16 | ethernet1/1 | 192.168.1.1 | 10 | ethernet1/1 | ip | 192.168.1.139 | 0 | 1 | OUTSIDE |
+>|  |  | 8.8.8.8 | dp0 |  | vr:default | 16 | ethernet1/1 | 10.10.10.10 | 10 | ethernet1/1 | ip | 10.10.10.10 | 0 | 1 | OUTSIDE |

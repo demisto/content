@@ -16,15 +16,17 @@ configuration:
   name: key
   required: true
   type: 4
-- display: Device group - Panorama instances only (write shared for Shared location)
+- additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select the desired Device Group
+  display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
   type: 0
-- display: Vsys - Firewall instances only
+- additionalinfo: Located in the Firewall URL; by default of PAN-OS it is vsys1
+  display: Vsys - Firewall instances only
   name: vsys
   required: false
   type: 0
-- display: Template - Panorama instances only.
+- display: Template - Panorama instances only
   name: template
   required: false
   type: 0
@@ -50,8 +52,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Manages Palo Alto Networks Firewall and Panorama. For more information
-  see the Panorama documentation.
+description: Manage Palo Alto Networks Firewall and Panorama. For more information
+  see Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
 script:
@@ -59,7 +61,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Action to be taken. Possible values are: "show", "get", "set", "edit", "delete", "rename", "clone", "move", "override", "multi-move", "multi-clone", and "complete".'
+      description: Action to be taken, such as show, get, set, edit, delete, rename,
+        clone, move, override, multi-move, multi-clone, or complete.
       isArray: false
       name: action
       predefined:
@@ -78,7 +81,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Category parameter. For example, when exporting a configuration file, use "category=configuration".
+      description: Category parameter. For example, when exporting a configuration
+        file, use "category=configuration".
       isArray: false
       name: category
       required: false
@@ -133,7 +137,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies the type of a move operation (for example, where=after, where=before, where=top, where=bottom).
+      description: Specifies the type of a move operation (for example, where=after,
+        where=before, where=top, where=bottom).
       isArray: false
       name: where
       required: false
@@ -176,13 +181,14 @@ script:
       secret: false
     - default: false
       defaultValue: keygen,config,commit,op,report,log,import,export,user-id,version
-      description: Request type (e.g., export, import, log, config).
+      description: Request type (e.g. export, import, log, config).
       isArray: false
       name: type
       required: false
       secret: false
     - default: false
-      description: The time that the PCAP was received on the firewall. Used for threat PCAPs.
+      description: The time that the PCAP was received on the firewall. Used for threat
+        PCAPs.
       isArray: false
       name: search-time
       required: false
@@ -217,7 +223,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the predefined threats list from a Firewall or Panorama and stores it as a JSON file in the context.
+    description: Gets the predefined threats list from a Firewall or Panorama and stores it
+      as a JSON file in the context.
     execution: false
     name: panorama-get-predefined-threats-list
     outputs:
@@ -255,7 +262,10 @@ script:
       description: SSDeep hash of the file.
       type: string
   - deprecated: false
-    description: Commits a configuration to the Palo Alto firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push      the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+    description: Commits a configuration to the Palo Alto firewall or Panorama, but does
+      not validate if the commit was successful. Committing to Panorama does not push
+      the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group
+      command.
     execution: false
     name: panorama-commit
     outputs:
@@ -832,7 +842,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Protocol for the new service. Possible values are: "tcp", "udp", and "sctp".'
+      description: Protocol for the new service.
       isArray: false
       name: protocol
       predefined:
@@ -842,7 +852,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Destination port for the new service.
+      description: Destination port  for the new service.
       isArray: false
       name: destination_port
       required: true
@@ -1225,7 +1235,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of sites to add to the custom URL category.
+      description: A comma separated list of sites to add to the custom URL category.
       isArray: true
       name: sites
       required: false
@@ -1241,7 +1251,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of categories to add to the custom URL category.
+      description: A comma separated list of categories to add to the custom URL category.
       isArray: true
       name: categories
       required: false
@@ -1426,7 +1436,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Action for the URL categories. Possible values are: "allow", "block", "alert", "continue", and override".'
+      description: Action for the URL categories. Can be "allow", "block", "alert",
+        "continue", or "override".
       isArray: false
       name: action
       predefined:
@@ -1450,7 +1461,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: URL filter description.
+      description: URL Filter description.
       isArray: false
       name: description
       required: false
@@ -1497,7 +1508,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Element to change. Possible values are: "override_allow_list", and "override_block_list".'
+      description: Element to change. Can be "override_allow_list", or "override_block_list"
       isArray: false
       name: element_to_change
       predefined:
@@ -1664,7 +1675,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of EDL. Possible values are: "ip", "url", and "domain".'
+      description: The type of EDL.
       isArray: false
       name: type
       predefined:
@@ -1675,7 +1686,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Time interval for pulling and updating the EDL. Possible values are: "five-minute" and "hourly".'
+      description: Time interval for pulling and updating the EDL.
       isArray: false
       name: recurring
       predefined:
@@ -1684,7 +1695,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Certificate Profile name for the URL that was previously uploaded to PAN OS.
+      description: Certificate Profile name for the URL that was previously uploaded.
+        to PAN OS.
       isArray: false
       name: certificate_profile
       required: false
@@ -1696,7 +1708,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The device group for which to return addresses for the EDL (Panorama instances).
+      description: The device group for which to return addresses for the EDL (Panorama
+        instances).
       isArray: false
       name: device-group
       required: false
@@ -1736,7 +1749,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The element to change. Possible values are: "url", "recurring", "certificate_profile", and "description".'
+      description: The element to change (“url”, “recurring”, “certificate_profile”,
+        “description”).
       isArray: false
       name: element_to_change
       predefined:
@@ -1816,7 +1830,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the EDL. Required when refreshing an EDL object which is configured on Panorama. Possible values are: "ip", "url", and "domain".'
+      description: The type of the EDL. Required when refreshing an EDL object which
+        is configured on Panorama.
       isArray: false
       name: edl_type
       predefined:
@@ -1858,7 +1873,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Action for the rule. Possible values are: "allow", "deny", and "drop".'
+      description: Action for the rule. Can be "allow", "deny", or "drop".
       isArray: false
       name: action
       predefined:
@@ -1934,7 +1949,7 @@ script:
       secret: false
     - default: false
       defaultValue: any
-      description: A comma-separated list of application object names for the rule.
+      description: A comma-separated list of application object namesfor the rule
         to create.
       isArray: true
       name: application
@@ -1949,7 +1964,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Pre rule or Post rule (Panorama instances). Possible values are: "pre-rulebase" and "post-rulebase".'
+      description: Pre rule or Post rule (Panorama instances).
       isArray: false
       name: pre_post
       predefined:
@@ -1986,6 +2001,12 @@ script:
       description: A comma-separated list of URL categories.
       isArray: false
       name: category
+      required: false
+      secret: false
+    - default: false
+      description: A profile setting group.
+      isArray: false
+      name: profile_setting
       required: false
       secret: false
     deprecated: false
@@ -2034,6 +2055,9 @@ script:
       type: string
     - contextPath: Panorama.SecurityRules.Tags
       description: Rule tags.
+      type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: Profile setting group.
       type: String
   - arguments:
     - default: false
@@ -2134,6 +2158,9 @@ script:
     - contextPath: Panorama.SecurityRule.Tags
       description: Rule tags.
       type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: Profile setting group.
+      type: String
   - arguments:
     - default: false
       description: Name of the rule to move.
@@ -2197,7 +2224,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Parameter in the security rule to change. Possible values are: "source", "destination", "application", "action", "category", "description", "disabled", "target", "log-forwarding" and "tag".'
+      description: Parameter in the security rule to change. Can be 'source', 'destination',
+        'application', 'action', 'category', 'description', 'disabled', 'target',
+        'log-forwarding', 'tag' or 'group_profile'.
       isArray: false
       name: element_to_change
       predefined:
@@ -2211,6 +2240,7 @@ script:
       - target
       - log-forwarding
       - tag
+      - profile-setting
       required: true
       secret: false
     - default: false
@@ -2221,7 +2251,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Pre-rule or post-rule (Panorama instances). Possible values are: "pre-rulebase" and "post-rulebase".'
+      description: Pre-rule or post-rule (Panorama instances).
       isArray: false
       name: pre_post
       predefined:
@@ -2295,7 +2325,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Pre rule or Post rule (Panorama instances). Possible values are: "pre-rulebase" and "post-rulebase".'
+      description: Pre rule or Post rule (Panorama instances).
       isArray: false
       name: pre_post
       predefined:
@@ -2413,7 +2443,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Type of packet capture. Possible values are: "application-pcap", "filter-pcap", "threat-pcap", and "dlp-pcap".'
+      description: Type of Packet Capture.
       isArray: false
       name: pcapType
       predefined:
@@ -2465,15 +2495,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The device name on which the PCAP is stored. For further information,
-        see the Panorama XML API documentation.
+      description: The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation.
       isArray: false
       name: deviceName
       required: false
       secret: false
     - default: false
-      description: The session ID of the PCAP. For further information, see the Panorama
-        XML API documentation.
+      description: The Session ID of the PCAP. For further information, see the Panorama XML API Documentation.
       isArray: false
       name: sessionID
       required: false
@@ -2522,7 +2550,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Type of packet capture. Possible values are: "application-pcap", "filter-pcap", "threat-pcap", and "dlp-pcap".'
+      description: Type of Packet Capture.
       isArray: false
       name: pcapType
       predefined:
@@ -2647,7 +2675,8 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of logs to retrieve. The default is 100. Maximum is 5000.
+      description: The number of logs to retrieve. The default is 100. Maximum is
+        5000.
       isArray: false
       name: number_of_logs
       required: false
@@ -2809,7 +2838,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Rules location. Possible values are: "pre-rulebase" and "post-rulebase". Mandatory for Panorama instances.'
+      description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
+        for Panorama instances.
       isArray: false
       name: pre_post
       predefined:
@@ -2873,7 +2903,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The log type. Possible values are: "threat", "traffic", "wildfire", "url", and "data".'
+      description: The log type. Can be "threat", "traffic", "wildfire", "url", or
+        "data".
       isArray: false
       name: log-type
       predefined:
@@ -2949,7 +2980,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The URL. e.g., "safebrowsing.googleapis.com".
+      description: URL, e.g "safebrowsing.googleapis.com".
       isArray: true
       name: url
       required: false
@@ -3029,8 +3060,8 @@ script:
       description: Application associated with the session.
       type: String
     - contextPath: Panorama.Monitor.Logs.Category
-      description: The URL category of the URL subtype. For the WildFire subtype, it is
-        the verdict on the file. Can be "malicious", "phishing", "grayware",
+      description: The URL category of the URL subtype. For WildFire subtype, it is
+        the verdict on the file, and can be either "malicious", "phishing", "grayware"’,
         or "benign". For other subtypes, the value is "any".
       type: String
     - contextPath: Panorama.Monitor.Logs.DeviceName
@@ -3161,7 +3192,7 @@ script:
       description: The zone to which the session was destined.
       type: String
     - contextPath: Panorama.Monitor.Logs.TimeGenerated
-      description: Time that the log was generated on the data plane.
+      description: Time that the log was generated on the dataplane.
       type: String
     - contextPath: Panorama.Monitor.Logs.URLCategoryList
       description: |-
@@ -3424,7 +3455,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type for the next hop. Possible values are: "ip-address", "next-vr", "fqdn", and "discard".'
+      description: 'The type for the next hop. Can be: "ip-address", "next-vr", "fqdn",
+        or "discard".'
       isArray: false
       name: nexthop_type
       predefined:
@@ -3782,7 +3814,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Reboots the firewall device.
+    description: Reboots the Firewall device.
     execution: false
     name: panorama-device-reboot
   - arguments:
@@ -3841,9 +3873,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The security profile for which to get information. Possible values are: "data-filtering",
+      description: The security profile for which to get information. Can be "data-filtering",
         "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or
-        "wildfire-analysis".'
+        "wildfire-analysis".
       isArray: false
       name: security_profile
       predefined:
@@ -3993,7 +4025,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Security profile type. Possible values are: "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", and "wildfire-analysis".'
+      description: Security profile type. Can be 'data-filtering', 'file-blocking',
+        'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.'
       isArray: false
       name: profile_type
       predefined:
@@ -4020,7 +4053,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The location of the rules. Possible values are: "pre-rulebase" or "post-rulebase". Mandatory for Panorama instances.'
+      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'.
+        Mandatory for Panorama instances.
       isArray: false
       name: pre_post
       predefined:
@@ -4036,7 +4070,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The location of the rules. Possible values are: "pre-rulebase" or "post-rulebase". Mandatory for Panorama instances.'
+      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'.
+        Mandatory for Panorama instances.
       isArray: false
       name: pre_post
       predefined:
