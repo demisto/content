@@ -7,6 +7,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 import traceback
+import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -412,8 +413,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
 
 
 def get_assigned_user_for_app_command(client, args):
-    user_id = args.get('user-id')
-    application_id = args.get('application-id')
+    user_id = args.get('user_id')
+    application_id = args.get('application_id')
 
     res = client.get_assigned_user_for_app(application_id, user_id)
 
@@ -440,6 +441,7 @@ def fetch_incidents(client, query_filter, fetch_time, fetch_limit):
             fetch_limit: (int) Maximum number of incidents to return.
         Returns:
             incidents: (dict) Incidents/events that will be created in Cortex XSOAR
+            next_run: (dict) The "last run" object for the next run.
     """
 
     last_run = demisto.getLastRun()
@@ -449,23 +451,35 @@ def fetch_incidents(client, query_filter, fetch_time, fetch_limit):
 
     demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
     if not incidents:
-        try:
-            log_events = client.get_logs(query_filter, last_run_time, time_now)
-            for entry in log_events:
-                # mapping will be done at the classification and mapping
-                incident = {'rawJSON': json.dumps(entry)}
-                incidents.append(incident)
+        log_events = client.get_logs(query_filter, last_run_time, time_now)
+        for entry in log_events:
+            # mapping will be done at the classification and mapping
+            incident = {
+                'rawJSON': json.dumps(entry),
+                'name': get_incident_title(entry)
+            }
+            incidents.append(incident)
 
-        except Exception as e:
-            demisto.error(f'Failed to fetch Okta log events from {last_run_time} to {time_now}.')
-            raise e
-
-    demisto.setLastRun({
+    next_run = {
         'incidents': incidents[fetch_limit:],
         'last_run_time': time_now
-    })
+    }
 
-    return incidents[:fetch_limit]
+    return incidents[:fetch_limit], next_run
+
+
+def get_incident_title(entry):
+    employee_name = demisto.dt(entry, 'target(val.type == "User").displayName')
+    app_name = demisto.dt(entry, 'target(val.type == "AppInstance").displayName')
+
+    if entry.get('eventType') == 'application.user_membership.add':
+        incident_title = f'Added {employee_name} to {app_name}'
+    elif entry.get('eventType') == 'application.user_membership.remove':
+        incident_title = f'Removed {employee_name} from {app_name}'
+    else:
+        incident_title = entry.get('displayMessage')
+
+    return incident_title
 
 
 def main():
@@ -487,7 +501,7 @@ def main():
 
     fetch_limit = int(params.get('max_fetch'))
     fetch_query_filter = params.get('fetch_query_filter')
-    fetch_time = parse_date_range(params.get('fetch_time'), date_format=DATE_FORMAT)
+    fetch_time = dateparser.parse(params.get('fetch_time')).strftime(DATE_FORMAT)
 
     headers = {
         'Content-Type': 'application/json',
@@ -541,7 +555,9 @@ def main():
             return_results(get_assigned_user_for_app_command(client, args))
 
         elif command == 'fetch-incidents':
-            demisto.incidents(fetch_incidents(client, fetch_query_filter, fetch_time, fetch_limit))
+            incidents, next_run = fetch_incidents(client, fetch_query_filter, fetch_time, fetch_limit)
+            demisto.incidents(incidents)
+            demisto.setLastRun(next_run)
 
     except Exception:
         # For any other integration command exception, return an error

@@ -390,7 +390,7 @@ def test_fetch_incidents_two_logs_batches(mocker):
     """
     import json
     mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
-    events = fetch_incidents(
+    events, _ = fetch_incidents(
         client=mock_client(),
         query_filter='mock_query_filter',
         fetch_time='mock_fetch_time',
@@ -415,7 +415,7 @@ def test_fetch_incidents_fetch_limit(mocker):
         - Ensure only two events are returned in incident the correct format.
     """
     mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
-    events = fetch_incidents(
+    events, _ = fetch_incidents(
         client=mock_client(),
         query_filter='mock_query_filter',
         fetch_time='mock_fetch_time',

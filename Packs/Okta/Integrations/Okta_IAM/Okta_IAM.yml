@@ -307,10 +307,10 @@ script:
     name: get-mapping-fields
   - name: okta-get-assigned-user-for-app
     arguments:
-    - name: user-id
+    - name: user_id
       required: true
       description: ID of the user for which to get information.
-    - name: application-id
+    - name: application_id
       required: true
       description: ID of the application for which to get information.
     outputs:
