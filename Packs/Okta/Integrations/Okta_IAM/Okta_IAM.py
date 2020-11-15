@@ -148,6 +148,9 @@ class Client(BaseClient):
                 logs_batch (dict): The logs batch.
                 next_page (str): URL for next API call (equals '' on last batch).
         """
+        if not url_suffix and not full_url:
+            return None, None
+
         res = self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -469,15 +472,12 @@ def fetch_incidents(client, query_filter, fetch_time, fetch_limit):
 
 
 def get_incident_title(entry):
-    employee_name = demisto.dt(entry, 'target(val.type == "User").displayName')
-    app_name = demisto.dt(entry, 'target(val.type == "AppInstance").displayName')
+    default_title = 'Okta Event'
+    incident_title = entry.get('displayMessage', default_title)
 
-    if entry.get('eventType') == 'application.user_membership.add':
-        incident_title = f'Added {employee_name} to {app_name}'
-    elif entry.get('eventType') == 'application.user_membership.remove':
-        incident_title = f'Removed {employee_name} from {app_name}'
-    else:
-        incident_title = entry.get('displayMessage')
+    user_name = demisto.dt(entry, 'target(val.type == "User").displayName')
+    if user_name and len(user_name) > 0:
+        incident_title += f' ({user_name})'
 
     return incident_title
 

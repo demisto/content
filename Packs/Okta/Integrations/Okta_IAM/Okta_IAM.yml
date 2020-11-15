@@ -336,7 +336,7 @@ script:
       type: string
     description: Gets a specific user assignment for an application by id.
   dockerimage: demisto/python3:3.8.6.12176
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
