@@ -11,10 +11,10 @@ from Tests.scripts.collect_tests_and_content_packs import (
     get_from_version_and_to_version_bounderies)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 
-# with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
-#     MOCK_ID_SET = json.load(mock_id_set_f)
-# with open('Tests/scripts/infrastructure_tests/tests_data/mock_conf.json', 'r') as mock_conf_f:
-#     MOCK_CONF = json.load(mock_conf_f)
+with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
+    MOCK_ID_SET = json.load(mock_id_set_f)
+with open('Tests/scripts/infrastructure_tests/tests_data/mock_conf.json', 'r') as mock_conf_f:
+    MOCK_CONF = json.load(mock_conf_f)
 
 
 class TestUtils(object):
