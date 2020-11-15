@@ -19,9 +19,7 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
-from demisto_sdk.commands.common.tools import str2bool
 from typing import Tuple
-from argparse import ArgumentTypeError
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
@@ -917,14 +915,10 @@ class Pack(object):
             # Determine if pack versions were aggregated during upload
             pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
             if pack_uploaded_in_prepare_content:
-                try:
-                    agg_str = str2bool(successful_packs_dict[self._pack_name].get('aggregated'))
-                    if agg_str:
-                        self._aggregated = True
-                        self._aggregation_str = agg_str
-                except ArgumentTypeError:
-                    # No need to raise here
-                    pass
+                agg_str = successful_packs_dict[self._pack_name].get('aggregated')
+                if agg_str:
+                    self._aggregated = True
+                    self._aggregation_str = agg_str
             logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
         return task_status, False
