@@ -110,8 +110,6 @@ def test_create_install_private_testing_pack(mocker):
 
     """
 
-    prints_manager = ParallelPrintsManager(len(BuildMock().servers))
-
     def mocked_generic_request_func(self, path: str, method, body=None, accept=None,
                                     _request_timeout=None):
         if path == '/contentpacks/marketplace/install':
@@ -121,7 +119,7 @@ def test_create_install_private_testing_pack(mocker):
     mocker.patch.object(demisto_client, 'generic_request_func',
                         side_effect=mocked_generic_request_func)
     mock_build = BuildMock()
-    install_private_testing_pack(mock_build, prints_manager, 'testing/path/to/test_pack.zip')
+    install_private_testing_pack(mock_build, 'testing/path/to/test_pack.zip')
     assert script.SUCCESS_FLAG
 
 
