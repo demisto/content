@@ -12,5 +12,29 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Malware": {
+            "mandatory": true,
+            "display_name": "Malware"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "AccessInvestigation": {
+            "mandatory": true,
+            "display_name": "Access Investigation"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "Malware",
+        "CommonTypes",
+        "AccessInvestigation"
+    ]
 }
