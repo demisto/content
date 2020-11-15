@@ -984,13 +984,9 @@ jobs:
             - run:
                 name: Validate Premium Packs
                 shell: /bin/bash
-                when:
-                  condition:
-                    equal: [ add_index_test, << pipeline.git.branch >> ]
+                when: always
                 command: |
                   ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
-                  export RETVAL=$?
-                  exit $RETVAL
             - run:
                 name: Run Tests - Demisto Master
                 shell: /bin/bash
