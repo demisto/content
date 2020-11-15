@@ -1130,19 +1130,22 @@ def configure_old_and_new_integrations(build: Build,
         old_integrations_to_configure: Integrations to configure that are already exists
         new_integrations_to_configure: Integrations to configure that were created in this build
         demisto_client: A demisto client
+
+    Returns:
+        A tuple with two lists:
+        1. List of configured instances of old integrations
+        2. List of configured instances of new integrations
     """
     old_modules_instances = []
     new_modules_instances = []
     for integration in old_integrations_to_configure:
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        module_instance = configure_integration_instance(integration, demisto_client, prints_manager,
-                                                         placeholders_map)
+        module_instance = configure_integration_instance(integration, demisto_client, placeholders_map)
         if module_instance:
             old_modules_instances.append(module_instance)
     for integration in new_integrations_to_configure:
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        module_instance = configure_integration_instance(integration, demisto_client, prints_manager,
-                                                         placeholders_map)
+        module_instance = configure_integration_instance(integration, demisto_client, placeholders_map)
         if module_instance:
             new_modules_instances.append(module_instance)
     return old_modules_instances, new_modules_instances

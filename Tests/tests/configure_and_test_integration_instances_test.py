@@ -1,23 +1,28 @@
 from Tests.configure_and_test_integration_instances import configure_old_and_new_integrations
-from munch import Munch
-
-from Tests.test_content import ParallelPrintsManager
 
 
 def test_configure_old_and_new_integrations(mocker):
+    """
+    Given:
+        - A list of new integration that should be configured
+        - A list of old integrations that should be configured
+    When:
+        - Running 'configure_old_and_new_integrations' method on those integrations
+
+    Then:
+        - Assert there the configured old integrations has no intersection with the configured new integrations
+    """
     def configure_integration_instance_mocker(integration,
                                               _,
-                                              __,
-                                              ___):
+                                              __):
         return integration
 
     mocker.patch('Tests.configure_and_test_integration_instances.configure_integration_instance',
                  side_effect=configure_integration_instance_mocker)
-    build_mock = Munch(servers=["server1"])
     old_modules_instances, new_modules_instances = configure_old_and_new_integrations(
-        build_mock,
-        ['old_integration1', 'old_integration2'],
-        ['new_integration1', 'new_integration2'],
-        None
+        build=mocker.MagicMock(servers=['server1']),
+        old_integrations_to_configure=['old_integration1', 'old_integration2'],
+        new_integrations_to_configure=['new_integration1', 'new_integration2'],
+        demisto_client=None
     )
     assert not set(old_modules_instances).intersection(new_modules_instances)
