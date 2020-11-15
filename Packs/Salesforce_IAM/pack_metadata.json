@@ -1,0 +1,16 @@
+{
+    "name": "Salesforce IAM",
+    "description": "## FILL MANDATORY FIELD ##",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-11-15T15:50:05Z",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
