@@ -49,8 +49,14 @@ class Client(BaseClient):
             url_suffix='import/upload'
         )
         form = response_get_form.get('data', {}).get('result', {}).get('form', {})
-        port_url = form['url']  # if no url field in form, we should have an exception
-        params = form['parameters']
+        
+        
+        port_url = form.get('url') 
+        params = form.get('parameters')
+        
+        if port_url is None or params is None:
+               raise ValueError('Failed to initiate an import operation')
+                
 
         # Creating a temp file with the same data of the given file
         # This way the uploaded file has a path that the API can parse properly
@@ -187,7 +193,7 @@ def import_command(client: Client, arguments: Dict[str, Any]):
             raise ValueError(results.get('message'))
         else:
             raise ValueError(
-                'No response from server, check your request')
+                'No response from server')
 
     readable_output = tableToMarkdown('Import Results', remove_empty_elements(results_data),
                                       headers=('created_at', 'id', 'operation', 'status'),
@@ -196,6 +202,7 @@ def import_command(client: Client, arguments: Dict[str, Any]):
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
+        raw_response = results,
         outputs=results_data
     )
 
@@ -214,7 +221,8 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
     # No 'data' field was returned from the request, meaning the input was invalid
     if results_data is None:
         if results.get('message'):
-            raise ValueError(results.get('message'))
+            
+            ValueError(results.get('message'))
         else:
             raise ValueError('No response from server')
 
@@ -225,6 +233,7 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
+        raw_response = results,
         outputs=results_data
     )
 
@@ -241,11 +250,6 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
      and its readable output OR if the argument is_entry is set to True, then a war room entry is returned
     """
     results = client.check_status(arguments)
-
-    # If checking on an export to entry operation, manually change the operation name
-    # For other operations, the operation matches the operation field in the API's response, so no change is needed
-    if arguments.get('is_entry'):
-        results['data']['operation'] = 'export/entry'
     results_data = results.get('data')
 
     # Check if no 'data' field was returned from the request, meaning the input was invalid
@@ -255,16 +259,28 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         else:
             raise ValueError('No response from server, check your request')
 
+    # If checking on an export to entry operation, manually change the operation name
+    # For other operations, the operation matches the operation field in the API's response, so no change is needed
+    if argToBoolean(arguments.get('is_entry')):
+        results['data']['operation'] = 'export/entry'
+        
     # Check if an export to war room entry operation is finished
     # If it did - create the entry
-    if results.get('data', [{}]).get('status') == 'finished' and argToBoolean(arguments.get('is_entry', 'False')):
-        url = results.get('data', {}).get('result', {}).get('files', [{}])[0].get('url')
-        file_name = results.get('data', {}).get('result', {}).get('files', [{}])[0].get('filename')
+    if results.get('data', {}).get('status') == 'finished' and argToBoolean(arguments.get('is_entry', 'False')):
+        results_info = results.get('data', {}).get('result', {}).get('files', [{}])[0]
+        url = results_info.get('url')
+        file_name = results_info.get('filename')
         file_data = client.get_file_from_url(url)
         war_room_file = fileResult(filename=file_name, data=file_data)
+        readable_output = tableToMarkdown('Check Status Results', remove_empty_elements(results_data),
+                                  headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
+                                           'status'),
+                                  headerTransform=string_to_table_header)
         return_results(CommandResults(
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
+            raw_response = results,
+            readable_output=readable_output,
             outputs=results_data
         ))
         return war_room_file
@@ -278,6 +294,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
             readable_output=readable_output,
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
+            raw_response = results,
             outputs=results_data
         )
 
@@ -317,6 +334,7 @@ def export_command(client: Client, arguments: Dict[str, Any]):
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
+        raw_response = results,
         outputs=results_data
     )
 
@@ -339,33 +357,35 @@ def test_module(client: Client):
 
 def main() -> None:
     try:
-        api_key = demisto.params().get('apikey')
-        verify = not demisto.params().get('insecure', False)
-        proxy = demisto.params().get('proxy', False)
+        params = demisto.params()
+        api_key = params.get('apikey')
+        verify = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
         headers = {
             'Authorization': f'Bearer {api_key}'
         }
         client = Client(headers, verify, proxy)
-
-        if demisto.command() == 'cloudconvert-import':
+        command = demisto.command()
+        
+        if command == 'cloudconvert-import':
             return_results(import_command(client, demisto.args()))
 
-        elif demisto.command() == 'cloudconvert-convert':
+        elif command == 'cloudconvert-convert':
             return_results(convert_command(client, demisto.args()))
 
-        elif demisto.command() == 'cloudconvert-checkstatus':
+        elif command == 'cloudconvert-checkstatus':
             return_results(check_status_command(client, demisto.args()))
 
-        elif demisto.command() == 'cloudconvert-export':
+        elif command == 'cloudconvert-export':
             return_results(export_command(client, demisto.args()))
 
-        elif demisto.command() == 'test-module':
+        elif command == 'test-module':
             return_results(test_module(client))
 
     except Exception as e:
         err_msg = 'Task id not found or expired' if 'No query results for model' in str(e) else \
             ('No more conversion minutes for today for this user' if 'Payment Required' in str(e) else str(e))
-        return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
+        return_error(f'Failed to execute {command} command. Error: {err_msg}', error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
