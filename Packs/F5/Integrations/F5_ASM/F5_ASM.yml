@@ -121,7 +121,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: indicates if to allow the new policy
+      description: Whether to allow the new policy.
       isArray: false
       name: allow
       predefined:
@@ -131,7 +131,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: indicates if to activate the new policy
+      description: Whether to activate the new policy.
       isArray: false
       name: active
       predefined:
