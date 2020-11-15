@@ -152,7 +152,7 @@ class RepeatedTimer:
             self.is_running = True
 
     def stop(self):
-        self._timer.cancel()
+        self._timer.cancel()  # type: ignore[union-attr]
         self.is_running = False
 
 
