@@ -1,14 +1,15 @@
 id: CloudConvert
 version: -1
 name: CloudConvert
+description: Use this Playbook to convert a file using CloudConvert
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0b8fdf08-4822-4008-8ace-f847f6212f89
+    taskid: e312dcb6-0a30-4bf8-87d7-fe224ea3e1c7
     type: start
     task:
-      id: 0b8fdf08-4822-4008-8ace-f847f6212f89
+      id: e312dcb6-0a30-4bf8-87d7-fe224ea3e1c7
       version: -1
       name: ""
       iscommand: false
@@ -32,17 +33,17 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: a5ee5a2e-e411-4d26-8112-0a14b913434d
+    taskid: c5079d33-05c6-4417-8bf7-777e4521dec2
     type: regular
     task:
-      id: a5ee5a2e-e411-4d26-8112-0a14b913434d
+      id: c5079d33-05c6-4417-8bf7-777e4521dec2
       version: -1
-      name: CloudConvert-import
-      script: '|||CloudConvert-import'
+      name: cloudconvert-import
+      description: Import the file
+      script: '|||cloudconvert-import'
       type: regular
       iscommand: true
       brand: ""
-      description: Import the file
     nexttasks:
       '#none#':
       - "2"
@@ -81,10 +82,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 39225273-a191-49f2-84b5-830e7d95e5e4
+    taskid: b2b725f9-16ba-4a01-80fd-07536cbda1de
     type: playbook
     task:
-      id: 39225273-a191-49f2-84b5-830e7d95e5e4
+      id: b2b725f9-16ba-4a01-80fd-07536cbda1de
       version: -1
       name: GenericPolling
       description: |-
@@ -112,12 +113,12 @@ tasks:
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
-        simple: CloudConvert-checkstatus
+        simple: cloudconvert-checkstatus
       Timeout:
         simple: "10"
       dt:
         simple: CloudConvert.Task(val.status != 'finished').id
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""
@@ -137,17 +138,17 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 35be5e52-a197-4fb3-8a9f-dd4ed4776171
+    taskid: f8d2503c-e635-4066-8379-f2c2825d95d3
     type: regular
     task:
-      id: 35be5e52-a197-4fb3-8a9f-dd4ed4776171
+      id: f8d2503c-e635-4066-8379-f2c2825d95d3
       version: -1
-      name: CloudConvert-convert
-      script: '|||CloudConvert-convert'
+      name: cloudconvert-convert
+      description: Convert the file
+      script: '|||cloudconvert-convert'
       type: regular
       iscommand: true
       brand: ""
-      description: Convert the file
     nexttasks:
       '#none#':
       - "5"
@@ -182,10 +183,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: c040e3ee-937c-4099-87a0-8cd9693b8e8b
+    taskid: 60b6cca7-30fa-4eb4-8a9d-2cfd1facc193
     type: playbook
     task:
-      id: c040e3ee-937c-4099-87a0-8cd9693b8e8b
+      id: 60b6cca7-30fa-4eb4-8a9d-2cfd1facc193
       version: -1
       name: GenericPolling
       description: |-
@@ -224,12 +225,12 @@ tasks:
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
-        simple: CloudConvert-checkstatus
+        simple: cloudconvert-checkstatus
       Timeout:
         simple: "10"
       dt:
         simple: CloudConvert.Task(val.status!='finished').id
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""
@@ -249,17 +250,17 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 6eb6e3f4-a431-48ce-85be-a5faa5d26239
+    taskid: 98edea88-9836-489a-8bd4-86678a102915
     type: regular
     task:
-      id: 6eb6e3f4-a431-48ce-85be-a5faa5d26239
+      id: 98edea88-9836-489a-8bd4-86678a102915
       version: -1
-      name: CloudConvert-export
-      script: '|||CloudConvert-export'
+      name: cloudconvert-export
+      description: Export the file
+      script: '|||cloudconvert-export'
       type: regular
       iscommand: true
       brand: ""
-      description: Export the file
     nexttasks:
       '#none#':
       - "13"
@@ -294,10 +295,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 5500260b-4604-4723-84a7-cec69927ecf6
+    taskid: e1bc6465-cd66-4bc2-8cce-263a33fa40d2
     type: playbook
     task:
-      id: 5500260b-4604-4723-84a7-cec69927ecf6
+      id: e1bc6465-cd66-4bc2-8cce-263a33fa40d2
       version: -1
       name: GenericPolling
       description: |-
@@ -335,7 +336,7 @@ tasks:
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
-        simple: CloudConvert-checkstatus
+        simple: cloudconvert-checkstatus
       Timeout:
         simple: "10"
       dt:
@@ -360,16 +361,16 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: bf200b39-bbd2-4239-8aa7-b982669cfaa2
+    taskid: a00de805-42ab-414e-8420-9176f87c37da
     type: condition
     task:
-      id: bf200b39-bbd2-4239-8aa7-b982669cfaa2
+      id: a00de805-42ab-414e-8420-9176f87c37da
       version: -1
       name: Is the export is to war room entry
+      description: Check if exporting to entry
       type: condition
       iscommand: false
       brand: ""
-      description: Check if exporting to entry
     nexttasks:
       '#default#':
       - "14"
@@ -402,10 +403,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 64c60aa9-d708-49af-8edd-1ab95b3d7a6c
+    taskid: 89efca25-1c95-4912-87ce-a0d411d51da7
     type: playbook
     task:
-      id: 64c60aa9-d708-49af-8edd-1ab95b3d7a6c
+      id: 89efca25-1c95-4912-87ce-a0d411d51da7
       version: -1
       name: GenericPolling
       description: |-
@@ -441,7 +442,7 @@ tasks:
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
-        simple: CloudConvert-checkstatus
+        simple: cloudconvert-checkstatus
       Timeout:
         simple: "10"
       dt:
@@ -480,12 +481,14 @@ inputs:
 - key: url
   value: {}
   required: false
-  description: This is the url of the imported file
+  description: This is the url of the imported file. If an entry id is supplied, do
+    not use this argument
   playbookInputQuery:
 - key: entry_id
   value: {}
   required: false
-  description: This is the entry id of the imported file
+  description: This is the entry id of the imported file. If a url is supplied, do
+    not use this argument
   playbookInputQuery:
 - key: output_format
   value: {}
@@ -503,4 +506,3 @@ outputs: []
 tests:
 - CloudConvert-test
 fromversion: 5.0.0
-description: Use this Playbook to convert a file using CloudConvert
