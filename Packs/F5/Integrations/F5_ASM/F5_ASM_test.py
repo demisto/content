@@ -439,7 +439,7 @@ def test_f5_delete_policy_xml_profile_command(mocker):
 
 
 def test_f5_list_policy_signatures_command(mocker):
-    from f5_ASM import f5_list_policy_signatures_command
+    from F5_ASM import f5_list_policy_signatures_command
     mocked_client = mocker.Mock()
     mocked_client.list_policy_signatures.return_value = MOCK_EMPTY_RESPONSE
     result = f5_list_policy_signatures_command(mocked_client, 'unimportant').to_context()
