@@ -1,0 +1,669 @@
+id: Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration
+version: -1
+fromversion: 5.0.0
+name: Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration
+description: |
+  This playbook remediates Prisma Cloud GCP Kubernetes Engine alerts.  It calls sub-playbooks that perform the actual remediation steps.
+
+  Remediation:
+  * GCP Kubernetes Engine Clusters Basic Authentication is set to Enabled
+  * GCP Kubernetes Engine Clusters have HTTP load balancing disabled
+  * GCP Kubernetes Engine Clusters have Legacy Authorization enabled
+  * GCP Kubernetes Engine Clusters have Master authorized networks disabled
+  * GCP Kubernetes Engine Clusters have Network policy disabled
+  * GCP Kubernetes Engine Clusters have Stackdriver Logging disabled
+  * GCP Kubernetes Engine Clusters have Stackdriver Monitoring disabled
+  * GCP Kubernetes Engine Clusters have binary authorization disabled
+  * GCP Kubernetes Engine Clusters web UI/Dashboard is set to Enabled
+  * GCP Kubernetes cluster intra-node visibility disabled
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61bee172-14d4-4a48-815c-913b49bef800
+    type: start
+    task:
+      id: 61bee172-14d4-4a48-815c-913b49bef800
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+    type: title
+    task:
+      id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c29ab7ff-a6fd-4211-80e8-eeccafa8981c
+    type: condition
+    task:
+      id: c29ab7ff-a6fd-4211-80e8-eeccafa8981c
+      version: -1
+      name: Is there a policy to remediate?
+      description: Checks for a Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 14ec4b6b-a5b7-4981-85be-a18ba5f49a84
+    type: condition
+    task:
+      id: 14ec4b6b-a5b7-4981-85be-a18ba5f49a84
+      version: -1
+      name: Update Kubernetes Engine automatically?
+      description: Determines if the Kubernetes Engine is updated automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRemediateKubernetesEngine
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 16fb9188-5edd-4d99-814a-33090e0b03d2
+    type: condition
+    task:
+      id: 16fb9188-5edd-4d99-814a-33090e0b03d2
+      version: -1
+      name: Auto remediate?
+      description: Determines if the event is automatically remediated or manually
+        updated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "Yes":
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: ${incident.id} Autoremediate?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: dc7b1198-6db2-4115-8ac2-e6661561335f
+    type: condition
+    task:
+      id: dc7b1198-6db2-4115-8ac2-e6661561335f
+      version: -1
+      name: Execute playbook
+      description: Executes the appropriate remediation sub-playbook based on the
+        Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      cluster:
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: cluster
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 6e125379-081e-4b06-a7ba-f04da2f0901a
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: f57baa2a-6039-4a17-94e8-0be723bcdc75
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: e1b70bb4-bb77-4326-93d5-5dd9c5170d3f
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 6ddbfdfe-3936-43d0-8157-97a7899beae6
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 53793c32-dd41-430f-bbea-2f002ddafe42
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: ca4b4654-d36a-4b17-a055-9c5063fa2f41
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: fe81b03a-c602-4b16-8ae9-973724c1adae
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: a3688f2e-eb5b-4b8d-b26f-90d40f08fd84
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 50d5ec3b-1710-4ff7-bb09-061c30deef96
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: bee0893d-85fb-403f-9ba7-a5269a46d382
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5d63c6a5-e9c0-484a-84ee-11d31cd44017
+    type: regular
+    task:
+      id: 5d63c6a5-e9c0-484a-84ee-11d31cd44017
+      version: -1
+      name: Manually update Kubernetes Engine
+      description: Manually update Google Kubernetes Engine alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: fb37a3ed-6884-4601-8841-f9414cf4a2ac
+    type: regular
+    task:
+      id: fb37a3ed-6884-4601-8841-f9414cf4a2ac
+      version: -1
+      name: Close investigation
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      mndadone: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: ec388f16-6c05-47b6-8cd8-d3e4bf955f6e
+    type: condition
+    task:
+      id: ec388f16-6c05-47b6-8cd8-d3e4bf955f6e
+      version: -1
+      name: Is Prisma Cloud (RedLock) integration enabled?
+      description: Is Prisma Cloud (RedLock) integration enabled?
+      type: condition
+      iscommand: false
+      brand: RedLock
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "12"
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RedLock
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1491bb10-b009-4dd8-8d1b-f12ff53a746a
+    type: regular
+    task:
+      id: 1491bb10-b009-4dd8-8d1b-f12ff53a746a
+      version: -1
+      name: Dismiss Prisma Cloud alert
+      description: Dismiss the alerts matching the given filter. Must provide either
+        policy IDs or alert IDs.
+      script: "|||redlock-dismiss-alerts"
+      type: regular
+      iscommand: true
+      brand: RedLock
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert-id:
+        complex:
+          root: incident
+          accessor: labels
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      alert-rule-name: {}
+      alert-status: {}
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
+      dismissal-note:
+        simple: ${incident.labels.id} has been remediated by Demisto.
+      policy-compliance-standard: {}
+      policy-id: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
+      risk-grade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 1ba4f261-b3a6-40c7-8c51-ad726a3b42bd
+    type: playbook
+    task:
+      id: 1ba4f261-b3a6-40c7-8c51-ad726a3b42bd
+      version: -1
+      name: Prisma Cloud Remediation - GCP Kubernetes Engine Cluster Misconfiguration
+      description: |-
+        This playbook remediates the following Prisma Cloud GCP Kubernetes Engine Cluster alerts.
+
+        Prisma Cloud policies remediated:
+
+        * GCP Kubernetes Engine Clusters Basic Authentication is set to Enabled
+        * GCP Kubernetes Engine Clusters have HTTP load balancing disabled
+        * GCP Kubernetes Engine Clusters have Legacy Authorization enabled
+        * GCP Kubernetes Engine Clusters have Master authorized networks disabled
+        * GCP Kubernetes Engine Clusters have Network policy disabled
+        * GCP Kubernetes Engine Clusters have Stackdriver Logging disabled
+        * GCP Kubernetes Engine Clusters have Stackdriver Monitoring disabled
+        * GCP Kubernetes Engine Clusters have binary authorization disabled
+        * GCP Kubernetes Engine Clusters web UI/Dashboard is set to Enabled
+        * GCP Kubernetes cluster intra-node visibility disabled
+      playbookName: Prisma Cloud Remediation - GCP Kubernetes Engine Cluster Misconfiguration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      policyId:
+        complex:
+          root: inputs.policyId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 34fd8c47-e326-4ee2-8343-b9c0794a0e06
+    type: condition
+    task:
+      id: 34fd8c47-e326-4ee2-8343-b9c0794a0e06
+      version: -1
+      name: Is Google Kubernetes Engine integration enabled?
+      description: Verifies that the Google Kubernetes Engine integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GoogleKubernetesEngine
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_9_#default#": 0.49,
+      "4_5_yes": 0.3,
+      "4_8_#default#": 0.22,
+      "5_6_#default#": 0.55,
+      "5_7_yes": 0.46,
+      "6_7_Yes": 0.45,
+      "6_8_#default#": 0.37,
+      "7_13_cluster": 0.63,
+      "7_8_#default#": 0.42
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1865,
+        "width": 1520,
+        "x": -50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: AutoRemediateKubernetesEngine
+  value:
+    simple: "no"
+  required: false
+  description: Execute GCP Kubernetes Engine remediation automatically?
+  playbookInputQuery: null
+- key: policyId
+  value:
+    complex:
+      root: incident
+      accessor: labels.policy
+      transformers:
+      - operator: ParseJSON
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: policyId
+  required: false
+  description: Grab the Prima Cloud policy Id.
+  playbookInputQuery: null
+outputs: []
+tests:
+- No Test
