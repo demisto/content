@@ -1068,7 +1068,7 @@ jobs:
                   GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
                   SOURCE_TESTING_PATH="dev/content/packs"
 
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_TESTING_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -o false -pbp "$SOURCE_TESTING_PATH"
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_TESTING_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp "$SOURCE_TESTING_PATH"
                   rm $GCS_PATH
       - run:
           name: Slack Notifier
