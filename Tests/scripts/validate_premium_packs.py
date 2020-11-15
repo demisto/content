@@ -1,6 +1,7 @@
 import demisto_client
 import argparse
 import logging
+import zipfile
 import json
 import ast
 import sys
@@ -9,13 +10,15 @@ from Tests.configure_and_test_integration_instances import Build, Server
 from Tests.test_content import get_json_file, ParallelPrintsManager
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, print_error
 
+INDEX_FILE_PATH = 'index.json'
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating integration instances')
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
                                           '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
                                           ' AMI environment.', default="Demisto Marketplace")
-    parser.add_argument('--index_file_path', help='The index file path, generated on the server', required=True)
+    parser.add_argument('--index_zip_path', help='The index.zip file path, generated on the cloud', required=True)
     # parser.add_argument('--commit_hash', help='The commit hash of the current build', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
 
@@ -28,11 +31,17 @@ def update_expectations_from_git(index_data):
     return index_data
 
 
+def unzip_index_and_return_index_file(index_zip_path):
+    with zipfile.ZipFile(index_zip_path, 'r') as zip_obj:
+        index_file_path = zip_obj.extract(INDEX_FILE_PATH)
+    return index_file_path
+
+
 def check_and_return_index_data(index_file_path, commit_hash):
     with open(index_file_path, 'r') as index_file:
         index_data = json.load(index_file)
     # TODO: check commit hash with master
-    assert index_data["commit"] == commit_hash
+    # assert index_data["commit"] == commit_hash
     assert len(index_data["packs"]) != 0
     for pack in index_data["packs"]:
         assert pack["id"] != ""
@@ -94,8 +103,8 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data):
 
 def main():
     options = options_handler()
-
-    index_data = check_and_return_index_data(options.index_file_path, options.commit_hash)
+    index_file_path = unzip_index_and_return_index_file(options.index_zip_path)
+    index_data = check_and_return_index_data(index_file_path)  # options.commit_hash)
     update_expectations_from_git(index_data)
 
     # Get the host by the ami env

@@ -33,12 +33,12 @@ BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 # ====== PRODUCTION CONFIGURATION ======
 
 GCS_MARKET_BUCKET="marketplace-dist"
-INDEX_PATH="content/packs/index.json"
+INDEX_PATH="content/packs/index.zip"
 
 # ====== TESTING CONFIGURATION ======
 
 GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
-INDEX_TESTING_PATH="dev/content/packs/index.json"
+INDEX_TESTING_PATH="dev/content/packs/index.zip"
 
 if [ ! -n "${BUCKET_UPLOAD}" ]; then
   echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$INDEX_PATH to target path: gs://$INDEX_FULL_TARGET_PATH ..."
@@ -53,5 +53,5 @@ if [ ! -f "./$INDEX_PATH" ]; then
   echo "Could not find file ./$INDEX_PATH"
 else
   echo "Testing premium packs in against index file ./$INDEX_PATH"
-  python3 ./Tests/scripts/validate_premium_packs.py --index_file_path ./$INDEX_PATH -s "$SECRET_CONF_PATH" --ami_env "$1"
+  python3 ./Tests/scripts/validate_premium_packs.py --index_zip_path ./$INDEX_PATH -s "$SECRET_CONF_PATH" --ami_env "$1"
 fi
