@@ -196,7 +196,6 @@ def install_nightly_packs(client: demisto_client,
     Returns:
         None: No data returned.
     """
-    packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
     logging.info(f'Installing packs on server {host}')
     # make the pack installation request
     all_packs_install_successfully = False
@@ -206,6 +205,7 @@ def install_nightly_packs(client: demisto_client,
     }
     while not all_packs_install_successfully:
         try:
+            packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
             logging.debug(f'Installing the following packs in server {host}:\n{packs_to_install_str}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
@@ -230,12 +230,18 @@ def install_nightly_packs(client: demisto_client,
             malformed_pack_id = find_malformed_pack_id(str(e))
             if not malformed_pack_id:
                 logging.exception('The request to install packs has failed')
-                break
+                raise
+            pack_ids_to_install = {pack['id'] for pack in packs_to_install}
+            malformed_pack_id = malformed_pack_id[0]
+            if malformed_pack_id not in pack_ids_to_install:
+                logging.exception(
+                    f'The pack {malformed_pack_id} has failed to install even though it was not in the installation list')
+                raise
             logging.warning(f'The request to install packs has failed, retrying without {malformed_pack_id}')
             # Remove the malformed pack from the pack to install list.
-            packs = [pack for pack in packs_to_install if pack['id'] not in malformed_pack_id]
+            packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_pack_id]
             request_data = {
-                'packs': packs,
+                'packs': packs_to_install,
                 'ignoreWarnings': True
             }
 
