@@ -427,7 +427,7 @@ def create_query_from_list(param_list: Dict[str, str]):
 
 
 def format_JSON_for_fetch_incidents(modelbreach: Dict[str, Any]) -> Dict[str, Any]:
-    """Formats JSON for getch incidents.
+    """Formats JSON for fetch incidents.
     :type modelbreach: ``Dict[str, Any]``
     :param modelbreach: JSON model breach as returned by API for fetch incident
     :return: Filtered JSON containing only relevant fields for context
