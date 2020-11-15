@@ -1,4 +1,6 @@
 from __future__ import print_function
+
+import logging
 import os
 import re
 import sys
@@ -23,6 +25,9 @@ import urllib3
 import requests
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
+
+from Tests.scripts.utils.log_util import install_simple_logging
+
 try:
     """
     Those dual-imports are required as Slack updated their sdk and it breaks BC.
@@ -774,18 +779,18 @@ def get_server_numeric_version(ami_env, is_local_run=False):
     """
     default_version = '99.99.98'
     if is_local_run:
-        print_color(f'Local run, assuming server version is {default_version}', LOG_COLORS.GREEN)
+        logging.info(f'Local run, assuming server version is {default_version}')
         return default_version
 
     env_json = load_env_results_json()
     if not env_json:
-        print_warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
+        logging.warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
         return default_version
 
     instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
     if len(instances_ami_names) != 1:
-        print_warning(f'Did not get one AMI Name, got {instances_ami_names}.'
-                      f' Assuming server version is {default_version}')
+        logging.warning(f'Did not get one AMI Name, got {instances_ami_names}.'
+                        f' Assuming server version is {default_version}')
         return default_version
 
     instances_ami_name = list(instances_ami_names)[0]
@@ -803,7 +808,7 @@ def extract_server_numeric_version(instances_ami_name, default_version):
         server_numeric_version = extracted_version[0]
     else:
         if 'Master' in instances_ami_name:
-            print_color('Server version: Master', LOG_COLORS.GREEN)
+            logging.info('Server version: Master')
             return default_version
         else:
             server_numeric_version = default_version
@@ -812,7 +817,7 @@ def extract_server_numeric_version(instances_ami_name, default_version):
     if server_numeric_version.count('.') == 1:
         server_numeric_version += ".0"
 
-    print_color(f'Server version: {server_numeric_version}', LOG_COLORS.GREEN)
+    logging.info(f'Server version: {server_numeric_version}')
     return server_numeric_version
 
 
@@ -1511,6 +1516,7 @@ def lock_expired(lock_file: storage.Blob, lock_timeout: str) -> bool:
 
 
 def main():
+    install_simple_logging()
     print("Time is: {}\n\n\n".format(datetime.datetime.now()))
     tests_settings = options_handler()
 
