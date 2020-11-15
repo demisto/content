@@ -3,7 +3,7 @@ import logging
 
 from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
     Build, Server
-from Tests.test_content import get_json_file, ParallelPrintsManager
+from Tests.test_content import get_json_file
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs
 from Tests.scripts.utils.log_util import install_logging
 
@@ -45,7 +45,7 @@ def main():
         # Acquire the server's host and install all content packs (one threaded execution)
         logging.info(f'Starting to install all content packs in {host}')
         server_host: str = server.client.api_client.configuration.host
-        install_all_content_packs(client=server.client, host=server_host, prints_manager=ParallelPrintsManager(1))
+        install_all_content_packs(client=server.client, host=server_host)
         logging.success(f'Finished installing all content packs in {host}')
 
 
