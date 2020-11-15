@@ -232,6 +232,7 @@ def install_nightly_packs(client: demisto_client,
                 logging.exception('The request to install packs has failed')
                 raise
             pack_ids_to_install = {pack['id'] for pack in packs_to_install}
+            malformed_pack_id = malformed_pack_id[0]
             if malformed_pack_id not in pack_ids_to_install:
                 logging.exception(
                     f'The pack {malformed_pack_id} has failed to install even though it was not in the installation list')
