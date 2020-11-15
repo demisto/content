@@ -2416,19 +2416,18 @@ def retrieve_file_details_command(client: Client, args):
             endpoints_count += 1
             if link:
                 retrived_files_count += 1
-                # file = client.get_file(file_link=link)
+                file = client.get_file(file_link=link)
 
-                # file_results.append(fileResult(filename=f'{endpoint}_{retrived_files_count}.zip', data=file))
+                file_results.append(fileResult(filename=f'{endpoint}_{retrived_files_count}.zip', data=file))
 
-    demisto.results({
+    return_entry = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': {},
         'HumanReadable': f'### Action id : {action_id} \nRetrieved {retrived_files_count} files from {endpoints_count} endpoints. ',
         'ReadableContentsFormat': formats['markdown'],
         'EntryContext': {}
-    })
-    return_entry = f'Actioon id : {action_id} \nRetrieved {retrived_files_count} files from {endpoints_count} endpoints.'
+    }
     if attach_files == 'false':
         file_results = []
     return return_entry, file_results
