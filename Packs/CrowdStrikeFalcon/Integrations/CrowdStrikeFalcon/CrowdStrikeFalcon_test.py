@@ -447,7 +447,7 @@ def test_run_script(requests_mock, mocker):
                 'Stdout': 'Hello, World!',
                 'Stderr': '',
                 'BaseCommand': 'runscript',
-                'Command': "runscript -Raw=Write-Output 'Hello, World!"
+                'Command': "runscript -Raw=Write-Output 'Hello, World! -Timeout=30"
             }]
         }
     }
