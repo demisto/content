@@ -1,29 +1,29 @@
-id: aa2b9fba-1143-4820-82f2-a4b899ddde46
+id: e0271a37-6934-4c20-823b-69d9f8ac137a
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: DevSecOps - Prisma - Analysis
-description: Prisma Task Analysis Playbook
+name: DevSecOps - Fetch PR - Triage
+description: A CodeQL Code Analysis Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1bd90f2d-9642-4d7d-87c4-76f4adc257dc
+    taskid: 519691fe-0a4c-4b49-81fd-a229ee131fc4
     type: start
     task:
-      id: 1bd90f2d-9642-4d7d-87c4-76f4adc257dc
+      id: 519691fe-0a4c-4b49-81fd-a229ee131fc4
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "35"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 50
+          "x": 390,
+          "y": 40
         }
       }
     note: false
@@ -31,14 +31,678 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 2c748952-85e4-4182-898c-6e1430bd3301
+  "26":
+    id: "26"
+    taskid: 8aeba2d0-f099-4844-8384-4c32ca71d369
     type: regular
     task:
-      id: 2c748952-85e4-4182-898c-6e1430bd3301
+      id: 8aeba2d0-f099-4844-8384-4c32ca71d369
       version: -1
-      name: Create IaC Alerts
+      name: Get PR Details
+      description: Get a pull request
+      script: '|||GitHub-get-pull-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+      - "30"
+    scriptarguments:
+      pull_number:
+        simple: ${incident.prnumber}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: ed19b4bc-9733-4fcb-8ee1-46f8ce05ee86
+    type: regular
+    task:
+      id: ed19b4bc-9733-4fcb-8ee1-46f8ce05ee86
+      version: -1
+      name: Get Head Commit
+      description: Get a commit
+      script: '|||GitHub-get-commit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      commit_sha:
+        simple: ${GitHub.PR.Head.SHA}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 8257647f-0235-4f7c-8ef6-469c69a2cd79
+    type: regular
+    task:
+      id: 8257647f-0235-4f7c-8ef6-469c69a2cd79
+      version: -1
+      name: Record Head Commit Details
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      action: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      aftercommitid: {}
+      agentid: {}
+      analysisid: {}
+      app: {}
+      appendMultiSelect: {}
+      approximatenumberofaffecteddatasubjects: {}
+      apptaskaction: {}
+      apptaskappid: {}
+      apptaskappname: {}
+      apptaskcompletedat: {}
+      apptaskconclusion: {}
+      apptaskheadcommit: {}
+      apptaskid: {}
+      apptaskname: {}
+      apptaskoutputsummary: {}
+      apptaskoutputtitle: {}
+      apptaskownerlogin: {}
+      apptaskprid: {}
+      apptaskprnumber: {}
+      apptaskstartedat: {}
+      apptaskstatus: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attorneygeneralnotification: {}
+      beforecommitid: {}
+      behaviourobjective: {}
+      behaviourscenario: {}
+      behaviourtactic: {}
+      blockedaction: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      caller: {}
+      ccdomain: {}
+      ccip: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      codeqlalerts: {}
+      commandline: {}
+      commitauthor: {}
+      commitcommitter: {}
+      commitid:
+        simple: ${incident.prheadcommit}
+      commitmessage:
+        simple: ${GitHub.Commit.Message}
+      commitmodifiedfiles: {}
+      committimestamp: {}
+      committreeid:
+        simple: ${GitHub.Commit.TreeSHA}
+      commiturl: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      customfield1: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      description: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      developeremail: {}
+      developername: {}
+      deviceexternalip: {}
+      devicegsuiteaccountstatus: {}
+      devicehash: {}
+      deviceip: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventid: {}
+      eventtype: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      externaladdresses: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      filetype: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      from: {}
+      gitissuedetails: {}
+      gitissuenumber: {}
+      gitpushername: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      headcommitauthor:
+        simple: ${GitHub.Commit.Author.Name}
+      headcommitcommiter: {}
+      headcommitid: {}
+      headcommitmessage: {}
+      headcommittimestamp:
+        simple: ${GitHub.Commit.Committer.Date}
+      headcommittreeid:
+        simple: ${GitHub.Commit.TreeSHA}
+      headcommiturl: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hmivendor: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      iacvulnerability: {}
+      iacvulnerabilitydescription: {}
+      iacvulnerabilityseverity: {}
+      iacvulnerablefiles: {}
+      id: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      individualsnotification: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      language: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lgtmanalysisid: {}
+      lgtmanalysislogsurl: {}
+      lgtmanalysisprojectid: {}
+      lgtmanalysisresultsurl: {}
+      lgtmanalysisstatus: {}
+      lgtmprojectconfig: {}
+      lgtmprojectgrade: {}
+      lgtmprojectid: {}
+      lgtmprojectlanguage: {}
+      lgtmprojectname: {}
+      lgtmprojectstatus: {}
+      lgtmprojecturl: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      logsource: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      managementnotification: {}
+      manageremail: {}
+      md5: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      name: {}
+      niststage: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      organizationname: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      penteraoperationdetails: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      praction: {}
+      pradditions: {}
+      prassignee: {}
+      prassignees: {}
+      prbaselabel: {}
+      prbasesize: {}
+      prbody: {}
+      prbranch: {}
+      prchangedfiles: {}
+      prclosedat: {}
+      prcomments: {}
+      prcommits: {}
+      prcreatedat: {}
+      prdeletions: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prheadcommit: {}
+      prheadid: {}
+      prheadopenissues: {}
+      prid: {}
+      prinstallationid: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      prmergeablestate: {}
+      prnumber: {}
+      projectid: {}
+      protocol: {}
+      protocols: {}
+      prpushedat: {}
+      prsize: {}
+      prstate: {}
+      prtitle: {}
+      prupdatedat: {}
+      prwatchers: {}
+      quarantined: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      repositoryid: {}
+      repositoryname: {}
+      repositoryorganization: {}
+      repositoryurl: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      safebreachsimulationid: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      sha256: {}
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      subcategory: {}
+      subject: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      substationlocation: {}
+      substationname: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      tenantname: {}
+      terminatedaction: {}
+      test: {}
+      threatactor: {}
+      threatlevel: {}
+      threatname: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      to: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 528a7264-0740-4c31-88ff-0d9aa5156446
+    type: regular
+    task:
+      id: 528a7264-0740-4c31-88ff-0d9aa5156446
+      version: -1
+      name: Create a Commit Tracking Record
       description: commands.local.cmd.new.indicator
       script: Builtin|||createNewIndicator
       type: regular
@@ -46,7 +710,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - "41"
     scriptarguments:
       accounttype: {}
       actor: {}
@@ -60,7 +724,6 @@ tasks:
       biosversion: {}
       campaign: {}
       category: {}
-      commitid: {}
       creationdate: {}
       customFields: {}
       cvedescription: {}
@@ -175,19 +838,19 @@ tasks:
       threattypes: {}
       trafficlightprotocol: {}
       type:
-        simple: IaC Vulnerability
+        simple: Git Commit
       updateddate: {}
       username: {}
       value:
-        simple: ${inputs.Vulnerabilities}
+        simple: ${incident.commitid}
       vulnerabilityname: {}
       xdrstatus: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 195
+          "x": 50,
+          "y": 1110
         }
       }
     note: false
@@ -195,50 +858,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: 204ff1df-e92e-40c6-8729-8ee5d8398cac
+  "30":
+    id: "30"
+    taskid: 1775ff5b-3e3b-451b-8e08-dd338630e5a3
     type: regular
     task:
-      id: 204ff1df-e92e-40c6-8729-8ee5d8398cac
+      id: 1775ff5b-3e3b-451b-8e08-dd338630e5a3
       version: -1
-      name: Link Alerts to PR
-      description: commands.local.cmd.associate.indicators
-      script: Builtin|||associateIndicatorsToIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "3"
-      - "4"
-    scriptarguments:
-      incidentId:
-        simple: ${inputs.PR_ID}
-      indicatorsIDs:
-        simple: ${CreatedIndicator.ID}
-      indicatorsValues: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: aa37c32e-c447-405c-85f0-5f8ffaaee77c
-    type: regular
-    task:
-      id: aa37c32e-c447-405c-85f0-5f8ffaaee77c
-      version: -1
-      name: Parse IaC Vulnerability Details - Localy
+      name: Parse PR Details
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -246,7 +873,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "5"
+      - "27"
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -282,6 +909,8 @@ tasks:
       apptaskstartedat: {}
       apptaskstatus: {}
       assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
       associatedmaliciousdomains: {}
       attachmentcount: {}
       attachmentextension: {}
@@ -294,9 +923,15 @@ tasks:
       attackeripblocked: {}
       attorneygeneralnotification: {}
       beforecommitid: {}
+      behaviourobjective: {}
+      behaviourscenario: {}
+      behaviourtactic: {}
       blockedaction: {}
       breachconfirmation: {}
       bugtraq: {}
+      caller: {}
+      ccdomain: {}
+      ccip: {}
       city: {}
       clarotyalertresolved: {}
       clarotyalerttype: {}
@@ -307,6 +942,7 @@ tasks:
       clarotysiteid: {}
       closeNotes: {}
       closeReason: {}
+      cloudservice: {}
       code42alerttype: {}
       code42fileevents: {}
       codeqlalerts: {}
@@ -314,10 +950,12 @@ tasks:
       commitauthor: {}
       commitcommitter: {}
       commitid: {}
-      commitmessage: {}
+      commitmessage:
+        simple: ${GitHub.Commit.Message}
       commitmodifiedfiles: {}
       committimestamp: {}
-      committreeid: {}
+      committreeid:
+        simple: ${GitHub.Commit.TreeSHA}
       commiturl: {}
       companyaddress: {}
       companycity: {}
@@ -358,6 +996,7 @@ tasks:
       dbotpredictionprobability: {}
       dbottextsuggestionhighlighted: {}
       deleteEmptyField: {}
+      description: {}
       dest: {}
       desthostname: {}
       destinationhostname: {}
@@ -380,9 +1019,12 @@ tasks:
       detectionurl: {}
       developeremail: {}
       developername: {}
+      deviceexternalip: {}
       devicegsuiteaccountstatus: {}
       devicehash: {}
       deviceip: {}
+      devicelocalip: {}
+      devicemodel: {}
       devicename: {}
       digitalguardianactivity: {}
       digitalguardianalarmname: {}
@@ -439,6 +1081,7 @@ tasks:
       employeedisplayname: {}
       employeeemail: {}
       employeemanageremail: {}
+      escalation: {}
       eventid: {}
       eventtype: {}
       exactlywhathappenedandatwhattimes: {}
@@ -459,6 +1102,8 @@ tasks:
       firstname: {}
       firstseen: {}
       from: {}
+      gitissuedetails: {}
+      gitissuenumber: {}
       gitpushername: {}
       globaldirectoryvisibility: {}
       googleaccountstatus: {}
@@ -483,75 +1128,10 @@ tasks:
       howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
       howwastheincidentcontainedanderadicated: {}
       howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
-      iacvulnerability:
-        complex:
-          root: incident
-          accessor: TaskDelivery.check_run.output.summary
-          transformers:
-          - operator: substringFrom
-            args:
-              from:
-                value:
-                  simple: '------------ | ------------- | ------------ | -------------'
-          - operator: substringTo
-            args:
-              to:
-                value:
-                  simple: '|'
-      iacvulnerabilitydescription:
-        complex:
-          root: incident
-          accessor: TaskDelivery.check_run.output.summary
-          transformers:
-          - operator: substringFrom
-            args:
-              from:
-                value:
-                  simple: '------------ | ------------- | ------------ | -------------'
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: '|'
-              fields:
-                value:
-                  simple: "4"
-      iacvulnerabilityseverity:
-        complex:
-          root: incident
-          accessor: TaskDelivery.check_run.output.summary
-          transformers:
-          - operator: substringFrom
-            args:
-              from:
-                value:
-                  simple: '------------ | ------------- | ------------ | -------------'
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: '|'
-              fields:
-                value:
-                  simple: "2"
-      iacvulnerablefiles:
-        complex:
-          root: incident
-          accessor: TaskDelivery.check_run.output.summary
-          transformers:
-          - operator: substringFrom
-            args:
-              from:
-                value:
-                  simple: '------------ | ------------- | ------------ | -------------'
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: '|'
-              fields:
-                value:
-                  simple: "3"
+      iacvulnerability: {}
+      iacvulnerabilitydescription: {}
+      iacvulnerabilityseverity: {}
+      iacvulnerablefiles: {}
       id: {}
       illusionblackattackerid: {}
       illusionblackattacktype: {}
@@ -565,6 +1145,7 @@ tasks:
       illusivenetworkssourceoperatingsystem: {}
       illusivenetworksstepstocrownjewel: {}
       illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
       indenideviceid: {}
       indeniissueid: {}
       individualsnotification: {}
@@ -607,6 +1188,7 @@ tasks:
       malwarefamily: {}
       managementnotification: {}
       manageremail: {}
+      md5: {}
       measurestomitigate: {}
       medianotification: {}
       medicalinformationbreached: {}
@@ -623,6 +1205,7 @@ tasks:
       os: {}
       osversion: {}
       otherpiidatabreached: {}
+      outgoingmirrorerror: {}
       owner: {}
       parentprocessid: {}
       participants: {}
@@ -654,19 +1237,22 @@ tasks:
       possiblecauseofthebreach: {}
       postalcode: {}
       praction: {}
-      pradditions: {}
+      pradditions:
+        simple: ${GitHub.PR.Additions}
       prassignee: {}
       prassignees: {}
       prbaselabel: {}
       prbasesize: {}
       prbody: {}
       prbranch: {}
-      prchangedfiles: {}
+      prchangedfiles:
+        simple: ${GitHub.PR.ChangedFiles}
       prclosedat: {}
       prcomments: {}
       prcommits: {}
       prcreatedat: {}
-      prdeletions: {}
+      prdeletions:
+        simple: ${GitHub.PR.Deletions}
       previouscoordinates: {}
       previouscountry: {}
       previoussignindatetime: {}
@@ -715,17 +1301,20 @@ tasks:
       prismacloudrules: {}
       prismacloudstatus: {}
       prismacloudtime: {}
-      prmergeablestate: {}
+      prmergeablestate:
+        simple: ${GitHub.PR.Mergeable}
       prnumber: {}
       projectid: {}
       protocol: {}
       protocols: {}
       prpushedat: {}
-      prsize: {}
+      prsize:
+        simple: ${GitHub.PR.Head.Repo.Size}
       prstate: {}
       prtitle: {}
       prupdatedat: {}
-      prwatchers: {}
+      prwatchers:
+        simple: ${GitHub.PR.Head.Repo.WatchersCount}
       quarantined: {}
       rating: {}
       rawparticipants: {}
@@ -755,6 +1344,7 @@ tasks:
       secretarynotification: {}
       sectorofaffectedparty: {}
       severity: {}
+      sha256: {}
       signature: {}
       signindatetime: {}
       sixgillalertid: {}
@@ -777,8 +1367,10 @@ tasks:
       srcntdomain: {}
       srcos: {}
       srcuser: {}
+      state: {}
       statecisonotification: {}
       statewherethebreachtookplace: {}
+      subcategory: {}
       subject: {}
       subscriptionassignedby: {}
       subscriptioncreatedby: {}
@@ -804,640 +1396,9 @@ tasks:
       threatactor: {}
       threatlevel: {}
       threatname: {}
-      to: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      uniquebiometricdatabreached: {}
-      uniqueidentificationnumberbreached: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userdisabledstatus: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
-      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
-      whataretheareasthatneedimprovement: {}
-      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
-      whatinformationwasneededsooner: {}
-      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
-      whatwasthescopeoftheincident: {}
-      whatwastheworkperformedduringrecovery: {}
-      whatweretheareaswherethecirtteamswereeffective: {}
-      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
-      whenwastheproblemfirstdetectedandbywhom: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: e597b90e-d584-459e-89e6-e52c3032c13d
-    type: regular
-    task:
-      id: e597b90e-d584-459e-89e6-e52c3032c13d
-      version: -1
-      name: Parse IaC Vulnerability Details - PR
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      accountgroups: {}
-      accountid: {}
-      accountinformationbreached: {}
-      accountname: {}
-      action: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      aftercommitid: {}
-      agentid: {}
-      analysisid: {}
-      app: {}
-      appendMultiSelect: {}
-      approximatenumberofaffecteddatasubjects: {}
-      apptaskaction: {}
-      apptaskappid: {}
-      apptaskappname: {}
-      apptaskcompletedat: {}
-      apptaskconclusion: {}
-      apptaskheadcommit: {}
-      apptaskid: {}
-      apptaskname: {}
-      apptaskoutputsummary: {}
-      apptaskoutputtitle: {}
-      apptaskownerlogin: {}
-      apptaskprid: {}
-      apptaskprnumber: {}
-      apptaskstartedat: {}
-      apptaskstatus: {}
-      assetid: {}
-      associatedmaliciousdomains: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      attorneygeneralnotification: {}
-      beforecommitid: {}
-      blockedaction: {}
-      breachconfirmation: {}
-      bugtraq: {}
-      city: {}
-      clarotyalertresolved: {}
-      clarotyalerttype: {}
-      clarotycategory: {}
-      clarotynetworkid: {}
-      clarotyrelatedassets: {}
-      clarotyresourceid: {}
-      clarotysiteid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      code42fileevents: {}
-      codeqlalerts: {}
-      commandline: {}
-      commitauthor: {}
-      commitcommitter: {}
-      commitid: {}
-      commitmessage: {}
-      commitmodifiedfiles: {}
-      committimestamp: {}
-      committreeid: {}
-      commiturl: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      consumerreportingagenciesnotification: {}
-      contactaddress: {}
-      contactemailaddress: {}
-      contactname: {}
-      contacttelephonenumber: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      customfield1: {}
-      cve: {}
-      cvss: {}
-      cymulateimmediatethreatsattackid: {}
-      cymulateimmediatethreatsfiletype: {}
-      cymulateimmediatethreatsid: {}
-      cymulateimmediatethreatsmitigations: {}
-      cymulateimmediatethreatsmodule: {}
-      cymulateimmediatethreatspayloadname: {}
-      cymulateimmediatethreatsstatus: {}
-      cymulateimmediatethreatsvector: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      desthostname: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationnetwork: {}
-      destinationport: {}
-      destinationports: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      developeremail: {}
-      developername: {}
-      devicegsuiteaccountstatus: {}
-      devicehash: {}
-      deviceip: {}
-      devicename: {}
-      digitalguardianactivity: {}
-      digitalguardianalarmname: {}
-      digitalguardianarcuid: {}
-      digitalguardianattachmentfilename: {}
-      digitalguardianclassification: {}
-      digitalguardiancommandline: {}
-      digitalguardiancomputername: {}
-      digitalguardiandestinationaddress: {}
-      digitalguardiandestinationdnsdomain: {}
-      digitalguardianemailrecipient: {}
-      digitalguardianemailsender: {}
-      digitalguardianemailsubject: {}
-      digitalguardianfilename: {}
-      digitalguardianparentprocessname: {}
-      digitalguardianpolicy: {}
-      digitalguardianprocessname: {}
-      digitalguardianremoteport: {}
-      digitalguardiansensitivity: {}
-      digitalguardiansourceaddress: {}
-      digitalguardiansourceip: {}
-      digitalguardianthreattype: {}
-      digitalguardianusername: {}
-      dpoemailaddress: {}
-      dponotification: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      eventid: {}
-      eventtype: {}
-      exactlywhathappenedandatwhattimes: {}
-      exfiltratedfiles: {}
-      expanseexposuretype: {}
-      expanserawjsonevent: {}
-      expanseseverity: {}
-      externaladdresses: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filehashblocked: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      filetype: {}
-      financialinformationbreached: {}
-      firstname: {}
-      firstseen: {}
-      from: {}
-      gitpushername: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      headcommitauthor: {}
-      headcommitcommiter: {}
-      headcommitid: {}
-      headcommitmessage: {}
-      headcommittimestamp: {}
-      headcommittreeid: {}
-      headcommiturl: {}
-      healthinsurancebreached: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      hmivendor: {}
-      hostname: {}
-      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
-      howwastheincidentcontainedanderadicated: {}
-      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
-      iacvulnerability:
-        complex:
-          root: incident
-          accessor: TaskDelivery.check_run.output.summary
-          transformers:
-          - operator: substringFrom
-            args:
-              from:
-                value:
-                  simple: '------------ | ------------- | ------------ | -------------'
-          - operator: substringTo
-            args:
-              to:
-                value:
-                  simple: '|'
-      iacvulnerabilitydescription:
-        complex:
-          root: incident
-          accessor: TaskDelivery.check_run.output.summary
-          transformers:
-          - operator: substringFrom
-            args:
-              from:
-                value:
-                  simple: '------------ | ------------- | ------------ | -------------'
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: '|'
-              fields:
-                value:
-                  simple: "4"
-      iacvulnerabilityseverity:
-        complex:
-          root: incident
-          accessor: TaskDelivery.check_run.output.summary
-          transformers:
-          - operator: substringFrom
-            args:
-              from:
-                value:
-                  simple: '------------ | ------------- | ------------ | -------------'
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: '|'
-              fields:
-                value:
-                  simple: "2"
-      iacvulnerablefiles:
-        complex:
-          root: incident
-          accessor: TaskDelivery.check_run.output.summary
-          transformers:
-          - operator: substringFrom
-            args:
-              from:
-                value:
-                  simple: '------------ | ------------- | ------------ | -------------'
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: '|'
-              fields:
-                value:
-                  simple: "3"
-      id:
-        simple: ${inputs.PR_ID}
-      illusionblackattackerid: {}
-      illusionblackattacktype: {}
-      illusionblackdecoyid: {}
-      illusionblackevents: {}
-      illusionblackthreatparse: {}
-      illusivenetworkshasforensics: {}
-      illusivenetworkshostname: {}
-      illusivenetworksid: {}
-      illusivenetworkslastseenuser: {}
-      illusivenetworkssourceoperatingsystem: {}
-      illusivenetworksstepstocrownjewel: {}
-      illusivenetworksstepstodomainadmin: {}
-      indenideviceid: {}
-      indeniissueid: {}
-      individualsnotification: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      internaladdresses: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      language: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      lgtmanalysisid: {}
-      lgtmanalysislogsurl: {}
-      lgtmanalysisprojectid: {}
-      lgtmanalysisresultsurl: {}
-      lgtmanalysisstatus: {}
-      lgtmprojectconfig: {}
-      lgtmprojectgrade: {}
-      lgtmprojectid: {}
-      lgtmprojectlanguage: {}
-      lgtmprojectname: {}
-      lgtmprojectstatus: {}
-      lgtmprojecturl: {}
-      likelyimpact: {}
-      loginattemptcount: {}
-      logsource: {}
-      logzioalerteventid: {}
-      logzioalertid: {}
-      logzioalertsummary: {}
-      logziotags: {}
-      macaddress: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      managementnotification: {}
-      manageremail: {}
-      measurestomitigate: {}
-      medianotification: {}
-      medicalinformationbreached: {}
-      mobiledevicemodel: {}
-      name: {}
-      niststage: {}
-      numberofports: {}
-      numberofuniqueports: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      organizationname: {}
-      os: {}
-      osversion: {}
-      otherpiidatabreached: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      passwordexpirationstatus: {}
-      pcapencryptionkey: {}
-      pcapendtime: {}
-      pcapfile: {}
-      pcapfilename: {}
-      pcapfilesize: {}
-      pcapflows: {}
-      pcapnumberofpackets: {}
-      pcapnumberofstreams: {}
-      pcapstarttime: {}
-      penteraoperationdetails: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      piidatatype: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portsblocked: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      praction: {}
-      pradditions: {}
-      prassignee: {}
-      prassignees: {}
-      prbaselabel: {}
-      prbasesize: {}
-      prbody: {}
-      prbranch: {}
-      prchangedfiles: {}
-      prclosedat: {}
-      prcomments: {}
-      prcommits: {}
-      prcreatedat: {}
-      prdeletions: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prheadcommit: {}
-      prheadid: {}
-      prheadopenissues: {}
-      prid: {}
-      prinstallationid: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      prmergeablestate: {}
-      prnumber: {}
-      projectid: {}
-      protocol: {}
-      protocols: {}
-      prpushedat: {}
-      prsize: {}
-      prstate: {}
-      prtitle: {}
-      prupdatedat: {}
-      prwatchers: {}
-      quarantined: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      repositoryid: {}
-      repositoryname: {}
-      repositoryorganization: {}
-      repositoryurl: {}
-      residentnotificationoption: {}
-      residentsemailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      safebreachsimulationid: {}
-      samaccountname: {}
-      sansstage: {}
-      scansourcetype: {}
-      secretarynotification: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourcenetwork: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      statecisonotification: {}
-      statewherethebreachtookplace: {}
-      subject: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      substationlocation: {}
-      substationname: {}
-      subtype: {}
-      successfullogin: {}
-      suggestionsanddiscussionofhowtoimprovetheteam: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      telephoneno: {}
-      tenantname: {}
-      terminatedaction: {}
-      test: {}
-      threatactor: {}
-      threatlevel: {}
-      threatname: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
       to: {}
       trapsid: {}
       travelmaplink: {}
@@ -1498,33 +1459,913 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 49b3e063-6447-4519-8f26-dc2e9b019644
+  "31":
+    id: "31"
+    taskid: 89f65b93-0853-4e42-8b0d-86f3f7effd63
     type: regular
     task:
-      id: 49b3e063-6447-4519-8f26-dc2e9b019644
+      id: 89f65b93-0853-4e42-8b0d-86f3f7effd63
       version: -1
-      name: Close Task
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
+      name: Get PR Check Runs
+      description: Get a check run details
+      script: '|||Github-get-check-run'
       type: regular
       iscommand: true
-      brand: Builtin
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+      - "36"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
+      commit_id:
+        complex:
+          root: incident
+          accessor: headcommitid
+      owner:
+        complex:
+          root: incident
+          accessor: repositoryorganization
+      repository:
+        complex:
+          root: incident
+          accessor: repositoryname
+      run_id: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: ae31a206-ea44-49ef-8f0b-da1672f66bb7
+    type: condition
+    task:
+      id: ae31a206-ea44-49ef-8f0b-da1672f66bb7
+      version: -1
+      name: LGTM Check Run Exists ?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      LGTM:
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: LGTM
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GitHub.CheckRuns.CheckRunAppName
+            iscontext: true
+          right:
+            value:
+              simple: LGTM.com
+    view: |-
+      {
+        "position": {
+          "x": 910,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 8be9b159-64d7-4abd-86b9-3007bc0494b4
+    type: regular
+    task:
+      id: 8be9b159-64d7-4abd-86b9-3007bc0494b4
+      version: -1
+      name: Refresh The Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: d39b756d-0cc4-42c8-8540-c2ed9ce4172a
+    type: condition
+    task:
+      id: d39b756d-0cc4-42c8-8540-c2ed9ce4172a
+      version: -1
+      name: Prisma Cloud Check Run Exists?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Prisma Cloud:
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: Prisma Cloud
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GitHub.CheckRuns.CheckRunAppName
+            iscontext: true
+          right:
+            value:
+              simple: Prisma Cloud
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 0c34ce1b-9219-4162-8a7d-b15a396fa8e2
+    type: playbook
+    task:
+      id: 0c34ce1b-9219-4162-8a7d-b15a396fa8e2
+      version: -1
+      name: DevSecOps - LGTM - Analysis - SubPB
+      description: A CodeQL Code Analysis Playbook
+      playbookName: DevSecOps - LGTM - Analysis - SubPB
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      LGTM Task ID:
+        complex:
+          root: ${GitHub
+          accessor: CheckRuns(val.CheckRunAppName=="LGTM.com").CheckExternalID}
+      Organization:
+        complex:
+          root: incident
+          accessor: repositoryorganization
+      Platform:
+        simple: g
+      Repository:
+        complex:
+          root: incident
+          accessor: repositoryname
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: c298fb92-359b-4530-8143-0b4f853b9353
+    type: playbook
+    task:
+      id: c298fb92-359b-4530-8143-0b4f853b9353
+      version: -1
+      name: DevSecOps - Prisma - Analysis -SubPB
+      description: Prisma Task Analysis Playbook
+      playbookName: DevSecOps - Prisma - Analysis -SubPB
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      Prisma_Cloud_Check_Run_Summary:
+        complex:
+          root: GitHub
+          accessor: CheckRuns(val.CheckRunAppName=="Prisma Cloud").CheckRunOutPut.summary
+      Prisma_Cloud_Check_Run_Title:
+        complex:
+          root: GitHub
+          accessor: CheckRuns(val.CheckRunAppName=="Prisma Cloud").CheckRunOutPut.title
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 24c651e8-77a9-44bb-8f23-0c24bcbba0ba
+    type: playbook
+    task:
+      id: 24c651e8-77a9-44bb-8f23-0c24bcbba0ba
+      version: -1
+      name: Wait for PR Closure
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${GitHub.PR.Number}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: pull_number
+      PollingCommandName:
+        simple: GitHub-get-pull-request
+      Timeout:
+        simple: "108000"
+      dt:
+        simple: GitHub.PR(val.State!=="closed").Number
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 6c15288a-be73-4084-8dce-12f006c0b7ea
+    type: regular
+    task:
+      id: 6c15288a-be73-4084-8dce-12f006c0b7ea
+      version: -1
+      name: Update the PR Closure Date
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      action: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      aftercommitid: {}
+      agentid: {}
+      analysisid: {}
+      app: {}
+      appendMultiSelect: {}
+      approximatenumberofaffecteddatasubjects: {}
+      apptaskaction: {}
+      apptaskappid: {}
+      apptaskappname: {}
+      apptaskcompletedat: {}
+      apptaskconclusion: {}
+      apptaskheadcommit: {}
+      apptaskid: {}
+      apptaskname: {}
+      apptaskoutputsummary: {}
+      apptaskoutputtitle: {}
+      apptaskownerlogin: {}
+      apptaskprid: {}
+      apptaskprnumber: {}
+      apptaskstartedat: {}
+      apptaskstatus: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attorneygeneralnotification: {}
+      beforecommitid: {}
+      behaviourobjective: {}
+      behaviourscenario: {}
+      behaviourtactic: {}
+      blockedaction: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      caller: {}
+      ccdomain: {}
+      ccip: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      codeqlalerts: {}
+      commandline: {}
+      commitauthor: {}
+      commitcommitter: {}
+      commitid: {}
+      commitmessage: {}
+      commitmodifiedfiles: {}
+      committimestamp: {}
+      committreeid: {}
+      commiturl: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      customfield1: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      description: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      developeremail: {}
+      developername: {}
+      deviceexternalip: {}
+      devicegsuiteaccountstatus: {}
+      devicehash: {}
+      deviceip: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventid: {}
+      eventtype: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      externaladdresses: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      filetype: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      from: {}
+      gitissuedetails: {}
+      gitissuenumber: {}
+      gitpushername: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      headcommitauthor: {}
+      headcommitcommiter: {}
+      headcommitid: {}
+      headcommitmessage: {}
+      headcommittimestamp: {}
+      headcommittreeid: {}
+      headcommiturl: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hmivendor: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      iacvulnerability: {}
+      iacvulnerabilitydescription: {}
+      iacvulnerabilityseverity: {}
+      iacvulnerablefiles: {}
+      id: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      individualsnotification: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      language: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lgtmanalysisid: {}
+      lgtmanalysislogsurl: {}
+      lgtmanalysisprojectid: {}
+      lgtmanalysisresultsurl: {}
+      lgtmanalysisstatus: {}
+      lgtmprojectconfig: {}
+      lgtmprojectgrade: {}
+      lgtmprojectid: {}
+      lgtmprojectlanguage: {}
+      lgtmprojectname: {}
+      lgtmprojectstatus: {}
+      lgtmprojecturl: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      logsource: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      managementnotification: {}
+      manageremail: {}
+      md5: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      name: {}
+      niststage: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      organizationname: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      penteraoperationdetails: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      praction: {}
+      pradditions: {}
+      prassignee: {}
+      prassignees: {}
+      prbaselabel: {}
+      prbasesize: {}
+      prbody: {}
+      prbranch: {}
+      prchangedfiles: {}
+      prclosedat:
+        simple: ${GitHub.PR.ClosedAt}
+      prcomments: {}
+      prcommits: {}
+      prcreatedat: {}
+      prdeletions: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prheadcommit: {}
+      prheadid: {}
+      prheadopenissues: {}
+      prid: {}
+      prinstallationid: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      prmergeablestate: {}
+      prnumber: {}
+      projectid: {}
+      protocol: {}
+      protocols: {}
+      prpushedat: {}
+      prsize: {}
+      prstate: {}
+      prtitle: {}
+      prupdatedat: {}
+      prwatchers: {}
+      quarantined: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      repositoryid: {}
+      repositoryname: {}
+      repositoryorganization: {}
+      repositoryurl: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      safebreachsimulationid: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      sha256: {}
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      subcategory: {}
+      subject: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      substationlocation: {}
+      substationname: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      tenantname: {}
+      terminatedaction: {}
+      test: {}
+      threatactor: {}
+      threatlevel: {}
+      threatname: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      to: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 2361f686-1afe-4072-8e29-8da4ec30e861
+    type: title
+    task:
+      id: 2361f686-1afe-4072-8e29-8da4ec30e861
+      version: -1
+      name: Playbook End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1520
         }
       }
     note: false
@@ -1537,22 +2378,19 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 810,
+        "height": 1545,
+        "width": 1240,
         "x": 50,
-        "y": 50
+        "y": 40
       }
     }
   }
 inputs:
-- key: Vulnerabilities
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery: null
-- key: PR_ID
-  value: {}
+- key: Run Code Analysis
+  value:
+    simple: "false"
   required: false
   description: ""
   playbookInputQuery: null
 outputs: []
+sourceplaybookid: 4ac23472-9a21-4685-8836-a849659b022d

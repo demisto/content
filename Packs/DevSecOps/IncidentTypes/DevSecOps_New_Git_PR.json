@@ -1,6 +1,6 @@
 {
     "id": "New Git PR",
-    "version": 4,
+    "version": -1,
     "modified": "2020-09-09T17:25:41.353539309+04:00",
     "sortValues": null,
     "packID": "",
@@ -15,7 +15,7 @@
     "name": "New Git PR",
     "prevName": "New Git PR",
     "color": "#03b0ff",
-    "playbookId": "DevSecOps - PR - Triage",
+    "playbookId": "DevSecOps - Fetch PR - Triage",
     "hours": 0,
     "days": 0,
     "weeks": 0,

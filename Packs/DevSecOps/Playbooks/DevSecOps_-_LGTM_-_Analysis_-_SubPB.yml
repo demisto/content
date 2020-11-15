@@ -1,16 +1,16 @@
-id: 455d5cf1-aeea-4db2-8943-5d9f3027a6b1
+id: fc5c8ee6-8f63-4900-8b19-1a37dcab2b23
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: DevSecOps - LGTM - Analysis
+name: DevSecOps - LGTM - Analysis - SubPB
 description: A CodeQL Code Analysis Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e7398152-bb01-4901-88ce-6efcaf6e2dde
+    taskid: eaa6d590-3df2-475e-834d-329ef36f56b2
     type: start
     task:
-      id: e7398152-bb01-4901-88ce-6efcaf6e2dde
+      id: eaa6d590-3df2-475e-834d-329ef36f56b2
       version: -1
       name: ""
       iscommand: false
@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 50
+          "x": 280,
+          "y": -340
         }
       }
     note: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 96710df1-3fff-42cf-897f-0691560518fa
+    taskid: 663846dc-6318-4721-8cb4-370378049ff7
     type: condition
     task:
-      id: 96710df1-3fff-42cf-897f-0691560518fa
+      id: 663846dc-6318-4721-8cb4-370378049ff7
       version: -1
       name: Alerts Found?
       type: condition
@@ -44,9 +44,10 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "27"
+      - "31"
       "yes":
-      - "5"
+      - "8"
+      - "25"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -56,7 +57,7 @@ tasks:
             value:
               complex:
                 root: LGTM
-                accessor: analysis_summary.languages.alerts
+                accessor: code_review_result.languages.new
             iscontext: true
           right:
             value:
@@ -64,43 +65,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 35253daa-ffd8-462d-8e9b-ecd6c8cb44a5
-    type: regular
-    task:
-      id: 35253daa-ffd8-462d-8e9b-ecd6c8cb44a5
-      version: -1
-      name: Get Alerts Details
-      description: Get detailed alert information
-      script: '|||lgtm-get-alerts'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-      - "25"
-    scriptarguments:
-      analysis-id:
-        simple: ${LGTM.analysis_summary.id}
-      excluded-files: {}
-      sarif-version: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1245
+          "x": 510,
+          "y": 660
         }
       }
     note: false
@@ -110,10 +76,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 707e1618-1c72-4940-8683-00eb0e0a330d
+    taskid: cf18d10b-1d8a-45d1-8a0e-8de8103aec71
     type: condition
     task:
-      id: 707e1618-1c72-4940-8683-00eb0e0a330d
+      id: cf18d10b-1d8a-45d1-8a0e-8de8103aec71
       version: -1
       name: SQL-Injection Discovered?
       type: condition
@@ -141,8 +107,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1420
+          "x": 510,
+          "y": 895
         }
       }
     note: false
@@ -152,10 +118,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: b3edc077-5f4b-4dfe-8dc7-f61b07afca40
+    taskid: e63cacc6-8b64-400d-8900-cf23c385014b
     type: regular
     task:
-      id: b3edc077-5f4b-4dfe-8dc7-f61b07afca40
+      id: e63cacc6-8b64-400d-8900-cf23c385014b
       version: -1
       name: Run a SQL Injection CodeQL Query Across All Project
       description: Run analysis of a specific commit
@@ -179,8 +145,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1595
+          "x": 622.5,
+          "y": 1070
         }
       }
     note: false
@@ -190,10 +156,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 90bd1281-fb65-462f-862a-0876b1d05fbd
+    taskid: 968ecbe9-428a-4c14-8fc5-f4948a3c68c4
     type: regular
     task:
-      id: 90bd1281-fb65-462f-862a-0876b1d05fbd
+      id: 968ecbe9-428a-4c14-8fc5-f4948a3c68c4
       version: -1
       name: Create SAST Alerts
       description: commands.local.cmd.new.indicator
@@ -203,7 +169,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "29"
+      - "31"
     scriptarguments:
       accounttype: {}
       actor: {}
@@ -353,15 +319,15 @@ tasks:
       updateddate: {}
       username: {}
       value:
-        simple: ${LGTM.alerts.runs.results.ruleId}
+        simple: ${LGTM.code_review_result.languages.alerts.query.properties.id}
       vulnerabilityname: {}
       xdrstatus: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1770
+          "x": 520,
+          "y": 1275
         }
       }
     note: false
@@ -371,10 +337,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 92e661cc-58b1-4a06-8058-dc244b2633c3
+    taskid: 911115fc-60d7-4f09-809d-8f9bdea26cf1
     type: regular
     task:
-      id: 92e661cc-58b1-4a06-8058-dc244b2633c3
+      id: 911115fc-60d7-4f09-809d-8f9bdea26cf1
       version: -1
       name: Get The Query Config
       description: Get configuration for a project identified by numeric identifier
@@ -395,8 +361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 50,
+          "y": 1110
         }
       }
     note: false
@@ -406,10 +372,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 30055379-e473-4529-843e-aa6bf405ed7c
+    taskid: 6afd3ae9-93ab-400d-8336-1523e727aa35
     type: regular
     task:
-      id: 30055379-e473-4529-843e-aa6bf405ed7c
+      id: 6afd3ae9-93ab-400d-8336-1523e727aa35
       version: -1
       name: Get LGTM Project ID
       description: Get project by URL identifier
@@ -420,6 +386,7 @@ tasks:
     nexttasks:
       '#none#':
       - "17"
+      - "26"
     scriptarguments:
       name:
         simple: ${inputs.Repository}
@@ -432,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 195
+          "x": 280,
+          "y": -190
         }
       }
     note: false
@@ -443,10 +410,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: a33c8c84-bcfd-494a-8ebd-2847efae9e37
+    taskid: cbd9dea7-7396-4a73-8b92-5f2edc91126b
     type: regular
     task:
-      id: a33c8c84-bcfd-494a-8ebd-2847efae9e37
+      id: cbd9dea7-7396-4a73-8b92-5f2edc91126b
       version: -1
       name: Parse LGTM Project Details
       description: commands.local.cmd.set.incident
@@ -456,7 +423,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "26"
+      - "31"
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -1041,607 +1008,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: e4f4243a-cad8-4bf4-84a2-d79e72afe1c9
-    type: regular
-    task:
-      id: e4f4243a-cad8-4bf4-84a2-d79e72afe1c9
-      version: -1
-      name: Parse LGTM Analysis Details - PR
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      accountgroups: {}
-      accountid: {}
-      accountinformationbreached: {}
-      accountname: {}
-      action: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      aftercommitid: {}
-      agentid: {}
-      analysisid: {}
-      app: {}
-      appendMultiSelect: {}
-      approximatenumberofaffecteddatasubjects: {}
-      apptaskaction: {}
-      apptaskappid: {}
-      apptaskappname: {}
-      apptaskcompletedat: {}
-      apptaskconclusion: {}
-      apptaskheadcommit: {}
-      apptaskid: {}
-      apptaskname: {}
-      apptaskoutputsummary: {}
-      apptaskoutputtitle: {}
-      apptaskownerlogin: {}
-      apptaskprid: {}
-      apptaskprnumber: {}
-      apptaskstartedat: {}
-      apptaskstatus: {}
-      assetid: {}
-      assigneduser: {}
-      assignmentgroup: {}
-      associatedmaliciousdomains: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      attorneygeneralnotification: {}
-      beforecommitid: {}
-      behaviourobjective: {}
-      behaviourscenario: {}
-      behaviourtactic: {}
-      blockedaction: {}
-      breachconfirmation: {}
-      bugtraq: {}
-      caller: {}
-      ccdomain: {}
-      ccip: {}
-      city: {}
-      clarotyalertresolved: {}
-      clarotyalerttype: {}
-      clarotycategory: {}
-      clarotynetworkid: {}
-      clarotyrelatedassets: {}
-      clarotyresourceid: {}
-      clarotysiteid: {}
-      closeNotes: {}
-      closeReason: {}
-      cloudservice: {}
-      code42alerttype: {}
-      code42fileevents: {}
-      codeqlalerts: {}
-      commandline: {}
-      commitauthor: {}
-      commitcommitter: {}
-      commitid: {}
-      commitmessage: {}
-      commitmodifiedfiles: {}
-      committimestamp: {}
-      committreeid: {}
-      commiturl: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      consumerreportingagenciesnotification: {}
-      contactaddress: {}
-      contactemailaddress: {}
-      contactname: {}
-      contacttelephonenumber: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      customfield1: {}
-      cve: {}
-      cvss: {}
-      cymulateimmediatethreatsattackid: {}
-      cymulateimmediatethreatsfiletype: {}
-      cymulateimmediatethreatsid: {}
-      cymulateimmediatethreatsmitigations: {}
-      cymulateimmediatethreatsmodule: {}
-      cymulateimmediatethreatspayloadname: {}
-      cymulateimmediatethreatsstatus: {}
-      cymulateimmediatethreatsvector: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      description: {}
-      dest: {}
-      desthostname: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationnetwork: {}
-      destinationport: {}
-      destinationports: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      developeremail: {}
-      developername: {}
-      deviceexternalip: {}
-      devicegsuiteaccountstatus: {}
-      devicehash: {}
-      deviceip: {}
-      devicelocalip: {}
-      devicemodel: {}
-      devicename: {}
-      digitalguardianactivity: {}
-      digitalguardianalarmname: {}
-      digitalguardianarcuid: {}
-      digitalguardianattachmentfilename: {}
-      digitalguardianclassification: {}
-      digitalguardiancommandline: {}
-      digitalguardiancomputername: {}
-      digitalguardiandestinationaddress: {}
-      digitalguardiandestinationdnsdomain: {}
-      digitalguardianemailrecipient: {}
-      digitalguardianemailsender: {}
-      digitalguardianemailsubject: {}
-      digitalguardianfilename: {}
-      digitalguardianparentprocessname: {}
-      digitalguardianpolicy: {}
-      digitalguardianprocessname: {}
-      digitalguardianremoteport: {}
-      digitalguardiansensitivity: {}
-      digitalguardiansourceaddress: {}
-      digitalguardiansourceip: {}
-      digitalguardianthreattype: {}
-      digitalguardianusername: {}
-      dpoemailaddress: {}
-      dponotification: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      escalation: {}
-      eventid: {}
-      eventtype: {}
-      exactlywhathappenedandatwhattimes: {}
-      exfiltratedfiles: {}
-      expanseexposuretype: {}
-      expanserawjsonevent: {}
-      expanseseverity: {}
-      externaladdresses: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filehashblocked: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      filetype: {}
-      financialinformationbreached: {}
-      firstname: {}
-      firstseen: {}
-      from: {}
-      gitissuedetails: {}
-      gitissuenumber: {}
-      gitpushername: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      headcommitauthor: {}
-      headcommitcommiter: {}
-      headcommitid: {}
-      headcommitmessage: {}
-      headcommittimestamp: {}
-      headcommittreeid: {}
-      headcommiturl: {}
-      healthinsurancebreached: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      hmivendor: {}
-      hostname: {}
-      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
-      howwastheincidentcontainedanderadicated: {}
-      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
-      iacvulnerability: {}
-      iacvulnerabilitydescription: {}
-      iacvulnerabilityseverity: {}
-      iacvulnerablefiles: {}
-      id:
-        simple: ${inputs.PR_ID}
-      illusionblackattackerid: {}
-      illusionblackattacktype: {}
-      illusionblackdecoyid: {}
-      illusionblackevents: {}
-      illusionblackthreatparse: {}
-      illusivenetworkshasforensics: {}
-      illusivenetworkshostname: {}
-      illusivenetworksid: {}
-      illusivenetworkslastseenuser: {}
-      illusivenetworkssourceoperatingsystem: {}
-      illusivenetworksstepstocrownjewel: {}
-      illusivenetworksstepstodomainadmin: {}
-      incomingmirrorerror: {}
-      indenideviceid: {}
-      indeniissueid: {}
-      individualsnotification: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      internaladdresses: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      language: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      lgtmanalysisid:
-        simple: ${LGTM.analysis_summary.id}
-      lgtmanalysislogsurl:
-        simple: ${LGTM.analysis_summary.log-url}
-      lgtmanalysisprojectid:
-        simple: ${LGTM.analysis_summary.project.id}
-      lgtmanalysisresultsurl:
-        simple: ${LGTM.analysis_summary.results-url}
-      lgtmanalysisstatus:
-        simple: ${LGTM.analysis_summary.languages.status}
-      lgtmprojectconfig: {}
-      lgtmprojectgrade: {}
-      lgtmprojectid: {}
-      lgtmprojectlanguage: {}
-      lgtmprojectname: {}
-      lgtmprojectstatus: {}
-      lgtmprojecturl: {}
-      likelyimpact: {}
-      loginattemptcount: {}
-      logsource: {}
-      logzioalerteventid: {}
-      logzioalertid: {}
-      logzioalertsummary: {}
-      logziotags: {}
-      macaddress: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      managementnotification: {}
-      manageremail: {}
-      md5: {}
-      measurestomitigate: {}
-      medianotification: {}
-      medicalinformationbreached: {}
-      mobiledevicemodel: {}
-      name: {}
-      niststage: {}
-      numberofports: {}
-      numberofuniqueports: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      organizationname: {}
-      os: {}
-      osversion: {}
-      otherpiidatabreached: {}
-      outgoingmirrorerror: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      passwordexpirationstatus: {}
-      pcapencryptionkey: {}
-      pcapendtime: {}
-      pcapfile: {}
-      pcapfilename: {}
-      pcapfilesize: {}
-      pcapflows: {}
-      pcapnumberofpackets: {}
-      pcapnumberofstreams: {}
-      pcapstarttime: {}
-      penteraoperationdetails: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      piidatatype: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portsblocked: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      praction: {}
-      pradditions: {}
-      prassignee: {}
-      prassignees: {}
-      prbaselabel: {}
-      prbasesize: {}
-      prbody: {}
-      prbranch: {}
-      prchangedfiles: {}
-      prclosedat: {}
-      prcomments: {}
-      prcommits: {}
-      prcreatedat: {}
-      prdeletions: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prheadcommit: {}
-      prheadid: {}
-      prheadopenissues: {}
-      prid: {}
-      prinstallationid: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      prmergeablestate: {}
-      prnumber: {}
-      projectid: {}
-      protocol: {}
-      protocols: {}
-      prpushedat: {}
-      prsize: {}
-      prstate: {}
-      prtitle: {}
-      prupdatedat: {}
-      prwatchers: {}
-      quarantined: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      repositoryid: {}
-      repositoryname: {}
-      repositoryorganization: {}
-      repositoryurl: {}
-      residentnotificationoption: {}
-      residentsemailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      safebreachsimulationid: {}
-      samaccountname: {}
-      sansstage: {}
-      scansourcetype: {}
-      secretarynotification: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      sha256: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourcenetwork: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      state: {}
-      statecisonotification: {}
-      statewherethebreachtookplace: {}
-      subcategory: {}
-      subject: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      substationlocation: {}
-      substationname: {}
-      subtype: {}
-      successfullogin: {}
-      suggestionsanddiscussionofhowtoimprovetheteam: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      telephoneno: {}
-      tenantname: {}
-      terminatedaction: {}
-      test: {}
-      threatactor: {}
-      threatlevel: {}
-      threatname: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      to: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      uniquebiometricdatabreached: {}
-      uniqueidentificationnumberbreached: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userdisabledstatus: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
-      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
-      whataretheareasthatneedimprovement: {}
-      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
-      whatinformationwasneededsooner: {}
-      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
-      whatwasthescopeoftheincident: {}
-      whatwastheworkperformedduringrecovery: {}
-      whatweretheareaswherethecirtteamswereeffective: {}
-      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
-      whenwastheproblemfirstdetectedandbywhom: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 895
+          "x": 50,
+          "y": 1275
         }
       }
     note: false
@@ -1651,10 +1019,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 137b5a2b-e6af-40d2-8c0b-d54a255c4bb5
+    taskid: 1fc91ea8-0db6-46a4-8394-0f1c7ee0db92
     type: regular
     task:
-      id: 137b5a2b-e6af-40d2-8c0b-d54a255c4bb5
+      id: 1fc91ea8-0db6-46a4-8394-0f1c7ee0db92
       version: -1
       name: Mirror Investigation to Slack
       description: Mirrors the investigation between Slack and the Demisto War Room.
@@ -1664,7 +1032,7 @@ tasks:
       brand: SlackV2
     nexttasks:
       '#none#':
-      - "30"
+      - "31"
     scriptarguments:
       autoclose:
         simple: "true"
@@ -1680,8 +1048,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 950,
+          "y": 1275
         }
       }
     note: false
@@ -1691,66 +1059,29 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 5ea4e02c-7e16-404c-8b7f-7e2913793229
+    taskid: 48f8bebe-4b90-4513-8814-d53a5262846b
     type: regular
     task:
-      id: 5ea4e02c-7e16-404c-8b7f-7e2913793229
+      id: 48f8bebe-4b90-4513-8814-d53a5262846b
       version: -1
-      name: Get LGTM Analysis Details
-      description: Get analysis summary for a specific commit
-      script: '|||lgtm-get-analysis-for-commit'
+      name: Get LGTM Code Review Details
+      description: Get results of code review
+      script: '|||lgtm-get-code-review'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
-      - "28"
+      - "32"
     scriptarguments:
-      commit-id:
-        simple: latest
-      project-id:
-        simple: ${LGTM.project_details.id}
+      review-id:
+        simple: ${inputs.LGTM Task ID}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "27":
-    id: "27"
-    taskid: 13c30a1b-facb-4bf5-8291-009c9b7e2c64
-    type: regular
-    task:
-      id: 13c30a1b-facb-4bf5-8291-009c9b7e2c64
-      version: -1
-      name: Close Incident
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1245
+          "x": 510,
+          "y": 0
         }
       }
     note: false
@@ -1760,12 +1091,12 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 482b701d-a75f-4df0-8849-4f51e41602b3
+    taskid: 2b850606-dd80-4901-8870-356521066b6e
     type: regular
     task:
-      id: 482b701d-a75f-4df0-8849-4f51e41602b3
+      id: 2b850606-dd80-4901-8870-356521066b6e
       version: -1
-      name: Parse LGTM Analysis Details Locally
+      name: Parse LGTM Code Review Details
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -2060,15 +1391,15 @@ tasks:
       lastname: {}
       lastseen: {}
       lgtmanalysisid:
-        simple: ${LGTM.analysis_summary.id}
+        simple: ${LGTM.code_review_result.id}
       lgtmanalysislogsurl:
-        simple: ${LGTM.analysis_summary.log-url}
+        simple: ${LGTM.code_review_result.results-url}
       lgtmanalysisprojectid:
-        simple: ${LGTM.analysis_summary.project.id}
+        simple: ${LGTM.project_details.id}
       lgtmanalysisresultsurl:
-        simple: ${LGTM.analysis_summary.results-url}
+        simple: ${LGTM.code_review_result.results-url}
       lgtmanalysisstatus:
-        simple: ${LGTM.analysis_summary.languages.status}
+        simple: ${LGTM.code_review_result.status}
       lgtmprojectconfig: {}
       lgtmprojectgrade: {}
       lgtmprojectid: {}
@@ -2347,8 +1678,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 895
+          "x": 510,
+          "y": 510
         }
       }
     note: false
@@ -2356,34 +1687,71 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "29":
-    id: "29"
-    taskid: 764e472f-2d50-4737-8493-9ac9c739f61d
-    type: regular
+  "31":
+    id: "31"
+    taskid: 7825e234-3e37-4fb6-8231-b619084d0000
+    type: title
     task:
-      id: 764e472f-2d50-4737-8493-9ac9c739f61d
+      id: 7825e234-3e37-4fb6-8231-b619084d0000
       version: -1
-      name: Link Alerts to PR
-      description: commands.local.cmd.associate.indicators
-      script: Builtin|||associateIndicatorsToIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+      name: Playbook End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 7687b9d3-bbe1-4ab8-8d8c-b39b2d1b8ccf
+    type: playbook
+    task:
+      id: 7687b9d3-bbe1-4ab8-8d8c-b39b2d1b8ccf
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "33"
     scriptarguments:
-      incidentId:
-        simple: ${inputs.PR_ID}
-      indicatorsIDs:
-        simple: ${CreatedIndicator.ID}
-      indicatorsValues: {}
-    separatecontext: false
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${LGTM.code_review_result.id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: review-id
+      PollingCommandName:
+        simple: lgtm-get-code-review
+      Timeout:
+        simple: "10"
+      dt:
+        simple: LGTM.code_review_result(val.status!=="success").id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1945
+          "x": 510,
+          "y": 160
         }
       }
     note: false
@@ -2391,33 +1759,31 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "30":
-    id: "30"
-    taskid: 23a77a11-8ef5-431d-8144-ca3881790bc8
+  "33":
+    id: "33"
+    taskid: 7941e853-9bd2-4bed-837e-fd2876c34f97
     type: regular
     task:
-      id: 23a77a11-8ef5-431d-8144-ca3881790bc8
+      id: 7941e853-9bd2-4bed-837e-fd2876c34f97
       version: -1
-      name: Close Task Record
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
+      name: Refresh LGTM Code Review Details
+      description: Get results of code review
+      script: '|||lgtm-get-code-review'
       type: regular
       iscommand: true
-      brand: Builtin
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
+      review-id:
+        simple: ${inputs.LGTM Task ID}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2120
+          "x": 510,
+          "y": 330
         }
       }
     note: false
@@ -2430,10 +1796,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2165,
-        "width": 1025,
+        "height": 1915,
+        "width": 1280,
         "x": 50,
-        "y": 50
+        "y": -340
       }
     }
   }
@@ -2442,27 +1808,38 @@ inputs:
   value:
     simple: g
   required: false
-  description: ""
+  description: Git Platform
   playbookInputQuery: null
 - key: Organization
   value: {}
   required: false
-  description: ""
+  description: Git Project Organization
   playbookInputQuery: null
 - key: Repository
   value: {}
   required: false
-  description: ""
+  description: Git Repository
   playbookInputQuery: null
-- key: PR_ID
+- key: LGTM Task ID
   value: {}
   required: false
-  description: ""
+  description: LGTM Task ID
   playbookInputQuery: null
-- key: Alerts
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery: null
-outputs: []
+outputs:
+- contextPath: LGTM.project_details.languages.grade
+  description: The grade of the code for this language.
+- contextPath: LGTM.project_details.id
+  description: LGTM Project id
+- contextPath: LGTM.project_details.name
+  description: LGTM Project name
+- contextPath: CreatedIndicator
+  description: commands.local.cmd.new.indicator.output.indicator
+- contextPath: LGTM.code_review_result
+  type: unknown
+- contextPath: LGTM.code_review_result.languages
+  type: unknown
+- contextPath: LGTM.code_review_result.languages.alerts
+  type: unknown
+- contextPath: LGTM.code_review_result.languages.alerts.query.properties
+  type: unknown
 sourceplaybookid: 4ac23472-9a21-4685-8836-a849659b022d
