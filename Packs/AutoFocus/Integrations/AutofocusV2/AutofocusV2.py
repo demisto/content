@@ -10,6 +10,7 @@ import re
 import json
 import requests
 import socket
+import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -496,7 +497,7 @@ def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
     sub_categories_list = []
     for item in sub_category_data:
         new_sub_category = {}
-        fields_to_extract = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('fields')  # type: ignore
+        fields_to_extract = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name, {}).get('fields', [])  # type: ignore
         for field in fields_to_extract:  # type: ignore
             new_sub_category[field] = item.get(field)  # type: ignore
         sub_categories_list.append(new_sub_category)
@@ -1653,7 +1654,7 @@ def main():
             return_results(search_file_command(**args))
 
     except Exception as e:
-        return_error(f'Unexpected error: {e}')
+        return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
