@@ -31,9 +31,6 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
             dbot_score=dbot_score
         )
 
-        # INTEGRATION DEVELOPER TIP
-        # The output key will be ``HelloWorld.IP``, using ``ip`` as the key field.
-        # ``indicator`` is used to provide the context standard (IP)
         command_results.append(CommandResults(
             outputs_prefix='Cryptocurrency',
             outputs_key_field='Address',
@@ -61,7 +58,6 @@ def main():
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             return_results('ok')
 
         elif demisto.command() == 'crypto':
