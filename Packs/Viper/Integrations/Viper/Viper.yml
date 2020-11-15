@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: default
-  display: Viper-Project
+  display: Viper Project
   name: viper_project
   required: true
   type: 0
