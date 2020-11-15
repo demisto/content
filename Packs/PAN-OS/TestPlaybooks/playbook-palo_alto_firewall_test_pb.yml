@@ -1008,6 +1008,8 @@ tasks:
         simple: deny
       application:
         simple: fortnite,backweb
+      profile_setting:
+        simple: test_group_profile
       description:
         simple: labala
       destination: {}
