@@ -247,8 +247,20 @@ def test_not_find_malformed_pack_id():
                                         'Reason: This is an error message without pack ID'):
         script.find_malformed_pack_id('This is an error message without pack ID')
 
+
 @timeout_decorator.timeout(3)
 def test_install_nightly_packs_endless_loop(mocker):
+    """
+    Given
+    - Packs to install with two packs that cannot be installed
+        (usually because their version does not exist in the bucket)
+    When
+    - Run install_nightly_packs method with those packs
+    Then
+    - Ensure the function does not enter an endless loop and that it gracefully removes the two damaged packs from the
+     installation list
+    """
+
     def generic_request_mock(self, path: str, method, body=None, accept=None, _request_timeout=None):
         requested_pack_ids = {pack['id'] for pack in body['packs']}
         for bad_integration in {'bad_integration1', 'bad_integration2'}:
