@@ -141,8 +141,7 @@ def handle_exception(user_profile, e, action):
         e (Exception): The exception error. If DemistoException, holds the response json.
         action (IAMActions): An enum represents the current action (get, update, create, etc).
     """
-    if hasattr(e, 'res'):
-        # response object
+    if hasattr(e, 'res') and e.res:
         try:
             resp = e.res.json()
             error_code = resp.get('errorCode')
