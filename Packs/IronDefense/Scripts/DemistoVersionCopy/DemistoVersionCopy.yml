@@ -1,0 +1,25 @@
+comment: Return the Demisto server version. Special for IronDefense Example.
+commonfields:
+  id: DemistoVersion
+  version: -1
+dockerimage: demisto/python3:3.8.6.13358
+enabled: true
+name: DemistoVersion
+outputs:
+- contextPath: DemistoVersion.version
+  description: The version of the Demisto server.
+  type: string
+- contextPath: DemistoVersion.buildNumber
+  description: The build number of the Demisto server.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+dockerimage45: demisto/python3:3.7.5.4583
