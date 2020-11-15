@@ -1,0 +1,138 @@
+{
+ "fromDate": "0001-01-01T00:00:00Z",
+ "fromDateLicense": "0001-01-01T00:00:00Z",
+ "id": "Tier1 - What do we do",
+ "layout": [
+  {
+   "forceRange": false,
+   "h": 6,
+   "i": "125ecec0-0cb1-11eb-bc74-794df829b77a",
+   "id": "125ecec0-0cb1-11eb-bc74-794df829b77a",
+   "w": 12,
+   "widget": {
+    "category": "utility",
+    "commitMessage": "",
+    "dataType": "incidents",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromServerVersion": "5.0.0",
+    "id": "",
+    "isPredefined": false,
+    "itemVersion": "1.0.3",
+    "locked": true,
+    "modified": "2020-10-08T19:26:37.113944369Z",
+    "name": "Text Widget",
+    "packID": "CommonWidgets",
+    "packPropagationLabels": [
+     "all"
+    ],
+    "params": {
+     "tableColumns": [
+      {
+       "isDefault": true,
+       "key": "id",
+       "position": 0,
+       "width": 110
+      },
+      {
+       "isDefault": true,
+       "key": "name",
+       "position": 2,
+       "width": 300
+      },
+      {
+       "isDefault": true,
+       "key": "type",
+       "position": 3,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "severity",
+       "position": 4,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "status",
+       "position": 5,
+       "width": 80
+      },
+      {
+       "isDefault": true,
+       "key": "owner",
+       "position": 6,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "roles",
+       "position": 7,
+       "width": 160
+      },
+      {
+       "isDefault": true,
+       "key": "playbookId",
+       "position": 8,
+       "width": 150
+      },
+      {
+       "isDefault": true,
+       "key": "occurred",
+       "position": 9,
+       "width": 200
+      },
+      {
+       "isDefault": true,
+       "key": "dueDate",
+       "position": 10,
+       "width": 200
+      }
+     ],
+     "text": "![](https://media.giphy.com/media/xT5LMQxseWbm9NqPBu/giphy.gif)![](https://media.giphy.com/media/l1AvzFnBfaSHDiT8Q/giphy.gif)![](https://media.giphy.com/media/jQ8S9dvwbhIv7bM9BK/giphy.gif)\n![](https://media.giphy.com/media/fxBytOffPAz3Byerhv/giphy.gif)![](https://media.giphy.com/media/SXYzfz4rCV5zdwM8q3/giphy.gif)![](https://media.giphy.com/media/2wXs8n1LBQueHbzJIz/giphy.gif)\n![](https://media.giphy.com/media/fY06m5ezcWLW2yvgCR/giphy.gif)![](https://media.giphy.com/media/Stolapvidub3p6M7fc/giphy.gif)\n\n"
+    },
+    "prevName": "Text Widget",
+    "propagationLabels": [
+
+    ],
+    "query": "",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 0,
+    "widgetType": "text"
+   },
+   "x": 0,
+   "y": 0
+  }
+ ],
+ "name": "Tier1 - What do we do",
+ "period": {
+  "by": "",
+  "byFrom": "days",
+  "byTo": "",
+  "field": "",
+  "fromValue": 7,
+  "toValue": null
+ },
+ "toDate": "0001-01-01T00:00:00Z",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "description": "",
+ "isPredefined": true
+}

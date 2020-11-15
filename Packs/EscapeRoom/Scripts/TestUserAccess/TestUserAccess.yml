@@ -1,0 +1,23 @@
+args:
+- description: The local server URL.
+  name: server_url
+  required: true
+- description: The user name to test.
+  name: user_name
+  required: true
+commonfields:
+  id: TestUserAccess
+  version: -1
+dockerimage: devdemisto/escape-room:1.0.0.12195
+enabled: true
+name: TestUserAccess
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
