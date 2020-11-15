@@ -393,7 +393,7 @@ def test_fetch_incidents_two_logs_batches(mocker):
     events, _ = fetch_incidents(
         client=mock_client(),
         query_filter='mock_query_filter',
-        fetch_time='mock_fetch_time',
+        first_fetch='mock_first_fetch',
         fetch_limit=5
     )
 
@@ -418,7 +418,7 @@ def test_fetch_incidents_fetch_limit(mocker):
     events, _ = fetch_incidents(
         client=mock_client(),
         query_filter='mock_query_filter',
-        fetch_time='mock_fetch_time',
+        first_fetch='mock_first_fetch',
         fetch_limit=2
     )
 

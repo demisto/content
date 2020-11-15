@@ -432,7 +432,7 @@ def get_assigned_user_for_app_command(client, args):
     )
 
 
-def fetch_incidents(client, query_filter, fetch_time, fetch_limit):
+def fetch_incidents(client, query_filter, first_fetch, fetch_limit):
     """ If no events were saved from last run, returns new events from Okta's /log API. Otherwise,
     returns the events from last run. In both cases, no more than `fetch_limit` incidents will be returned,
     and the rest of them will be saved for next run.
@@ -440,7 +440,7 @@ def fetch_incidents(client, query_filter, fetch_time, fetch_limit):
         Args:
             client: (BaseClient) Okta client.
             query_filter: (str) A query filter for okta logs API.
-            fetch_time: (str) First fetch time, in DATE_FORMAT format.
+            first_fetch: (str) First fetch time, in DATE_FORMAT format.
             fetch_limit: (int) Maximum number of incidents to return.
         Returns:
             incidents: (dict) Incidents/events that will be created in Cortex XSOAR
@@ -449,7 +449,7 @@ def fetch_incidents(client, query_filter, fetch_time, fetch_limit):
 
     last_run = demisto.getLastRun()
     incidents = last_run.get('incidents', [])
-    last_run_time = last_run.get('last_run_time', fetch_time)  # if last_run_time is undefined, use fetch_time param
+    last_run_time = last_run.get('last_run_time', first_fetch)  # if last_run_time is undefined, use first_fetch param
     time_now = datetime.now().strftime(DATE_FORMAT)
 
     demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
@@ -501,7 +501,7 @@ def main():
 
     fetch_limit = int(params.get('max_fetch'))
     fetch_query_filter = params.get('fetch_query_filter')
-    fetch_time = dateparser.parse(params.get('fetch_time')).strftime(DATE_FORMAT)
+    first_fetch = dateparser.parse(params.get('first_fetch')).strftime(DATE_FORMAT)
 
     headers = {
         'Content-Type': 'application/json',
@@ -555,7 +555,7 @@ def main():
             return_results(get_assigned_user_for_app_command(client, args))
 
         elif command == 'fetch-incidents':
-            incidents, next_run = fetch_incidents(client, fetch_query_filter, fetch_time, fetch_limit)
+            incidents, next_run = fetch_incidents(client, fetch_query_filter, first_fetch, fetch_limit)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 
