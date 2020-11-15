@@ -1,0 +1,18 @@
+commonfields:
+  id: ChronicleDBotScoreWidgetScript
+  version: -1
+name: ChronicleDBotScoreWidgetScript
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Shows the DBot Score and reputation of the Domain.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
