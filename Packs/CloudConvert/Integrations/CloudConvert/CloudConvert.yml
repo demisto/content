@@ -261,7 +261,7 @@ script:
       also create a war room entry of the file when checking on an export to war room
       entry operation
     execution: false
-    name: cloudconvert-checkstatus
+    name: cloudconvert-check-status
     outputs:
     - contextPath: CloudConvert.Task.id
       description: Unique task id of scanned file

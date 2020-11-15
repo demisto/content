@@ -14,7 +14,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * cloudconvert-export
 * cloudconvert-import
 * cloudconvert-convert
-* cloudconvert-checkstatus
+* cloudconvert-check-status
 
 ## Playbook Inputs
 ---

@@ -101,14 +101,14 @@ Convert a priorly uploaded file to desired format
 
 
 
-### cloudconvert-checkstatus
+### cloudconvert-check-status
 ***
 Check the status of an operation. Use the 'is_entry' argument to also create a war room entry of the file when checking on an export to war room entry operation
 
 
 #### Base Command
 
-`cloudconvert-checkstatus`
+`cloudconvert-check-status`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -138,7 +138,7 @@ Check the status of an operation. Use the 'is_entry' argument to also create a w
 
 
 #### Command Example
-`cloudconvert-checkstatus task_id=1`
+`cloudconvert-check-status task_id=1`
 
 #### Human Readable Output
 

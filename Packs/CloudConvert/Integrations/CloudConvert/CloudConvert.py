@@ -373,7 +373,7 @@ def main() -> None:
         elif command == 'cloudconvert-convert':
             return_results(convert_command(client, demisto.args()))
 
-        elif command == 'cloudconvert-checkstatus':
+        elif command == 'cloudconvert-check-status':
             return_results(check_status_command(client, demisto.args()))
 
         elif command == 'cloudconvert-export':

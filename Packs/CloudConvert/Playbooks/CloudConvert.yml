@@ -113,7 +113,7 @@ tasks:
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
-        simple: cloudconvert-checkstatus
+        simple: cloudconvert-check-status
       Timeout:
         simple: "10"
       dt:
@@ -225,7 +225,7 @@ tasks:
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
-        simple: cloudconvert-checkstatus
+        simple: cloudconvert-check-status
       Timeout:
         simple: "10"
       dt:
@@ -336,7 +336,7 @@ tasks:
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
-        simple: cloudconvert-checkstatus
+        simple: cloudconvert-check-status
       Timeout:
         simple: "10"
       dt:
@@ -442,7 +442,7 @@ tasks:
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
-        simple: cloudconvert-checkstatus
+        simple: cloudconvert-check-status
       Timeout:
         simple: "10"
       dt:
