@@ -1,0 +1,25 @@
+{
+ "id": "Cryptocurrency Wallet",
+ "version": -1,
+ "modified": "2020-11-15T08:32:40.171839+02:00",
+ "shouldCommit": false,
+ "regex": "\\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\\b",
+ "details": "Cryptocurrency Wallet",
+ "prevDetails": "Cryptocurrency Wallet",
+ "reputationCommand": "crypto",
+ "system": false,
+ "locked": false,
+ "disabled": false,
+ "file": false,
+ "updateAfter": 0,
+ "mergeContext": false,
+ "formatScript": "CryptoCurrenciesFormat",
+ "manualMapping": {
+  "addresstype": {
+   "simple": "Cryptocurrency.AddressType",
+   "complex": null
+  }
+ },
+ "expiration": 0,
+ "fromVersion": "5.0.0"
+}
