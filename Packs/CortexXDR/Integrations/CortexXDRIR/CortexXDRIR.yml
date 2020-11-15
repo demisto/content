@@ -1795,9 +1795,9 @@ script:
       - disk drive
       - floppy disk
       - portable device
-    - description: Timestamp of the violation - Greater than or equal, Supported values
-        - 1579039377301 (time in milliseconds) "3 days ago" (relative date) "2019-10-21T23:45:00"
-        (date)
+    - description: Timestamp of the violation - Greater than or equal. Values could be either ISO date format, relative 
+            time or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative 
+            time) 1579039377301 (epoch time).
       name: timestamp_gte
     - description: Timestamp of the violation - Greater than or equal. Values could be either ISO date format, relative
         time or epoch timestamp. For example: "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative
@@ -1912,8 +1912,8 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: "true"
-      description: Choose whether you want to attach retrieved files to War room or
-        not. Default value - true.
+      description: If set to true the retrieved files will be saved in the war room otherwise a link to download the file 
+      will be retrieved. Default value - true.
       name: attach_files
       predefined:
       - "true"
