@@ -41,12 +41,11 @@ script:
       required: true
     description: Search for sample with file hash
     name: viper-search
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   runonce: false
   script: ''
   subtype: python3
   type: python
-  dockerimage45: demisto/python3:3.8.2.6981
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
