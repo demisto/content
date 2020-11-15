@@ -1,9 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 ''' IMPORTS '''
-import requests
-import os
 import csv
+import os
+
+import requests
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
