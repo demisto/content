@@ -3,6 +3,8 @@ import argparse
 
 import demisto_client
 from slackclient import SlackClient
+
+from Tests.scripts.utils.log_util import install_simple_logging
 from Tests.test_integration import __create_integration_instance, __delete_integrations_instances
 from Tests.test_content import ParallelPrintsManager
 from demisto_sdk.commands.common.tools import str2bool, print_color, print_error, LOG_COLORS, print_warning
@@ -26,9 +28,7 @@ def options_handler():
 
 
 def install_new_content(client, server):
-    prints_manager = ParallelPrintsManager(1)
-    update_content_on_demisto_instance(client, server, 'Demisto Marketplace', prints_manager, 0)
-    prints_manager.execute_thread_prints(0)
+    update_content_on_demisto_instance(client, server, 'Demisto Marketplace')
 
 
 def get_integrations(secret_conf_path):
@@ -148,6 +148,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 
 
 if __name__ == "__main__":
+    install_simple_logging()
     options = options_handler()
     if options.instance_tests:
         with open('./env_results.json', 'r') as json_file:
