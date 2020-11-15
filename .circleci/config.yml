@@ -986,7 +986,7 @@ jobs:
             - *comment_on_contrib_pr
             - *destroy_instances
             - *store_artifacts
-  
+
   Force Upload Packs To Marketplace:
     <<: *container_config
     resource_class: medium
@@ -1046,7 +1046,7 @@ jobs:
                   GCS_MARKET_TESTING_BUCKET="marketplace-dist"
 
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_TESTING_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH
-                  rm $GCS_PATH 
+                  rm $GCS_PATH
       - run:
           name: Slack Notifier
           shell: /bin/bash
