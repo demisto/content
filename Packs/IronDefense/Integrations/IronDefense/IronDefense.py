@@ -1,13 +1,17 @@
+import datetime
 import functools
-from typing import List, Dict
-import demistomock as demisto
 import json
-import requests
 import traceback
 from http.client import HTTPException
-import datetime
+from typing import Dict, List
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
+
 try:
-    from CommonServerPython import return_outputs, tableToMarkdown, return_error
+    from CommonServerPython import (return_error, return_outputs,
+                                    tableToMarkdown)
 except ImportError:
     pass
 
@@ -944,6 +948,10 @@ def get_alert_irondome_information_command():
                    outputs={})
 
 
+def example_added_command():
+    demisto.results('ok')
+
+
 COMMANDS = {
     'test-module': test_module_command,
     'fetch-incidents': fetch_incidents_command,
@@ -955,6 +963,7 @@ COMMANDS = {
     'irondefense-get-events-from-alert': get_events_command,
     'irondefense-get-alerts': get_alerts_command,
     'irondefense-get-alert-irondome-information': get_alert_irondome_information_command,
+    'irondefense-example-added-command': example_added_command,
 }
 COOKIE_KEY = 'user_sid'
 LOG_PREFIX = 'IronDefense Integration: '
