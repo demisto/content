@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: F5 ASM
+  id: F5 WAF
   version: -1
 configuration:
 - display: Server URL (e.g., 8.8.8.8)
@@ -21,7 +21,7 @@ configuration:
   type: 8
 description: Manages F5 firewall
 display: F5 Application Security Manager (WAF)
-name: F5 ASM
+name: F5 WAF
 script:
   commands:
   - arguments:
@@ -48,22 +48,22 @@ script:
     execution: false
     name: f5-asm-policy-list
     outputs:
-    - contextPath: f5.Policy.name
+    - contextPath: f5.ListPolicy.name
       description: Display name of the policy.
       type: String
-    - contextPath: f5.Policy.active
+    - contextPath: f5.ListPolicy.active
       description: Indicates if the policy is active.
       type: Boolean
-    - contextPath: f5.Policy.creatorName
+    - contextPath: f5.ListPolicy.creatorName
       description: The name of the user who created the policy.
       type: String
-    - contextPath: f5.Policy.createdTime
+    - contextPath: f5.ListPolicy.createdTime
       description: The time that the policy was created.
       type: String
-    - contextPath: f5.Policy.enforcementMode
+    - contextPath: f5.ListPolicy.enforcementMode
       description: Indicates if the policy is in enforcement mode.
       type: Boolean
-    - contextPath: f5.Policy.type
+    - contextPath: f5.ListPolicy.type
       description: The policy type.
       type: String
   - arguments:
@@ -88,7 +88,6 @@ script:
       predefined:
       - parent
       - child
-      - security
       required: true
       secret: false
     - default: false
@@ -121,7 +120,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: indicates if to allow the new policy
+      description: Whether to allow the new policy.
       isArray: false
       name: allow
       predefined:
@@ -131,7 +130,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: indicates if to activate the new policy
+      description: Whether to activate the new policy.
       isArray: false
       name: active
       predefined:
@@ -144,26 +143,23 @@ script:
     execution: false
     name: f5-asm-policy-create
     outputs:
-    - contextPath: f5.Policy.name
+    - contextPath: f5.CreatePolicy.name
       description: Display name of the policy.
       type: String
-    - contextPath: f5.Policy.id
+    - contextPath: f5.CreatePolicy.id
       description: ID of the policy.
       type: String
-    - contextPath: f5.Policy.fullPath
+    - contextPath: f5.CreatePolicy.fullPath
       description: Full path of the policy.
       type: String
-    - contextPath: f5.Policy.description
+    - contextPath: f5.CreatePolicy.description
       description: Description of the policy.
       type: String
-    - contextPath: f5.Policy.type
+    - contextPath: f5.CreatePolicy.type
       description: Type of the policy.
       type: String
-    - contextPath: f5.Policy.versionDatetime
+    - contextPath: f5.CreatePolicy.versionDatetime
       description: The creation time of the policy.
-      type: String
-    - contextPath: f5.Policy.selfLink
-      description: Policy self link
       type: String
   - arguments:
     - default: false
@@ -177,19 +173,19 @@ script:
     execution: false
     name: f5-asm-policy-apply
     outputs:
-    - contextPath: f5.Policy.id
+    - contextPath: f5.ApplyPolicy.id
       description: The policy ID.
       type: String
-    - contextPath: f5.Policy.kind
+    - contextPath: f5.ApplyPolicy.kind
       description: The type of the policy.
       type: String
-    - contextPath: f5.Policy.policyReference
+    - contextPath: f5.ApplyPolicy.policyReference
       description: The policy reference link.
       type: String
-    - contextPath: f5.Policy.status
+    - contextPath: f5.ApplyPolicy.status
       description: The status of the policy.
       type: String
-    - contextPath: f5.Policy.startTime
+    - contextPath: f5.ApplyPolicy.startTime
       description: The start time of the policy.
       type: String
   - arguments:
@@ -221,25 +217,25 @@ script:
     execution: false
     name: f5-asm-policy-export-file
     outputs:
-    - contextPath: f5.Policy.kind
+    - contextPath: f5.ExportPolicy.kind
       description: The type of the policy.
       type: String
-    - contextPath: f5.Policy.format
+    - contextPath: f5.ExportPolicy.format
       description: The format of the policy.
       type: String
-    - contextPath: f5.Policy.filename
+    - contextPath: f5.ExportPolicy.filename
       description: The filename of the exported file.
       type: String
-    - contextPath: f5.Policy.policyReference
+    - contextPath: f5.ExportPolicy.policyReference
       description: The reference link to the policy.
       type: String
-    - contextPath: f5.Policy.id
+    - contextPath: f5.ExportPolicy.id
       description: The ID of the policy.
       type: String
-    - contextPath: f5.Policy.startTime
+    - contextPath: f5.ExportPolicy.startTime
       description: The start time of the policy.
       type: String
-    - contextPath: f5.Policy.status
+    - contextPath: f5.ExportPolicy.status
       description: The status of the policy.
       type: String
   - arguments:
@@ -419,7 +415,7 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: The display name of the method to delete. The method_ID or method_name argument must be filled. Default is "None".
+      description: The display name of the method to delete. The method_ID or method_name argument must be filled. Default is "None".   
       isArray: false
       name: method_name
       required: false
@@ -701,13 +697,13 @@ script:
     execution: false
     name: f5-asm-policy-file-types-delete
     outputs:
-    - contextPath: f5.FileType.name
+    - contextPath: f5.policy-delete.name
       description: Display name of the policy.
       type: String
-    - contextPath: f5.FileType.id
+    - contextPath: f5.policy-delete.id
       description: ID of the policy that was deleted.
       type: String
-    - contextPath: f5.FileType.selfLink
+    - contextPath: f5.policy-delete.selfLink
       description: The self link to the deleted policy.
       type: String
   - arguments:
@@ -722,13 +718,13 @@ script:
     execution: false
     name: f5-asm-policy-delete
     outputs:
-    - contextPath: f5.Policy.name
+    - contextPath: f5.DeletePolicy.name
       description: Display name of the deleted policy.
       type: String
-    - contextPath: f5.Policy.id
+    - contextPath: f5.DeletePolicy.id
       description: ID of the deleted policy.
       type: String
-    - contextPath: f5.Policy.selfLink
+    - contextPath: f5.DeletePolicy.selfLink
       description: The self link to the deleted policy.
       type: String
   - arguments:
@@ -1008,7 +1004,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Sub-path of the blocking- settings element. Possible values are: "violations", "evasions", "http-protocols", and "web-services-securities".'
+      description: 'Sub-path of the blocking- settings element. Possible values are: "violations", "evasions", "http-protocols", and "web-services-securities".' 
       isArray: false
       name: endpoint
       predefined:
@@ -1199,7 +1195,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether attack signatures should be checked. Default is "true". If the enforcement type is set to "enforce", this field will not get any value.
+      description: Whether attack signatures should be checked. Default is "true". If the enforcement type is set to "enforce", this field will not get any value. 
       isArray: false
       name: attack_signatures_check
       predefined:
@@ -1305,7 +1301,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to stage the URL.
+      description: Whether to stage the URL. 
       isArray: false
       name: perform_staging
       predefined:
@@ -1468,7 +1464,7 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: The display name of the URL. The ID or display name must be filled. Default is "None".
+      description: The display name of the URL. The ID or display name must be filled. Default is "None". 
       isArray: false
       name: url_name
       required: false
@@ -1570,7 +1566,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether attack signatures should be checked. Default is "true". If the enforcement type is set to "enforce", this field will not get any value.
+      description: Whether attack signatures should be checked. Default is "true". If the enforcement type is set to "enforce", this field will not get any value. 
       isArray: false
       name: attack_signatures_check
       predefined:
@@ -1616,7 +1612,7 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: The ID of the cookie. The ID or display name must be filled. Default is "None".
+      description: The ID of the cookie. The ID or display name must be filled. Default is "None". 
       isArray: false
       name: cookie_id
       required: false
@@ -3633,7 +3629,7 @@ script:
     - contextPath: f5.Policy.md5
       description: The MD5 hash of the policy.
       type: String
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.5.11789
   feed: false
   isfetch: false
   longRunning: false
