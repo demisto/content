@@ -5,12 +5,9 @@ import json
 import ast
 import sys
 
-from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
-    Build, Server
+from Tests.configure_and_test_integration_instances import Build, Server
 from Tests.test_content import get_json_file, ParallelPrintsManager
-from Tests.Marketplace.search_and_install_packs import install_all_content_packs
-from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list, print_error
+from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, print_error
 
 
 def options_handler():
@@ -19,7 +16,7 @@ def options_handler():
                                           '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
                                           ' AMI environment.', default="Demisto Marketplace")
     parser.add_argument('--index_file_path', help='The index file path, generated on the server', required=True)
-    #parser.add_argument('--commit_hash', help='The commit hash of the current build', required=True)
+    # parser.add_argument('--commit_hash', help='The commit hash of the current build', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
 
     options = parser.parse_args()
@@ -43,20 +40,20 @@ def check_and_return_index_data(index_file_path, commit_hash):
     return index_data
 
 
-def get_paid_packs(client: demisto_client, prints_manager: ParallelPrintsManager,
-                  thread_index: int, request_timeout: int = 999999):
+def get_paid_packs(client: demisto_client, prints_manager: ParallelPrintsManager, thread_index: int,
+                   request_timeout: int = 999999):
 
-    request_data = {
-        'page': 0,
-        'size': 50,
-        'sort': [
-            {
-                'field': 'updated',
-                'asc': 0
-            }
-        ],
-        'general': ["generalFieldPaid"]
-    }
+    request_data = \
+        {
+            'page': 0,
+            'size': 50,
+            'sort':
+                [{
+                    'field': 'updated',
+                    'asc': 0
+                }],
+            'general': ["generalFieldPaid"]
+        }
 
     message = f'Getting premium packs from server {client.api_client.configuration.host}:\n'
     prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
@@ -112,7 +109,7 @@ def main():
     # Check the marketplace
     for host in hosts:
         server = Server(host=host, user_name=username, password=password)
-        paid_packs = get_paid_packs(server.client)
+        paid_packs = get_paid_packs(client=server.client)
         if paid_packs is not None:
             verify_server_paid_packs_by_index(paid_packs, index_data)
         else:
