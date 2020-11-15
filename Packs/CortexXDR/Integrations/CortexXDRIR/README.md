@@ -1496,7 +1496,7 @@ Gets a list of device control violations filtered by selected fields. You can re
                 "date": "2020-04-13T21:39:24",
                 "endpoint_id": "eca20ea25d4e4cfdad3a317997322693",
                 "hostname": "win-2020-04-14---12-39",
-                "ip": "10.196.73.119",
+                "ip": "1.1.1.1",
                 "os_type": "AGENT_OS_WINDOWS",
                 "product": "Cruzer Blade",
                 "product_id": "0x5567",
@@ -1512,7 +1512,7 @@ Gets a list of device control violations filtered by selected fields. You can re
                 "date": "2020-04-13T21:39:13",
                 "endpoint_id": "e4b83018ae2c411899d847930e68d398",
                 "hostname": "win-2020-04-14---12-39",
-                "ip": "10.196.73.119",
+                "ip": "1.1.1.1",
                 "os_type": "AGENT_OS_WINDOWS",
                 "product": "Cruzer Blade",
                 "product_id": "0x5567",
@@ -1528,7 +1528,7 @@ Gets a list of device control violations filtered by selected fields. You can re
                 "date": "2020-04-13T21:39:02",
                 "endpoint_id": "bef78d0ddbcc4ae488190bab0dcb31cd",
                 "hostname": "win-2020-04-14---12-39",
-                "ip": "10.196.73.119",
+                "ip": "1.1.1.1",
                 "os_type": "AGENT_OS_WINDOWS",
                 "product": "Cruzer Blade",
                 "product_id": "0x5567",
@@ -1550,9 +1550,9 @@ Gets a list of device control violations filtered by selected fields. You can re
 >### Endpoint Device Control Violation
 >|Date|Hostname|Username|Ip|Type|Violation Id|Vendor|Product|Serial|
 >|---|---|---|---|---|---|---|---|---|
->| 2020-04-13T21:39:24 | win-2020-04-14---12-39 | st3.local\assaflevi | 10.196.73.119 | Disk Drive | 100 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
->| 2020-04-13T21:39:13 | win-2020-04-14---12-39 | st3.local\assaflevi | 10.196.73.119 | Disk Drive | 90 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
->| 2020-04-13T21:39:02 | win-2020-04-14---12-39 | st3.local\assaflevi | 10.196.73.119 | Disk Drive | 80 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
+>| 2020-04-13T21:39:24 | win-2020-04-14---12-39 | st3.local\assaflevi | 1.1.1.1 | Disk Drive | 100 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
+>| 2020-04-13T21:39:13 | win-2020-04-14---12-39 | st3.local\assaflevi | 1.1.1.1 | Disk Drive | 90 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
+>| 2020-04-13T21:39:02 | win-2020-04-14---12-39 | st3.local\assaflevi | 1.1.1.1 | Disk Drive | 80 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
 
 
 ### 17. xdr-retrieve-files
