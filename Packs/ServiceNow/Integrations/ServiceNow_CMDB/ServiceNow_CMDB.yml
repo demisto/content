@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: ServiceNow_CMDB
+  id: ServiceNow CMDB
   version: -1
 configuration:
 - display: ServiceNow URL, in the format https://company.service-now.com/
@@ -29,8 +29,8 @@ configuration:
   type: 8
 description: The ServiceNow CMDB is a service‑centric foundation that proactively
   analyzes service‑impacting changes, identifies issues, and eliminates outages.
-display: ServiceNow_CMDB
-name: ServiceNow_CMDB
+display: ServiceNow CMDB
+name: ServiceNow CMDB
 script:
   commands:
   - arguments:
@@ -48,12 +48,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The maximum number of results returned per page (default: 1000).'
+      defaultValue: '50'
+      description: 'The maximum number of results returned per page (default: 50).'
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: 'A number of records to exclude from the query (default: 0).'
       isArray: false
       name: offset
@@ -98,6 +100,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: 'A number of records to exclude from the relations query (default:
         0).'
       isArray: false
@@ -177,6 +180,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: 'A number of records to exclude from the relations query (default:
         0).'
       isArray: false
@@ -248,6 +252,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: 'A number of records to exclude from the relations query (default:
         0).'
       isArray: false
@@ -325,6 +330,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: 'A number of records to exclude from the relations query (default:
         0).'
       isArray: false
@@ -386,6 +392,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: 'A number of records to exclude from the relations query (default:
         0).'
       isArray: false
@@ -444,8 +451,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultmapperin: HelloWorld-mapper
-defaultclassifier: HelloWorld
 tests:
 - ServiceNow_CMDB_Test
 fromversion: 5.0.0

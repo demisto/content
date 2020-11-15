@@ -144,7 +144,7 @@ def create_record_context(class_name: str, sys_id: str, result: dict) -> dict:
     return context
 
 
-def create_human_readable(title: str, result: dict) -> str:
+def create_human_readable(title: str, result: dict, fields: str) -> str:
     """
     Create the human readable output for commands.
 
@@ -152,15 +152,24 @@ def create_human_readable(title: str, result: dict) -> str:
         title: The title of the human readable output.
         result: The raw response from the http request consisting of the attributes, inbound_relations and
                 outbound_relations fields.
+        fields: A string representing all the fields of the record the client specified that should be returned. If no
+        fields were specified, only the record name and sys_id will be displayed in the war room.
 
     Return:
         A string representing the markdown output that should be displayed in the war room.
     """
     md = f'{title}\n'
-    attributes_outputs = {
-        'SysID': result.get('attributes', {}).get('sys_id'),
-        'Name': result.get('attributes', {}).get('name')
-    }
+    attributes_outputs = {}
+    if fields:
+        for field in fields.split(','):
+            if result.get('attributes', {}).get(field):
+                attributes_outputs[string_to_context_key(field)] = result.get('attributes', {}).get(field)
+    else:
+        attributes_outputs = {
+            'SysID': result.get('attributes', {}).get('sys_id'),
+            'Name': result.get('attributes', {}).get('name')
+        }
+
     md += tableToMarkdown('Attributes', t=attributes_outputs, removeNull=True)
 
     for relation_type in ['inbound_relations', 'outbound_relations']:
@@ -255,7 +264,7 @@ def get_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
             'OutboundRelations': result.get('outbound_relations', []),
         }
         hr_title = f'### Found the following attributes and relations for record {sys_id}:'
-        human_readable = create_human_readable(hr_title, result)
+        human_readable = create_human_readable(hr_title, result, params.get('sysparm_fields'))
     else:
         context['ServiceNowCMDB.Record(val.ID===obj.ID)'] = {
             'Class': class_name,
@@ -300,7 +309,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         sys_id = result.get('attributes', {}).get('sys_id')
         context = create_record_context(class_name, sys_id, result)
         hr_title = f'### Record {sys_id} was created successfully.'
-        human_readable = create_human_readable(hr_title, result)
+        human_readable = create_human_readable(hr_title, result, params.get('sysparm_fields'))
     else:
         human_readable = 'Failed to create a new record.'
 
@@ -341,7 +350,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     if result:
         context = create_record_context(class_name, sys_id, result)
         hr_title = f'### Updated record {sys_id} successfully.'
-        human_readable = create_human_readable(hr_title, result)
+        human_readable = create_human_readable(hr_title, result, params.get('sysparm_fields'))
     else:
         human_readable = f'Failed to update record {sys_id}.'
 
@@ -382,7 +391,7 @@ def add_relation_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     if result:
         context = create_record_context(class_name, sys_id, result)
         hr_title = f'### New relations were added to {sys_id} record successfully.'
-        human_readable = create_human_readable(hr_title, result)
+        human_readable = create_human_readable(hr_title, result, params.get('sysparm_fields'))
     else:
         human_readable = f'Failed to add new relations to record {sys_id}.'
 
@@ -422,7 +431,7 @@ def delete_relation_command(client: Client, args: dict) -> Tuple[str, dict, Any]
     if result:
         context = create_record_context(class_name, sys_id, result)
         hr_title = f'### Deleted relation {rel_sys_id} successfully from {sys_id} record.'
-        human_readable = create_human_readable(hr_title, result)
+        human_readable = create_human_readable(hr_title, result, params.get('sysparm_fields'))
     else:
         human_readable = f'Failed to delete relation {rel_sys_id} from record {sys_id}.'
 
