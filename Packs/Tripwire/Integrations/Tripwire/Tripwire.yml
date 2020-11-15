@@ -1,0 +1,358 @@
+category: Utilities
+commonfields:
+  id: Tripwire
+  version: -1
+configuration:
+- defaultvalue: https://soar.monstersofhack.com
+  display: Server URL (e.g. https://soar.monstersofhack.com)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Rules IDs of elements versions to fetch, comma seperated.
+  display: Rule ids
+  hidden: false
+  name: rule_oids
+  required: false
+  type: 0
+- additionalinfo: Nodes IDs of elements versions to fetch, comma seperated.
+  display: Node ids
+  hidden: false
+  name: node_oids
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This is the Hello World integration for getting started.
+display: Tripwire
+name: Tripwire
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Versions IDs given comma seperated.
+      isArray: false
+      name: version_oids
+      required: false
+      secret: false
+    - default: false
+      description: Elements IDs of elements versions to fetch, comma seperated.
+      isArray: false
+      name: element_oids
+      required: false
+      secret: false
+    - default: false
+      description: Element names of elements versions to fetch. (case insensitive)
+        .comma seperated
+      isArray: false
+      name: element_names
+      required: false
+      secret: false
+    - default: false
+      description: Nodes IDs of elements versions to fetch. comma seperated.
+      isArray: false
+      name: node_oids
+      required: false
+      secret: false
+    - default: false
+      description: Nodes names of elements versions to fetch. comma seperated.
+      isArray: false
+      name: node_names
+      required: false
+      secret: false
+    - default: false
+      description: Rules IDs of elements versions to fetch. comma seperated.
+      isArray: false
+      name: rule_oids
+      required: false
+      secret: false
+    - default: false
+      description: Rules names of elements versions to fetch. comma seperated.
+      isArray: false
+      name: rule_names
+      required: false
+      secret: false
+    - default: false
+      description: Possible Hashes value (md5, sha1, sha256, sha512) of elements versions
+        to fetch. comma seperated.
+      isArray: false
+      name: version_hashes
+      required: false
+      secret: false
+    - default: false
+      description: Last baseline versions of elements versions to fetch. comma seperated.
+      isArray: false
+      name: baseline_version_ids
+      required: false
+      secret: false
+    - default: false
+      description: Time detected range of element versions to fetch.  comma seperated.
+      isArray: false
+      name: time_detetcted_range
+      required: false
+      secret: false
+    - default: false
+      description: Time received range of element versions to fetch.
+      isArray: false
+      name: time_received_range
+      required: false
+      secret: false
+    - default: false
+      description: Page limit for paging support
+      isArray: false
+      name: page_limit
+      required: false
+      secret: false
+    - default: false
+      description: Page start for paging support
+      isArray: false
+      name: page_start
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all Element Versions that meet the search critiera.
+    execution: false
+    name: tripwire-versions-list
+    outputs:
+    - contextPath: Tripwire.Versions.approvalId
+      description: Approval IDs of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.baselineVersion
+      description: Last baseline versions of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.changeType
+      description: Change types of elements versions
+      type: String
+    - contextPath: Tripwire.Versions.elementId
+      description: Elements IDs of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.elementName
+      description: Element names of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.exists
+      description: Exists condition of elements versions.
+      type: Boolean
+    - contextPath: Tripwire.Versions.id
+      description: ID of element versions.
+      type: String
+    - contextPath: Tripwire.Versions.isPromoted
+      description: True if the element version has been promoted.
+      type: Boolean
+    - contextPath: Tripwire.Versions.md5
+      description: MD5 hashes of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.nodeId
+      description: Nodes IDs of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.nodeName
+      description: Nodes names of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.outsideMaintenanceWindow
+      description: Outside maintenance window condition of elements versions.
+      type: Boolean
+    - contextPath: Tripwire.Versions.promotionComment
+      description: Promotion comments of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.ruleId
+      description: Rules IDs of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.ruleName
+      description: Rules names of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.scanId
+      description: Scan IDs of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.severity
+      description: Severities of elements versions.
+      type: Number
+    - contextPath: Tripwire.Versions.sha1
+      description: SHA1 hashes of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.sha256
+      description: SHA256 hashes of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.sha512
+      description: SHA512 hashes of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.timeDetected
+      description: Times detected of elements versions.
+      type: Date
+    - contextPath: Tripwire.Versions.timeReceived
+      description: Times received of elements versions.
+      type: Date
+  - arguments:
+    - default: false
+      description: IDs of rules to fetch. comma seperated.
+      isArray: false
+      name: rule_oids
+      required: false
+      secret: false
+    - default: false
+      description: Names of rules to fetch. comma seperated.
+      isArray: false
+      name: rule_names
+      required: false
+      secret: false
+    - default: false
+      description: Types of rules to fetch. comma seperated.
+      isArray: false
+      name: rule_types
+      required: false
+      secret: false
+    - default: false
+      description: Page limit for paging support.
+      isArray: false
+      name: page_limit
+      required: false
+      secret: false
+    - default: false
+      description: Page start for paging support.
+      isArray: false
+      name: 'page_start  '
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all rules or those that match the provided filter
+      criteria.
+    execution: false
+    name: tripwire-rules-list
+    outputs:
+    - contextPath: Tripwire.Rules.command
+      type: String
+    - contextPath: Tripwire.Rules.elementName
+      type: String
+    - contextPath: Tripwire.Rules.id
+      type: String
+    - contextPath: Tripwire.Rules.importedTime
+      type: Date
+    - contextPath: Tripwire.Rules.modifiedTime
+      type: Date
+    - contextPath: Tripwire.Rules.name
+      type: String
+    - contextPath: Tripwire.Rules.severity
+      type: Number
+    - contextPath: Tripwire.Rules.timeoutMillis
+      type: Number
+    - contextPath: Tripwire.Rules.trackingId
+      type: String
+    - contextPath: Tripwire.Rules.type
+      type: String
+  - arguments:
+    - default: false
+      description: Id of the element. comma seperated.
+      isArray: false
+      name: element_oids
+      required: false
+      secret: false
+    - default: false
+      description: Name of the element (case insensitive). comma seperated.
+      isArray: false
+      name: element_names
+      required: false
+      secret: false
+    - default: false
+      description: Id of the node for this element. comma seperated.
+      isArray: false
+      name: node_oids
+      required: false
+      secret: false
+    - default: false
+      description: Id of the rule for this element. comma seperated.
+      isArray: false
+      name: rule_oids
+      required: false
+      secret: false
+    - default: false
+      description: Latest baseline version Id for this element. comma seperated.
+      isArray: false
+      name: baseline_version_ids
+      required: false
+      secret: false
+    - default: false
+      description: Id for the latest version of this element. comma seperated.
+      isArray: false
+      name: last_version_id
+      required: false
+      secret: false
+    - default: false
+      description: Page limit for paging support.
+      isArray: false
+      name: page_limit
+      required: false
+      secret: false
+    - default: false
+      description: Page start for paging support.
+      isArray: false
+      name: page_start
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all elements or those that match the provided criteria.
+    execution: false
+    name: tripwire-elements-list
+    outputs:
+    - contextPath: Tripwire.Elements.baselineVersionId
+      type: String
+    - contextPath: Tripwire.Elements.description
+      type: String
+    - contextPath: Tripwire.Elements.id
+      type: String
+    - contextPath: Tripwire.Elements.inScope
+      type: Boolean
+    - contextPath: Tripwire.Elements.isRestorable
+      type: Boolean
+    - contextPath: Tripwire.Elements.lastSuccessDate
+      type: Date
+    - contextPath: Tripwire.Elements.lastVersionChangeSeverity
+      type: Number
+    - contextPath: Tripwire.Elements.lastVersionChangeType
+      type: String
+    - contextPath: Tripwire.Elements.lastVersionId
+      type: String
+    - contextPath: Tripwire.Elements.lastVersionTime
+      type: Date
+    - contextPath: Tripwire.Elements.name
+      type: String
+    - contextPath: Tripwire.Elements.nodeId
+      type: String
+    - contextPath: Tripwire.Elements.ruleId
+      type: String
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
+fromversion: 5.0.0
