@@ -847,6 +847,11 @@
             "playbookID": "Panorama Best Practise - Test"
         },
         {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall",
+            "playbookID": "PAN-OS - Lookup Zone Test"
+        },
+        {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io test"
         },
