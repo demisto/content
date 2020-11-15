@@ -958,18 +958,17 @@ def restart_server_legacy(server):
         logging.exception('Legacy SSH restart demisto failed')
 
 
-def get_tests(server_numeric_version, build):
+def get_tests(build):
     """
     Selects the tests from that should be run in this execution and filters those that cannot run in this server version
     Args:
-        server_numeric_version: The server numeric versions
         build: Build object
 
     Returns:
         Test configurations from conf.json that should be run in this execution
     """
-
-    tests = build.tests
+    server_numeric_version: str = build.server_numeric_version
+    tests: dict = build.tests
     if Build.run_environment == Running.CIRCLECI_RUN:
         filtered_tests = extract_filtered_tests()
         if build.is_nightly:
@@ -1287,7 +1286,7 @@ def main():
     else:
         installed_content_packs_successfully = True
 
-    tests_for_iteration = get_tests(build.server_numeric_version, build)
+    tests_for_iteration = get_tests(build)
     new_integrations, modified_integrations = get_changed_integrations(build)
     all_module_instances, brand_new_integrations = configure_server_instances(build,
                                                                               tests_for_iteration,
