@@ -31,11 +31,6 @@ from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs
 from Tests.tools import update_server_configuration
-if __name__ == '__main__':
-    # The ValidateManager class imports a package that's configuring logging's basicConfig.
-    # This configuration overwrites any later configuration, so installing logging the way we want it should
-    # happen before importing this class
-    install_logging('Install Content And Configure Integrations On Server.log')
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
@@ -1272,6 +1267,7 @@ def set_marketplace_url(servers, branch_name, ci_build_number):
 
 
 def main():
+    install_logging('Install Content And Configure Integrations On Server.log')
     build = Build(options_handler())
 
     configure_servers_and_restart(build)

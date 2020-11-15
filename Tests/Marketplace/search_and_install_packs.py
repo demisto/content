@@ -198,7 +198,6 @@ def install_nightly_packs(client: demisto_client,
     """
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
     logging.info(f'Installing packs on server {host}')
-    logging.debug(f'Installing the following packs in server {host}:\n{packs_to_install_str}')
     # make the pack installation request
     all_packs_install_successfully = False
     request_data = {
@@ -207,6 +206,7 @@ def install_nightly_packs(client: demisto_client,
     }
     while not all_packs_install_successfully:
         try:
+            logging.debug(f'Installing the following packs in server {host}:\n{packs_to_install_str}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
                                                                                 method='POST',
@@ -217,6 +217,7 @@ def install_nightly_packs(client: demisto_client,
             if 200 <= status_code < 300:
                 packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
                               ast.literal_eval(response_data)]
+                logging.success(f'Packs were successfully installed on server {host}')
                 logging.debug(f'The following packs were successfully installed on server {host}:\n{packs_data}')
             else:
                 result_object = ast.literal_eval(response_data)
@@ -298,10 +299,9 @@ def install_packs(client: demisto_client,
         'packs': packs_to_install,
         'ignoreWarnings': True
     }
-
-    logging.info(f'Installing packs to server {host}')
+    logging.info(f'Installing packs on server {host}')
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-    logging.debug(f'Installing the following packs in server {host}:\n{packs_to_install_str}')
+    logging.debug(f'Installing the following packs on server {host}:\n{packs_to_install_str}')
 
     # make the pack installation request
     try:
@@ -316,6 +316,7 @@ def install_packs(client: demisto_client,
             packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for
                           pack in
                           ast.literal_eval(response_data)]
+            logging.success(f'Packs were successfully installed on server {host}')
             logging.debug(f'The following packs were successfully installed on server {host}:\n{packs_data}')
         else:
             result_object = ast.literal_eval(response_data)
