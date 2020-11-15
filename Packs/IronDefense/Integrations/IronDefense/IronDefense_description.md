@@ -1,3 +1,9 @@
+### Partner Contributed Integration
+#### Integration Author: Iron Defense
+Support and maintenance for this integration are provided by the author. Please use the following contact details:
+- **Email**: [support@ironnetcybersecurity.com](mailto:support@ironnetcybersecurity.com)
+- **URL**: [https://ironnet.atlassian.net/servicedesk/customer/portal/4](https://ironnet.atlassian.net/servicedesk/customer/portal/4)
+***
 # IronDefense Integration for Cortex XSOAR
 The IronDefense Integration allows users to interact with IronDefense alerts within Cortex XSOAR. The 
 Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, to report 
@@ -27,3 +33,6 @@ The following table describes all the parameters required to setup the Integrati
 | Dome Notification limit per request            | The limit on Dome Notifications returned per request.                                             | 500                      |
 | Alert Notification limit per request           | The limit on Alert Notifications returned per request.                                            | 500                      |
 | Event Notification limit per request           | The limit on Event Notifications returned per request.                                            | 500                      |
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/iron-defense)
