@@ -865,21 +865,16 @@ class Pack(object):
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status, True, None
 
-    def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack, latest_version,
-                                   successful_packs_dict):
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, latest_version, successful_packs_dict):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
         The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
-        In case that zip pack artifact already exist at the constructed path above (the path in the production bucket),
-        the copy will be skipped.
-        If flag override_pack is set to True, pack will forced to copy.
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
-            override_pack (bool): whether to override existing pack.
             latest_version (str): the pack's latest version.
-            successful_packs_dict (dict): the list of all packs were uploaded in prepare content step
+            successful_packs_dict (dict): the dict of all packs were uploaded in prepare content step
 
         Returns:
             bool: Status - whether the operation succeeded.
@@ -896,37 +891,34 @@ class Pack(object):
                           f"path {build_version_pack_path}.")
             return False, False
 
-        prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
-        existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
-        # We check that the pack version was bumped by comparing the pack version in build bucket and production bucket
-        successful_packs_list = [*successful_packs_dict]
-        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_list
-        if (existing_prod_version_files or pack_not_uploaded_in_prepare_content) and not override_pack:
-            logging.warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
+        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
+        if pack_not_uploaded_in_prepare_content:
+            logging.warning("The following packs already exist at storage.")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
 
         # We upload the pack zip object taken from the build bucket into the production bucket
+        prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
         prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
-        build_file_blob = build_bucket.blob(build_pack_zip_path)
+        build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
         copied_blob = build_bucket.copy_blob(
-            blob=build_file_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
+            blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
         )
         copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
         self.public_storage_path = copied_blob.public_url
         task_status = copied_blob.exists()
 
-        pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
-        if pack_uploaded_in_prepare_content:
-            agg_str = successful_packs_dict[self._pack_name].get('aggregated')
-            if agg_str:
-                self._aggregated = True
-                self._aggregation_str = agg_str
-
         if not task_status:
             logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
         else:
+            # Determine if pack versions were aggregated during upload
+            pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
+            if pack_uploaded_in_prepare_content:
+                agg_str = successful_packs_dict[self._pack_name].get('aggregated')
+                if agg_str:
+                    self._aggregated = True
+                    self._aggregation_str = agg_str
             logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
         return task_status, False
