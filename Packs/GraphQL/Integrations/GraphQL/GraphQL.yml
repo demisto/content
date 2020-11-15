@@ -40,6 +40,13 @@ script:
       name: query
       required: true
       secret: false
+    - default: false
+      description: Primary key field in the response to unique the object in the context
+        data.
+      isArray: false
+      name: outputs_key_field
+      required: false
+      secret: false
     deprecated: false
     description: Execute a query request to the GraphQL server.
     execution: false

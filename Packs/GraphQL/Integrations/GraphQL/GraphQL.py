@@ -15,7 +15,13 @@ urllib3.disable_warnings()
 def execute_query(client: Client, args: Dict) -> CommandResults:
     query = gql(args.get('query'))
     result = client.execute(query)
-    return CommandResults(outputs=result, outputs_prefix='GraphQL')
+    command_results_args = {
+        'outputs': result,
+        'outputs_prefix': 'GraphQL'
+    }
+    if args.get('outputs_key_field'):
+        command_results_args['outputs_key_field'] = args.get('outputs_key_field')
+    return CommandResults(**command_results_args)
 
 
 def main() -> None:

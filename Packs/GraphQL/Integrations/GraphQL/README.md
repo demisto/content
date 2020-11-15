@@ -31,6 +31,7 @@ Execute a query request to the GraphQL server.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The GraphQL query to execute. | Required | 
+| outputs_key_field | Primary key field in the response to unique the object in the context data. | Optional | 
 
 
 #### Context Output
