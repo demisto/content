@@ -172,7 +172,7 @@ class DBotScoreType(object):
     URL = 'url'
     CVE = 'cve'
     ACCOUNT = 'account'
-    CRYPTOCURRENCY = 'Cryptocurrency'
+    CRYPTOCURRENCY = 'cryptocurrency'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -2676,44 +2676,48 @@ class Common(object):
 
     class Cryptocurrency(Indicator):
         """
-        TODO: fix docstring
-        TODO: add docs to https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
-        URL indicator - https://xsoar.pan.dev/docs/context-standards#url
-        :type url: ``str``
-        :param url: The URL
+        Cryptocurrency indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cryptocurrency
+        :type address: ``str``
+        :param address: The Cryptocurrency address
 
-        :type detection_engines: ``int``
-        :param detection_engines: The total number of engines that checked the indicator.
-
-        :type positive_detections: ``int``
-        :param positive_detections: The number of engines that positively detected the indicator as malicious.
-
-        :type category: ``str``
-        :param category: The category associated with the indicator.
+        :type address_type: ``str``
+        :param address_type: The Cryptocurrency type - e.g. `bitcoin`.
 
         :type dbot_score: ``DBotScore``
-        :param dbot_score: If URL has reputation then create DBotScore object
+        :param dbot_score:  If the address has reputation then create DBotScore object.
 
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'Cryptocurrency(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, address, address_type):
+        def __init__(self, address, address_type, dbot_score):
             self.address = address
             self.address_type = address_type
 
+            self.dbot_score = dbot_score
+
         def to_context(self):
-            endpoint_context = {
+            crypto_context = {
                 'Address': self.address,
                 'AddressType': self.address_type
             }
 
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                crypto_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
             ret_value = {
-                Common.Cryptocurrency.CONTEXT_PATH: endpoint_context
+                Common.Cryptocurrency.CONTEXT_PATH: crypto_context
             }
 
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
             return ret_value
+
 
 def camelize_string(src_str, delim='_'):
     """

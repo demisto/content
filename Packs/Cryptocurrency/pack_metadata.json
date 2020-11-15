@@ -1,6 +1,6 @@
 {
-    "name": "## FILL MANDATORY FIELD ##",
-    "description": "## FILL MANDATORY FIELD ##",
+    "name": "Cryptocurrency",
+    "description": "This Content Pack enables you to add a reputation for cryptocurrency addresses.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
