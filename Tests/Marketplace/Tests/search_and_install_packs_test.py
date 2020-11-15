@@ -1,5 +1,6 @@
 import demisto_client
 import pytest
+import timeout_decorator
 
 import Tests.Marketplace.search_and_install_packs as script
 
@@ -245,3 +246,37 @@ def test_not_find_malformed_pack_id():
     with pytest.raises(Exception, match='The request to install packs has failed. '
                                         'Reason: This is an error message without pack ID'):
         script.find_malformed_pack_id('This is an error message without pack ID')
+
+
+@timeout_decorator.timeout(3)
+def test_install_nightly_packs_endless_loop(mocker):
+    """
+    Given
+    - Packs to install with two packs that cannot be installed
+        (usually because their version does not exist in the bucket)
+    When
+    - Run install_nightly_packs method with those packs
+    Then
+    - Ensure the function does not enter an endless loop and that it gracefully removes the two damaged packs from the
+     installation list
+    """
+
+    def generic_request_mock(self, path: str, method, body=None, accept=None, _request_timeout=None):
+        requested_pack_ids = {pack['id'] for pack in body['packs']}
+        for bad_integration in {'bad_integration1', 'bad_integration2'}:
+            if bad_integration in requested_pack_ids:
+                raise Exception(f'invalid version 1.2.0 for pack with ID {bad_integration}')
+        return MOCK_PACKS_INSTALLATION_RESULT, 200, None
+
+    client = MockClient()
+    mocker.patch.object(demisto_client, 'generic_request_func', generic_request_mock)
+    mocker.patch("Tests.Marketplace.search_and_install_packs.logging")
+    packs_to_install = [
+        {'id': 'HelloWorld'},
+        {'id': 'TestPack'},
+        {'id': 'AzureSentinel'},
+        {'id': 'Base'},
+        {'id': 'bad_integration1'},
+        {'id': 'bad_integration2'},
+    ]
+    script.install_nightly_packs(client, 'my_host', packs_to_install)
