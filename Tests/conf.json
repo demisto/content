@@ -738,13 +738,13 @@
                 {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorrelations",
-            "timeout": 1500,
+            "timeout": 2400,
             "fromversion": "5.0.0"
         },
         {
             "integrations": "QRadar_v2",
             "playbookID": "test playbook - QRadarCorrelations",
-            "timeout": 1500,
+            "timeout": 2400,
             "fromversion": "6.0.0"
         },
         {
