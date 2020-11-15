@@ -986,7 +986,7 @@ jobs:
                 shell: /bin/bash
                 when:
                   condition:
-                    equals: [ add_index_test, << pipeline.git.branch >> ]
+                    equal: [ add_index_test, << pipeline.git.branch >> ]
                 command: |
                   ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
                   export RETVAL=$?
