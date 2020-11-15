@@ -325,6 +325,7 @@ def install_packs(client: demisto_client, host: str, prints_manager: ParallelPri
     """
     if is_nightly:
         install_nightly_packs(client, host, prints_manager, thread_index, packs_to_install)
+        return
     request_data = {
         'packs': packs_to_install,
         'ignoreWarnings': True

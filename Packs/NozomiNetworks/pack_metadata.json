@@ -4,15 +4,13 @@
     "support": "Nozomi Networks",
     "author": "Nozomi Networks",
     "url": "https://www.nozominetworks.com",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "email": "support@nozominetworks.com",
     "categories": [
         "Network Security"
     ],
     "tags": [
-        "ot",
-        "iot",
-        "nozomi"
+        "IoT"
     ],
     "created": "2020-07-07T07:35:05Z",
     "updated": "2020-07-74T07:35:05Z",
