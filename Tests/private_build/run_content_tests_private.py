@@ -12,6 +12,7 @@ import urllib3
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
 
+from Tests.scripts.utils.log_util import install_simple_logging
 from Tests.test_integration import Docker, check_integration, disable_all_integrations
 from demisto_sdk.commands.common.constants import PB_Status
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
@@ -433,6 +434,7 @@ def manage_tests(tests_settings: SettingsTester):
 
 
 def main():
+    install_simple_logging()
     print("Time is: {}\n\n\n".format(datetime.datetime.now()))
     tests_settings = options_handler()
     manage_tests(tests_settings)
