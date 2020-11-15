@@ -125,7 +125,7 @@ def get_specific_entity(entity_name: str):
 
 def get_range_for_list_command(args: Dict):
     first_index = args.get('offset', 0)
-    last_index = args.get('limit', 50)
+    last_index = int(args.get('limit', 50)) - 1
     list_range = []
 
     # A bug on Forti API when the first index is 0, need to add 1 to the last index for consistency

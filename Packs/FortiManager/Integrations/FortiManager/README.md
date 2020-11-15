@@ -9,7 +9,7 @@ This integration was integrated and tested with version 6.2.2 of FortiManager
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL | True |
-| creds | Username | True |
+| credentials | Username | True |
 | adom | The instance ADOM | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
