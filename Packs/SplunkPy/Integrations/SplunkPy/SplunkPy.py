@@ -13,6 +13,7 @@ import requests
 import urllib3
 import io
 import re
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
@@ -114,14 +115,15 @@ def convert_to_str(obj):
     return str(obj)
 
 
-def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
-                        searchID=None):
+def updateNotableEvents(sessionKey, baseurl, comment, session, status=None, urgency=None, owner=None,
+                        eventIDs=None, searchID=None):
     """
     Update some notable events.
 
     Arguments:
     sessionKey -- The session key to use
     comment -- A description of the change or some information about the notable events
+    session -- The requests.Session to perform the HTTP requests
     status -- A status (only required if you are changing the status of the event)
     urgency -- An urgency (only required if you are changing the urgency of the event)
     owner -- A nowner (only required if reassigning the event)
@@ -139,7 +141,7 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
         raise Exception("Either eventIDs of a searchID must be provided (or both)")
 
     # These the arguments to the REST handler
-    args = {}
+    args = dict()
     args['comment'] = comment
 
     if status is not None:
@@ -163,8 +165,8 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
 
     args['output_mode'] = 'json'
 
-    mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header,
-                                 verify=VERIFY_CERTIFICATE)
+    mod_notables = session.post(baseurl + 'services/notable_update', data=args, headers=auth_header,
+                                verify=VERIFY_CERTIFICATE)
 
     return mod_notables.json()
 
@@ -555,7 +557,6 @@ def splunk_submit_event_command(service):
 
 
 def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_):
-
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
@@ -587,7 +588,6 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 
 
 def splunk_submit_event_hec_command():
-
     hec_token = demisto.params().get('hec_token')
     baseurl = demisto.params().get('hec_url')
     if baseurl is None:
@@ -610,17 +610,19 @@ def splunk_submit_event_hec_command():
 
 
 def splunk_edit_notable_event_command(proxy):
+    session = requests.Session()
     if not proxy:
         os.environ["HTTPS_PROXY"] = ""
         os.environ["HTTP_PROXY"] = ""
         os.environ["https_proxy"] = ""
         os.environ["http_proxy"] = ""
+        session.trust_env = False
     baseurl = 'https://' + demisto.params()['host'] + ':' + demisto.params()['port'] + '/'
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
-    auth_req = requests.post(baseurl + 'services/auth/login',
-                             data={'username': username, 'password': password, 'output_mode': 'json'},
-                             verify=VERIFY_CERTIFICATE)
+    auth_req = session.post(baseurl + 'services/auth/login',
+                            data={'username': username, 'password': password, 'output_mode': 'json'},
+                            verify=VERIFY_CERTIFICATE)
 
     sessionKey = auth_req.json()['sessionKey']
     eventIDs = None
@@ -631,7 +633,7 @@ def splunk_edit_notable_event_command(proxy):
     if demisto.get(demisto.args(), 'status'):
         status = int(demisto.args()['status'])
     response_info = updateNotableEvents(sessionKey=sessionKey, baseurl=baseurl,
-                                        comment=demisto.get(demisto.args(), 'comment'), status=status,
+                                        comment=demisto.get(demisto.args(), 'comment'), session=session, status=status,
                                         urgency=demisto.get(demisto.args(), 'urgency'),
                                         owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
     if 'success' not in response_info or not response_info['success']:
