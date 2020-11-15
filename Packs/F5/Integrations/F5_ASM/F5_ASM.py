@@ -604,7 +604,7 @@ def test_module(client: Client):
     try:
         client.list_policies("", "", None)
     except DemistoException as exception:
-        if 'Authorization Required' or 'Authentication failed' in str(exception):
+        if 'Authorization Required' in str(exception) or 'Authentication failed' in str(exception):
             return f'Authorization Error: please check your credentials.\n\nError:\n{exception}'
 
         if 'HTTPSConnectionPool' in str(exception):
@@ -621,13 +621,11 @@ def login(server_ip: str, username: str, password: str, verify_certificate: bool
                              verify=verify_certificate,
                              json={'username': username, 'password': password,
                                    'loginProviderName': 'tmos'}).json()
-    try:
-        if response:
-            token = response.get('token')
-            if token:
-                return token.get('token')
-    except DemistoException as exception:
-        return f'Authorization Error: please check your credentials. \n\nError\n:{exception}'
+    token = dict_safe_get(response, ['token', 'token'], '', str)
+    if not token:
+        raise DemistoException(f'Authorization Error: please check your credentials. \n\nError:\n{response}')
+
+    return token
 
 
 def f5_get_policy_md5_command(client: Client, policy_name: str) -> CommandResults:
@@ -2287,6 +2285,7 @@ def main():
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    handle_proxy()
 
     token = login(server_ip, username, password, verify_certificate)
 
@@ -2297,7 +2296,7 @@ def main():
             base_url=base_url,
             token=token,
             use_ssl=verify_certificate,
-            use_proxy=proxy
+            use_proxy=proxy,
         )
 
         command = demisto.command()
