@@ -893,7 +893,7 @@ class Pack(object):
 
         pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
         if pack_not_uploaded_in_prepare_content:
-            logging.warning(f"The following packs already exist at storage.")
+            logging.warning("The following packs already exist at storage.")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
 
