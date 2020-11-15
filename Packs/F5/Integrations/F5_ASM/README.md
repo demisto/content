@@ -1,25 +1,25 @@
 Use the F5 ASM integration to read information and to manage F5 firewall.
-This integration was integrated and tested with version 15.1.0 of F5 WAF
-## Configure F5 WAF on Cortex XSOAR
+This integration was integrated and tested with version 15.1.0 of F5 ASM
+## Configure F5 ASM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for F5 WAF.
+2. Search for F5 ASM.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. 1.2.3.4\) | True |
+| url | Server URL \(e.g., 8.8.8.8\) | True |
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### f5-asm-policy-list
 ***
-list all policies
+Lists all F5 Application Security Manager (ASM) policies.
 
 
 #### Base Command
@@ -38,12 +38,12 @@ list all policies
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.ListPolicy.name | String | Display name of the policy. | 
-| f5.ListPolicy.active | Boolean | Indicates if the policy is active | 
-| f5.ListPolicy.creatorName | String | Indicates the user that created the policy | 
-| f5.ListPolicy.createdTime | String | Indicated the time that the policy was created | 
-| f5.ListPolicy.enforcementMode | Boolean | Indicates if the policy is in enforcement mode | 
-| f5.ListPolicy.type | String | policy type | 
+| f5.Policy.name | String | Display name of the policy. | 
+| f5.Policy.active | Boolean | Indicates if the policy is active. | 
+| f5.Policy.creatorName | String | The name of the user who created the policy. | 
+| f5.Policy.createdTime | String | The time that the policy was created. | 
+| f5.Policy.enforcementMode | Boolean | Indicates if the policy is in enforcement mode. | 
+| f5.Policy.type | String | The policy type. | 
 
 
 #### Command Example
@@ -123,7 +123,7 @@ list all policies
 
 ### f5-asm-policy-create
 ***
-Create a new ASM policy
+Creates a new ASM policy.
 
 
 #### Base Command
@@ -134,23 +134,26 @@ Create a new ASM policy
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Display name of the policy. | Required | 
-| description | Optional description for the policy | Optional | 
-| kind | Is the policy a parent or child policy | Required | 
-| parent | If the policy is a security policy, optionally specify the parent path. | Optional | 
-| enforcement_mode | Choose the enforcement mode of the policy | Optional | 
-| protocol_independent | Is the policy protocol independent | Optional | 
+| description | Optional description for the policy. | Optional | 
+| kind | The type of the policy. Possible values are: "parent" and "child". Default is "parent". | Required | 
+| parent | The parent path if the policy is a security policy. | Optional | 
+| enforcement_mode | The enforcement mode of the policy. Possible values are: "transparent" and "blocking". Default is "transparent". | Optional | 
+| protocol_independent | Whether the policy is protocol independent. Default is "true". | Optional | 
+| allow | Whether to allow the new policy. | Optional | 
+| active | Whether to activate the new policy. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.CreatePolicy.name | String | Display name of the policy. | 
-| f5.CreatePolicy.id | String | ID for the policy | 
-| f5.CreatePolicy.fullPath | String | Full path of the policy | 
-| f5.CreatePolicy.description | String | Description of the policy | 
-| f5.CreatePolicy.type | String | Type of the policy | 
-| f5.CreatePolicy.versionDatetime | String | Policy creation time | 
+| f5.Policy.name | String | Display name of the policy. | 
+| f5.Policy.id | String | ID of the policy. | 
+| f5.Policy.fullPath | String | Full path of the policy. | 
+| f5.Policy.description | String | Description of the policy. | 
+| f5.Policy.type | String | Type of the policy. | 
+| f5.Policy.versionDatetime | String | The creation time of the policy. | 
+| f5.Policy.selfLink | String | Policy self link | 
 
 
 #### Command Example
@@ -183,7 +186,7 @@ Create a new ASM policy
 
 ### f5-asm-policy-apply
 ***
-Applying a policy in application security manager
+Applies a policy in the application security manager.
 
 
 #### Base Command
@@ -193,18 +196,18 @@ Applying a policy in application security manager
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_reference_link | link to the policy the user wish to apply | Required | 
+| policy_reference_link | Link to the policy to apply. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.ApplyPolicy.id | String | Policy ID | 
-| f5.ApplyPolicy.kind | String | Policy kind | 
-| f5.ApplyPolicy.policyReference | String | policy reference link | 
-| f5.ApplyPolicy.status | String | policy status | 
-| f5.ApplyPolicy.startTime | String | Policy start time | 
+| f5.Policy.id | String | The policy ID. | 
+| f5.Policy.kind | String | The type of the policy. | 
+| f5.Policy.policyReference | String | The policy reference link. | 
+| f5.Policy.status | String | The status of the policy. | 
+| f5.Policy.startTime | String | The start time of the policy. | 
 
 
 #### Command Example
@@ -235,7 +238,7 @@ Applying a policy in application security manager
 
 ### f5-asm-policy-export-file
 ***
-Exporting policy file
+Exports a policy file.
 
 
 #### Base Command
@@ -245,22 +248,22 @@ Exporting policy file
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filename | name of the file to export to | Required | 
-| policy_reference_link | link to policy user wishes to export | Required | 
-| minimal | Indicates whether to export only custom settings. | Optional | 
+| filename | The name of the file to export the policy to. | Required | 
+| policy_reference_link | The link to the policy to export. | Required | 
+| minimal | Indicates whether to export only custom settings. Default is "true". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.ExportPolicy.kind | String | policy kind | 
-| f5.ExportPolicy.format | String | policy format | 
-| f5.ExportPolicy.filename | String | filename of the file exported | 
-| f5.ExportPolicy.policyReference | String | policy reference link | 
-| f5.ExportPolicy.id | String | policy id | 
-| f5.ExportPolicy.startTime | String | policy start time | 
-| f5.ExportPolicy.status | String | policy status | 
+| f5.Policy.kind | String | The type of the policy. | 
+| f5.Policy.format | String | The format of the policy. | 
+| f5.Policy.filename | String | The filename of the exported file. | 
+| f5.Policy.policyReference | String | The reference link to the policy. | 
+| f5.Policy.id | String | The ID of the policy. | 
+| f5.Policy.startTime | String | The start time of the policy. | 
+| f5.Policy.status | String | The status of the policy. | 
 
 
 #### Command Example
@@ -303,19 +306,19 @@ Lists the HTTP methods that are enforced in the security policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 hash using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.PolicyMethods.name | String | Method name | 
-| f5.PolicyMethods.actAsMethod | String | The functionality of the method | 
-| f5.PolicyMethods.id | String | Method ID | 
-| f5.PolicyMethods.selfLink | String | Self link | 
-| f5.PolicyMethods.kind | String | Endpoint kind | 
-| f5.PolicyMethods.lastUpdateMicros | String | Last update time | 
+| f5.PolicyMethods.name | String | The name of the method. | 
+| f5.PolicyMethods.actAsMethod | String | The functionality of the method. | 
+| f5.PolicyMethods.id | String | The ID of the method. | 
+| f5.PolicyMethods.selfLink | String | The self link to the method. | 
+| f5.PolicyMethods.kind | String | The type of endpoint. | 
+| f5.PolicyMethods.lastUpdateMicros | String | The datetime the policy method was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -791,7 +794,7 @@ Lists the HTTP methods that are enforced in the security policy.
 
 ### f5-asm-policy-file-types-list
 ***
-Lists the file types that are allowed or disallowed in the security policy.
+Lists the file types that are allowed or not allowed in the security policy.
 
 
 #### Base Command
@@ -801,21 +804,21 @@ Lists the file types that are allowed or disallowed in the security policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 hash using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.FileType.name | String | Method name | 
-| f5.FileType.id | String | Method ID | 
-| f5.FileType.selfLink | String | Self link | 
-| f5.FileType.kind | String | Endpoint kind | 
-| f5.FileType.lastUpdateMicros | String | Last update time | 
-| f5.FileType.queryStringLength | String | Length of the query | 
-| f5.FileType.checkRequestLength | String | Request length | 
-| f5.FileType.allowed | Boolean | Indicates if the file type allowed | 
+| f5.FileType.name | String | The name of the file type. | 
+| f5.FileType.id | String | The ID of the file type. | 
+| f5.FileType.selfLink | String | The self link to the file type. | 
+| f5.FileType.kind | String | The type of endpoint. | 
+| f5.FileType.lastUpdateMicros | String | The datetime the file type was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
+| f5.FileType.queryStringLength | String | The length of the query string. | 
+| f5.FileType.checkRequestLength | String | The length of the request. | 
+| f5.FileType.allowed | Boolean | Indicates if the file type is allowed. | 
 
 
 #### Command Example
@@ -1127,7 +1130,7 @@ Lists the file types that are allowed or disallowed in the security policy.
 
 ### f5-asm-policy-methods-add
 ***
-add new allowed method
+Adds a new allowed method.
 
 
 #### Base Command
@@ -1137,20 +1140,20 @@ add new allowed method
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| new_method_name | Display name of the new method. | Required | 
-| act_as_method | Functionality of the new method. default is GET. | Optional | 
+| policy_md5 | The MD5 hash of the policy to which to add the method. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| new_method_name | The display name of the new method. | Required | 
+| act_as_method | Functionality of the new method. Possible values are: "GET" and "POST". Default is "GET". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.PolicyMethods.name | String | The name of the new method | 
-| f5.PolicyMethods.id | String | ID of the new method | 
-| f5.PolicyMethods.actAsMethod | String | Functionality of the new method. | 
-| f5.PolicyMethods.selfLink | String | self link | 
-| f5.PolicyMethods.kind | String | kind | 
+| f5.PolicyMethods.name | String | The name of the new method. | 
+| f5.PolicyMethods.id | String | The ID of the new method. | 
+| f5.PolicyMethods.actAsMethod | String | The functionality of the new method. | 
+| f5.PolicyMethods.selfLink | String | The self link to the method. | 
+| f5.PolicyMethods.kind | String | The type of method. | 
 
 
 #### Command Example
@@ -1217,7 +1220,7 @@ add new allowed method
 
 ### f5-asm-policy-methods-update
 ***
-update a policy method
+Updates a policy method.
 
 
 #### Base Command
@@ -1227,21 +1230,21 @@ update a policy method
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5. | Required | 
-| method_id | ID of the method. ID or display name must be filled. | Optional | 
-| method_name | Display name of the method. Method ID or method display name must be filled. | Optional | 
-| act_as_method | Functionality of the new method. | Required | 
+| policy_md5 | The MD5 hash of the policy in which to update the method. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| method_id | The ID of the method to update. The method_ID or method_name arguments must be filled. Default is "None". | Optional | 
+| method_name | Display name of the method to update. The method_ID or method_name argument must be filled. Default is "None". | Optional | 
+| act_as_method | Functionality of the updated method. Possible values are: "GET" and "POST". | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.PolicyMethods.name | String | The name of the new method | 
-| f5.PolicyMethods.id | String | ID of the new method | 
-| f5.PolicyMethods.actAsMethod | String | Functionality of the new method. | 
-| f5.PolicyMethods.selfLink | String | self link | 
-| f5.PolicyMethods.kind | String | kind | 
+| f5.PolicyMethods.name | String | The name of the updated method. | 
+| f5.PolicyMethods.id | String | The ID of the updated method. | 
+| f5.PolicyMethods.actAsMethod | String | The functionality of the updated method. | 
+| f5.PolicyMethods.selfLink | String | The self link to the updated method. | 
+| f5.PolicyMethods.kind | String | The type of method. | 
 
 
 #### Command Example
@@ -1308,7 +1311,7 @@ update a policy method
 
 ### f5-asm-policy-methods-delete
 ***
-Delete a method from a certain policy
+Deletes a method from a given policy.
 
 
 #### Base Command
@@ -1318,20 +1321,20 @@ Delete a method from a certain policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5. | Required | 
-| method_id | ID of the method. ID or display name must be filled. | Optional | 
-| method_name | Display name of the method. Method ID or method display name must be filled. | Optional | 
+| policy_md5 | The MD5 hash of the policy from which to delete the method. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| method_id | The ID of the method to delete. The method_ID or method_name argument must be filled. Default is "None". | Optional | 
+| method_name | The display name of the method to delete. The method_ID or method_name argument must be filled. Default is "None". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.PolicyMethods.name | String | The name of the new method | 
-| f5.PolicyMethods.id | String | ID of the new method | 
-| f5.PolicyMethods.actAsMethod | String | Functionality of the new method. | 
-| f5.PolicyMethods.selfLink | String | self link | 
-| f5.PolicyMethods.kind | String | kind | 
+| f5.PolicyMethods.name | String | The name of the deleted method. | 
+| f5.PolicyMethods.id | String | The ID of the deleted method. | 
+| f5.PolicyMethods.actAsMethod | String | The functionality of the deleted method. | 
+| f5.PolicyMethods.selfLink | String | The self link to the deleted method. | 
+| f5.PolicyMethods.kind | String | The type of the deleted method. | 
 
 
 #### Command Example
@@ -1408,32 +1411,32 @@ add new file type
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | The MD5 hash of the policy. | Required | 
+| policy_md5 | The MD5 hash of the policy to which you want to add the new file type. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 | new_file_type | The new file type to add. | Required | 
-| query_string_length | Query string length. | Optional | 
-| check_post_data_length | indicates if the user wishes check the length of data in post method. default is True. | Optional | 
-| response_check | Indicates if the user wishes to check the response. | Optional | 
-| check_request_length | Indicates if the user wishes to check the request length. | Optional | 
-| post_data_length | post data length. | Optional | 
-| perform_staging | Indicates if the user wishes the new file type to be at staging. | Optional | 
+| query_string_length | The length of the query string. Default is "100". | Optional | 
+| check_post_data_length | Whether to check the length of the data in the post method. Default is "true". | Optional | 
+| response_check | Whether to check the response. Default is "true". | Optional | 
+| check_request_length | Whether to check the length of the request. Default is "true". | Optional | 
+| post_data_length | The post data length. Default is "100". | Optional | 
+| perform_staging | Whether to stage the new file type. Default is "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.FileType.name | String | Method name | 
-| f5.FileType.id | String | Method ID | 
-| f5.FileType.queryStringLength | Number | Indicates the query string length | 
-| f5.FileType.selfLink | String | self link | 
-| f5.FileType.lastUpdateMicros | String | Last update time | 
-| f5.FileType.responseCheck | Boolean | Indicates if user wished to check response | 
-| f5.FileType.checkRequestLength | String | Request length | 
-| f5.FileType.allowed | Boolean | Indicates if the file type allowed | 
-| f5.FileType.check-url-length | Boolean | Indicates if user wishes to check url length | 
-| f5.FileType.postDataLength | Number | Length od the post data | 
-| f5.FileType.urlLength | Number | Indicates the url length | 
-| f5.FileType..performStaging | Boolean | Indicates if staging was performed. | 
+| f5.FileType.name | String | The name of the file type. | 
+| f5.FileType.id | String | The ID of the file type. | 
+| f5.FileType.queryStringLength | Number | The length of the query string. | 
+| f5.FileType.selfLink | String | The self link to the file type. | 
+| f5.FileType.lastUpdateMicros | String | The datetime the file type was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
+| f5.FileType.responseCheck | Boolean | Indicates if user wanted to check the response. | 
+| f5.FileType.checkRequestLength | String | The length of the request. | 
+| f5.FileType.allowed | Boolean | Indicates if the file type is allowed. | 
+| f5.FileType.check-url-length | Boolean | Indicates whether to check the URL length. | 
+| f5.FileType.postDataLength | Number | The length of the post data. | 
+| f5.FileType.urlLength | Number | The length of the URL. | 
+| f5.FileType.performStaging | Boolean | Indicates whether the file type should be staged. | 
 
 
 #### Command Example
@@ -1500,7 +1503,7 @@ add new file type
 
 ### f5-asm-policy-file-types-update
 ***
-update policy file type
+Updates the policy file type.
 
 
 #### Base Command
@@ -1510,33 +1513,33 @@ update policy file type
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | The MD5 hash of the policy. | Required | 
-| file_type_id | ID of the file type. ID or display name must be filled. | Optional | 
-| file_type_name | Display name of the file type. ID or display name must be filled. | Optional | 
-| query_string_length | Query string length. | Optional | 
-| check_post_data_length | indicates if the user wishes check the length of data in post method. default is True. | Optional | 
-| response_check | Indicates if the user wishes to check the response. | Optional | 
-| check_request_length | Indicates if the user wishes to check the request length. | Optional | 
-| post_data_length | post data length. | Optional | 
-| perform_staging | Indicates if the user wishes the new file type to be at staging. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| file_type_id | ID of the file type. The ID or display name must be filled. Default is "None". | Optional | 
+| file_type_name | Display name of the file type. The ID or display name must be filled. Default is "None". | Optional | 
+| query_string_length | The length of the query string. Default is "100". | Optional | 
+| check_post_data_length | Whether to check the length of the data in the post method. Default is "True". | Optional | 
+| response_check | Whether to check the response. Default is "true". | Optional | 
+| check_request_length | Whether to check the length of the request. Default is "true". | Optional | 
+| post_data_length | The post data length. Default is "100". | Optional | 
+| perform_staging | Whether to stage the updated file type. Default is "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.FileType.name | String | Method name | 
-| f5.FileType.id | String | Method ID | 
-| f5.FileType.queryStringLength | Number | Indicates the query string length | 
-| f5.FileType.selfLink | String | self link | 
-| f5.FileType.lastUpdateMicros | String | Last update time. | 
-| f5.FileType.responseCheck | Boolean | Indicates if user wished to check response | 
-| f5.FileType.checkRequestLength | String | Request length | 
-| f5.FileType.allowed | Boolean | Indicates if the file type allowed | 
-| f5.FileType.check-url-length | Boolean | Indicates if user wishes to check url length | 
-| f5.FileType.postDataLength | Number | Length od the post data | 
-| f5.FileType.urlLength | Number | Indicates the url length | 
-| f5.FileType..performStaging | Boolean | Indicates if staging was performed. | 
+| f5.FileType.name | String | The name of the file type. | 
+| f5.FileType.id | String | The ID of the file type. | 
+| f5.FileType.queryStringLength | Number | The length of the query string. | 
+| f5.FileType.selfLink | String | The self link to the file type. | 
+| f5.FileType.lastUpdateMicros | String | The datetime the file type was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
+| f5.FileType.responseCheck | Boolean | Indicates whether the user wanted to check the response. | 
+| f5.FileType.checkRequestLength | String | The length of the request. | 
+| f5.FileType.allowed | Boolean | Indicates if the file type is allowed. | 
+| f5.FileType.check-url-length | Boolean | Indicates whether the user wanted to check the URL length. | 
+| f5.FileType.postDataLength | Number | The length of the post data. | 
+| f5.FileType.urlLength | Number | The length of the URL. | 
+| f5.FileType.performStaging | Boolean | Indicates whether the file type should be staged. | 
 
 
 #### Command Example
@@ -1603,7 +1606,7 @@ update policy file type
 
 ### f5-asm-policy-file-types-delete
 ***
-Delete policy file type
+Deletes the policy file type.
 
 
 #### Base Command
@@ -1613,18 +1616,18 @@ Delete policy file type
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5. | Required | 
-| file_type_id | ID of the file type. ID or display name must be filled. | Optional | 
-| file_type_name | Display name of the file type. ID or display name must be filled. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| file_type_id | ID of the file type. The ID or display name must be filled. Default is "None". | Optional | 
+| file_type_name | Display name of the file type. The ID or display name must be filled. Default is "None". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.policy-delete.name | String | Display name of the policy. | 
-| f5.policy-delete.id | String | ID of the policy that was deleted | 
-| f5.policy-delete.selfLink | String | Self link of the policy that was deleted | 
+| f5.FileType.name | String | Display name of the policy. | 
+| f5.FileType.id | String | ID of the policy that was deleted. | 
+| f5.FileType.selfLink | String | The self link to the deleted policy. | 
 
 
 #### Command Example
@@ -1691,7 +1694,7 @@ Delete policy file type
 
 ### f5-asm-policy-delete
 ***
-Delete policy
+Deletes a policy.
 
 
 #### Base Command
@@ -1701,16 +1704,16 @@ Delete policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.DeletePolicy.name | String | Display name of the deleted policy. | 
-| f5.DeletePolicy.id | String | ID of the deleted policy. | 
-| f5.DeletePolicy.selfLink | String | Self link of the deleted policy. | 
+| f5.Policy.name | String | Display name of the deleted policy. | 
+| f5.Policy.id | String | ID of the deleted policy. | 
+| f5.Policy.selfLink | String | The self link to the deleted policy. | 
 
 
 #### Command Example
@@ -1740,7 +1743,7 @@ Delete policy
 
 ### f5-asm-policy-hostnames-list
 ***
-List policy hostnames
+Lists the hostnames of the policy.
 
 
 #### Base Command
@@ -1750,19 +1753,19 @@ List policy hostnames
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Hostname.name | String | Policy hostname | 
-| f5.Hostname.id | String | Policy ID | 
-| f5.Hostname.createdBy | String | Interface used to create the hostname | 
-| f5.Hostname.selfLink | String | URI of specific hostname | 
-| f5.Hostname.includeSubdomains | Boolean | Whether or not to include subdomains | 
-| f5.Hostname.lastUpdateMicros | String | Time of last update | 
+| f5.Hostname.name | String | The hostname of the policy. | 
+| f5.Hostname.id | String | The ID of the hostname. | 
+| f5.Hostname.createdBy | String | The interface used to create the hostname. | 
+| f5.Hostname.selfLink | String | The self link to the specific hostname. | 
+| f5.Hostname.includeSubdomains | Boolean | Indicates whether to include subdomains. | 
+| f5.Hostname.lastUpdateMicros | String | The datetime the hostname was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -1951,7 +1954,7 @@ List policy hostnames
 
 ### f5-asm-policy-hostnames-add
 ***
-Add a new hostname to a policy
+Adds a new hostname to a policy.
 
 
 #### Base Command
@@ -1961,21 +1964,21 @@ Add a new hostname to a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| name | Host name to add | Required | 
-| include_subdomains | Whether or not to include subdomains | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| name | The hostname to add to the policy. | Required | 
+| include_subdomains | Whether to include subdomains in the policy. Default is "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Hostname.name | String | Policy hostname | 
-| f5.Hostname.id | String | Policy ID | 
-| f5.Hostname.createdBy | String | Interface used to create the hostname | 
-| f5.Hostname.selfLink | String | URI of specific hostname | 
-| f5.Hostname.includeSubdomains | Boolean | Whether or not to include subdomains | 
-| f5.Hostname.lastUpdateMicros | String | Time of last update | 
+| f5.Hostname.name | String | The policy hostname. | 
+| f5.Hostname.id | String | The policy ID. | 
+| f5.Hostname.createdBy | String | The interface used to create the hostname. | 
+| f5.Hostname.selfLink | String | The self link to the specific hostname. | 
+| f5.Hostname.includeSubdomains | Boolean | Indicates whether to include subdomains. | 
+| f5.Hostname.lastUpdateMicros | String | The datetime the hostname was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -2042,7 +2045,7 @@ Add a new hostname to a policy
 
 ### f5-asm-policy-hostnames-update
 ***
-Update an existing policy hostname
+Updates an existing policy hostname.
 
 
 #### Base Command
@@ -2052,22 +2055,22 @@ Update an existing policy hostname
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| hostname_id | ID of the hostname. ID or display name must be filled. | Optional | 
-| hostname_name | Display name of the hostname. ID or display name must be filled. | Optional | 
-| include_subdomains | Whether or not to include subdomains | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| hostname_id | ID of the hostname. ID or display name must be filled. Default is "None". | Optional | 
+| hostname_name | Display name of the hostname. ID or display name must be filled. Default is "None". | Optional | 
+| include_subdomains | Whether to include subdomains. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Hostname.name | String | Policy hostname | 
-| f5.Hostname.id | String | Policy ID | 
-| f5.Hostname.createdBy | String | Interface used to create the hostname | 
-| f5.Hostname.selfLink | String | URI of specific hostname | 
-| f5.Hostname.includeSubdomains | Boolean | Whether or not to include subdomains | 
-| f5.Hostname.lastUpdateMicros | String | Time of last update | 
+| f5.Hostname.name | String | The policy hostname. | 
+| f5.Hostname.id | String | The policy ID. | 
+| f5.Hostname.createdBy | String | The interface used to create the hostname. | 
+| f5.Hostname.selfLink | String | The self link to the specific hostname. | 
+| f5.Hostname.includeSubdomains | Boolean | Indicates whether subdomains are included. | 
+| f5.Hostname.lastUpdateMicros | String | The datetime the hostname was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -2134,7 +2137,7 @@ Update an existing policy hostname
 
 ### f5-asm-policy-hostnames-delete
 ***
-Delete a hostname from a policy
+Deletes a hostname from a policy.
 
 
 #### Base Command
@@ -2144,21 +2147,21 @@ Delete a hostname from a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| hostname_id | ID of the hostname. ID or display name must be filled. | Optional | 
-| hostname_name | Display name of the hostname. ID or display name must be filled. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| hostname_id | The ID of the hostname. The ID or display name must be filled. Default is "None". | Optional | 
+| hostname_name | The display name of the hostname. The ID or display name must be filled. Default is "None". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Hostname.name | String | Policy hostname | 
-| f5.Hostname.id | String | Policy ID | 
-| f5.Hostname.createdBy | String | Interface used to create the hostname | 
-| f5.Hostname.selfLink | String | URI of specific hostname | 
-| f5.Hostname.includeSubdomains | Boolean | Whether or not to include subdomains | 
-| f5.Hostname.lastUpdateMicros | String | Time of last update | 
+| f5.Hostname.name | String | The policy hostname. | 
+| f5.Hostname.id | String | The policy ID. | 
+| f5.Hostname.createdBy | String | The interface used to create the hostname. | 
+| f5.Hostname.selfLink | String | The self link to the specific hostname. | 
+| f5.Hostname.includeSubdomains | Boolean | Whether to include subdomains. | 
+| f5.Hostname.lastUpdateMicros | String | The datetime the hostname was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -2225,7 +2228,7 @@ Delete a hostname from a policy
 
 ### f5-asm-policy-cookies-list
 ***
-List all cookies of a given policy
+Lists all cookies of a given policy.
 
 
 #### Base Command
@@ -2235,20 +2238,20 @@ List all cookies of a given policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Cookies.name | String | Cookies name | 
-| f5.Cookies.id | String | Cookie ID | 
-| f5.Cookies.selfLink | String | Cookie self link | 
-| f5.Cookies.enforcementType | String | Enforcement type | 
-| f5.Cookies..performStaging | Boolean | Indicates if perform staging | 
-| f5.Cookies.kind | String | Object kind | 
-| f5.Cookies.isBase64 | Boolean | Indicated if base 64 | 
+| f5.Cookies.name | String | The name of the cookie. | 
+| f5.Cookies.id | String | The ID of the cookie. | 
+| f5.Cookies.selfLink | String | The self link to the specific cookie. | 
+| f5.Cookies.enforcementType | String | The enforcement type of the cookie. | 
+| f5.Cookies.performStaging | Boolean | Indicates whether the cookie should be staged. | 
+| f5.Cookies.kind | String | The cookie type. | 
+| f5.Cookies.isBase64 | Boolean | Indicates if the cookie is encoded in base64. | 
 | f5.Cookies.createdBy | String | Indicates which user created this cookie. | 
 
 
@@ -2479,7 +2482,7 @@ List all cookies of a given policy
 
 ### f5-asm-policy-blocking-settings-list
 ***
-Retreive a blocking- settings list from a selected policy.
+Retrieves a blocking-settings list from a selected policy.
 
 
 #### Base Command
@@ -2489,25 +2492,25 @@ Retreive a blocking- settings list from a selected policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5. | Required | 
-| endpoint | Sub-path of the blocking- settings element | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| endpoint | Sub-path of the blocking- settings element. Possible values are: "violations", "evasions", "http-protocols", and "web-services-securities". | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.BlockingSettings.description | String | Element description | 
-| f5.BlockingSettings.learn | Boolean | Is the element learning | 
-| f5.BlockingSettings.id | String | Element ID | 
-| f5.BlockingSettings.kind | String | Kind of element | 
-| f5.BlockingSettings.enabled | Boolean | Is the element enabled | 
-| f5.BlockingSettings.selfLink | String | Link to the element | 
-| f5.BlockingSettings.reference | String | Reference to the element | 
-| f5.BlockingSettings.lastUpdateMicros | String | Time when the resource was last updated | 
-| f5.BlockingSettings.section-reference | String | Section reference to the element | 
-| f5.BlockingSettings.alarm | Boolean | Should the element alarm | 
-| f5.BlockingSettings.block | Boolean | Should the element block | 
+| f5.BlockingSettings.description | String | Description of the element. | 
+| f5.BlockingSettings.learn | Boolean | Indicates whether the element is learning. | 
+| f5.BlockingSettings.id | String | The element ID. | 
+| f5.BlockingSettings.kind | String | The type of element. | 
+| f5.BlockingSettings.enabled | Boolean | Whether the element is enabled. | 
+| f5.BlockingSettings.selfLink | String | The self link to the specific element. | 
+| f5.BlockingSettings.reference | String | Reference to the element. | 
+| f5.BlockingSettings.lastUpdateMicros | String | The datetime the element was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
+| f5.BlockingSettings.section-reference | String | Section reference to the element. | 
+| f5.BlockingSettings.alarm | Boolean | Whether the system records requests that trigger the violation. | 
+| f5.BlockingSettings.block | Boolean | Whether the element blocks the request that triggers the violation. | 
 
 
 #### Command Example
@@ -2644,7 +2647,7 @@ Retreive a blocking- settings list from a selected policy.
 
 ### f5-asm-policy-blocking-settings-update
 ***
-Update a blocking-settings element
+Updates a blocking-settings element.
 
 
 #### Base Command
@@ -2654,30 +2657,30 @@ Update a blocking-settings element
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| endpoint | Sub-path of the blocking- settings element | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| endpoint | Sub-path of the blocking- settings element. Possible values are: "violations", "evasions", "http-protocols", and "web-services-securities". | Required | 
 | description | Description (or name) of the element. | Required | 
-| learn | Should the element learn | Optional | 
-| alarm | Should the element alarm | Optional | 
-| block | Should the element block | Optional | 
-| enabled | Should the element be enabled | Optional | 
+| learn | Whether the element should learn. | Optional | 
+| alarm | Whether the system records requests that trigger the violation. | Optional | 
+| block | Whether the element blocks the request that triggers the violation. | Optional | 
+| enabled | Whether the element should be enabled. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.BlockingSettings.description | String | Element description | 
-| f5.BlockingSettings.learn | Boolean | Is the element learning | 
-| f5.BlockingSettings.id | String | Element ID | 
-| f5.BlockingSettings.kind | String | Kind of element | 
-| f5.BlockingSettings.enabled | Boolean | Is the element enabled | 
-| f5.BlockingSettings.selfLink | String | Link to the element | 
-| f5.BlockingSettings.reference | String | Reference to the element | 
-| f5.BlockingSettings.lastUpdateMicros | String | Time when the resource was last updated | 
-| f5.BlockingSettings.section-reference | String | Section reference to the element | 
-| f5.BlockingSettings.alarm | Boolean | Should the element alarm | 
-| f5.BlockingSettings.block | Boolean | Should the element block | 
+| f5.BlockingSettings.description | String | The description of the element. | 
+| f5.BlockingSettings.learn | Boolean | Whether the element is learning. | 
+| f5.BlockingSettings.id | String | The ID of the element. | 
+| f5.BlockingSettings.kind | String | The type of element. | 
+| f5.BlockingSettings.enabled | Boolean | Whether the element is enabled. | 
+| f5.BlockingSettings.selfLink | String | The self link to the specific element. | 
+| f5.BlockingSettings.reference | String | The reference to the element. | 
+| f5.BlockingSettings.lastUpdateMicros | String | The datetime the resource was last updated represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
+| f5.BlockingSettings.section-reference | String | The section reference to the element. | 
+| f5.BlockingSettings.alarm | Boolean | Whether the system records requests that trigger the violation. | 
+| f5.BlockingSettings.block | Boolean | Whether the element blocks the request that triggers the violation. | 
 
 
 #### Command Example
@@ -2713,7 +2716,7 @@ Update a blocking-settings element
 
 ### f5-asm-policy-urls-list
 ***
-List all policy URLs
+Lists all policy URLs.
 
 
 #### Base Command
@@ -2723,25 +2726,25 @@ List all policy URLs
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Url.id | String | URL ID | 
-| f5.Url.name | String | URL name | 
-| f5.Url.description | String | Description of the URL | 
-| f5.Url.protocol | String | Protocol the URL uses. | 
-| f5.Url.type | String | Is the URL explicit or wildcard | 
-| f5.Url.method | String | Allowed method \(or all\) | 
-| f5.Url.isAllowed | Boolean | Is the URL allowed. | 
-| f5.Url.clickjackingProtection | Boolean | Is clickjacking protection enabled in the URL. | 
-| f5.Url..performStaging | Boolean | Is the URL in staging. | 
-| f5.Url.mandatoryBody | Boolean | Is a body mandatory | 
-| f5.Url.selfLink | String | Path the the URL in the api. | 
-| f5.Url.lastUpdateMicros | String | Time of last update committed to the URL | 
+| f5.Url.id | String | The ID of the URL. | 
+| f5.Url.name | String | The name of the URL. | 
+| f5.Url.description | String | A description of the URL. | 
+| f5.Url.protocol | String | The protocol the URL uses. | 
+| f5.Url.type | String | Whether the URL is explicit or a wildcard. | 
+| f5.Url.method | String | The allowed method \(or all methods\) of the URL. | 
+| f5.Url.isAllowed | Boolean | Whether the URL is allowed. | 
+| f5.Url.clickjackingProtection | Boolean | Whether clickjacking protection is enabled in the URL. | 
+| f5.Url.performStaging | Boolean | Indicates whether the URL should be staged. | 
+| f5.Url.mandatoryBody | Boolean | Whether a request body is mandatory. | 
+| f5.Url.selfLink | String | The self link to the URL in the API. | 
+| f5.Url.lastUpdateMicros | String | The datetime the last update was committed to the URL represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -3012,7 +3015,7 @@ List all policy URLs
 
 ### f5-asm-policy-cookies-add
 ***
-Add new cookie to a specific policy
+Adds a new cookie to a specific policy.
 
 
 #### Base Command
@@ -3022,26 +3025,26 @@ Add new cookie to a specific policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 | new_cookie_name | The new cookie name to add. | Required | 
-| perform_staging | Indicates if the user wishes the new file type to be at staging. | Optional | 
-| parameter_type | Type of the new parameter. | Optional | 
-| enforcement_type | Enforcement type | Optional | 
-| attack_signatures_check | Should attack signatures be checked. If enforcement type is set to 'enforce', this field will not get any value.   | Optional | 
+| perform_staging | Whether to stage the new cookie. Default is "false". | Optional | 
+| parameter_type | Type of the new parameter. Possible values are: "explicit" and "wildcard". Default is "explicit". | Optional | 
+| enforcement_type | The enforcement type. Possible values are: "allow" and "enforce". Default is "allow". | Optional | 
+| attack_signatures_check | Whether attack signatures should be checked. Default is "true". If the enforcement type is set to "enforce", this field will not get any value. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Cookies.name | String | Cookie name | 
-| f5.Cookies.id | String | Cookie ID | 
-| f5.Cookies.selfLink | String | Cookie self link | 
-| f5.Cookies.enforcementType | String | Enforcement type | 
-| f5.Cookies..performStaging | Boolean | Indicates if the user wishes to perform staging | 
-| f5.Cookies.type | String | Type | 
-| f5.Cookies.isBase64 | Boolean | Indicates if base 64 | 
-| f5.Cookies.createdBy | String | Indicates the user created the cookie | 
+| f5.Cookies.name | String | The name of the cookie. | 
+| f5.Cookies.id | String | The ID of the cookie. | 
+| f5.Cookies.selfLink | String | The self link to the specific cookie. | 
+| f5.Cookies.enforcementType | String | The enforcement type. | 
+| f5.Cookies.performStaging | Boolean | Indicates whether the cookie should be staged. | 
+| f5.Cookies.type | String | The type of the cookie. | 
+| f5.Cookies.isBase64 | Boolean | Indicates if the cookie is encoded in base64. | 
+| f5.Cookies.createdBy | String | Indicates who created the cookie. | 
 
 
 #### Command Example
@@ -3108,7 +3111,7 @@ Add new cookie to a specific policy
 
 ### f5-asm-policy-urls-add
 ***
-Add a new URL to a policy
+Adds a new URL to a policy.
 
 
 #### Base Command
@@ -3118,33 +3121,33 @@ Add a new URL to a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| protocol | Communication protocol (HTTP/S) | Required | 
-| name | Display name of the new URL | Required | 
-| description | Optional description for the URL | Optional | 
-| url_type | Type of URL (explicit or wildcard) | Optional | 
-| is_allowed | Whether or not the URL is allowed | Optional | 
-| method | What method to use in the URL | Optional | 
-| clickjacking_protection | Is clickjacking protection enabled in the URL. | Optional | 
-| perform_staging | Wheter or not to stage the URL | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| protocol | The communication protocol. Possible values are: "http" and "https". | Required | 
+| name | Display name of the new URL. | Required | 
+| description | An optional description for the URL. | Optional | 
+| url_type | The type of URL. Possible values are: "explicit" and "wildcard". | Optional | 
+| is_allowed | Whether the URL is allowed. Default is "true". | Optional | 
+| method | The method to use in the URL. | Optional | 
+| clickjacking_protection | Whether clickjacking protection is enabled in the URL. | Optional | 
+| perform_staging | Whether to stage the URL. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Url.id | String | URL ID | 
-| f5.Url.name | String | URL name | 
-| f5.Url.description | String | Description of the URL | 
-| f5.Url.protocol | String | Protocol the URL uses. | 
-| f5.Url.type | String | Is the URL explicit or wildcard | 
-| f5.Url.method | String | Allowed method \(or all\) | 
-| f5.Url.isAllowed | Boolean | Is the URL allowed. | 
-| f5.Url.clickjackingProtection | Boolean | Is clickjacking protection enabled in the URL. | 
-| f5.Url..performStaging | Boolean | Is the URL in staging. | 
-| f5.Url.mandatoryBody | Boolean | Is a body mandatory | 
-| f5.Url.selfLink | String | Path the the URL in the api. | 
-| f5.Url.lastUpdateMicros | String | Time of last update committed to the URL | 
+| f5.Url.id | String | The ID of the URL. | 
+| f5.Url.name | String | The name of the URL. | 
+| f5.Url.description | String | A description of the URL. | 
+| f5.Url.protocol | String | The protocol the URL uses. | 
+| f5.Url.type | String | Whether the URL is explicit or wildcard. | 
+| f5.Url.method | String | The allowed method \(or all\) of the URL. | 
+| f5.Url.isAllowed | Boolean | Whether the URL is allowed. | 
+| f5.Url.clickjackingProtection | Boolean | Whether clickjacking protection is enabled in the URL. | 
+| f5.Url.performStaging | Boolean | Indicates whether the URL should be staged. | 
+| f5.Url.mandatoryBody | Boolean | Whether a request body is mandatory. | 
+| f5.Url.selfLink | String | The self link to the specific URL in the API. | 
+| f5.Url.lastUpdateMicros | String | The datetime the last update was committed to the URL represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -3211,7 +3214,7 @@ Add a new URL to a policy
 
 ### f5-asm-policy-urls-update
 ***
-Update an existing policy URL
+Updates an existing policy URL.
 
 
 #### Base Command
@@ -3221,31 +3224,31 @@ Update an existing policy URL
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| url_id | ID of the url. ID or display name must be filled. | Optional | 
-| url_name | Display name of the url. ID or display name must be filled. | Optional | 
-| perform_staging | Whether or not to stage the URL | Optional | 
-| description | Optional new description for the URL | Optional | 
-| mandatory_body | Whether or not to have a mandatory body | Optional | 
-| url_isreferrer | Whether or not the URL is a referrer. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| url_id | The ID of the URL. The ID or display name must be filled. Default is "None". | Optional | 
+| url_name | The display name of the URL. The ID or display name must be filled. Default is "None". | Optional | 
+| perform_staging | Whether to stage the URL. | Optional | 
+| description | Optional new description for the URL. | Optional | 
+| mandatory_body | Whether a body is mandatory. | Optional | 
+| url_isreferrer | Whether the URL is a referrer. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Url.id | String | URL ID | 
-| f5.Url.name | String | URL name | 
-| f5.Url.description | String | Description of the URL | 
-| f5.Url.protocol | String | Protocol the URL uses. | 
-| f5.Url.type | String | Is the URL explicit or wildcard | 
-| f5.Url.method | String | Allowed method \(or all\) | 
-| f5.Url.isAllowed | Boolean | Is the URL allowed. | 
-| f5.Url.clickjackingProtection | Boolean | Is clickjacking protection enabled in the URL. | 
-| f5.Url..performStaging | Boolean | Is the URL in staging. | 
-| f5.Url.mandatoryBody | Boolean | Is a body mandatory | 
-| f5.Url.selfLink | String | Path the the URL in the api. | 
-| f5.Url.lastUpdateMicros | String | Time of last update committed to the URL | 
+| f5.Url.id | String | the ID of the URL. | 
+| f5.Url.name | String | The name of the URL. | 
+| f5.Url.description | String | A description of the URL. | 
+| f5.Url.protocol | String | The protocol the URL uses. | 
+| f5.Url.type | String | Whether the URL is explicit or wildcard. | 
+| f5.Url.method | String | The allowed method \(or all\) of the URL. | 
+| f5.Url.isAllowed | Boolean | Whether the URL is allowed. | 
+| f5.Url.clickjackingProtection | Boolean | Whether clickjacking protection is enabled in the URL. | 
+| f5.Url.performStaging | Boolean | Indicates whether the URL should be staged. | 
+| f5.Url.mandatoryBody | Boolean | Whether a request body is mandatory. | 
+| f5.Url.selfLink | String | The self link to the specific URL in the API. | 
+| f5.Url.lastUpdateMicros | String | The datetime the last update was committed to the URL represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -3312,7 +3315,7 @@ Update an existing policy URL
 
 ### f5-asm-policy-urls-delete
 ***
-Delete a URL from a policy
+Deletes a URL from a policy.
 
 
 #### Base Command
@@ -3322,27 +3325,27 @@ Delete a URL from a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5. | Required | 
-| url_id | ID of the url. ID or display name must be filled. | Optional | 
-| url_name | Display name of the url. ID or display name must be filled. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| url_id | The ID of the URL. The ID or display name must be filled. Default is "None". | Optional | 
+| url_name | The display name of the URL. The ID or display name must be filled. Default is "None". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Url.id | String | URL ID | 
-| f5.Url.name | String | URL name | 
-| f5.Url.description | String | Description of the URL | 
-| f5.Url.protocol | String | Protocol the URL uses. | 
-| f5.Url.type | String | Is the URL explicit or wildcard | 
-| f5.Url.method | String | Allowed method \(or all\) | 
-| f5.Url.isAllowed | Boolean | Is the URL allowed. | 
-| f5.Url.clickjackingProtection | Boolean | Is clickjacking protection enabled in the URL. | 
-| f5.Url..performStaging | Boolean | Is the URL in staging. | 
-| f5.Url.mandatoryBody | Boolean | Is a body mandatory | 
-| f5.Url.selfLink | String | Path the the URL in the api. | 
-| f5.Url.lastUpdateMicros | String | Time of last update committed to the URL | 
+| f5.Url.id | String | The ID of the URL. | 
+| f5.Url.name | String | The name of the URL. | 
+| f5.Url.description | String | A description of the URL. | 
+| f5.Url.protocol | String | The protocol the URL uses. | 
+| f5.Url.type | String | Whether the URL is explicit or wildcard. | 
+| f5.Url.method | String | The allowed method \(or all\) of the URL. | 
+| f5.Url.isAllowed | Boolean | Whether the URL is allowed. | 
+| f5.Url.clickjackingProtection | Boolean | Whether clickjacking protection is enabled in the URL. | 
+| f5.Url.performStaging | Boolean | Indicates whether the URL should be staged. | 
+| f5.Url.mandatoryBody | Boolean | Whether a request body is mandatory. | 
+| f5.Url.selfLink | String | The self link to the specific URL in the API. | 
+| f5.Url.lastUpdateMicros | String | The datetime the last update was committed to the URL represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -3409,7 +3412,7 @@ Delete a URL from a policy
 
 ### f5-asm-policy-cookies-update
 ***
-Update a cookie object
+Updates a cookie object.
 
 
 #### Base Command
@@ -3419,27 +3422,27 @@ Update a cookie object
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| cookie_id | ID of the cookie. ID or display name must be filled. | Optional | 
-| cookie_name | Display name of the cookie. ID or display name must be filled. | Optional | 
-| perform_staging | Indicates if the user wishes the new file type to be at staging. | Optional | 
-| parameter_type | Type of the new parameter. | Optional | 
-| enforcement_type | Enforcement type. | Optional | 
-| attack_signatures_check | Should attack signatures be checked. If enforcement type is set to 'enforce', this field will not get any value. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| cookie_id | The ID of the cookie. The ID or display name must be filled. Default is "None". | Optional | 
+| cookie_name | The display name of the cookie. The ID or display name must be filled. Default is "None". | Optional | 
+| perform_staging | Whether to stage the updated cookie. Default is "false". | Optional | 
+| parameter_type | The type of the new parameter. Possible values are: "wildcard" and "explicit". Default is "wildcard". | Optional | 
+| enforcement_type | The enforcement type. Possible values are: "allow" and "enforce".Default is "allow". | Optional | 
+| attack_signatures_check | Whether attack signatures should be checked. Default is "true". If the enforcement type is set to "enforce", this field will not get any value. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Cookies.name | String | Cookie name | 
-| f5.Cookies.id | String | Cookie ID | 
-| f5.Cookies.selfLink | String | Cookie self link | 
-| f5.Cookies.enforcementType | String | Enforcement type | 
-| f5.Cookies..performStaging | Boolean | Indicates if the user wishes to perform staging | 
-| f5.Cookies.type | String | Type | 
-| f5.Cookies.isBase64 | Boolean | Indicates if base 64 | 
-| f5.Cookies.createdBy | String | Indicates the user created the cookie | 
+| f5.Cookies.name | String | The name of the cookie. | 
+| f5.Cookies.id | String | The ID of the cookie. | 
+| f5.Cookies.selfLink | String | The self link to the specific cookie. | 
+| f5.Cookies.enforcementType | String | The enforcement type. | 
+| f5.Cookies.performStaging | Boolean | Indicates whether the cookie should be staged. | 
+| f5.Cookies.type | String | The type of the cookie. | 
+| f5.Cookies.isBase64 | Boolean | Indicates if the cookie is encoded in base64. | 
+| f5.Cookies.createdBy | String | Indicates who created the cookie. | 
 
 
 #### Command Example
@@ -3506,7 +3509,7 @@ Update a cookie object
 
 ### f5-asm-policy-cookies-delete
 ***
-Delete cookie
+Deletes a cookie.
 
 
 #### Base Command
@@ -3516,23 +3519,23 @@ Delete cookie
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| cookie_id | ID of the cookie. ID or display name must be filled. | Optional | 
-| cookie_name | Display name of the cookie. ID or display name must be filled. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| cookie_id | The ID of the cookie. The ID or display name must be filled. Default is "None". | Optional | 
+| cookie_name | The display name of the cookie. The ID or display name must be filled. Default is "None". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Cookies.name | String | Cookie name | 
-| f5.Cookies.id | String | Cookie ID | 
-| f5.Cookies.selfLink | String | Cookie self link | 
-| f5.Cookies.enforcementType | String | Enforcement type | 
-| f5.Cookies..performStaging | Boolean | Indicates if the user wishes to perform staging | 
-| f5.Cookies.type | String | Type | 
-| f5.Cookies.isBase64 | Boolean | Indicates if base 64 | 
-| f5.Cookies.createdBy | String | Indicates the user created the cookie | 
+| f5.Cookies.name | String | The name of the cookie. | 
+| f5.Cookies.id | String | The ID of the cookie. | 
+| f5.Cookies.selfLink | String | The self link to the specific cookie. | 
+| f5.Cookies.enforcementType | String | The enforcement type. | 
+| f5.Cookies.performStaging | Boolean | Indicates whether the cookie should be staged. | 
+| f5.Cookies.type | String | The type of the cookie. | 
+| f5.Cookies.isBase64 | Boolean | Indicates if the cookie is encoded in base64. | 
+| f5.Cookies.createdBy | String | Indicates who created the cookie. | 
 
 
 #### Command Example
@@ -3599,7 +3602,7 @@ Delete cookie
 
 ### f5-asm-policy-whitelist-ips-list
 ***
-List all whitelisted IPs for a policy
+Lists all whitelisted IP addresses for a policy.
 
 
 #### Base Command
@@ -3609,24 +3612,24 @@ List all whitelisted IPs for a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.WhitelistIP.id | String | ID of the whitelisted IP | 
-| f5.WhitelistIP.ipAddress | String | The whitelisted IP address | 
-| f5.WhitelistIP.ipMask | String | Subnet mask of the whitelisted IP address | 
-| f5.WhitelistIP.description | String | Description for the whitelisted IP | 
-| f5.WhitelistIP.blockRequests | String | How or if the IP blocks requests | 
-| f5.WhitelistIP.ignoreAnomalies | Boolean | Whether or not to ignore anomalies | 
-| f5.WhitelistIP.neverLogRequests | Boolean | Whether or not to never log requests | 
-| f5.WhitelistIP.neverLearnRequests | Boolean | Whether or not to never learn requests | 
-| f5.WhitelistIP.trustedByPolicyBuilder | Boolean | Whether or not the IP is trusted by the builder. | 
-| f5.WhitelistIP.selfLink | String | Link to the whitelisted IP. | 
-| f5.WhitelistIP.lastUpdateMicros | String | Time of last update | 
+| f5.WhitelistIP.id | String | The ID of the whitelisted IP address. | 
+| f5.WhitelistIP.ipAddress | String | The whitelisted IP address. | 
+| f5.WhitelistIP.ipMask | String | The subnet mask of the whitelisted IP address. | 
+| f5.WhitelistIP.description | String | The description for the whitelisted IP address. | 
+| f5.WhitelistIP.blockRequests | String | How or if the IP blocks requests. | 
+| f5.WhitelistIP.ignoreAnomalies | Boolean | Whether to ignore anomalies. | 
+| f5.WhitelistIP.neverLogRequests | Boolean | Whether to never log requests. | 
+| f5.WhitelistIP.neverLearnRequests | Boolean | Whether to never learn requests. | 
+| f5.WhitelistIP.trustedByPolicyBuilder | Boolean | Whether the IP is trusted by the builder. | 
+| f5.WhitelistIP.selfLink | String | The self link to the specific whitelisted IP. | 
+| f5.WhitelistIP.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -3897,7 +3900,7 @@ List all whitelisted IPs for a policy
 
 ### f5-asm-policy-whitelist-ips-add
 ***
-Add a new whitelisted IP to a policy.
+Adds a new whitelisted IP address to a policy.
 
 
 #### Base Command
@@ -3907,33 +3910,33 @@ Add a new whitelisted IP to a policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| ip_address | The new IP address | Required | 
-| ip_mask | Subnet mask for the new IP | Optional | 
-| trusted_by_builder | Whether or not the IP is trusted by the policy builder. | Optional | 
-| ignore_brute_detection | Whether or not to ignore detections of brute force. | Optional | 
-| description | Optional description for the new IP. | Optional | 
-| block_requests | Method of blocking requests. | Optional | 
-| ignore_learning | Whether or not to ignore learning suggestions. | Optional | 
-| never_log | Whether or not to never log from the IP. | Optional | 
-| ignore_intelligence | Whether or not to ignore intelligence gathered on the IP. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| ip_address | The new IP address. | Required | 
+| ip_mask | Subnet mask for the new IP address. | Optional | 
+| trusted_by_builder | Whether the IP address is trusted by the policy builder. | Optional | 
+| ignore_brute_detection | Whether to ignore detections of brute force. | Optional | 
+| description | Optional description for the new IP address. | Optional | 
+| block_requests | The method of blocking requests. Possible values are: "policy-default", "never", and "always". Default is "policy-default". | Optional | 
+| ignore_learning | Whether to ignore learning suggestions. | Optional | 
+| never_log | Whether to never log from the IP address. | Optional | 
+| ignore_intelligence | Whether to ignore intelligence gathered on the IP address. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.WhitelistIP.id | String | ID of the whitelisted IP | 
-| f5.WhitelistIP.ipAddress | String | The whitelisted IP address | 
-| f5.WhitelistIP.ipMask | String | Subnet mask of the whitelisted IP address | 
-| f5.WhitelistIP.description | String | Description for the whitelisted IP | 
-| f5.WhitelistIP.blockRequests | String | How or if the IP blocks requests | 
-| f5.WhitelistIP.ignoreAnomalies | Boolean | Whether or not to ignore anomalies | 
-| f5.WhitelistIP.neverLogRequests | Boolean | Whether or not to never log requests | 
-| f5.WhitelistIP.neverLearnRequests | Boolean | Whether or not to never learn requests | 
-| f5.WhitelistIP.trustedByPolicyBuilder | Boolean | Whether or not the IP is trusted by the builder. | 
-| f5.WhitelistIP.selfLink | String | Link to the whitelisted IP. | 
-| f5.WhitelistIP.lastUpdateMicros | String | Time of last update | 
+| f5.WhitelistIP.id | String | ID of the whitelisted IP address. | 
+| f5.WhitelistIP.ipAddress | String | The whitelisted IP address. | 
+| f5.WhitelistIP.ipMask | String | The subnet mask of the whitelisted IP address. | 
+| f5.WhitelistIP.description | String | A description for the whitelisted IP address. | 
+| f5.WhitelistIP.blockRequests | String | How or if the IP blocks requests. | 
+| f5.WhitelistIP.ignoreAnomalies | Boolean | Whether to ignore anomalies. | 
+| f5.WhitelistIP.neverLogRequests | Boolean | Whether to never log requests. | 
+| f5.WhitelistIP.neverLearnRequests | Boolean | Whether to never learn requests. | 
+| f5.WhitelistIP.trustedByPolicyBuilder | Boolean | Whether the IP address is trusted by the builder. | 
+| f5.WhitelistIP.selfLink | String | The self link to the specific whitelisted IP. | 
+| f5.WhitelistIP.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -4000,7 +4003,7 @@ Add a new whitelisted IP to a policy.
 
 ### f5-asm-policy-whitelist-ips-update
 ***
-Update an existing whitelisted IP.
+Updates an existing whitelisted IP address.
 
 
 #### Base Command
@@ -4010,33 +4013,33 @@ Update an existing whitelisted IP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| ip_id | ID of the IP. ID or display name must be filled. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| ip_id | The ID of the IP address. The ID or display name must be filled. Default is "None". | Optional | 
 | ip_address | IP address | Required | 
-| trusted_by_builder | Whether or not the IP is trusted by the policy builder. ID or display name must be filled. | Optional | 
-| ignore_brute_detection | Whether or not to ignore detections of brute force. | Optional | 
-| description | Optional description for the new IP. | Optional | 
-| block_requests | Method of blocking requests. | Optional | 
-| ignore_learning | Whether or not to ignore learning suggestions. | Optional | 
-| never_log | Whether or not to never log from the IP. | Optional | 
-| ignore_intelligence | Whether or not to ignore intelligence gathered on the IP. | Optional | 
+| trusted_by_builder | Whether the IP address is trusted by the policy builder. The ID or display name must be filled. | Optional | 
+| ignore_brute_detection | Whether to ignore detections of brute force. | Optional | 
+| description | Optional description for the new IP address. | Optional | 
+| block_requests | The method of blocking requests. Possible values are: "policy-default", "never", and "always". Default is "policy-default". | Optional | 
+| ignore_learning | Whether to ignore learning suggestions. | Optional | 
+| never_log | Whether to never log from the IP address. | Optional | 
+| ignore_intelligence | Whether to ignore intelligence gathered on the IP address. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.WhitelistIP.id | String | ID of the whitelisted IP | 
-| f5.WhitelistIP.ipAddress | String | The whitelisted IP address | 
-| f5.WhitelistIP.ipMask | String | Subnet mask of the whitelisted IP address | 
-| f5.WhitelistIP.description | String | Description for the whitelisted IP | 
-| f5.WhitelistIP.blockRequests | String | How or if the IP blocks requests | 
-| f5.WhitelistIP.ignoreAnomalies | Boolean | Whether or not to ignore anomalies | 
-| f5.WhitelistIP.neverLogRequests | Boolean | Whether or not to never log requests | 
-| f5.WhitelistIP.neverLearnRequests | Boolean | Whether or not to never learn requests | 
-| f5.WhitelistIP.trustedByPolicyBuilder | Boolean | Whether or not the IP is trusted by the builder. | 
-| f5.WhitelistIP.selfLink | String | Link to the whitelisted IP. | 
-| f5.WhitelistIP.lastUpdateMicros | String | Time of last update | 
+| f5.WhitelistIP.id | String | The ID of the whitelisted IP address. | 
+| f5.WhitelistIP.ipAddress | String | The whitelisted IP address. | 
+| f5.WhitelistIP.ipMask | String | The subnet mask of the whitelisted IP address. | 
+| f5.WhitelistIP.description | String | A description for the whitelisted IP address. | 
+| f5.WhitelistIP.blockRequests | String | How or if the IP address blocks requests. | 
+| f5.WhitelistIP.ignoreAnomalies | Boolean | Whether to ignore anomalies. | 
+| f5.WhitelistIP.neverLogRequests | Boolean | Whether to never log requests. | 
+| f5.WhitelistIP.neverLearnRequests | Boolean | Whether to never learn requests. | 
+| f5.WhitelistIP.trustedByPolicyBuilder | Boolean | Whether the IP address is trusted by the builder. | 
+| f5.WhitelistIP.selfLink | String | The self link to the specific whitelisted IP. | 
+| f5.WhitelistIP.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -4103,7 +4106,7 @@ Update an existing whitelisted IP.
 
 ### f5-asm-policy-whitelist-ips-delete
 ***
-Delete an existing whitelisted IP from a policy.
+Deletes an existing whitelisted IP address from a policy.
 
 
 #### Base Command
@@ -4113,8 +4116,8 @@ Delete an existing whitelisted IP from a policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| ip_id | ID of the IP. ID or display name must be filled. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| ip_id | The ID of the IP address. The ID or display name must be filled. Default is "None". | Optional | 
 | ip_address | IP address | Required | 
 
 
@@ -4122,17 +4125,17 @@ Delete an existing whitelisted IP from a policy.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.WhitelistIP.id | String | ID of the whitelisted IP | 
-| f5.WhitelistIP.ipAddress | String | The whitelisted IP address | 
-| f5.WhitelistIP.ipMask | String | Subnet mask of the whitelisted IP address | 
-| f5.WhitelistIP.description | String | Description for the whitelisted IP | 
-| f5.WhitelistIP.blockRequests | String | How or if the IP blocks requests | 
-| f5.WhitelistIP.ignoreAnomalies | Boolean | Whether or not to ignore anomalies | 
-| f5.WhitelistIP.neverLogRequests | Boolean | Whether or not to never log requests | 
-| f5.WhitelistIP.neverLearnRequests | Boolean | Whether or not to never learn requests | 
-| f5.WhitelistIP.trustedByPolicyBuilder | Boolean | Whether or not the IP is trusted by the builder. | 
-| f5.WhitelistIP.selfLink | String | Link to the whitelisted IP. | 
-| f5.WhitelistIP.lastUpdateMicros | String | Time of last update | 
+| f5.WhitelistIP.id | String | The ID of the whitelisted IP address. | 
+| f5.WhitelistIP.ipAddress | String | The whitelisted IP address. | 
+| f5.WhitelistIP.ipMask | String | The subnet mask of the whitelisted IP address. | 
+| f5.WhitelistIP.description | String | A description for the whitelisted IP address. | 
+| f5.WhitelistIP.blockRequests | String | How or if the IP address blocks requests. | 
+| f5.WhitelistIP.ignoreAnomalies | Boolean | Whether to ignore anomalies. | 
+| f5.WhitelistIP.neverLogRequests | Boolean | Whether to never log requests. | 
+| f5.WhitelistIP.neverLearnRequests | Boolean | Whether to never learn requests. | 
+| f5.WhitelistIP.trustedByPolicyBuilder | Boolean | Whether the IP address is trusted by the builder. | 
+| f5.WhitelistIP.selfLink | String | The self link to the specific whitelisted IP. | 
+| f5.WhitelistIP.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -4199,7 +4202,7 @@ Delete an existing whitelisted IP from a policy.
 
 ### f5-asm-policy-signatures-list
 ***
-List all signatures for a certain policy.
+Lists all signatures for a specified policy.
 
 
 #### Base Command
@@ -4209,17 +4212,17 @@ List all signatures for a certain policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Signatures.id | String | ID of the signature. | 
-| f5.Signatures.selfLink | String | Self link to the signature | 
-| f5.Signatures.performStaging | Boolean | Indicates whether staging was perform | 
-| f5.Signatures.lastUpdateMicros | String | Last update time | 
+| f5.Signatures.id | String | The ID of the signature. | 
+| f5.Signatures.selfLink | String | The self link to the specific signature. | 
+| f5.Signatures.performStaging | Boolean | Indicates whether the signature should be staged. | 
+| f5.Signatures.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -4231,7 +4234,7 @@ List all signatures for a certain policy.
 
 ### f5-asm-policy-parameters-list
 ***
-List all policy parameters
+Lists all policy parameters.
 
 
 #### Base Command
@@ -4241,26 +4244,26 @@ List all policy parameters
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. to get  | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Parameter.id | String | ID of the parameter | 
-| f5.Parameter.name | String | Display name of the parameter | 
-| f5.Parameter.type | String | Type of parameter \(explicit / wildcard\) | 
-| f5.Parameter.selfLink | String | Link to the parameter | 
-| f5.Parameter.isBase64 | Boolean | Is the parameter encoded in base64 | 
-| f5.Parameter.performStaging | Boolean | Should the parameter be staged | 
-| f5.Parameter.dataType | String | Type of data given in the parameter | 
-| f5.Parameter.valueType | String | Type of values given in the parameter | 
-| f5.Parameter.mandatory | Boolean | Is the parameter mandatory | 
-| f5.Parameter.isCookie | Boolean | Is the parmeter located in the cookie | 
-| f5.Parameter.isHeader | Boolean | Is the parameter located in the header | 
-| f5.Parameter.createdBy | String | Where was the parameter created | 
-| f5.Parameter.lastUpdateMicros | String | Time of last update | 
+| f5.Parameter.id | String | The ID of the parameter. | 
+| f5.Parameter.name | String | The display name of the parameter. | 
+| f5.Parameter.type | String | The type of parameter \(explicit / wildcard\). | 
+| f5.Parameter.selfLink | String | The self link to the specific parameter. | 
+| f5.Parameter.isBase64 | Boolean | Indicates if the parameter is encoded in base64. | 
+| f5.Parameter.performStaging | Boolean | Indicates whether the parameter should be staged. | 
+| f5.Parameter.dataType | String | The type of data given in the parameter. | 
+| f5.Parameter.valueType | String | The type of values given in the parameter. | 
+| f5.Parameter.mandatory | Boolean | Whether the parameter is mandatory. | 
+| f5.Parameter.isCookie | Boolean | Whether the parameter is located in the cookie. | 
+| f5.Parameter.isHeader | Boolean | Whether the parameter is located in the header. | 
+| f5.Parameter.createdBy | String | Indicates who created the parameter. | 
+| f5.Parameter.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -4367,7 +4370,7 @@ List all policy parameters
 
 ### f5-asm-policy-parameters-add
 ***
-Add a new parameter to a policy
+Adds a new parameter to a policy.
 
 
 #### Base Command
@@ -4377,35 +4380,35 @@ Add a new parameter to a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| param_type | Type of the new parameter | Optional | 
-| name | Display name of new parameter | Required | 
-| value_type | Type of value passed to the parameter | Optional | 
-| param_location | Location of the parameter | Optional | 
-| mandatory | Is the parameter mandatory | Optional | 
-| perform_staging | Should the parameter be staged | Optional | 
-| sensitive | Is the parameter sensitive (should values be masked in logs) | Optional | 
-| allow_empty | Should the parameter allow empty values | Optional | 
-| allow_repeated | Should the parameter allow repeated values | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| param_type | The type of the new parameter. Possible values are: "wildcard" and "explicit". | Optional | 
+| name | The display name of the new parameter. | Required | 
+| value_type | The type of value passed to the parameter. Possible values are: "user-input", "json", "static-content", "auto-detect", and "xml". | Optional | 
+| param_location | The location of the parameter. Possible values are: "any", "query", "form-data", "path", "header",  and "cookie". | Optional | 
+| mandatory | Whether the parameter is mandatory. | Optional | 
+| perform_staging | Whether to stage the parameter. | Optional | 
+| sensitive | Whether the parameter is sensitive. (Whether values should be masked in logs.) | Optional | 
+| allow_empty | Whether the parameter allows empty values. | Optional | 
+| allow_repeated | Whether the parameter allows repeated values. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Parameter.id | String | ID of the parameter | 
-| f5.Parameter.name | String | Display name of the parameter | 
-| f5.Parameter.type | String | Type of parameter \(explicit / wildcard\) | 
-| f5.Parameter.selfLink | String | Link to the parameter | 
-| f5.Parameter.isBase64 | Boolean | Is the parameter encoded in base64 | 
-| f5.Parameter.performStaging | Boolean | Should the parameter be staged | 
-| f5.Parameter.dataType | String | Type of data given in the parameter | 
-| f5.Parameter.valueType | String | Type of values given in the parameter | 
-| f5.Parameter.mandatory | Boolean | Is the parameter mandatory | 
-| f5.Parameter.isCookie | Boolean | Is the parmeter located in the cookie | 
-| f5.Parameter.isHeader | Boolean | Is the parameter located in the header | 
-| f5.Parameter.createdBy | String | Where was the parameter created | 
-| f5.Parameter.lastUpdateMicros | String | Time of last update | 
+| f5.Parameter.id | String | The ID of the parameter. | 
+| f5.Parameter.name | String | The display name of the parameter. | 
+| f5.Parameter.type | String | The type of parameter \(explicit / wildcard\). | 
+| f5.Parameter.selfLink | String | The self link to the specific parameter. | 
+| f5.Parameter.isBase64 | Boolean | Indicates if the parameter is encoded in base64. | 
+| f5.Parameter.performStaging | Boolean | Indicates whether the parameter should be staged. | 
+| f5.Parameter.dataType | String | The type of data given in the parameter. | 
+| f5.Parameter.valueType | String | The type of values given in the parameter. | 
+| f5.Parameter.mandatory | Boolean | Whether the parameter is mandatory. | 
+| f5.Parameter.isCookie | Boolean | Whether the parameter is located in the cookie. | 
+| f5.Parameter.isHeader | Boolean | Whether the parameter is located in the header. | 
+| f5.Parameter.createdBy | String | Indicates who created the parameter. | 
+| f5.Parameter.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -4472,7 +4475,7 @@ Add a new parameter to a policy
 
 ### f5-asm-policy-parameters-update
 ***
-Update an existing policy parameter
+Updates an existing policy parameter.
 
 
 #### Base Command
@@ -4482,35 +4485,35 @@ Update an existing policy parameter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| parameter_id | ID of the parameter. ID or display name must be filled. | Optional | 
-| parameter_name | Display name of the parameter. ID or display name must be filled. | Required | 
-| value_type | Type of value passed to the parameter | Optional | 
-| param_location | Location of the parameter | Optional | 
-| mandatory | Is the parameter mandatory | Optional | 
-| perform_staging | Should the parameter be staged | Optional | 
-| sensitive | Is the parameter sensitive (should values be masked in logs) | Optional | 
-| allow_empty | Should the parameter allow empty values | Optional | 
-| allow_repeated | Should the parameter allow repeated values | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| parameter_id | The ID of the parameter. The ID or display name must be filled. Default is "None". | Optional | 
+| parameter_name | The display name of the parameter. The ID or display name must be filled. | Required | 
+| value_type | The type of value passed to the parameter. Possible values are: "user-input", "array", "dynamic", "ignore", "json", "static", "auto", and "xml". | Optional | 
+| param_location | The location of the parameter. Possible values are: "any", "query", "form-data", "path", "header",  and "cookie". | Optional | 
+| mandatory | Whether the parameter is mandatory. | Optional | 
+| perform_staging | Whether to stage the parameter. | Optional | 
+| sensitive | Whether the parameter is sensitive. (Whether values should be masked in logs.) | Optional | 
+| allow_empty | Whether the parameter allows empty values. | Optional | 
+| allow_repeated | Whether the parameter allows repeated values. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Parameter.id | String | ID of the parameter | 
-| f5.Parameter.name | String | Display name of the parameter | 
-| f5.Parameter.type | String | Type of parameter \(explicit / wildcard\) | 
-| f5.Parameter.selfLink | String | Link to the parameter | 
-| f5.Parameter.isBase64 | Boolean | Is the parameter encoded in base64 | 
-| f5.Parameter.performStaging | Boolean | Should the parameter be staged | 
-| f5.Parameter.dataType | String | Type of data given in the parameter | 
-| f5.Parameter.valueType | String | Type of values given in the parameter | 
-| f5.Parameter.mandatory | Boolean | Is the parameter mandatory | 
-| f5.Parameter.isCookie | Boolean | Is the parmeter located in the cookie | 
-| f5.Parameter.isHeader | Boolean | Is the parameter located in the header | 
-| f5.Parameter.createdBy | String | Where was the parameter created | 
-| f5.Parameter.lastUpdateMicros | String | Time of last update | 
+| f5.Parameter.id | String | The ID of the parameter. | 
+| f5.Parameter.name | String | The display name of the parameter. | 
+| f5.Parameter.type | String | The type of parameter \(explicit / wildcard\). | 
+| f5.Parameter.selfLink | String | The self link to the specific parameter. | 
+| f5.Parameter.isBase64 | Boolean | Indicates if the parameter is encoded in base64. | 
+| f5.Parameter.performStaging | Boolean | Indicates whether the parameter should be staged. | 
+| f5.Parameter.dataType | String | The type of data given in the parameter. | 
+| f5.Parameter.valueType | String | The type of values given in the parameter. | 
+| f5.Parameter.mandatory | Boolean | Whether the parameter is mandatory. | 
+| f5.Parameter.isCookie | Boolean | Whether the parameter is located in the cookie. | 
+| f5.Parameter.isHeader | Boolean | Whether the parameter is located in the header. | 
+| f5.Parameter.createdBy | String | Indicates who created the parameter. | 
+| f5.Parameter.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -4577,7 +4580,7 @@ Update an existing policy parameter
 
 ### f5-asm-policy-parameters-delete
 ***
-Delete an existing policy parameter
+Deletes an existing policy parameter.
 
 
 #### Base Command
@@ -4587,28 +4590,28 @@ Delete an existing policy parameter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| parameter_id | ID of the parameter. ID or display name must be filled. | Optional | 
-| parameter_name | Display name of the parameter. ID or display name must be filled. | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| parameter_id | The ID of the parameter. The ID or display name must be filled. Default is "None". | Optional | 
+| parameter_name | The display name of the parameter. ID or display name must be filled. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Parameter.id | String | ID of the parameter | 
-| f5.Parameter.name | String | Display name of the parameter | 
-| f5.Parameter.type | String | Type of parameter \(explicit / wildcard\) | 
-| f5.Parameter.selfLink | String | Link to the parameter | 
-| f5.Parameter.isBase64 | Boolean | Is the parameter encoded in base64 | 
-| f5.Parameter.performStaging | Boolean | Should the parameter be staged | 
-| f5.Parameter.dataType | String | Type of data given in the parameter | 
-| f5.Parameter.valueType | String | Type of values given in the parameter | 
-| f5.Parameter.mandatory | Boolean | Is the parameter mandatory | 
-| f5.Parameter.isCookie | Boolean | Is the parmeter located in the cookie | 
-| f5.Parameter.isHeader | Boolean | Is the parameter located in the header | 
-| f5.Parameter.createdBy | String | Where was the parameter created | 
-| f5.Parameter.lastUpdateMicros | String | Time of last update | 
+| f5.Parameter.id | String | The ID of the parameter. | 
+| f5.Parameter.name | String | The display name of the parameter. | 
+| f5.Parameter.type | String | The type of parameter \(explicit / wildcard\). | 
+| f5.Parameter.selfLink | String | The self link to the specific parameter. | 
+| f5.Parameter.isBase64 | Boolean | Indicates if the parameter is encoded in base64. | 
+| f5.Parameter.performStaging | Boolean | Indicates whether the parameter should be staged. | 
+| f5.Parameter.dataType | String | The type of data given in the parameter. | 
+| f5.Parameter.valueType | String | The type of values given in the parameter. | 
+| f5.Parameter.mandatory | Boolean | Whether the parameter is mandatory. | 
+| f5.Parameter.isCookie | Boolean | Whether the parameter is located in the cookie. | 
+| f5.Parameter.isHeader | Boolean | Whether the parameter is located in the header. | 
+| f5.Parameter.createdBy | String | Indicates who created the parameter. | 
+| f5.Parameter.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -4675,7 +4678,7 @@ Delete an existing policy parameter
 
 ### f5-asm-policy-gwt-profiles-list
 ***
-List all GWT profiles in a policy
+Lists all GWT profiles in a policy.
 
 
 #### Base Command
@@ -4685,20 +4688,20 @@ List all GWT profiles in a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.GWTProfile.id | String | ID of the GWT profile | 
-| f5.GWTProfile.name | String | Display name of the GWT profile | 
-| f5.GWTProfile.description | String | Description of the GWT profile | 
-| f5.GWTProfile.isDefault | Boolean | Is the GWT profile default | 
-| f5.GWTProfile.attackSignaturesCheck | Boolean | Should attack signatures be checked | 
-| f5.GWTProfile.isReferenced | Boolean | Is the profile referenced | 
-| f5.GWTProfile.metacharElementCheck | Boolean | Should metachar elements be checked | 
+| f5.GWTProfile.id | String | The ID of the GWT profile. | 
+| f5.GWTProfile.name | String | The display name of the GWT profile. | 
+| f5.GWTProfile.description | String | A description of the GWT profile. | 
+| f5.GWTProfile.isDefault | Boolean | Whether the GWT profile is the default profile. | 
+| f5.GWTProfile.attackSignaturesCheck | Boolean | Whether the GWT profile should check for attack signatures. | 
+| f5.GWTProfile.isReferenced | Boolean | Whether the GWT profile is referenced. | 
+| f5.GWTProfile.metacharElementCheck | Boolean | Whether the GWT profile should check for metachar elements. | 
 
 
 #### Command Example
@@ -4762,7 +4765,7 @@ List all GWT profiles in a policy
 
 ### f5-asm-policy-gwt-profiles-add
 ***
-Add a new GWT profile to a policy
+Adds a new GWT profile to a policy.
 
 
 #### Base Command
@@ -4772,27 +4775,27 @@ Add a new GWT profile to a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| name | Display name of the profile | Required | 
-| description | Optional description for the profile | Optional | 
-| maximum_value_len | Maximum length for a value in the profile | Optional | 
-| maximum_total_len | Maximum length of all GWT data | Optional | 
-| tolerate_parsing_warnings | Whether or not to tolerate parsing warnings | Optional | 
-| check_signatures | Whether or not to check attack signatures | Optional | 
-| check_metachars | Whether or not to check metachar elements | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| name | The display name of the profile. | Required | 
+| description | Optional description for the profile. | Optional | 
+| maximum_value_len | The maximum length for a value in the profile. Default is "any". | Optional | 
+| maximum_total_len | The maximum length of all GWT data. Default is "any". | Optional | 
+| tolerate_parsing_warnings | Whether the profile should tolerate parsing warnings. | Optional | 
+| check_signatures | Whether the profile should check for attack signatures. | Optional | 
+| check_metachars | Whether the profile should check for metachar elements. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.GWTProfile.id | String | ID of the GWT profile | 
-| f5.GWTProfile.name | String | Display name of the GWT profile | 
-| f5.GWTProfile.description | String | Description of the GWT profile | 
-| f5.GWTProfile.isDefault | Boolean | Is the GWT profile default | 
-| f5.GWTProfile.attackSignaturesCheck | Boolean | Should attack signatures be checked | 
-| f5.GWTProfile.isReferenced | Boolean | Is the profile referenced | 
-| f5.GWTProfile.metacharElementCheck | Boolean | Should metachar elements be checked | 
+| f5.GWTProfile.id | String | The ID of the GWT profile. | 
+| f5.GWTProfile.name | String | The display name of the GWT profile. | 
+| f5.GWTProfile.description | String | A description of the GWT profile. | 
+| f5.GWTProfile.isDefault | Boolean | Whether the GWT profile is the default profile. | 
+| f5.GWTProfile.attackSignaturesCheck | Boolean | Whether the GWT profile should check for attack signatures. | 
+| f5.GWTProfile.isReferenced | Boolean | Whether the GWT profile is referenced. | 
+| f5.GWTProfile.metacharElementCheck | Boolean | Whether the GWT profile should check for metachar elements. | 
 
 
 #### Command Example
@@ -4859,7 +4862,7 @@ Add a new GWT profile to a policy
 
 ### f5-asm-policy-gwt-profiles-update
 ***
-Update an existing GWT profile
+Updates an existing GWT profile
 
 
 #### Base Command
@@ -4869,28 +4872,28 @@ Update an existing GWT profile
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| gwt_profile_id | ID of the GWT profile. ID or display name must be filled. | Optional | 
-| gwt_profile_name | Display name of the GWT profile. ID or display name must be filled. | Required | 
-| description | Optional description for the profile | Optional | 
-| maximum_value_len | Maximum length for a value in the profile | Optional | 
-| maximum_total_len | Maximum length of all GWT data | Optional | 
-| tolerate_parsing_warnings | Whether or not to tolerate parsing warnings | Optional | 
-| check_signatures | Whether or not to check attack signatures | Optional | 
-| check_metachars | Whether or not to check metachar elements | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| gwt_profile_id | The ID of the GWT profile. The ID or display name must be filled. Default is "None". | Optional | 
+| gwt_profile_name | The display name of the GWT profile. The ID or display name must be filled. | Required | 
+| description | Optional description for the profile. | Optional | 
+| maximum_value_len | The maximum length for a value in the profile. Default is "any". | Optional | 
+| maximum_total_len | The maximum length of all GWT data. Default is "any". | Optional | 
+| tolerate_parsing_warnings | Whether to tolerate parsing warnings. | Optional | 
+| check_signatures | Whether the profile should check for attack signatures. | Optional | 
+| check_metachars | Whether the profile should check for metachar elements. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.GWTProfile.id | String | ID of the GWT profile | 
-| f5.GWTProfile.name | String | Display name of the GWT profile | 
-| f5.GWTProfile.description | String | Description of the GWT profile | 
-| f5.GWTProfile.isDefault | Boolean | Is the GWT profile default | 
-| f5.GWTProfile.attackSignaturesCheck | Boolean | Should attack signatures be checked | 
-| f5.GWTProfile.isReferenced | Boolean | Is the profile referenced | 
-| f5.GWTProfile.metacharElementCheck | Boolean | Should metachar elements be checked | 
+| f5.GWTProfile.id | String | The ID of the GWT profile. | 
+| f5.GWTProfile.name | String | The display name of the GWT profile. | 
+| f5.GWTProfile.description | String | A description of the GWT profile. | 
+| f5.GWTProfile.isDefault | Boolean | Whether the GWT profile is the default profile. | 
+| f5.GWTProfile.attackSignaturesCheck | Boolean | Whether the GWT profile should check for attack signatures. | 
+| f5.GWTProfile.isReferenced | Boolean | Whether the GWT profile is referenced. | 
+| f5.GWTProfile.metacharElementCheck | Boolean | Whether the GWT profile should check for metachar elements. | 
 
 
 #### Command Example
@@ -4957,7 +4960,7 @@ Update an existing GWT profile
 
 ### f5-asm-policy-gwt-profiles-delete
 ***
-Delete an existing GWT profile.
+Deletes an existing GWT profile.
 
 
 #### Base Command
@@ -4967,22 +4970,22 @@ Delete an existing GWT profile.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| gwt_profile_id | ID of the GWT profile. ID or display name must be filled. | Optional | 
-| gwt_profile_name | Display name of the GWT profile. ID or display name must be filled. | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| gwt_profile_id | The ID of the GWT profile. The ID or display name must be filled. Default is "None". | Optional | 
+| gwt_profile_name | The display name of the GWT profile. The ID or display name must be filled. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.GWTProfile.id | String | ID of the GWT profile | 
-| f5.GWTProfile.name | String | Display name of the GWT profile | 
-| f5.GWTProfile.description | String | Description of the GWT profile | 
-| f5.GWTProfile.isDefault | Boolean | Is the GWT profile default | 
-| f5.GWTProfile.attackSignaturesCheck | Boolean | Should attack signatures be checked | 
-| f5.GWTProfile.isReferenced | Boolean | Is the profile referenced | 
-| f5.GWTProfile.metacharElementCheck | Boolean | Should metachar elements be checked | 
+| f5.GWTProfile.id | String | The ID of the GWT profile. | 
+| f5.GWTProfile.name | String | The display name of the GWT profile. | 
+| f5.GWTProfile.description | String | A description of the GWT profile. | 
+| f5.GWTProfile.isDefault | Boolean | Whether the GWT profile is the default profile. | 
+| f5.GWTProfile.attackSignaturesCheck | Boolean | Whether the GWT profile should check for attack signatures. | 
+| f5.GWTProfile.isReferenced | Boolean | Whether the GWT profile is referenced. | 
+| f5.GWTProfile.metacharElementCheck | Boolean | Whether the GWT profile should check for metachar elements. | 
 
 
 #### Command Example
@@ -5049,7 +5052,7 @@ Delete an existing GWT profile.
 
 ### f5-asm-policy-json-profiles-list
 ***
-List all JSON profiles in a policy
+Lists all JSON profiles in a policy.
 
 
 #### Base Command
@@ -5059,23 +5062,23 @@ List all JSON profiles in a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.JSONProfile.id | String | ID of JSON profile | 
-| f5.JSONProfile.name | String | Display name of JSON profile | 
-| f5.JSONProfile.description | String | Description of JSON profile | 
-| f5.JSONProfile.isDefault | Boolean | Is the JSON profile default | 
-| f5.JSONProfile.attackSignaturesCheck | Boolean | Should the JSON profile check for attack signatures | 
-| f5.JSONProfile.isReferenced | Boolean | Is the JSON profile referenced somewhere | 
-| f5.JSONProfile.metacharElementCheck | Boolean | Should the JSON profile check for metachar elements | 
-| f5.JSONProfile.hasValidationFiles | Boolean | Does the JSON profile have validation files | 
-| f5.JSONProfile.selfLink | String | Link to the profile | 
-| f5.JSONProfile.lastUpdate | String | Time of last update made to the profile | 
+| f5.JSONProfile.id | String | The ID of JSON profile. | 
+| f5.JSONProfile.name | String | The display name of the JSON profile. | 
+| f5.JSONProfile.description | String | A description of he JSON profile. | 
+| f5.JSONProfile.isDefault | Boolean | Whether the JSON profile is the default profile. | 
+| f5.JSONProfile.attackSignaturesCheck | Boolean | Whether the JSON profile should check for attack signatures. | 
+| f5.JSONProfile.isReferenced | Boolean | Whether the JSON profile is referenced. | 
+| f5.JSONProfile.metacharElementCheck | Boolean | Whether the JSON profile should check for metachar elements. | 
+| f5.JSONProfile.hasValidationFiles | Boolean | Whether the JSON profile has validation files. | 
+| f5.JSONProfile.selfLink | String | The self link to the specific profile. | 
+| f5.JSONProfile.lastUpdate | String | The time the last update was made to the profile. | 
 
 
 #### Command Example
@@ -5139,7 +5142,7 @@ List all JSON profiles in a policy
 
 ### f5-asm-policy-json-profiles-add
 ***
-Add a new JSON profile to a policy
+Adds a new JSON profile to a policy.
 
 
 #### Base Command
@@ -5149,33 +5152,33 @@ Add a new JSON profile to a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| name | Display name of new profile | Required | 
-| description | Optional description for the JSON profile | Optional | 
-| maximum_total_len | Maximum total length of JSON data | Optional | 
-| maximum_value_len | Maximum length for a single value | Optional | 
-| max_structure_depth | Maxmimum structure depth | Optional | 
-| max_array_len | Maximum JSON array length | Optional | 
-| tolerate_parsing_warnings | Should the profile tolerate JSON parsing warnings | Optional | 
-| parse_parameters | Should the profile handle JSON values as parameters | Optional | 
-| check_signatures | Should the profile check for attack signatures | Optional | 
-| check_metachars | Should the profile check for metachar elements | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| name | The display name of the new profile. | Required | 
+| description | Optional description for the JSON profile. | Optional | 
+| maximum_total_len | The maximum total length of the JSON data. Default is "any". | Optional | 
+| maximum_value_len | The maximum length for a single value. Default is "any". | Optional | 
+| max_structure_depth | The maximum structure depth. Default is "any". | Optional | 
+| max_array_len | The maximum JSON array length. Default is "any". | Optional | 
+| tolerate_parsing_warnings | Whether the profile should tolerate JSON parsing warnings. | Optional | 
+| parse_parameters | Whether the profile should handle JSON values as parameters. | Optional | 
+| check_signatures | Whether the profile should check for attack signatures. | Optional | 
+| check_metachars | Whether the profile should check for metachar elements. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.JSONProfile.id | String | ID of JSON profile | 
-| f5.JSONProfile.name | String | Display name of JSON profile | 
-| f5.JSONProfile.description | String | Description of JSON profile | 
-| f5.JSONProfile.isDefault | Boolean | Is the JSON profile default | 
-| f5.JSONProfile.attackSignaturesCheck | Boolean | Should the JSON profile check for attack signatures | 
-| f5.JSONProfile.isReferenced | Boolean | Is the JSON profile referenced somewhere | 
-| f5.JSONProfile.metacharElementCheck | Boolean | Should the JSON profile check for metachar elements | 
-| f5.JSONProfile.hasValidationFiles | Boolean | Does the JSON profile have validation files | 
-| f5.JSONProfile.selfLink | String | Link to the profile | 
-| f5.JSONProfile.lastUpdate | String | Time of last update made to the profile | 
+| f5.JSONProfile.id | String | The ID of the JSON profile. | 
+| f5.JSONProfile.name | String | The display name of the JSON profile. | 
+| f5.JSONProfile.description | String | A description of the JSON profile. | 
+| f5.JSONProfile.isDefault | Boolean | Whether the JSON profile is the default profile. | 
+| f5.JSONProfile.attackSignaturesCheck | Boolean | Whether the JSON profile should check for attack signatures. | 
+| f5.JSONProfile.isReferenced | Boolean | Whether the JSON profile is referenced. | 
+| f5.JSONProfile.metacharElementCheck | Boolean | Whether the JSON profile should check for metachar elements. | 
+| f5.JSONProfile.hasValidationFiles | Boolean | Whether the JSON profile has validation files. | 
+| f5.JSONProfile.selfLink | String | The self link to the specific profile. | 
+| f5.JSONProfile.lastUpdate | String | The time the last update was made to the profile. | 
 
 
 #### Command Example
@@ -5242,7 +5245,7 @@ Add a new JSON profile to a policy
 
 ### f5-asm-policy-json-profiles-update
 ***
-Update an existing JSON profile
+Updates an existing JSON profile.
 
 
 #### Base Command
@@ -5252,34 +5255,34 @@ Update an existing JSON profile
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| json_id | ID of the JSON profile. ID or display name must be filled. | Optional | 
-| json_name | Display name of the JSON profile. ID or display name must be filled. | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| json_id | The ID of the JSON profile. The ID or display name must be filled. Default is "None". | Optional | 
+| json_name | The display name of the JSON profile. The ID or display name must be filled. | Required | 
 | description | Optional description for the JSON profile | Optional | 
-| maximum_total_len | Maximum total length of JSON data | Optional | 
-| maximum_value_len | Maximum length for a single value | Optional | 
-| max_structure_depth | Maxmimum structure depth | Optional | 
-| max_array_len | Maximum JSON array length | Optional | 
-| tolerate_parsing_warnings | Should the profile tolerate JSON parsing warnings | Optional | 
-| parse_parameters | Should the profile handle JSON values as parameters | Optional | 
-| check_signatures | Should the profile check for attack signatures | Optional | 
-| check_metachars | Should the profile check for metachar elements | Optional | 
+| maximum_total_len | The maximum total length of JSON data. Default is "any". | Optional | 
+| maximum_value_len | The maximum length for a single value. Default is "any". | Optional | 
+| max_structure_depth | The maximum structure depth. Default is "any". | Optional | 
+| max_array_len | The maximum JSON array length. Default is "any". | Optional | 
+| tolerate_parsing_warnings | Whether the profile should tolerate JSON parsing warnings. | Optional | 
+| parse_parameters | Whether the profile should handle JSON values as parameters. | Optional | 
+| check_signatures | Whether the profile should check for attack signatures. | Optional | 
+| check_metachars | Whether the profile should check for metachar elements. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.JSONProfile.id | String | ID of JSON profile | 
-| f5.JSONProfile.name | String | Display name of JSON profile | 
-| f5.JSONProfile.description | String | Description of JSON profile | 
-| f5.JSONProfile.isDefault | Boolean | Is the JSON profile default | 
-| f5.JSONProfile.attackSignaturesCheck | Boolean | Should the JSON profile check for attack signatures | 
-| f5.JSONProfile.isReferenced | Boolean | Is the JSON profile referenced somewhere | 
-| f5.JSONProfile.metacharElementCheck | Boolean | Should the JSON profile check for metachar elements | 
-| f5.JSONProfile.hasValidationFiles | Boolean | Does the JSON profile have validation files | 
-| f5.JSONProfile.selfLink | String | Link to the profile | 
-| f5.JSONProfile.lastUpdate | String | Time of last update made to the profile | 
+| f5.JSONProfile.id | String | The ID of the JSON profile. | 
+| f5.JSONProfile.name | String | The display name of the JSON profile. | 
+| f5.JSONProfile.description | String | A description of the JSON profile. | 
+| f5.JSONProfile.isDefault | Boolean | Whether the JSON profile is the default profile. | 
+| f5.JSONProfile.attackSignaturesCheck | Boolean | Whether the JSON profile should check for attack signatures. | 
+| f5.JSONProfile.isReferenced | Boolean | Whether the JSON profile is referenced. | 
+| f5.JSONProfile.metacharElementCheck | Boolean | Whether the JSON profile should check for metachar elements. | 
+| f5.JSONProfile.hasValidationFiles | Boolean | Whether the JSON profile has validation files. | 
+| f5.JSONProfile.selfLink | String | The self link to the specific profile. | 
+| f5.JSONProfile.lastUpdate | String | The time the last update was made to the profile. | 
 
 
 #### Command Example
@@ -5346,7 +5349,7 @@ Update an existing JSON profile
 
 ### f5-asm-policy-json-profiles-delete
 ***
-Delete an existing JSON profile from a policy
+Deletes an existing JSON profile from a policy
 
 
 #### Base Command
@@ -5356,25 +5359,25 @@ Delete an existing JSON profile from a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| json_id | ID of the JSON profile. ID or display name must be filled. | Optional | 
-| json_name | Display name of the JSON profile. ID or display name must be filled. | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| json_id | The ID of the JSON profile. The ID or display name must be filled. Default is "None". | Optional | 
+| json_name | The display name of the JSON profile. The ID or display name must be filled. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.JSONProfile.id | String | ID of JSON profile | 
-| f5.JSONProfile.name | String | Display name of JSON profile | 
-| f5.JSONProfile.description | String | Description of JSON profile | 
-| f5.JSONProfile.isDefault | Boolean | Is the JSON profile default | 
-| f5.JSONProfile.attackSignaturesCheck | Boolean | Should the JSON profile check for attack signatures | 
-| f5.JSONProfile.isReferenced | Boolean | Is the JSON profile referenced somewhere | 
-| f5.JSONProfile.metacharElementCheck | Boolean | Should the JSON profile check for metachar elements | 
-| f5.JSONProfile.hasValidationFiles | Boolean | Does the JSON profile have validation files | 
-| f5.JSONProfile.selfLink | String | Link to the profile | 
-| f5.JSONProfile.lastUpdate | String | Time of last update made to the profile | 
+| f5.JSONProfile.id | String | The ID of the JSON profile. | 
+| f5.JSONProfile.name | String | The display name of the JSON profile. | 
+| f5.JSONProfile.description | String | A description of the JSON profile. | 
+| f5.JSONProfile.isDefault | Boolean | Whether the JSON profile is the default profile. | 
+| f5.JSONProfile.attackSignaturesCheck | Boolean | Whether the JSON profile should check for attack signatures. | 
+| f5.JSONProfile.isReferenced | Boolean | Whether the JSON profile is referenced. | 
+| f5.JSONProfile.metacharElementCheck | Boolean | Whether the JSON profile should check for metachar elements. | 
+| f5.JSONProfile.hasValidationFiles | Boolean | Whether the JSON profile has validation files. | 
+| f5.JSONProfile.selfLink | String | The self link to the specific profile. | 
+| f5.JSONProfile.lastUpdate | String | The time the last update was made to the profile. | 
 
 
 #### Command Example
@@ -5441,7 +5444,7 @@ Delete an existing JSON profile from a policy
 
 ### f5-asm-policy-xml-profiles-list
 ***
-List all XML profiles in a policy.
+Lists all XML profiles in a policy.
 
 
 #### Base Command
@@ -5451,26 +5454,26 @@ List all XML profiles in a policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.XMLProfile.id | String | ID of the XML profile | 
-| f5.XMLProfile.name | String | Display name of the XML profile | 
-| f5.XMLProfile.description | String | Description of the XML profile | 
-| f5.XMLProfile.isDefault | Boolean | Is the profile the default one | 
-| f5.XMLProfile.attackSignaturesCheck | Boolean | Should the profile check for attack signatures | 
-| f5.XMLProfile.followSchemaLinks | Boolean | Should the profile follow schema links | 
-| f5.XMLProfile.metacharElementCheck | Boolean | Should the profile check for metachar elements | 
-| f5.XMLProfile.metacharAttributeCheck | Boolean | Should the profile check for metachar attributes | 
-| f5.XMLProfile.isReferenced | Boolean | Is the profile referenced somewhere | 
-| f5.XMLProfile.enableWSS | Boolean | Should web service security be enabled | 
-| f5.XMLProfile.hasValidationFiles | Boolean | Does the profile have validation files | 
-| f5.XMLProfile.selfLink | String | Self link to the profile | 
-| f5.XMLProfile.lastUpdate | String | Time of last update to the profile | 
+| f5.XMLProfile.id | String | The ID of the XML profile | 
+| f5.XMLProfile.name | String | The display name of the XML profile. | 
+| f5.XMLProfile.description | String | A description of the XML profile. | 
+| f5.XMLProfile.isDefault | Boolean | Whether the XML profile is the default profile. | 
+| f5.XMLProfile.attackSignaturesCheck | Boolean | Whether the XML profile should check for attack signatures. | 
+| f5.XMLProfile.followSchemaLinks | Boolean | Whether the profile should follow schema links. | 
+| f5.XMLProfile.metacharElementCheck | Boolean | Whether the XML profile should check for metachar elements. | 
+| f5.XMLProfile.metacharAttributeCheck | Boolean | Whether the profile should check for metachar attributes. | 
+| f5.XMLProfile.isReferenced | Boolean | Whether the XML profile is referenced. | 
+| f5.XMLProfile.enableWSS | Boolean | Whether the web service security should be enabled. | 
+| f5.XMLProfile.hasValidationFiles | Boolean | Whether the XML profile has validation files. | 
+| f5.XMLProfile.selfLink | String | The self link to the specific profile. | 
+| f5.XMLProfile.lastUpdate | String | The time the last update was made to the profile. | 
 
 
 #### Command Example
@@ -5577,7 +5580,7 @@ List all XML profiles in a policy.
 
 ### f5-asm-policy-xml-profiles-add
 ***
-Add a new XML profile to a policy
+Adds a new XML profile to a policy.
 
 
 #### Base Command
@@ -5587,39 +5590,39 @@ Add a new XML profile to a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| name | Display name of the profile to add | Required | 
-| description | Optional description for the profile | Optional | 
-| check_signatures | Whether or not to check for signatures | Optional | 
-| check_metachar_elements | Whether or not to check for metachar elements | Optional | 
-| check_metachar_attributes | Whether or not to check for metachar attributes | Optional | 
-| enable_wss | Whether or not to enable web services securities | Optional | 
-| inspect_soap | Whether or not to inspect SOAP attachments | Optional | 
-| follow_links | Whether or not to follow schema links | Optional | 
-| use_xml_response | Whether or not to use the XML response page | Optional | 
-| allow_cdata | Whether or not to allow CDATA | Optional | 
-| allow_dtds | Whether or not to allow DTDs | Optional | 
-| allow_external_ref | Whether or not to allow external references | Optional | 
-| allow_processing_instructions | Whether or not to allow processing instructions. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| name | The display name of the profile to add. | Required | 
+| description | Optional description for the profile. | Optional | 
+| check_signatures | Whether the profile should check for attack signatures. | Optional | 
+| check_metachar_elements | Whether to check for metachar elements. | Optional | 
+| check_metachar_attributes | Whether to check for metachar attributes. | Optional | 
+| enable_wss | Whether to enable web services securities. | Optional | 
+| inspect_soap | Whether to inspect SOAP attachments. | Optional | 
+| follow_links | Whether to follow schema links. | Optional | 
+| use_xml_response | Whether to use the XML response page. | Optional | 
+| allow_cdata | Whether to allow CDATA. | Optional | 
+| allow_dtds | Whether to allow DTDs. | Optional | 
+| allow_external_ref | Whether to allow external references. | Optional | 
+| allow_processing_instructions | Whether to allow processing instructions. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.XMLProfile.id | String | ID of the XML profile | 
-| f5.XMLProfile.name | String | Display name of the XML profile | 
-| f5.XMLProfile.description | String | Description of the XML profile | 
-| f5.XMLProfile.isDefault | Boolean | Is the profile the default one | 
-| f5.XMLProfile.attackSignaturesCheck | Boolean | Should the profile check for attack signatures | 
-| f5.XMLProfile.followSchemaLinks | Boolean | Should the profile follow schema links | 
-| f5.XMLProfile.metacharElementCheck | Boolean | Should the profile check for metachar elements | 
-| f5.XMLProfile.metacharAttributeCheck | Boolean | Should the profile check for metachar attributes | 
-| f5.XMLProfile.isReferenced | Boolean | Is the profile referenced somewhere | 
-| f5.XMLProfile.enableWSS | Boolean | Should web service security be enabled | 
-| f5.XMLProfile.hasValidationFiles | Boolean | Does the profile have validation files | 
-| f5.XMLProfile.selfLink | String | Self link to the profile | 
-| f5.XMLProfile.lastUpdate | String | Time of last update to the profile | 
+| f5.XMLProfile.id | String | The ID of the XML profile. | 
+| f5.XMLProfile.name | String | The display name of the XML profile. | 
+| f5.XMLProfile.description | String | A description of the XML profile. | 
+| f5.XMLProfile.isDefault | Boolean | Whether the XML profile is the default profile. | 
+| f5.XMLProfile.attackSignaturesCheck | Boolean | Whether the XML profile should check for attack signatures. | 
+| f5.XMLProfile.followSchemaLinks | Boolean | Whether the profile should follow schema links. | 
+| f5.XMLProfile.metacharElementCheck | Boolean | Whether the XML profile should check for metachar elements. | 
+| f5.XMLProfile.metacharAttributeCheck | Boolean | Whether the profile should check for metachar attributes. | 
+| f5.XMLProfile.isReferenced | Boolean | Whether the XML profile is referenced. | 
+| f5.XMLProfile.enableWSS | Boolean | Whether the web service security should be enabled. | 
+| f5.XMLProfile.hasValidationFiles | Boolean | Whether the XML profile has validation files. | 
+| f5.XMLProfile.selfLink | String | The self link to the specific profile. | 
+| f5.XMLProfile.lastUpdate | String | The time the last update was made to the profile. | 
 
 
 #### Command Example
@@ -5686,7 +5689,7 @@ Add a new XML profile to a policy
 
 ### f5-asm-policy-xml-profiles-update
 ***
-Update an XML profile in a policy
+Updates an XML profile in a policy
 
 
 #### Base Command
@@ -5696,40 +5699,40 @@ Update an XML profile in a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| xml_id | ID of the XML profile. ID or display name must be filled. | Optional | 
-| xml_name | Display name of the XML profile. ID or display name must be filled. | Required | 
-| description | Optional description for the profile | Optional | 
-| check_signatures | Whether or not to check for signatures | Optional | 
-| check_metachar_elements | Whether or not to check for metachar elements | Optional | 
-| check_metachar_attributes | Whether or not to check for metachar attributes | Optional | 
-| enable_wss | Whether or not to enable web services securities | Optional | 
-| inspect_soap | Whether or not to inspect SOAP attachments | Optional | 
-| follow_links | Whether or not to follow schema links | Optional | 
-| use_xml_response | Whether or not to use the XML response page | Optional | 
-| allow_cdata | Whether or not to allow CDATA | Optional | 
-| allow_dtds | Whether or not to allow DTDs | Optional | 
-| allow_external_ref | Whether or not to allow external references | Optional | 
-| allow_processing_instructions | Whether or not to allow processing instructions. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| xml_id | The ID of the XML profile. The ID or display name must be filled. Default is "None". | Optional | 
+| xml_name | The display name of the XML profile. The ID or display name must be filled. | Required | 
+| description | Optional description for the profile. | Optional | 
+| check_signatures | Whether the profile should check for attack signatures. | Optional | 
+| check_metachar_elements | Whether to check for metachar elements. | Optional | 
+| check_metachar_attributes | Whether to check for metachar attributes. | Optional | 
+| enable_wss | Whether to enable web services securities. | Optional | 
+| inspect_soap | Whether to inspect SOAP attachments. | Optional | 
+| follow_links | Whether to follow schema links. | Optional | 
+| use_xml_response | Whether to use the XML response page. | Optional | 
+| allow_cdata | Whether to allow CDATA. | Optional | 
+| allow_dtds | Whether to allow DTDs. | Optional | 
+| allow_external_ref | Whether to allow external references. | Optional | 
+| allow_processing_instructions | Whether to allow processing instructions. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.XMLProfile.id | String | ID of the XML profile | 
-| f5.XMLProfile.name | String | Display name of the XML profile | 
-| f5.XMLProfile.description | String | Description of the XML profile | 
-| f5.XMLProfile.isDefault | Boolean | Is the profile the default one | 
-| f5.XMLProfile.attackSignaturesCheck | Boolean | Should the profile check for attack signatures | 
-| f5.XMLProfile.followSchemaLinks | Boolean | Should the profile follow schema links | 
-| f5.XMLProfile.metacharElementCheck | Boolean | Should the profile check for metachar elements | 
-| f5.XMLProfile.metacharAttributeCheck | Boolean | Should the profile check for metachar attributes | 
-| f5.XMLProfile.isReferenced | Boolean | Is the profile referenced somewhere | 
-| f5.XMLProfile.enableWSS | Boolean | Should web service security be enabled | 
-| f5.XMLProfile.hasValidationFiles | Boolean | Does the profile have validation files | 
-| f5.XMLProfile.selfLink | String | Self link to the profile | 
-| f5.XMLProfile.lastUpdate | String | Time of last update to the profile | 
+| f5.XMLProfile.id | String | The ID of the XML profile. | 
+| f5.XMLProfile.name | String | The display name of the XML profile. | 
+| f5.XMLProfile.description | String | A description of the XML profile. | 
+| f5.XMLProfile.isDefault | Boolean | Whether the XML profile is the default profile. | 
+| f5.XMLProfile.attackSignaturesCheck | Boolean | Whether the XML profile should check for attack signatures. | 
+| f5.XMLProfile.followSchemaLinks | Boolean | Whether the profile should follow schema links. | 
+| f5.XMLProfile.metacharElementCheck | Boolean | Whether the XML profile should check for metachar elements. | 
+| f5.XMLProfile.metacharAttributeCheck | Boolean | Whether the profile should check for metachar attributes. | 
+| f5.XMLProfile.isReferenced | Boolean | Whether the XML profile is referenced. | 
+| f5.XMLProfile.enableWSS | Boolean | Whether the web service security should be enabled. | 
+| f5.XMLProfile.hasValidationFiles | Boolean | Whether the XML profile has validation files. | 
+| f5.XMLProfile.selfLink | String | The self link to the specific profile. | 
+| f5.XMLProfile.lastUpdate | String | The time the last update was made to the profile. | 
 
 
 #### Command Example
@@ -5796,7 +5799,7 @@ Update an XML profile in a policy
 
 ### f5-asm-policy-xml-profiles-delete
 ***
-Delete an existing XML profile from a policy
+Deletes an existing XML profile from a policy
 
 
 #### Base Command
@@ -5806,28 +5809,28 @@ Delete an existing XML profile from a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| xml_id | ID of the XML profile. ID or display name must be filled. | Optional | 
-| xml_name | Display name of the XML profile. ID or display name must be filled. | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| xml_id | The ID of the XML profile. The ID or display name must be filled. Default is "None". | Optional | 
+| xml_name | The display name of the XML profile. The ID or display name must be filled. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.XMLProfile.id | String | ID of the XML profile | 
-| f5.XMLProfile.name | String | Display name of the XML profile | 
-| f5.XMLProfile.description | String | Description of the XML profile | 
-| f5.XMLProfile.isDefault | Boolean | Is the profile the default one | 
-| f5.XMLProfile.attackSignaturesCheck | Boolean | Should the profile check for attack signatures | 
-| f5.XMLProfile.followSchemaLinks | Boolean | Should the profile follow schema links | 
-| f5.XMLProfile.metacharElementCheck | Boolean | Should the profile check for metachar elements | 
-| f5.XMLProfile.metacharAttributeCheck | Boolean | Should the profile check for metachar attributes | 
-| f5.XMLProfile.isReferenced | Boolean | Is the profile referenced somewhere | 
-| f5.XMLProfile.enableWSS | Boolean | Should web service security be enabled | 
-| f5.XMLProfile.hasValidationFiles | Boolean | Does the profile have validation files | 
-| f5.XMLProfile.selfLink | String | Self link to the profile | 
-| f5.XMLProfile.lastUpdate | String | Time of last update to the profile | 
+| f5.XMLProfile.id | String | The ID of the XML profile. | 
+| f5.XMLProfile.name | String | The display name of the XML profile. | 
+| f5.XMLProfile.description | String | A description of the XML profile. | 
+| f5.XMLProfile.isDefault | Boolean | Whether the XML profile is the default profile. | 
+| f5.XMLProfile.attackSignaturesCheck | Boolean | Whether the XML profile should check for attack signatures. | 
+| f5.XMLProfile.followSchemaLinks | Boolean | Whether the profile should follow schema links. | 
+| f5.XMLProfile.metacharElementCheck | Boolean | Whether the XML profile should check for metachar elements. | 
+| f5.XMLProfile.metacharAttributeCheck | Boolean | Whether the profile should check for metachar attributes. | 
+| f5.XMLProfile.isReferenced | Boolean | Whether the XML profile is referenced. | 
+| f5.XMLProfile.enableWSS | Boolean | Whether the web service security should be enabled. | 
+| f5.XMLProfile.hasValidationFiles | Boolean | Whether the XML profile has validation files. | 
+| f5.XMLProfile.selfLink | String | The self link to the specific profile. | 
+| f5.XMLProfile.lastUpdate | String | The time the last update was made to the profile. | 
 
 
 #### Command Example
@@ -5894,7 +5897,7 @@ Delete an existing XML profile from a policy
 
 ### f5-asm-policy-server-technologies-list
 ***
-List all server technologies in a policy
+Lists all server technologies in a policy.
 
 
 #### Base Command
@@ -5904,17 +5907,17 @@ List all server technologies in a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.ServerTechnology.id | String | ID of the server technology | 
-| f5.ServerTechnology.selfLink | String | Link to the server technology | 
-| f5.ServerTechnology.serverTechnologyName | String | Display name of the server technology | 
-| f5.ServerTechnology.lastUpdateMicros | String | Time of last update | 
+| f5.ServerTechnology.id | String | The ID of the server technology. | 
+| f5.ServerTechnology.selfLink | String | The self link to the specific server technology. | 
+| f5.ServerTechnology.serverTechnologyName | String | The display name of the server technology. | 
+| f5.ServerTechnology.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -6113,19 +6116,19 @@ Add a server technology to a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| technology_id | ID of the server technology. ID or display name must be filled. | Optional | 
-| technology_name | Display name of the server technology. ID or display name must be filled. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| technology_id | The ID of the server technology. The ID or display name must be filled. Default is "None". | Optional | 
+| technology_name | The display name of the server technology. The ID or display name must be filled. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.ServerTechnology.id | String | ID of the server technology | 
-| f5.ServerTechnology.selfLink | String | Link to the server technology | 
-| f5.ServerTechnology.serverTechnologyName | String | Display name of the server technology | 
-| f5.ServerTechnology.lastUpdateMicros | String | Time of last update | 
+| f5.ServerTechnology.id | String | The ID of the server technology. | 
+| f5.ServerTechnology.selfLink | String | The self link to the specific server technology. | 
+| f5.ServerTechnology.serverTechnologyName | String | The display name of the server technology. | 
+| f5.ServerTechnology.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -6192,7 +6195,7 @@ Add a server technology to a policy
 
 ### f5-asm-policy-server-technologies-delete
 ***
-Delete a server technology from a policy.
+Deletes a server technology from a policy.
 
 
 #### Base Command
@@ -6202,19 +6205,19 @@ Delete a server technology from a policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_md5 | MD5 hash of the policy. You can get the policy md5 using f5-asm-get-policy-md5 | Required | 
-| technology_id | ID of the server technology. ID or display name must be filled. | Optional | 
-| technology_name | Display name of the server technology. ID or display name must be filled. | Optional | 
+| policy_md5 | The MD5 hash of the policy. You can get the policy md5 using the f5-asm-get-policy-md5 command. | Required | 
+| technology_id | The ID of the server technology. The ID or display name must be filled. Default is "None". | Optional | 
+| technology_name | The display name of the server technology. The ID or display name must be filled. Default is "None". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.ServerTechnology.id | String | ID of the server technology | 
-| f5.ServerTechnology.selfLink | String | Link to the server technology | 
-| f5.ServerTechnology.serverTechnologyName | String | Display name of the server technology | 
-| f5.ServerTechnology.lastUpdateMicros | String | Time of last update | 
+| f5.ServerTechnology.id | String | The ID of the server technology. | 
+| f5.ServerTechnology.selfLink | String | The self link to the specific server technology. | 
+| f5.ServerTechnology.serverTechnologyName | String | The display name of the server technology. | 
+| f5.ServerTechnology.lastUpdateMicros | String | The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT \(Unix epoch\). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37. | 
 
 
 #### Command Example
@@ -6281,7 +6284,7 @@ Delete a server technology from a policy.
 
 ### f5-asm-get-policy-md5
 ***
-Get the MD5 hash of a policy that can be accessed in the API.
+Gets the MD5 hash of a policy that can be accessed in the API.
 
 
 #### Base Command
@@ -6291,14 +6294,14 @@ Get the MD5 hash of a policy that can be accessed in the API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Display name of the policy to get a hash for. | Required | 
+| policy_name | The display name of the policy to get a hash for. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.Policy.md5 | String | MD5 hash of the policy | 
+| f5.Policy.md5 | String | The MD5 hash of the policy. | 
 
 
 #### Command Example
