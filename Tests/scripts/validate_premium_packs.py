@@ -21,11 +21,8 @@ def options_handler():
     parser.add_argument('--index_file_path', help='The index file path, generated on the server', required=True)
     #parser.add_argument('--commit_hash', help='The commit hash of the current build', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
-    #parser.add_argument('--branch', help='GitHub branch name', required=True)
-    #parser.add_argument('--build_number', help='CI job number where the instances were created', required=True)
 
     options = parser.parse_args()
-
     return options
 
 
