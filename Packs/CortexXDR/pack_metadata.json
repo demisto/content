@@ -11,11 +11,10 @@
         "Endpoint",
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Recommended by Cortex XSOAR"
-    ],
+    "tags": [],
     "useCases": [
-        "Malware"
+        "Malware",
+        "Incident Mirroring"
     ],
     "keywords": [
         "adaptive cyber protection",
