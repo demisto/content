@@ -11,10 +11,11 @@
         "Endpoint",
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [
-        "Malware",
+    "tags": [
         "Incident Mirroring"
+    ],
+    "useCases": [
+        "Malware"
     ],
     "keywords": [
         "adaptive cyber protection",
