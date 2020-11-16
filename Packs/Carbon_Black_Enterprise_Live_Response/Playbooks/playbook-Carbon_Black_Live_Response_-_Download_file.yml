@@ -252,13 +252,13 @@ view: |-
 inputs:
 - key: SensorId
   value:
-    simple: "24"
+    simple: ""
   required: true
   description: Sensor ID.
   playbookInputQuery:
 - key: Path
   value:
-    simple: c:\\Users\\artifcats.zip
+    simple: ""
   required: true
   description: File Path to download.
   playbookInputQuery:
