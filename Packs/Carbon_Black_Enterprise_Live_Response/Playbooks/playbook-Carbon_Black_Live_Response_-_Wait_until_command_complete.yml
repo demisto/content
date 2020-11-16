@@ -1,6 +1,6 @@
-id: Carbon Black Live Response - Wait until command complete
+id: Carbon Black Live Response - Wait Until Command Complete
 version: -1
-name: Carbon Black Live Response - Wait until command complete
+name: Carbon Black Live Response - Wait Until Command Complete
 description: Polling command status until finished with an error or complete.
 starttaskid: "0"
 tasks:
