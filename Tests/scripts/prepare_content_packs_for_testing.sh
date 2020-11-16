@@ -38,7 +38,7 @@ SOURCE_PATH="content/packs"
 # ====== TESTING CONFIGURATION ======
 
 GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
-SOURCE_TESTING_PATH="dev/content/packs"
+SOURCE_TESTING_PATH="wow/content/packs"
 
 if [ ! -n "${BUCKET_UPLOAD}" ]; then
   echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
