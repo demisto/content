@@ -49,14 +49,12 @@ class Client(BaseClient):
             url_suffix='import/upload'
         )
         form = response_get_form.get('data', {}).get('result', {}).get('form', {})
-        
-        
-        port_url = form.get('url') 
+
+        port_url = form.get('url')
         params = form.get('parameters')
-        
+
         if port_url is None or params is None:
-               raise ValueError('Failed to initiate an import operation')
-                
+            raise ValueError('Failed to initiate an import operation')
 
         # Creating a temp file with the same data of the given file
         # This way the uploaded file has a path that the API can parse properly
@@ -78,16 +76,16 @@ class Client(BaseClient):
                 return_empty_response=True,
                 data=params
             )
-        
+
         # As shown, this operation has two requests
         # The data about the operation is within the first request's response,
-        # So in order to keep the operation's data, we should return the first request's response, 
-        # But first we should remove fields that are no longer true, such as ones that indictes that 
+        # So in order to keep the operation's data, we should return the first request's response,
+        # But first we should remove fields that are no longer true, such as ones that indicates that
         # The second request has not been done yet
         if response_get_form.get('data'):
             response_get_form.get('data').pop('message', None)
             response_get_form.get('data').pop('result', None)
-        
+
         return response_get_form
 
     @logger
@@ -223,7 +221,7 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
     # No 'data' field was returned from the request, meaning the input was invalid
     if results_data is None:
         if results.get('message'):
-            ValueError(results.get('message'))
+            raise ValueError(results.get('message'))
         else:
             raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
                              'many requests. Please try again later.')
@@ -266,7 +264,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     # For other operations, the operation matches the operation field in the API's response, so no change is needed
     if argToBoolean(arguments.get('is_entry', False)):
         results['data']['operation'] = 'export/entry'
-        
+
     # Check if an export to war room entry operation is finished
     # If it did - create the entry
     if results.get('data', {}).get('status') == 'finished' and argToBoolean(arguments.get('is_entry', 'False')):
@@ -276,9 +274,8 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         file_data = client.get_file_from_url(url)
         war_room_file = fileResult(filename=file_name, data=file_data)
         readable_output = tableToMarkdown('Check Status Results', remove_empty_elements(results_data),
-                                  headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
-                                           'status'),
-                                  headerTransform=string_to_table_header)
+                                          headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
+                                                   'status'), headerTransform=string_to_table_header)
         return_results(CommandResults(
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
@@ -370,7 +367,7 @@ def main() -> None:
         }
         client = Client(headers, verify, proxy)
         command = demisto.command()
-        
+
         if command == 'cloudconvert-import':
             return_results(import_command(client, demisto.args()))
 

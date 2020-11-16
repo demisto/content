@@ -252,8 +252,8 @@ script:
       isArray: false
       name: is_entry
       predefined:
-      - True
-      - False
+      - true
+      - false
       required: false
       secret: false
     deprecated: false
