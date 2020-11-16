@@ -356,8 +356,8 @@ def test_get_assigned_user_for_app_command(mocker):
     client = mock_client()
 
     args = {
-        'user-id': 'mock_user_id',
-        'application-id': 'mock_app_id'
+        'user_id': 'mock_user_id',
+        'application_id': 'mock_app_id'
     }
 
     get_assignment_response = Response()
@@ -394,7 +394,7 @@ def test_fetch_incidents__two_logs_batches(mocker):
         client=mock_client(),
         last_run={},
         query_filter='mock_query_filter',
-        first_fetch='mock_first_fetch',
+        first_fetch_str='7 days',
         fetch_limit=5
     )
 
@@ -420,7 +420,7 @@ def test_fetch_incidents__fetch_limit(mocker):
         client=mock_client(),
         last_run={},
         query_filter='mock_query_filter',
-        first_fetch='mock_first_fetch',
+        first_fetch_str='7 days',
         fetch_limit=2
     )
 
@@ -450,7 +450,7 @@ def test_fetch_incidents__last_run():
         client=mock_client(),
         last_run=last_run,
         query_filter='mock_query_filter',
-        first_fetch='mock_first_fetch',
+        first_fetch_str='7 days',
         fetch_limit=2
     )
 

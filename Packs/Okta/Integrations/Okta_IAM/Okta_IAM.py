@@ -222,6 +222,17 @@ def get_error_details(res):
     return error_msg
 
 
+def get_incident_title(entry):
+    default_title = 'Okta Event'
+    incident_title = entry.get('displayMessage', default_title)
+
+    user_name = demisto.dt(entry, 'target(val.type == "User").displayName')
+    if user_name and len(user_name) > 0:
+        incident_title += f' ({user_name})'
+
+    return incident_title
+
+
 '''COMMAND FUNCTIONS'''
 
 
@@ -431,7 +442,7 @@ def get_assigned_user_for_app_command(client, args):
     )
 
 
-def fetch_incidents(client, last_run, query_filter, first_fetch, fetch_limit):
+def fetch_incidents(client, last_run, query_filter, first_fetch_str, fetch_limit):
     """ If no events were saved from last run, returns new events from Okta's /log API. Otherwise,
     returns the events from last run. In both cases, no more than `fetch_limit` incidents will be returned,
     and the rest of them will be saved for next run.
@@ -440,7 +451,7 @@ def fetch_incidents(client, last_run, query_filter, first_fetch, fetch_limit):
             client: (BaseClient) Okta client.
             last_run: (dict) The "last run" object that was set on the previous run.
             query_filter: (str) A query filter for okta logs API.
-            first_fetch: (str) First fetch time, in DATE_FORMAT format.
+            first_fetch_str: (str) First fetch time parameter (e.g. "1 day", "2 months", etc).
             fetch_limit: (int) Maximum number of incidents to return.
         Returns:
             incidents: (dict) Incidents/events that will be created in Cortex XSOAR
@@ -448,14 +459,16 @@ def fetch_incidents(client, last_run, query_filter, first_fetch, fetch_limit):
     """
 
     incidents = last_run.get('incidents', [])
-    last_run_time = last_run.get('last_run_time', first_fetch)  # if last_run_time is undefined, use first_fetch param
+
+    first_fetch = dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
+    last_run_time = last_run.get('last_run_time', first_fetch)  # if last_run_time is undefined, use first_fetch
     time_now = datetime.now().strftime(DATE_FORMAT)
 
     demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
     if not incidents:
         log_events = client.get_logs(query_filter, last_run_time, time_now)
         for entry in log_events:
-            # mapping will be done at the classification and mapping
+            # mapping is done at the classification and mapping stage
             incident = {
                 'rawJSON': json.dumps(entry),
                 'name': get_incident_title(entry)
@@ -468,17 +481,6 @@ def fetch_incidents(client, last_run, query_filter, first_fetch, fetch_limit):
     }
 
     return incidents[:fetch_limit], next_run
-
-
-def get_incident_title(entry):
-    default_title = 'Okta Event'
-    incident_title = entry.get('displayMessage', default_title)
-
-    user_name = demisto.dt(entry, 'target(val.type == "User").displayName')
-    if user_name and len(user_name) > 0:
-        incident_title += f' ({user_name})'
-
-    return incident_title
 
 
 def main():
@@ -551,10 +553,7 @@ def main():
 
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
-            first_fetch = dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
-
-            incidents, next_run = fetch_incidents(client, last_run, fetch_query_filter, first_fetch, fetch_limit)
-
+            incidents, next_run = fetch_incidents(client, last_run, fetch_query_filter, first_fetch_str, fetch_limit)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 

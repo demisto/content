@@ -260,8 +260,8 @@ Gets a specific user assignment for an application by id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | ID of the user for which to get information. | Required | 
-| application-id | ID of the application for which to get information. | Required | 
+| user_id | ID of the user for which to get information. | Required | 
+| application_id | ID of the application for which to get information. | Required | 
 
 
 #### Context Output
@@ -278,7 +278,7 @@ Gets a specific user assignment for an application by id.
 
 
 #### Command Example
-```!okta-get-assigned-user-for-app user-id=00uuv6y8t1iy8YXm94h7 application-id=0oae3ioe51sQ64Aui2h7```
+```!okta-get-assigned-user-for-app user_id=00uuv6y8t1iy8YXm94h7 application_id=0oae3ioe51sQ64Aui2h7```
 
 #### Human Readable Output
 ### Okta User App Assignment
