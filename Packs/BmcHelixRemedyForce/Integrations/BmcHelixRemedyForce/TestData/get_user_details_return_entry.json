@@ -70,5 +70,6 @@
       }
     ]
   },
-  "IndicatorTimeline": []
+  "IndicatorTimeline": [],
+  "IgnoreAutoExtract": false
 }

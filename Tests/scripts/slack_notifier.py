@@ -21,7 +21,7 @@ BUCKET_UPLOAD_TYPE = 'bucket_upload_flow'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
 BUCKET_UPLOAD_BUILD_TITLE = 'Upload Packs To Marketplace Storage'
-PACKS_RESULTS_FILE = "failed_packs_prepare_content.json"
+PACKS_RESULTS_FILE = "packs_results.json"
 
 
 def get_faild_steps_list():
@@ -143,6 +143,13 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
                 with open(packs_results_file_path, 'r') as json_file:
                     packs_results_file = json.load(json_file)
                 if packs_results_file:
+                    successful_packs = packs_results_file.get('successful_packs', {})
+                    if successful_packs:
+                        steps_fields += [{
+                            "title": "Successful Packs:",
+                            "value": "\n".join([pack_name for pack_name in {*successful_packs}]),
+                            "short": False
+                        }]
                     failed_packs = packs_results_file.get('failed_packs', {})
                     if failed_packs:
                         steps_fields += [{

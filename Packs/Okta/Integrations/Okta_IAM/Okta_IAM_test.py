@@ -304,7 +304,7 @@ def test_disable_user_command__user_is_already_disabled(mocker):
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     bad_response = Response()
-    bad_response.status_code = 500
+    bad_response.status_code = 400
     bad_response._content = b'{"errorCode": "E0000007", ' \
                             b'"errorSummary": "mock_error_summary", ' \
                             b'"errorCauses": [{"errorSummary": "reason_1"}, ' \
