@@ -5,7 +5,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import pandas as pd
 from bs4 import BeautifulSoup
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
@@ -16,7 +16,7 @@ import re
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 pd.options.mode.chained_assignment = None  # default='warn'
 
-SIMILARITY_THRESHOLD = float(demisto.args().get('threshold', 0.99))
+SIMILARITY_THRESHOLD = float(demisto.args().get('threshold', 0.97))
 CLOSE_TO_SIMILAR_DISTANCE = 0.2
 
 EMAIL_BODY_FIELD = 'emailbody'
@@ -191,7 +191,7 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
     global MERGED_TEXT_FIELD, FROM_POLICY
     new_incident_text = new_incident[MERGED_TEXT_FIELD]
     text = [new_incident_text] + existing_incidents_df[MERGED_TEXT_FIELD].tolist()
-    vectorizer = TfidfVectorizer(token_pattern=r"(?u)\b\w\w+\b|!|\?|\"|\'").fit(text)
+    vectorizer = CountVectorizer(token_pattern=r"(?u)\b\w\w+\b|!|\?|\"|\'").fit(text)
     new_incident_vector = vectorize(new_incident_text, vectorizer)
     existing_incidents_df['vector'] = existing_incidents_df[MERGED_TEXT_FIELD].apply(lambda x: vectorize(x, vectorizer))
     existing_incidents_df['similarity'] = existing_incidents_df['vector'].apply(

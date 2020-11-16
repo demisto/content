@@ -1,4 +1,6 @@
 from __future__ import print_function
+
+import logging
 import os
 import re
 import sys
@@ -23,6 +25,9 @@ import urllib3
 import requests
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
+
+from Tests.scripts.utils.log_util import install_simple_logging
+
 try:
     """
     Those dual-imports are required as Slack updated their sdk and it breaks BC.
@@ -105,7 +110,13 @@ class SettingsTester:
         self.is_local_run = (self.server is not None)
 
     @staticmethod
-    def parse_tests_list_arg(tests_list):
+    def parse_tests_list_arg(tests_list: str):
+        """
+        Parses the test list arguments if present.
+
+        :param tests_list: CSV string of tests to run.
+        :return: List of tests if there are any, otherwise empty list.
+        """
         tests_to_run = tests_list.split(",") if tests_list else []
         return tests_to_run
 
@@ -188,7 +199,14 @@ class DataKeeperTester:
             self.empty_files.append(playbook_id)
 
 
-def print_test_summary(tests_data_keeper, is_ami=True):
+def print_test_summary(tests_data_keeper: DataKeeperTester, is_ami: bool = True):
+    """
+    Takes the information stored in the tests_data_keeper and prints it in a human readable way.
+
+    :param tests_data_keeper: DataKeeperTester object containing test statuses.
+    :param is_ami: Boolean indicating if the server running the tests is an AMI or not.
+    :return: None.
+    """
     succeed_playbooks = tests_data_keeper.succeeded_playbooks
     failed_playbooks = tests_data_keeper.failed_playbooks
     skipped_tests = tests_data_keeper.skipped_tests
@@ -325,8 +343,9 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
     )
 
 
-def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations, playbook_id,
-                   succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
+def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass,
+                   failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+                   test_options, slack, circle_ci, build_number, server_url,
                    build_name, prints_manager, thread_index=0, is_mock_run=False):
     with acquire_test_lock(integrations,
                            test_options.get('timeout'),
@@ -334,12 +353,13 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
                            thread_index,
                            tests_settings.conf_path) as lock:
         if lock:
-            status, inc_id = check_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+            status, inc_id = check_integration(c, server_url, demisto_user, demisto_pass, integrations,
+                                               playbook_id, prints_manager, test_options,
                                                is_mock_run, thread_index=thread_index)
             # c.api_client.pool.close()
             if status == PB_Status.COMPLETED:
-                prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
-                                             message_color=LOG_COLORS.GREEN)
+                prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color,
+                                             thread_index, message_color=LOG_COLORS.GREEN)
                 succeed_playbooks.append(playbook_id)
 
             elif status == PB_Status.NOT_SUPPORTED_VERSION:
@@ -366,14 +386,17 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, faile
 
 
 # run the test using a real instance, record traffic.
-def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks, integrations,
-                   playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                   server_url, build_name, prints_manager, thread_index=0):
+def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass,
+                   proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+                   test_options, slack, circle_ci, build_number, server_url, build_name, prints_manager,
+                   thread_index=0):
     proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True, thread_index=thread_index, prints_manager=prints_manager)
-    succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations,
-                             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                             server_url, build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
+    succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass,
+                             failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                             test_message, test_options, slack, circle_ci, build_number, server_url,
+                             build_name, prints_manager, thread_index=thread_index,
+                             is_mock_run=True)
     proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
         proxy.successful_rerecord_count += 1
@@ -386,9 +409,10 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
     return succeed
 
 
-def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks, integrations,
-             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
-             build_name, start_message, prints_manager, thread_index=0):
+def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass, proxy,
+             failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
+             slack, circle_ci, build_number, server_url, build_name, start_message, prints_manager,
+             thread_index=0):
     rerecord = False
 
     if proxy.has_mock_file(playbook_id):
@@ -396,7 +420,8 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
         prints_manager.add_print_job(start_mock_message, print, thread_index, include_timestamp=True)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, _ = check_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+        status, _ = check_integration(c, server_url, demisto_user, demisto_pass, integrations,
+                                      playbook_id, prints_manager, test_options,
                                       is_mock_run=True, thread_index=thread_index)
         # use results
         proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
@@ -435,8 +460,9 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
     # Mock recording - no mock file or playback failure.
     c = demisto_client.configure(base_url=c.api_client.configuration.host,
                                  api_key=c.api_client.configuration.api_key, verify_ssl=False)
-    succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks,
-                             integrations, playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
+    succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user,
+                             demisto_pass, proxy, failed_playbooks, integrations, playbook_id,
+                             succeed_playbooks, test_message, test_options, slack, circle_ci,
                              build_number, server_url, build_name, prints_manager, thread_index=thread_index)
 
     if rerecord and succeed:
@@ -451,18 +477,22 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
     start_message = f'------ Test {test_message} start ------'
     client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
 
-    if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
-        prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
-        run_test_logic(conf_json_test_details, tests_queue, tests_settings, client, failed_playbooks, integrations,
-                       playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-                       server_url, build_name, prints_manager, thread_index=thread_index)
+    if not is_ami or (not integrations or has_unmockable_integration(integrations,
+                                                                     unmockable_integrations)):
+        prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index,
+                                     include_timestamp=True)
+        run_test_logic(conf_json_test_details, tests_queue, tests_settings, client, demisto_user,
+                       demisto_pass, failed_playbooks, integrations, playbook_id,
+                       succeed_playbooks, test_message, test_options, slack, circle_ci,
+                       build_number, server_url, build_name, prints_manager)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index,
                                      include_timestamp=True)
 
         return
-    mock_run(conf_json_test_details, tests_queue, tests_settings, client, proxy, failed_playbooks, integrations,
-             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-             server_url, build_name, start_message, prints_manager, thread_index=thread_index)
+    mock_run(conf_json_test_details, tests_queue, tests_settings, client, demisto_user, demisto_pass,
+             proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+             test_options, slack, circle_ci, build_number, server_url, build_name, start_message,
+             prints_manager, thread_index=thread_index)
 
 
 def http_request(url, params_dict=None):
@@ -749,18 +779,18 @@ def get_server_numeric_version(ami_env, is_local_run=False):
     """
     default_version = '99.99.98'
     if is_local_run:
-        print_color(f'Local run, assuming server version is {default_version}', LOG_COLORS.GREEN)
+        logging.info(f'Local run, assuming server version is {default_version}')
         return default_version
 
     env_json = load_env_results_json()
     if not env_json:
-        print_warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
+        logging.warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
         return default_version
 
     instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
     if len(instances_ami_names) != 1:
-        print_warning(f'Did not get one AMI Name, got {instances_ami_names}.'
-                      f' Assuming server version is {default_version}')
+        logging.warning(f'Did not get one AMI Name, got {instances_ami_names}.'
+                        f' Assuming server version is {default_version}')
         return default_version
 
     instances_ami_name = list(instances_ami_names)[0]
@@ -770,7 +800,7 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 
 def extract_server_numeric_version(instances_ami_name, default_version):
     # regex doesn't catch Server Master execution
-    extracted_version = re.findall(r'Demisto-(?:Circle-CI|Marketplace)-Content-[A-Za-z]*[-_](\d[._]\d)-[\d]{5}',
+    extracted_version = re.findall(r'Demisto-(?:Circle-CI|Marketplace)-Content-AMI-[A-Za-z]*[-_](\d[._]\d)-[\d]{5}',
                                    instances_ami_name)
     extracted_version = [match.replace('_', '.') for match in extracted_version]
 
@@ -778,7 +808,7 @@ def extract_server_numeric_version(instances_ami_name, default_version):
         server_numeric_version = extracted_version[0]
     else:
         if 'Master' in instances_ami_name:
-            print_color('Server version: Master', LOG_COLORS.GREEN)
+            logging.info('Server version: Master')
             return default_version
         else:
             server_numeric_version = default_version
@@ -787,7 +817,7 @@ def extract_server_numeric_version(instances_ami_name, default_version):
     if server_numeric_version.count('.') == 1:
         server_numeric_version += ".0"
 
-    print_color(f'Server version: {server_numeric_version}', LOG_COLORS.GREEN)
+    logging.info(f'Server version: {server_numeric_version}')
     return server_numeric_version
 
 
@@ -1486,6 +1516,7 @@ def lock_expired(lock_file: storage.Blob, lock_timeout: str) -> bool:
 
 
 def main():
+    install_simple_logging()
     print("Time is: {}\n\n\n".format(datetime.datetime.now()))
     tests_settings = options_handler()
 

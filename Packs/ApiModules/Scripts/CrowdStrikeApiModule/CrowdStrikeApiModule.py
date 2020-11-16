@@ -13,8 +13,9 @@ class CrowdStrikeClient(BaseClient):
         credentials = params.get('credentials', {})
         self._client_id = credentials.get('identifier')
         self._client_secret = credentials.get('password')
-        super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
-                         ok_codes=tuple(), proxy=params.get('proxy', False))  # type: ignore[misc]
+        super().__init__(base_url=demisto.params().get('server_url', 'https://api.crowdstrike.com/'),
+                         verify=not params.get('insecure', False), ok_codes=tuple(),
+                         proxy=params.get('proxy', False))  # type: ignore[misc]
         self._token = self._generate_token()
         self._headers = {'Authorization': 'bearer ' + self._token}
 

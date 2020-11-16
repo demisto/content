@@ -40,24 +40,22 @@ def test_ip(requests_mock):
         'threshold': 10,
     }
 
-    response = ip_reputation_command(client, args, 10)
+    response = ip_reputation_command(client, args, 10)[0]
 
     assert response.outputs_prefix == 'CyberTotal.IP'
     assert response.outputs_key_field == 'task_id'
-    assert response.outputs[0]['resource'] == ip_to_check
-    assert response.outputs[0]['severity'] == 9
-    assert response.outputs[0]['confidence'] == 3
-    assert response.outputs[0]['threat'] == "High"
-    assert response.outputs[0]['permalink'] == "https://test.com/app/intelligence/2e11509eb3034aabaf3c006425050247"
-    assert response.outputs[0]['detection_ratio'] == "1/2"
+    assert response.outputs['resource'] == ip_to_check
+    assert response.outputs['severity'] == 9
+    assert response.outputs['confidence'] == 3
+    assert response.outputs['threat'] == "High"
+    assert response.outputs['permalink'] == "https://test.com/app/intelligence/2e11509eb3034aabaf3c006425050247"
+    assert response.outputs['detection_ratio'] == "1/2"
 
     # This command also returns Common.IP data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.IP)
-    assert response.indicators[0].ip == ip_to_check
-    assert type(response.indicators[0].detection_engines) == int
-    assert type(response.indicators[0].positive_engines) == int
+    assert isinstance(response.indicator, Common.IP)
+    assert response.indicator.ip == ip_to_check
+    assert type(response.indicator.detection_engines) == int
+    assert type(response.indicator.positive_engines) == int
 
 
 def test_url(requests_mock):
@@ -87,24 +85,22 @@ def test_url(requests_mock):
         'threshold': 10,
     }
 
-    response = url_reputation_command(client, args, 10)
+    response = url_reputation_command(client, args, 10)[0]
 
     assert response.outputs_prefix == 'CyberTotal.URL'
     assert response.outputs_key_field == 'task_id'
-    assert response.outputs[0]['resource'] == url_to_check
-    assert response.outputs[0]['severity'] == 9
-    assert response.outputs[0]['confidence'] == 3
-    assert response.outputs[0]['threat'] == "High"
-    assert response.outputs[0]['permalink'] == "https://test.com/app/intelligence/2e11509eb3034aabaf3c006425050247"
-    assert response.outputs[0]['detection_ratio'] == "1/2"
+    assert response.outputs['resource'] == url_to_check
+    assert response.outputs['severity'] == 9
+    assert response.outputs['confidence'] == 3
+    assert response.outputs['threat'] == "High"
+    assert response.outputs['permalink'] == "https://test.com/app/intelligence/2e11509eb3034aabaf3c006425050247"
+    assert response.outputs['detection_ratio'] == "1/2"
 
     # This command also returns Common.URL data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.URL)
-    assert response.indicators[0].url == url_to_check
-    assert type(response.indicators[0].detection_engines) == int
-    assert type(response.indicators[0].positive_detections) == int
+    assert isinstance(response.indicator, Common.URL)
+    assert response.indicator.url == url_to_check
+    assert type(response.indicator.detection_engines) == int
+    assert type(response.indicator.positive_detections) == int
 
 
 def test_domain(requests_mock):
@@ -134,24 +130,22 @@ def test_domain(requests_mock):
         'threshold': 10,
     }
 
-    response = domain_reputation_command(client, args, 10)
+    response = domain_reputation_command(client, args, 10)[0]
 
     assert response.outputs_prefix == 'CyberTotal.Domain'
     assert response.outputs_key_field == 'task_id'
-    assert response.outputs[0]['resource'] == domain_to_check
-    assert response.outputs[0]['severity'] == 9
-    assert response.outputs[0]['confidence'] == 3
-    assert response.outputs[0]['threat'] == "High"
-    assert response.outputs[0]['permalink'] == "https://test.com/app/intelligence/2e11509eb3034aabaf3c006425050247"
-    assert response.outputs[0]['detection_ratio'] == "1/2"
+    assert response.outputs['resource'] == domain_to_check
+    assert response.outputs['severity'] == 9
+    assert response.outputs['confidence'] == 3
+    assert response.outputs['threat'] == "High"
+    assert response.outputs['permalink'] == "https://test.com/app/intelligence/2e11509eb3034aabaf3c006425050247"
+    assert response.outputs['detection_ratio'] == "1/2"
 
     # This command also returns Common.Domain data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.Domain)
-    assert response.indicators[0].domain == domain_to_check
-    assert type(response.indicators[0].detection_engines) == int
-    assert type(response.indicators[0].positive_detections) == int
+    assert isinstance(response.indicator, Common.Domain)
+    assert response.indicator.domain == domain_to_check
+    assert type(response.indicator.detection_engines) == int
+    assert type(response.indicator.positive_detections) == int
 
 
 def test_file(requests_mock):
@@ -181,22 +175,20 @@ def test_file(requests_mock):
         'threshold': 10,
     }
 
-    response = file_reputation_command(client, args, 10)
+    response = file_reputation_command(client, args, 10)[0]
 
     assert response.outputs_prefix == 'CyberTotal.File'
     assert response.outputs_key_field == 'task_id'
-    assert response.outputs[0]['resource'] == file_to_check
-    assert response.outputs[0]['severity'] == 9
-    assert response.outputs[0]['confidence'] == 3
-    assert response.outputs[0]['threat'] == "High"
-    assert response.outputs[0]['permalink'] == "https://test.com/app/intelligence/2e11509eb3034aabaf3c006425050247"
-    assert response.outputs[0]['detection_ratio'] == "1/2"
+    assert response.outputs['resource'] == file_to_check
+    assert response.outputs['severity'] == 9
+    assert response.outputs['confidence'] == 3
+    assert response.outputs['threat'] == "High"
+    assert response.outputs['permalink'] == "https://test.com/app/intelligence/2e11509eb3034aabaf3c006425050247"
+    assert response.outputs['detection_ratio'] == "1/2"
 
     # This command also returns Common.File data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.File)
-    assert response.indicators[0].md5 == file_to_check
+    assert isinstance(response.indicator, Common.File)
+    assert response.indicator.md5 == file_to_check
 
 
 def test_ip_whois(requests_mock):
