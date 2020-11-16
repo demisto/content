@@ -12,6 +12,7 @@ from mitmproxy.addons.serverplayback import ServerPlayback
 from time import ctime
 from dateparser import parse
 
+
 def record_concurrently(replaying: bool = False):
     '''
     A decorator to return a decorator that just executes the function it decorates normally if 'replaying' is true,
@@ -351,14 +352,15 @@ class TimestampReplacer:
                                         digits = str(val).split('.')
                                         for_eval = digits[0]
                                     if len(str(for_eval)) < 13:
-                                        parse(ctime(val))
+                                        parsed_date = parse(ctime(val))
                                     else:
-                                        parse(ctime(val / 1000.0))
+                                        parsed_date = parse(ctime(val / 1000.0))
                                 else:
-                                    parse(val)
-                                # if it continues to the next line that means it successfully parsed the object
-                                # and it's some sort of time-related object
-                                bad_key_paths.append(sub_key_path)
+                                    parsed_date = parse(val)
+                                # if parsed_date is not None then successfully interpreted value as some sort of
+                                # time related thingieding
+                                if parsed_date:
+                                    bad_key_paths.append(sub_key_path)
                         except (ValueError, OverflowError):
                             pass
             elif isinstance(obj, list):
@@ -377,14 +379,15 @@ class TimestampReplacer:
                                         digits = str(val).split('.')
                                         for_eval = digits[0]
                                     if len(str(for_eval)) < 13:
-                                        parse(ctime(val))
+                                        parsed_date = parse(ctime(val))
                                     else:
-                                        parse(ctime(val / 1000.0))
+                                        parsed_date = parse(ctime(val / 1000.0))
                                 else:
-                                    parse(val)
-                                # if it continues to the next line that means it successfully parsed the object
-                                # and it's some sort of time-related object
-                                bad_key_paths.append(sub_key_path)
+                                    parsed_date = parse(val)
+                                # if parsed_date is not None then successfully interpreted value as some sort of
+                                # time related thingieding
+                                if parsed_date:
+                                    bad_key_paths.append(sub_key_path)
                         except (ValueError, OverflowError):
                             pass
             return bad_key_paths
