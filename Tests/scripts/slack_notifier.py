@@ -21,7 +21,7 @@ BUCKET_UPLOAD_TYPE = 'bucket_upload_flow'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
 BUCKET_UPLOAD_BUILD_TITLE = 'Upload Packs To Marketplace Storage'
-PACKS_RESULTS_FILE = "failed_packs_prepare_content.json"
+PACKS_RESULTS_FILE = "packs_results.json"
 
 
 def get_faild_steps_list():
