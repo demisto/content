@@ -3,12 +3,12 @@ commonfields:
   id: Palo Alto Networks Enterprise DLP
   version: -1
 configuration:
-- additionalinfo: Access token generated from Enterprise DLP UI
+- additionalinfo: Access token generated in the Enterprise DLP UI
   display: Access Token
   name: access_token
   required: true
   type: 4
-- additionalinfo: Refresh token generated from Enterprise DLP UI
+- additionalinfo: Refresh token generated in the Enterprise DLP UI
   display: Refresh Token
   name: refresh_token
   required: true
@@ -21,7 +21,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Palo Alto Networks Enterprise DLP discovers and protect company data
+description: Palo Alto Networks Enterprise DLP discovers and protects company data
   across every data channel and repository. Integrated Enterprise DLP enables data
   protection and compliance everywhere without complexity.
 display: Palo Alto Networks Enterprise DLP
@@ -32,28 +32,28 @@ script:
     arguments:
     - name: report_id
       required: true
-      description: DLP Report ID
+      description: DLP report ID.
     - name: fetch_snippets
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Provide snippets with the reports
+      description: If "true", will include snippets with the reports. Default is "false". 
       defaultValue: "false"
     outputs:
     - contextPath: DLP.Report.DataProfile
-      description: Data Profile Name
+      description: Data profile name.
     - contextPath: DLP.Report.DataPatternMatches.DataPatternName
-      description: DLP Data Pattern Name
+      description: DLP data pattern name.
     - contextPath: DLP.Report.DataPatternMatches.Detections
-      description: Snippets of DLP Detection
+      description: Snippets of DLP detections.
     - contextPath: DLP.Report.DataPatternMatches.HighConfidenceFrequency
-      description: Number of Occurrences at High Confidence
+      description: Number of occurrences at High confidence.
     - contextPath: DLP.Report.DataPatternMatches.MediumConfidenceFrequency
-      description: Number of Occurrences at Low Confidence
+      description: Number of occurrences at Low confidence.
     - contextPath: DLP.Report.DataPatternMatches.LowConfidenceFrequency
-      description: Number of Occurrences at Medium Confidence
-    description: Fetches DLP report associated with a Report ID
+      description: Number of occurrences at Medium confidence.
+    description: Fetches DLP reports associated with a report ID.
   dockerimage: demisto/python3:3.8.6.13358
   isFetchSamples: true
   longRunning: false
