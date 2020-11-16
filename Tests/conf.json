@@ -735,11 +735,18 @@
             "playbookID": "WordTokenizeTest",
             "toversion": "4.5.9"
         },
-        {
+                {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorrelations",
-            "timeout": 1000,
-            "fromversion": "5.0.0"
+            "timeout": 2000,
+            "fromversion": "5.0.0",
+            "toversion": "5.9.9"
+        },
+        {
+            "integrations": "QRadar_v2",
+            "playbookID": "test playbook - QRadarCorrelations For V2",
+            "timeout": 2000,
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Awake Security",
@@ -2678,10 +2685,10 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "QRadar",
+            "integrations": "QRadar_v2",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 600,
-            "fromversion": "5.0.0"
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "SetAndHandleEmpty test",
@@ -2992,8 +2999,8 @@
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
         },
-        {
-            "integrations": "Deep Instinct",
+		{
+			"integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
         },
@@ -3136,6 +3143,13 @@
             "integrations": "Whois",
             "fromversion": "4.5.0"
         },
+		{
+            "integrations": "F5 ASM",
+            "playbookID": "playbook-F5_ASM-Test",
+            "timeout": 600,
+            "fromversion": "5.0.0",
+            "nightly": true
+		},
         {
             "playbookID": "Hatching Triage - Detonate File",
             "integrations": "Hatching Triage",
@@ -3158,6 +3172,11 @@
         {
             "integrations": "Analyst1",
             "playbookID": "Analyst1 Integration Demonstration - Test"
+        },
+        {
+            "integrations": "Generic Webhook",
+            "playbookID": "Generic Webhook - Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cryptocurrency",
@@ -3220,7 +3239,6 @@
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
         "Luminate-TestPlaybook": "Issue 27016",
-        "AutoFocus V2 test": "Issue 26464",
         "Fidelis Elevate Network": "Issue 26453",
         "SepioPrimeAPI-Test": "Issue 27240",
         "Cortex XDR - IOC - Test": "Issue 25598",
@@ -3392,6 +3410,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Generic Webhook": "Does not send HTTP traffic",
         "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
         "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
