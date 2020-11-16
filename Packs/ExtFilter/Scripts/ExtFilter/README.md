@@ -11,6 +11,20 @@ You can make filters with comlex and combination conditions for the context data
 
 
 ---
+## Inputs
+
+| **Argument Name** | **Description** |
+| --- | --- |
+| value | The value to filter/transform. |
+| operator | The operation name to filter/transform. |
+| filter | The filter. |
+| ctx_demisto | Enable to access the context data |
+| ctx_inputs | Enable to access the input parameters to sub playbooks and use `${inputs.}` |
+| ctx_lists | Enable to access the `list` data and use `${list.}` |
+| ctx_incident | Enable to access the incident context and use `${incident.}` |
+
+
+---
 ## Filter Syntax for `expressions`, `conditions` and `transformers`
 
     primitive-expression ::= <operator> : <value>
@@ -359,6 +373,11 @@ Available operators
 * `is updated with`
 * `appends`
 * `if-then-else`
+* `switch-case`
+* `collects values`
+* `collects keys`
+* `flattens with values`
+* `flattens with keys`
 * `abort`
 
 
@@ -7784,9 +7803,9 @@ If `if` condition is not given or returns any value, `then` operation is execute
 
 | *Parameter* | *Data Type* | *Description* |
 | - | - | - |
-| if | conditions | (Optional) `if` condition |
-| then | conditions | Conditions to execute if `if` condition is not given or returns any value. |
-| else | conditions | (Optional) Conditions to execute if `if` returns `null`. |
+| if | expressions | (Optional) `if` condition |
+| then | expressions | Conditions to execute if `if` condition is not given or returns any value. |
+| else | expressions | (Optional) Conditions to execute if `if` returns `null`. |
 
 
 #### Example 1
@@ -7912,6 +7931,420 @@ If `if` condition is not given or returns any value, `then` operation is execute
       10,
       10
     ]
+
+</details>
+
+
+----
+### Operator: `switch-case`
+<details><summary>
+Performs expressions for the label whose `expressions` matches the value.
+If any of `expressions` doesn't match the value, `default` operation is executed.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+| switch | dict[&lt;label&gt;, expressions] | (Optional) Patterns of conditions. |
+| default | expressions | (Optional) Conditions to execute if it doesn't match all the `switch` conditions. |
+| &lt;label&gt;| expressions | (Optional) Conditions to execute if it matches the conditions given in the label. |
+
+
+#### Example 1
+##### Input
+    [
+      {
+        "IP": "1.1.1.1",
+        "Score": 80
+      },
+      {
+        "IP": "2.2.2.2",
+        "Score": 50
+      },
+      {
+        "IP": "3.3.3.3",
+        "Score": 20
+      }
+    ]
+
+##### Filter
+> **Operator**: switch-case
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "switch": {
+        "#low": {
+          "is filtered with": {
+            "Score": {
+              "<=": 30
+            }
+          }
+        },
+        "#high": {
+          "is filtered with": {
+            "Score": {
+              ">=": 70
+            }
+          }
+        }
+      },
+      "#low": {
+        "is updated with": {
+          "Risk": "low"
+        }
+      },
+      "#high": {
+        "is updated with": {
+          "Risk": "high"
+        }
+      },
+      "default": {
+        "is updated with": {
+          "Risk": "middle"
+        }
+      }
+    }
+
+##### Output
+    [
+      {
+        "IP": "1.1.1.1",
+        "Score": 80,
+        "Risk": "high"
+      },
+      {
+        "IP": "2.2.2.2",
+        "Score": 50,
+        "Risk": "middle"
+      },
+      {
+        "IP": "3.3.3.3",
+        "Score": 20,
+        "Risk": "low"
+      }
+    ]
+
+
+#### Example 2
+##### Input
+    [
+      {
+        "IP": "1.1.1.1",
+        "Score": 80
+      },
+      {
+        "IP": "2.2.2.2",
+        "Score": 50
+      },
+      {
+        "IP": "3.3.3.3",
+        "Score": 20
+      }
+    ]
+
+##### Filter
+> **Operator**: switch-case
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "switch": {
+        "#low": {
+          "is filtered with": {
+            "Score": {
+              "<=": 30
+            }
+          }
+        },
+        "#high": {
+          "is filtered with": {
+            "Score": {
+              ">=": 70
+            }
+          }
+        }
+      },
+      "#low": {
+        "is updated with": {
+          "Risk": "low"
+        }
+      },
+      "#high": {
+        "is updated with": {
+          "Risk": "high"
+        }
+      }
+    }
+
+##### Output
+    [
+      {
+        "IP": "1.1.1.1",
+        "Score": 80,
+        "Risk": "high"
+      },
+      {
+        "IP": "2.2.2.2",
+        "Score": 50
+      },
+      {
+        "IP": "3.3.3.3",
+        "Score": 20,
+        "Risk": "low"
+      }
+    ]
+
+
+</details>
+
+
+----
+### Operator: `collects values`
+<details><summary>
+Returns a set of &lt;value&gt; of each element. A value is &lt;value&gt; for `dict`, otherwise element itself.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    {
+      "JDOE": {
+        "IP": [
+          "1.1.1.1",
+          "1.1.1.2"
+        ],
+        "Score": 30
+      },
+      "TYAMADA": {
+        "IP": "2.2.2.2",
+        "Score": 10
+      },
+      "MBLACK": {
+        "IP": "3.3.3.3",
+        "Score": 40
+      }
+    }
+
+##### Filter
+> **Operator**: collects values
+
+> **Path**: 
+
+> **Filter**: {}
+
+##### Output
+    [
+      {
+        "IP": [
+          "1.1.1.1",
+          "1.1.1.2"
+        ],
+        "Score": 30
+      },
+      {
+        "IP": "2.2.2.2",
+        "Score": 10
+      },
+      {
+        "IP": "3.3.3.3",
+        "Score": 40
+      }
+    ]
+
+
+#### Example 2
+##### Input
+    [
+      "1.1.1.1",
+      "2.2.2.2",
+      "3.3.3.3"
+    ]
+
+##### Filter
+> **Operator**: collects values
+
+> **Path**: 
+
+> **Filter**: {}
+
+##### Output
+    [
+      "1.1.1.1",
+      "2.2.2.2",
+      "3.3.3.3"
+    ]
+
+
+</details>
+
+
+----
+### Operator: `collects keys`
+<details><summary>
+Returns a set of &lt;key&gt; of each `dict` element.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    {
+      "JDOE": {
+        "IP": [
+          "1.1.1.1",
+          "1.1.1.2"
+        ],
+        "Score": 30
+      },
+      "TYAMADA": {
+        "IP": "2.2.2.2",
+        "Score": 10
+      },
+      "MBLACK": {
+        "IP": "3.3.3.3",
+        "Score": 40
+      }
+    }
+
+##### Filter
+> **Operator**: collects keys
+
+> **Path**: 
+
+> **Filter**: {}
+
+##### Output
+    [
+      "JDOE",
+      "TYAMADA",
+      "MBLACK"
+    ]
+
+
+</details>
+
+
+----
+### Operator: `flattens with values`
+<details><summary>
+Returns a set of &lt;value&gt; of all the elements in the tree.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    {
+      "JDOE": {
+        "IP": [
+          "1.1.1.1",
+          "1.1.1.2"
+        ],
+        "Score": 30
+      },
+      "TYAMADA": {
+        "IP": "2.2.2.2",
+        "Score": 10
+      },
+      "MBLACK": {
+        "IP": "3.3.3.3",
+        "Score": 40
+      }
+    }
+
+##### Filter
+> **Operator**: flattens with values
+
+> **Path**: 
+
+> **Filter**: {}
+
+##### Output
+    [
+      "1.1.1.1",
+      "1.1.1.2",
+      30,
+      "2.2.2.2",
+      10,
+      "3.3.3.3",
+      40
+    ]
+
+
+</details>
+
+
+----
+### Operator: `flattens with keys`
+<details><summary>
+Returns a set of &lt;key&gt; of all the `dict` elements in the tree.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    {
+      "JDOE": {
+        "IP": [
+          "1.1.1.1",
+          "1.1.1.2"
+        ],
+        "Score": 30
+      },
+      "TYAMADA": {
+        "IP": "2.2.2.2",
+        "Score": 10
+      },
+      "MBLACK": {
+        "IP": "3.3.3.3",
+        "Score": 40
+      }
+    }
+
+##### Filter
+> **Operator**: flattens with keys
+
+> **Path**: 
+
+> **Filter**: {}
+
+##### Output
+    [
+      "JDOE",
+      "IP",
+      "Score",
+      "TYAMADA",
+      "IP",
+      "Score",
+      "MBLACK",
+      "IP",
+      "Score"
+    ]
+
 
 </details>
 

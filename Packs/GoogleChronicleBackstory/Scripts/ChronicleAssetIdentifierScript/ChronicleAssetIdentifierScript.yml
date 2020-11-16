@@ -1,0 +1,26 @@
+commonfields:
+  id: ChronicleAssetIdentifierScript
+  version: -1
+name: ChronicleAssetIdentifierScript
+script: ''
+type: python
+tags: []
+comment: Collect all asset identifiers - Hostname, IP address and MAC address in the
+  context.
+enabled: true
+args:
+- name: artifact_identifiers
+  required: true
+  description: Hostname, IP address or MAC address that can identify the asset.
+outputs:
+- contextPath: AssetIdentifiers
+  description: Collects all the asset identifier.
+  type: Unknown
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
