@@ -98,7 +98,9 @@ def test_prepare_fetch_incidents_query():
     from CortexDataLake import prepare_fetch_incidents_query
     timestamp = '2020-02-20T16:49:05'
     firewall_subtype = ['attack', 'url']
+    fetch_fields = "*"
     firewall_severity = ['Critical', 'High']
+    table_name = "firewall.threat"
     fetch_limit = 10
     expected_response = 'SELECT * FROM `firewall.threat` WHERE ' \
                         'time_generated Between TIMESTAMP("2020-02-20T16:49:05") ' \
@@ -109,8 +111,20 @@ def test_prepare_fetch_incidents_query():
                         'LIMIT 10'
     assert expected_response == prepare_fetch_incidents_query(timestamp,
                                                               firewall_severity,
+                                                              table_name,
                                                               firewall_subtype,
+                                                              fetch_fields,
                                                               fetch_limit)
+
+
+MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [(1582017903000000, '2020-02-18T09:25:03.001Z'),
+                                                               (1582027208002000, '2020-02-18T12:00:08.003Z')]
+
+
+@pytest.mark.parametrize('epoch_time, expected_response', MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES)
+def test_epoch_to_timestamp_and_add_milli(epoch_time, expected_response):
+    from CortexDataLake import epoch_to_timestamp_and_add_milli
+    assert epoch_to_timestamp_and_add_milli(epoch_time) == expected_response
 
 
 def test_get_table_name():

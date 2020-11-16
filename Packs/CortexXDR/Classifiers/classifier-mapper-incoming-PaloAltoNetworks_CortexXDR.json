@@ -7,7 +7,7 @@
 	"defaultIncidentType": "",
 	"mapping": {
 		"Cortex XDR Incident": {
-			"dontMapEventToLabels": false,
+			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"XDR Alert Count": {
 					"complex": null,

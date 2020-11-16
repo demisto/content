@@ -1,12 +1,12 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
 import traceback
 from typing import List, Dict
 from operator import itemgetter
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
-
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 
 
 def get_investigations(raw_output, investigations):
@@ -22,22 +22,33 @@ def get_investigations(raw_output, investigations):
                 investigations[entry].update({"Date": db.get('dbName')})
 
 
-def parse_investigations_to_table(investigations):
+def parse_investigations_to_table(investigations, is_table_result):
     data: List = []
     widget_table = {"total": len(investigations)}
+    urls = demisto.demistoUrls()
+    server_url = urls.get('server', '')
     for investigation in investigations.keys():
-        size = investigations[investigation].get('leafSize').split(' ')
-        if float(size[0]) >= 1.0 and size[1] == 'MB':
-            db_name = investigations[investigation].get('Date')
+        full_size = investigations[investigation].get('leafSize').split(' ')
+        db_name = investigations[investigation].get('Date')
+        size = float(full_size[0])
+        if size >= 1.0 and full_size[1] == 'MB':
+            if db_name.isdigit():
+                inv_id = investigation.split('-')[1]
+                inv_link = f"[{inv_id}]({os.path.join(server_url, '#', 'incident', inv_id)})"
+                date = db_name[:2] + "-" + db_name[2:]
+            else:
+                inv_id = "-".join(investigation.split('-')[1:])
+                inv_link = f"[playground]({os.path.join(server_url, '#', 'WarRoom', 'playground')})"
+                date = ""
+            inv_link = inv_id if is_table_result else inv_link
             data.append({
-                "IncidentID": investigation.split('-')[1],
-                "Size": investigations[investigation].get('leafSize'),
+                "IncidentID": inv_link,
+                "Size(MB)": int(size) if size == int(size) else size,
                 "AmountOfEntries": investigations[investigation].get('keyN'),
-                "Date": db_name[:2] + "-" + db_name[2:],
-                "SizeNumber": float(size[0])
+                "Date": date
             })
 
-    widget_table['data'] = sorted(data, key=itemgetter('SizeNumber'), reverse=True)  # type: ignore
+    widget_table['data'] = sorted(data, key=itemgetter('Size(MB)'), reverse=True)  # type: ignore
 
     return widget_table
 
@@ -48,13 +59,14 @@ def get_month_db_from_date(date):
     return month + year
 
 
-def get_time_object(timestring):
+def get_time_object(timestring, empty_res_as_now=True):
+    empty_res = datetime.now() if empty_res_as_now else None
     if timestring is None or timestring == '':
-        return datetime.now()
+        return empty_res
 
     date_object = parse(timestring)
     if date_object.year == 1:
-        return datetime.now()
+        return empty_res
     else:
         return date_object
 
@@ -75,10 +87,22 @@ def get_month_database_names():
 def main():
     try:
         investigations: Dict = {}
-        for db_name in get_month_database_names():
-            raw_output = demisto.executeCommand('getDBStatistics', args={"filter": db_name})
+        args: Dict = demisto.args()
+        from_date = args.get('from')
+        is_table_result = args.get('table_result') == 'true'
+        if not get_time_object(from_date, empty_res_as_now=False):
+            raw_output = demisto.executeCommand('getDBStatistics', args={})
             get_investigations(raw_output[0].get('Contents', {}), investigations)
-        demisto.results(parse_investigations_to_table(investigations))
+        else:
+            for db_name in get_month_database_names():
+                raw_output = demisto.executeCommand('getDBStatistics', args={"filter": db_name})
+                get_investigations(raw_output[0].get('Contents', {}), investigations)
+        result = parse_investigations_to_table(investigations, is_table_result)
+        if not is_table_result:
+            # change result to MD
+            result = tableToMarkdown('Largest Incidents by Storage Size', result.get("data"),
+                                     headers=["IncidentID", "Size(MB)", "AmountOfEntries", "Date"])
+        demisto.results(result)
     except Exception:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GetLargestInvestigations. Error: {traceback.format_exc()}')

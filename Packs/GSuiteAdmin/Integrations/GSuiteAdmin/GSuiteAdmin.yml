@@ -1,0 +1,1854 @@
+category: IT Services
+commonfields:
+  id: GSuiteAdmin
+  version: -1
+configuration:
+- display: User's Service Account JSON
+  name: user_service_account_json
+  required: true
+  type: 4
+- display: Admin Email
+  name: admin_email
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: G Suite or Google Workspace Admin is an integration to perform an action on IT infrastructure, create users,
+  update settings, and more administrative tasks.
+display: G Suite Admin
+name: GSuiteAdmin
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The unique ID of the customer's G Suite account.
+      isArray: false
+      name: customer_id
+      required: true
+      secret: false
+    - default: false
+      description: The unique ID used to identify the mobile device.
+      isArray: false
+      name: resource_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The action to be performed on the device.
+
+        Available Options:
+        admin_account_wipe - Remotely wipes only G Suite data from the device.
+
+        admin_remote_wipe - Remotely wipes all data on the device.
+
+        approve - Approves the device.
+
+        block - Blocks access to G Suite data on the device.
+
+        cancel_remote_wipe_then_activate - Cancels a remote wipe of the device and then reactivates it.
+
+        cancel_remote_wipe_then_block - Cancels a remote wipe of the device and then blocks it.
+      isArray: false
+      name: action
+      predefined:
+      - admin_account_wipe
+      - admin_remote_wipe
+      - approve
+      - block
+      - cancel_remote_wipe_then_activate
+      - cancel_remote_wipe_then_block
+      required: true
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Takes an action that affects a mobile device. For example, remotely
+      wiping a device.
+    execution: false
+    name: gsuite-mobile-update
+  - arguments:
+    - default: false
+      description: The unique ID of the customer's G Suite account.
+      isArray: false
+      name: customer_id
+      required: true
+      secret: false
+    - default: false
+      description: The unique ID used to identify the mobile device.
+      isArray: false
+      name: resource_id
+      required: true
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Removes a mobile device. Note that this does not break the device's
+      sync, it simply removes it from the list of devices connected to the domain.
+      If the device still has a valid login/authentication, it will be added back
+      on it's next successful sync.
+    execution: false
+    name: gsuite-mobile-delete
+  - arguments:
+    - default: false
+      description: Identifies the user in the API request. The value can be the user's
+        primary email address, alias email address, or unique user ID.
+      isArray: false
+      name: user_key
+      required: true
+      secret: false
+    - default: false
+      description: The alias email address.
+      isArray: false
+      name: alias
+      required: true
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds an alias.
+    execution: false
+    name: gsuite-user-alias-add
+    outputs:
+    - contextPath: GSuite.UserAlias.kind
+      description: The type of the API resource.
+      type: String
+    - contextPath: GSuite.UserAlias.id
+      description: The unique ID for the user.
+      type: String
+    - contextPath: GSuite.UserAlias.etag
+      description: ETag of the resource.
+      type: String
+    - contextPath: GSuite.UserAlias.alias
+      description: The alias email address.
+      type: String
+  - arguments:
+    - default: false
+      description: The user's first name.
+      isArray: false
+      name: first_name
+      required: true
+      secret: false
+    - default: false
+      description: The user's last name.
+      isArray: false
+      name: last_name
+      required: true
+      secret: false
+    - default: false
+      description: Stores the password for the user account. A password can contain
+        any combination of ASCII characters. A minimum of 8 characters is required.
+        The maximum length is 100 characters. The password will be sent in MD5 hash
+        format.
+      isArray: false
+      name: password
+      required: true
+      secret: false
+    - default: false
+      description: The user's primary email address. The primary_email must be unique
+        and cannot be an alias of another user.
+      isArray: false
+      name: primary_email
+      required: true
+      secret: false
+    - default: false
+      description: User's Country.
+      isArray: false
+      name: country
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The address type.
+      isArray: false
+      name: address_type
+      predefined:
+      - home
+      - other
+      - work
+      required: false
+      secret: false
+    - default: false
+      description: The ZIP or postal code, if applicable.
+      isArray: false
+      name: postal_code
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set to true, If this is the user's primary address.
+      isArray: false
+      name: is_address_primary
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: For extended addresses, such as an address that includes a sub-region.
+      isArray: false
+      name: extended_address
+      required: false
+      secret: false
+    - default: false
+      description: The abbreviated province or state.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The street address, such as 1600 Amphitheatre Parkway. Whitespace
+        within the string is ignored; however, newlines are significant.
+      isArray: false
+      name: street_address
+      required: false
+      secret: false
+    - default: false
+      description: The user's secondary email address.
+      isArray: false
+      name: secondary_email_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the secondary email account.
+      isArray: false
+      name: secondary_email_type
+      predefined:
+      - home
+      - other
+      - work
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: User's gender.
+      isArray: false
+      name: gender
+      predefined:
+      - female
+      - male
+      - other
+      - unknown
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If true, the user's IP address is white listed.
+      isArray: false
+      name: is_ip_white_listed
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Content type of note, either plain text or HTML. If not provided,
+        considered as plain text.
+      isArray: false
+      name: notes_content_type
+      predefined:
+      - text_plain
+      - text_html
+      required: false
+      secret: false
+    - default: false
+      description: Contents of notes.
+      isArray: false
+      name: notes_value
+      required: false
+      secret: false
+    - default: false
+      description: A human-readable phone number. It may be in any telephone number
+        format.
+      isArray: false
+      name: phone_number
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of phone number.
+      isArray: false
+      name: phone_number_type
+      predefined:
+      - assistant
+      - callback
+      - car
+      - company_main
+      - grand_central
+      - home
+      - home_fax
+      - isdn
+      - main
+      - mobile
+      - other
+      - other_fax
+      - pager
+      - radio
+      - telex
+      - tty_tdd
+      - work
+      - work_fax
+      - work_mobile
+      - work_pager
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates if this is the user's primary phone number. A user may
+        only have one primary phone number.
+      isArray: false
+      name: is_phone_number_primary
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Recovery email of the user.
+      isArray: false
+      name: recovery_email
+      required: false
+      secret: false
+    - default: false
+      description: 'Recovery phone of the user. The phone number must be in the E.164
+        format, starting with the plus sign (+). Example: +16506661212.'
+      isArray: false
+      name: recovery_phone
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates if the user is suspended.
+      isArray: false
+      name: suspended
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a user.
+    execution: false
+    name: gsuite-user-create
+    outputs:
+    - contextPath: GSuite.User.id
+      description: The unique ID for the user.
+      type: String
+    - contextPath: GSuite.User.primaryEmail
+      description: The user's primary email address.
+      type: String
+    - contextPath: GSuite.User.firstName
+      description: The user's first name.
+      type: String
+    - contextPath: GSuite.User.lastName
+      description: The user's last name.
+      type: String
+    - contextPath: GSuite.User.customerId
+      description: The unique ID for the customer's G Suite account.
+      type: String
+    - contextPath: GSuite.User.gender
+      description: Gender.
+      type: String
+    - contextPath: GSuite.User.suspended
+      description: Indicates if the user is suspended.
+      type: Boolean
+    - contextPath: GSuite.User.notesValue
+      description: Contents of notes.
+      type: String
+    - contextPath: GSuite.User.notesContentType
+      description: Content type of notes.
+      type: String
+    - contextPath: GSuite.User.isAdmin
+      description: Indicates a user with super administrator privileges.
+      type: Boolean
+    - contextPath: GSuite.User.creationTime
+      description: The time the user's account was created.
+      type: Date
+    - contextPath: GSuite.User.phones.value
+      description: A human-readable phone number. It may be in any telephone number
+        format.
+      type: String
+    - contextPath: GSuite.User.phones.type
+      description: The type of phone number.
+      type: String
+    - contextPath: GSuite.User.phones.primary
+      description: Indicates if this is the user's primary phone number.
+      type: Boolean
+    - contextPath: GSuite.User.addresses.type
+      description: The address type.
+      type: String
+    - contextPath: GSuite.User.addresses.country
+      description: Country.
+      type: String
+    - contextPath: GSuite.User.addresses.postalCode
+      description: The ZIP or postal code.
+      type: String
+    - contextPath: GSuite.User.addresses.region
+      description: The abbreviated province or state.
+      type: String
+    - contextPath: GSuite.User.addresses.streetAddress
+      description: The street address.
+      type: String
+    - contextPath: GSuite.User.addresses.extendedAddress
+      description: For extended addresses, such as an  address that includes a sub-region.
+      type: String
+    - contextPath: GSuite.User.addresses.primary
+      description: If this is the user's primary address.
+      type: Boolean
+    - contextPath: GSuite.User.emails.address
+      description: The user's secondary email.
+      type: String
+    - contextPath: GSuite.User.emails.type
+      description: The secondary email type.
+      type: String
+    - contextPath: GSuite.User.ipWhitelisted
+      description: If true, the user's IP address is white listed.
+      type: Boolean
+    - contextPath: GSuite.User.recoveryEmail
+      description: Recovery email of the user.
+      type: String
+    - contextPath: GSuite.User.isDelegatedAdmin
+      description: Indicates if the user is a delegated administrator.
+      type: Boolean
+    - contextPath: GSuite.User.recoveryPhone
+      description: Recovery phone of the user.
+      type: String
+    - contextPath: GSuite.User.orgUnitPath
+      description: The full path of the parent organization associated with the user.
+        If the parent organization is the top-level, it is represented as a forward
+        slash (/).
+      type: String
+    - contextPath: GSuite.User.isMailboxSetup
+      description: Indicates if the user's Google mailbox is created.
+      type: Boolean
+    - contextPath: GSuite.User.kind
+      description: The type of the API resource.
+      type: Boolean
+    - contextPath: GSuite.User.etag
+      description: ETag of the resource.
+      type: Boolean
+    - contextPath: GSuite.User.hashFunction
+      description: Stores the hash format of the password property.
+      type: String
+  - arguments:
+    - default: false
+      description: The group's email address.
+      isArray: false
+      name: group_email
+      required: true
+      secret: false
+    - default: false
+      description: The group's display name.
+      isArray: false
+      name: group_name
+      required: false
+      secret: false
+    - default: false
+      description: An extended description to help users determine the purpose of
+        a group.
+      isArray: false
+      name: group_description
+      required: false
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a group with a group name and its description.
+    execution: false
+    name: gsuite-group-create
+    outputs:
+    - contextPath: GSuite.Group.kind
+      description: The type of the API resource.
+      type: String
+    - contextPath: GSuite.Group.id
+      description: The unique ID of a group.
+      type: String
+    - contextPath: GSuite.Group.etag
+      description: ETag of the resource.
+      type: String
+    - contextPath: GSuite.Group.email
+      description: The group's email address.
+      type: String
+    - contextPath: GSuite.Group.name
+      description: The group's display name.
+      type: String
+    - contextPath: GSuite.Group.directMembersCount
+      description: The number of users that are direct members of the group.
+      type: String
+    - contextPath: GSuite.Group.description
+      description: An extended description to help users determine the purpose of
+        a group.
+      type: String
+    - contextPath: GSuite.Group.adminCreated
+      description: Value is true if this group was created by an administrator rather
+        than a user.
+      type: Boolean
+    - contextPath: GSuite.Group.aliases
+      description: List of a group's alias email addresses.
+      type: String
+    - contextPath: GSuite.Group.nonEditableAliases
+      description: List of the group's non-editable alias email addresses that are
+        outside of the account's primary domain or subdomains.
+      type: String
+  - arguments:
+    - default: false
+      description: Immutable ID of the G Suite account.
+      isArray: false
+      name: customer_id
+      required: true
+      secret: false
+    - default: false
+      description: Immutable ID of a role. If included, it returns only role assignments
+        containing this role ID.
+      isArray: false
+      name: role_id
+      required: false
+      secret: false
+    - default: false
+      description: The user's primary email address, alias email address, or unique
+        user ID. If included in the request, returns role assignments only for this
+        user.
+      isArray: false
+      name: user_key
+      required: false
+      secret: false
+    - default: false
+      description: Token to specify the next page in the list.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of results to return. Acceptable values are 1 to
+        200, inclusive.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a paginated list of all role assignments.
+    execution: false
+    name: gsuite-role-assignment-list
+    outputs:
+    - contextPath: GSuite.RoleAssignment.kind
+      description: The type of the API resource.
+      type: String
+    - contextPath: GSuite.RoleAssignment.etag
+      description: ETag of the resource.
+      type: String
+    - contextPath: GSuite.RoleAssignment.roleAssignmentId
+      description: ID of this role assignment.
+      type: Number
+    - contextPath: GSuite.RoleAssignment.roleId
+      description: The ID of the role that is assigned.
+      type: Number
+    - contextPath: GSuite.RoleAssignment.assignedTo
+      description: The unique ID of the user this role is assigned to.
+      type: String
+    - contextPath: GSuite.RoleAssignment.scopeType
+      description: The scope in which this role is assigned.
+      type: String
+    - contextPath: GSuite.RoleAssignment.orgUnitId
+      description: If the role is restricted to an organization unit, this contains
+        the ID of the organization unit to which the exercise of this role is restricted
+        to.
+      type: String
+    - contextPath: GSuite.PageToken.RoleAssignment.nextPageToken
+      description: Token to specify the next page in the list.
+      type: String
+  - arguments:
+    - default: false
+      description: Immutable ID of the G Suite account.
+      isArray: false
+      name: customer_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the role to be assigned to the user.
+      isArray: false
+      name: role_id
+      required: true
+      secret: false
+    - default: false
+      description: The unique ID of the user this role is assigned to.
+      isArray: false
+      name: assigned_to
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The scope in which this role is assigned.
+      isArray: false
+      name: scope_type
+      predefined:
+      - CUSTOMER
+      - ORG_UNIT
+      required: true
+      secret: false
+    - default: false
+      description: If the role is restricted to an organization unit, this contains
+        the ID for the organization unit the exercise of this role is restricted to.
+      isArray: false
+      name: org_unit_id
+      required: false
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a role assignment.
+    execution: false
+    name: gsuite-role-assignment-create
+    outputs:
+    - contextPath: GSuite.RoleAssignment.kind
+      description: The type of the API resource.
+      type: String
+    - contextPath: GSuite.RoleAssignment.etag
+      description: ETag of the resource.
+      type: String
+    - contextPath: GSuite.RoleAssignment.roleAssignmentId
+      description: ID of this role assignment.
+      type: Number
+    - contextPath: GSuite.RoleAssignment.roleId
+      description: The ID of the role that is assigned.
+      type: Number
+    - contextPath: GSuite.RoleAssignment.assignedTo
+      description: The unique ID of the user this role is assigned to.
+      type: String
+    - contextPath: GSuite.RoleAssignment.scopeType
+      description: The scope in which this role is assigned.
+      type: String
+    - contextPath: GSuite.RoleAssignment.orgUnitId
+      description: If the role is restricted to an organization unit, this contains
+        the ID of the organization unit to which the exercise of this role is restricted
+        to.
+      type: String
+  - arguments:
+    - default: false
+      description: Immutable ID of the G Suite account.
+      isArray: false
+      name: customer_id
+      required: true
+      secret: false
+    - default: false
+      description: Name of the role.
+      isArray: false
+      name: role_name
+      required: true
+      secret: false
+    - default: false
+      description: The set of privileges that are granted to this role. Comma-separated
+        list of privilege names and service ids of the form "PrivilegeName1:ServiceId1,PrivilegeName2:ServiceId2".
+      isArray: false
+      name: role_privileges
+      required: true
+      secret: false
+    - default: false
+      description: A short description of the role.
+      isArray: false
+      name: role_description
+      required: false
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new role.
+    execution: false
+    name: gsuite-role-create
+    outputs:
+    - contextPath: GSuite.Role.kind
+      description: The type of the API resource. This is always admin#directory#role.
+      type: String
+    - contextPath: GSuite.Role.etag
+      description: ETag of the resource.
+      type: String
+    - contextPath: GSuite.Role.roleId
+      description: ID of the role.
+      type: Number
+    - contextPath: GSuite.Role.roleName
+      description: Name of the role.
+      type: String
+    - contextPath: GSuite.Role.roleDescription
+      description: A short description of the role.
+      type: String
+    - contextPath: GSuite.Role.rolePrivileges.privilegeName
+      description: The name of the privilege.
+      type: String
+    - contextPath: GSuite.Role.rolePrivileges.serviceId
+      description: The obfuscated ID of the service this privilege is for.
+      type: String
+    - contextPath: GSuite.Role.isSystemRole
+      description: Whether this is a pre-defined system role.
+      type: Boolean
+    - contextPath: GSuite.Role.isSuperAdminRole
+      description: Whether the role is a super admin role.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The Client ID of the application the token is issued to.
+      isArray: false
+      name: client_id
+      required: true
+      secret: false
+    - default: false
+      description: Identifies the user in the API request. The value can be the user's
+        primary email address, alias email address, or unique user ID.
+      isArray: false
+      name: user_key
+      required: true
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete all access tokens issued by a user for an application.
+    execution: false
+    name: gsuite-token-revoke
+  - arguments:
+    - default: false
+      description: Immutable ID of the G Suite account.
+      isArray: false
+      name: customer_id
+      required: false
+      secret: false
+    - default: false
+      description: Destination user's profile ID.
+      isArray: false
+      name: new_owner_user_id
+      required: false
+      secret: false
+    - default: false
+      description: Source user's profile ID.
+      isArray: false
+      name: old_owner_user_id
+      required: false
+      secret: false
+    - default: false
+      description: Status of the transfer.
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of results to return. Default is 100. Acceptable values are 1 to 500, inclusive.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: Token to specify the next page in the list.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists the transfers for a customer by source user, destination user, or status.
+    execution: false
+    name: gsuite-datatransfer-list
+    outputs:
+    - contextPath: GSuite.DataTransfer.kind
+      description: Identifies the resource as a DataTransfer request.
+      type: String
+    - contextPath: GSuite.DataTransfer.etag
+      description: ETag of the resource.
+      type: String
+    - contextPath: GSuite.DataTransfer.id
+      description: The transfer's ID.
+      type: String
+    - contextPath: GSuite.DataTransfer.oldOwnerUserId
+      description: ID of the user whose data is being transferred.
+      type: String
+    - contextPath: GSuite.DataTransfer.newOwnerUserId
+      description: ID of the user to whom the data is being transferred.
+      type: String
+    - contextPath: GSuite.DataTransfer.overallTransferStatusCode
+      description: Overall transfer status.
+      type: String
+    - contextPath: GSuite.DataTransfer.requestTime
+      description: The time at which the data transfer was requested.
+      type: Date
+    - contextPath: GSuite.DataTransfer.applicationDataTransfers.applicationTransferStatus
+      description: Current status of transfer for this application.
+      type: String
+    - contextPath: GSuite.DataTransfer.applicationDataTransfers.applicationId
+      description: The application's ID.
+      type: Number
+    - contextPath: GSuite.DataTransfer.applicationDataTransfers.applicationTransferParams.key
+      description: The type of the transfer parameter.
+      type: String
+    - contextPath: GSuite.DataTransfer.applicationDataTransfers.applicationTransferParams.value
+      description: The value of the corresponding transfer parameter.
+      type: Unknown
+    - contextPath: GSuite.PageToken.DataTransfer.nextPageToken
+      description: Continuation token which will be used to specify next page in list API.
+      type: String
+  - arguments:
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - default: false
+      description: Immutable ID of the G Suite account.
+      isArray: false
+      name: customer_id
+      required: true
+      secret: false
+    - default: false
+      description: The schema's name.
+      isArray: false
+      name: schema_name
+      required: true
+      secret: false
+    - default: false
+      description: Display name for the schema.
+      isArray: false
+      name: schema_display_name
+      required: true
+      secret: false
+    - default: false
+      description: |+
+        Raw JSON containing fields of the schema. Acceptable values for
+        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
+        values for readAccessType are ADMINS_AND_SELF- Only administrators and
+        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
+        your domain can see values.
+        E.g.
+        {
+          "fields": [
+            {
+              "fieldType": string,
+              "fieldName": string,
+              "displayName": string,
+              "multiValued": boolean,
+              "readAccessType": string,
+              "indexed": boolean,
+              "numericIndexingSpec": {
+                "minValue": double,
+                "maxValue": double
+              }
+            }
+          ]
+        }
+      isArray: false
+      name: field_raw_json
+      required: false
+      secret: false
+    - default: false
+      description: |+
+        JSON file entry ID containing fields of the schema. Acceptable values for
+        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
+        values for readAccessType are ADMINS_AND_SELF- Only administrators and
+        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
+        your domain can see values.
+        E.g.
+        {
+          "fields": [
+            {
+              "fieldType": string,
+              "fieldName": string,
+              "displayName": string,
+              "multiValued": boolean,
+              "readAccessType": string,
+              "indexed": boolean,
+              "numericIndexingSpec": {
+                "minValue": double,
+                "maxValue": double
+              }
+            }
+          ]
+        }
+      isArray: false
+      name: field_json_entry_id
+      required: false
+      secret: false
+    deprecated: false
+    description: "Creates a custom user schema to add custom fields to user profiles.\nNote:
+    field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
+    execution: false
+    name: gsuite-custom-user-schema-create
+    outputs:
+    - contextPath: GSuite.UserSchema.kind
+      description: The type of the API resource.
+      type: String
+    - contextPath: GSuite.UserSchema.etag
+      description: The ETag of the resource.
+      type: String
+    - contextPath: GSuite.UserSchema.schemaId
+      description: The unique identifier of the schema.
+      type: String
+    - contextPath: GSuite.UserSchema.schemaName
+      description: The schema's name.
+      type: String
+    - contextPath: GSuite.UserSchema.displayName
+      description: Display Name for the schema.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.kind
+      description: The kind of resource this is.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.fieldId
+      description: The unique identifier of the field.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.etag
+      description: The ETag of the field.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.fieldType
+      description: The type of the field.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.fieldName
+      description: The name of the field.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.displayName
+      description: Display name of the field.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.multiValued
+      description: A boolean specifying whether this is a multi-valued field or not.
+      type: Boolean
+    - contextPath: GSuite.UserSchema.fields.readAccessType
+      description: Specifies who can view values of this field.
+      type: Boolean
+    - contextPath: GSuite.UserSchema.fields.indexed
+      description: Specifies whether the field is indexed or not.
+      type: Boolean
+    - contextPath: GSuite.UserSchema.fields.numericIndexingSpecMinValue
+      description: Minimum value of this field.
+      type: Number
+    - contextPath: GSuite.UserSchema.fields.numericIndexingSpecMaxValue
+      description: Maximum value of this field.
+      type: Number
+  - arguments:
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - default: false
+      description: Immutable ID of the G Suite account.
+      isArray: false
+      name: customer_id
+      required: true
+      secret: false
+    - default: false
+      description: The schema's name.
+      isArray: false
+      name: schema_name
+      required: false
+      secret: false
+    - default: false
+      description: Immutable ID of the schema.
+      isArray: false
+      name: schema_id
+      required: false
+      secret: false
+    - default: false
+      description: Display name for the schema.
+      isArray: false
+      name: schema_display_name
+      required: false
+      secret: false
+    - default: false
+      description: |+
+        Raw JSON containing fields of the schema. Acceptable values for
+        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
+        values for readAccessType are ADMINS_AND_SELF- Only administrators and
+        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
+        your domain can see values.
+        E.g.
+        {
+          "fields": [
+            {
+              "fieldType": string,
+              "fieldName": string,
+              "displayName": string,
+              "multiValued": boolean,
+              "readAccessType": string,
+              "indexed": boolean,
+              "numericIndexingSpec": {
+                "minValue": double,
+                "maxValue": double
+              }
+            }
+          ]
+        }
+      isArray: false
+      name: field_raw_json
+      required: false
+      secret: false
+    - default: false
+      description: |+
+        JSON file entry ID containing fields of the schema. Acceptable values for
+        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
+        values for readAccessType are ADMINS_AND_SELF- Only administrators and
+        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
+        your domain can see values.
+        E.g.
+        {
+          "fields": [
+            {
+              "fieldType": string,
+              "fieldName": string,
+              "displayName": string,
+              "multiValued": boolean,
+              "readAccessType": string,
+              "indexed": boolean,
+              "numericIndexingSpec": {
+                "minValue": double,
+                "maxValue": double
+              }
+            }
+          ]
+        }
+      isArray: false
+      name: field_json_entry_id
+      required: false
+      secret: false
+    deprecated: false
+    description: "Updates a custom user schema.\nNote:
+    field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
+    execution: false
+    name: gsuite-custom-user-schema-update
+    outputs:
+    - contextPath: GSuite.UserSchema.kind
+      description: The type of the API resource.
+      type: String
+    - contextPath: GSuite.UserSchema.etag
+      description: The ETag of the resource.
+      type: String
+    - contextPath: GSuite.UserSchema.schemaId
+      description: The unique identifier of the schema.
+      type: String
+    - contextPath: GSuite.UserSchema.schemaName
+      description: The schema's name.
+      type: String
+    - contextPath: GSuite.UserSchema.displayName
+      description: Display Name for the schema.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.kind
+      description: The kind of resource this is.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.fieldId
+      description: The unique identifier of the field.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.etag
+      description: The ETag of the field.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.fieldType
+      description: The type of the field.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.fieldName
+      description: The name of the field.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.displayName
+      description: Display name of the field.
+      type: String
+    - contextPath: GSuite.UserSchema.fields.multiValued
+      description: A boolean specifying whether this is a multi-valued field or not.
+      type: Boolean
+    - contextPath: GSuite.UserSchema.fields.readAccessType
+      description: Specifies who can view values of this field.
+      type: Boolean
+    - contextPath: GSuite.UserSchema.fields.indexed
+      description: Specifies whether the field is indexed or not.
+      type: Boolean
+    - contextPath: GSuite.UserSchema.fields.numericIndexingSpecMinValue
+      description: Minimum value of this field.
+      type: Number
+    - contextPath: GSuite.UserSchema.fields.numericIndexingSpecMaxValue
+      description: Maximum value of this field.
+      type: Number
+  - arguments:
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - default: false
+      description: ID of the user whose data is being transferred.
+      isArray: false
+      name: old_owner_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of the user to whom the data is being transferred.
+      isArray: false
+      name: new_owner_id
+      required: true
+      secret: false
+    - default: false
+      description: The application's ID.
+      isArray: false
+      name: application_id
+      required: false
+      secret: false
+    - default: false
+      description: Key and value pair of application data transfer parameters. Key
+        and value must be delimited by (:) colon. Multiple values must be delimited
+        by (,) comma. Multiple key-value pairs must be delimited by (;) semi-colon.
+        E.g. key1:val;key2:val1,val2
+      isArray: false
+      name: application_transfer_params
+      required: false
+      secret: false
+    - default: false
+      description: |+
+        Raw JSON containing the whole body of the application data transfers.
+        E.g.
+        {
+          "applicationDataTransfers": [
+            {
+              "applicationId": long,
+              "applicationTransferParams": [
+                {
+                  "key": string,
+                  "value": [
+                    string
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      isArray: false
+      name: applications_raw_json
+      required: false
+      secret: false
+    - default: false
+      description: |+
+        JSON file Entry ID containing the whole body of the application data transfers.
+        E.g.
+        {
+          "applicationDataTransfers": [
+            {
+              "applicationId": long,
+              "applicationTransferParams": [
+                {
+                  "key": string,
+                  "value": [
+                    string
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      isArray: false
+      name: applications_raw_json_entry_id
+      required: false
+      secret: false
+    deprecated: false
+    description: |+
+      Inserts a data transfer request.
+      Note: If all three applications_raw_json, applications_raw_json_entry_id and application_id are provided
+      the higher precedence will be in order of applications_raw_json, applications_raw_json_entry_id,
+      and application_id respectively.
+    execution: false
+    name: gsuite-datatransfer-request-create
+    outputs:
+    - contextPath: GSuite.DataTransfer.kind
+      description: Identifies the resource as a DataTransfer request.
+      type: String
+    - contextPath: GSuite.DataTransfer.etag
+      description: ETag of the resource.
+      type: String
+    - contextPath: GSuite.DataTransfer.id
+      description: The transfer's ID.
+      type: String
+    - contextPath: GSuite.DataTransfer.oldOwnerUserId
+      description: ID of the user whose data is being transferred.
+      type: String
+    - contextPath: GSuite.DataTransfer.newOwnerUserId
+      description: ID of the user to whom the data is being transferred.
+      type: String
+    - contextPath: GSuite.DataTransfer.applicationDataTransfers.applicationId
+      description: The application's ID.
+      type: Number
+    - contextPath: GSuite.DataTransfer.applicationDataTransfers.applicationTransferParams.key
+      description: The type of the transfer parameter.
+      type: String
+    - contextPath: GSuite.DataTransfer.applicationDataTransfers.applicationTransferParams.value
+      description: The value of the corresponding transfer parameter.
+      type: Unknown
+    - contextPath: GSuite.DataTransfer.applicationDataTransfers.applicationTransferStatus
+      description: Current status of transfer for this application.
+      type: String
+    - contextPath: GSuite.DataTransfer.overallTransferStatusCode
+      description: Overall transfer status.
+      type: String
+    - contextPath: GSuite.DataTransfer.requestTime
+      description: The time at which the data transfer was requested.
+      type: Date
+  - arguments:
+    - default: false
+      description: Identifies the user in the API request. The value can be the user's
+        primary email address, alias email address, or unique user ID.
+      isArray: false
+      name: user_key
+      required: true
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Deletes a user.
+    execution: false
+    name: gsuite-user-delete
+  - arguments:
+    - default: false
+      description: The user's first name.
+      isArray: false
+      name: first_name
+      required: false
+      secret: false
+    - default: false
+      description: The user's last name.
+      isArray: false
+      name: last_name
+      required: false
+      secret: false
+    - default: false
+      description: Stores the password for the user account. A password can contain
+        any combination of ASCII characters. A minimum of 8 characters is required.
+        The maximum length is 100 characters. The password will be sent in MD5 hash
+        format.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: The user's primary email address. The primary_email must be unique
+        and cannot be an alias of another user.
+      isArray: false
+      name: primary_email
+      required: false
+      secret: false
+    - default: false
+      description: User's Country.
+      isArray: false
+      name: country
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The address type.
+      isArray: false
+      name: address_type
+      predefined:
+      - home
+      - other
+      - work
+      required: false
+      secret: false
+    - default: false
+      description: The ZIP or postal code, if applicable.
+      isArray: false
+      name: postal_code
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set to true, If this is the user's primary address.
+      isArray: false
+      name: is_address_primary
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: For extended addresses, such as an address that includes a sub-region.
+      isArray: false
+      name: extended_address
+      required: false
+      secret: false
+    - default: false
+      description: The abbreviated province or state.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The street address, such as 1600 Amphitheatre Parkway. Whitespace
+        within the string is ignored; however, newlines are significant.
+      isArray: false
+      name: street_address
+      required: false
+      secret: false
+    - default: false
+      description: The user's secondary email address.
+      isArray: false
+      name: secondary_email_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the secondary email account.
+      isArray: false
+      name: secondary_email_type
+      predefined:
+      - home
+      - other
+      - work
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: User's gender.
+      isArray: false
+      name: gender
+      predefined:
+      - female
+      - male
+      - other
+      - unknown
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If true, the user's IP address is white listed.
+      isArray: false
+      name: is_ip_white_listed
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Content type of note, either plain text or HTML. If not provided,
+        considered as plain text.
+      isArray: false
+      name: notes_content_type
+      predefined:
+      - text_plain
+      - text_html
+      required: false
+      secret: false
+    - default: false
+      description: Contents of notes.
+      isArray: false
+      name: notes_value
+      required: false
+      secret: false
+    - default: false
+      description: A human-readable phone number. It may be in any telephone number
+        format.
+      isArray: false
+      name: phone_number
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of phone number.
+      isArray: false
+      name: phone_number_type
+      predefined:
+      - assistant
+      - callback
+      - car
+      - company_main
+      - grand_central
+      - home
+      - home_fax
+      - isdn
+      - main
+      - mobile
+      - other
+      - other_fax
+      - pager
+      - radio
+      - telex
+      - tty_tdd
+      - work
+      - work_fax
+      - work_mobile
+      - work_pager
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates if this is the user's primary phone number. A user may
+        only have one primary phone number.
+      isArray: false
+      name: is_phone_number_primary
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Recovery email of the user.
+      isArray: false
+      name: recovery_email
+      required: false
+      secret: false
+    - default: false
+      description: 'Recovery phone of the user. The phone number must be in the E.164
+        format, starting with the plus sign (+). Example: +16506661212.'
+      isArray: false
+      name: recovery_phone
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates if the user is suspended.
+      isArray: false
+      name: suspended
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - default: false
+      description: Identifies the user in the API request. The value can be the user's primary email
+        address, alias email address, or unique user ID.
+      isArray: false
+      name: user_key
+      required: true
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      description: Indicates if the user is archived.
+      isArray: false
+      name: archived
+      required: false
+      secret: false
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: To move the user to OU (Organization Unit). The full path of the parent organization
+        associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/).
+      isArray: false
+      name: org_unit_path
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a user.
+    execution: false
+    name: gsuite-user-update
+    outputs:
+    - contextPath: GSuite.User.id
+      description: The unique ID for the user.
+      type: String
+    - contextPath: GSuite.User.primaryEmail
+      description: The user's primary email address.
+      type: String
+    - contextPath: GSuite.User.firstName
+      description: The user's first name.
+      type: String
+    - contextPath: GSuite.User.lastName
+      description: The user's last name.
+      type: String
+    - contextPath: GSuite.User.customerId
+      description: The unique ID for the customer's G Suite account.
+      type: String
+    - contextPath: GSuite.User.gender
+      description: Gender.
+      type: String
+    - contextPath: GSuite.User.suspended
+      description: Indicates if the user is suspended.
+      type: Boolean
+    - contextPath: GSuite.User.notesValue
+      description: Contents of notes.
+      type: String
+    - contextPath: GSuite.User.notesContentType
+      description: Content type of notes.
+      type: String
+    - contextPath: GSuite.User.isAdmin
+      description: Indicates a user with super administrator privileges.
+      type: Boolean
+    - contextPath: GSuite.User.creationTime
+      description: The time the user's account was created.
+      type: Date
+    - contextPath: GSuite.User.phones.value
+      description: A human-readable phone number. It may be in any telephone number
+        format.
+      type: String
+    - contextPath: GSuite.User.phones.type
+      description: The type of phone number.
+      type: String
+    - contextPath: GSuite.User.phones.primary
+      description: Indicates if this is the user's primary phone number.
+      type: Boolean
+    - contextPath: GSuite.User.phones.customType
+      description: If the value of type is custom, this property contains the custom type.
+      type: String
+    - contextPath: GSuite.User.addresses.type
+      description: The address type.
+      type: String
+    - contextPath: GSuite.User.addresses.customType
+      description: If the address type is custom, this property contains the custom value.
+      type: String
+    - contextPath: GSuite.User.addresses.sourceIsStructured
+      description: Indicates if the user-supplied address was formatted. Formatted addresses are not currently supported.
+      type: Boolean
+    - contextPath: GSuite.User.addresses.formatted
+      description: A full and unstructured postal address. This is not synced with the structured address fields.
+      type: String
+    - contextPath: GSuite.User.addresses.poBox
+      description: The post office box, if present.
+      type: String
+    - contextPath: GSuite.User.addresses.locality
+      description: The town or city of the address.
+      type: String
+    - contextPath: GSuite.User.addresses.countryCode
+      description: The country code. Uses the ISO 3166-1 standard.
+      type: String
+    - contextPath: GSuite.User.addresses.country
+      description: Country.
+      type: String
+    - contextPath: GSuite.User.addresses.postalCode
+      description: The ZIP or postal code.
+      type: String
+    - contextPath: GSuite.User.addresses.region
+      description: The abbreviated province or state.
+      type: String
+    - contextPath: GSuite.User.addresses.streetAddress
+      description: The street address.
+      type: String
+    - contextPath: GSuite.User.addresses.extendedAddress
+      description: For extended addresses, such as an  address that includes a sub-region.
+      type: String
+    - contextPath: GSuite.User.addresses.primary
+      description: If this is the user's primary address.
+      type: Boolean
+    - contextPath: GSuite.User.emails.address
+      description: The user's secondary email.
+      type: String
+    - contextPath: GSuite.User.emails.type
+      description: The secondary email type.
+      type: String
+    - contextPath: GSuite.User.emails.customType
+      description: If the value of type is custom, this property contains the custom type string.
+      type: String
+    - contextPath: GSuite.User.emails.primary
+      description: Indicates if this is the user's primary email. Only one entry can be marked as primary.
+      type: Boolean
+    - contextPath: GSuite.User.ipWhitelisted
+      description: If true, the user's IP address is white listed.
+      type: Boolean
+    - contextPath: GSuite.User.recoveryEmail
+      description: Recovery email of the user.
+      type: String
+    - contextPath: GSuite.User.isDelegatedAdmin
+      description: Indicates if the user is a delegated administrator.
+      type: Boolean
+    - contextPath: GSuite.User.recoveryPhone
+      description: Recovery phone of the user.
+      type: String
+    - contextPath: GSuite.User.orgUnitPath
+      description: The full path of the parent organization associated with the user.
+        If the parent organization is the top-level, it is represented as a forward
+        slash (/).
+      type: String
+    - contextPath: GSuite.User.isMailboxSetup
+      description: Indicates if the user's Google mailbox is created.
+      type: Boolean
+    - contextPath: GSuite.User.kind
+      description: The type of the API resource.
+      type: Boolean
+    - contextPath: GSuite.User.etag
+      description: ETag of the resource.
+      type: Boolean
+    - contextPath: GSuite.User.hashFunction
+      description: Stores the hash format of the password property.
+      type: String
+    - contextPath: GSuite.User.archived
+      description: Indicates if the user is archived.
+      type: Boolean
+    - contextPath: GSuite.User.fullName
+      description: The user's full name formed by concatenating the first and last name values.
+      type: String
+    - contextPath: GSuite.User.lastLoginTime
+      description: The last time the user logged into the user's account.
+        The value is in ISO 8601 date and time format.
+        The time is the complete date plus hours, minutes, and seconds in the form
+        YYYY-MM-DDThh:mm:ssTZD. For example, 2010-04-05T17:30:04+01:00.
+      type: Date
+    - contextPath: GSuite.User.deletionTime
+      description: The time the user's account was deleted.
+        The value is in ISO 8601 date and time format.
+        The time is the complete date plus hours, minutes, and seconds in the form
+        YYYY-MM-DDThh:mm:ssTZD. For example 2010-04-05T17:30:04+01:00.
+      type: Date
+    - contextPath: GSuite.User.agreedToTerms
+      description: This property is true if the user has completed an initial login and
+        accepted the Terms of Service agreement.
+      type: Boolean
+    - contextPath: GSuite.User.suspensionReason
+      description: Has the reason a user account is suspended either by the administrator
+        or by Google at the time of suspension. The property is returned only if the suspended property is true.
+      type: String
+    - contextPath: GSuite.User.changePasswordAtNextLogin
+      description: Indicates if the user is forced to change their password at next login.
+        This setting doesn't apply when the user signs in via a third-party identity provider.
+      type: Boolean
+    - contextPath: GSuite.User.ims.type
+      description: Type of the user's Instant Messenger (IM) account.
+      type: Boolean
+    - contextPath: GSuite.User.ims.customType
+      description: If the IM type is custom, this property holds the custom type string.
+      type: String
+    - contextPath: GSuite.User.ims.protocol
+      description: An IM protocol identifies the IM network. The value can be a custom network or the standard network.
+      type: String
+    - contextPath: GSuite.User.ims.customProtocol
+      description: If the protocol value is custom_protocol, this property holds the custom protocol's string.
+      type: String
+    - contextPath: GSuite.User.ims.im
+      description: The user's IM network ID.
+      type: String
+    - contextPath: GSuite.User.ims.primary
+      description: If this is the user's primary IM. Only one entry in the IM list can have a value of true.
+      type: Boolean
+    - contextPath: GSuite.User.externalIds.value
+      description: The value of the external ID.
+      type: String
+    - contextPath: GSuite.User.externalIds.type
+      description: The type of the external ID.
+      type: String
+    - contextPath: GSuite.User.externalIds.customType
+      description: If the external ID type is custom, this property holds the custom type.
+      type: String
+    - contextPath: GSuite.User.relations.value
+      description: The name of the person the user is related to.
+      type: String
+    - contextPath: GSuite.User.relations.type
+      description: The type of relation.
+      type: String
+    - contextPath: GSuite.User.relations.customType
+      description: If the value of type is custom, this property contains the custom type.
+      type: String
+    - contextPath: GSuite.User.organizations.name
+      description: The name of the organization.
+      type: String
+    - contextPath: GSuite.User.organizations.title
+      description: The user's title within the organization, for example 'member' or 'engineer'.
+      type: String
+    - contextPath: GSuite.User.organizations.primary
+      description: Indicates if this is the user's primary organization. A user may only have one primary organization.
+      type: Boolean
+    - contextPath: GSuite.User.organizations.type
+      description: The type of organization.
+      type: String
+    - contextPath: GSuite.User.organizations.customType
+      description: If the value of type is custom, this property contains the custom type.
+      type: String
+    - contextPath: GSuite.User.organizations.department
+      description: Specifies the department within the organization, such as 'sales' or 'engineering'.
+      type: String
+    - contextPath: GSuite.User.organizations.symbol
+      description: Text string symbol of the organization. For example, the text symbol for Google is GOOG.
+      type: String
+    - contextPath: GSuite.User.organizations.location
+      description: The physical location of the organization. This does not need to be a fully qualified address.
+      type: String
+    - contextPath: GSuite.User.organizations.description
+      description: The description of the organization.
+      type: String
+    - contextPath: GSuite.User.organizations.domain
+      description: The domain the organization belongs to.
+      type: String
+    - contextPath: GSuite.User.organizations.costCenter
+      description: The cost center of the user's organization.
+      type: String
+    - contextPath: GSuite.User.organizations.fullTimeEquivalent
+      description: The full-time equivalent millipercent within the organization (100000 = 100%).
+      type: String
+    - contextPath: GSuite.User.languages.languageCode
+      description: Language Code. Should be used for storing Google III LanguageCode string
+        representation for language. Illegal values cause SchemaException.
+      type: String
+    - contextPath: GSuite.User.languages.customLanguage
+      description: Other language. A user can provide their own language name if there
+        is no corresponding Google III language code. If this is set, LanguageCode can't be set.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.username
+      description: The username of the account.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.uid
+      description: The POSIX compliant user ID.
+      type: Number
+    - contextPath: GSuite.User.posixAccounts.gid
+      description: The default group ID.
+      type: Number
+    - contextPath: GSuite.User.posixAccounts.homeDirectory
+      description: The path to the home directory for this account.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.shell
+      description: The path to the login shell for this account.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.gecos
+      description: The GECOS (user information) for this account.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.systemId
+      description: System identifier for which account Username or Uid apply to.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.primary
+      description: If this is user's primary account within the SystemId.
+      type: Boolean
+    - contextPath: GSuite.User.posixAccounts.accountId
+      description: A POSIX account field identifier.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.operatingSystemType
+      description: The operating system type for this account.
+      type: String
+    - contextPath: GSuite.User.sshPublicKeys.key
+      description: An SSH public key.
+      type: String
+    - contextPath: GSuite.User.sshPublicKeys.expirationTimeUsec
+      description: An expiration time in microseconds since epoch.
+      type: String
+    - contextPath: GSuite.User.sshPublicKeys.fingerprint
+      description: A SHA-256 fingerprint of the SSH public key.
+      type: String
+    - contextPath: GSuite.User.aliases
+      description: List of the user's alias email addresses.
+      type: Unknown
+    - contextPath: GSuite.User.nonEditableAliases
+      description: List of the user's non-editable alias email addresses.
+        These are typically outside the account's primary domain or sub-domain.
+      type: Unknown
+    - contextPath: GSuite.User.websites.value
+      description: The URL of the website.
+      type: String
+    - contextPath: GSuite.User.websites.primary
+      description: If this is user's primary website or not.
+      type: Boolean
+    - contextPath: GSuite.User.websites.type
+      description: The type or purpose of the website. For example, a website could be labeled as home or blog.
+        Alternatively, an entry can have a custom type.
+      type: String
+    - contextPath: GSuite.User.websites.customType
+      description: The custom type. Only used if the type is custom.
+      type: String
+    - contextPath: GSuite.User.locations.type
+      description: The location type.
+      type: String
+    - contextPath: GSuite.User.locations.customType
+      description: If the location type is custom, this property contains the custom value.
+      type: String
+    - contextPath: GSuite.User.locations.area
+      description: Textual location. This is most useful for display purposes to
+        concisely describe the location. For example, "Mountain View, CA", "Near Seattle".
+      type: String
+    - contextPath: GSuite.User.locations.buildingId
+      description: Building identifier.
+      type: String
+    - contextPath: GSuite.User.locations.floorName
+      description: Floor name/number.
+      type: String
+    - contextPath: GSuite.User.locations.floorSection
+      description: Floor section. More specific location within the floor.
+        For example, if a floor is divided into sections "A", "B", and "C", this field would identify one of those values.
+      type: String
+    - contextPath: GSuite.User.locations.deskCode
+      description: Most specific textual code of individual desk location.
+      type: String
+    - contextPath: GSuite.User.keywords.type
+      description: Each entry can have a type which indicates standard type of that entry. For example,
+        keyword could be of type occupation or outlook. In addition to the standard type,
+        an entry can have a custom type and can give it any name. Such types
+        should have the CUSTOM value as type and also have a customType value.
+      type: String
+    - contextPath: GSuite.User.keywords.customType
+      description: Custom Type.
+      type: String
+    - contextPath: GSuite.User.keywords.value
+      description: Keyword.
+      type: String
+    - contextPath: GSuite.User.isEnrolledIn2Sv
+      description: Is enrolled in 2-step verification.
+      type: Boolean
+    - contextPath: GSuite.User.isEnforcedIn2Sv
+      description: Is 2-step verification enforced.
+      type: Boolean
+    - contextPath: GSuite.User.includeInGlobalAddressList
+      description: Indicates if the user's profile is visible in the G Suite global address
+        list when the contact sharing feature is enabled for the domain.
+      type: Boolean
+    - contextPath: GSuite.User.thumbnailPhotoUrl
+      description: Photo Url of the user.
+      type: String
+    - contextPath: GSuite.User.thumbnailPhotoEtag
+      description: ETag of the user's photo.
+      type: String
+    - contextPath: GSuite.User.customSchemas
+      description: Custom fields of the user.
+      type: Unknown
+  dockerimage: demisto/googleapi-python3:1.0.0.12698
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- GSuiteAdmin-Test
+fromversion: 5.0.0
