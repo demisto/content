@@ -1,5 +1,6 @@
 id: CloudConvert
-version: -1
+version: 25
+vcShouldKeepItemLegacyProdMachine: false
 name: CloudConvert
 description: Use this Playbook to convert a file using CloudConvert
 starttaskid: "0"
@@ -14,7 +15,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -87,7 +87,7 @@ tasks:
     task:
       id: 33555613-cbd2-487e-8030-93227a8906b1
       version: -1
-      name: GenericPolling
+      name: GenericPolling - Wait For Import To Finish
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -189,7 +189,7 @@ tasks:
     task:
       id: 191ce5b8-26af-4f33-80ec-d7c19771f928
       version: -1
-      name: GenericPolling
+      name: GenericPolling - Wait For Convert To Finish
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -344,7 +344,7 @@ tasks:
     task:
       id: e3bdecaf-2861-43e3-86ef-6fcbf83aa87f
       version: -1
-      name: GenericPolling
+      name: GenericPolling - Wait For Export To Finish
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -510,7 +510,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -542,28 +541,29 @@ inputs:
   required: false
   description: This is the url of the imported file. If an entry id is supplied, do
     not use this argument
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: entry_id
   value: {}
   required: false
   description: This is the entry id of the imported file. If a url is supplied, do
     not use this argument
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: output_format
   value: {}
   required: true
   description: |
     This is the desired output format
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: export_via
   value: {}
   required: true
   description: |
     The method for exporting the resulted file, url or war_room_entry
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: CloudConvert.Task.result.files.url
   description: Resulted file url
-tests:
-- CloudConvert-test
-fromversion: 5.0.0
+- contextPath: CloudConvert.Task.result.files.filename
+  description: Resulted file name
+- contextPath: CloudConvert.Task.result.files.size
+  description: Resulted size of file

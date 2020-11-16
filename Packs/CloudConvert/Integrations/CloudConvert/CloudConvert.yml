@@ -308,7 +308,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: where should the file be exported to
+      description: Export the converted file as a url or as a war room entry. Note that if you are exporting the file as a war room entry, a url of the file will also be generated.
       isArray: false
       name: export_as
       predefined:
