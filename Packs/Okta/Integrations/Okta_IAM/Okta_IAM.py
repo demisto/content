@@ -203,6 +203,8 @@ def handle_exception(user_profile, e, action):
                                 error_code=error_code,
                                 error_message=error_message)
 
+    demisto.error(traceback.format_exc())
+
 
 def get_error_details(res):
     """ Parses the error details retrieved from Okta and outputs the resulted string.
