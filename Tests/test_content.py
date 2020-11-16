@@ -38,7 +38,7 @@ except ModuleNotFoundError:
     from slackclient import SlackClient  # Old slack
 
 from Tests.mock_server import MITMProxy, AMIConnection
-from Tests.test_integration import Docker, check_integration, disable_all_integrations
+from Tests.test_integration import Docker, check_integration
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
 from demisto_sdk.commands.common.constants import FILTER_CONF, PB_Status
 from demisto_sdk.commands.common.tools import str2bool
@@ -810,7 +810,6 @@ def execute_testing(tests_settings,
     skipped_integration = set([])
     playbook_skipped_integration = set([])
 
-    disable_all_integrations(xsoar_client, logging_manager)
     logging_manager.execute_logs()
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
