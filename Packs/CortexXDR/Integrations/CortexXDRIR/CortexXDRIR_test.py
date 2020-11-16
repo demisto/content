@@ -1158,7 +1158,7 @@ def test_get_policy(requests_mock):
 def test_get_endpoint_violations_command(requests_mock):
     """
         Given:
-            - violation_id_list="100,90"
+            - violation_id_list='100'
         When:
             -Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
         Then:
@@ -1171,7 +1171,7 @@ def test_get_endpoint_violations_command(requests_mock):
     violations = get_endpoint_violations_reply.get('reply').get('violations')
     for violation in violations:
         timestamp = violation.get('timestamp')
-        violation['date'] = timestamp_to_datestring(timestamp, "%Y-%m-%dT%H:%M:%S")
+        violation['date'] = timestamp_to_datestring(timestamp, '%Y-%m-%dT%H:%M:%S')
     get_endpoint_violations_expected_result = {
         'PaloAltoNetworksXDR.EndpointViolations(val.violation_id==obj.violation_id)':
             violations
@@ -1203,13 +1203,13 @@ def test_retrieve_files_command(requests_mock):
     from CortexXDRIR import retrieve_files_command, Client
 
     retrieve_expected_result = {'PaloAltoNetworksXDR.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
-    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/file_retrieval/', json={"reply": {"action_id": 1773}})
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     _, context, _ = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
-                                                    'windows_file_paths': "C:\\Users\\demisto\\Desktop\\demisto.txt"})
+                                                    'windows_file_paths': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
 
     assert retrieve_expected_result == context
 
@@ -1226,7 +1226,7 @@ def test_retrieve_file_details_command(requests_mock):
     from CortexXDRIR import retrieve_file_details_command, Client
 
     data = load_test_data('./test_data/retrieve_file_details.json')
-    data1 = "test_file"
+    data1 = 'test_file'
     retrieve_expected_hr = 'Action id : 1788 \nRetrieved 1 files from 1 endpoints.'
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
@@ -1259,7 +1259,7 @@ def test_get_scripts_command(requests_mock):
     for script in scripts:
         timestamp = script.get('modification_date')
         script['modification_date_timestamp'] = timestamp
-        script['modification_date'] = timestamp_to_datestring(timestamp, "%Y-%m-%dT%H:%M:%S")
+        script['modification_date'] = timestamp_to_datestring(timestamp, '%Y-%m-%dT%H:%M:%S')
     get_scripts_expected_result = {
         'PaloAltoNetworksXDR.Scripts(val.script_uid == obj.script_uid)': scripts
     }
@@ -1356,9 +1356,9 @@ def test_action_status_get_command(requests_mock):
     result = []
     for item in data:
         result.append({
-            "action_id": 1810,
-            "endpoint_id": item,
-            "status": data.get(item)
+            'action_id': 1810,
+            'endpoint_id': item,
+            'status': data.get(item)
         })
     action_status_get_command_expected_result = {
         'PaloAltoNetworksXDR.GetActionStatus(val.action_id == obj.action_id)':
