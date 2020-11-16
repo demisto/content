@@ -138,17 +138,13 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         }] + steps_fields
 
     if job_name and job_name == 'Upload Packs To Marketplace':
-        print("job_name and job_name == 'Upload Packs To Marketplace' TRUE")
         if os.path.exists(packs_results_file_path):
-            print(f"os path exists TRUE: {packs_results_file_path}")
             try:
                 with open(packs_results_file_path, 'r') as json_file:
                     packs_results_file = json.load(json_file)
                 if packs_results_file:
-                    print("pack results file not empty")
                     successful_packs = packs_results_file.get('successful_packs', {})
                     if successful_packs:
-                        print('found successful packs')
                         steps_fields += [{
                             "title": "Successful Packs:",
                             "value": "\n".join([pack_name for pack_name in {*successful_packs}]),

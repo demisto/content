@@ -429,14 +429,32 @@ references:
   bucket_upload_jobs: &bucket_upload_jobs
     - Setup Environment:
         context: bucket_upload_env
-    - Create Instances:
+    - Run Unit Testing And Lint:
         context: bucket_upload_env
         requires:
           - Setup Environment
-    - Upload Packs To Marketplace:
+    - Run Validations:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
+    - Create Instances:
+        context: bucket_upload_env
+        requires:
+          - Run Unit Testing And Lint
+          - Run Validations
+    - Install Packs in Demisto 6_0:
         context: bucket_upload_env
         requires:
           - Create Instances
+    - Install Packs in Demisto Marketplace - Master:
+        context: bucket_upload_env
+        requires:
+          - Create Instances
+    - Upload Packs To Marketplace:
+        context: bucket_upload_env
+        requires:
+          - Install Packs in Demisto 6_0
+          - Install Packs in Demisto Marketplace - Master
 
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
@@ -895,23 +913,6 @@ jobs:
                   fi
                   exit $RETVAL
             - run:
-                name: Upload Packs To Marketplace Storage
-                command: |
-                  # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
-                  if [[ $CIRCLE_BRANCH != master ]]; then
-                    echo "Skipping packs uploading on non master branch"
-                    exit 0
-                  fi
-                  EXTRACT_FOLDER=$(mktemp -d)
-                  PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-                  PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-                  ID_SET=$CIRCLE_ARTIFACTS/id_set.json
-                  GCS_PATH=$(mktemp)
-                  echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -o false -rt true -bu false -c $CIRCLE_BRANCH
-                  rm $GCS_PATH
-                when: on_success
-            - run:
                 name: Slack Notifier
                 shell: /bin/bash
                 command: |
@@ -986,7 +987,7 @@ jobs:
             - *destroy_instances
             - *store_artifacts
 
-  Force Pack Upload:
+  Force Upload Packs To Marketplace:
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -994,17 +995,22 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
-      - *check_user_permissions_to_upload_packs
       - run:
-          name: Upload Packs To Marketplace Storage
+          name: Force Upload Packs To Marketplace Storage
           command: |
             EXTRACT_FOLDER=$(mktemp -d)
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-            ID_SET=$CIRCLE_ARTIFACTS/id_set.json
             GCS_PATH=$(mktemp)
+            CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+            CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o true -bu false -rt true -c $CIRCLE_BRANCH
+
+            GCS_BUILD_BUCKET="marketplace-ci-build"
+            GCS_MARKET_BUCKET="marketplace-dist-dev"
+            STORAGE_BATH_PATH="wow/content/packs"
+
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb $GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BATH_PATH}"
             rm $GCS_PATH
           when: on_success
       - *destroy_instances
@@ -1285,15 +1291,18 @@ workflows:
   force_pack_upload:
     when: << pipeline.parameters.force_pack_upload >>
     jobs:
-      - Setup Environment
+      - Setup Environment:
+          context: bucket_upload_env
       - Create Instances:
+          context: bucket_upload_env
           filters:
             branches:
               only:
                 - master
           requires:
             - Setup Environment
-      - Force Pack Upload:
+      - Force Upload Packs To Marketplace:
+          context: bucket_upload_env
           filters:
             branches:
               only:
@@ -1359,8 +1368,8 @@ workflows:
   bucket_upload:
     triggers:
       - schedule:
-          # should trigger every day at 9 PM UTC (00:00 AM Israel Time)
-          cron: "0 22 * * *"
+          # should trigger every day at 10 AM & 10 PM UTC (12:00 PM & 00:00 AM Israel Time)
+          cron: "0 10,22 * * *"
           filters:
             branches:
               only:
