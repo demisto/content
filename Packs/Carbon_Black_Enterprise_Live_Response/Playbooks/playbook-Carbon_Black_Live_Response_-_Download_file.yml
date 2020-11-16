@@ -77,10 +77,10 @@ tasks:
       version: -1
       name: Start downloading file
       description: Retrieve a file from a path on the endpoint.
-      script: carbonblackliveresponse|||cb-get-file-from-endpoint
+      script: "|||cb-get-file-from-endpoint"
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
