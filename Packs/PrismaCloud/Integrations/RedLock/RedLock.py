@@ -178,7 +178,7 @@ def handle_filters(payload):
         'cloud-type': 'cloud.type',
         'risk-grade': 'risk.grade',
         'policy-type': 'policy.type',
-        'policy-severity': 'policy.severity',
+        'policy-severity': 'policy.severity'
     }
     payload['filters'] = []
     for filter_ in demisto.args():
