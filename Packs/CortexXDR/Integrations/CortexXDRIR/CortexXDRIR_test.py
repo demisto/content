@@ -1280,11 +1280,11 @@ def test_get_scripts_command(requests_mock):
 def test_get_script_metadata_command(requests_mock):
     """
         Given:
-            -script_uid
+            - A script_uid
         When:
-            Get the full definitions of a specific script in the scripts library.
+            - Requersting for a given script metadata.
         Then:
-            - returns markdown, context data and raw response.
+            - Assert...
         """
     from CortexXDRIR import get_script_metadata_command, Client
 
@@ -1309,18 +1309,18 @@ def test_get_script_metadata_command(requests_mock):
 def test_get_script_code_command(requests_mock):
     """
         Given:
-            -script_uid
+            - A script_uid
         When:
-            Get the code of a specific script in the script library.
+            - Requesting the code of a specific script in the script library.
         Then:
-            - returns markdown, context data and raw response.
+            - Assert the returned markdown, context data and raw response are as expected.
         """
     from CortexXDRIR import get_script_code_command, Client
 
     get_script_code_command_reply = load_test_data('./test_data/get_script_code.json')
     context = {
-        "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d",
-        "code": get_script_code_command_reply.get('reply')
+        'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
+        'code': get_script_code_command_reply.get('reply')
     }
     get_script_code_command_expected_result = {
         'PaloAltoNetworksXDR.ScriptCode(val.script_uid == obj.script_uid)':
@@ -1332,7 +1332,7 @@ def test_get_script_code_command(requests_mock):
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
-        'script_uid': "548023b6e4a01ec51a495ba6e5d2a15d"
+        'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d'
     }
 
     _, context, _ = get_script_code_command(client, args)
@@ -1342,11 +1342,11 @@ def test_get_script_code_command(requests_mock):
 def test_action_status_get_command(requests_mock):
     """
         Given:
-            -action_id
+            - An action_id
         When:
-            Retrieve the status of the requested actions according to the action ID.
+            - Retrieving the status of the requested actions according to the action ID.
         Then:
-            - returns markdown, context data and raw response.
+            - Assert the returned markdown, context data and raw response are as expected.
         """
     from CortexXDRIR import action_status_get_command, Client
 
