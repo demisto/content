@@ -2634,7 +2634,7 @@ script:
       description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     - name: download
-      description: Whether to download the file or download the file or upload it to CarbonBlack server (use false for large files).
+      description: Whether to download the file from the CarbonBlack server (use false for large files).
       defaultValue: 'true'
       auto: PREDEFINED
       predefined:
