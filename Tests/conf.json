@@ -37,6 +37,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "SecurityAndCompliance",
+            "playbookID": "O365-SecurityAndCompliance-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "SecurityIntelligenceServicesFeed",
             "playbookID": "SecurityIntelligenceServicesFeed - Test",
             "fromversion": "5.5.0"

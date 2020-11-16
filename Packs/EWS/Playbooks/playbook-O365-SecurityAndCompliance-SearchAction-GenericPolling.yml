@@ -1,0 +1,189 @@
+id: O365 - Security And Compliance - search action - Generic polling
+version: -1
+name: O365 - Security And Compliance - search action - Generic polling
+description: This playbook intend to create new search action in security and compliace
+  and than wait to search action to complete.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ca5dfed0-e804-46aa-89ab-6f9da00ff115
+    type: start
+    task:
+      id: ca5dfed0-e804-46aa-89ab-6f9da00ff115
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ee860a02-5505-47d1-8ad1-e72007ae6fe5
+    type: regular
+    task:
+      id: ee860a02-5505-47d1-8ad1-e72007ae6fe5
+      version: -1
+      name: Create search action
+      description: After you create a content search using the !o365-sc-new-search
+        command and run it using the !o365-sc-start-search command, you assign a search
+        action to the search using the !o365-sc-new-search-action command.
+      script: '|||o365-sc-new-search-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action:
+        simple: ${inputs.Search action}
+      purge_type:
+        simple: ${inputs.Purge type}
+      search_name:
+        simple: ${inputs.Search name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 13bafa62-ab83-4af6-86e8-4dc369e22b91
+    type: playbook
+    task:
+      id: 13bafa62-ab83-4af6-86e8-4dc369e22b91
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${O365.SecurityAndCompliance.ContentSearch.SearchAction.Name}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: search_action_name
+      PollingCommandName:
+        simple: o365-sc-get-search-action
+      Timeout:
+        simple: "10"
+      dt:
+        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status &&  val.Status
+          != "Completed")
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: dee90d35-cd3e-48c6-8085-769b28613fb6
+    type: title
+    task:
+      id: dee90d35-cd3e-48c6-8085-769b28613fb6
+      version: -1
+      description: ""
+      name: Search action completed.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Search name
+  value: {}
+  required: true
+  description: The name of the compliance search.
+  playbookInputQuery: null
+- key: Search action
+  value: {}
+  required: true
+  description: Search action to perform - Preview/Purge.
+  playbookInputQuery: null
+- key: Purge type
+  value: {}
+  required: false
+  description: Choose purge type if purge action chose - Soft Delete/Hard Delete.
+  playbookInputQuery: null
+outputs:
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Name
+  description: Security and compliance search action name.
+  type: string
+fromversion: 5.5.0
+tests:
+ - O365-SecurityAndCompliance-Test
