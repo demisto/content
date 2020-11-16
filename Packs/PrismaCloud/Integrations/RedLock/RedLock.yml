@@ -499,7 +499,8 @@ script:
     - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       name: time-range-value
     - auto: PREDEFINED
-      description: The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue
+      description: |-
+        The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue
         is not provided.
       name: time-range-unit
       predefined:
