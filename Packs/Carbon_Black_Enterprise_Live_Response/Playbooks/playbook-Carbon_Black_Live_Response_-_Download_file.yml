@@ -155,10 +155,10 @@ tasks:
       name: Download file
       description: Download a file from Cb server in a given session. Use cb-get-file-from-endpoint
         instead.
-      script: carbonblackliveresponse|||cb-file-get
+      script: "|||cb-file-get"
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
