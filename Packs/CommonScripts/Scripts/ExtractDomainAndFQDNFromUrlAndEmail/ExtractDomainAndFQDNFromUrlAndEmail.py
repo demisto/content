@@ -115,9 +115,8 @@ def main():
             "Contents": [extract_fqdn_or_domain(item, is_fqdn=True), extract_fqdn_or_domain(item, is_domain=True)]
         }
         if input_entry.get("Contents") == ['', '']:
-            continue
-        else:
-            entries_list.append(input_entry)
+            input_entry['Contents'] = []
+        entries_list.append(input_entry)
     if entries_list:
         demisto.results(entries_list)
     else:
