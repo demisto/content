@@ -392,8 +392,8 @@ def lookup_events(args):
                 'EventName': event.get('EventName'),
                 'EventTime': handle_returning_date_to_string(event.get('EventTime', '01-01-01T00:00:00')),
                 'EventSource': event.get('EventSource'),
-                'ResourceName': event.get('Resources', [{}])[0].get('ResourceName'),
-                'ResourceType': event.get('Resources', [{}])[0].get('ResourceType'),
+                'ResourceName': event.get('Resources')[0].get('ResourceName') if event.get('Resources') else None,
+                'ResourceType': event.get('Resources')[0].get('ResourceType') if event.get('Resources') else None,
                 'CloudTrailEvent': event.get('CloudTrailEvent')
             })
             if 'Username' in event:
