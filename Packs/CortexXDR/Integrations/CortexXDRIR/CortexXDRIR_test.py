@@ -1266,9 +1266,9 @@ def test_retrieve_file_details_command(requests_mock):
 def test_get_scripts_command(requests_mock):
     """
         Given:
-            _ script_name
+            - script_name
         When:
-            - Requersting for a list of scripts available in the scripts library.
+            - Requesting for a list of scripts available in the scripts library.
         Then:
             - Assert the returned markdown, context data and raw response are as expected.
         """
@@ -1308,7 +1308,7 @@ def test_get_script_metadata_command(requests_mock):
         Given:
             - A script_uid
         When:
-            - Requersting for a given script metadata.
+            - Requesting for a given script metadata.
         Then:
             - Assert the returned markdown, context data and raw response are as expected.
         """
