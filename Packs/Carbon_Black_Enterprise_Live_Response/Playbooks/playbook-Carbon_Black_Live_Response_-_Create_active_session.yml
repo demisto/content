@@ -238,8 +238,7 @@ view: |-
 inputs:
 - key: sensor
   value:
-    simple: |2+
-
+    simple: ""
   required: true
   description: Sensor ID to create a session for.
   playbookInputQuery:
