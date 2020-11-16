@@ -1127,12 +1127,14 @@ def test_get_update_args_owner_sync(mocker):
 
 def test_get_policy(requests_mock):
     """
-        Given: -endpoint_id
+        Given:
+            -endpoint_id
 
-        When: Get the policy name for a specific endpoint.
+        When:
+            -Get the policy name for a specific endpoint.
 
         Then:
-            - returns markdown, context data and raw response.
+            - Assert the returned markdown, context data and raw response are as expected.
         """
     from CortexXDRIR import get_policy_command, Client
 
@@ -1151,21 +1153,23 @@ def test_get_policy(requests_mock):
         'endpoint_id': 'aeec6a2cc92e46fab3b6f621722e9916'
     }
 
-    _, context, _ = get_policy_command(client, args)
+    hr, context, raw_response = get_policy_command(client, args)
+    assert hr == f'The policy name of endpoint: aeec6a2cc92e46fab3b6f621722e9916 is: test.'
     assert run_script_expected_result == context
+    assert raw_response == {'policy_name': 'test'}
 
 
-def test_get_endpoint_violations_command(requests_mock):
+def test_get_endpoint_device_control_violations_command(requests_mock):
     """
         Given:
             - violation_id_list='100'
         When:
             -Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
         Then:
-            - returns markdown, context data and raw response.
+            - Assert the returned markdown, context data and raw response are as expected.
         """
     from CortexXDRIR import get_endpoint_device_control_violations_command, Client
-    from CommonServerPython import timestamp_to_datestring
+    from CommonServerPython import timestamp_to_datestring, tableToMarkdown, string_to_table_header
 
     get_endpoint_violations_reply = load_test_data('./test_data/get_endpoint_violations.json')
     violations = get_endpoint_violations_reply.get('reply').get('violations')
@@ -1176,6 +1180,8 @@ def test_get_endpoint_violations_command(requests_mock):
         'PaloAltoNetworksXDR.EndpointViolations(val.violation_id==obj.violation_id)':
             violations
     }
+    headers = ['date', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
+               'serial']
     requests_mock.post(f'{XDR_URL}/public_api/v1/device_control/get_violations/', json=get_endpoint_violations_reply)
 
     client = Client(
@@ -1185,9 +1191,12 @@ def test_get_endpoint_violations_command(requests_mock):
         'violation_id_list': '100'
     }
 
-    _, context, _ = get_endpoint_device_control_violations_command(client, args)
+    hr, context, raw_response = get_endpoint_device_control_violations_command(client, args)
 
-    assert get_endpoint_violations_expected_result == context
+    assert hr == tableToMarkdown(name='Endpoint Device Control Violation', t=violations, headers=headers,
+                        headerTransform=string_to_table_header, removeNull=True)
+    assert context == get_endpoint_violations_expected_result
+    assert raw_response == get_endpoint_violations_reply.get('reply')
 
 
 def test_retrieve_files_command(requests_mock):
@@ -1198,20 +1207,24 @@ def test_retrieve_files_command(requests_mock):
     When
         - A user desires to retrieve a file.
     Then
-        - returns markdown, context data and raw response.
+        - Assert the returned markdown, context data and raw response are as expected.
     """
     from CortexXDRIR import retrieve_files_command, Client
+    from CommonServerPython import tableToMarkdown, string_to_table_header
 
     retrieve_expected_result = {'PaloAltoNetworksXDR.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
+    result = {'action_id': 1773}
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
-    _, context, _ = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
+    hr, context, raw_response = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
                                                     'windows_file_paths': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
 
-    assert retrieve_expected_result == context
+    assert hr == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
+    assert context == retrieve_expected_result
+    assert raw_response == {'action_id': 1773}
 
 
 def test_retrieve_file_details_command(requests_mock):
@@ -1221,13 +1234,21 @@ def test_retrieve_file_details_command(requests_mock):
     When
         - View the file retrieved by the Retrieve File request according to the action ID.
     Then
-        - returns markdown, context data and raw response.
+        - Assert the returned markdown, file result are as expected.
     """
     from CortexXDRIR import retrieve_file_details_command, Client
 
     data = load_test_data('./test_data/retrieve_file_details.json')
     data1 = 'test_file'
-    retrieve_expected_hr = 'Action id : 1788 \nRetrieved 1 files from 1 endpoints.'
+    retrieve_expected_hr = {
+        'Type': 1,
+        'ContentsFormat': 'json',
+        'Contents': {},
+        'HumanReadable': f'### Action id : 1788 \nRetrieved 1 files from 1 '
+                         f'endpoints. ',
+        'ReadableContentsFormat': 'markdown',
+        'EntryContext': {}
+    }
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
     requests_mock.post(f'{XDR_URL}', json=data1)
@@ -1247,12 +1268,12 @@ def test_get_scripts_command(requests_mock):
         Given:
             _ script_name
         When:
-            Get a list of scripts available in the scripts library.
+            - Get a list of scripts available in the scripts library.
         Then:
-            - returns markdown, context data and raw response.
+            - Assert the returned markdown, context data and raw response are as expected.
         """
     from CortexXDRIR import get_scripts_command, Client
-    from CommonServerPython import timestamp_to_datestring
+    from CommonServerPython import timestamp_to_datestring, tableToMarkdown, string_to_table_header
 
     get_scripts_response = load_test_data('./test_data/get_scripts.json')
     scripts = copy.deepcopy(get_scripts_response.get('reply').get('scripts')[0::50])
@@ -1260,6 +1281,8 @@ def test_get_scripts_command(requests_mock):
         timestamp = script.get('modification_date')
         script['modification_date_timestamp'] = timestamp
         script['modification_date'] = timestamp_to_datestring(timestamp, '%Y-%m-%dT%H:%M:%S')
+    headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
+                     'windows_supported', 'linux_supported', 'macos_supported', 'is_high_risk']
     get_scripts_expected_result = {
         'PaloAltoNetworksXDR.Scripts(val.script_uid == obj.script_uid)': scripts
     }
@@ -1272,9 +1295,12 @@ def test_get_scripts_command(requests_mock):
         'script_name': 'process_get'
     }
 
-    _, context, _ = get_scripts_command(client, args)
+    hr, context, raw_response = get_scripts_command(client, args)
 
-    assert get_scripts_expected_result == context
+    assert hr == tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True,
+                        headerTransform=string_to_table_header)
+    assert context == get_scripts_expected_result
+    assert raw_response == get_scripts_response.get('reply')
 
 
 def test_get_script_metadata_command(requests_mock):
@@ -1284,9 +1310,10 @@ def test_get_script_metadata_command(requests_mock):
         When:
             - Requersting for a given script metadata.
         Then:
-            - Assert...
+            - Assert the returned markdown, context data and raw response are as expected.
         """
     from CortexXDRIR import get_script_metadata_command, Client
+    from CommonServerPython import tableToMarkdown, string_to_table_header
 
     get_script_metadata_response = load_test_data('./test_data/get_script_metadata.json')
     get_scripts_expected_result = {
@@ -1301,9 +1328,12 @@ def test_get_script_metadata_command(requests_mock):
         'script_uid': '956e8989f67ebcb2c71c4635311e47e4'
     }
 
-    _, context, _ = get_script_metadata_command(client, args)
+    hr, context, raw_response = get_script_metadata_command(client, args)
 
-    assert get_scripts_expected_result == context
+    assert hr == tableToMarkdown(name='Script Metadata', t=get_script_metadata_response.get('reply'),
+                                removeNull=True, headerTransform=string_to_table_header)
+    assert context == get_scripts_expected_result
+    assert raw_response == get_script_metadata_response.get('reply')
 
 
 def test_get_script_code_command(requests_mock):
@@ -1335,8 +1365,11 @@ def test_get_script_code_command(requests_mock):
         'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d'
     }
 
-    _, context, _ = get_script_code_command(client, args)
-    assert get_script_code_command_expected_result == context
+    hr, context, raw_response = get_script_code_command(client, args)
+
+    assert hr == f'### Script code: \n ``` {str(get_script_code_command_reply.get("reply"))} ```'
+    assert context == get_script_code_command_expected_result
+    assert raw_response == get_script_code_command_reply.get("reply")
 
 
 def test_action_status_get_command(requests_mock):
@@ -1349,6 +1382,7 @@ def test_action_status_get_command(requests_mock):
             - Assert the returned markdown, context data and raw response are as expected.
         """
     from CortexXDRIR import action_status_get_command, Client
+    from CommonServerPython import tableToMarkdown,
 
     action_status_get_command_command_reply = load_test_data('./test_data/action_status_get.json')
 
@@ -1374,8 +1408,10 @@ def test_action_status_get_command(requests_mock):
         'action_id': '1810'
     }
 
-    _, context, _ = action_status_get_command(client, args)
-    assert action_status_get_command_expected_result == context
+    hr, context, raw_response = action_status_get_command(client, args)
+    assert hr == tableToMarkdown(name='Get Action Status', t=result, removeNull=True, headers=['endpoint_id', 'status'])
+    assert context == action_status_get_command_expected_result
+    assert raw_response == result
 
 
 def test_sort_by_key__only_main_key():

@@ -11,6 +11,7 @@ import dateparser
 import urllib3
 import traceback
 from operator import itemgetter
+import copy
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -2336,7 +2337,7 @@ def get_endpoint_device_control_violations_command(client: Client, args: Dict[st
 
     headers = ['date', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
                'serial']
-    violations: list = reply.get('violations')  # type: ignore
+    violations: list = copy.deepcopy(reply.get('violations')) # type: ignore
     for violation in violations:
         timestamp: str = violation.get('timestamp')
         violation['date'] = timestamp_to_datestring(timestamp, TIME_FORMAT)
@@ -2428,7 +2429,7 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk]
     )
-    scripts = result.get('scripts')[offset:limit]  # type: ignore
+    scripts = copy.deepcopy(result.get('scripts')[offset:limit])  # type: ignore
     for script in scripts:
         timestamp = script.get('modification_date')
         script['modification_date_timestamp'] = timestamp
