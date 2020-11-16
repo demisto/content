@@ -230,7 +230,7 @@ def get_incident_title(entry):
 
     user_name = demisto.dt(entry, 'target(val.type == "User").displayName')
     if user_name and len(user_name) > 0:
-        incident_title += f' ({user_name})'
+        incident_title += f' ({user_name[0]})'
 
     return incident_title
 
