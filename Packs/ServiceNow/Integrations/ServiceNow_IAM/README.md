@@ -1,5 +1,9 @@
+> <i>Note:</i> This integration should be used along with our IAM premium pack. For further details, visit our IAM pack documentation.
+
 Integrate with ServiceNow's services to perform Identity Lifecycle Management operations.
-This integration was integrated and tested with version xx of ServiceNow IAM
+This integration was integrated and tested with London version of ServiceNow.
+For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
+
 ## Configure ServiceNow IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -13,12 +17,12 @@ This integration was integrated and tested with version xx of ServiceNow IAM
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-| create-user-enabled | Create User Command Enabled | False |
-| update-user-enabled | Update User Command Enabled | False |
-| enable-disable-user-enabled | Enable/Disable User Commands Enabled | False |
-| create-if-not-exists | Automatically create user if not found in update and enable commands | False |
-| mapper-in | Incoming Mapper | True |
-| mapper-out | Outgoing Mapper | True |
+| create_user_enabled | Create User Command Enabled | False |
+| update_user_enabled | Update User Command Enabled | False |
+| enable_disable_user_enabled | Enable/Disable User Commands Enabled | False |
+| create_if_not_exists | Automatically create user if not found in update and enable commands | False |
+| mapper_in | Incoming Mapper | True |
+| mapper_out | Outgoing Mapper | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

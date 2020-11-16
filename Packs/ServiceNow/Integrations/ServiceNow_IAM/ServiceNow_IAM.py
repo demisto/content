@@ -78,44 +78,31 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
-def merge(user_profile, full_user_data):
-    """ Merges the user_profile and the full user data, such that existing attributes in user_profile will remain as
-    they are, but attributes not provided will be added to it.
-
-    Args:
-        user_profile (dict): The user profile data, in ServiceNow format.
-        full_user_data (dict): The full user data retrieved from ServiceNow.
-
-    Return:
-        (dict) The full user profile.
-    """
-    for attribute, value in full_user_data.items():
-        if attribute not in user_profile.keys():
-            user_profile[attribute] = value
-
-    return user_profile
-
-
 def handle_exception(user_profile, e, action):
     """ Handles failed responses from ServiceNow API by setting the User Profile object with the results.
 
     Args:
         user_profile (IAMUserProfile): The User Profile object.
-        e (DemistoException): The exception error that holds the response json.
+        e (Exception): The exception error. If DemistoException, holds the response json.
         action (IAMActions): An enum represents the current action (get, update, create, etc).
     """
-    try:
-        resp = e.res.json()
-        error_message = get_error_details(e.res.json())
-    except ValueError:
-        resp = e.res.text
-        error_message = ''
+    if e.__class__ is DemistoException and hasattr(e, 'res') and e.res is not None:
+        error_code = e.res.status_code
+        try:
+            resp = e.res.json()
+            error_message = get_error_details(resp)
+        except ValueError:
+            error_message = str(e)
+    else:
+        error_code = ''
+        error_message = str(e)
 
     user_profile.set_result(action=action,
                             success=False,
-                            error_code=e.res.status_code,
-                            error_message=error_message,
-                            details=resp)
+                            error_code=error_code,
+                            error_message=error_message)
+
+    demisto.error(traceback.format_exc())
 
 
 def get_error_details(res):
@@ -172,7 +159,7 @@ def get_user_command(client, args, mapper_in):
                 details=service_now_user
             )
 
-    except DemistoException as e:
+    except Exception as e:
         handle_exception(user_profile, e, IAMActions.GET_USER)
 
     return user_profile
@@ -209,7 +196,7 @@ def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_
                     details=updated_user
                 )
 
-        except DemistoException as e:
+        except Exception as e:
             handle_exception(user_profile, e, IAMActions.ENABLE_USER)
 
     return user_profile
@@ -243,7 +230,7 @@ def disable_user_command(client, args, is_command_enabled):
                     details=updated_user
                 )
 
-        except DemistoException as e:
+        except Exception as e:
             handle_exception(user_profile, e, IAMActions.DISABLE_USER)
 
     return user_profile
@@ -276,7 +263,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
                     details=created_user
                 )
 
-        except DemistoException as e:
+        except Exception as e:
             handle_exception(user_profile, e, IAMActions.CREATE_USER)
 
     return user_profile
@@ -294,8 +281,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
             if service_now_user:
                 user_id = service_now_user.get('sys_id')
                 service_now_profile = user_profile.map_object(mapper_out)
-                full_service_now_profile = merge(service_now_profile, service_now_user)
-                updated_user = client.update_user(user_id, full_service_now_profile)
+                updated_user = client.update_user(user_id, service_now_profile)
                 user_profile.set_result(
                     action=IAMActions.UPDATE_USER,
                     success=True,
@@ -314,7 +300,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                                             skip=True,
                                             skip_reason=error_message)
 
-        except DemistoException as e:
+        except Exception as e:
             handle_exception(user_profile, e, IAMActions.UPDATE_USER)
 
     return user_profile
@@ -329,17 +315,17 @@ def main():
         base_url += api_version
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
-    mapper_in = params.get('mapper-in')
-    mapper_out = params.get('mapper-out')
+    mapper_in = params.get('mapper_in')
+    mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
 
-    is_create_enabled = params.get("create-user-enabled")
-    is_enable_disable_enabled = params.get("enable-disable-user-enabled")
-    is_update_enabled = demisto.params().get("update-user-enabled")
-    create_if_not_exists = demisto.params().get("create-if-not-exists")
+    is_create_enabled = params.get("create_user_enabled")
+    is_enable_disable_enabled = params.get("enable_disable_user_enabled")
+    is_update_enabled = demisto.params().get("update_user_enabled")
+    create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     headers = {
         'Content-Type': 'application/json',
@@ -357,30 +343,25 @@ def main():
 
     demisto.debug(f'Command being called is {command}')
 
-    try:
-        if command == 'iam-get-user':
-            user_profile = get_user_command(client, args, mapper_in)
+    if command == 'iam-get-user':
+        user_profile = get_user_command(client, args, mapper_in)
 
-        elif command == 'iam-create-user':
-            user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
+    elif command == 'iam-create-user':
+        user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
 
-        elif command == 'iam-update-user':
-            user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
-                                               is_create_enabled, create_if_not_exists)
+    elif command == 'iam-update-user':
+        user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+                                           is_create_enabled, create_if_not_exists)
 
-        elif command == 'iam-disable-user':
-            user_profile = disable_user_command(client, args, is_enable_disable_enabled)
+    elif command == 'iam-disable-user':
+        user_profile = disable_user_command(client, args, is_enable_disable_enabled)
 
-        elif command == 'iam-enable-user':
-            user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled,
-                                               is_create_enabled, create_if_not_exists)
+    elif command == 'iam-enable-user':
+        user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled,
+                                           is_create_enabled, create_if_not_exists)
 
-        if user_profile:
-            return_results(user_profile)
-
-    except Exception:
-        # We don't want to return an error entry CRUD commands execution
-        return_results(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+    if user_profile:
+        return_results(user_profile)
 
     try:
         if command == 'test-module':

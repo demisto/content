@@ -25,32 +25,32 @@ configuration:
   type: 8
 - defaultvalue: 'true'
   display: Create User Command Enabled
-  name: create-user-enabled
+  name: create_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
   display: Update User Command Enabled
-  name: update-user-enabled
+  name: update_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
   display: Enable/Disable User Commands Enabled
-  name: enable-disable-user-enabled
+  name: enable_disable_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
   display: Automatically create user if not found in update and enable commands
-  name: create-if-not-exists
+  name: create_if_not_exists
   required: false
   type: 8
 - defaultvalue: User Profile - ServiceNow (Incoming)
   display: Incoming Mapper
-  name: mapper-in
+  name: mapper_in
   required: true
   type: 0
 - defaultvalue: User Profile - ServiceNow (Outgoing)
   display: Outgoing Mapper
-  name: mapper-out
+  name: mapper_out
   required: true
   type: 0
 description: Integrate with ServiceNow's services to perform Identity Lifecycle Management operations.
