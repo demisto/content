@@ -1,4 +1,4 @@
-Palo Alto Networks Enterprise DLP discovers and protect company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
+Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
 This integration was integrated and tested with Palo Alto Networks Enterprise DLP
 ## Configure Palo Alto Networks Enterprise DLP on Cortex XSOAR
 
@@ -17,7 +17,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### pan-dlp-get-report
 ***
-Fetches DLP report associated with a Report ID
+Fetches a DLP report associated with the passed report ID.
 
 
 #### Base Command
@@ -27,20 +27,20 @@ Fetches DLP report associated with a Report ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | DLP Report ID | Required | 
-| fetch_snippets | Provide snippets with the reports | Optional | 
+| report_id | DLP report ID. | Required | 
+| fetch_snippets | If "true" will include snippets with the reports. Default is "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DLP.Report.DataProfile | unknown | Data Profile Name | 
-| DLP.Report.DataPatternMatches.DataPatternName | unknown | DLP Data Pattern Name | 
-| DLP.Report.DataPatternMatches.Detections | unknown | Snippets of DLP Detection | 
-| DLP.Report.DataPatternMatches.HighConfidenceFrequency | unknown | Number of Occurrences at High Confidence | 
-| DLP.Report.DataPatternMatches.MediumConfidenceFrequency | unknown | Number of Occurrences at Low Confidence | 
-| DLP.Report.DataPatternMatches.LowConfidenceFrequency | unknown | Number of Occurrences at Medium Confidence | 
+| DLP.Report.DataProfile | unknown | Data profile name. | 
+| DLP.Report.DataPatternMatches.DataPatternName | unknown | DLP data pattern name. | 
+| DLP.Report.DataPatternMatches.Detections | unknown | Snippets of DLP detections. | 
+| DLP.Report.DataPatternMatches.HighConfidenceFrequency | unknown | Number of occurrences at High confidence. | 
+| DLP.Report.DataPatternMatches.MediumConfidenceFrequency | unknown | Number of occurrences at Low confidence. | 
+| DLP.Report.DataPatternMatches.LowConfidenceFrequency | unknown | Number of occurrences at Medium confidence. | 
 
 
 #### Command Example
