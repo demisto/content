@@ -29,6 +29,20 @@ PROTOCOL_MAPPING = {
     6: 'ICMP6',
 }
 
+TASK_STATE = {
+    0: 'Pending',
+    1: 'Running',
+    2: 'Cancelling',
+    3: 'Cancelled',
+    4: 'Done',
+    5: 'Error',
+    6: 'Aborting',
+    7: 'Aborted',
+    8: 'Warning',
+    9: 'to_continue',
+    10: 'unknown'
+}
+
 ''' CLIENT CLASS '''
 
 
@@ -152,6 +166,20 @@ def split_param(args, name, default_val='', skip_if_none=False):
         args[name] = args.get(name, default_val).split(',')
 
 
+def resolve_enum(entity_object, field_name, enum_dict):
+    """
+    Method resolves enum values to
+    """
+    if type(entity_object) == list:
+        for entity in entity_object:
+            if field_name in entity:
+                entity[field_name] = enum_dict.get(entity[field_name], entity[field_name])
+
+    else:
+        if field_name in entity_object:
+            entity_object[field_name] = enum_dict.get(entity_object[field_name], entity_object[field_name])
+
+
 def list_adom_devices_command(client, args):
     devices_data = client.fortimanager_api_call("get", f"/dvmdb/{get_global_or_adom(client, args)}/device"
                                                        f"{get_specific_entity(args.get('device'))}",
@@ -161,7 +189,6 @@ def list_adom_devices_command(client, args):
 
     # Only show vdom names in human readable
     hr_devices_data = devices_data
-
     if type(devices_data) == list:
         for device in devices_data:
             vdom_names = []
@@ -215,13 +242,7 @@ def list_firewall_addresses_command(client, args):
                'comment'] if not args.get('address') else None
 
     # change address type from number to text
-    if type(firewall_addresses) == list:
-        for address in firewall_addresses:
-            if 'type' in address:
-                address['type'] = ADDRESS_TYPE_MAPPING.get(address['type'], address['type'])
-
-    else:
-        firewall_addresses['type'] = ADDRESS_TYPE_MAPPING.get(firewall_addresses['type'], firewall_addresses['type'])
+    resolve_enum(firewall_addresses, field_name='type', enum_dict=ADDRESS_TYPE_MAPPING)
 
     return CommandResults(
         outputs_prefix='FortiManager.Address',
@@ -367,12 +388,7 @@ def list_custom_service_command(client, args):
     headers = ['name', 'category', 'protocol', 'iprange', 'fqdn', 'comment'] if not args.get('custom_service') else None
 
     # change service protocal and category from number to text
-    if type(custom_services) == list:
-        for service in custom_services:
-            service['protocol'] = PROTOCOL_MAPPING.get(service['protocol'], service['protocol'])
-
-    else:
-        custom_services['protocol'] = PROTOCOL_MAPPING.get(custom_services['protocol'], custom_services['protocol'])
+    resolve_enum(custom_services, field_name='protocol', enum_dict=PROTOCOL_MAPPING)
 
     return CommandResults(
         outputs_prefix='FortiManager.CustomService',
@@ -612,7 +628,10 @@ def install_policy_package_command(client, args):
 def install_policy_package_status_command(client, args):
     task_data = client.fortimanager_api_call('get', f"/task/task/{args.get('task_id')}")
 
-    headers = ['id', 'title', 'adom', 'percent', 'line']
+    headers = ['id', 'title', 'adom', 'percent', 'state', 'line']
+
+    # resolve task state from number to text
+    resolve_enum(task_data, field_name='state', enum_dict=TASK_STATE)
 
     return CommandResults(
         outputs_prefix='FortiManager.Installation',
