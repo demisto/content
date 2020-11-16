@@ -34,7 +34,7 @@ class Client(BaseClient):
     Okta IAM Client class that implements logic to authenticate with Okta.
     """
 
-    def test(self):
+    def test_connection(self):
         uri = 'users/me'
         self._http_request(method='GET', url_suffix=uri)
 
@@ -243,8 +243,17 @@ def get_error_details(res):
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client):
-    client.test()
+def test_module(client, is_fetch, fetch_query_filter, first_fetch_str):
+    if is_fetch and not fetch_query_filter:
+        raise DemistoException('You must define the Fetch Query Filter parameter in order to fetch incidents.')
+
+    try:
+        dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
+    except AttributeError:
+        raise DemistoException('First fetch timestamp parameter is not in the correct format.')
+
+    client.test_connection()
+
     return_results('ok')
 
 
@@ -441,13 +450,14 @@ def get_assigned_user_for_app_command(client, args):
     )
 
 
-def fetch_incidents(client, query_filter, first_fetch, fetch_limit):
+def fetch_incidents(client, last_run, query_filter, first_fetch, fetch_limit):
     """ If no events were saved from last run, returns new events from Okta's /log API. Otherwise,
     returns the events from last run. In both cases, no more than `fetch_limit` incidents will be returned,
     and the rest of them will be saved for next run.
 
         Args:
             client: (BaseClient) Okta client.
+            last_run: (dict) The "last run" object that was set on the previous run.
             query_filter: (str) A query filter for okta logs API.
             first_fetch: (str) First fetch time, in DATE_FORMAT format.
             fetch_limit: (int) Maximum number of incidents to return.
@@ -456,7 +466,6 @@ def fetch_incidents(client, query_filter, first_fetch, fetch_limit):
             next_run: (dict) The "last run" object for the next run.
     """
 
-    last_run = demisto.getLastRun()
     incidents = last_run.get('incidents', [])
     last_run_time = last_run.get('last_run_time', first_fetch)  # if last_run_time is undefined, use first_fetch param
     time_now = datetime.now().strftime(DATE_FORMAT)
@@ -508,9 +517,10 @@ def main():
     is_update_enabled = demisto.params().get("update-user-enabled")
     create_if_not_exists = demisto.params().get("create-if-not-exists")
 
-    fetch_limit = int(params.get('max_fetch'))
     fetch_query_filter = params.get('fetch_query_filter')
-    first_fetch = dateparser.parse(params.get('first_fetch')).strftime(DATE_FORMAT)
+    first_fetch_str = params.get('first_fetch')
+    fetch_limit = int(params.get('max_fetch'))
+    is_fetch = params.get('isFetch')
 
     headers = {
         'Content-Type': 'application/json',
@@ -550,7 +560,7 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client)
+            test_module(client, is_fetch, fetch_query_filter, first_fetch_str)
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
@@ -559,7 +569,11 @@ def main():
             return_results(get_assigned_user_for_app_command(client, args))
 
         elif command == 'fetch-incidents':
-            incidents, next_run = fetch_incidents(client, fetch_query_filter, first_fetch, fetch_limit)
+            last_run = demisto.getLastRun()
+            first_fetch = dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
+
+            incidents, next_run = fetch_incidents(client, last_run, fetch_query_filter, first_fetch, fetch_limit)
+
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 

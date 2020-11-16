@@ -27,10 +27,12 @@ For more information, please refer to the [Identity Lifecycle Management article
 | incidentFetchInterval | Incidents Fetch Interval | False |
 | incidentType | Incident type | False |
 | fetch_query_filter | Fetch Query Filter | True |
-| fetch_time | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+| first_fetch | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
 
 * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
-
+* Generate the `Fetch Query Filter` parameter for okta logs API to retrieve only applications configured in XSOAR. In order to generate the filter, go to Okta's System Log and use the advanced search to retrieve only desired logs.
+  For example, to retrieve only additions/removal of users to/from an application with ID "0oae3ioe51sQ64Aui2h7", you will need to use the following filter: `(eventType eq "application.user_membership.add" or eventType eq "application.user_membership.remove") and target.id co "0oae3ioe51sQ64Aui2h7"`.
+  For more information about the filtering syntax, visit [Okta's API docs](https://developer.okta.com/docs/reference/api-overview/#filtering).
 
 4. Click **Test** to check that you are able to connect to the integration.
 ## Commands

@@ -70,9 +70,9 @@ configuration:
 - display: Fetch Query Filter
   name: fetch_query_filter
   type: 0
-  required: true
+  required: false
   additionalinfo: Generate a query filter for okta logs API to retrieve only applications
-    configured in XSOAR.
+    configured in XSOAR. To generate the filter, go to Okta's System Log and use the advanced search.
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch

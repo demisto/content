@@ -378,7 +378,7 @@ def test_get_assigned_user_for_app_command(mocker):
     assert 'Okta User App Assignment' in command_result.readable_output
 
 
-def test_fetch_incidents_two_logs_batches(mocker):
+def test_fetch_incidents__two_logs_batches(mocker):
     """
     Given:
         - An Okta IAM client object and fetch-relevant instance parameters
@@ -392,6 +392,7 @@ def test_fetch_incidents_two_logs_batches(mocker):
     mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
     events, _ = fetch_incidents(
         client=mock_client(),
+        last_run={},
         query_filter='mock_query_filter',
         first_fetch='mock_first_fetch',
         fetch_limit=5
@@ -403,7 +404,7 @@ def test_fetch_incidents_two_logs_batches(mocker):
     assert json.loads(events[2]['rawJSON']).get('mock_log3') == 'mock_value3'
 
 
-def test_fetch_incidents_fetch_limit(mocker):
+def test_fetch_incidents__fetch_limit(mocker):
     """
     Given:
         - An Okta IAM client object and fetch-relevant instance parameters
@@ -417,12 +418,48 @@ def test_fetch_incidents_fetch_limit(mocker):
     mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
     events, _ = fetch_incidents(
         client=mock_client(),
+        last_run={},
         query_filter='mock_query_filter',
         first_fetch='mock_first_fetch',
         fetch_limit=2
     )
 
     assert len(events) == 2
+
+
+def test_fetch_incidents__last_run():
+    """
+    Given:
+        - An Okta IAM client object and fetch-relevant instance parameters
+        - Last run object contains three incidents.
+    When:
+        - Calling function fetch_incidents
+        - Fetch Limit is 2.
+    Then:
+        - Ensure only the first two incidents from the last run are retrieved.
+        - Ensure that the next_run object returned contains the third incident.
+        - Ensure 'last_run_time' key exists and holds a datetime string in the correct format.
+    """
+    from datetime import datetime
+
+    last_run = {
+        'incidents': [{'mock_log1': 'mock_value1'}, {'mock_log2': 'mock_value2'}, {'mock_log3': 'mock_value3'}]
+    }
+
+    events, next_run = fetch_incidents(
+        client=mock_client(),
+        last_run=last_run,
+        query_filter='mock_query_filter',
+        first_fetch='mock_first_fetch',
+        fetch_limit=2
+    )
+
+    last_run_time = datetime.strptime(next_run.get('last_run_time'), '%Y-%m-%dT%H:%M:%SZ')
+
+    assert len(events) == 2
+    assert len(next_run.get('incidents')) == 1
+    assert next_run['incidents'][0].get('mock_log3') == 'mock_value3'
+    assert isinstance(last_run_time, datetime)
 
 
 def mock_get_logs_batch(url_suffix='', params=None, full_url=''):
