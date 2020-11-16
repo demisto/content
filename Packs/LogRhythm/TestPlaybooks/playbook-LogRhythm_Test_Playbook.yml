@@ -693,7 +693,7 @@ view: |-
 inputs:
 - key: alarm_id
   value:
-    simple: "1150"
+    simple: "1969"
   required: false
   description: ""
   playbookInputQuery:
