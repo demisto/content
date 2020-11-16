@@ -553,3 +553,23 @@ def test_get_escalations_no_new(requests_mock, mocker):
     assert res == [{'Type': 1, 'Contents': 'No new escalations', 'ContentsFormat': 'text'}]
     assert escalations_spy.call_count == 1
 
+def test_get_escalations_throws_exception(requests_mock, mocker):
+    from RespondAnalyst import get_escalations_command, RestClient
+    args = {'respond_tenant_id': 'Tenant 1', 'incident_id': '1'}
+    rest_client = RestClient(
+        base_url='https://localhost:6078',
+        auth=('un', 'pw'),
+        verify=False
+    )
+    requests_mock.get(
+        f'{BASE_URL}/session/tenantIdMapping',
+        json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
+    )
+    debug_spy = mocker.spy(demisto, 'debug')
+    mocker.patch.object(rest_client, 'construct_and_send_new_escalations_query').side_effect = Exception('Unauthorized')
+    with pytest.raises(Exception):
+        get_escalations_command(rest_client, args)
+    assert debug_spy.call_count == 2
+    debug_spy.assert_called_with("Error while getting escalation data in Respond incoming mirror for incident 1 Error message: Unauthorized")
+
+
