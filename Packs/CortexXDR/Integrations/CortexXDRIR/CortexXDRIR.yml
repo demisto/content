@@ -1905,6 +1905,17 @@ script:
       command to check if this action completed successfully.
     name: xdr-retrieve-file-details
     outputs:
+    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails
+      description: Data — Link to the file retrieved by Retrieve File request.
+    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.endpoint_id
+      description: Endpoint ID.
+      type: string
+    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.file_link
+      description: Link to the file retrieved by Retrieve File request.
+      type: string
+    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.action_id
+      description: Action ID of the Retrieve File request
+      type: string
     - contextPath: File
       description: The file details command results.
     - contextPath: File.Name
