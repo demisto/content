@@ -1,0 +1,259 @@
+description: This playbook gets all available assets ( alerts, vulnerabilities and
+  devices) and send then to configured PANW third-party integration SIEM server.
+id: PANW IoT 3rd Party SIEM Integration - Bulk Export to SIEM
+inputs: []
+name: PANW IoT 3rd Party SIEM Integration - Bulk Export to SIEM
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 19bc2352-d86e-4c74-8ad5-d64c9b97a900
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 19bc2352-d86e-4c74-8ad5-d64c9b97a900
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": -80
+        }
+      }
+  "1":
+    continueonerror: true
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+      - "4"
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Syslog Sender
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      id: 0540fb12-7121-46f9-8e41-10c5cf429dd5
+      iscommand: false
+      name: IsIntegrationAvailable
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 0540fb12-7121-46f9-8e41-10c5cf429dd5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 90
+        }
+      }
+  "2":
+    continueonerror: true
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integrationName:
+        simple: siem
+      message:
+        simple: Syslog Sender (SIEM) instance is not enabled
+      playbookName:
+        simple: PANW IoT 3rd Party SIEM Integration - Bulk Export to SIEM
+      status:
+        simple: disabled
+      type:
+        simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IOT cloud.
+      id: 2756fb73-770f-4f33-8949-47ccd50b94d9
+      iscommand: true
+      name: panw-iot-3rd-party-report-status-to-panw
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: 2756fb73-770f-4f33-8949-47ccd50b94d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 250
+        }
+      }
+  "3":
+    continueonerror: true
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets all available alerts from the IoT cloud and sends it to the
+        SIEM server.
+      id: 942631c7-ed9c-4c01-8a97-2eae87593d92
+      iscommand: false
+      name: SendAllPANWIoTAlertsToSIEM
+      script: send_bulk_panw_iot_alerts_to_siem
+      type: regular
+      version: -1
+    taskid: 942631c7-ed9c-4c01-8a97-2eae87593d92
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 500
+        }
+      }
+  "4":
+    continueonerror: true
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets all available devices from the IoT cloud and sends it to the
+        SIEM server
+      id: d886f89d-c9cf-442e-8afa-fb3c9e6550b8
+      iscommand: false
+      name: SendAllPANWIoTDevicesToSIEM
+      script: send_bulk_panw_iot_devices_to_siem
+      type: regular
+      version: -1
+    taskid: d886f89d-c9cf-442e-8afa-fb3c9e6550b8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 500
+        }
+      }
+  "5":
+    continueonerror: true
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets all available vulnerabilities from the IoT cloud and sends
+        it to the SIEM server.
+      id: 93cd8102-ac4b-45e1-8c46-e9de592f7f60
+      iscommand: false
+      name: SendAllPANWIoTVulnerabilitiesToSIEM
+      script: send_bulk_panw_iot_vulnerabilities_to_siem
+      type: regular
+      version: -1
+    taskid: 93cd8102-ac4b-45e1-8c46-e9de592f7f60
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 500
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 822e49f8-293b-4475-854e-8322b27792fc
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 822e49f8-293b-4475-854e-8322b27792fc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 850
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 1220,
+        "x": 220,
+        "y": -80
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

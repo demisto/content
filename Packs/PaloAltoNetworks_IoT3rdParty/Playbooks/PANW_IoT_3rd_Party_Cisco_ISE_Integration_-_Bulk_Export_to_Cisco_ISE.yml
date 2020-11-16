@@ -1,6 +1,6 @@
 description: This playbook gets all available device inventory from PANW IoT Cloud
   and updates/create endpoints with custom attributes on Cisco ISE.
-id: 103d4cc0-054a-4d4f-8f56-2493486a7433
+id: PANW IoT 3rd Party Cisco ISE Integration - Bulk Export to Cisco ISE
 inputs: []
 name: PANW IoT 3rd Party Cisco ISE Integration - Bulk Export to Cisco ISE
 outputs: []
@@ -22,6 +22,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 370c0965-1323-4468-8516-60d251554af6
     timertriggers: []
     type: start

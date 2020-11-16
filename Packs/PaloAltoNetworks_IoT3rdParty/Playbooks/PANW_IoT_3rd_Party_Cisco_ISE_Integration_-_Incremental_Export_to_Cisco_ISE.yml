@@ -1,7 +1,7 @@
 description: Playbook to be run every 15 minutes via a job. Each run will get incremental
   updates for devices, and will update or create new endpoints in Cisco ISE with PANW
   IOT discovered attributes (ISE custom attributes)
-id: 8c6a6382-3e20-41de-829b-12d73d503927
+id: PANW IoT 3rd Party Cisco ISE Integration - Incremental Export to Cisco ISE
 inputs: []
 name: PANW IoT 3rd Party Cisco ISE Integration - Incremental Export to Cisco ISE
 outputs: []
@@ -23,6 +23,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 266f80f8-72a4-4b45-85d2-712ef6221a59
     timertriggers: []
     type: start
