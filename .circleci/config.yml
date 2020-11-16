@@ -754,7 +754,6 @@ jobs:
             - run:
                 name: Run Tests - Server 5.0
                 shell: /bin/bash
-                when: always
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
                     then
@@ -834,7 +833,6 @@ jobs:
             - run:
                 name: Run Tests - 5.5
                 shell: /bin/bash
-                when: always
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
                     then
@@ -902,7 +900,6 @@ jobs:
             - run:
                 name: Run Tests - Demisto 6.0
                 shell: /bin/bash
-                when: always
                 no_output_timeout: 5h
                 command: |
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
@@ -984,7 +981,6 @@ jobs:
             - run:
                 name: Run Tests - Demisto Master
                 shell: /bin/bash
-                when: always
                 no_output_timeout: 5h
                 command: |
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
@@ -1149,7 +1145,6 @@ jobs:
       - *create_instance
       - run:
           name: Wait until server ready
-          when: always
           command: |
             python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
       - run:
