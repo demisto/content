@@ -1,0 +1,23 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#AB47BC",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"hours": 0,
+	"hoursR": 0,
+	"id": "PANW IoT 3rd Party SIEM Integration - Alert",
+	"locked": false,
+	"name": "PANW IoT 3rd Party SIEM Integration - Alert",
+	"playbookId": "PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM",
+	"preProcessingScript": "",
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": false,
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

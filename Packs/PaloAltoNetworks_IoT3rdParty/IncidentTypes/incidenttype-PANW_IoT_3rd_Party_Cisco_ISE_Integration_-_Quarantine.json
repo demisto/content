@@ -1,0 +1,23 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#B287FE",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"hours": 0,
+	"hoursR": 0,
+	"id": "PANW IoT 3rd Party Cisco ISE Integration - Quarantine",
+	"locked": false,
+	"name": "PANW IoT 3rd Party Cisco ISE Integration - Quarantine",
+	"playbookId": "PANW IoT 3rd Party Cisco ISE Integration - Quarantine Device in Cisco ISE",
+	"preProcessingScript": "",
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": false,
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

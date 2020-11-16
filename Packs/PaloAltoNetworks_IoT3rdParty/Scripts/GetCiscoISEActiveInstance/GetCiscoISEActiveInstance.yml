@@ -1,8 +1,8 @@
 comment: This Script gets - TODO
 commonfields:
-  id: 85188905-f908-4b6a-8ada-e350f8a29874
+  id: GetCiscoISEActiveInstance
   version: -1
-dockerimage: demisto/python3:3.8.6.12176
+dockerimage: demisto/python3:3.8.6.13358
 enabled: true
 name: GetCiscoISEActiveInstance
 outputs:
@@ -10,7 +10,6 @@ outputs:
   description: Returns instance name of the active Cisco ISE node
 - contextPath: PaloAltoIoTIntegrationBase.NodeErrorStatus
   description: Returns the nodes error status if no active Cisco ISE nodes are found
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -20,3 +19,6 @@ tags:
 - PANW IoT 3rd Party Integration
 - Cisco ISE
 type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
