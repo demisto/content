@@ -43,4 +43,4 @@ def test_extract_fqdn_or_domain_empty_indicators(mocker):
     main()
     results = demisto.results.call_args[0]
 
-    assert results[0] == ''
+    assert results[0] == [{'Contents': [], 'ContentsFormat': 'json', 'Type': 1}]

@@ -1,0 +1,156 @@
+{
+  "historyRevisionReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/history-revisions?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "childPolicyCount": 0,
+  "responsePageReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/response-pages?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "policyBuilderReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/policy-builder?ver=15.1.0"
+  },
+  "serverTechnologyReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/server-technologies?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "blockingSettingReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/blocking-settings?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "hostNameReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/host-names?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "dataGuardReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/data-guard?ver=15.1.0"
+  },
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000?ver=15.1.0",
+  "versionDeviceName": "f5asm.qmasters.co",
+  "threatCampaignSettingReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/threat-campaign-settings?ver=15.1.0"
+  },
+  "signatureReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/signatures?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "filetypeReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/filetypes?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "createdDatetime": "2020-09-08T11:27:48Z",
+  "databaseProtectionReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/database-protection?ver=15.1.0"
+  },
+  "modifierName": "",
+  "id": "0000",
+  "versionDatetime": "2020-09-08T11:27:49Z",
+  "subPath": "/Common",
+  "versionLastChange": " Security Policy /Common/New_Policy [add]: Type was set to Parent.\nEncoding Selected was set to true.\nApplication Language was set to utf-8.\nDifferentiate between HTTP and HTTPS URLs was set to Protocol Independent.\nPolicy Name was set to /Common/New_Policy.\nEnforcement Mode was set to Transparent. { audit: policy = /Common/New_Policy, username = admin, client IP = 192.168.30.99 }",
+  "name": "New_Policy",
+  "caseInsensitive": false,
+  "headerSettingsReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/header-settings?ver=15.1.0"
+  },
+  "auditLogReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/audit-logs?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "sectionReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/sections?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "disallowedGeolocationReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/disallowed-geolocations?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "flowReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/flows?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "description": "This is a description!",
+  "fullPath": "/Common/New_Policy",
+  "policyBuilderParameterReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/policy-builder-parameter?ver=15.1.0"
+  },
+  "signatureSettingReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/signature-settings?ver=15.1.0"
+  },
+  "type": "parent",
+  "threatCampaignReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/threat-campaigns?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "partition": "Common",
+  "managedByBewaf": false,
+  "methodReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/methods?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "templateReference": {
+    "link": "https://localhost/mgmt/tm/asm/policy-templates/KGO8Jk0HA4ipQRG8Bfd_Dw?ver=15.1.0",
+    "title": "Fundamental"
+  },
+  "policyBuilderHeaderReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/policy-builder-header?ver=15.1.0"
+  },
+  "creatorName": "admin",
+  "_kind": "tm:asm:policies:policystate",
+  "ipIntelligenceReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/ip-intelligence?ver=15.1.0"
+  },
+  "headerReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/headers?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "protocolIndependent": true,
+  "policyBuilderServerTechnologiesReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/policy-builder-server-technologies?ver=15.1.0"
+  },
+  "actionItemReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/action-items?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "microserviceReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/microservices?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "policyBuilderFiletypeReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/policy-builder-filetype?ver=15.1.0"
+  },
+  "signatureSetReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/signature-sets?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "lastUpdateMicros": 0,
+  "applicationLanguage": "utf-8",
+  "openApiFileReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/open-api-files?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "disabledActionItemReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/disabled-action-items?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "characterSetReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/character-sets?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "suggestionReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/suggestions?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "isModified": false,
+  "whitelistIpReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/whitelist-ips?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "generalReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/general?ver=15.1.0"
+  },
+  "versionPolicyName": "/Common/New_Policy",
+  "policyBuilderCentralConfigurationReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/policy-builder-central-configuration?ver=15.1.0"
+  }
+}
