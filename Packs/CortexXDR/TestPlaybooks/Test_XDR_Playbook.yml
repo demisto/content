@@ -256,7 +256,7 @@ tasks:
         simple: This alert from content  TestXDRPlaybook description
       alert_name:
         simple: This alert from content  TestXDRPlaybook
-      event_timestampt: {}
+      event_timestamp: {}
       local_ip:
         simple: 196.168.0.111
       local_port:

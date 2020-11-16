@@ -775,7 +775,7 @@ maximum of 60 alerts.
 | local_port | Integer value for the source port. | Required | 
 | remote_ip | String value of the destination IP<br/>address. | Required | 
 | remote_port | Integer value for the destination<br/>port. | Required | 
-| event_timestampt | Integer value representing the epoch of the time the alert occurred in milliseconds or String value of date format 2019-10-23T10:00:00. If not set then the event time will be defined as now. | Optional | 
+| event_timestamp | Integer value representing the epoch of the time the alert occurred in milliseconds or String value of date format 2019-10-23T10:00:00. If not set then the event time will be defined as now. | Optional | 
 | severity | String value of alert severity:<br/>Informational, Low, Medium, High, or Unknown | Optional | 
 | alert_name | String defining the alert name | Required | 
 | alert_description | String defining the alert description | Optional | 
@@ -786,7 +786,7 @@ maximum of 60 alerts.
 There is no context output for this command.
 
 ##### Command Example
-```!xdr-insert-parsed-alert product="SandBlast" vendor="Checkpoint" local_ip="196.168.0.1" local_port="600" remote_ip="5.5.5.5" remote_port="500" event_timestampt="2020-01-01T00:00:00" severity="High" alert_name="some alert" alert_description="this is test alert"```
+```!xdr-insert-parsed-alert product="SandBlast" vendor="Checkpoint" local_ip="196.168.0.1" local_port="600" remote_ip="5.5.5.5" remote_port="500" event_timestamp="2020-01-01T00:00:00" severity="High" alert_name="some alert" alert_description="this is test alert"```
 
 ##### Human Readable Output
 Alert inserted successfully
