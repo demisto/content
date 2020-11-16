@@ -90,6 +90,8 @@ def test_get_user_command__bad_response(mocker):
     Then:
         - Ensure the resulted User Profile object holds information about the bad response.
     """
+    import demistomock as demisto
+
     client = mock_client()
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
@@ -97,6 +99,7 @@ def test_get_user_command__bad_response(mocker):
     bad_response.status_code = 500
     bad_response._content = b'{"error": {"detail": "details", "message": "message"}}'
 
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
     user_profile = get_user_command(client, args, 'mapper_in')
