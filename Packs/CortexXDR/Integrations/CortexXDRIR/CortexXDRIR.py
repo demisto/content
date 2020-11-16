@@ -111,30 +111,6 @@ def clear_trailing_whitespace(res):
     return res
 
 
-def arg_to_dictionary(arg: Any) -> dict:
-    """
-
-    Args:
-        arg: string, looks like: 'param1_name=param1_value, param2_name=param2_value'
-
-    Returns: dictionary : { param1_name : param1_value,
-                            param2_name : param2_value}
-
-    """
-    list_of_arg: list = argToList(arg)
-    args_dictionary: dict = {}
-    try:
-        for item in list_of_arg:
-            key, value = item.split('=')
-            value = int(value) if value.isdigit() else value
-            args_dictionary[key] = value
-
-    except ValueError:
-        raise ValueError('Please enter comma separated parameters at the following way: '
-                         'param1_name=param1_value,param2_name=param2_value')
-    return args_dictionary
-
-
 class Client(BaseClient):
 
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
@@ -1150,7 +1126,6 @@ class Client(BaseClient):
     def get_file(self, file_link):
         reply = self._http_request(
             method='POST',
-            url_suffix=str(),
             full_url=file_link,
             timeout=self.timeout,
             resp_type='content'

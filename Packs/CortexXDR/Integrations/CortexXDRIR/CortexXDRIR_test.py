@@ -1378,34 +1378,6 @@ def test_action_status_get_command(requests_mock):
     assert action_status_get_command_expected_result == context
 
 
-def test_arg_to_dictionary():
-    """
-            Given:
-                -string
-            When:
-                -when user enter params argument at "run script" command
-            Then:
-                - returns dictionary of params
-    """
-    from CortexXDRIR import arg_to_dictionary
-
-    string = 'param1_name=param1_value, param2_name=param2_value'
-    ret_value = {
-        "param1_name": "param1_value",
-        "param2_name": "param2_value"
-    }
-    assert arg_to_dictionary(string) == ret_value
-
-    string = 'param1=1, param2=2'
-    ret_value = {
-        "param1": 1,
-        "param2": 2
-    }
-
-    assert arg_to_dictionary(string) == ret_value
-    assert arg_to_dictionary(None) == {}
-
-
 def test_sort_by_key__only_main_key():
     """
     Given:
