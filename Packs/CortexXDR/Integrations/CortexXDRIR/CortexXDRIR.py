@@ -2337,7 +2337,7 @@ def get_endpoint_device_control_violations_command(client: Client, args: Dict[st
 
     headers = ['date', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
                'serial']
-    violations: list = copy.deepcopy(reply.get('violations')) # type: ignore
+    violations: list = copy.deepcopy(reply.get('violations'))  # type: ignore
     for violation in violations:
         timestamp: str = violation.get('timestamp')
         violation['date'] = timestamp_to_datestring(timestamp, TIME_FORMAT)
