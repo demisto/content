@@ -428,37 +428,37 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY | Optional | 
-| time-range-date-to | End time for search in the following format -  MM/DD/YYYY | Optional | 
-| time-range-value | The amount of units to go back in time | Optional | 
-| time-range-unit | The search unit. login and epoch are only available if timeRangeValue is not provided. | Optional | 
-| query | Query to run in Prisma Cloud config API (use RQL) | Required | 
-|limit |Maximum number of entries to return | Optional |
+| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY. | Optional | 
+| time-range-date-to | End time for search in the following format -  MM/DD/YYYY. | Optional | 
+| time-range-value | The number of units to go back in time for the search. | Optional | 
+| time-range-unit | The search unit. Possible values are: "hour", "day", "week", "month", "year", "login", and "epoch". The login and epoch values are only available if the time-range-value argument is not provided. | Optional | 
+| query | Query to run in Prisma Cloud config API (use RQL). | Required | 
+|limit |The maximum number of entries to return. Default is 100. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Asset.accountId | Date | Cloud Account ID | 
-| Redlock.Asset.accountName | String | Cloud Account Name | 
+| Redlock.Asset.accountId | Date | Cloud Account ID. | 
+| Redlock.Asset.accountName | String | Cloud account Name | 
 | Redlock.Asset.allowDrillDown | Boolean |  | 
-| Redlock.Asset.cloudType | String | Cloud Type | 
-| Redlock.Asset.deleted | Boolean | Asset was deleted? | 
-| Redlock.Asset.hasAlert | Boolean | Asset has Prisma Cloud alert? | 
-| Redlock.Asset.hasExtFindingRiskFactors | Boolean | Has External Finding Risk Factors? | 
-| Redlock.Asset.hasExternalFinding | Boolean | Has External Finding? | 
-| Redlock.Asset.hasExternalIntegration | Boolean | Has External Integration? | 
-| Redlock.Asset.hasNetwork | Boolean | Has Network? | 
-| Redlock.Asset.id | String | Redlock Asset ID | 
-| Redlock.Asset.data | Unknown | Redlock Asset specific data |
-| Redlock.Asset.insertTs | Date | Insert Ts | 
-| Redlock.Asset.name | String | Asset Name | 
-| Redlock.Asset.regionId | String | Cloud Region ID | 
-| Redlock.Asset.regionName | String | Cloud Region Name | 
-| Redlock.Asset.resourceType | String | Cloud Resource type | 
-| Redlock.Asset.rrn | String | Cloud RRN | 
-| Redlock.Asset.service | String | Cloud service | 
+| Redlock.Asset.cloudType | String | Cloud type. | 
+| Redlock.Asset.deleted | Boolean | Whether the asset was delete. | 
+| Redlock.Asset.hasAlert | Boolean | Whether the asset has a Prisma Cloud alert. | 
+| Redlock.Asset.hasExtFindingRiskFactors | Boolean | Whether the asset has external finding risk factors. | 
+| Redlock.Asset.hasExternalFinding | Boolean | Whether the asset has an external finding. | 
+| Redlock.Asset.hasExternalIntegration | Boolean | Whether the asset has an external integration. | 
+| Redlock.Asset.hasNetwork | Boolean |Whether the asset has a network. | 
+| Redlock.Asset.id | String | The Redlock asset ID. | 
+| Redlock.Asset.data | Unknown | The Redlock asset specific data. |
+| Redlock.Asset.insertTs | Date | The asset insert TS. | 
+| Redlock.Asset.name | String | The asset name. | 
+| Redlock.Asset.regionId | String | The cloud region ID of the asset. | 
+| Redlock.Asset.regionName | String | The cloud region name of the asset. | 
+| Redlock.Asset.resourceType | String | The cloud resource type of the asset. | 
+| Redlock.Asset.rrn | String | The cloud RRN of the asset. | 
+| Redlock.Asset.service | String | The state ID of the asset. | 
 | Redlock.Asset.stateId | String | State ID | 
 
 
