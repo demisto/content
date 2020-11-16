@@ -492,15 +492,14 @@ script:
       description: The exact CLI command string.
       type: string
   - arguments:
-    - description: Start time for search in the following string format -  MM/DD/YYYY
+    - description: Start time for search in the following string format -  MM/DD/YYYY.
       name: time-range-date-from
-    - description: End time for search in the following format -  MM/DD/YYYY
+    - description: End time for search in the following format -  MM/DD/YYYY.
       name: time-range-date-to
-    - description: The amount of units to go back in time
+    - description: The number of units to go back in time for the search.
       name: time-range-value
     - auto: PREDEFINED
-      description: The search unit. login and epoch are only available if timeRangeValue
-        is not provided.
+      description: 'The search unit. Possible values are: "hour", "day", "week", "month", "year", "login", and "epoch". The login and epoch values are only available if the time-range-value argument is not provided.'
       name: time-range-unit
       predefined:
       - hour
@@ -511,73 +510,73 @@ script:
       - login
       - epoch
     - name: query
-      description: Query to run in Prisma Cloud config API (use RQL)
+      description: Query to run in Prisma Cloud config API (use RQL).
       required: true
     - name: limit
-      description: Maximum number of entries to return
+      description: The maximum number of entries to return. Default is 100.
       defaultValue: 100
-    description: Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL language
+    description: Search the configuration inventory on the Prisma Cloud (RedLock) platform using RQL language.
     name: redlock-search-config
     outputs:
     - contextPath: Redlock.Asset.accountId
-      description: Cloud Account ID
+      description: Cloud account ID.
       type: Date
     - contextPath: Redlock.Asset.accountName
-      description: Cloud Account Name
+      description: Cloud account name.
       type: String
     - contextPath: Redlock.Asset.allowDrillDown
       description: ''
       type: Boolean
     - contextPath: Redlock.Asset.cloudType
-      description: Cloud Type
+      description: Cloud type.
       type: String
     - contextPath: Redlock.Asset.deleted
-      description: Asset was deleted?
+      description: Whether the asset was deleted.
       type: Boolean
     - contextPath: Redlock.Asset.hasAlert
-      description: Asset has Prisma Cloud alert?
+      description: Whether the asset has a Prisma Cloud alert.
       type: Boolean
     - contextPath: Redlock.Asset.hasExtFindingRiskFactors
-      description: Has External Finding Risk Factors?
+      description: Whether the asset has external finding risk factors.
       type: Boolean
     - contextPath: Redlock.Asset.hasExternalFinding
-      description: Has External Finding?
+      description: Whether the asset has an external finding.
       type: Boolean
     - contextPath: Redlock.Asset.hasExternalIntegration
-      description: Has External Integration?
+      description: Whether the asset has an external integration.
       type: Boolean
     - contextPath: Redlock.Asset.hasNetwork
-      description: Has Network?
+      description: Whether the asset has a network.
       type: Boolean
     - contextPath: Redlock.Asset.id
-      description: Redlock Asset ID
+      description: The Redlock asset ID.
       type: String
     - contextPath: Redlock.Asset.data
-      description: Redlock Asset specific data
+      description: The Redlock asset specific data.
       type: Unknown
     - contextPath: Redlock.Asset.insertTs
-      description: Insert Ts
+      description: The asset insert TS.
       type: Date
     - contextPath: Redlock.Asset.name
-      description: Asset Name
+      description: The asset name.
       type: String
     - contextPath: Redlock.Asset.regionId
-      description: Cloud Region ID
+      description: The cloud region ID of the asset.
       type: String
     - contextPath: Redlock.Asset.regionName
-      description: Cloud Region Name
+      description: The cloud region name of the asset.
       type: String
     - contextPath: Redlock.Asset.resourceType
-      description: Cloud Resource type
+      description: The cloud resource type of the asset.
       type: String
     - contextPath: Redlock.Asset.rrn
-      description: Cloud RRN
+      description: The cloud RRN of the asset.
       type: String
     - contextPath: Redlock.Asset.service
-      description: Cloud service
+      description: The cloud service of the asset.
       type: String
     - contextPath: Redlock.Asset.stateId
-      description: State ID
+      description: The state ID of the asset.
       type: String
   isfetch: true
   runonce: false
