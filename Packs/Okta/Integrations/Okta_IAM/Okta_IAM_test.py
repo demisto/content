@@ -92,6 +92,8 @@ def test_get_user_command__bad_response(mocker):
     Then:
         - Ensure the resulted User Profile object holds information about the bad response.
     """
+    import demistomock as demisto
+
     client = mock_client()
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
@@ -102,6 +104,7 @@ def test_get_user_command__bad_response(mocker):
                             b'"errorCauses": [{"errorSummary": "reason_1"}, ' \
                             b'{"errorSummary": "reason_2"}]}'
 
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
     user_profile = get_user_command(client, args, 'mapper_in')
@@ -240,6 +243,8 @@ def test_update_user_command__rate_limit_error(mocker):
     Then:
         - Ensure an error entry is returned, as rate limit error code is in ERROR_CODES_TO_RETURN_ERROR list.
     """
+    import demistomock as demisto
+
     client = mock_client()
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
@@ -248,6 +253,7 @@ def test_update_user_command__rate_limit_error(mocker):
     bad_response._content = b'{"errorCode": "E0000047", ' \
                             b'"errorSummary": "API call exceeded rate limit due to too many requests."}'
 
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
     user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
@@ -300,6 +306,8 @@ def test_disable_user_command__user_is_already_disabled(mocker):
     Then:
         - Ensure the command is considered successful and skipped
     """
+    import demistomock as demisto
+
     client = mock_client()
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
@@ -310,6 +318,7 @@ def test_disable_user_command__user_is_already_disabled(mocker):
                             b'"errorCauses": [{"errorSummary": "reason_1"}, ' \
                             b'{"errorSummary": "reason_2"}]}'
 
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
     user_profile = disable_user_command(client, args, is_command_enabled=True)
