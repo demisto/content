@@ -1243,7 +1243,7 @@ def test_retrieve_file_details_command(requests_mock):
     retrieve_expected_hr = {
         'Type': 1,
         'ContentsFormat': 'json',
-        'Contents': {},
+        'Contents': [data.get('reply').get('data')],
         'HumanReadable': '### Action id : 1788 \nRetrieved 1 files from 1 '
                          'endpoints. ',
         'ReadableContentsFormat': 'markdown',
