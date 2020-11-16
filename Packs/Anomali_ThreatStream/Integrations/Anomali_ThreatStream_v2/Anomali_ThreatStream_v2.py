@@ -550,7 +550,7 @@ def get_url_reputation(url, threshold=None, status="active,inactive"):
     }
     human_readable = tableToMarkdown(F"URL reputation for: {url}", threat_url_context)
 
-    return_outputs(human_readable, ec, indicator)
+    return human_readable, ec, indicator
 
 
 def get_email_reputation(email, threshold=None, status="active,inactive"):
