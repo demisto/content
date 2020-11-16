@@ -1,6 +1,6 @@
-id: test playbook - QRadarCorrelations
+id: test playbook - QRadarCorrelations For V2
 version: -1
-name: test playbook - QRadarCorrelations
+name: test playbook - QRadarCorrelations For V2
 starttaskid: '0'
 tasks:
   '0':
@@ -51,13 +51,13 @@ tasks:
       GetOnlyCREEvents:
         simple: All
       ID:
-        simple: '311'
+        simple: '482'
       MaxCorrelationCount:
         simple: '100'
       MaxLogsCount:
         simple: '20'
       StartTime:
-        simple: '1585502808393'
+        simple: '2020-08-02T14:10:30.326000Z'
     separatecontext: true
     loop:
       iscommand: false
@@ -89,9 +89,9 @@ tasks:
       - '3'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -103,8 +103,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2'
-      - - operator: isEqualString
+              simple: "1"
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -116,7 +116,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2'
+              simple: "1"
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
     note: false
     timertriggers: []
