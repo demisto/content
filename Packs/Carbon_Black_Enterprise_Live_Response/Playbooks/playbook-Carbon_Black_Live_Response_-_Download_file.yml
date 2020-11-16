@@ -1,6 +1,6 @@
-id: Carbon Black Live Response - Download file
+id: Carbon Black Live Response - Download File
 version: -1
-name: Carbon Black Live Response - Download file
+name: Carbon Black Live Response - Download File
 description: Download file from a sensor.
 starttaskid: "0"
 tasks:
