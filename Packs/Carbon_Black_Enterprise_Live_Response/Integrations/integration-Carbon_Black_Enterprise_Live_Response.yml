@@ -2675,7 +2675,7 @@ script:
       description: File extension.
     description: |
       Retrieve a file from a path on the endpoint).
-      For large files disable download using disable='false', Verify command completion using !cb-command-info,
+      For large files disable download using download='false', Verify command completion using !cb-command-info,
       After command completion download file using command !cb-file-get.
   - name: cb-push-file-to-endpoint
     arguments:
