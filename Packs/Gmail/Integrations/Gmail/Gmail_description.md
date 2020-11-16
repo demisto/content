@@ -40,7 +40,7 @@ In order to delegate a user to a mailbox or remove a delegated mail from a mailb
 
 In order to set a user's password, authorize this API: [https://www.googleapis.com/auth/admin.directory.user](https://www.googleapis.com/auth/admin.directory.user)
 
-In order to send mails, authorize this API:
+In order to send mails or reply to a mail, authorize this API:
 [https://www.googleapis.com/auth/gmail.compose](https://www.googleapis.com/auth/gmail.compose) and [https://www.googleapis.com/auth/gmail.send](https://www.googleapis.com/auth/gmail.send)
 
 In order to add the send as email ID, authorize this API:
