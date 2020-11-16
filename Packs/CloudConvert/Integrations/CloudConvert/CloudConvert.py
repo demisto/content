@@ -174,6 +174,8 @@ def import_command(client: Client, arguments: Dict[str, Any]):
     """
 
     if arguments.get('url'):
+        if arguments.get('entry_id'):
+            raise ValueError('Both url and entry id were inserted - please insert only one')
         results = client.import_url(arguments)
         results_data = results.get('data')
     elif arguments.get('entry_id'):
@@ -192,8 +194,8 @@ def import_command(client: Client, arguments: Dict[str, Any]):
         if results.get('message'):
             raise ValueError(results.get('message'))
         else:
-            raise ValueError(
-                'No response from server')
+            raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
+                             'many requests. Please try again later.')
 
     readable_output = tableToMarkdown('Import Results', remove_empty_elements(results_data),
                                       headers=('created_at', 'id', 'operation', 'status'),
@@ -202,8 +204,8 @@ def import_command(client: Client, arguments: Dict[str, Any]):
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
-        raw_response = results,
-        outputs=results_data
+        raw_response=results,
+        outputs=remove_empty_elements(results_data)
     )
 
 
@@ -221,10 +223,10 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
     # No 'data' field was returned from the request, meaning the input was invalid
     if results_data is None:
         if results.get('message'):
-            
             ValueError(results.get('message'))
         else:
-            raise ValueError('No response from server')
+            raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
+                             'many requests. Please try again later.')
 
     readable_output = tableToMarkdown('Convert Results', remove_empty_elements(results_data),
                                       headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
@@ -233,8 +235,8 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
-        raw_response = results,
-        outputs=results_data
+        raw_response=results,
+        outputs=remove_empty_elements(results_data)
     )
 
 
@@ -257,7 +259,8 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         if results.get('message'):
             raise ValueError(results.get('message'))
         else:
-            raise ValueError('No response from server, check your request')
+            raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
+                             'many requests. Please try again later.')
 
     # If checking on an export to entry operation, manually change the operation name
     # For other operations, the operation matches the operation field in the API's response, so no change is needed
@@ -279,9 +282,9 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         return_results(CommandResults(
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
-            raw_response = results,
+            raw_response=results,
             readable_output=readable_output,
-            outputs=results_data
+            outputs=remove_empty_elements(results_data)
         ))
         return war_room_file
 
@@ -294,8 +297,8 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
             readable_output=readable_output,
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
-            raw_response = results,
-            outputs=results_data
+            raw_response=results,
+            outputs=remove_empty_elements(results_data)
         )
 
 
@@ -321,7 +324,8 @@ def export_command(client: Client, arguments: Dict[str, Any]):
         if results.get('message'):
             raise ValueError(results.get('message'))
         else:
-            raise ValueError('No response from server, check your request')
+            raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
+                             'many requests. Please try again later.')
 
     # If exporting to war room entry, manually change the operation name
     if arguments['export_as'] == 'war_room_entry':
@@ -334,8 +338,8 @@ def export_command(client: Client, arguments: Dict[str, Any]):
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
-        raw_response = results,
-        outputs=results_data
+        raw_response=results,
+        outputs=remove_empty_elements(results_data)
     )
 
 
