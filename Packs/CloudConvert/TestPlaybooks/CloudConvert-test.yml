@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b4276152-d18b-48e5-8f9f-fc3e7fa336f1
+    taskid: eb50078a-e1aa-41a5-82c0-d831071f0f25
     type: start
     task:
-      id: b4276152-d18b-48e5-8f9f-fc3e7fa336f1
+      id: eb50078a-e1aa-41a5-82c0-d831071f0f25
       version: -1
       name: ""
       iscommand: false
@@ -33,12 +33,12 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 541d332c-175e-413e-82ee-a6a118703e62
+    taskid: e6386c17-9294-4181-8796-8e4037f75b00
     type: regular
     task:
-      id: 541d332c-175e-413e-82ee-a6a118703e62
+      id: e6386c17-9294-4181-8796-8e4037f75b00
       version: -1
-      name: cloudconvert-import - from url
+      name: Import File To Server From URL
       script: '|||cloudconvert-import'
       type: regular
       iscommand: true
@@ -50,13 +50,14 @@ tasks:
       entry_id: {}
       file_name: {}
       url:
-        simple: ${inputs.url}
+        complex:
+          root: inputs.url
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 90
+          "y": 70
         }
       }
     note: false
@@ -66,12 +67,12 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 6625e247-4448-4367-85bd-8f053d3a5bac
+    taskid: cb0e9566-f1be-4b6d-858c-3bd346eceadf
     type: playbook
     task:
-      id: 6625e247-4448-4367-85bd-8f053d3a5bac
+      id: cb0e9566-f1be-4b6d-858c-3bd346eceadf
       version: -1
-      name: GenericPolling - wait for import task to finish
+      name: GenericPolling - Wait For Import Operation To Finish
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -122,12 +123,12 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 924cc957-f24f-4653-87cf-23739fbed09e
+    taskid: d1352972-ad6c-4ff4-8a6d-7a4df31556b2
     type: regular
     task:
-      id: 924cc957-f24f-4653-87cf-23739fbed09e
+      id: d1352972-ad6c-4ff4-8a6d-7a4df31556b2
       version: -1
-      name: deletecontext
+      name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -148,7 +149,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -100
+          "y": -90
         }
       }
     note: false
@@ -158,12 +159,12 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 13ad0fce-1379-4370-8324-ecf888814d34
+    taskid: 72941b1e-bff3-41e1-8099-ef9c298e253c
     type: regular
     task:
-      id: 13ad0fce-1379-4370-8324-ecf888814d34
+      id: 72941b1e-bff3-41e1-8099-ef9c298e253c
       version: -1
-      name: cloudconvert-convert
+      name: Convert File
       script: '|||cloudconvert-convert'
       type: regular
       iscommand: true
@@ -173,7 +174,8 @@ tasks:
       - "15"
     scriptarguments:
       output_format:
-        simple: ${inputs.output_format}
+        complex:
+          root: inputs.output_format
       task_id:
         complex:
           root: CloudConvert.Task
@@ -202,12 +204,12 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: be5dcd5a-2df3-4b87-86be-cdfcdca5bcbd
+    taskid: 914f68c7-5dbe-4b6c-8f36-0a26cade0b59
     type: playbook
     task:
-      id: be5dcd5a-2df3-4b87-86be-cdfcdca5bcbd
+      id: 914f68c7-5dbe-4b6c-8f36-0a26cade0b59
       version: -1
-      name: GenericPolling - wait for convert request to finish
+      name: GenericPolling - Wait For Convert Operation To Finish
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -269,12 +271,12 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 88a56d40-1325-453e-81ce-30c8e2e67962
+    taskid: 03121605-02a8-45e3-899d-619db321f7eb
     type: regular
     task:
-      id: 88a56d40-1325-453e-81ce-30c8e2e67962
+      id: 03121605-02a8-45e3-899d-619db321f7eb
       version: -1
-      name: cloudconvert - export to entry
+      name: Export File To War Room Entry
       script: '|||cloudconvert-export'
       type: regular
       iscommand: true
@@ -284,7 +286,8 @@ tasks:
       - "17"
     scriptarguments:
       export_as:
-        simple: ${inputs.export_via}
+        complex:
+          root: inputs.export_via
       task_id:
         complex:
           root: CloudConvert.Task
@@ -313,10 +316,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 4c403d54-ee13-47d7-8e7f-336d212b17e8
+    taskid: 6f750625-69ac-49ba-8372-d4d7eba20e6d
     type: title
     task:
-      id: 4c403d54-ee13-47d7-8e7f-336d212b17e8
+      id: 6f750625-69ac-49ba-8372-d4d7eba20e6d
       version: -1
       name: Done!
       type: title
@@ -327,8 +330,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 3700
+          "x": 450,
+          "y": 3680
         }
       }
     note: false
@@ -338,12 +341,12 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 024c5e78-646c-4bad-8599-f6573d0436d0
+    taskid: 452a73b1-819b-4b65-806f-3f7ec24bce35
     type: condition
     task:
-      id: 024c5e78-646c-4bad-8599-f6573d0436d0
+      id: 452a73b1-819b-4b65-806f-3f7ec24bce35
       version: -1
-      name: Verify command results - check if import request sent successfully
+      name: Verify - Check If Import Request Sent Successfully
       type: condition
       iscommand: false
       brand: ""
@@ -387,7 +390,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 250
+          "y": 240
         }
       }
     note: false
@@ -397,12 +400,12 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 4d413de7-5f24-44b5-8e15-611376570dda
+    taskid: 4e836e23-fcdb-40a3-83ae-5f349bb25b7a
     type: condition
     task:
-      id: 4d413de7-5f24-44b5-8e15-611376570dda
+      id: 4e836e23-fcdb-40a3-83ae-5f349bb25b7a
       version: -1
-      name: Verify command results - convert
+      name: Verify - Check If Convert Request Sent Successfully
       type: condition
       iscommand: false
       brand: ""
@@ -456,10 +459,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 4f2dfb8b-3e64-4f9a-8b08-7af41b163ee9
+    taskid: e1973b8c-f73f-4f39-8342-1b152f25abfa
     type: condition
     task:
-      id: 4f2dfb8b-3e64-4f9a-8b08-7af41b163ee9
+      id: e1973b8c-f73f-4f39-8342-1b152f25abfa
       version: -1
       name: Verify command results - export
       type: condition
@@ -515,12 +518,12 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: eb54c826-1131-418c-8fb6-9bc38be0158a
+    taskid: a797af6b-411f-4ed6-8eea-22cd40ef49c4
     type: playbook
     task:
-      id: eb54c826-1131-418c-8fb6-9bc38be0158a
+      id: a797af6b-411f-4ed6-8eea-22cd40ef49c4
       version: -1
-      name: GenericPolling - wait for export request to finish
+      name: GenericPolling - Wait For Export Request To Finish
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -584,12 +587,12 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: f2704acf-7f1f-4114-8592-16cd1ad25b98
+    taskid: ccce8c27-d447-4abc-8a5c-bf9597671e04
     type: regular
     task:
-      id: f2704acf-7f1f-4114-8592-16cd1ad25b98
+      id: ccce8c27-d447-4abc-8a5c-bf9597671e04
       version: -1
-      name: Create sample file
+      name: Create Sample File
       description: Sends http request. Returns the response as json.
       scriptName: http
       type: regular
@@ -629,10 +632,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 5bd0f1a6-b46d-49b9-8d65-f565f9f3d826
+    taskid: 79c48936-c323-426e-81f2-7fbb7f1cc4c4
     type: condition
     task:
-      id: 5bd0f1a6-b46d-49b9-8d65-f565f9f3d826
+      id: 79c48936-c323-426e-81f2-7fbb7f1cc4c4
       version: -1
       name: Check export type
       type: condition
@@ -667,12 +670,12 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 7180e1e3-5e6c-45e0-811d-7acb0c28b9a5
+    taskid: 1ccecc01-569c-4070-816f-917a6bb6b781
     type: condition
     task:
-      id: 7180e1e3-5e6c-45e0-811d-7acb0c28b9a5
+      id: 1ccecc01-569c-4070-816f-917a6bb6b781
       version: -1
-      name: Verify command results - check format of resulted file
+      name: Verify - Check Format Of Resulted File
       type: condition
       iscommand: false
       brand: ""
@@ -708,105 +711,32 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: dc4540b5-f518-4aa6-87f9-cf8ab7976afa
+    taskid: 5df3d888-bcc5-4845-8a4a-2afef72607f2
     type: condition
     task:
-      id: dc4540b5-f518-4aa6-87f9-cf8ab7976afa
+      id: 5df3d888-bcc5-4845-8a4a-2afef72607f2
       version: -1
-      name: Verify command results - check if we got a resulted url
+      name: Verify - Check If We Got A Resulted URL
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      Successful Operation:
+      "Yes":
       - "39"
     separatecontext: false
     conditions:
-    - label: Successful Operation
+    - label: "Yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              complex:
-                root: CloudConvert.Task
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: CloudConvert.Task.status
-                      iscontext: true
-                    right:
-                      value:
-                        simple: finished
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: CloudConvert.Task.operation
-                      iscontext: true
-                    right:
-                      value:
-                        simple: export
-                accessor: result
+              simple: CloudConvert.Task.result.files.url
             iscontext: true
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 2250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "35":
-    id: "35"
-    taskid: f005611c-936d-4887-8f0b-18278cd7428f
-    type: condition
-    task:
-      id: f005611c-936d-4887-8f0b-18278cd7428f
-      version: -1
-      name: Verify command results - check if we got a resulted url
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      Successful Operation:
-      - "40"
-    separatecontext: false
-    conditions:
-    - label: Successful Operation
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: CloudConvert.Task
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: CloudConvert.Task.status
-                      iscontext: true
-                    right:
-                      value:
-                        simple: finished
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: CloudConvert.Task.operation
-                      iscontext: true
-                    right:
-                      value:
-                        simple: export
-                accessor: result
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2835
+          "y": 2240
         }
       }
     note: false
@@ -816,23 +746,23 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 7e27ad13-69f1-4697-874c-46729d457aca
+    taskid: f0670e35-63a4-4c3b-839d-11fe2bd09d78
     type: condition
     task:
-      id: 7e27ad13-69f1-4697-874c-46729d457aca
+      id: f0670e35-63a4-4c3b-839d-11fe2bd09d78
       version: -1
-      name: Verify command results - check format of resulted file
+      name: Verify - Check Format Of Resulted File
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      Successful Operation:
+      "Yes":
       - "13"
     separatecontext: false
     conditions:
-    - label: Successful Operation
+    - label: "Yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               complex:
@@ -857,12 +787,12 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: b33d2698-af26-4786-84ae-6689b70e3a66
+    taskid: 5d27c187-8888-4c84-8046-66ea7dc594e0
     type: regular
     task:
-      id: b33d2698-af26-4786-84ae-6689b70e3a66
+      id: 5d27c187-8888-4c84-8046-66ea7dc594e0
       version: -1
-      name: Create sample file
+      name: Create Sample File
       description: Sends http request. Returns the response as json.
       scriptName: http
       type: regular
@@ -902,12 +832,12 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 21ec6b1b-f79e-42e5-8fae-c1389700d492
+    taskid: 9b404e0b-27ae-429c-80aa-68958df0421e
     type: regular
     task:
-      id: 21ec6b1b-f79e-42e5-8fae-c1389700d492
+      id: 9b404e0b-27ae-429c-80aa-68958df0421e
       version: -1
-      name: deletecontext
+      name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -938,12 +868,12 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 890cc421-fef2-48a1-8a6f-77276245044b
+    taskid: ad6a75a3-a7ad-4bb2-851f-d3fbe8d1e5ab
     type: regular
     task:
-      id: 890cc421-fef2-48a1-8a6f-77276245044b
+      id: ad6a75a3-a7ad-4bb2-851f-d3fbe8d1e5ab
       version: -1
-      name: deletecontext
+      name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -974,12 +904,12 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 0fb11f0e-c131-4132-897d-dcc4f974a835
+    taskid: 6e6c16e8-f7ab-4da4-8454-8dd8b150e263
     type: regular
     task:
-      id: 0fb11f0e-c131-4132-897d-dcc4f974a835
+      id: 6e6c16e8-f7ab-4da4-8454-8dd8b150e263
       version: -1
-      name: deletecontext
+      name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -1000,7 +930,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3040
+          "y": 3010
         }
       }
     note: false
@@ -1010,12 +940,12 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 26af4dd7-0098-436c-85ba-de56b3f1cf53
+    taskid: b55c1e1d-ba3c-4e0b-864e-8e38a7494e72
     type: playbook
     task:
-      id: 26af4dd7-0098-436c-85ba-de56b3f1cf53
+      id: b55c1e1d-ba3c-4e0b-864e-8e38a7494e72
       version: -1
-      name: cloudconvert-url-to-url
+      name: Convert URL TO URL Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
       playbookName: CloudConvert
       type: playbook
@@ -1032,7 +962,7 @@ tasks:
         simple: jpg
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -1052,12 +982,12 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: a7f6c537-301e-4022-8c94-a86f5a159017
+    taskid: 2b09dfd1-ea5e-4a83-8fcf-aee929fb6a2a
     type: playbook
     task:
-      id: a7f6c537-301e-4022-8c94-a86f5a159017
+      id: 2b09dfd1-ea5e-4a83-8fcf-aee929fb6a2a
       version: -1
-      name: cloudconvert-entry-to-url
+      name: Convert Entry TO URL Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
       playbookName: CloudConvert
       type: playbook
@@ -1065,7 +995,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "45"
     scriptarguments:
       entry_id:
         simple: ${File.EntryID}
@@ -1074,7 +1004,7 @@ tasks:
       output_format:
         simple: jpg
       url: {}
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -1092,40 +1022,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "43":
-    id: "43"
-    taskid: a79b630c-99d5-4c37-8fca-34650f8d16fa
-    type: playbook
-    task:
-      id: a79b630c-99d5-4c37-8fca-34650f8d16fa
-      version: -1
-      name: CloudConvert
-      playbookName: CloudConvert
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 890,
-          "y": 2460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "44":
     id: "44"
-    taskid: 0390909d-23da-414e-8de1-c619caffb4d4
+    taskid: 2c1109c9-bf3e-427f-82ff-3cb7d4260246
     type: playbook
     task:
-      id: 0390909d-23da-414e-8de1-c619caffb4d4
+      id: 2c1109c9-bf3e-427f-82ff-3cb7d4260246
       version: -1
-      name: cloudconvert-entry-to-entry
+      name: Convert Entry To Entry Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
       playbookName: CloudConvert
       type: playbook
@@ -1142,7 +1046,7 @@ tasks:
       output_format:
         simple: jpg
       url: {}
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -1162,23 +1066,34 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 40fd3db4-660d-45e0-8536-104b3e17101d
-    type: playbook
+    taskid: cde9364c-c852-4c0e-8c6d-6798e2c6b8c7
+    type: condition
     task:
-      id: 40fd3db4-660d-45e0-8536-104b3e17101d
+      id: cde9364c-c852-4c0e-8c6d-6798e2c6b8c7
       version: -1
-      name: CloudConvert
-      playbookName: CloudConvert
-      type: playbook
+      name: Verify - Check If We Got A Resulted URL
+      type: condition
       iscommand: false
       brand: ""
-      description: ''
-    separatecontext: true
+    nexttasks:
+      "Yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CloudConvert.Task.result.files
+                accessor: url
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 2640
+          "x": 450,
+          "y": 2835
         }
       }
     note: false
@@ -1191,9 +1106,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3995,
-        "width": 830,
-        "x": 440,
+        "height": 3975,
+        "width": 380,
+        "x": 450,
         "y": -230
       }
     }

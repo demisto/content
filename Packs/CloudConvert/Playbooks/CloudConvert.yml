@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e312dcb6-0a30-4bf8-87d7-fe224ea3e1c7
+    taskid: 310e2bd8-a0c8-4243-83bd-064d35844268
     type: start
     task:
-      id: e312dcb6-0a30-4bf8-87d7-fe224ea3e1c7
+      id: 310e2bd8-a0c8-4243-83bd-064d35844268
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -120
+          "y": 10
         }
       }
     note: false
@@ -33,12 +33,12 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: c5079d33-05c6-4417-8bf7-777e4521dec2
+    taskid: 934ef52e-8df3-4b83-846c-db51efcfeed8
     type: regular
     task:
-      id: c5079d33-05c6-4417-8bf7-777e4521dec2
+      id: 934ef52e-8df3-4b83-846c-db51efcfeed8
       version: -1
-      name: cloudconvert-import
+      name: Import The File To The Server
       description: Import the file
       script: '|||cloudconvert-import'
       type: regular
@@ -72,7 +72,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 190
+          "y": 180
         }
       }
     note: false
@@ -82,10 +82,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: b2b725f9-16ba-4a01-80fd-07536cbda1de
+    taskid: 33555613-cbd2-487e-8030-93227a8906b1
     type: playbook
     task:
-      id: b2b725f9-16ba-4a01-80fd-07536cbda1de
+      id: 33555613-cbd2-487e-8030-93227a8906b1
       version: -1
       name: GenericPolling
       description: |-
@@ -128,7 +128,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 390
+          "y": 380
         }
       }
     note: false
@@ -138,12 +138,12 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: f8d2503c-e635-4066-8379-f2c2825d95d3
+    taskid: cc390895-2837-4b14-8cd6-470c6f99c42f
     type: regular
     task:
-      id: f8d2503c-e635-4066-8379-f2c2825d95d3
+      id: cc390895-2837-4b14-8cd6-470c6f99c42f
       version: -1
-      name: cloudconvert-convert
+      name: Convert The File
       description: Convert the file
       script: '|||cloudconvert-convert'
       type: regular
@@ -154,7 +154,8 @@ tasks:
       - "5"
     scriptarguments:
       output_format:
-        simple: ${inputs.output_format}
+        complex:
+          root: inputs.output_format
       task_id:
         complex:
           root: CloudConvert.Task
@@ -173,7 +174,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 590
+          "y": 580
         }
       }
     note: false
@@ -183,10 +184,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 60b6cca7-30fa-4eb4-8a9d-2cfd1facc193
+    taskid: 191ce5b8-26af-4f33-80ec-d7c19771f928
     type: playbook
     task:
-      id: 60b6cca7-30fa-4eb4-8a9d-2cfd1facc193
+      id: 191ce5b8-26af-4f33-80ec-d7c19771f928
       version: -1
       name: GenericPolling
       description: |-
@@ -240,7 +241,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 770
+          "y": 760
         }
       }
     note: false
@@ -250,12 +251,12 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 98edea88-9836-489a-8bd4-86678a102915
+    taskid: 1a9b20ed-7217-4558-8628-66e4263b8b34
     type: regular
     task:
-      id: 98edea88-9836-489a-8bd4-86678a102915
+      id: 1a9b20ed-7217-4558-8628-66e4263b8b34
       version: -1
-      name: cloudconvert-export
+      name: Export The File
       description: Export the file
       script: '|||cloudconvert-export'
       type: regular
@@ -263,10 +264,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "14"
     scriptarguments:
       export_as:
-        simple: ${inputs.export_via}
+        complex:
+          root: inputs.export_via
       task_id:
         complex:
           root: CloudConvert.Task
@@ -285,73 +287,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: e1bc6465-cd66-4bc2-8cce-263a33fa40d2
-    type: playbook
-    task:
-      id: e1bc6465-cd66-4bc2-8cce-263a33fa40d2
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      AdditionalPollingCommandArgNames:
-        simple: is_entry
-      AdditionalPollingCommandArgValues:
-        simple: "True"
-      Ids:
-        complex:
-          root: CloudConvert.Task
-          filters:
-          - - operator: containsString
-              left:
-                value:
-                  simple: CloudConvert.Task.operation
-                iscontext: true
-              right:
-                value:
-                  simple: export
-          accessor: id
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: task_id
-      PollingCommandName:
-        simple: cloudconvert-check-status
-      Timeout:
-        simple: "10"
-      dt:
-        simple: CloudConvert.Task(val.status!='finished').id
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 1290
+          "y": 930
         }
       }
     note: false
@@ -361,21 +297,21 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: a00de805-42ab-414e-8420-9176f87c37da
+    taskid: 5687ac9a-72b6-4b05-8661-1db87c10da81
     type: condition
     task:
-      id: a00de805-42ab-414e-8420-9176f87c37da
+      id: 5687ac9a-72b6-4b05-8661-1db87c10da81
       version: -1
-      name: Is the export is to war room entry
+      name: 'Exporting To War Room Entry? '
       description: Check if exporting to entry
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+      - "15"
       "yes":
-      - "12"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -393,7 +329,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1115
+          "y": 1270
         }
       }
     note: false
@@ -403,10 +339,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 89efca25-1c95-4912-87ce-a0d411d51da7
+    taskid: e3bdecaf-2861-43e3-86ef-6fcbf83aa87f
     type: playbook
     task:
-      id: 89efca25-1c95-4912-87ce-a0d411d51da7
+      id: e3bdecaf-2861-43e3-86ef-6fcbf83aa87f
       version: -1
       name: GenericPolling
       description: |-
@@ -421,6 +357,9 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
@@ -456,8 +395,128 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 450,
+          "y": 1095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: c9d5343f-8ad3-4554-80e2-40b4191cf3c2
+    type: regular
+    task:
+      id: c9d5343f-8ad3-4554-80e2-40b4191cf3c2
+      version: -1
+      name: Check Status - Used For Getting Finished Export Task's Data
+      description: Check the status of an operation. Use the 'is_entry' argument to
+        also create a war room entry of the file when checking on an export to war
+        room entry operation
+      script: '|||cloudconvert-check-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      is_entry:
+        simple: "false"
+      task_id:
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: export
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 660,
-          "y": 1290
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: c2f426de-4837-4090-8c8f-605d6f2545ed
+    type: regular
+    task:
+      id: c2f426de-4837-4090-8c8f-605d6f2545ed
+      version: -1
+      name: Check Status - Used For Getting Finished Export Task's Data And Create
+        Entry
+      description: Check the status of an operation. Use the 'is_entry' argument to
+        also create a war room entry of the file when checking on an export to war
+        room entry operation
+      script: '|||cloudconvert-check-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      is_entry:
+        simple: "true"
+      task_id:
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: export
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 2d9994d4-80e5-467a-894d-f66d88578f7b
+    type: title
+    task:
+      id: 2d9994d4-80e5-467a-894d-f66d88578f7b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1690
         }
       }
     note: false
@@ -470,10 +529,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1505,
+        "height": 1745,
         "width": 800,
         "x": 240,
-        "y": -120
+        "y": 10
       }
     }
   }
@@ -502,7 +561,9 @@ inputs:
   description: |
     The method for exporting the resulted file, url or war_room_entry
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: CloudConvert.Task.result.files.url
+  description: Resulted file url
 tests:
 - CloudConvert-test
 fromversion: 5.0.0
