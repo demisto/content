@@ -1,0 +1,161 @@
+category: Utilities
+commonfields:
+  id: Palo Alto Networks IoT 3rd Party
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: ""
+  display: URL.
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Customer ID.
+  name: Customer ID
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Access Key.
+  name: Access Key
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Key ID.
+  name: Key ID
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+description: Base Integration for Palo Alto IOT third party integrations. This integrations
+  communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities,  device inventory.
+display: Palo Alto Networks IoT 3rd Party
+name: Palo Alto Networks IoT 3rd Party
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of Asset.
+      name: assetType
+      predefined:
+      - Device
+      - Alert
+      - Vulnerability
+      required: true
+    - description: 'Increment time in minutes. Example: Increment Time = 15 mins will
+        return input type assets modified or discovered within the last 15 minutes.
+        A Null value will return full inventory (1000 MAX)'
+      name: incrementTime
+    - description: '(Optional)Offset for paging: Null value will accumulate all results
+        by default.'
+      name: offset
+    - description: '(Optional)Page size for paging: Null value will accumulate all
+        results by default.'
+      name: pageLength
+    description: Returns a list of assets for the specified asset type.
+    name: panw-iot-3rd-party-get-asset-list
+    outputs:
+    - contextPath: PanwIot3rdParty.Devices
+      description: List of devices.
+    - contextPath: PanwIot3rdParty.Alerts
+      description: List of Alerts.
+    - contextPath: PanwIot3rdParty.Vulnerabilities
+      description: List of Vulnerabilities.
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of Asset.
+      name: assetType
+      predefined:
+      - Device
+      - Alert
+      - Vulnerability
+      required: true
+    - description: Asset ID. MacAddress for device, zb_ticketid for alert and vulnerability.
+      name: assetID
+      required: true
+    description: For a given a asset ID (alert-id, vulnerability-id or mac-address)
+      returns the asset details.
+    name: panw-iot-3rd-party-get-single-asset
+    outputs:
+    - contextPath: PanwIot3rdParty.SingleAsset
+      description: Asset Details.
+  - arguments:
+    - auto: PREDEFINED
+      description: Status to be reported to PANW IoT Cloud.
+      name: status
+      predefined:
+      - error
+      - success
+      - disabled
+      required: true
+    - description: Message to be sent to PANW IoT Cloud.
+      name: message
+      required: true
+    - auto: PREDEFINED
+      description: Name of PANW IoT 3rd Party Integration.
+      name: integrationName
+      predefined:
+      - siem
+      - ise
+      - servicenow
+      required: true
+    - description: Name of the playbook.
+      name: playbookName
+      required: true
+    - auto: PREDEFINED
+      description: Type of asset associated with the status report.
+      name: type
+      predefined:
+      - device
+      - alert
+      - vulnerability
+      required: true
+    description: Sends a status message back to PANW IOT cloud.
+    name: panw-iot-3rd-party-report-status-to-panw
+  - arguments:
+    - auto: PREDEFINED
+      description: Input asset type.
+      name: assetType
+      predefined:
+      - Device
+      - Alert
+      - Vulnerability
+      required: true
+    - auto: PREDEFINED
+      description: Desired output format.
+      name: outputFormat
+      predefined:
+      - CiscoISECustomAttributes
+      - SIEM
+      - ServiceNow
+      required: true
+    - description: List of input assets.
+      isArray: true
+      name: assetList
+    description: For a given asset (alert, device, vuln) converts it to 3rd party
+      format.
+    name: panw-iot-3rd-party-convert-assets-to-external-format
+    outputs:
+    - contextPath: PanwIot3rdParty.VulnerabilityCEFSyslogs
+      description: List of CEF formatted vulnerability syslogs for SIEM.
+    - contextPath: PanwIot3rdParty.AlertCEFSyslogs
+      description: List of CEF formatted alert syslogs for SIEM.
+    - contextPath: PanwIot3rdParty.DeviceCEFSyslogs
+      description: List CEF formatted device syslogs for SIEM.
+    - contextPath: PanwIot3rdParty.CiscoISEAttributes
+      description: List Cisco ISE attribute dicts/maps
+  dockerimage: demisto/python3:3.8.6.13358
+  longRunning: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

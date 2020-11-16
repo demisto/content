@@ -1,0 +1,20 @@
+comment: Gets all available alerts from the IoT cloud and sends it to the SIEM server.
+commonfields:
+  id: SendAllPANWIoTAlertsToSIEM
+  version: -1
+dockerimage: demisto/python3:3.8.6.13358
+enabled: true
+name: SendAllPANWIoTAlertsToSIEM
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- PANW IoT 3rd Party Integration
+- siem
+timeout: 362.88ms
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
