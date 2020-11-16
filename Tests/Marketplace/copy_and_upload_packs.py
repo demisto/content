@@ -12,7 +12,6 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, Pa
     IGNORED_FILES, PACKS_FOLDER, PACKS_RESULTS_FILE
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, load_json, \
     get_packs_summary
-from demisto_sdk.commands.common.tools import str2bool
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_]+/\d+\.\d+\.\d+/'
                               r'[A-Za-z0-9-_]+\.zip$)')
@@ -230,6 +229,23 @@ def copy_id_set(production_bucket, build_bucket):
         logging.success("Finished uploading id_set.json to storage.")
 
 
+def verify_copy(successful_packs, pc_successful_packs_dict):
+    """ Verify that all uploaded packs from Prepare were copied & verify that no packs were mistakenly copied
+
+    Args:
+        successful_packs: The packs that were copied successfully
+        pc_successful_packs_dict: The pack that were uploaded successfully in Prepare Content
+
+    """
+    pc_successful_packs = {*pc_successful_packs_dict}
+    not_uploaded = [pack for pack in pc_successful_packs if pack not in successful_packs]
+    mistakenly_uploaded = [pack for pack in successful_packs if pack not in pc_successful_packs]
+    error_str = "Mismatch in Prepare Content successful packs and Upload successful packs\n"
+    error_str += f"Packs not copied: {', '.join(not_uploaded)}\n" if not_uploaded else ""
+    error_str += f"Packs mistakenly copied: {', '.join(mistakenly_uploaded)}\n" if mistakenly_uploaded else ""
+    assert not not_uploaded and not mistakenly_uploaded, error_str
+
+
 def options_handler():
     """ Validates and parses script arguments.
 
@@ -260,8 +276,6 @@ def options_handler():
                         help="CircleCi build number (will be used as hash revision at index file)", required=True)
     parser.add_argument('-c', '--circle_branch',
                         help="CircleCi branch of current build", required=True)
-    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        type=str2bool, default=False, required=True)
     parser.add_argument('-pbp', '--production_base_path', help="Production base path of the directory to upload to.",
                         required=False)
     # disable-secrets-detection-end
@@ -278,7 +292,6 @@ def main():
     service_account = options.service_account
     build_number = options.ci_build_number
     circle_branch = options.circle_branch
-    override_all_packs = options.override_all_packs
     production_base_path = options.production_base_path
     target_packs = options.pack_names
 
@@ -298,7 +311,7 @@ def main():
         download_and_extract_index(build_bucket, extract_destination_path)
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
-    successful_packs_dict, failed_packs_dict = get_successful_and_failed_packs(
+    pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(
         os.path.join(os.path.dirname(packs_artifacts_path), PACKS_RESULTS_FILE)
     )
 
@@ -311,7 +324,7 @@ def main():
     # Starting iteration over packs
     for pack in packs_list:
         # Indicates whether a pack has failed to upload on Prepare Content step
-        task_status, pack_status = pack.is_failed_to_upload(failed_packs_dict)
+        task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
         if task_status:
             pack.status = pack_status
             pack.cleanup()
@@ -343,8 +356,8 @@ def main():
             continue
 
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
-                                                                              override_all_packs, pack.latest_version,
-                                                                              successful_packs_dict)
+                                                                              pack.latest_version,
+                                                                              pc_successful_packs_dict)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
@@ -369,6 +382,9 @@ def main():
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+
+    # verify that the successful from Prepare content and are the ones that were copied
+    verify_copy(successful_packs, pc_successful_packs_dict)
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs)
