@@ -138,11 +138,21 @@ def handle_exception(user_profile, e, action):
 
     Args:
         user_profile (IAMUserProfile): The User Profile object.
-        e (DemistoException): The exception error that holds the response json.
+        e (Exception): The exception error. If DemistoException, holds the response json.
         action (IAMActions): An enum represents the current action (get, update, create, etc).
     """
-    error_code = e.res.get('errorCode')
-    error_message = get_error_details(e.res)
+    if e.__class__ is DemistoException and hasattr(e, 'res') and e.res is not None:
+        try:
+            resp = e.res.json()
+            error_code = resp.get('errorCode')
+            error_message = get_error_details(resp)
+        except ValueError:
+            error_code = e.res.status_code
+            error_message = str(e)
+    else:
+        error_code = ''
+        error_message = str(e)
+
     if error_code == USER_IS_DISABLED_ERROR:
         error_message = USER_IS_DISABLED_MSG
 
@@ -156,8 +166,7 @@ def handle_exception(user_profile, e, action):
                                 success=False,
                                 return_error=should_return_error,
                                 error_code=error_code,
-                                error_message=error_message,
-                                details=e.res)
+                                error_message=error_message)
 
 
 def get_error_details(res):
@@ -218,7 +227,7 @@ def get_user_command(client, args, mapper_in):
                 details=okta_user
             )
 
-    except DemistoException as e:
+    except Exception as e:
         handle_exception(user_profile, e, IAMActions.GET_USER)
 
     return user_profile
@@ -253,7 +262,7 @@ def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_
                     details=okta_user
                 )
 
-        except DemistoException as e:
+        except Exception as e:
             handle_exception(user_profile, e, IAMActions.ENABLE_USER)
 
     return user_profile
@@ -285,7 +294,7 @@ def disable_user_command(client, args, is_command_enabled):
                     details=okta_user
                 )
 
-        except DemistoException as e:
+        except Exception as e:
             handle_exception(user_profile, e, IAMActions.DISABLE_USER)
 
     return user_profile
@@ -318,7 +327,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
                     details=created_user
                 )
 
-        except DemistoException as e:
+        except Exception as e:
             handle_exception(user_profile, e, IAMActions.CREATE_USER)
 
     return user_profile
@@ -356,7 +365,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                                             skip=True,
                                             skip_reason=error_message)
 
-        except DemistoException as e:
+        except Exception as e:
             handle_exception(user_profile, e, IAMActions.UPDATE_USER)
 
     return user_profile
@@ -395,30 +404,25 @@ def main():
 
     demisto.debug(f'Command being called is {command}')
 
-    try:
-        if command == 'iam-get-user':
-            user_profile = get_user_command(client, args, mapper_in)
+    if command == 'iam-get-user':
+        user_profile = get_user_command(client, args, mapper_in)
 
-        elif command == 'iam-create-user':
-            user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
+    elif command == 'iam-create-user':
+        user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
 
-        elif command == 'iam-update-user':
-            user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
-                                               is_create_enabled, create_if_not_exists)
+    elif command == 'iam-update-user':
+        user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+                                           is_create_enabled, create_if_not_exists)
 
-        elif command == 'iam-disable-user':
-            user_profile = disable_user_command(client, args, is_enable_disable_enabled)
+    elif command == 'iam-disable-user':
+        user_profile = disable_user_command(client, args, is_enable_disable_enabled)
 
-        elif command == 'iam-enable-user':
-            user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled,
-                                               is_create_enabled, create_if_not_exists)
+    elif command == 'iam-enable-user':
+        user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled,
+                                           is_create_enabled, create_if_not_exists)
 
-        if user_profile:
-            return_results(user_profile)
-
-    except Exception:
-        # We don't want to return an error entry CRUD commands execution
-        return_results(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+    if user_profile:
+        return_results(user_profile)
 
     try:
         if command == 'test-module':
