@@ -318,7 +318,7 @@ def dismiss_alerts():
     payload = {'alerts': ids, 'policies': policies, 'dismissalNote': demisto.getArg('dismissal-note'), 'filter': {}}
     demisto.args().pop('alert-id', None)
     handle_filters(payload['filter'])
-    handle_time_filter(payload, {'type': 'to_now', 'value': 'epoch'})
+    handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
     if not ids and not policies:
         return_error('You must specify either alert-id or policy-id for dismissing alerts')
     response = req('POST', 'alert/dismiss', payload, None)
