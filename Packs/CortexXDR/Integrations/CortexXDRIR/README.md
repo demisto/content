@@ -1,8 +1,8 @@
 ## Overview
 ---
 
-Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
-This integration was integrated and tested with version xx of Cortex XDR - IR
+Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
+This integration was integrated and tested with version xx of Cortex XDR - IR.
 ## Playbooks
 ---
 #### Cortex XDR Incident Handling
@@ -31,7 +31,7 @@ SOC analyst, the XDR incident is closed automatically.
 
 ## Automation
 ---
-To sync incidents between Demisto and Cortex XDR, you should use the **XDRSyncScript** script, which you can find in the automation page.
+To sync incidents between Cortex XSOAR and Cortex XDR, you should use the **XDRSyncScript** script, which you can find in the automation page.
 
 ## Configuration
 ---
@@ -39,7 +39,7 @@ You need to collect several pieces of information in order to configure the inte
 
 #### Generate an API Key and API Key ID
 1. In your Cortex XDR platform, go to **Settings**.
-2. Click the **+New Key** button in the top right corner
+2. Click the **+New Key** button in the top right corner.
 3. Generate a key of type **Advanced**.
 4. Copy and paste the key.
 5. From the ID column, copy the Key ID.
@@ -93,7 +93,7 @@ manual_description:null
 xdr_url:https://1111.paloaltonetworks.com/incident-view/31
 ```
 
-* Note: By checking the `Fetch incident alerts and artifacts` integration configuration parameter - fetched incidents will include additional data.
+* Note: By checking the **Fetch incident alerts and artifacts** integration configuration parameter, fetched incidents will include additional data.
 
 ## XDR Incident Mirroring
 **Note this feature is available from Cortex XSOAR version 6.0.0**
@@ -102,16 +102,16 @@ You can enable incident mirroring between Cortex XSOAR incidents and Cortex XDR 
 To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Cortex XDR - IR and select your integration instance.
-3. Enable `Fetches incidents`.
-4. In the `Incident Mirroring Direction` integration parameter, select in which direction should incidents be mirrored:
+3. Enable **Fetches incidents**.
+4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents shouldbe mirrored:
   * Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
   * Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
   * Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
   * None - Choose this to turn off incident mirroring.
-5. Optional: Check the `Sync Incident Owners` integration parameter to sync the incident owners in both XDR and XSOAR.
-  * Note: This feature will only work if the same users are registered both in Cortex XSOAR and Cortex XDR.
+5. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both XDR and XSOAR.
+  * Note: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
 6. Newly fetched incidents will be mirrored in the chosen direction.
-  * Note: this will not effect existing incidents.
+  * Note: This will not effect existing incidents.
 
 ### XDR Mirroring Notes, limitations and Troubleshooting
 
@@ -125,7 +125,7 @@ To setup the mirroring follow these instructions:
   (e.g `Cortex XDR Incident Sync` or `Cortex XDR incident handling v2`), as it impairs the mirroring functionality.
 
 * When migrating an existing instance to the mirroring feature, or in case the mirroring does not work as expected, make sure that:
-   * The default playbook of the `Cortex XDR Incident` incident type is not `Cortex XDR Incident Sync`, change it to a 
+   * The default playbook of the *Cortex XDR Incident* incident type is not *Cortex XDR Incident Sync*, change it to a 
      different playbook that does not use `XDRSyncScript`.
    * The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
 
@@ -1394,7 +1394,7 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
  - In case you encounter ReadTimeoutError, we recommend increasing the HTTP request timeout by setting it in the **HTTP Timeout** integration parameter.
 ### 15. xdr-get-policy
 ***
-Get the policy name for a specific endpoint.
+Gets the policy name for a specific endpoint.
 
 
 #### Base Command
@@ -1404,7 +1404,7 @@ Get the policy name for a specific endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | The endpoint ID. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| endpoint_id | The endpoint ID. Can be retrieved by running the ***xdr-get-endpoints*** command. | Required | 
 
 
 #### Context Output
@@ -1413,7 +1413,7 @@ Get the policy name for a specific endpoint.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.policyName | string | Name of the policy allocated with the endpoint. | 
 | PaloAltoNetworksXDR.policyName.policy_name | unknown | Name of the policy allocated with the endpoint. | 
-| PaloAltoNetworksXDR.policyName.endpoint_id | unknown | Endpoint id | 
+| PaloAltoNetworksXDR.policyName.endpoint_id | unknown | Endpoint ID. | 
 
 
 #### Command Example
@@ -1433,7 +1433,7 @@ Get the policy name for a specific endpoint.
 
 #### Human Readable Output
 
-The policy name of endpoint f8a2f58846b542579c12090652e79f3d is Windows Default.
+The policy name of endpoint f8a2f58846b542579c12090652e79f3d is Windows default.
 
 
 ### 16. xdr-get-endpoint-device-control-violations
@@ -1448,40 +1448,40 @@ Gets a list of device control violations filtered by selected fields. You can re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma separated list of endpoint IDs. | Optional | 
-| type | Type of violation | Optional | 
-| timestamp_gte | Timestamp of the violation - Greater than or equal, Supported values - 1579039377301 (time in milliseconds) "3 days ago" (relative date) "2019-10-21T23:45:00" (date) | Optional | 
-| timestamp_lte | Timestamp of the violation - Less than or equal, Supported values - 1579039377301 (time in milliseconds) "3 days ago" (relative date) "2019-10-21T23:45:00" (date) | Optional | 
-| ip_list | Comma separated list of IP addresses | Optional | 
-| vendor | Name of vendor | Optional | 
-| vendor_id | Vendor ID | Optional | 
-| product | Name of product | Optional | 
-| product_id | Product ID | Optional | 
-| serial | Serial Number | Optional | 
-| hostname | Hostname | Optional | 
-| violation_id_list | Comma separated list of violation IDs | Optional | 
-| username | Username | Optional | 
+| endpoint_ids | Comma-separated list of endpoint IDs. | Optional | 
+| type | ype of violation. Possible values are: "cd-rom", "disk drive", "floppy disk", "portable device" | Optional | 
+| timestamp_gte | Timestamp of the violation. Violations that are greater than or equal to this timestamp will be returned. Values could be in either ISO date format, relative time or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time). | Optional | 
+| timestamp_lte | Timestamp of the violation. Violations that are less than or equal to this timestamp will be returned. Values could be in either ISO date format, relative time or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time). | Optional | 
+| ip_list | Comma-separated list of IP addresses | Optional | 
+| vendor | Name of vendor. | Optional | 
+| vendor_id | Vendor ID. | Optional | 
+| product | Name of the product. | Optional | 
+| product_id | Product ID. | Optional | 
+| serial | Serial number. | Optional | 
+| hostname | Hostname. | Optional | 
+| violation_id_list | Comma-separated list of violation IDs. | Optional | 
+| username | Username. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.EndpointViolations | unknown | Get endpoint violations command results. | 
-| PaloAltoNetworksXDR.EndpointViolations.violations | unknown | A list of violations \(list\). | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.os_type | string | Type of the operation system | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.hostname | string | Hostname | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.username | string | Username | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.ip | string | IP address  | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.timestamp | number | Timestamp of the violation | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.violation_id | number | Violation ID | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.type | string | Type of violation | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.vendor_id | string | Vendor ID | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.vendor | string | Name of vendor | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.product_id | string | Product ID | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.product | string | Name of product | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.serial | string | Serial Number | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.endpoint_id | string | Endpoint ID | 
+| PaloAltoNetworksXDR.EndpointViolations | unknown | Endpoint violations command results. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations | unknown | A list of violations. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.os_type | string | Type of the operating system. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.hostname | string | Hostname of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.username | string | Username of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.ip | string | IP address of the violation.  | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.timestamp | number | Timestamp of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.violation_id | number | Violation ID. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.type | string | Type of violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.vendor_id | string | Vendor ID of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.vendor | string | Name of the vendor of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.product_id | string | Product ID of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.product | string | Name of the product of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.serial | string | Serial number of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.endpoint_id | string | Endpoint ID of the violation. | 
 
 
 #### Command Example
@@ -1557,7 +1557,7 @@ Gets a list of device control violations filtered by selected fields. You can re
 
 ### 17. xdr-retrieve-files
 ***
-Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. Please enter endpoint_ids and at least one file path.
+Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the ***xdr-action-status-get*** command with returned action_id, to check the action status.
 
 
 #### Base Command
@@ -1567,17 +1567,17 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma separated list of endpoint IDs | Required | 
-| windows_file_paths | The type of platform and files you want to retrieve - comma separated list of strings.  | Optional | 
-| linux_file_paths | The type of platform and files you want to retrieve - comma separated list of strings.  | Optional | 
-| mac_file_paths | The type of platform and files you want to retrieve - comma separated list of strings.  | Optional | 
+| endpoint_ids | Comma-separated list of endpoint IDs. | Required | 
+| windows_file_paths | A comma-separated list of file paths on the Windows platform.  | Optional | 
+| linux_file_paths | A comma-separated list of file paths on the Linux platform.  | Optional | 
+| mac_file_paths | A comma-separated list of file paths on the Mac platform.  | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.retrievedFiles.actionId | unknown | ID of action to retrieve files from selected endpoints. | 
+| PaloAltoNetworksXDR.retrievedFiles.actionId | unknown | ID of the action to retrieve files from selected endpoints. | 
 
 
 #### Command Example
@@ -1604,7 +1604,7 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 
 ### 18. xdr-retrieve-file-details
 ***
-View the file retrieved by the Retrieve File request according to the action ID. Before running this command, you can use - xdr-action-status-get command, in order to check if this action completed successfully.
+View the file retrieved by the ***xdr-retrieve-files*** command according to the action ID. Before running this command, you can use the ***xdr-action-status-get*** command to check if this action completed successfully.
 
 
 #### Base Command
@@ -1614,23 +1614,23 @@ View the file retrieved by the Retrieve File request according to the action ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | Action ID retrieved from the retrieve file command. | Required | 
-| attach_files | Choose whether you want to attach retrieved files to War room or not. Default value - true. | Optional | 
+| action_id | Action ID retrieved from the ***xdr-retrieve-files command***. | Required | 
+| attach_files | Choose whether you want to attach retrieved files in the  War Room. Default is "true". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File | unknown | Retrieve file details command results. | 
-| File.Name | String | The full file name \(including file extension\). | 
+| File | unknown | The file details command results. | 
+| File.Name | String | The full file name \(including the file extension\). | 
 | File.EntryID | String | The ID for locating the file in the War Room. | 
 | File.Size | Number | The size of the file in bytes. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
 | File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Extension | String | The file extension, for example: 'xls'. | 
+| File.Extension | String | The file extension. For example: 'xls'. | 
 | File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
 
 
@@ -1662,7 +1662,7 @@ View the file retrieved by the Retrieve File request according to the action ID.
 >Retrieved 1 files from 1 endpoints.
 ### 19. xdr-get-scripts
 ***
-Get a list of scripts available in the scripts library.
+Gets a list of scripts available in the scripts library.
 
 
 #### Base Command
@@ -1672,14 +1672,14 @@ Get a list of scripts available in the scripts library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| script_name | String of the script name, or comma separated list of strings | Optional | 
-| description | String of the script description, or comma separated list of strings | Optional | 
-| created_by | String of the user name of who created the script or comma separated list of strings | Optional | 
-| limit | Number of scripts returned to the war room. Default limit is 50. | Optional | 
-| offset | (Int) Offset in data set. Default offset is 0. | Optional | 
-| windows_supported | Whether the script can be executed on Windows operating system. | Optional | 
-| linux_supported | Whether the script can be executed on Linux operating system. | Optional | 
-| macos_supported | Whether the script can be executed on Mac operating system. | Optional | 
+| script_name | A comma-separated list of the script names. | Optional | 
+| description | A comma-separated list of the script descriptions. | Optional | 
+| created_by | A comma-separated list of the users who created the script. | Optional | 
+| limit | Maximum number of scripts returned to the War Room. Default limit is 50. | Optional | 
+| offset | (Int) Offset in the data set. Default offset is 0. | Optional | 
+| windows_supported | Whether the script can be executed on a Windows operating system. | Optional | 
+| linux_supported | Whether the script can be executed on a Linux operating system. | Optional | 
+| macos_supported | Whether the script can be executed on a Mac operating system. | Optional | 
 | is_high_risk | Whether the script has a high-risk outcome. | Optional | 
 
 
@@ -1687,15 +1687,15 @@ Get a list of scripts available in the scripts library.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.Scripts | unknown | Get scripts command results | 
-| PaloAltoNetworksXDR.Scripts.script_id | unknown | Script ID | 
-| PaloAltoNetworksXDR.Scripts.name | string | Name of the script | 
-| PaloAltoNetworksXDR.Scripts.description | string | Description of the script | 
+| PaloAltoNetworksXDR.Scripts | unknown | Get scripts command results. | 
+| PaloAltoNetworksXDR.Scripts.script_id | unknown | Script ID. | 
+| PaloAltoNetworksXDR.Scripts.name | string | Name of the script. | 
+| PaloAltoNetworksXDR.Scripts.description | string | Description of the script. | 
 | PaloAltoNetworksXDR.Scripts.modification_date | unknown | Timestamp of when the script was last modified. | 
-| PaloAltoNetworksXDR.Scripts.created_by | string | name of the user who created the script. | 
-| PaloAltoNetworksXDR.Scripts.windows_supported | boolean | Whether the script can be executed on Windows OS. | 
-| PaloAltoNetworksXDR.Scripts.linux_supported | boolean | Whether the script can be executed on Linux OS. | 
-| PaloAltoNetworksXDR.Scripts.macos_supported | boolean | Whether the script can be executed on macOS. | 
+| PaloAltoNetworksXDR.Scripts.created_by | string | Name of the user who created the script. | 
+| PaloAltoNetworksXDR.Scripts.windows_supported | boolean | Whether the script can be executed on a Windows operating system. | 
+| PaloAltoNetworksXDR.Scripts.linux_supported | boolean | Whether the script can be executed on a Linux operating system. | 
+| PaloAltoNetworksXDR.Scripts.macos_supported | boolean | Whether the script can be executed on Mac operating system. | 
 | PaloAltoNetworksXDR.Scripts.is_high_risk | boolean | Whether the script has a high-risk outcome. | 
 | PaloAltoNetworksXDR.Scripts.script_uid | string | GUID, global ID of the script, used to identify the script when executing. | 
 
@@ -1835,7 +1835,7 @@ Get a list of scripts available in the scripts library.
 
 ### 20. xdr-get-script-metadata
 ***
-Get the full definitions of a specific script in the scripts library.
+Gets the full definition of a specific script in the scripts library.
 
 
 #### Base Command
@@ -1845,27 +1845,27 @@ Get the full definitions of a specific script in the scripts library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| script_uid | Unique identifier of the script, returned by the “xdr-get-scripts” command. | Required | 
+| script_uid | Unique identifier of the script, returned by the ***xdr-get-scripts*** command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.scriptMetadata | unknown | The full definitions of a specific script in the scripts library. | 
-| PaloAltoNetworksXDR.scriptMetadata.script_id | unknown | Script ID | 
-| PaloAltoNetworksXDR.scriptMetadata.name | unknown | Script name | 
-| PaloAltoNetworksXDR.scriptMetadata.description | unknown | Script Description | 
+| PaloAltoNetworksXDR.scriptMetadata | unknown | The full definition of a specific script in the scripts library. | 
+| PaloAltoNetworksXDR.scriptMetadata.script_id | unknown | Script ID. | 
+| PaloAltoNetworksXDR.scriptMetadata.name | unknown | Script name. | 
+| PaloAltoNetworksXDR.scriptMetadata.description | unknown | Script description. | 
 | PaloAltoNetworksXDR.scriptMetadata.modification_date | unknown | Timestamp of when the script was last modified. | 
 | PaloAltoNetworksXDR.scriptMetadata.created_by | unknown | Name of the user who created the script. | 
 | PaloAltoNetworksXDR.scriptMetadata.is_high_risk | unknown | Whether the script has a high-risk outcome. | 
-| PaloAltoNetworksXDR.scriptMetadata.windows_supported | unknown | Whether the script can be executed on Windows OS. | 
-| PaloAltoNetworksXDR.scriptMetadata.linux_supported | unknown | Whether the script can be executed on Linux OS. | 
-| PaloAltoNetworksXDR.scriptMetadata.macos_supported | unknown | Whether the script can be executed on macOS. | 
-| PaloAltoNetworksXDR.scriptMetadata.entry_point | unknown | Name of the entry point selected for the script. Empty string indicate the script defined as just run. | 
+| PaloAltoNetworksXDR.scriptMetadata.windows_supported | unknown | Whether the script can be executed on a Windows operating system. | 
+| PaloAltoNetworksXDR.scriptMetadata.linux_supported | unknown | Whether the script can be executed on a Linux operating system. | 
+| PaloAltoNetworksXDR.scriptMetadata.macos_supported | unknown | Whether the script can be executed on a Mac operating system. | 
+| PaloAltoNetworksXDR.scriptMetadata.entry_point | unknown | Name of the entry point selected for the script. An empty string indicates the script defined as just run. | 
 | PaloAltoNetworksXDR.scriptMetadata.script_input | unknown | Name and type for the specified entry point. | 
-| PaloAltoNetworksXDR.scriptMetadata.script_output_type | unknown | Type of output | 
-| PaloAltoNetworksXDR.scriptMetadata.script_output_dictionary_definitions | unknown | In case of the script_output_type is a dictionary an array with friendly_name, name, and type for each output is returned. | 
+| PaloAltoNetworksXDR.scriptMetadata.script_output_type | unknown | Type of the output. | 
+| PaloAltoNetworksXDR.scriptMetadata.script_output_dictionary_definitions | unknown | If the script_output_type is a dictionary, an array with a friendly name, name, and type for each output. | 
 
 
 #### Command Example
@@ -1924,16 +1924,16 @@ Get the code of a specific script in the script library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| script_uid | Unique identifier of the script, returned by the “xdr-get-scripts” command. | Required | 
+| script_uid | Unique identifier of the script, returned by the ***xdr-get-scripts*** command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.scriptCode | unknown | The code of a specific script in the script library. | 
+| PaloAltoNetworksXDR.scriptCode | unknown | The script code command results. | 
 | PaloAltoNetworksXDR.scriptCode.code | unknown | The code of a specific script in the script library. | 
-| PaloAltoNetworksXDR.scriptCode.script_uid | unknown | Script uid | 
+| PaloAltoNetworksXDR.scriptCode.script_uid | unknown |Unique identifier of the script. | 
 
 
 #### Command Example
@@ -1994,7 +1994,7 @@ def run(file_path):
 
 ### 22. xdr-action-status-get
 ***
-Retrieve the status of the requested actions according to the action ID.
+Retrieves the status of the requested actions according to the action ID.
 
 
 #### Base Command
@@ -2004,17 +2004,17 @@ Retrieve the status of the requested actions according to the action ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | The Action ID of the selected request. After performing an action, you will receive an action id. | Required | 
+| action_id | The action ID of the selected request. After performing an action, you will receive an action ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.getActionStatus | unknown | Status of the action ID. You will receive a table of endpoint id and its status. | 
-| PaloAltoNetworksXDR.getActionStatus.endpoint_id | unknown | endpoint id. | 
-| PaloAltoNetworksXDR.getActionStatus.status | unknown | status of specific endpoint id. | 
-| PaloAltoNetworksXDR.getActionStatus.action_id | unknown | Action ID that was at the input. | 
+| PaloAltoNetworksXDR.getActionStatus | unknown | Status of the action ID. You will receive a table of endpoint IDs and their status. | 
+| PaloAltoNetworksXDR.getActionStatus.endpoint_id | unknown | Endpoint ID. | 
+| PaloAltoNetworksXDR.getActionStatus.status | unknown | Status of specific endpoint ID. | 
+| PaloAltoNetworksXDR.getActionStatus.action_id | unknown | The specified action ID. | 
 
 
 #### Command Example
@@ -2053,7 +2053,7 @@ Delete selected endpoints in the Cortex XDR app. You can delete up to 1000 endpo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma separated list of endpoint IDs. | Required | 
+| endpoint_ids | Comma-separated list of endpoint IDs. | Required | 
 
 
 #### Context Output
