@@ -214,10 +214,10 @@ tasks:
       version: -1
       name: Close session
       description: Close the given session
-      script: carbonblackliveresponse|||cb-session-close
+      script: "|||cb-session-close"
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
