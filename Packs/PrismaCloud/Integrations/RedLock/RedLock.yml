@@ -513,6 +513,9 @@ script:
     - name: query
       description: Query to run in Prisma Cloud config API (use RQL)
       required: true
+    - name: limit
+      description: Maximum number of entries to return
+      defaultValue: 100
     description: Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL language
     name: redlock-search-config
     outputs:

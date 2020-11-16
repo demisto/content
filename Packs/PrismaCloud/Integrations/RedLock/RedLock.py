@@ -21,6 +21,8 @@ if not demisto.getParam('proxy'):
 
 VERIFY = not demisto.params().get('unsecure', False)
 
+DEFAULT_LIMIT = 100
+
 # Standard headers
 HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
 TOKEN = None
@@ -422,11 +424,17 @@ def redlock_search_config():
     Run query in config
     """
     query = demisto.args().get('query', None)
+    limit = demisto.args().get('limit', None)
+    if not limit:
+        limit = DEFAULT_LIMIT
+    else:
+        limit = int(limit)
+
     if not query:
         return_error('You must specify a query to retrieve assets')
     payload = {
         'query': query,
-        'limit': 100,
+        'limit': limit,
         'sort': [{"direction": "desc", "field": "insertTs"}],
         'withResourceJson': True
     }

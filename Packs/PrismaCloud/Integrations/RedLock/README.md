@@ -433,6 +433,7 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 | time-range-value | The amount of units to go back in time | Optional | 
 | time-range-unit | The search unit. login and epoch are only available if timeRangeValue is not provided. | Optional | 
 | query | Query to run in Prisma Cloud config API (use RQL) | Required | 
+|limit |Maximum number of entries to return | Optional |
 
 
 #### Context Output
