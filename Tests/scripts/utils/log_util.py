@@ -94,5 +94,24 @@ def install_logging(log_file_name: str, include_process_name=False) -> str:
     ch.setLevel(logging.INFO)
     fh.setLevel(logging.DEBUG)
     logging.basicConfig(level=logging.DEBUG,
-                        handlers=[ch, fh])
+                        handlers=[ch, fh],
+                        force=True)
     return log_file_path
+
+
+def install_simple_logging():
+    """
+    This method implements logging module to print the message only with colors
+    This function is implemented to support backward compatibility for functions that cannot yet support the full
+    `install_logging` method capabilities
+    """
+    if not hasattr(logging, 'success'):
+        _add_logging_level('SUCCESS', 25)
+    coloredlogs.install(fmt='%(message)s',
+                        level_styles={
+                            'critical': {'bold': True, 'color': 'red'},
+                            'debug': {'color': 'cyan'},
+                            'error': {'color': 'red'},
+                            'info': {},
+                            'warning': {'color': 'yellow'},
+                            'success': {'color': 'green'}})

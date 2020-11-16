@@ -2055,7 +2055,8 @@ Creates a policy rule.
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 | tags | Rule tags to create. | Optional | 
-| category | A comma-separated list of URL categories. | Optional | 
+| category | A comma-separated list of URL categories. | Optional |
+| profile_setting | A profile setting group. | Optional | 
 
 
 #### Context Output
@@ -2075,7 +2076,8 @@ Creates a policy rule.
 | Panorama.SecurityRule.Target | string | Target firewall \(Panorama instances\). | 
 | Panorama.SecurityRule.LogForwarding | string | Log forwarding profile \(Panorama instances\). | 
 | Panorama.SecurityRule.DeviceGroup | string | Device group for the rule \(Panorama instances\). | 
-| Panorama.SecurityRules.Tags | String | Rule tags. | 
+| Panorama.SecurityRules.Tags | String | Rule tags. |
+| Panorama.SecurityRules.ProfileSetting | String | Profile setting group. | 
 
 
 #### Command Example
@@ -2207,7 +2209,7 @@ Edits a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to edit. | Required | 
-| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding' or 'tag'. | Required | 
+| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag' or 'profile-setting'. | Required | 
 | element_value | The new value for the parameter. | Required | 
 | pre_post | Pre-rule or post-rule (Panorama instances). | Optional | 
 | behaviour | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
@@ -2230,7 +2232,7 @@ Edits a policy rule.
 | Panorama.SecurityRule.Target | string | Target firewall \(Panorama instances\). | 
 | Panorama.SecurityRule.DeviceGroup | string | Device group for the rule \(Panorama instances\). | 
 | Panorama.SecurityRule.Tags | String | Tags for the rule. | 
-
+| Panorama.SecurityRules.ProfileSetting | String | Profile setting group. |
 
 #### Command Example
 ```!panorama-edit-rule rulename="block_bad_application" element_to_change=action element_value=drop```
