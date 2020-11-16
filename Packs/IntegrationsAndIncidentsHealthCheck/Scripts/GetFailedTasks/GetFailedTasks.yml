@@ -1,21 +1,35 @@
 args:
-- defaultValue: -status:closed
-  description: The query by which to retrieve failed tasks. Optional. The default value is "-status:closed"
+- default: false
+  defaultValue: -status:closed
+  description: The query by which to retrieve failed tasks. Optional. The default
+    value is "-status:closed"
+  isArray: false
   name: query
+  required: false
+  secret: false
+- default: false
+  description: Rest API instance to use.
+  isArray: false
+  name: rest_api_instance
+  required: false
+  secret: false
 comment: Gets failed tasks details for incidents based on a query.
-dockerimage: demisto/python3:3.8.6.12176
 commonfields:
   id: GetFailedTasks
   version: -1
 enabled: true
 name: GetFailedTasks
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.13358
 runas: DBotWeakRole
 runonce: false
-script: ''
-scripttarget: 0
-subtype: python3
-tags: []
-type: python
-fromversion: 6.0.0
 tests:
 - No tests
+dependson:
+  must:
+  - Demisto REST API|||demisto-api-post
+fromversion: 6.0.0
