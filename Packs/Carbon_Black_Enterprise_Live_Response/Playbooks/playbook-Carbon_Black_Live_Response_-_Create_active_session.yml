@@ -66,10 +66,10 @@ tasks:
       version: -1
       name: Create new session
       description: Create a new CarbonBlack session for a given sensor.
-      script: carbonblackliveresponse|||cb-session-create
+      script: "|||cb-session-create"
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
