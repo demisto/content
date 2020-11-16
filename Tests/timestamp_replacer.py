@@ -10,8 +10,7 @@ from mitmproxy.http import HTTPRequest
 from mitmproxy.script import concurrent
 from mitmproxy.addons.serverplayback import ServerPlayback
 from time import ctime
-from dateutil.parser import parse
-
+from dateparser import parse
 
 def record_concurrently(replaying: bool = False):
     '''
@@ -269,8 +268,8 @@ class TimestampReplacer:
             # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
             if len(val) > 4:
                 try:
-                    parse(val)
-                    self.query_keys.add(key)
+                    if parse(val):
+                        self.query_keys.add(key)
                 except ValueError:
                     pass
 
@@ -285,8 +284,8 @@ class TimestampReplacer:
                 # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
                 if len(val) > 4:
                     try:
-                        parse(val)
-                        self.form_keys.add(key)
+                        if parse(val):
+                            self.form_keys.add(key)
                     except ValueError:
                         pass
 
@@ -301,8 +300,8 @@ class TimestampReplacer:
                 # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
                 if len(val) > 4:
                     try:
-                        parse(val)
-                        self.form_keys.add(key)
+                        if parse(val):
+                            self.form_keys.add(key)
                     except ValueError:
                         pass
 
