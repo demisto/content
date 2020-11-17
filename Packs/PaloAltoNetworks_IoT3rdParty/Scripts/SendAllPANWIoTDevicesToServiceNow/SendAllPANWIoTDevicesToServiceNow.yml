@@ -1,12 +1,11 @@
 comment: gets all available devices from the IoT cloud and sends it to the ServiceNow
   server
 commonfields:
-  id: 189eabd5-8705-467a-8c5a-9499af595521
+  id: SendAllPANWIoTDevicesToServiceNow
   version: -1
-dockerimage: demisto/python3:3.8.6.12176
+dockerimage: demisto/python3:3.8.6.13358
 enabled: true
 name: SendAllPANWIoTDevicesToServiceNow
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -16,3 +15,6 @@ tags:
 - PANW IoT 3rd Party Integration
 - servicenow v2
 type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
