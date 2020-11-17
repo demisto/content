@@ -1013,7 +1013,6 @@ jobs:
             python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb $GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}"
             rm $GCS_PATH
           when: on_success
-      - *destroy_instances
       - *store_artifacts
 
   Upload Packs To Marketplace:
@@ -1055,7 +1054,6 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
             fi
           when: always
-      - *destroy_instances
       - *store_artifacts
 
   Instance Test:
@@ -1209,6 +1207,8 @@ jobs:
             fi
           when: always
       - *persist_to_workspace
+      - *destroy_instances
+      - *store_artifacts
 
   Install Packs in Demisto Marketplace - Master:
     <<: *container_config
@@ -1237,6 +1237,8 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
             fi
           when: always
+      - *destroy_instances
+      - *store_artifacts
 
 workflows:
   version: 2
