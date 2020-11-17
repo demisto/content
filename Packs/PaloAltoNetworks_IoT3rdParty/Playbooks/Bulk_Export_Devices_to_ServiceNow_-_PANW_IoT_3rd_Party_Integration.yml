@@ -1,0 +1,338 @@
+description: This playbook gets all available device inventory from PANW IoT Cloud
+  and updates/creates endpoints with custom attributes on ServiceNow.
+id: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
+inputs: []
+name: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6fc6ad44-626b-4eb0-8295-26d38a653098
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6fc6ad44-626b-4eb0-8295-26d38a653098
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerror: true
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: ServiceNow v2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      id: 135eac26-d75a-4c51-8bba-3fbf9a6b7369
+      iscommand: false
+      name: Is ServiceNow available
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 135eac26-d75a-4c51-8bba-3fbf9a6b7369
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: gets all available devices from the IoT cloud and sends it to the
+        ServiceNow server
+      id: 45a007f8-8472-4be6-8488-4d45af894399
+      iscommand: false
+      name: SendAllPANWIoTDevicesToServiceNow
+      script: 189eabd5-8705-467a-8c5a-9499af595521
+      type: regular
+      version: -1
+    taskid: 45a007f8-8472-4be6-8488-4d45af894399
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: a80bcb5f-5406-4eee-8f09-3692b227b2a9
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: a80bcb5f-5406-4eee-8f09-3692b227b2a9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integrationName:
+        simple: servicenow
+      message:
+        simple: Servicenow integration is disabled
+      playbookName:
+        simple: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
+      status:
+        simple: disabled
+      type:
+        simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto Networks IoT 3rd Party
+      description: Sends a status message back to PANW IOT cloud.
+      id: 44592f5a-2263-45d0-82c0-043d2a2f6bea
+      iscommand: true
+      name: send disabled status back to panw iot
+      script: Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-report-status-to-panw
+      type: regular
+      version: -1
+    taskid: 44592f5a-2263-45d0-82c0-043d2a2f6bea
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: baa9263c-8231-4ee7-8b98-e2028602a50d
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: baa9263c-8231-4ee7-8b98-e2028602a50d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "8"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: c0ad8bb8-1caa-456b-832a-0fc3cad0d89d
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: c0ad8bb8-1caa-456b-832a-0fc3cad0d89d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integrationName:
+        simple: servicenow
+      message:
+        simple: 'Error: Failed to do a bulk device sync to ServiceNow'
+      playbookName:
+        simple: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
+      status:
+        simple: error
+      type:
+        simple: device
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto Networks IoT 3rd Party
+      description: Sends a status message back to PANW IOT cloud.
+      id: d16895fd-132f-4391-899d-e1ee762b5733
+      iscommand: true
+      name: panw-iot-3rd-party-report-status-to-panw
+      script: Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-report-status-to-panw
+      type: regular
+      version: -1
+    taskid: d16895fd-132f-4391-899d-e1ee762b5733
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 05cb2ec2-8a84-4aa7-89b1-2a73316f5ce9
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 05cb2ec2-8a84-4aa7-89b1-2a73316f5ce9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 1025,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
