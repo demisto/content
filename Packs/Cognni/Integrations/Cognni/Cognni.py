@@ -636,12 +636,7 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        elif demisto.command() == 'cognni-ping':
+        if demisto.command() == 'cognni-ping':
             return_results(ping_command(client))
 
         elif demisto.command() == 'cognni-fetch-incidents':
