@@ -22,6 +22,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 45a4ab5b-a09e-401d-8e6b-7a079f9f28e3
     timertriggers: []
     type: start
