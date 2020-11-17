@@ -161,8 +161,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### 1. xdr-get-incidents
 ---
-Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
-      If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
+Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created. If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported. This command requires at least one query argument.
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
