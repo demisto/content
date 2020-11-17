@@ -1146,14 +1146,14 @@ class SecurityAndComplianceClient {
 
 function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
     if ($cs_client.password) {
-        $cs_client.ListSearchActions()
+        $cs_client.ListSearchActions() | Out-Null
     }
     else {
         throw "Fill password for basic auth or use command !o365-sc-start-auth for Oauth2.0 authorization (MFA enabled accounts)."
     }
-    $raw_response = @{}
-	$human_readable = "Ok!"
-    $entry_context = @{}
+    $raw_response = $null
+	$human_readable = "ok"
+    $entry_context = $null
 
     return $human_readable, $entry_context, $raw_response
 }
@@ -1411,7 +1411,7 @@ function Main {
         $Demisto.Debug("Command being called is $Command")
         switch ($command) {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client $cs_client
 			}
             "$script:COMMAND_PREFIX-start-auth" {
                 ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
