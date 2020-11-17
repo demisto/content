@@ -6,10 +6,7 @@ import requests
 import traceback
 from http.client import HTTPException
 import datetime
-try:
-    from CommonServerPython import return_outputs, tableToMarkdown, return_error
-except ImportError:
-    pass
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
