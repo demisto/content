@@ -69,10 +69,8 @@ def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_
         - Case B: Verify pack should not be tested
     """
     # Creating temp dirs
-    packs_dir = tmp_path / PACKS_DIR
-    packs_dir.mkdir()
-    pack = packs_dir / pack_name
-    pack.mkdir()
+    pack = tmp_path / PACKS_DIR / pack_name
+    pack.mkdir(parents=True)
     pack_metadata_file = pack / PACKS_PACK_META_FILE_NAME
     pack_metadata_file.write_text(json.dumps(pack_metadata_content))
 

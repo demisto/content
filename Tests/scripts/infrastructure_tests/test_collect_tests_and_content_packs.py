@@ -458,9 +458,6 @@ class TestChangedScript:
                 with_scripts=fake_script['id_set'],
                 with_test_playbook=fake_test_playbook['id_set']
             )
-            # Creating pack metadata
-            # pack_metadata_file = create_temp_dir_with_metadata(tmp_path, 'fake_pack', {PACK_METADATA_SUPPORT: 'xsoar'})
-            # mocker.patch.object(os.path, 'join', return_value=pack_metadata_file)
 
             # When
             # - filtering tests to run
@@ -596,7 +593,7 @@ TWO_BEFORE_GA_VERSION = '4.5.0'
 
 
 def get_mock_test_list(minimum_server_version=TWO_BEFORE_GA_VERSION, get_modified_files_ret=None, mocker=None,
-                       git_diff_ret='', ):
+                       git_diff_ret=''):
     branch_name = 'BranchA'
     if get_modified_files_ret is not None:
         mocker.patch(

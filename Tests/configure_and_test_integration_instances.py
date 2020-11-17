@@ -15,6 +15,7 @@ from time import sleep
 from threading import Thread
 from distutils.version import LooseVersion
 import logging
+from typing import Optional
 
 from Tests.scripts.utils.log_util import install_logging
 
@@ -958,7 +959,7 @@ def restart_server_legacy(server):
         logging.exception('Legacy SSH restart demisto failed')
 
 
-def get_tests(build):
+def get_tests(build: Build) -> list[Optional[dict]]:
     """
     Selects the tests from that should be run in this execution and filters those that cannot run in this server version
     Args:
@@ -973,7 +974,7 @@ def get_tests(build):
         filtered_tests = extract_filtered_tests()
         if build.is_nightly:
             # skip test button testing
-            logging.warning('Not running instance tests in nightly flow')
+            logging.debug('Not running instance tests in nightly flow')
             tests_for_iteration = []
         elif filtered_tests:
             tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]

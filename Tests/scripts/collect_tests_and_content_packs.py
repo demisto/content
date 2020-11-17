@@ -1064,13 +1064,12 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         tests.add('TestCommonPython')
 
     # get all modified packs - not just tests related
-    # EDIT: this fix is bad and need to be changed in the source (get_modified_files_for_testing) and not after all
-    # packs / tests were collected.
+    # TODO: need move logic of collecting packs of all items to be inside get_modified_files_for_testing
     modified_packs = get_modified_packs(files_string)
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
 
-    # Get packs of integrations corresponding to the tests the listed in, in conf.json
+    # Get packs of integrations corresponding to each test, as listed in conf.json
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
