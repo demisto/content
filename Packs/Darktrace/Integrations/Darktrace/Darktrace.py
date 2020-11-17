@@ -74,7 +74,7 @@ class Client(BaseClient):
         """
         request = "/modelbreaches?pbid=" + pbid
         http_headers = get_headers(request)
-        return self._http_request(  # TODO: Come up with better error handling if there isn't a model breach with that given ID
+        return self._http_request(
             method='GET',
             url_suffix=request,
             headers=http_headers
@@ -89,7 +89,7 @@ class Client(BaseClient):
         """
         request = "/modelbreaches/" + pbid + "/comments"
         http_headers = get_headers(request)
-        return self._http_request(  # TODO: Better error handling if no model breach with given ID/no comments
+        return self._http_request(
             method='GET',
             url_suffix=request,
             headers=http_headers
@@ -403,29 +403,6 @@ def create_query_from_list(param_list: Dict[str, str]):
     return query if param_list else ''
 
 
-# def convert_to_demisto_severity(severity: str) -> int:      # TODO: decide severity mappings
-#     """Maps Darktrace model breach score to Cortex XSOAR severity
-#     Converts the Darktrace  model breach score ([0,1])
-#     to Cortex XSOAR incident severity (1 to 4) for mapping.
-#     :type severity: ``str``
-#     :param severity: severity as returned from the Darktrace API (str) [0,1]
-#     :return: Cortex XSOAR Severity (1 to 4)
-#     :rtype: ``int``
-#     """
-#     # This is a straightforward mapping, but more complex mapping
-#     # is probably required. This mapping should also be documented.
-#     int_severity = int(severity)
-#     if int_severity < .2:
-#         demisto_severity = 1  # 'Low'
-#     elif int_severity < .7:
-#         demisto_severity = 2  # 'Medium'
-#     elif int_severity < .9:
-#         demisto_severity = 3  # 'High'
-#     else:
-#         demisto_severity = 4  # 'Critical'
-#     return demisto_severity
-
-
 def format_JSON_for_fetch_incidents(modelbreach: Dict[str, Any]) -> Dict[str, Any]:
     """Formats JSON for fetch incidents.
     :type modelbreach: ``Dict[str, Any]``
@@ -598,12 +575,7 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: Dict[str, int],
         formatted_JSON = format_JSON_for_fetch_incidents(alert)
 
         # The incident dict is initialized with a few mandatory fields:
-        # name: th
-        #
-        #
-        #
-        #
-        # e incident name
+        # name: the incident name
         # occurred: the time on when the incident occurred, in ISO8601 format
         # we use timestamp_to_datestring() from CommonServerPython.py to
         # handle the conversion.
@@ -616,7 +588,6 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: Dict[str, int],
         incident = {
             'name': incident_name,
             'occurred': timestamp_to_datestring(incident_created_time),
-            # 'severity': convert_to_demisto_severity(alert.get('score', '0')),
             'rawJSON': json.dumps(formatted_JSON)
         }
 
@@ -671,7 +642,7 @@ def get_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='Darktrace.ModelBreach',
         outputs_key_field='pbid',
-        outputs=formatted_output   # TODO: define the outputs/update design doc
+        outputs=formatted_output
     )
 
 
@@ -715,7 +686,7 @@ def get_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults
         readable_output=readable_output,
         outputs_prefix='Darktrace.ModelBreach',
         outputs_key_field='pid',
-        outputs=model_breach_comments    # TODO: define the outputs/update design doc
+        outputs=model_breach_comments
     )
 
 
@@ -754,7 +725,7 @@ def acknowledge_breach_command(client: Client, args: Dict[str, Any]) -> CommandR
         readable_output=readable_output,
         outputs_prefix='Darktrace.ModelBreach',
         outputs_key_field='pbid',
-        outputs=ack_output    # TODO: define the outputs/update design doc
+        outputs=ack_output
     )
 
 
@@ -793,7 +764,7 @@ def unacknowledge_breach_command(client: Client, args: Dict[str, Any]) -> Comman
         readable_output=readable_output,
         outputs_prefix='Darktrace.ModelBreach',
         outputs_key_field='pbid',
-        outputs=ack_output    # TODO: define the outputs/update design doc
+        outputs=ack_output
     )
 
 
@@ -834,7 +805,7 @@ def list_similar_devices_command(client: Client, args: Dict[str, Any]) -> Comman
         readable_output=readable_output,
         outputs_prefix='Darktrace.SimilarDevices',
         outputs_key_field='did',
-        outputs=formatted_output    # TODO: define the outputs/update design doc
+        outputs=formatted_output
     )
 
 
@@ -875,7 +846,7 @@ def get_external_endpoint_details_command(client: Client, args: Dict[str, Any]) 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Darktrace.ExternalEndpointDetails',
-        outputs=formatted_output    # TODO: define the outputs/update design doc
+        outputs=formatted_output
     )
 
 
@@ -916,7 +887,7 @@ def get_device_connection_info_command(client: Client, args: Dict[str, Any]) -> 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Darktrace.DeviceConnectionInfo',
-        outputs=formatted_output    # TODO: define the outputs/update design doc
+        outputs=formatted_output
     )
 
 
@@ -966,7 +937,7 @@ def get_device_identity_info_command(client: Client, args: Dict[str, Any]) -> Co
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Darktrace.DeviceIdentityInfo',
-        outputs_key_field='devices.did',  # TODO: see if this works
+        outputs_key_field='devices.did',
         outputs=formatted_output
     )
 
