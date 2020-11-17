@@ -1,6 +1,6 @@
 {
     "name": "Salesforce IAM",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Use The Salesforce IAM Service Management solution to modernize the way you manage and deliver services to your users.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

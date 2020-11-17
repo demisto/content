@@ -83,7 +83,7 @@ class Client(BaseClient):
     def update_user_profile(self, user_term, data):
         uri = URI_PREFIX + f'sobjects/User/{encode_string_results(user_term)}'
         params = {"_HttpMethod": "PATCH"}
-        return self.http_request(
+        return self._http_request(
             method='POST',
             url_suffix=uri,
             params=params,
@@ -119,8 +119,7 @@ def test_module(client):
 def get_user_command(client, args, mapper_out):
     try:
         user_profile = args.get("user-profile")
-        user_profile_delta = args.get('user-profile-delta')
-        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
+        iam_user_profile = IAMUserProfile(user_profile=user_profile)
         salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
         email = salesforce_user.get('email')
@@ -220,7 +219,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                                     skip_reason='Command is disabled.')
 
         else:
-            iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
+            iam_user_profile = IAMUserProfile(user_profile=user_profile)
             salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
             email = salesforce_user.get('email')
@@ -269,7 +268,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
         return iam_user_profile
 
 
-def enable_disable_user_command(enable, client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
+def enable_disable_user_command(enable, client, args, mapper_out, is_command_enabled, is_create_user_enabled,
+                                create_if_not_exists):
     try:
         user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
@@ -344,7 +344,7 @@ def get_user_if_by_mail(client, email):
     return user_id
 
 
-def get_mapping_fields_command():
+def get_mapping_fields_command(client):
     # in progress
     return ""
 
@@ -400,8 +400,8 @@ def main():
                                                is_create_enabled, create_if_not_exists)
 
         elif command == 'iam-disable-user':
-            user_profile = enable_disable_user_command(False, client, args, is_enable_disable_enabled)
-
+            user_profile = enable_disable_user_command(False, client, args, mapper_out, is_enable_disable_enabled,
+                                                       is_create_enabled, create_if_not_exists)
         elif command == 'iam-enable-user':
             user_profile = enable_disable_user_command(True, client, args, mapper_out, is_enable_disable_enabled,
                                                        is_create_enabled, create_if_not_exists)
