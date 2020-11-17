@@ -1,10 +1,10 @@
 import json
 import io
 from datetime import datetime
-from XMCyberIntegration import get_version_command, is_xm_version_supported_command, entity_get_command, ip_command
+from XMCyberIntegration import get_version_command, is_xm_version_supported_command, ip_command
 from XMCyberIntegration import hostname_command, affected_entities_list_command, affected_critical_assets_list_command
 from XMCyberIntegration import Client, XM, URLS, PAGE_SIZE, DEFAULT_TIME_ID, TOP_ENTITIES, PREVIOUS_DEFAULT_TIME_ID
-from XMCyberIntegration import XM_CYBER_INCIDENT_TYPE, SEVERITY, XM_CYBER_INCIDENT_TYPE_ENTITY, XM_CYBER_INCIDENT_TYPE_TECHNIQUE
+from XMCyberIntegration import SEVERITY, XM_CYBER_INCIDENT_TYPE_ASSET, XM_CYBER_INCIDENT_TYPE_TECHNIQUE, XM_CYBER_INCIDENT_TYPE_SCORE
 from XMCyberIntegration import fetch_incidents_command
 from CommonServerPython import *
 
@@ -71,8 +71,8 @@ def test_affected_critical_assets_list(requests_mock):
         'entityId': '15553084234424912589'
     })
 
-    assert_response(response, 'XMCyber', 'entityId', [{
-        'entityId': '15553084234424912589',
+    assert_response(response, 'XMCyber.Entity', 'id', [{
+        'id': '15553084234424912589',
         'criticalAssetsAtRiskList': [
             {
                 'average': 25.33,
@@ -101,8 +101,8 @@ def test_affected_entities_list(requests_mock):
         'entityId': 'awsUser-AIDA5HCBCYKFMAQHGI56Z'
     })
 
-    assert_response(response, 'XMCyber', 'entityId', [{
-        'entityId': 'awsUser-AIDA5HCBCYKFMAQHGI56Z',
+    assert_response(response, 'XMCyber.Entity', 'id', [{
+        'id': 'awsUser-AIDA5HCBCYKFMAQHGI56Z',
         'entitiesAtRiskList': [
             {
                 'name': '792168ed-fcf9-4d5c-ae31-f3de29f7e354',
@@ -129,9 +129,9 @@ def test_hostname(requests_mock):
         'hostname': 'CorporateDC'
     })
 
-    assert_response(response, 'XMCyber', 'entityId', [{
-        'entityId': '3110337924893579985',
-        'displayName': 'CorporateDC',
+    assert_response(response, 'XMCyber.Entity', 'id', [{
+        'id': '3110337924893579985',
+        'name': 'CorporateDC',
         'affectedEntities': 29,
         'averageComplexity': 2,
         'criticalAssetsAtRisk': 14,
@@ -142,8 +142,9 @@ def test_hostname(requests_mock):
             {'count': 46, 'name': 'DNS Heap Overflow (CVE-2018-8626)'},
             {'count': 34, 'name': 'SIGRed (CVE-2020-1350)'}
         ],
-        'entityType': 'Sensor',
-        'entityReport': 'https://test.com/#/scenarioHub/entityReport/3110337924893579985?timeId=timeAgo_days_7'
+        'type': 'Sensor',
+        'report': 'https://test.com/#/scenarioHub/entityReport/3110337924893579985?timeId=timeAgo_days_7',
+        'OS': 'Windows Server 2012 R2 (DC)'
     }])
 
 
@@ -161,11 +162,11 @@ def test_ip(requests_mock):
         'ip': '172.0.0.1'
     })
 
-    assert response.outputs_prefix == 'XMCyber'
-    assert response.outputs_key_field == 'entityId'
+    assert response.outputs_prefix == 'XMCyber.Entity'
+    assert response.outputs_key_field == 'id'
     assert response.outputs == [{
-        'entityId': '3110337924893579985',
-        'displayName': 'CorporateDC',
+        'id': '3110337924893579985',
+        'name': 'CorporateDC',
         'affectedEntities': 29,
         'averageComplexity': 2,
         'criticalAssetsAtRisk': 14,
@@ -176,42 +177,9 @@ def test_ip(requests_mock):
             {'count': 46, 'name': 'DNS Heap Overflow (CVE-2018-8626)'},
             {'count': 34, 'name': 'SIGRed (CVE-2020-1350)'}
         ],
-        'entityType': 'Sensor',
-        'entityReport': 'https://test.com/#/scenarioHub/entityReport/3110337924893579985?timeId=timeAgo_days_7'
-    }]
-
-
-def test_entity_get(requests_mock):
-    """Tests entity-get command function.
-
-    Configures requests_mock instance to generate the appropriate search
-    API response. Checks the output of the command function with the expected output.
-    """
-
-    mock_url = f'{TEST_URL}{URLS.Entities}?search=%2F172.0.0.1%2Fi&page=1&pageSize={PAGE_SIZE}'
-    xm = mock_request_and_get_xm_mock('test_data/hostname.json', requests_mock, mock_url)
-
-    response = entity_get_command(xm, {
-        'ip': '172.0.0.1'
-    })
-
-    assert response.outputs_prefix == 'XMCyber'
-    assert response.outputs_key_field == 'entityId'
-    assert response.outputs == [{
-        'entityId': '3110337924893579985',
-        'displayName': 'CorporateDC',
-        'affectedEntities': 29,
-        'averageComplexity': 2,
-        'criticalAssetsAtRisk': 14,
-        'criticalAssetsAtRiskLevel': 'medium',
-        'averageComplexityLevel': 'medium',
-        'isAsset': True,
-        'compromisingTechniques': [
-            {'count': 46, 'name': 'DNS Heap Overflow (CVE-2018-8626)'},
-            {'count': 34, 'name': 'SIGRed (CVE-2020-1350)'}
-        ],
-        'entityType': 'Sensor',
-        'entityReport': 'https://test.com/#/scenarioHub/entityReport/3110337924893579985?timeId=timeAgo_days_7'
+        'type': 'Sensor',
+        'report': 'https://test.com/#/scenarioHub/entityReport/3110337924893579985?timeId=timeAgo_days_7',
+        'OS': 'Windows Server 2012 R2 (DC)'
     }]
 
 
@@ -247,7 +215,7 @@ def _get_risk_score_incidents(create_time):
         'current_score': 41,
         'name': 'XM Risk score - 41',
         'create_time': create_time,
-        'type': XM_CYBER_INCIDENT_TYPE,
+        'type': XM_CYBER_INCIDENT_TYPE_SCORE,
         'severity': SEVERITY.Low,
         'linkToReport': 'https://test.com/#/dashboard'
     }]
@@ -299,7 +267,7 @@ def _get_entities_incidents(create_time):
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=azureUser-5d49400b-bc26-4d36-8cff-640d1eeb6465'
                     '&timeId=timeAgo_days_7',
-            'type': XM_CYBER_INCIDENT_TYPE_ENTITY
+            'type': XM_CYBER_INCIDENT_TYPE_ASSET
         },
         {
             "entityId": "azureVirtualMachine-4be55d60-136f-4410-9b0b-26f192e941ad",
@@ -371,7 +339,7 @@ def _get_entities_incidents(create_time):
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=azureVirtualMachine-4be55d60-136f-'
                     '4410-9b0b-26f192e941ad&timeId=timeAgo_days_7',
-            'type': XM_CYBER_INCIDENT_TYPE_ENTITY
+            'type': XM_CYBER_INCIDENT_TYPE_ASSET
         },
         {
             "entityId": "azureVirtualMachine-9f9a1625-aa36-428c-b6bd-e9c7c476510a",
@@ -443,7 +411,7 @@ def _get_entities_incidents(create_time):
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=azureVirtualMachine-9f9a1625-aa36-428c-b6bd-'
                     'e9c7c476510a&timeId=timeAgo_days_7',
-            'type': XM_CYBER_INCIDENT_TYPE_ENTITY
+            'type': XM_CYBER_INCIDENT_TYPE_ASSET
         },
         {
             "entityId": "15553084234424912589",
@@ -487,7 +455,7 @@ def _get_entities_incidents(create_time):
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=15553084234424912589&timeId=timeAgo_days_7',
-            'type': XM_CYBER_INCIDENT_TYPE_ENTITY
+            'type': XM_CYBER_INCIDENT_TYPE_ASSET
         },
         {
             "entityId": "872743867762485580",
@@ -531,7 +499,7 @@ def _get_entities_incidents(create_time):
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=872743867762485580&timeId=timeAgo_days_7',
-            'type':XM_CYBER_INCIDENT_TYPE_ENTITY
+            'type':XM_CYBER_INCIDENT_TYPE_ASSET
         },
         {
             "entityId": "file-163b4ecf80b8429583007386c77cae39",
@@ -572,7 +540,7 @@ def _get_entities_incidents(create_time):
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=file-163b4ecf80b8429583007386c77cae39&'
                     'timeId=timeAgo_days_7',
-            'type': XM_CYBER_INCIDENT_TYPE_ENTITY
+            'type': XM_CYBER_INCIDENT_TYPE_ASSET
         }
     ]
 

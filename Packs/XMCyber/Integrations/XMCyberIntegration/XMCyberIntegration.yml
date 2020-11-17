@@ -65,16 +65,16 @@ script:
         required: true
         secret: false
     outputs:
-      - contextPath: XMCyber.entityId
+      - contextPath: XMCyber.Entity.id
         description: XMCyber Entity ID
         type: String
-      - contextPath: XMCyber.criticalAssetsAtRiskList.name
+      - contextPath: XMCyber.Entity.criticalAssetsAtRiskList.name
         description: Compromising Techinique Name
         type: String
-      - contextPath: XMCyber.criticalAssetsAtRiskList.average
+      - contextPath: XMCyber.Entity.criticalAssetsAtRiskList.average
         description: Average attack complexity
         type: Number
-      - contextPath: XMCyber.criticalAssetsAtRiskList.minimum
+      - contextPath: XMCyber.Entity.criticalAssetsAtRiskList.minimum
         description: Minimum attack complexity
         type: Number
 
@@ -94,20 +94,20 @@ script:
         required: true
         secret: false
     outputs:
-      - contextPath: XMCyber.entityId
+      - contextPath: XMCyber.Entity.id
         description: XMCyber Entity ID
         type: String
-      - contextPath: XMCyber.entitiesAtRiskList.name
+      - contextPath: XMCyber.Entity.entitiesAtRiskList.name
         description: Compromising Techinique Name
         type: String
-      - contextPath: XMCyber.entitiesAtRiskList.technique
+      - contextPath: XMCyber.Entity.entitiesAtRiskList.technique
         description: The attack technique which compromised the entity
         type: String
 
   - name: xmcyber-version-supported
     description: Check if current XM version supports Demisto integration
     outputs:
-      - contextPath: XMCyber.IsVersion.valid
+      - contextPath: XMCyber.Version.valid
         description: Flag that indicates if the version is valid
         type: Boolean
     
@@ -127,37 +127,37 @@ script:
         isArray: true
         required: false
     outputs:
-      - contextPath: XMCyber.entityId
+      - contextPath: XMCyber.Entity.id
         description: XMCyber Entity ID
         type: String
-      - contextPath: XMCyber.name
+      - contextPath: XMCyber.Entity.name
         description: Entity Name
         type: String
-      - contextPath: XMCyber.isAsset
+      - contextPath: XMCyber.Entity.isAsset
         description: Is Entity a Critical Asset
         type: Boolean
-      - contextPath: XMCyber.affectedEntities
+      - contextPath: XMCyber.Entity.affectedEntities
         description: Number of unique entities at risk from this entity
         type: Number
-      - contextPath: XMCyber.averageComplexity
+      - contextPath: XMCyber.Entity.averageComplexity
         description: Average complexity to compromise this entity
         type: Number
-      - contextPath: XMCyber.criticalAssetsAtRisk
+      - contextPath: XMCyber.Entity.criticalAssetsAtRisk
         description: Number of unique critical assets at risk from this entity
         type: Number
-      - contextPath: XMCyber.averageComplexityLevel
+      - contextPath: XMCyber.Entity.averageComplexityLevel
         description: Level of the average complexity to compromise this entity
         type: String
-      - contextPath: XMCyber.compromisingTechniques.name
+      - contextPath: XMCyber.Entity.compromisingTechniques.name
         description: Technique compromising this entity
         type: String
-      - contextPath: XMCyber.compromisingTechniques.count
+      - contextPath: XMCyber.Entity.compromisingTechniques.count
         description: Number of vectors with this technique compromising this entity
         type: Number
-      - contextPath: XMCyber.entityType
+      - contextPath: XMCyber.Entity.type
         description: Entity Type
         type: String
-      - contextPath: XMCyber.entityReport
+      - contextPath: XMCyber.Entity.report
         description: Link to the Entity Report
         type: String
       - contextPath: DBotScore.Indicator
@@ -175,60 +175,16 @@ script:
       - contextPath: IP.Address
         description: IP address.
         type: String
+      - contextPath: Endpoint.Hostname
+        description: The hostname to matching the IP in XM Cyber
+        type: String
+      - contextPath: Endpoint.IP
+        description: IP address
+        type: String
+      - contextPath: Endpoint.OS
+        description: OS of the matched endpoint
+        type: String
 
-  - name: xmcyber-entity-get
-    description: Return data on Entity by IP or Hostname from XM Cyber
-    arguments:
-      - name: ip
-        default: true
-        description: List of IPs
-        isArray: true
-        required: false
-      - name: name
-        default: true
-        description: List of entity names (i.e. hostname, cloud instance, user)
-        isArray: true
-        required: false
-      - name: entityId
-        description: List of XMCyber Entity IDs
-        isArray: true
-        required: false
-        default: true
-    outputs:
-      - contextPath: XMCyber.entityId
-        description: XMCyber Entity ID
-        type: String
-      - contextPath: XMCyber.name
-        description: Entity Name
-        type: String
-      - contextPath: XMCyber.isAsset
-        description: Is Entity a Critical Asset
-        type: Boolean
-      - contextPath: XMCyber.affectedEntities
-        description: Number of unique entities at risk from this entity
-        type: Number
-      - contextPath: XMCyber.averageComplexity
-        description: Average complexity to compromise this entity
-        type: Number
-      - contextPath: XMCyber.criticalAssetsAtRisk
-        description: Number of unique critical assets at risk from this entity
-        type: Number
-      - contextPath: XMCyber.averageComplexityLevel
-        description: Level of the average complexity to compromise this entity
-        type: String
-      - contextPath: XMCyber.compromisingTechniques.name
-        description: Technique compromising this entity
-        type: String
-      - contextPath: XMCyber.compromisingTechniques.count
-        description: Number of vectors with this technique compromising this entity
-        type: Number
-      - contextPath: XMCyber.entityType
-        description: Entity Type
-        type: String
-      - contextPath: XMCyber.entityReport
-        description: Link to the Entity Report
-        type: String
-  
   - name: hostname
     description: Return data on Entity by hostname from XM Cyber
     arguments:
@@ -238,37 +194,37 @@ script:
         isArray: true
         required: false
     outputs:
-      - contextPath: entityId
+      - contextPath: XMCyber.Entity.id
         description: XMCyber Entity ID
         type: String
-      - contextPath: name
+      - contextPath: XMCyber.Entity.name
         description: Entity Name
         type: String
-      - contextPath: isAsset
+      - contextPath: XMCyber.Entity.isAsset
         description: Is Entity a Critical Asset
         type: Boolean
-      - contextPath: affectedEntities
+      - contextPath: XMCyber.Entity.affectedEntities
         description: Number of unique entities at risk from this entity
         type: Number
-      - contextPath: averageComplexity
+      - contextPath: XMCyber.Entity.averageComplexity
         description: Average complexity to compromise this entity
         type: Number
-      - contextPath: criticalAssetsAtRisk
+      - contextPath: XMCyber.Entity.criticalAssetsAtRisk
         description: Number of unique critical assets at risk from this entity
         type: Number
-      - contextPath: averageComplexityLevel
+      - contextPath: XMCyber.Entity.averageComplexityLevel
         description: Level of the average complexity to compromise this entity
         type: String
-      - contextPath: compromisingTechniques.name
+      - contextPath: XMCyber.Entity.compromisingTechniques.name
         description: Technique compromising this entity
         type: String
-      - contextPath: compromisingTechniques.count
+      - contextPath: XMCyber.Entity.compromisingTechniques.count
         description: Number of vectors with this technique compromising this entity
         type: Number
-      - contextPath: entityType
+      - contextPath: XMCyber.Entity.type
         description: Entity Type
         type: String
-      - contextPath: entityReport
+      - contextPath: XMCyber.Entity.report
         description: Link to the Entity Report
         type: String
       - contextPath: Host.Hostname
@@ -281,7 +237,7 @@ script:
         description: The IP address of the host.
         type: String
 
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   isfetch: true
   longRunning: false
   longRunningPort: false
