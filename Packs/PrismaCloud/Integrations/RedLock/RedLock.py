@@ -80,6 +80,14 @@ def req(method, path, data, param_data):
     return response.json()
 
 
+def format_response(response):
+    if response and isinstance(response, dict):
+        response = {pascalToSpace(key).replace(" ", ""): format_response(value) for key, value in response.items()}
+    elif response and isinstance(response, list):
+        response = [format_response(item) for item in response]
+    return response
+
+
 def list_filters():
     """
     List the acceptable filters on alerts
@@ -423,8 +431,8 @@ def get_rql_response():
         }
         human_readable.append(tmp_human_readable)
 
-    contents = [{pascalToSpace(key).replace(" ", ""): val for key, val in item.items() if val is not None} for item in items]
-
+    #contents = [{pascalToSpace(key).replace(" ", ""): val for key, val in item.items() if val is not None} for item in items]
+    contents = format_response(items)
     rql_data = {
         "Query": rql,
         "Response": contents
