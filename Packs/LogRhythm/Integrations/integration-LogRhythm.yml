@@ -1,7 +1,6 @@
 commonfields:
   id: LogRhythm
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: LogRhythm
 display: LogRhythm
 category: Analytics & SIEM
@@ -51,11 +50,6 @@ configuration:
 - display: Domain of the Windows authentication server (used for Windows authentication)
   name: domain
   type: 0
-  required: false
-- display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  defaultvalue: "1"
-  type: 19
   required: false
 script:
   script: |-
@@ -1074,7 +1068,8 @@ script:
             Password: params.Credentials.password
         };
 
-        var lastRun = getLastRun() + tz;
+        var lastRun = lastRun.lastTime + tz;
+        logDebug("Fetch-Incidents-LogRythm: lastRun with offset is",JSON.stringify(lastRun));
         if (!lastRun || !lastRun.lastTime) {
             lastRun = {
                 lastId: 0,
