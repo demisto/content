@@ -268,11 +268,8 @@ class TimestampReplacer:
         for key, val in query_data:
             # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
             if len(val) > 4:
-                try:
-                    if parse(val):
-                        self.query_keys.add(key)
-                except ValueError:
-                    pass
+                if parse(val):
+                    self.query_keys.add(key)
 
     def handle_multipart_form(self, req: HTTPRequest) -> None:
         '''Used when detecting what keys in a multipart form to replace with constants.
@@ -284,11 +281,8 @@ class TimestampReplacer:
             for key, val in req.multipart_form.items(multi=True):
                 # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
                 if len(val) > 4:
-                    try:
-                        if parse(val):
-                            self.form_keys.add(key)
-                    except ValueError:
-                        pass
+                    if parse(val):
+                        self.form_keys.add(key)
 
     def handle_urlencoded_form(self, req: HTTPRequest) -> None:
         '''Used when detecting what keys in an url encoded parameters to replace with constants.
@@ -300,11 +294,8 @@ class TimestampReplacer:
             for key, val in req.urlencoded_form.items(multi=True):
                 # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
                 if len(val) > 4:
-                    try:
-                        if parse(val):
-                            self.form_keys.add(key)
-                    except ValueError:
-                        pass
+                    if parse(val):
+                        self.form_keys.add(key)
 
     def handle_json_body(self, req: HTTPRequest) -> None:
         '''Used when detecting what keys in a request's json body to replace with constants.
@@ -344,25 +335,22 @@ class TimestampReplacer:
                     else:
                         is_string = isinstance(val, str) and len(val) > 4
                         possible_timestamp = isinstance(val, (int, float)) and len(str(val)) >= 8
-                        try:
-                            if is_string or possible_timestamp:
-                                for_eval = val
-                                if possible_timestamp:
-                                    if isinstance(for_eval, float):
-                                        digits = str(val).split('.')
-                                        for_eval = digits[0]
-                                    if len(str(for_eval)) < 13:
-                                        parsed_date = parse(ctime(val))
-                                    else:
-                                        parsed_date = parse(ctime(val / 1000.0))
+                        if is_string or possible_timestamp:
+                            for_eval = val
+                            if possible_timestamp:
+                                if isinstance(for_eval, float):
+                                    digits = str(val).split('.')
+                                    for_eval = digits[0]
+                                if len(str(for_eval)) < 13:
+                                    parsed_date = parse(ctime(val))
                                 else:
-                                    parsed_date = parse(val)
-                                # if parsed_date is not None then successfully interpreted value as some sort of
-                                # time related thingieding
-                                if parsed_date:
-                                    bad_key_paths.append(sub_key_path)
-                        except (ValueError, OverflowError):
-                            pass
+                                    parsed_date = parse(ctime(val / 1000.0))
+                            else:
+                                parsed_date = parse(val)
+                            # if parsed_date is not None then successfully interpreted value as some sort of
+                            # time related thingieding
+                            if parsed_date:
+                                bad_key_paths.append(sub_key_path)
             elif isinstance(obj, list):
                 for i, val in enumerate(obj):
                     sub_key_path = '{}.{}'.format(key_path, i) if key_path else i
@@ -371,25 +359,22 @@ class TimestampReplacer:
                     else:
                         is_string = isinstance(val, str) and len(val) > 4
                         possible_timestamp = isinstance(val, (int, float)) and len(str(val)) >= 8
-                        try:
-                            if is_string or possible_timestamp:
-                                for_eval = val
-                                if possible_timestamp:
-                                    if isinstance(for_eval, float):
-                                        digits = str(val).split('.')
-                                        for_eval = digits[0]
-                                    if len(str(for_eval)) < 13:
-                                        parsed_date = parse(ctime(val))
-                                    else:
-                                        parsed_date = parse(ctime(val / 1000.0))
+                        if is_string or possible_timestamp:
+                            for_eval = val
+                            if possible_timestamp:
+                                if isinstance(for_eval, float):
+                                    digits = str(val).split('.')
+                                    for_eval = digits[0]
+                                if len(str(for_eval)) < 13:
+                                    parsed_date = parse(ctime(val))
                                 else:
-                                    parsed_date = parse(val)
-                                # if parsed_date is not None then successfully interpreted value as some sort of
-                                # time related thingieding
-                                if parsed_date:
-                                    bad_key_paths.append(sub_key_path)
-                        except (ValueError, OverflowError):
-                            pass
+                                    parsed_date = parse(ctime(val / 1000.0))
+                            else:
+                                parsed_date = parse(val)
+                            # if parsed_date is not None then successfully interpreted value as some sort of
+                            # time related thingieding
+                            if parsed_date:
+                                bad_key_paths.append(sub_key_path)
             return bad_key_paths
         bad_keys = travel_dict(content)
         return bad_keys
