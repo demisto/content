@@ -231,7 +231,7 @@
 				"complex": {
 					"root": "Domain",
 					"filters": [],
-					"accessor": "Admin.organization",
+					"accessor": "Admin.Organization",
 					"transformers": [
 						{
 							"operator": "uniq",
