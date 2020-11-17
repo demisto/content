@@ -1,7 +1,7 @@
 {
  "id": "host-memory-line",
  "version": -1,
- "fromVersion": "5.0.0",
+ "fromVersion": "6.2.0",
  "name": "Memory Usage % per host (last 24h)",
  "description": "Memory usage percentage per host in the previous 24 hours",
  "dataType": "system",
