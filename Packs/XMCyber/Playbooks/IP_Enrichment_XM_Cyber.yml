@@ -173,6 +173,37 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    fieldMapping:
+    - incidentfield: Entity ID
+      output:
+        simple: ${XMCyber.Entity.id}
+    - incidentfield: Entity Name
+      output:
+        simple: ${XMCyber.Entity.name}
+    - incidentfield: Is Entity Critical Asset
+      output:
+        simple: ${XMCyber.Entity.isAsset}
+    - incidentfield: Affected Entities
+      output:
+        simple: ${XMCyber.Entity.affectedEntities}
+    - incidentfield: Average Complexity
+      output:
+        simple: ${XMCyber.Entity.averageComplexity}
+    - incidentfield: Critical Assets At Risk
+      output:
+        simple: ${XMCyber.Entity.criticalAssetsAtRisk}
+    - incidentfield: Average Complexity Level
+      output:
+        simple: ${XMCyber.Entity.averageComplexityLevel}
+    - incidentfield: Entity Type
+      output:
+        simple: ${XMCyber.Entity.type}
+    - incidentfield: Entity Report
+      output:
+        simple: ${XMCyber.Entity.report}
+    - incidentField: Compromising Techniques
+      output:
+        simple: ${XMCyber.Entity.compromisingTechniques}
   "41":
     id: "41"
     taskid: 2e94e0b9-818d-470c-8fe8-9197ef6000b7
@@ -222,7 +253,7 @@ tasks:
       - "28"
     scriptarguments:
       brandname:
-        simple: XM Cyber
+        simple: XMCyber
     results:
     - brandInstances
     separatecontext: false
@@ -285,7 +316,7 @@ tasks:
       - "47"
     scriptarguments:
       entityId:
-        simple: ${XMCyber.entityId}
+        simple: ${XMCyber.Entity.id}
       timeId: {}
     separatecontext: false
     view: |-
@@ -300,6 +331,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    fieldMapping:
+    - incidentfield: Critical Assets At Risk List
+      output:
+        simple: ${XMCyber.Entity.criticalAssetsAtRiskList}
   "47":
     id: "47"
     taskid: 775c1092-07dc-4139-8502-be92d8c8e6d9
@@ -319,7 +354,7 @@ tasks:
       - "24"
     scriptarguments:
       entityId:
-        simple: ${XMCyber.entityId}
+        simple: ${XMCyber.Entity.id}
       timeId: {}
     separatecontext: false
     view: |-
@@ -334,6 +369,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    fieldMapping:
+    - incidentfield: Affected Entities List
+      output:
+        simple: ${XMCyber.Entity.entitiesAtRiskList}
 view: |-
   {
     "linkLabelsPosition": {

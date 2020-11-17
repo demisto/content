@@ -7,7 +7,7 @@
     "prevName": "XM Cyber Critical Asset",
     "color": "#275726",
     "sla": 168,
-    "playbookId": "Enrich Endpoint - XM Cyber",
+    "playbookId": "Endpoint Enrichment - XM Cyber",
     "hours": 0,
     "days": 0,
     "weeks": 1,

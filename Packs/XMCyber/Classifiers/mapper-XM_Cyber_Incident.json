@@ -3,6 +3,7 @@
 	"description": "Maps fields from XM Cyber incidents",
 	"feed": false,
 	"id": "XM Cyber Incident Mapper",
+	"fromVersion": "6.0.0",
 	"mapping": {
 		"XM Cyber Choke Point": {
 			"dontMapEventToLabels": false,
@@ -294,17 +295,6 @@
 		}
 	},
 	"name": "XM Cyber Incident Mapper",
-	"nameRaw": "XM Cyber Incident Mapper",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
 	"version": -1
 }

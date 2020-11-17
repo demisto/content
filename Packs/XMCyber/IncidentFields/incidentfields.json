@@ -676,7 +676,7 @@
 			"prevName": "Compromising Techniques",
 			"ownerOnly": false,
 			"placeholder": "",
-			"description": "",
+			"description": "Name of each attack technique that has compromised the entity and the count such attack vectors from the time period",
 			"cliName": "compromisingtechniques",
 			"type": "grid",
 			"closeForm": false,

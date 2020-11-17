@@ -366,7 +366,7 @@
 						"items": [
 							{
 								"endCol": 4,
-								"fieldId": "xmcybertechnique",
+								"fieldId": "technique",
 								"height": 22,
 								"id": "af1cf400-1768-11eb-ae90-a7556e35a3ad",
 								"index": 0,
@@ -385,7 +385,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "xmcybertechniquedescription",
+								"fieldId": "techniquedescription",
 								"height": 44,
 								"id": "b3efd8d0-1768-11eb-ae90-a7556e35a3ad",
 								"index": 2,
@@ -426,7 +426,7 @@
 							},
 							{
 								"endCol": 4,
-								"fieldId": "xmcybertechniquename",
+								"fieldId": "techniquename",
 								"height": 22,
 								"id": "b4dd4610-1768-11eb-ae90-a7556e35a3ad",
 								"index": 6,
@@ -435,7 +435,7 @@
 							},
 							{
 								"endCol": 4,
-								"fieldId": "xmcybertechniqueassets",
+								"fieldId": "techniqueassets",
 								"height": 22,
 								"id": "b1516030-1768-11eb-ae90-a7556e35a3ad",
 								"index": 6,

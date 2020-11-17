@@ -389,7 +389,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "xmcyberentityreport",
+								"fieldId": "entityreport",
 								"height": 22,
 								"id": "6be4bf80-1473-11eb-8e98-c1f918d6dfb0",
 								"index": 0,
@@ -399,16 +399,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "xmcyberhostname",
-								"height": 22,
-								"id": "07786320-1325-11eb-8c8a-31e6f7de4330",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "xmcyberdisplayname",
+								"fieldId": "entityname",
 								"height": 22,
 								"id": "2bd10050-1880-11eb-b34a-395d056e24a8",
 								"index": 1,
@@ -418,7 +409,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "xmcybercriticalasset",
+								"fieldId": "criticalasset",
 								"height": 22,
 								"id": "89960d20-1317-11eb-8677-ed095e9aa5f3",
 								"index": 2,
@@ -429,7 +420,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "xmcyberaveragecomplexity",
+								"fieldId": "averagecomplexity",
 								"height": 22,
 								"id": "eb262400-0f14-11eb-acc7-97278328b66f",
 								"index": 3,
@@ -440,7 +431,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "xmcybercriticalassetsatrisklevel",
+								"fieldId": "criticalassetsatrisklevel",
 								"height": 22,
 								"id": "fac55110-0f14-11eb-acc7-97278328b66f",
 								"index": 4,
@@ -451,9 +442,20 @@
 							{
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "xmcyberentityid",
+								"fieldId": "entityid",
 								"height": 22,
 								"id": "4928f760-1313-11eb-8c4e-19d649fb0001",
+								"index": 0,
+								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "entitytype",
+								"height": 22,
+								"id": "1e324220-1325-11eb-8c8a-31e6f7de4330",
 								"index": 1,
 								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
 								"sectionItemType": "field",
@@ -462,21 +464,10 @@
 							{
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "xmcyberentitytype",
-								"height": 22,
-								"id": "1e324220-1325-11eb-8c8a-31e6f7de4330",
-								"index": 2,
-								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
-								"sectionItemType": "field",
-								"startCol": 2
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "xmcyberaveragecomplexitylevel",
+								"fieldId": "averagecomplexitylevel",
 								"height": 22,
 								"id": "bfe26560-0f14-11eb-acc7-97278328b66f",
-								"index": 3,
+								"index": 2,
 								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
 								"sectionItemType": "field",
 								"startCol": 2
@@ -503,7 +494,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "xmcybercriticalassetsatrisk",
+								"fieldId": "criticalassetsatrisk",
 								"height": 22,
 								"id": "f7e8be00-0f14-11eb-acc7-97278328b66f",
 								"index": 0,
@@ -513,7 +504,7 @@
 							},
 							{
 								"endCol": 4,
-								"fieldId": "xmcybercriticalassetsatrisklist",
+								"fieldId": "criticalassetsatrisklist",
 								"height": 106,
 								"id": "24ed8070-187f-11eb-b34a-395d056e24a8",
 								"index": 1,
@@ -541,7 +532,7 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "xmcyberaffectedentities",
+								"fieldId": "affectedentities",
 								"height": 22,
 								"id": "62ed1570-187f-11eb-b34a-395d056e24a8",
 								"index": 0,
@@ -550,7 +541,7 @@
 							},
 							{
 								"endCol": 4,
-								"fieldId": "xmcyberaffectedentitieslist",
+								"fieldId": "affectedentitieslist",
 								"height": 106,
 								"id": "64f6c820-187f-11eb-b34a-395d056e24a8",
 								"index": 1,
@@ -574,12 +565,12 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideItemTitleOnlyOne": true,
-						"hideName": true,
+						"hideName": false,
 						"i": "sqsw8wv4hm-fabd40c0-1896-11eb-8949-bb6927d39d5d",
 						"items": [
 							{
 								"endCol": 4,
-								"fieldId": "xmcybercompromisingtechniques",
+								"fieldId": "compromisingtechniques",
 								"height": 106,
 								"id": "094aafb0-1897-11eb-8949-bb6927d39d5d",
 								"index": 0,
