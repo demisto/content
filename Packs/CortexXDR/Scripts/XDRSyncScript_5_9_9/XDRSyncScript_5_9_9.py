@@ -392,7 +392,7 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
     if first_run:
         latest_incident_in_xdr_result = create_incident_from_saved_data(fields_mapping, incident_result=True)
 
-        demisto.results(latest_incident_in_xdr_result)  # TODO solve this
+        demisto.results(latest_incident_in_xdr_result)
 
         # set the incident markdown field
         xdr_incident = latest_incident_in_xdr_result
