@@ -1,5 +1,5 @@
-Playbook that takes action id and checks the action status. 
-Please enter action id you want to know it’s status.
+Checks the action status of an action ID. 
+Enter the action ID of the action whose status you want to know. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -29,9 +29,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.GetActionStatus | Get Action Status command results. | unknown |
-| PaloAltoNetworksXDR.GetActionStatus.endpoint_id | endpoint id. | string |
-| PaloAltoNetworksXDR.GetActionStatus.status | status of specific endpoint id. | string |
-| PaloAltoNetworksXDR.GetActionStatus.action_id | Action ID that was at the input. | number |
+| PaloAltoNetworksXDR.GetActionStatus.endpoint_id | Endpoint ID. | string |
+| PaloAltoNetworksXDR.GetActionStatus.status | Status of the specific endpoint ID. | string |
+| PaloAltoNetworksXDR.GetActionStatus.action_id | The action ID. | number |
 
 ## Playbook Image
 ---
