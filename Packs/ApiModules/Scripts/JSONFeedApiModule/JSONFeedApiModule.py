@@ -97,8 +97,9 @@ class Client:
 
 
 def test_module(client, params) -> str:
-    client.build_iterator()
-    return 'ok'
+    for feed_name, feed in client.feed_name_to_config.items():
+        client.build_iterator(feed)
+        return 'ok'
 
 
 def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool, **kwargs) \
@@ -125,7 +126,6 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             indicator_type = feed_config.get('indicator_type', indicator_type)
             for item in items:
                 mapping = feed_config.get('mapping')
-
                 if isinstance(item, str):
                     item = {indicator_field: item}
                 indicator_value = item.get(indicator_field)
@@ -215,7 +215,6 @@ def extract_all_fields_from_indicator(indicator, indicator_key):
 
 def feed_main(params, feed_name, prefix):
     handle_proxy()
-
     client = Client(**params)
     indicator_type = params.get('indicator_type')
     feedTags = argToList(params.get('feedTags'))
@@ -229,7 +228,7 @@ def feed_main(params, feed_name, prefix):
             return_outputs(test_module(client, params))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, params.get('indicator_type'), feedTags,
+            indicators = fetch_indicators_command(client, indicator_type, feedTags,
                                                   params.get('auto_detect_type'))
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
@@ -239,6 +238,7 @@ def feed_main(params, feed_name, prefix):
             limit = int(demisto.args().get('limit', 10))
             auto_detect = params.get('auto_detect_type')
             indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect)[:limit]
+            demisto.debug(f"tal indicators len in feed main {len(indicators)}")
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_outputs(hr, {}, indicators)
 

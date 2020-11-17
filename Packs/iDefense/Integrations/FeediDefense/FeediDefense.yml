@@ -8,6 +8,11 @@ configuration:
   name: feed
   required: false
   type: 8
+- display: API Key
+  hidden: false
+  name: api_token
+  required: true
+  type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: feedInstanceReputationNotSet
@@ -21,7 +26,7 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: F - Reliability cannot be judged
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -66,32 +71,11 @@ configuration:
   display: Indicator Type
   name: indicator_type
   options:
-  - IP
-  - ' DOMAIN'
-  - ' URL'
+  - 'IP'
+  - 'Domain'
+  - 'URL'
   required: false
   type: 16
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
-- additionalinfo: Supports CSV values.
-  display: Tags
-  hidden: false
-  name: feedTags
-  required: false
-  type: 0
 - additionalinfo: Severity of the indicator.  Which value to fetch.
   defaultvalue: '0'
   display: Indicator Severity
@@ -123,11 +107,6 @@ configuration:
   name: confidence_from
   required: false
   type: 0
-- display: API Key
-  hidden: false
-  name: api_token
-  required: false
-  type: 0
 - additionalinfo: Confidence about the indicator detailes. Choose the highest confidence
     value to fetch between 0-100
   display: confidence to
@@ -141,7 +120,28 @@ configuration:
   name: malware_family
   required: false
   type: 0
-description: Fetches indicators from a JSON feed.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
+description: Fetches indicators from a iDefense feed.
 display: iDefense Feed
 name: iDefense Feed
 script:
@@ -157,7 +157,7 @@ script:
     deprecated: false
     description: Gets the feed indicators.
     execution: false
-    name: json-get-indicators
+    name: idefense-get-indicators
   dockerimage: demisto/jmespath:1.0.0.10854
   feed: true
   isfetch: false
