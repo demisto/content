@@ -1,7 +1,7 @@
 id: Carbon Black Live Response - Create active session
 version: -1
 name: Carbon Black Live Response - Create active session
-description: Create an active sessio.
+description: Create an active session.
 starttaskid: "0"
 tasks:
   "0":
@@ -127,8 +127,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: CbLiveResponse.Sessions(val.Status != 'active'  || val.Status != 'Active'
-          || val.Status != 'ACTIVE')
+        simple: CbLiveResponse.Sessions(val.Status != 'pending' || val.Status != 'error')
     separatecontext: false
     loop:
       iscommand: false
