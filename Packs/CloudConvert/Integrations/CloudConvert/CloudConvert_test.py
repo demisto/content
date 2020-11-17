@@ -1,5 +1,5 @@
 from CloudConvert import import_command, Client, convert_command, check_status_command, export_command
-from CommonServerPython import remove_empty_elements
+from CommonServerPython import remove_empty_elements, tableToMarkdown, string_to_table_header
 import json
 import io
 import pytest
@@ -34,7 +34,11 @@ def test_import_valid_url(mocker):
     client = create_client()
     mocker.patch.object(client, 'import_url', return_value=util_load_json('./test_data/import_url_response.json'))
     results = import_command(client, {'url': MOCK_URL})
+    readable_output = tableToMarkdown('Import Results', remove_empty_elements(util_load_json('./test_data/import_url_response.json').get('data')),
+                                      headers=('created_at', 'id', 'operation', 'status'),
+                                      headerTransform=string_to_table_header)
     assert results.outputs == remove_empty_elements(util_load_json('./test_data/import_url_response.json').get('data'))
+    assert results.readable_output == readable_output
 
 
 def test_import_invalid_url(mocker):
@@ -74,7 +78,11 @@ def test_convert_valid_format_and_id(mocker):
         'task_id': 'id',
         'output_format': 'pdf'
     })
+    readable_output = tableToMarkdown('Convert Results', remove_empty_elements(util_load_json('test_data/convert_valid_format_and_id_response.json').get('data')),
+                                      headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
+                                      headerTransform=string_to_table_header)
     assert results.outputs == remove_empty_elements(util_load_json('test_data/convert_valid_format_and_id_response.json').get('data'))
+    assert results.readable_output == readable_output
 
 
 def test_convert_invalid_format_or_id(mocker):
@@ -142,7 +150,12 @@ def test_check_status_valid_id_non_export(mocker, entry_id):
         'task_id': 'id',
         'entry_id': entry_id
     })
+    readable_output = tableToMarkdown('Check Status Results', remove_empty_elements(util_load_json('test_data/check_status_non_export_response.json').get('data')),
+                                      headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
+                                               'status'),
+                                      headerTransform=string_to_table_header)
     assert results.outputs == remove_empty_elements(util_load_json('test_data/check_status_non_export_response.json').get('data'))
+    assert results.readable_output == readable_output
 
 
 @pytest.mark.parametrize('entry_id', [True, False])
@@ -176,6 +189,13 @@ def test_check_status_valid_id_export(mocker, entry_id):
 
     else:
         assert results.outputs == remove_empty_elements(util_load_json('test_data/check_status_export_response.json').get('data'))
+        readable_output = tableToMarkdown('Check Status Results', remove_empty_elements(
+            util_load_json('test_data/check_status_export_response.json').get('data')),
+                                          headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
+                                                   'status'),
+                                          headerTransform=string_to_table_header)
+        assert results.readable_output == readable_output
+
 
 
 @pytest.mark.parametrize('export_as', ['war_room_entry', 'url'])
@@ -221,7 +241,12 @@ def test_export_valid_id(mocker, export_as):
         'export_as': export_as
     })
     if export_as == 'url':
+        readable_output = tableToMarkdown('Export Results', remove_empty_elements(util_load_json('test_data/export_valid_id_response.json').get('data')),
+                                          headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
+                                          headerTransform=string_to_table_header)
         assert results.outputs == remove_empty_elements(util_load_json('test_data/export_valid_id_response.json').get('data'))
+        assert results.readable_output == readable_output
+
     else:
         request_results = util_load_json('test_data/export_valid_id_response.json')
         request_results['data']['operation'] = 'export/entry'
