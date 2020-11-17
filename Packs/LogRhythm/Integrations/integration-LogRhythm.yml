@@ -1068,13 +1068,14 @@ script:
             Password: params.Credentials.password
         };
 
-        var lastRun = lastRun.lastTime + tz;
+        var lastRun = getLastRun();
         logDebug("Fetch-Incidents-LogRythm: lastRun with offset is",JSON.stringify(lastRun));
         if (!lastRun || !lastRun.lastTime) {
-            lastRun = {
-                lastId: 0,
-                lastTime: new Date().getTime() - (10 * 60 * 1000)
-            }
+            lastRun = lastRun.lastTime + tz;
+          // lastRun = {
+          //     lastId: 0,
+          //     lastTime: new Date().getTime() - (10 * 60 * 1000)
+          // }
         }
         logDebug("Fetch-Incidents-LogRythm: lastRun is",JSON.stringify(lastRun));
         var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultAlarmsPageSize;
