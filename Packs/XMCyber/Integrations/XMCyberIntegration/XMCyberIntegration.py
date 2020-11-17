@@ -99,7 +99,7 @@ class URLS:
 
 class EVENT_NAME:
     EventPrefix = 'XM '
-    RiskScore = 'Risk score'
+    RiskScore = 'Security score'
     AssetAtRisk = 'Asset at risk'
     ChokePoint = 'Choke point'
     TopTechnique = 'Top technique'
