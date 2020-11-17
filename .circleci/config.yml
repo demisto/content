@@ -743,7 +743,6 @@ jobs:
             - run:
                 name: Install Content And Configure Integrations On Server
                 shell: /bin/bash
-                when: always
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
                     then
@@ -754,7 +753,6 @@ jobs:
             - run:
                 name: Run Tests - Server 5.0
                 shell: /bin/bash
-                when: always
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
                     then
@@ -823,7 +821,6 @@ jobs:
             - run:
                 name: Install Content And Configure Integrations On Server
                 shell: /bin/bash
-                when: always
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
                     then
@@ -834,7 +831,6 @@ jobs:
             - run:
                 name: Run Tests - 5.5
                 shell: /bin/bash
-                when: always
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
                     then
@@ -1134,7 +1130,6 @@ jobs:
       - *create_instance
       - run:
           name: Wait until server ready
-          when: always
           command: |
             python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
       - run:
