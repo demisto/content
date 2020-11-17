@@ -39,7 +39,8 @@
         {
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 700
         },
         {
             "integrations": "SecurityIntelligenceServicesFeed",
