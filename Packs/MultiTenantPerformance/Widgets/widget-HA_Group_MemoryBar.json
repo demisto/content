@@ -1,0 +1,17 @@
+{
+ "id": "ha-group-memory-bar",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "Average Hosts Group Memory Usage % per group",
+ "description": "Average hosts group memory usage percentage per hosts group",
+ "dataType": "system",
+ "widgetType": "bar",
+ "query": "host.memory",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "haGroup"
+  ]
+ },
+ "size": 61
+}

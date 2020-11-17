@@ -1,0 +1,17 @@
+{
+ "id": "ha-group-container-bar",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "Average Hosts Group Docker containers count per group",
+ "description": "Average hosts group Docker containers count per group",
+ "dataType": "system",
+ "widgetType": "bar",
+ "query": "host.account-docker-containers",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "haGroup"
+  ]
+ },
+ "size": 61
+}

@@ -1,0 +1,17 @@
+{
+ "id": "host-disk-bar",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "Disk Usage % per host",
+ "description": "Disk usage percentage per host",
+ "dataType": "system",
+ "widgetType": "bar",
+ "query": "host.disk",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "host"
+  ]
+ },
+ "size": 61
+}

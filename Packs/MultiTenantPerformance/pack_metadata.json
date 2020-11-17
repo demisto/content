@@ -1,0 +1,16 @@
+{
+    "name": "Multi-Tenant Performance",
+    "description": "Multi-Tenant related content to monitor hosts and hosts groups performance",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-11-16T13:00:19Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
