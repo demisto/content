@@ -177,7 +177,7 @@ def import_command(client: Client, arguments: Dict[str, Any]):
         results = client.import_url(arguments)
         results_data = results.get('data')
     elif arguments.get('entry_id'):
-#        demisto.debug('getting the path of the file from its entry id')
+        demisto.debug('getting the path of the file from its entry id')
         result = demisto.getFilePath(arguments.get('entry_id'))
         if not result:
             raise ValueError('No file was found for given entry id')
