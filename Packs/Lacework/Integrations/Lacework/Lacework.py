@@ -12,14 +12,14 @@ requests.packages.urllib3.disable_warnings()
 handle_proxy()
 
 ''' GLOBAL VARS '''
-LACEWORK_INSTANCE = demisto.params().get('lacework_instance')
+LACEWORK_ACCOUNT = demisto.params().get('lacework_account')
 LACEWORK_API_KEY = demisto.params()['lacework_api_key']
 LACEWORK_API_SECRET = demisto.params()['lacework_api_secret']
 LACEWORK_EVENT_SEVERITY = demisto.params()['lacework_event_severity']
 LACEWORK_EVENT_HISTORY_DAYS = demisto.params()['lacework_event_history']
 
 try:
-    lacework_client = LaceworkClient(instance=LACEWORK_INSTANCE,
+    lacework_client = LaceworkClient(instance=LACEWORK_ACCOUNT,
                                      api_key=LACEWORK_API_KEY,
                                      api_secret=LACEWORK_API_SECRET)
 except Exception:

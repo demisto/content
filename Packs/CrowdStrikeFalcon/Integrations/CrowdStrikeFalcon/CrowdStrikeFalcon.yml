@@ -26,8 +26,12 @@ configuration:
   name: incidents_per_fetch
   required: false
   type: 0
-- display: Fetch query
+- display: Detections fetch query
   name: fetch_query
+  required: false
+  type: 0
+- display: Incidents fetch query
+  name: incidents_fetch_query
   required: false
   type: 0
 - display: Fetch incidents

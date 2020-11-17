@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "1.8.2",
+    "currentVersion": "1.8.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -142,7 +142,7 @@
         },
         "illuminate": {
             "mandatory": false,
-            "display_name": "illuminate"
+            "display_name": "Analyst1"
         },
         "MicrosoftGraphMail": {
             "mandatory": false,
@@ -298,3 +298,4 @@
         }
     }
 }
+

@@ -11,15 +11,14 @@ Inputs:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* QRadarCorrelationLog
 * QRadarFullSearch
+* QRadarCorrelationLog
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* ChangeContext
-* Set
+This playbook does not use any scripts.
 
 ### Commands
 This playbook does not use any commands.
@@ -33,10 +32,9 @@ This playbook does not use any commands.
 | MaxLogsCount | Maximum number of log entires to query from QRadar \(default: 20\) | 20 | Optional |
 | ID | The QRadar offense ID  | incident.labels.id | Required |
 | StartTime | The QRadar offense start time | incident.labels.start_time | Required |
-| GetOnlyCREEvents | If value "OnlyCRE" get only events made by CRE.
-Values can be "OnlyCRE", "OnlyNotCRE", "All". | All | Optional |
+| GetOnlyCREEvents | If value "OnlyCRE" get only events made by CRE.<br/>Values can be "OnlyCRE", "OnlyNotCRE", "All". | All | Optional |
 | MaxCorrelationCount | Maximum number of correlations to query from QRadar \(default: 100\) | 100 | Optional |
-| Fields | A comma\-separated list of extra fields to get from each event. |  | Optional |
+| Fields | A comma-separated list of extra fields to get from each event. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -50,7 +48,6 @@ Values can be "OnlyCRE", "OnlyNotCRE", "All". | All | Optional |
 | QRadar.Correlation.CREDescription | The correlation description | unknown |
 | QRadar.Correlation | The QRadar offense correlations | unknown |
 | QRadar.Correlation.SourceIP | The correlation source IP | unknown |
-| QRadar | QRadar context output | unknown |
 | QRadar.Correlation.DestinationIP | The correlation destination IP | unknown |
 | QRadar.Correlation.Category | The correlation high level category | unknown |
 | QRadar.Correlation.Username | The correlation username | unknown |
@@ -67,4 +64,6 @@ Values can be "OnlyCRE", "OnlyNotCRE", "All". | All | Optional |
 | QRadar.Log.Magnitude | The log's magnitude | unknown |
 | QRadar.Log.ProtocolName | The log's protocol name | unknown |
 
-![](https://user-images.githubusercontent.com/50324325/81266040-c083d180-904c-11ea-861a-62110996845d.png)
+## Playbook Image
+---
+![QRadar - Get offense correlations v2](https://raw.githubusercontent.com/demisto/content/7417184a2a92d69f7b06e32a41595395fd0f9bc9/Packs/QRadar/doc_files/QRadar_-_Get_offense_correlations_v2.png)

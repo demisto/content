@@ -1,0 +1,50 @@
+category: Network Security
+commonfields:
+  id: CyberX - Central Manager
+  version: -1
+configuration:
+- defaultvalue: 127.0.0.1
+  display: (IP/DNS)
+  name: Server
+  required: true
+  type: 0
+- display: Token generated in CyberX
+  name: Api-Token
+  required: true
+  type: 4
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+description: Updates alerts in CyberX Central Management
+display: CyberX - Central Manager
+name: CyberX - Central Manager
+script:
+  commands:
+  - arguments:
+    - description: The unique ID
+      name: cyberx_uuid
+      required: true
+    - auto: PREDEFINED
+      description: The action to perform on the alert
+      name: action
+      predefined:
+      - handle
+      - handleAndLearn
+      required: true
+    description: Updating the alert
+    name: cyberx-update-alert
+  dockerimage: demisto/python3-deb:3.8.6.12176
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

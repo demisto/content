@@ -8187,9 +8187,9 @@ def parse_registrants(data, never_query_handles=True, handle_server=""):
                     i += 1
                 obj["organization"] = "\n".join(organization_items)
             if 'changedate' in obj:
-                obj['changedate'] = parse_dates([obj['changedate']])[0]
+                obj['changedate'] = parse_dates([obj['changedate']])[0].strftime('%d-%m-%Y')
             if 'creationdate' in obj:
-                obj['creationdate'] = parse_dates([obj['creationdate']])[0]
+                obj['creationdate'] = parse_dates([obj['creationdate']])[0].strftime('%d-%m-%Y')
             if 'street' in obj and "\n" in obj["street"] and 'postalcode' not in obj:
                 # Deal with certain mad WHOIS servers that don't properly delimit address data... (yes, AFNIC, looking at you)
                 lines = [x.strip() for x in obj["street"].splitlines()]
