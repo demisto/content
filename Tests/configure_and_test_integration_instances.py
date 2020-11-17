@@ -15,7 +15,7 @@ from time import sleep
 from threading import Thread
 from distutils.version import LooseVersion
 import logging
-from typing import Optional
+from typing import List
 
 from Tests.scripts.utils.log_util import install_logging
 
@@ -959,7 +959,7 @@ def restart_server_legacy(server):
         logging.exception('Legacy SSH restart demisto failed')
 
 
-def get_tests(build: Build) -> list[str]:
+def get_tests(build: Build) -> List[str]:
     """
     Selects the tests from that should be run in this execution and filters those that cannot run in this server version
     Args:
