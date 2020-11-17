@@ -344,6 +344,151 @@ script:
       type: String
     - contextPath: Tripwire.Elements.ruleId
       type: String
+  - arguments:
+    - default: false
+      description: IDs of nodes to fetch. comma seperated.
+      isArray: false
+      name: node_oids
+      required: false
+      secret: false
+    - default: false
+      description: IP addresses of nodes to fetch (only finds agent nodes). comma
+        seperated.
+      isArray: false
+      name: node_ips
+      required: false
+      secret: false
+    - default: false
+      description: MAC addresses of nodes to fetch. comma seperat
+      isArray: false
+      name: node_mac_adresses
+      required: false
+      secret: false
+    - default: false
+      description: Support for case insensitive search for name parameter. comma seperat
+      isArray: false
+      name: node_names
+      required: false
+      secret: false
+    - default: false
+      description: Os names of nodes to fetch. comma seperated.
+      isArray: false
+      name: node_os_names
+      required: false
+      secret: false
+    - default: false
+      description: Tags of nodes to fetch. comma seperated.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Page limit for paging support.
+      isArray: false
+      name: page_limit
+      required: false
+      secret: false
+    - default: false
+      description: Page start for paging support.
+      isArray: false
+      name: page_start
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all nodes or those that match the provided filter
+      criteria.
+    execution: false
+    name: tripwire-nodes-list
+    outputs:
+    - contextPath: Tripwire.Nodes.agentType
+      type: String
+    - contextPath: Tripwire.Nodes.agentVersion
+      description: Agent versions of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.auditEnabled
+      description: Audit enabled condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.description
+      description: Descriptions of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.elementCount
+      description: Element counts of nodes.
+      type: Number
+    - contextPath: Tripwire.Nodes.eventGeneratorEnabled
+      description: Event generator enabled condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.eventGeneratorInstalled
+      description: Event generator installed condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.hasFailures
+      description: Has failures condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.id
+      description: IDs of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.importedTime
+      description: Imported times of nodes.
+      type: Date
+    - contextPath: Tripwire.Nodes.ipAddresses
+      description: IP addresses of nodes (only finds agent nodes).
+      type: Unknown
+    - contextPath: Tripwire.Nodes.isDisabled
+      description: Is disabled condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.isSocksProxy
+      description: Is socks proxy condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.lastCheck
+      description: Last checks of nodes.
+      type: Date
+    - contextPath: Tripwire.Nodes.lastRegistration
+      description: Last registration dates of nodes.
+      type: Date
+    - contextPath: Tripwire.Nodes.licensedFeatures
+      description: Licensed features of nodes.
+      type: Unknown
+    - contextPath: Tripwire.Nodes.make
+      description: Make of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.maxSeverity
+      description: Max severities of nodes.
+      type: Number
+    - contextPath: Tripwire.Nodes.model
+      description: Models of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.modifiedTime
+      description: Modified times of nodes.
+      type: Date
+    - contextPath: Tripwire.Nodes.name
+      description: Names of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.realTimeEnabled
+      description: Real time enabled condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.rmiHost
+      description: RMI hosts of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.rmiPort
+      description: RMI ports of nodes.
+      type: Number
+    - contextPath: Tripwire.Nodes.tags.tag
+      description: Tags of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.tags.tagset
+      description: Tags sets of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.tags.type
+      description: Tags types of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.trackingId
+      description: Tracking IDs of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.type
+      description: Node type of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.version
+      description: Versions of nodes.
+      type: String
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
