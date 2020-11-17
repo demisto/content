@@ -247,19 +247,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: use this argument if you are checking on an export to war room
-        entry operation, so an entry will be created if the operation is finished
+      description: use this argument when checking on an export operation, so an entry will be created if the operation is finished
       isArray: false
-      name: is_entry
+      name: create_war_room_entry
       predefined:
-      - true
-      - false
+      - 'True'
+      - 'False'
       required: false
       secret: false
     deprecated: false
-    description: Check the status of an operation. Use the 'is_entry' argument to
-      also create a war room entry of the file when checking on an export to war room
-      entry operation
+    description: Check the status of an operation. Use the 'create_war_room_entry' argument to
+      also create a war room entry of the file when checking on an export operation.
     execution: false
     name: cloudconvert-check-status
     outputs:

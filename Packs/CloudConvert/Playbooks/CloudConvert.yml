@@ -412,9 +412,8 @@ tasks:
       id: c9d5343f-8ad3-4554-80e2-40b4191cf3c2
       version: -1
       name: Check Status - Used For Getting Finished Export Task's Data
-      description: Check the status of an operation. Use the 'is_entry' argument to
-        also create a war room entry of the file when checking on an export to war
-        room entry operation
+      description: Check the status of an operation. Use the 'create_war_room_entry' argument to
+        also create a war room entry of the file when checking on an export operation
       script: '|||cloudconvert-check-status'
       type: regular
       iscommand: true
@@ -423,7 +422,7 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      is_entry:
+      create_war_room_entry:
         simple: "false"
       task_id:
         complex:
@@ -460,9 +459,8 @@ tasks:
       version: -1
       name: Check Status - Used For Getting Finished Export Task's Data And Create
         Entry
-      description: Check the status of an operation. Use the 'is_entry' argument to
-        also create a war room entry of the file when checking on an export to war
-        room entry operation
+      description: Check the status of an operation. Use the 'create_war_room_entry' argument to
+        also create a war room entry of the file when checking on an export operation
       script: '|||cloudconvert-check-status'
       type: regular
       iscommand: true
@@ -471,7 +469,7 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      is_entry:
+      create_war_room_entry:
         simple: "true"
       task_id:
         complex:

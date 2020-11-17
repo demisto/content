@@ -103,7 +103,7 @@ Convert a priorly uploaded file to desired format
 
 ### cloudconvert-check-status
 ***
-Check the status of an operation. Use the 'is_entry' argument to also create a war room entry of the file when checking on an export to war room entry operation
+Check the status of an operation. Use the 'create_war_room_entry' argument to also create a war room entry of the file when checking on an export operation
 
 
 #### Base Command
@@ -114,7 +114,7 @@ Check the status of an operation. Use the 'is_entry' argument to also create a w
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | task_id | Task id of the convert task of the file of interest | Required | 
-| is_entry | use this argument if you are checking on an export to war room entry operation, so an entry will be created if the operation is finished | Optional | 
+| create_war_room_entry | use this argument if you are checking on an export operation, so an entry will be created if the operation is finished | Optional | 
 
 
 #### Context Output

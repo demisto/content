@@ -244,10 +244,10 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     Check status of an existing operation using it's task id
     :param client: CloudConvert client to use
     :param arguments: All command arguments, the field 'task_id'
-        Note: When the checked operation is 'export to war room entry', the field 'is_entry' should be True.
+        Note: When the checked operation is 'export', the field 'create_war_room_entry' should be True.
         This way the results will be a war room entry containing the file.
     :return: CommandResults object containing the results of the check status action as returned from the API
-     and its readable output OR if the argument is_entry is set to True, then a war room entry is returned
+     and its readable output OR if the argument create_war_room_entry is set to True, then a war room entry is returned
     """
     results = client.check_status(arguments)
     results_data = results.get('data')
@@ -262,12 +262,15 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
 
     # If checking on an export to entry operation, manually change the operation name
     # For other operations, the operation matches the operation field in the API's response, so no change is needed
-    if argToBoolean(arguments.get('is_entry', False)):
+    if argToBoolean(arguments.get('create_war_room_entry', False)) \
+            and results.get('data', {}).get('operation') == 'export/url':
         results['data']['operation'] = 'export/entry'
 
     # Check if an export to war room entry operation is finished
     # If it did - create the entry
-    if results.get('data', {}).get('status') == 'finished' and argToBoolean(arguments.get('is_entry', 'False')):
+    if results.get('data', {}).get('status') == 'finished' \
+            and argToBoolean(arguments.get('create_war_room_entry', 'False'))\
+            and results.get('data', {}).get('operation') == 'export/entry':
         results_info = results.get('data', {}).get('result', {}).get('files', [{}])[0]
         url = results_info.get('url')
         file_name = results_info.get('filename')

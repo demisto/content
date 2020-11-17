@@ -130,7 +130,8 @@ def test_convert_valid_format_and_id(mocker):
     })
     readable_output = tableToMarkdown('Convert Results',
                                       remove_empty_elements(util_load_json('test_data/convert_val'
-                                                                           'id_format_and_id_response.json').get('data')),
+                                                                           'id_format_and_id_response.'
+                                                                           'json').get('data')),
                                       headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
                                       headerTransform=string_to_table_header)
     assert results.outputs == remove_empty_elements(util_load_json('test_data/convert_valid_format_and_id_response.json'
@@ -150,7 +151,8 @@ def test_convert_invalid_format_or_id(mocker):
 
     """
     client = create_client()
-    mocker.patch.object(client, 'convert', return_value=util_load_json('test_data/convert_invalid_format_or_id_response.json'))
+    mocker.patch.object(client, 'convert', return_value=util_load_json('test_data/convert_invalid_format_or_id'
+                                                                       '_response.json'))
     with pytest.raises(ValueError) as e:
         convert_command(client, {
             'task_id': 'ff',
@@ -182,16 +184,16 @@ def test_check_status_invalid_id(mocker):
             assert False
 
 
-@pytest.mark.parametrize('entry_id', [True, False])
-def test_check_status_valid_id_non_export(mocker, entry_id):
+@pytest.mark.parametrize('create_war_room_entry', [True, False])
+def test_check_status_valid_id_non_export(mocker, create_war_room_entry):
     """
 
     Given:
         - A valid task id, of a non-export operation
     When:
         - When the user checks the status of a task that was priorly done, and it is not export.
-        the purpose here is to make sure that the extra argument, 'is_entry', only makes a difference when the id is of
-        an actual export operation.
+        the purpose here is to make sure that the extra argument, 'create_war_room_entry', only makes a difference
+         when the id is of an actual export operation.
     Then:
         - Returns the response
 
@@ -202,7 +204,7 @@ def test_check_status_valid_id_non_export(mocker, entry_id):
 
     results = check_status_command(client, {
         'task_id': 'id',
-        'entry_id': entry_id
+        'create_war_room_entry': create_war_room_entry
     })
     readable_output = tableToMarkdown('Check Status Results',
                                       remove_empty_elements(util_load_json('test_data/check_status'
@@ -215,8 +217,8 @@ def test_check_status_valid_id_non_export(mocker, entry_id):
     assert results.readable_output == readable_output
 
 
-@pytest.mark.parametrize('entry_id', [True, False])
-def test_check_status_valid_id_export(mocker, entry_id):
+@pytest.mark.parametrize('create_war_room_entry', [True, False])
+def test_check_status_valid_id_export(mocker, create_war_room_entry):
     """
 
     Given:
@@ -225,7 +227,7 @@ def test_check_status_valid_id_export(mocker, entry_id):
         - When the user checks the status of a task that was priorly done, and it is an export operation.
 
     Then:
-        - When checking on a export operation and the argument 'is_entry' is set to True, the output is a
+        - When checking on a export operation and the argument 'create_war_room_entry' is set to True, the output is a
         warroom entry. if set to False, then a regular response is retrieved.
 
     """
@@ -239,9 +241,9 @@ def test_check_status_valid_id_export(mocker, entry_id):
     mocker.patch.object(CloudConvert, 'fileResult', return_value={'File': file_name})
     results = check_status_command(client, {
         'task_id': 'id',
-        'is_entry': entry_id
+        'create_war_room_entry': create_war_room_entry
     })
-    if entry_id:
+    if create_war_room_entry:
         assert results.get('File') == file_name
 
     else:

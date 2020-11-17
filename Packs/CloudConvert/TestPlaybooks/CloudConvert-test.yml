@@ -541,7 +541,7 @@ tasks:
       - "30"
     scriptarguments:
       AdditionalPollingCommandArgNames:
-        simple: is_entry
+        simple: create_war_room_entry
       AdditionalPollingCommandArgValues:
         simple: "True"
       Ids:
