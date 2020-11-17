@@ -1,0 +1,23 @@
+commonfields:
+  id: ChronicleAssetEventsForIPWidgetScript
+  version: -1
+name: ChronicleAssetEventsForIPWidgetScript
+script: ''
+type: python
+tags:
+- dynamic-indicator-section
+comment: Shows the list of events fetched for an asset identified as a "ChronicleAsset"
+  type of indicator, when its IP Address is passed as an asset identifier.
+enabled: true
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - '|||gcb-list-events'
+timeout: 300ns
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
