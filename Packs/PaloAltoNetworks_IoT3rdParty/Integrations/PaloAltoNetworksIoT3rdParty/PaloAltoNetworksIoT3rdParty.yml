@@ -35,7 +35,7 @@ configuration:
   type: 8
 description: Base Integration for Palo Alto IOT third party integrations. This integrations
   communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities,  device inventory.
-display: Palo Alto Networks IoT 3rd Party
+display: Palo Alto Networks IoT 3rd Party (Community Contribution)
 name: Palo Alto Networks IoT 3rd Party
 script:
   commands:
@@ -138,6 +138,11 @@ script:
     - description: List of input assets.
       isArray: true
       name: assetList
+    - description: 'Example: ServiceNow ID and deviceid mapping'
+      isArray: true
+      name: metadata
+    - description: 'Example: incident triggered by PANW IoT cloud API or list of '
+      name: metadata1
     description: For a given asset (alert, device, vuln) converts it to 3rd party
       format.
     name: panw-iot-3rd-party-convert-assets-to-external-format
@@ -150,6 +155,12 @@ script:
       description: List CEF formatted device syslogs for SIEM.
     - contextPath: PanwIot3rdParty.CiscoISEAttributes
       description: List Cisco ISE attribute dicts/maps
+    - contextPath: PanwIot3rdParty.AlertServiceNow
+      description: Single SN formatted alert string
+    - contextPath: PanwIot3rdParty.VulnerabilityServiceNow
+      description: Single SN formatted vulnerability string
+    - contextPath: PanwIot3rdParty.DeviceServiceNow
+      description: List of upsert ready formatted device for SN
   dockerimage: demisto/python3:3.8.6.13358
   longRunning: true
   runonce: false

@@ -471,6 +471,176 @@ def convert_device_list_to_ise_attributes(device_list=None):
     return data
 
 
+def convert_alert_to_servicenow(args):
+    """
+    Converts a PANW IoT alert to ServiceNow table formatted.
+    """
+    incident = args.get('metadata1')
+    assetList = args.get('assetList')
+    alert = assetList[0]
+    comments_and_work_notes = str(incident['comments_and_work_notes'])
+    url = str(incident['url'])
+    urgency = str(incident['urgency'])
+    incident.setdefault('user_email', 'cannot find any email')
+    user_email = incident['user_email']
+    zb_ticketid = incident['correlation_id']
+
+    alert.setdefault('msg', {}).setdefault('impact', 'Sorry, no impact available to display so far!')
+    alert.setdefault('msg', {}).setdefault('recommendation', {}).setdefault(
+        'content', ['Sorry, no recommendation available to display so far!'])
+    alert.setdefault('location', 'Sorry, location is not provided')
+    alert.setdefault('category', 'Sorry, category is not provided')
+    alert.setdefault('profile', 'Sorry, profile is not provided')
+    alert.setdefault('description', 'Sorry, description is not provided')
+    alert.setdefault('name', '')
+
+    impact = alert['msg']['impact']
+    recommendations = alert['msg']['recommendation']['content']
+    recommendation_text = ''
+    alert_description = str(alert['description'])
+    category = str(alert['category'])
+    profile = str(alert['profile'])
+    location = str(alert['location'])
+    short_description = str(alert['name'])
+
+    for rec in recommendations:
+        recommendation_text += '*' + rec + '\n'
+
+    description = 'Summary\n' + alert_description + '\n\nCategory: ' + category + " Profile: " + profile\
+        + '\n\nImpact\n' + impact + '\n\nRecommendations\n' + recommendation_text + '\nURL\n' + url
+
+    data = 'urgency=' + urgency + ';location=' + location + ';short_description=' + short_description\
+        + ';comments_and_work_notes=' + comments_and_work_notes + ';description=' + description\
+        + ';correlation_id=' + zb_ticketid + ';impact=3;company=Palo Alto Networks;opened_by=svc_panw_iot;'
+    return data
+
+
+def convert_vulnerability_to_servicenow(args):
+    incident = args.get('metadata1')
+    comments_and_work_notes = str(incident['comments_and_work_notes'])
+    url = str(incident['url'])
+    urgency = str(incident['urgency'])
+    incident.setdefault('user_email', 'cannot find any email')
+    user_email = incident['user_email']
+    zb_ticketid = incident['correlation_id']
+
+    assetList = args.get('assetList')
+    vuln = assetList[0]
+    vuln.setdefault('msg', {}).setdefault('impact', 'Sorry, no impact available to display so far!')
+    vuln.setdefault('msg', {}).setdefault('recommendation', {}).setdefault(
+        'content', ['Sorry, no recommendation available to display so far!'])
+    vuln.setdefault('category', 'Sorry, category is not provided')
+    vuln.setdefault('profile', 'Sorry, profile is not provided')
+    vuln.setdefault('description', 'Sorry, description is not provided')
+    vuln.setdefault('location', 'Sorry, location is not provided')
+    impact = vuln['msg']['impact']
+    recommendations = vuln['msg']['recommendation']['content']
+    recommendation_text = ''
+    alert_description = str(vuln['description'])
+    category = str(vuln['category'])
+    profile = str(vuln['profile'])
+    location = str(vuln['location'])
+    short_description = str(vuln['name'])
+
+    for rec in recommendations:
+        recommendation_text += '*' + rec + '\n'
+
+    description = 'Summary\n' + alert_description + '\n\nCategory: ' + category + " Profile: " + profile\
+        + '\n\nImpact\n' + impact + '\n\nRecommendations\n' + recommendation_text + '\nURL\n' + url
+
+    data = 'urgency=' + urgency + ';location=' + location + ';short_description=' + short_description\
+        + ';comments_and_work_notes=' + comments_and_work_notes + ';description=' + description\
+        + ';correlation_id=' + zb_ticketid + ';impact=3;company=Palo Alto Networks;opened_by=svc_panw_iot;'
+    return data
+
+
+def convert_device_to_servicenow_format(device):
+    device_fields_mapping = {
+        "hostname": "name",
+        "ip_address": "ip_address",
+        "deviceid": "mac_address"
+    }
+    device_custome_fields_mapping = {
+        "category": "u_category",
+        "profile": "u_profile",
+        "display_tags": "u_iot_tag",
+        "vendor": "u_iot_vendor",
+        "model": "u_iot_model",
+        "os_group": "u_iot_os",
+        "SSID": "u_iot_ssid",
+        "site_name": "u_iot_site",
+        "vlan": "u_iot_vlan",
+        "wire_or_wireless": "u_iot_wired_wireless",
+        "os_support": "u_os_support"
+    }
+    instance = {}
+    fields = ''
+    custom_fields = ''
+
+    for field in device_fields_mapping:
+        sn_name = device_fields_mapping[field]
+        value = ''
+        if field in device:
+            if device[field] != None:
+                value = str(device[field])
+        else:
+            value = ' '
+        fields += (sn_name + "=" + value + ";")
+    instance["fields"] = fields
+
+    for field in device_custome_fields_mapping:
+        sn_name = device_custome_fields_mapping[field]
+        value = ''
+        if field in device:
+            if device[field] != None:
+                value = str(device[field])
+        else:
+            value = ' '
+        custom_fields += (sn_name + "=" + value + ";")
+
+    instance["custom_fields"] = custom_fields
+    return instance
+
+
+def get_servicenow_upsert_devices(args):
+    sn_id_deviceids = {}
+    # metadata should be list of ServiceNow table ID and deviceid mapping
+    if "metadata" in args:
+        sn_id_deviceids = args.get("metadata")
+    device_list = args.get("assetList")
+    ids_map = {}
+    if sn_id_deviceids:
+        for i in range(len(sn_id_deviceids)):
+            ids = sn_id_deviceids[i]
+            sn_id = ''
+            if "ID" in ids:
+                sn_id = ids["ID"]
+            else:
+                sn_id = ids['sys_id']
+            deviceid = ids["mac_address"]
+            ids_map[deviceid] = sn_id
+
+    update_list = []
+    insert_list = []
+    for i in range(len(device_list)):
+        device = device_list[i]
+        deviceid = device["deviceid"]
+        instance = convert_device_to_servicenow_format(device)
+        if (not ids_map) or (deviceid not in ids_map):
+            insert_list.append(instance)
+        else:
+            sn_id = ids_map[deviceid]
+            instance["sys_id"] = sn_id
+            update_list.append(instance)
+
+    result = {}
+    result["insert"] = insert_list
+    result["update"] = update_list
+    result["update_count"] = len(update_list)
+    result["insert_count"] = len(insert_list)
+    return result
+
+
 def convert_asset_to_external_format():
     """
     For a given asset (alert, device, vuln) converts it
@@ -480,54 +650,65 @@ def convert_asset_to_external_format():
     prefixMap = {
         "Device": {
             "SIEM": "PanwIot3rdParty.DeviceCEFSyslogs",
-            "CiscoISECustomAttributes": "PanwIot3rdParty.CiscoISEAttributes"
+            "CiscoISECustomAttributes": "PanwIot3rdParty.CiscoISEAttributes",
+            "ServiceNow": "PanwIot3rdParty.DeviceServiceNow"
         },
         "Alert": {
             "SIEM": "PanwIot3rdParty.AlertCEFSyslogs",
+            "ServiceNow": "PanwIot3rdParty.AlertServiceNow"
         },
         "Vulnerability": {
             "SIEM": "PanwIot3rdParty.VulnerabilityCEFSyslogs",
-        },
+            "ServiceNow": "PanwIot3rdParty.VulnerabilityServiceNow"
+        }
     }
 
     asset_type = demisto.args().get('assetType')
     output_format = demisto.args().get('outputFormat')
     asset_list = demisto.args().get('assetList')
-
     data = []
-    if asset_list:
-        if asset_type == "Device":
-            if output_format == "CiscoISECustomAttributes":
-                data = convert_device_list_to_ise_attributes(asset_list)
-            elif output_format == "SIEM":
-                data = convert_device_list_to_cef(asset_list)
-            elif output_format == "ServiceNow":
-                # Shuai to do this
-                LOG("adding a line here")
-            else:
-                return_error("Output format %s not supported for Devices" % output_format)
-        elif asset_type == "Alert":
-            if output_format == "SIEM":
-                data = convert_alert_list_to_cef(asset_list)
-            elif output_format == "ServiceNow":
-                # Shuai to do this
-                LOG("adding a line here")
-            else:
-                return_error("Output format %s not supported for Alerts" % output_format)
-        elif asset_type == "Vulnerability":
-            if output_format == "SIEM":
-                data = convert_vulnerability_list_to_cef(asset_list)
-            elif output_format == "ServiceNow":
-                # Shuai to do this
-                LOG("adding a line here")
-            else:
-                return_error("Output format %s not supported for Vulnerabilities" % output_format)
+    readable_res = ''
+
+    if output_format == "ServiceNow":
+        if asset_list:
+            if asset_type == "Device":
+                data = get_servicenow_upsert_devices(demisto.args())
+                readable_res = "Converted Device list to %d upsert %s list" % (len(data), output_format)
+            elif asset_type == 'Alert':
+                data = convert_alert_to_servicenow(demisto.args())
+                readable_res = "Converted an Alert has zb_ticketid %s to %s" % (
+                    demisto.args().get('metadata1')['correlation_id'], output_format)
+            elif asset_type == 'Vulnerability':
+                data = convert_vulnerability_to_servicenow(demisto.args())
+                readable_res = "Converted an Vulnerability has zb_ticketid %s to %s" % (
+                    demisto.args().get('metadata1')['correlation_id'], output_format)
         else:
-            return_error("Invalid asset type %s" % asset_type)
+            return_error("Output format ServiceNow not supported for %s" % asset_type)
+
+    elif output_format == "SIEM":
+        if asset_list:
+            if asset_type == "Device":
+                data = convert_device_list_to_cef(asset_list)
+            elif asset_type == 'Alert':
+                data = convert_alert_list_to_cef(asset_list)
+            elif asset_type == "Vulnerability":
+                data = convert_vulnerability_list_to_cef(asset_list)
+            else:
+                return_error("Output format SIEM not supported for %s" % asset_type)
+            readable_res = "Converted %d %s to %s" % (len(data), asset_type, output_format)
+
+    elif output_format == 'CiscoISECustomAttributes':
+        if asset_list:
+            if asset_type == 'Devices':
+                data = convert_device_list_to_ise_attributes(asset_list)
+        else:
+            return_error("Output format CiscoISECustomAttributes not supported for Devices")
+        readable_res = "Converted %d %s to %s" % (len(data), asset_type, output_format)
 
     prefix = prefixMap[asset_type][output_format]
+
     return CommandResults(
-        readable_output="Converted %d %s to %s" % (len(data), asset_type, output_format),
+        readable_output=readable_res,
         outputs_prefix=prefix,
         outputs=data
     )
