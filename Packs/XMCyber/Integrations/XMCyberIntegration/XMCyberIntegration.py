@@ -573,12 +573,16 @@ def _fetch_incidents_internal(xm: XM, args: Dict[str, Any], run_data: Dict[str, 
 # Each incident can be created only one time in each week (in order to avoid spamming the incidents page)
 def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     run_data = demisto.getLastRun()
+    keys_to_delete = []
     # Clean the dict key with old values
     for key in run_data.keys():
         if key == "start_time" or key == "lastRun":
             continue
         if is_seconds_diff_passed(run_data[key], ONE_WEEK_IN_SECONDS):
-            del run_data[key]
+            keys_to_delete.append(key)
+
+    for key_to_delete in keys_to_delete:
+        del run_data[key_to_delete]
 
     events = _fetch_incidents_internal(xm, args, run_data)
 
