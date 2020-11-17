@@ -511,7 +511,7 @@ def test_module(client):
 
 
 def fetch_incidents(client: Client, max_alerts: int, last_run: Dict[str, int],
-                    first_fetch_time: int, min_score: int) -> Tuple[Dict[str, int], List[dict]]:
+                    first_fetch_time: Optional[int], min_score: int) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new model breaches every minute. It will use last_run
     to save the timestamp of the last incident it processed. If last_run is not provided,
     it should use the integration parameter first_fetch to determine when to start fetching
@@ -524,7 +524,7 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: Dict[str, int],
     :param last_run:
         A dict with a key containing the latest incident created time we got
         from last fetch
-    :type first_fetch_time: ``int``
+    :type first_fetch_time: ``Optional[int]``
     :param first_fetch_time:
         If last_run is None (first time we are fetching), it contains
         the timestamp in milliseconds on when to start fetching incidents
@@ -1014,8 +1014,6 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-    assert isinstance(first_fetch_time, int)
 
     # Client class inherits from BaseClient, so system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
