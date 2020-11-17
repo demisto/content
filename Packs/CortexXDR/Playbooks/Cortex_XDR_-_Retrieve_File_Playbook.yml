@@ -2,11 +2,10 @@ id: Cortex XDR - Retrieve File Playbook
 version: -1
 name: Cortex XDR - Retrieve File Playbook
 description: |-
-  Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
-  Please enter - endpoint ids, comma separated and at least one file path:
-  windows_file_paths - comma separated,
-  linux_file_paths - comma separated,
-  mac_file_paths - comma separated
+  Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
+  Inputs for this playbook are:
+  - A comma-separated list of endpoint IDs.
+  - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
 starttaskid: "0"
 tasks:
   "0":
@@ -167,7 +166,7 @@ tasks:
       id: 069bc12b-b96b-47ef-86dd-c000cdc518b6
       version: -1
       name: Retrieve file finished
-      description: We should check if the link to the file is ready.
+      description: Checks if the link to the file is ready.
       type: condition
       iscommand: false
       brand: ""
@@ -205,7 +204,7 @@ tasks:
       id: 776b2c6a-86da-4037-8a97-f037d957a432
       version: -1
       name: Print Error message
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -277,34 +276,34 @@ inputs:
 - key: endpoint_ids
   value: {}
   required: true
-  description: Please enter comma separated list of endpoint ids.
+  description: Comma-separated list of endpoint IDs.
   playbookInputQuery:
 - key: windows_file_paths
   value: {}
   required: false
   description: |-
-    Comma separated list, of paths.
-    Please enter at least one path ( windows, linux or mac)
+    Comma-separated list of Windows paths.
+    Enter at least one path for either Windows, Linux, or Mac.
   playbookInputQuery:
 - key: linux_file_paths
   value: {}
   required: false
   description: |-
-    Comma separated list, of paths.
-    Please enter at least one path ( windows, linux or mac)
+    Comma-separated list Linux paths.
+    Enter at least one path for either Windows, Linux, or Mac.
   playbookInputQuery:
 - key: mac_file_paths
   value: {}
   required: false
   description: |-
-    Comma separated list, of paths.
-    Please enter at least one path ( windows, linux or mac)
+    Comma-separated list of Mac paths.
+    Enter at least one path for either Windows, Linux, or Mac.
   playbookInputQuery:
 outputs:
 - contextPath: File
-  description: Retrieve file details command results.
+  description: Retrieve the file details command results.
 - contextPath: File.Name
-  description: The full file name (including file extension).
+  description: The full file name (including the file extension).
   type: String
 - contextPath: File.EntryID
   description: The ID for locating the file in the War Room.
@@ -319,16 +318,16 @@ outputs:
   description: The SHA1 hash of the file.
   type: String
 - contextPath: File.SHA256
-  description: The SHA1 hash of the file.
+  description: The SHA256 hash of the file.
   type: String
 - contextPath: File.SHA512
   description: The SHA512 hash of the file.
   type: String
 - contextPath: File.Extension
-  description: "The file extension, for example: 'xls'."
+  description: The file extension. For example, 'xls'.
   type: String
 - contextPath: File.Type
-  description: The file type, as determined by libmagic (same as displayed in file entries).
+  description: The file type, as determined by libmagic (same as displayed in the file entries).
   type: String
 tests:
 - Test XDR Playbook
