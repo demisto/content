@@ -72,7 +72,7 @@ class Client(BaseClient):
         :return: list containing the found Darktrace model breach as a Dict
         :rtype: ``List[Dict[str, Any]]``
         """
-        request = "/modelbreaches?pbid=" + pbid
+        request = f"/modelbreaches?pbid={pbid}"
         http_headers = get_headers(request)
         return self._http_request(
             method='GET',
