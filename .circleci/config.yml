@@ -900,6 +900,7 @@ jobs:
             - run:
                 name: Run Tests - Demisto 6.0
                 shell: /bin/bash
+                when: always
                 no_output_timeout: 5h
                 command: |
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
@@ -981,6 +982,7 @@ jobs:
             - run:
                 name: Run Tests - Demisto Master
                 shell: /bin/bash
+                when: always
                 no_output_timeout: 5h
                 command: |
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
