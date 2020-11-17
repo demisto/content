@@ -637,8 +637,8 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
         raise ValueError('IP(s) not specified')
 
     # Context standard for IP class
-    indicators_list: List[Common.IP] = []
-    xm_data_list = []#: List[Dict[str, Any]] = []
+    indicators_list: Any = []
+    xm_data_list = []  #: List[Dict[str, Any]] = []
 
     for ip in ips:
         entity_ids: List[Any]
@@ -667,7 +667,8 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
             entity_data = entity_obj_to_data(xm, entity)
             criticalAssetsAtRisk = entity_data['criticalAssetsAtRisk']
             if score == Common.DBotScore.BAD:
-                readable_output += f'**Bad dbot score given because {ip} risks {criticalAssetsAtRisk} ("{reputation}") critical assets**\n'
+                readable_output += f'**Bad dbot score given because {ip} risks {criticalAssetsAtRisk} ("{reputation}")\
+                    critical assets**\n'
             dbot_score = Common.DBotScore(
                 indicator=ip,
                 indicator_type=DBotScoreType.IP,
@@ -682,8 +683,8 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 dbot_score=dbot_score
             )
             indicators_list.append(ip_standard_context)
-            
-            #TODO return also endpoint
+
+            # TODO return also endpoint
             if entity_data['type'] == SENSOR_TYPE:
                 endpoint_standard_context = Common.Endpoint(
                     entity_data['id'],

@@ -4,7 +4,8 @@ from datetime import datetime
 from XMCyberIntegration import get_version_command, is_xm_version_supported_command, ip_command
 from XMCyberIntegration import hostname_command, affected_entities_list_command, affected_critical_assets_list_command
 from XMCyberIntegration import Client, XM, URLS, PAGE_SIZE, DEFAULT_TIME_ID, TOP_ENTITIES, PREVIOUS_DEFAULT_TIME_ID
-from XMCyberIntegration import SEVERITY, XM_CYBER_INCIDENT_TYPE_ASSET, XM_CYBER_INCIDENT_TYPE_TECHNIQUE, XM_CYBER_INCIDENT_TYPE_SCORE
+from XMCyberIntegration import SEVERITY, XM_CYBER_INCIDENT_TYPE_ASSET, XM_CYBER_INCIDENT_TYPE_TECHNIQUE
+from XMCyberIntegration import XM_CYBER_INCIDENT_TYPE_CHOKE_POINT, XM_CYBER_INCIDENT_TYPE_SCORE
 from XMCyberIntegration import fetch_incidents_command
 from CommonServerPython import *
 
@@ -455,7 +456,7 @@ def _get_entities_incidents(create_time):
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=15553084234424912589&timeId=timeAgo_days_7',
-            'type': XM_CYBER_INCIDENT_TYPE_ASSET
+            'type': XM_CYBER_INCIDENT_TYPE_CHOKE_POINT
         },
         {
             "entityId": "872743867762485580",
@@ -499,7 +500,7 @@ def _get_entities_incidents(create_time):
             "severity": SEVERITY.Low,
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=872743867762485580&timeId=timeAgo_days_7',
-            'type':XM_CYBER_INCIDENT_TYPE_ASSET
+            'type':XM_CYBER_INCIDENT_TYPE_CHOKE_POINT
         },
         {
             "entityId": "file-163b4ecf80b8429583007386c77cae39",
@@ -540,7 +541,7 @@ def _get_entities_incidents(create_time):
             'create_time': create_time,
             'linkToReport': 'https://test.com/systemReport/entity?entityId=file-163b4ecf80b8429583007386c77cae39&'
                     'timeId=timeAgo_days_7',
-            'type': XM_CYBER_INCIDENT_TYPE_ASSET
+            'type': XM_CYBER_INCIDENT_TYPE_CHOKE_POINT
         }
     ]
 
