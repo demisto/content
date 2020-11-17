@@ -1,12 +1,14 @@
 from CloudConvert import import_command, Client, convert_command, check_status_command, export_command
 from CommonServerPython import remove_empty_elements, tableToMarkdown, string_to_table_header
+import demistomock as demisto
 import json
 import io
 import pytest
 
+
 MOCK_API_KEY = "a1b2c3d4e5"
 MOCK_URL = 'https://www.thisisamockurl.com'
-
+MOCK_ENTRY_ID = '@123'
 
 def create_client():
     headers = {
@@ -49,13 +51,55 @@ def test_import_invalid_url(mocker):
     When:
         - When the user uploads a file for later conversion via url
     Then:
-        - Returns the response data
+        - Returns the response message of invalid input
 
     """
     client = create_client()
     mocker.patch.object(client, 'import_url', return_value=util_load_json('./test_data/import_url_bad_url_response.json'))
     with pytest.raises(ValueError) as e:
         import_command(client, {'url': MOCK_URL})
+        if not e:
+            assert False
+
+
+def test_import_valid_entry(mocker):
+    """
+
+    Given:
+        - Valid entry id of a file, str
+    When:
+        - When the user uploads a file for later conversion via entry
+    Then:
+        - Returns the response data
+
+    """
+
+    client = create_client()
+    mocker.patch.object(client, 'import_entry_id', return_value=util_load_json('./test_data/import_entry_response.json'))
+    results = import_command(client, {'entry_id': MOCK_ENTRY_ID})
+    readable_output = tableToMarkdown('Import Results', remove_empty_elements(util_load_json('./test_data/import_entry_response.json').get('data')),
+                                      headers=('created_at', 'id', 'operation', 'status'),
+                                      headerTransform=string_to_table_header)
+    assert results.outputs == remove_empty_elements(util_load_json('./test_data/import_entry_response.json').get('data'))
+    assert results.readable_output == readable_output
+
+
+def test_import_invalid_entry(mocker):
+    """
+
+    Given:
+        - Invalid entry id of a file, str
+    When:
+        - When the user uploads a file for later conversion via entry
+    Then:
+        - Returns the response message of invalid input
+
+    """
+
+    client = create_client()
+    mocker.patch.object(demisto, 'getFilePath', return_value=None)
+    with pytest.raises(ValueError) as e:
+        import_command(client, {'entry_id': MOCK_ENTRY_ID})
         if not e:
             assert False
 
@@ -195,7 +239,6 @@ def test_check_status_valid_id_export(mocker, entry_id):
                                                    'status'),
                                           headerTransform=string_to_table_header)
         assert results.readable_output == readable_output
-
 
 
 @pytest.mark.parametrize('export_as', ['war_room_entry', 'url'])

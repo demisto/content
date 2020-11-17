@@ -17,13 +17,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "18"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 10
+          "y": -120
         }
       }
     note: false
@@ -524,15 +524,50 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "18":
+    id: "18"
+    taskid: dc887b89-5538-4f8a-82ec-c2d7f16433f9
+    type: condition
+    task:
+      id: dc887b89-5538-4f8a-82ec-c2d7f16433f9
+      version: -1
+      name: IsIntegrationAvailable
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: CloudConvert
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1745,
+        "height": 1875,
         "width": 800,
         "x": 240,
-        "y": 10
+        "y": -120
       }
     }
   }

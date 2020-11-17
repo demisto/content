@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![CloudConvert](https://cloudconvert.com/images/logo_flat_110_borderless.png)
+![CloudConvert](https://user-images.githubusercontent.com/72340690/99377797-54253d00-28cf-11eb-874b-e09a9b128e6d.png)
