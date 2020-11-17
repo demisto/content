@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 import requests
 import traceback
-from asyncio import Event, create_task, sleep, run
+from asyncio import Event, create_task, sleep, run, wait_for, TimeoutError
 from contextlib import asynccontextmanager
 from aiohttp import ClientSession, TCPConnector
 from typing import Dict, AsyncGenerator, AsyncIterator
@@ -123,7 +123,9 @@ class EventStream:
                 demisto.debug('Finished stream discovery')
                 resources = discover_stream_response.get('resources', [])
                 if not resources:
-                    raise ValueError(f'Did not get event stream resources - {str(discover_stream_response)}')
+                    demisto.updateModuleHealth('Did not discover event stream resources, verify the App ID is not used'
+                                               ' in another integration instance')
+                    demisto.error(f'Did not discover event stream resources - {str(discover_stream_response)}')
                 resource = resources[0]
                 self.data_feed_url = resource.get('dataFeedURL')
                 demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
@@ -149,69 +151,76 @@ class EventStream:
         """
         while True:
             demisto.debug('Fetching event')
-            event = Event()
-            create_task(self._discover_refresh_stream(event))
-            demisto.debug('Waiting for stream discovery or refresh')
-            await event.wait()
-            demisto.debug('Done waiting for stream discovery or refresh')
-            events_fetched = 0
-            new_lines_fetched = 0
-            last_fetch_stats_print = datetime.utcnow()
-            async with ClientSession(
-                connector=TCPConnector(ssl=self.verify_ssl),
-                headers={
-                    'Authorization': f'Token {self.session_token}',
-                    'Connection': 'keep-alive'
-                },
-                trust_env=self.proxy,
-                timeout=None
-            ) as session:
-                try:
-                    integration_context = get_integration_context()
-                    offset = integration_context.get('offset', 0) or initial_offset
-                    demisto.debug(f'Starting to fetch from offset {offset} events of type {event_type} '
-                                  f'from time {first_fetch_time}')
-                    async with session.get(
-                        self.data_feed_url,
-                        params={'offset': offset, 'eventType': event_type},
-                        timeout=None
-                    ) as res:
-                        demisto.debug(f'Fetched event: {res.content}')
-                        async for line in res.content:
-                            stripped_line = line.strip()
-                            if stripped_line:
-                                events_fetched += 1
-                                try:
-                                    streaming_event = json.loads(stripped_line)
-                                    event_metadata = streaming_event.get('metadata', {})
-                                    event_creation_time = event_metadata.get('eventCreationTime', 0)
-                                    if not event_creation_time:
-                                        demisto.debug('Could not extract "eventCreationTime" field, using 0 instead. '
-                                                      f'{streaming_event}')
-                                    else:
-                                        event_creation_time /= 1000
-                                    event_creation_time_dt = datetime.fromtimestamp(event_creation_time)
-                                    if event_creation_time_dt < first_fetch_time:
-                                        demisto.debug(f'Event with offset {event_metadata.get("offset")} '
-                                                      f'and creation time {event_creation_time} was skipped.')
-                                        continue
-                                    yield streaming_event
-                                except json.decoder.JSONDecodeError:
-                                    demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
-                            else:
-                                new_lines_fetched += 1
-                            if last_fetch_stats_print + timedelta(minutes=1) <= datetime.utcnow():
-                                demisto.info(
-                                    f'Fetched {events_fetched} events and'
-                                    f' {new_lines_fetched} new lines'
-                                    f' from the stream in the last minute.')
-                                events_fetched = 0
-                                new_lines_fetched = 0
-                                last_fetch_stats_print = datetime.utcnow()
-                except Exception as e:
-                    demisto.debug(f'Failed to fetch event: {e} - Going to sleep for 10 seconds and then retry -'
-                                  f' {traceback.format_exc()}')
-                    await sleep(10)
+            try:
+                event = Event()
+                create_task(self._discover_refresh_stream(event))
+                demisto.debug('Waiting for stream discovery or refresh')
+                await wait_for(event.wait(), 10)
+            except TimeoutError as e:
+                demisto.debug(f'Failed discovering/refreshing stream: {e} - '
+                              f'Going to sleep for 10 seconds and then retry - {traceback.format_exc()}')
+                await sleep(10)
+            else:
+                demisto.debug('Done waiting for stream discovery or refresh')
+                events_fetched = 0
+                new_lines_fetched = 0
+                last_fetch_stats_print = datetime.utcnow()
+                async with ClientSession(
+                    connector=TCPConnector(ssl=self.verify_ssl),
+                    headers={
+                        'Authorization': f'Token {self.session_token}',
+                        'Connection': 'keep-alive'
+                    },
+                    trust_env=self.proxy,
+                    timeout=None
+                ) as session:
+                    try:
+                        integration_context = get_integration_context()
+                        offset = integration_context.get('offset', 0) or initial_offset
+                        demisto.debug(f'Starting to fetch from offset {offset} events of type {event_type} '
+                                      f'from time {first_fetch_time}')
+                        async with session.get(
+                            self.data_feed_url,
+                            params={'offset': offset, 'eventType': event_type},
+                            timeout=None
+                        ) as res:
+                            demisto.updateModuleHealth('')
+                            demisto.debug(f'Fetched event: {res.content}')
+                            async for line in res.content:
+                                stripped_line = line.strip()
+                                if stripped_line:
+                                    events_fetched += 1
+                                    try:
+                                        streaming_event = json.loads(stripped_line)
+                                        event_metadata = streaming_event.get('metadata', {})
+                                        event_creation_time = event_metadata.get('eventCreationTime', 0)
+                                        if not event_creation_time:
+                                            demisto.debug('Could not extract "eventCreationTime" field, using 0 instead. '
+                                                          f'{streaming_event}')
+                                        else:
+                                            event_creation_time /= 1000
+                                        event_creation_time_dt = datetime.fromtimestamp(event_creation_time)
+                                        if event_creation_time_dt < first_fetch_time:
+                                            demisto.debug(f'Event with offset {event_metadata.get("offset")} '
+                                                          f'and creation time {event_creation_time} was skipped.')
+                                            continue
+                                        yield streaming_event
+                                    except json.decoder.JSONDecodeError:
+                                        demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
+                                else:
+                                    new_lines_fetched += 1
+                                if last_fetch_stats_print + timedelta(minutes=1) <= datetime.utcnow():
+                                    demisto.info(
+                                        f'Fetched {events_fetched} events and'
+                                        f' {new_lines_fetched} new lines'
+                                        f' from the stream in the last minute.')
+                                    events_fetched = 0
+                                    new_lines_fetched = 0
+                                    last_fetch_stats_print = datetime.utcnow()
+                    except Exception as e:
+                        demisto.debug(f'Failed to fetch event: {e} - Going to sleep for 10 seconds and then retry -'
+                                      f' {traceback.format_exc()}')
+                        await sleep(10)
 
 
 class RefreshToken:
