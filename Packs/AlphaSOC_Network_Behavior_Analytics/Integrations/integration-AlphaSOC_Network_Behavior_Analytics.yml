@@ -22,7 +22,7 @@ configuration:
   required: true
 - display: Ignore events below severity
   name: severity
-  defaultvalue: "3"
+  defaultvalue: "4"
   type: 0
   required: true
 - display: Include policy violations
