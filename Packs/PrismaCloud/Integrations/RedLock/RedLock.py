@@ -431,7 +431,6 @@ def get_rql_response():
         }
         human_readable.append(tmp_human_readable)
 
-    #contents = [{pascalToSpace(key).replace(" ", ""): val for key, val in item.items() if val is not None} for item in items]
     contents = format_response(items)
     rql_data = {
         "Query": rql,
