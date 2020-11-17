@@ -766,10 +766,10 @@ def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
-        test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
-                                          server_v=server_version,
-                                          to_v=test_conf.get('toversion', '99.99.99')))), None)
+            test_conf.get('playbookID') == test_id
+            and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
+                                              server_v=server_version,
+                                              to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -963,13 +963,13 @@ def get_modified_packs(files_string):
 
 
 def remove_ignored_tests(tests: set, id_set: dict) -> set:
-    """Removes test playbooks, which are in .pack-ignore, from the given tests set
+    """Filters out test playbooks, which are in .pack-ignore, from the given tests set
 
     Args:
         tests (set): Tests set to remove the tests to ignore from
         id_set (dict): The id set object
 
-    Return:remove_ignored_tests
+    Return:
          set: The filtered tests set
     """
     ignored_tests_set = set()
@@ -985,7 +985,17 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
     return tests
 
 
-def remove_tests_for_non_supported_packs(tests: set, id_set: dict):
+def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
+    """Filters out test playbooks, which are not XSOAR supported or not relevant for tests (DeprecatedContent,
+        NonSupported)
+
+        Args:
+            tests (set): Tests set to remove the tests to ignore from
+            id_set (dict): The id set object
+
+        Return:
+             set: The filtered tests set
+        """
     tests_that_should_not_be_tested = set()
     for test in tests:
         content_pack_name_list = list(get_content_pack_name_of_test({test}, id_set))
@@ -1005,10 +1015,12 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict):
 
 def filter_tests(tests: set, id_set: json) -> set:
     """
-    Filter tests out from the test set if they are a.Ignored b.Non XSOAR and non-supported packs;
-    :param tests: Set. Set of tests collected so far.
-    :param id_set: dict. The ID set.
-    :return: set. Set of tests without ignored and non supported tests.
+    Filter tests out from the test set if they are a.Ignored b.Non XSOAR or non-supported packs.
+    Args:
+        tests (set): Set of tests collected so far.
+        id_set (dict): The ID set.
+    Returns:
+        (set): Set of tests without ignored and non supported tests.
     """
     tests_without_ignored = remove_ignored_tests(tests, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
