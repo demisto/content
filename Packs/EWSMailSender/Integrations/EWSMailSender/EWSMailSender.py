@@ -217,6 +217,7 @@ def process_attachments(attachCIDs="", attachIDs="", attachNames="", manualAttac
         manualAttachObj = []
     file_entries_for_attachments = []  # type: list
     attachments_names = []  # type: list
+
     if attachIDs:
         file_entries_for_attachments = attachIDs if isinstance(attachIDs, list) else attachIDs.split(",")
         if attachNames:
@@ -229,7 +230,9 @@ def process_attachments(attachCIDs="", attachIDs="", attachNames="", manualAttac
                 attachments_names.append(att_name)
         if len(file_entries_for_attachments) != len(attachments_names):
             raise Exception("attachIDs and attachNames lists should be the same length")
+
     attachments = collect_manual_attachments(manualAttachObj)
+
     if attachCIDs:
         file_entries_for_attachments_inline = attachCIDs if isinstance(attachCIDs, list) else attachCIDs.split(",")
         for att_id_inline in file_entries_for_attachments_inline:
@@ -242,6 +245,7 @@ def process_attachments(attachCIDs="", attachIDs="", attachNames="", manualAttac
             with open(file_info["path"], 'rb') as f:
                 attachments.append(FileAttachment(content=f.read(), name=att_name_inline, is_inline=True,
                                                   content_id=att_name_inline))
+
     for i in range(0, len(file_entries_for_attachments)):
         entry_id = file_entries_for_attachments[i]
         attachment_name = attachments_names[i]
