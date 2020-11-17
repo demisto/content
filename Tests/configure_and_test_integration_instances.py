@@ -959,7 +959,7 @@ def restart_server_legacy(server):
         logging.exception('Legacy SSH restart demisto failed')
 
 
-def get_tests(build: Build) -> list[Optional[dict]]:
+def get_tests(build: Build) -> list[str]:
     """
     Selects the tests from that should be run in this execution and filters those that cannot run in this server version
     Args:
