@@ -11,6 +11,14 @@
 					"complex": null,
 					"simple": "entityId"
 				},
+				"Average Complexity Level": {
+					"complex": null,
+					"simple": "level"
+				},
+				"Average Complexity of Compromise": {
+					"complex": null,
+					"simple": "value"
+				},
 				"Device Local IP": {
 					"complex": {
 						"accessor": "",
@@ -72,14 +80,6 @@
 				"Sub Category": {
 					"complex": null,
 					"simple": "entityType"
-				},
-				"Average Complexity of Compromise": {
-					"complex": null,
-					"simple": "value"
-				},
-				"Average Complexity Level": {
-					"complex": null,
-					"simple": "level"
 				},
 				"name": {
 					"complex": null,
@@ -102,6 +102,14 @@
 					"complex": null,
 					"simple": "entityId"
 				},
+				"Average Complexity Level": {
+					"complex": null,
+					"simple": "level"
+				},
+				"Average Complexity of Compromise": {
+					"complex": null,
+					"simple": "value"
+				},
 				"Device Local IP": {
 					"complex": {
 						"accessor": "",
@@ -164,14 +172,6 @@
 					"complex": null,
 					"simple": "entityType"
 				},
-				"Average Complexity of Compromise": {
-					"complex": null,
-					"simple": "value"
-				},
-				"Average Complexity Level": {
-					"complex": null,
-					"simple": "level"
-				},
 				"name": {
 					"complex": null,
 					"simple": "name"
@@ -192,6 +192,15 @@
 				"Event Type": {
 					"complex": null,
 					"simple": "type"
+				},
+				"XM Cyber Dashboard": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "linkToReport",
+						"transformers": []
+					},
+					"simple": ""
 				},
 				"XM Security Score": {
 					"complex": null,
@@ -222,37 +231,52 @@
 					"complex": null,
 					"simple": "linkToReport"
 				},
+				"Technique Advices": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "advices",
+						"transformers": []
+					},
+					"simple": ""
+				},
 				"Technique Affected Assets": {
 					"complex": null,
 					"simple": "criticalAssets"
-				},
-				"Technique Choke Points": {
-					"complex": null,
-					"simple": "chokePoints"
-				},
-				"Technique Mitre": {
-					"complex": null,
-					"simple": "mitre.[0].name"
-				},
-				"Technique Name": {
-					"complex": null,
-					"simple": "displayName"
 				},
 				"Technique Best Practice": {
 					"complex": null,
 					"simple": "bestPractice"
 				},
-				"Technique Description": {
+				"Technique Choke Points": {
 					"complex": null,
-					"simple": "description"
+					"simple": "chokePoints"
+				},
+				"Technique Description": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "description",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Technique Mitre": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "mitre",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Technique Name": {
+					"complex": null,
+					"simple": "displayName"
 				},
 				"Technique Report": {
 					"complex": null,
 					"simple": "linkToReport"
-				},
-				"details": {
-					"complex": null,
-					"simple": "description"
 				},
 				"name": {
 					"complex": null,
@@ -270,7 +294,17 @@
 		}
 	},
 	"name": "XM Cyber Incident Mapper",
+	"nameRaw": "XM Cyber Incident Mapper",
+	"packID": "",
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
 	"type": "mapping-incoming",
-	"fromVersion": "6.0.0",
+	"unclassifiedCases": null,
 	"version": -1
 }

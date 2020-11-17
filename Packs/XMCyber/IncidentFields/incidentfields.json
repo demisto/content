@@ -420,7 +420,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcyberaffectedentities",
+			"id": "incident_affectedentities",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-15T18:21:24.357588322Z",
@@ -438,7 +438,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcyberaffectedentities",
+			"cliName": "affectedentities",
 			"type": "number",
 			"closeForm": false,
 			"editForm": true,
@@ -473,7 +473,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcyberaffectedentitieslist",
+			"id": "incident_affectedentitieslist",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T22:11:59.674831946Z",
@@ -491,7 +491,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcyberaffectedentitieslist",
+			"cliName": "affectedentitieslist",
 			"type": "grid",
 			"closeForm": false,
 			"editForm": true,
@@ -553,7 +553,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcyberaveragecomplexity",
+			"id": "incident_averagecomplexity",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-15T17:57:17.331441535Z",
@@ -571,7 +571,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcyberaveragecomplexity",
+			"cliName": "averagecomplexity",
 			"type": "number",
 			"closeForm": false,
 			"editForm": true,
@@ -606,7 +606,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcyberaveragecomplexitylevel",
+			"id": "incident_averagecomplexitylevel",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-15T17:57:31.945846658Z",
@@ -624,7 +624,7 @@
 			"ownerOnly": false,
 			"placeholder": "None",
 			"description": "",
-			"cliName": "xmcyberaveragecomplexitylevel",
+			"cliName": "averagecomplexitylevel",
 			"type": "shortText",
 			"closeForm": false,
 			"editForm": true,
@@ -659,7 +659,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcybercompromisingtechniques",
+			"id": "incident_compromisingtechniques",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T20:55:42.645738146Z",
@@ -677,7 +677,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcybercompromisingtechniques",
+			"cliName": "compromisingtechniques",
 			"type": "grid",
 			"closeForm": false,
 			"editForm": true,
@@ -741,7 +741,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcybercriticalasset",
+			"id": "incident_criticalasset",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T20:59:26.189346971Z",
@@ -759,7 +759,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcybercriticalasset",
+			"cliName": "criticalasset",
 			"type": "boolean",
 			"closeForm": false,
 			"editForm": true,
@@ -794,7 +794,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcybercriticalassetsatrisk",
+			"id": "incident_criticalassetsatrisk",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-15T17:57:43.305987924Z",
@@ -812,7 +812,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcybercriticalassetsatrisk",
+			"cliName": "criticalassetsatrisk",
 			"type": "number",
 			"closeForm": false,
 			"editForm": true,
@@ -847,7 +847,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcybercriticalassetsatrisklevel",
+			"id": "incident_criticalassetsatrisklevel",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-15T17:57:55.562649578Z",
@@ -865,7 +865,7 @@
 			"ownerOnly": false,
 			"placeholder": "None",
 			"description": "",
-			"cliName": "xmcybercriticalassetsatrisklevel",
+			"cliName": "criticalassetsatrisklevel",
 			"type": "shortText",
 			"closeForm": false,
 			"editForm": true,
@@ -900,7 +900,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcybercriticalassetsatrisklist",
+			"id": "incident_criticalassetsatrisklist",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T22:31:23.584951248Z",
@@ -918,7 +918,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "The average and minimum complexities of attacks to assets from this entity",
-			"cliName": "xmcybercriticalassetsatrisklist",
+			"cliName": "criticalassetsatrisklist",
 			"type": "grid",
 			"closeForm": false,
 			"editForm": true,
@@ -1046,7 +1046,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcyberentityname",
+			"id": "incident_entityname",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-27T18:11:33.813524494Z",
@@ -1064,7 +1064,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcyberentityname",
+			"cliName": "entityname",
 			"type": "shortText",
 			"closeForm": false,
 			"editForm": true,
@@ -1099,7 +1099,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcyberentityid",
+			"id": "incident_entityid",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T20:31:31.827681046Z",
@@ -1117,7 +1117,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcyberentityid",
+			"cliName": "entityid",
 			"type": "shortText",
 			"closeForm": false,
 			"editForm": true,
@@ -1152,7 +1152,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcyberentityreport",
+			"id": "incident_entityreport",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-22T13:48:41.735004377Z",
@@ -1170,7 +1170,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "Link to the Entity Report in XM Cyber",
-			"cliName": "xmcyberentityreport",
+			"cliName": "entityreport",
 			"type": "url",
 			"closeForm": false,
 			"editForm": true,
@@ -1205,7 +1205,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcyberentitytype",
+			"id": "incident_entitytype",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-20T22:39:19.37465031Z",
@@ -1223,7 +1223,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcyberentitytype",
+			"cliName": "entitytype",
 			"type": "shortText",
 			"closeForm": false,
 			"editForm": true,
@@ -1311,7 +1311,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcybertechniquereport",
+			"id": "incident_techniquereport",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-25T16:25:14.951273619Z",
@@ -1329,7 +1329,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcybertechniquereport",
+			"cliName": "techniquereport",
 			"type": "url",
 			"closeForm": false,
 			"editForm": true,
@@ -1363,7 +1363,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcybertechniquebestpractice",
+			"id": "incident_techniquebestpractice",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-25T11:26:21.045708682Z",
@@ -1381,7 +1381,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcybertechniquebestpractice",
+			"cliName": "techniquebestpractice",
 			"type": "shortText",
 			"closeForm": false,
 			"editForm": true,
@@ -1415,7 +1415,7 @@
 			"validatedError": ""
 		},
 		{
-			"id": "incident_xmcybertechniquedescription",
+			"id": "incident_techniquedescription",
 			"version": -1,
 			"fromVersion": "6.0.0",
 			"modified": "2020-10-25T11:09:49.214226268Z",
@@ -1433,7 +1433,7 @@
 			"ownerOnly": false,
 			"placeholder": "",
 			"description": "",
-			"cliName": "xmcybertechniquedescription",
+			"cliName": "techniquedescription",
 			"type": "longText",
 			"closeForm": false,
 			"editForm": true,
