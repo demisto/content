@@ -12,36 +12,6 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 GLOBAL_VAR = 'global'
-ADDRESS_TYPE_MAPPING = {
-    0: 'ipmask',
-    1: 'iprange',
-    2: 'fqdn',
-    3: 'wildcard',
-    4: 'geography',
-    5: 'dynamic',
-    6: 'wildcard-fqdn'
-}
-
-PROTOCOL_MAPPING = {
-    1: 'ICMP',
-    2: 'IP',
-    5: 'TCP/UDP/SCTP',
-    6: 'ICMP6',
-}
-
-TASK_STATE = {
-    0: 'Pending',
-    1: 'Running',
-    2: 'Cancelling',
-    3: 'Cancelled',
-    4: 'Done',
-    5: 'Error',
-    6: 'Aborting',
-    7: 'Aborted',
-    8: 'Warning',
-    9: 'to_continue',
-    10: 'unknown'
-}
 
 ''' CLIENT CLASS '''
 
@@ -62,6 +32,10 @@ class Client(BaseClient):
                                                       json_data={'user': self.username, 'passwd': self.password},
                                                       add_session_token=False)
 
+            if response.get('result')[0].get('status', {}).get('code') != 0:
+                raise DemistoException(f"Unable to get new session token. Reason - "
+                                       f"{response.get('result')[0].get('status').get('message')}")
+
             demisto.setIntegrationContext({'session': response.get('session')})
             return response.get('session')
 
@@ -74,6 +48,7 @@ class Client(BaseClient):
         body: Dict = {
             "id": 1,
             "method": method,
+            "verbose": 1,
             "params": [{
                 "url": url
             }],
@@ -241,9 +216,6 @@ def list_firewall_addresses_command(client, args):
     headers = ['name', 'type', 'subnet', 'start-ip', 'end-ip', 'fqdkn', 'wildcard', 'country', 'wildcard-fqdn', 'sdn',
                'comment'] if not args.get('address') else None
 
-    # change address type from number to text
-    resolve_enum(firewall_addresses, field_name='type', enum_dict=ADDRESS_TYPE_MAPPING)
-
     return CommandResults(
         outputs_prefix='FortiManager.Address',
         outputs_key_field='name',
@@ -386,9 +358,6 @@ def list_custom_service_command(client, args):
                                                    range_info=get_range_for_list_command(args))
 
     headers = ['name', 'category', 'protocol', 'iprange', 'fqdn', 'comment'] if not args.get('custom_service') else None
-
-    # change service protocal and category from number to text
-    resolve_enum(custom_services, field_name='protocol', enum_dict=PROTOCOL_MAPPING)
 
     return CommandResults(
         outputs_prefix='FortiManager.CustomService',
@@ -629,9 +598,6 @@ def install_policy_package_status_command(client, args):
     task_data = client.fortimanager_api_call('get', f"/task/task/{args.get('task_id')}")
 
     headers = ['id', 'title', 'adom', 'percent', 'state', 'line']
-
-    # resolve task state from number to text
-    resolve_enum(task_data, field_name='state', enum_dict=TASK_STATE)
 
     return CommandResults(
         outputs_prefix='FortiManager.Installation',
