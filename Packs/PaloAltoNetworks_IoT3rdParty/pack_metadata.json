@@ -1,10 +1,10 @@
 {
     "name": "Palo Alto Networks IoT 3rd Party Integrations",
-    "description": "TBD",
-    "support": "community",
+    "description": "Palo Alto Networks IoT 3rd Party Integrations",
+    "support": "developer",
     "currentVersion": "1.0.0",
     "author": "ZingboxTeam",
-    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "url": "https://www.paloaltonetworks.com/network-security/iot-security",
     "email": "",
     "created": "2020-11-16T03:10:41Z",
     "categories": [

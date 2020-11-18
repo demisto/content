@@ -35,7 +35,7 @@ configuration:
   type: 8
 description: Base Integration for Palo Alto IOT third party integrations. This integrations
   communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities,  device inventory.
-display: Palo Alto Networks IoT 3rd Party (Community Contribution)
+display: Palo Alto Networks IoT 3rd Party
 name: Palo Alto Networks IoT 3rd Party
 script:
   commands:
