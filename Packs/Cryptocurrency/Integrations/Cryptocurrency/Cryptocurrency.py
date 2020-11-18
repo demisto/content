@@ -40,7 +40,6 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
         )
         hr = f'Cryptocurrency reputation for {BITCOIN} address {address} was set to {SCORE[score]}'
 
-
         command_results.append(CommandResults(
             outputs_prefix='Cryptocurrency',
             readable_output=hr,
