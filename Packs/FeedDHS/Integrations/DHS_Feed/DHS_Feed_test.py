@@ -299,7 +299,7 @@ class TestIndicators:
 class TestCommands:
 
     def setup(self):
-        self.client = TaxiiClient('', '')
+        self.client = TaxiiClient('', '', '')
 
     def test_command_test_module(self, mocker):
         demisto_results = mocker.patch.object(demisto, 'results')
