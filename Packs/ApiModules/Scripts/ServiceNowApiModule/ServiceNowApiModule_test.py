@@ -14,14 +14,20 @@ PARAMS = {
 }
 
 
+# Unit tests for OAuth authorization
 def test_get_access_token(mocker):
     """Unit test
     Given
-    - Integration context with/without valid/expired access token.
+    A client using OAuth authorization
+    - (a) Integration context with a valid access token.
+    - (b) Integration context with an expired access token.
+    - (c) Empty integration context (mocks the case that the user didn't run the login command first).
     When
-    - Calling the get_access_token function.
+    - Calling the get_access_token function while using OAuth 2.0 authorization.
     Then
-    - Validate that an valid access token is returned if one exist, else that a new one is created.
+    - (a) Validate that the previous access token is returned, since it is still valid.
+    - (b) Validate that a new access token is returned, as the previous one expired.
+    - (c) Validate that an error is raised, asking the user to first run the login command.
     """
     valid_access_token = {
         'access_token': 'previous_token',
@@ -40,7 +46,7 @@ def test_get_access_token(mocker):
     new_token_response.status_code = 200
 
     mocker.patch('ServiceNowApiModule.date_to_timestamp', return_value=0)
-    client = ServiceNowClient(credentials=PARAMS.get('credentials', {}), use_oauth=PARAMS.get('use_oauth', False),
+    client = ServiceNowClient(credentials=PARAMS.get('credentials', {}), use_oauth=True,
                               client_id=PARAMS.get('client_id', ''), client_secret=PARAMS.get('client_secret', ''),
                               url=PARAMS.get('url', ''), verify=PARAMS.get('insecure', False),
                               proxy=PARAMS.get('proxy', False), headers=PARAMS.get('headers', ''))
