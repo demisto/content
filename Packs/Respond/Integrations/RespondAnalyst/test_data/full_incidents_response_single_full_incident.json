@@ -16,10 +16,28 @@
         },
         "firstEventTime": "1576933531016",
         "id": "6",
-        "internalSystems": [
+        "allSystems": [
           {
-            "hostname": "enterprise.com",
-            "ipAddress": "100.100.100.100"
+            "hostname": "host1",
+            "ipAddress": "10.150.0.11",
+            "isInternal": true
+          },
+          {
+            "hostname": "host2",
+            "ipAddress": "10.150.0.22",
+            "isInternal": false
+          }
+        ],
+        "avMalwareNames": [
+          {
+            "name": "Ransom.Win32.CRYSIS.SM",
+            "type": "Ransomware",
+            "vendor": "McAfee"
+          },
+          {
+            "name": "RAT.Win32.CRYSIS.SM",
+            "type": "RAT",
+            "vendor": "McAfee"
           }
         ],
         "internalSystemsCount": 1,
@@ -36,7 +54,60 @@
         "description": "description of the incident",
         "userIds": [
           "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
-        ]
+        ],
+        "authDataAccounts": [
+          {
+            "domain": "test",
+            "name": "svc_adminscom3"
+          },
+          {
+            "domain": "test",
+            "name": "svc_adminscom"
+          },
+          {
+            "domain": "test",
+            "name": "svc_adminscom2"
+          }
+        ],
+        "avAccounts": [
+          {
+            "domain": null,
+            "name": ""
+          },
+          {
+            "domain": null,
+            "name": "svc_adminscom3"
+          },
+          {
+            "domain": null,
+            "name": ""
+          },
+          {
+            "domain": null,
+            "name": "svc_adminscom"
+          },
+          {
+            "domain": "test",
+            "name": "svc_adminscom2"
+          },
+          {
+            "domain": null,
+            "name": "svc_adminscom2"
+          },
+          {
+            "domain": null,
+            "name": "svc_adminscom2"
+          }
+        ],
+        "avFileHashes": [
+          {
+            "hash": "44d88612fea8a8f36de82e1278abb02f"
+          }
+        ],
+        "edrAccounts": [],
+        "nidsSignatures": [],
+        "wpAccounts": [],
+        "wpHosts": []
       }
     ]
   }

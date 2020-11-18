@@ -125,43 +125,78 @@ class RestClient(BaseClient):
 
     # sadly the linting process will fail if the format below is not used. Hard to read
     def construct_and_send_full_incidents_query(self, tenant_id, incident_ids):
-        query = {"query": "query { fullIncidents(ids: " + str(incident_ids) + ") { "
-                                                                              "id "
-                                                                              "dateCreated "
-                                                                              "eventCount "
-                                                                              "firstEventTime "
-                                                                              "lastEventTime "
-                                                                              "title "
-                                                                              "description "
-                                                                              "attackStage "
-                                                                              "assetClass "
-                                                                              "probabilityBucket "
-                                                                              "status "
-                                                                              "priority "
-                                                                              "internalSystems{ "
-                                                                              "hostname "
-                                                                              "ipAddress"
-                                                                              "} "
-                                                                              "internalSystemsCount "
-                                                                              "feedback { "
-                                                                              "newStatus "
-                                                                              "status "
-                                                                              "newSelectedOptions{ "
-                                                                              "id "
-                                                                              "key "
-                                                                              "value "
-                                                                              "} "
-                                                                              "timeGiven "
-                                                                              "optionalText "
-                                                                              "userId "
-                                                                              "closedAt "
-                                                                              "closedBy "
-                                                                              "} "
-                                                                              "userIds "
-                                                                              "tags { "
-                                                                              "label "
-                                                                              "} "
-                                                                              "} }"
+        query = {"query": "query { "
+                          "     fullIncidents(ids: " + str(incident_ids) + ") {"
+                                                                           "         id"
+                                                                           "         dateCreated"
+                                                                           "         eventCount"
+                                                                           "         firstEventTime"
+                                                                           "         lastEventTime"
+                                                                           "         title"
+                                                                           "         description"
+                                                                           "         attackStage"
+                                                                           "         assetClass"
+                                                                           "         probabilityBucket"
+                                                                           "         status"
+                                                                           "         priority"
+                                                                           "         internalSystemsCount"
+                                                                           "         allSystems{"
+                                                                           "            hostname"
+                                                                           "            ipAddress" 
+                                                                           "            isInternal"       
+                                                                           "         }"
+                                                                           "         avAccounts{"
+                                                                           "            name"
+                                                                           "            domain"
+                                                                           "         }"
+                                                                           "         wpAccounts{"
+                                                                           "            name"
+                                                                           "            domain"
+                                                                           "         }"
+                                                                           "         authDataAccounts{"
+                                                                           "            name"
+                                                                           "            domain"
+                                                                           "         }"
+                                                                           "         edrAccounts{"
+                                                                           "            name"
+                                                                           "            domain"
+                                                                           "         }"
+                                                                           "         avMalwareNames{"
+                                                                           "            name"
+                                                                           "            vendor"
+                                                                           "            type"
+                                                                           "         }"
+                                                                           "         nidsSignatures{"
+                                                                           "            vendor"
+                                                                           "            name"
+                                                                           "            category"
+                                                                           "         }"
+                                                                           "         wpHosts{"
+                                                                           "            hostname"
+                                                                           "            categorizations"
+                                                                           "         }"
+                                                                           "         avFileHashes{"
+                                                                           "            hash"
+                                                                           "         }"
+                                                                           "         feedback {"
+                                                                           "             newStatus"
+                                                                           "             status"
+                                                                           "             newSelectedOptions{"
+                                                                           "                 id"
+                                                                           "                 key"
+                                                                           "                 value"
+                                                                           "             }"
+                                                                           "             timeGiven"
+                                                                           "             optionalText"
+                                                                           "             userId"
+                                                                           "             closedAt"
+                                                                           "             closedBy"
+                                                                           "         }"
+                                                                           "         userIds"
+                                                                           "         tags {"
+                                                                           "             label"
+                                                                           "         }"
+                                                                           "} }"
                  }
         res = self._http_request(
             method='POST',
@@ -524,6 +559,43 @@ def fetch_incidents_for_tenant(rest_client, internal_tenant_id, external_tenant_
 
 
 def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
+    # separate internal and external systems. internal system = asset
+    assets = []
+    external_systems = []
+    if raw_incident.get('allSystems'):
+        assets = list(filter(lambda system: system['isInternal'] is True, raw_incident['allSystems']))
+        external_systems = list(filter(lambda system: system['isInternal'] is False, raw_incident['allSystems']))
+
+    # aggregate accounts
+    accounts = []
+    accounts.append(raw_incident.get('avAccounts'))
+    accounts.append(raw_incident.get('wpAccounts'))
+    accounts.append(raw_incident.get('authDataAccounts'))
+    accounts.append(raw_incident.get('edrAccounts'))
+    # flatten list
+    # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-list-of-lists
+    flatten = lambda t: [item for sublist in t for item in sublist]
+    accounts = flatten(accounts)
+    # if there are unknown accounts, only keep one, and make the name 'unknown'
+    unknown = False
+    for account in accounts:
+        if not account.get('name') and not account.get('domain'):
+            accounts.remove(account)
+            unknown = True
+    if unknown:
+        accounts.append({'name': 'Unknown', 'domain': None})
+
+
+    # collect hashes
+    hashes = []
+    for hash_map in raw_incident.get('avFileHashes'):
+        hashes.append(hash_map.get('hash'))
+
+    # collect domains
+    domains = []
+    for domain in raw_incident.get('wpHosts'):
+        domains.append(domain.get('hostname'))
+
     # convert graphql response to standardized JSON output for an incident
     formatted_incident = {
         'incidentId': raw_incident.get('id'),
@@ -546,8 +618,14 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
         'attackStage': raw_incident.get('attackStage'),
         'attackTactic': raw_incident.get('attackTactic'),
         'assetCriticality': raw_incident.get('assetClass'),
-        'internalSystemsCount': raw_incident.get('internalSystemsCount'),
-        'internalSystems': raw_incident.get('internalSystems'),
+        'assetCount': raw_incident.get('internalSystemsCount'),
+        'assets': assets,
+        'externalSystems': external_systems,
+        'accounts': accounts,
+        'domains': domains,
+        'hashes': hashes,
+        'malware': raw_incident.get('avMalwareNames'),
+        'signatures': raw_incident.get('nidsSignatures'),
         'escalationReasons': raw_incident.get('tags'),
         'assignedUsers': raw_incident.get('userIds'),
         'tenantIdRespond': internal_tenant_id,
@@ -987,7 +1065,6 @@ def fetch_incidents(rest_client, last_run=dict()):
             next_run[external_tenant_id]['time'] = latest_time
         else:
             next_run[external_tenant_id] = {'time': latest_time}
-
     return next_run, incidents
 
 
@@ -1010,7 +1087,7 @@ def main():
 
     try:
         if demisto.command() == 'test-module':
-            # todo
+            fetch_incidents(rest_client, demisto.getLastRun())
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':

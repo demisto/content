@@ -28,7 +28,14 @@
     "tags": [],
     "title": "Unknown",
     "description": "incident description",
-    "userIds": []
+    "userIds": [],
+    "avMalwareNames": [],
+    "avFileHashes": [],
+    "wpAccounts": [],
+    "avAccounts": [],
+    "edrAccounts": [],
+    "authDataAccounts": [],
+    "wpHosts": []
   },
   {
     "assetClass": "Low",
@@ -63,7 +70,14 @@
     ],
     "title": "Blocked Int - Ext C2 Malware",
     "description": "incident description",
-    "userIds": []
+    "userIds": [],
+    "avMalwareNames": [],
+    "avFileHashes": [],
+    "wpAccounts": [],
+    "avAccounts": [],
+    "edrAccounts": [],
+    "authDataAccounts": [],
+    "wpHosts": []
   }
 ]
 
