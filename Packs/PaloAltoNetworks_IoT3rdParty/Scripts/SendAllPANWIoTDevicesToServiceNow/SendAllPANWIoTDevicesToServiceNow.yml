@@ -15,6 +15,6 @@ tags:
 - PANW IoT 3rd Party Integration
 - servicenow v2
 type: python
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
