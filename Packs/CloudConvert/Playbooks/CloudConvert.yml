@@ -1,7 +1,7 @@
 id: CloudConvert
 version: -1
 name: CloudConvert
-description: Use this Playbook to convert a file using CloudConvert
+description: Use this playbook to convert a file to the required format using CloudConvert.
 starttaskid: "0"
 tasks:
   "0":
@@ -39,7 +39,7 @@ tasks:
       id: 934ef52e-8df3-4b83-846c-db51efcfeed8
       version: -1
       name: Import The File To The Server
-      description: Import the file
+      description: Import the file.
       script: '|||cloudconvert-import'
       type: regular
       iscommand: true
@@ -144,7 +144,7 @@ tasks:
       id: cc390895-2837-4b14-8cd6-470c6f99c42f
       version: -1
       name: Convert The File
-      description: Convert the file
+      description: Convert the file to the required format.
       script: '|||cloudconvert-convert'
       type: regular
       iscommand: true
@@ -303,7 +303,7 @@ tasks:
       id: 5687ac9a-72b6-4b05-8661-1db87c10da81
       version: -1
       name: 'Exporting To War Room Entry? '
-      description: Check if exporting to entry
+      description: Check if exporting to War Room entry.
       type: condition
       iscommand: false
       brand: ""
@@ -413,7 +413,7 @@ tasks:
       version: -1
       name: Check Status - Used For Getting Finished Export Task's Data
       description: Check the status of an operation. Use the 'create_war_room_entry' argument to
-        also create a war room entry of the file when checking on an export operation
+        also create a War Room entry of the file when checking on an export operation.
       script: '|||cloudconvert-check-status'
       type: regular
       iscommand: true
@@ -460,7 +460,7 @@ tasks:
       name: Check Status - Used For Getting Finished Export Task's Data And Create
         Entry
       description: Check the status of an operation. Use the 'create_war_room_entry' argument to
-        also create a war room entry of the file when checking on an export operation
+        also create a War Room entry of the file when checking on an export operation.
       script: '|||cloudconvert-check-status'
       type: regular
       iscommand: true
@@ -530,7 +530,7 @@ tasks:
       id: dc887b89-5538-4f8a-82ec-c2d7f16433f9
       version: -1
       name: IsIntegrationAvailable
-      description: Returns 'yes' if integration brand is available. Otherwise returns
+      description: Returns 'yes' if the integration brand is available. Otherwise returns
         'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -573,26 +573,26 @@ inputs:
 - key: url
   value: {}
   required: false
-  description: This is the url of the imported file. If an entry id is supplied, do
-    not use this argument
+  description: The URL of the imported file. If an entry ID is supplied, do
+    not use this argument.
   playbookInputQuery:
 - key: entry_id
   value: {}
   required: false
-  description: This is the entry id of the imported file. If a url is supplied, do
-    not use this argument
+  description: The entry ID of the imported file. If a URL is supplied, do
+    not use this argument.
   playbookInputQuery:
 - key: output_format
   value: {}
   required: true
   description: |
-    This is the desired output format
+    The required output format.
   playbookInputQuery:
 - key: export_via
   value: {}
   required: true
   description: |
-    The method for exporting the resulted file, url or war_room_entry
+    The method for exporting the resulted file, URL or war_room_entry
   playbookInputQuery:
 outputs:
 - contextPath: CloudConvert.Task.result.files.url
