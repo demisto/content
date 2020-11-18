@@ -731,7 +731,7 @@ class TestCopyAndUploadToStorage:
 
         # case: latest version is not in build bucket
         dummy_build_bucket.list_blobs.return_value = []
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket,
                                                                           '2.0.0', {})
         assert not task_status
         assert not skipped_pack
@@ -752,7 +752,7 @@ class TestCopyAndUploadToStorage:
         blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_prod_bucket.list_blobs.return_value = [Blob(blob_name, dummy_prod_bucket)]
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket,
                                                                           '2.0.0', {})
         assert task_status
         assert skipped_pack
@@ -772,7 +772,7 @@ class TestCopyAndUploadToStorage:
         blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, False,
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket,
                                                                           '2.0.0', {"TestPack": {"status": "status1",
                                                                                                  "aggregated": True}})
         assert task_status
