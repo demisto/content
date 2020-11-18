@@ -1,5 +1,5 @@
-Use the CloudConvert integration to convert your files to desired format
-This integration was integrated and tested with version xx of CloudConvert
+Use the CloudConvert integration to convert your files to the required format.
+This integration was integrated and tested with version v2 of CloudConvert.
 ## Configure CloudConvert on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -14,11 +14,11 @@ This integration was integrated and tested with version xx of CloudConvert
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cloudconvert-import
 ***
-Import a file for later conversion
+Imports a file for conversion.
 
 
 #### Base Command
@@ -28,27 +28,27 @@ Import a file for later conversion
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The file's url. If an entry id is supplied, do not use this argument | Optional | 
-| entry_id | The file's war room entry ID. If a url is supplied, do not use this argument | Optional | 
+| url | The file's URL. If an entry ID is supplied, do not use this argument. | Optional | 
+| entry_id | The file's War Room entry ID. If a URL is supplied, do not use this argument. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CloudConvert.Task.id | String | Unique task id of scanned file | 
-| CloudConvert.Task.status | String | Status of current task | 
-| CloudConvert.Task.message | String | Response message from the API | 
-| CloudConvert.Task.operation | String | The operation conducted | 
-| CloudConvert.Task.result.files.filename | String | Resulted file name | 
-| CloudConvert.Task.result.files.size | Number | Resulted size of file | 
-| CloudConvert.Task.result.files.url | String | Resulted file url | 
-| CloudConvert.Task.created_at | Date | Creation Time | 
-| CloudConvert.Task.started_at | Date | Operation start time | 
-| CloudConvert.Task.ended_at | Date | Operation end time | 
-| CloudConvert.Task.host_name | String | Name of host used for operation | 
-| CloudConvert.Task.storage | String | Storage server for operation | 
-| CloudConvert.Task.links | String | APIs link for operation | 
+| CloudConvert.Task.id | String | Unique task ID of the scanned file. | 
+| CloudConvert.Task.status | String | Status of the current task. | 
+| CloudConvert.Task.message | String | Response message from the API. | 
+| CloudConvert.Task.operation | String | The operation that was performed. | 
+| CloudConvert.Task.result.files.filename | String | The name of the imported file. | 
+| CloudConvert.Task.result.files.size | Number | The size of the imported file. | 
+| CloudConvert.Task.result.files.url | String | The URL of the imported file. | 
+| CloudConvert.Task.created_at | Date | Time the task was created. | 
+| CloudConvert.Task.started_at | Date | Start time of the task. | 
+| CloudConvert.Task.ended_at | Date | End time of the task. | 
+| CloudConvert.Task.host_name | String | Name of the host used for the task. | 
+| CloudConvert.Task.storage | String | Storage server used for the task. | 
+| CloudConvert.Task.links | String | API link for the task. | 
 
 
 #### Command Example
@@ -60,7 +60,7 @@ Import a file for later conversion
 
 ### cloudconvert-convert
 ***
-Convert a priorly uploaded file to desired format
+Converts an uploaded file to the required format.
 
 
 #### Base Command
@@ -70,28 +70,28 @@ Convert a priorly uploaded file to desired format
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | Task id of the import task of the file of interest | Required | 
-| output_format | The desired output format for the given file | Required | 
+| task_id | ID of the task that imported the file. | Required | 
+| output_format | The required output format for the given file. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CloudConvert.Task.id | String | Unique task id of scanned file | 
-| CloudConvert.Task.status | String | Status of current task | 
-| CloudConvert.Task.message | String | Response message from API | 
-| CloudConvert.Task.operation | String | The operation conducted | 
-| CloudConvert.Task.result.files.filename | String | Resulted file name | 
-| CloudConvert.Task.result.files.size | Number | Resulted size of file | 
-| CloudConvert.Task.result.files.url | String | Resulted file url | 
-| CloudConvert.Task.created_at | Date | Creation Time | 
-| CloudConvert.Task.started_at | Date | Operation start time | 
-| CloudConvert.Task.ended_at | Date | Operation end time | 
-| CloudConvert.Task.host_name | String | Name of host used for operation | 
-| CloudConvert.Task.storage | String | Storage server for operation | 
-| CloudConvert.Task.depends_on_task_ids | String | The ID of the previous operation conducted on this file | 
-| CloudConvert.Task.links | String | APIs link for operation | 
+| CloudConvert.Task.id | String | Unique task ID of the scanned file. | 
+| CloudConvert.Task.status | String | Status of the current task. | 
+| CloudConvert.Task.message | String | Response message from the API. | 
+| CloudConvert.Task.operation | String | The task that was performed. | 
+| CloudConvert.Task.result.files.filename | String | The name of the converted file. | 
+| CloudConvert.Task.result.files.size | Number | The size of the converted file. | 
+| CloudConvert.Task.result.files.url | String | The URL of the converted file. | 
+| CloudConvert.Task.created_at | Date | Time the task was created. | 
+| CloudConvert.Task.started_at | Date | Start time of the task. | 
+| CloudConvert.Task.ended_at | Date | End time of the task. | 
+| CloudConvert.Task.host_name | String | Name of the host used for the task. | 
+| CloudConvert.Task.storage | String | Storage server used for the task. | 
+| CloudConvert.Task.depends_on_task_ids | String | The ID of the previous task that was conducted on this file. | 
+| CloudConvert.Task.links | String | API link for the task. | 
 
 
 #### Command Example
@@ -103,7 +103,7 @@ Convert a priorly uploaded file to desired format
 
 ### cloudconvert-check-status
 ***
-Check the status of an operation. Use the 'create_war_room_entry' argument to also create a war room entry of the file when checking on an export operation
+Checks the status of an operation. Use the 'create_war_room_entry' argument to also create a war room entry of the file when checking on an export operation
 
 
 #### Base Command
@@ -113,28 +113,28 @@ Check the status of an operation. Use the 'create_war_room_entry' argument to al
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | Task id of the convert task of the file of interest | Required | 
-| create_war_room_entry | use this argument if you are checking on an export operation, so an entry will be created if the operation is finished | Optional | 
+| task_id | ID of the task used to convert the file. | Required | 
+| create_war_room_entry | Whether to create an entry in the War Room if the task is finished. Possible values are: "True" and "False". Use this argument to be able to check on an export operation in the War Room. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CloudConvert.Task.id | String | Unique task id of scanned file | 
-| CloudConvert.Task.status | String | Status of current task | 
-| CloudConvert.Task.message | String | Response message from API | 
-| CloudConvert.Task.operation | String | The operation conducted | 
-| CloudConvert.Task.result.files.filename | String | Resulted file name | 
-| CloudConvert.Task.result.files.size | Number | Resulted size of file | 
-| CloudConvert.Task.result.files.url | String | Resulted file url | 
-| CloudConvert.Task.created_at | Date | Creation Time | 
-| CloudConvert.Task.started_at | Date | Operation start time | 
-| CloudConvert.Task.ended_at | Date | Operation end time | 
-| CloudConvert.Task.host_name | String | Name of host used for operation | 
-| CloudConvert.Task.storage | String | Storage server for operation | 
-| CloudConvert.Task.depends_on_task_ids | String | The ID of the previous operation conducted on this file | 
-| CloudConvert.Task.links | String | APIs link for operation | 
+| CloudConvert.Task.id | String | Unique task ID of the scanned file. | 
+| CloudConvert.Task.status | String | Status of the current task. | 
+| CloudConvert.Task.message | String | Response message from the API. | 
+| CloudConvert.Task.operation | String | The task that was performed. | 
+| CloudConvert.Task.result.files.filename | String | The name of the converted file. | 
+| CloudConvert.Task.result.files.size | Number | The size of the converted file. | 
+| CloudConvert.Task.result.files.url | String | The URL of the converted file. | 
+| CloudConvert.Task.created_at | Date | The time the task was created. | 
+| CloudConvert.Task.started_at | Date | Start time of the task. | 
+| CloudConvert.Task.ended_at | Date | End time of the task. | 
+| CloudConvert.Task.host_name | String | Name of the host used for the task. | 
+| CloudConvert.Task.storage | String | Storage server used for the task. | 
+| CloudConvert.Task.depends_on_task_ids | String | The ID of the previous task conducted on this file. | 
+| CloudConvert.Task.links | String | API link for the task. | 
 
 
 #### Command Example
@@ -146,7 +146,7 @@ Check the status of an operation. Use the 'create_war_room_entry' argument to al
 
 ### cloudconvert-export
 ***
-Export a converted file to a url or a war room entry
+Exports a converted file to a URL or a War Room entry.
 
 
 #### Base Command
@@ -156,28 +156,28 @@ Export a converted file to a url or a war room entry
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| export_as | where should the file be exported to | Required | 
-| task_id | Task id of the convert task of the file of interest | Required | 
+| export_as | 'Whether to export the converted file to a URL or as a War Room entry. Possible values are: "url" and "war_room_entry". Note that if you export the file as a War Room entry, a URL of the file will also be generated.' | Required | 
+| task_id | ID of the task that converted the file. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CloudConvert.Task.id | String | Unique task id of scanned file | 
-| CloudConvert.Task.status | String | Status of current task | 
-| CloudConvert.Task.message | String | Response message from API | 
-| CloudConvert.Task.operation | String | The operation conducted | 
-| CloudConvert.Task.result.files.filename | String | Resulted file name | 
-| CloudConvert.Task.result.files.size | Number | Resulted size of file | 
-| CloudConvert.Task.result.files.url | String | Resulted file url | 
-| CloudConvert.Task.created_at | Date | Creation Time | 
-| CloudConvert.Task.started_at | Date | Operation start time | 
-| CloudConvert.Task.ended_at | Date | Operation end time | 
-| CloudConvert.Task.host_name | String | Name of host used for operation | 
-| CloudConvert.Task.storage | String | Storage server for operation | 
-| CloudConvert.Task.depends_on_task_ids | String | The ID of the previous operation conducted on this file | 
-| CloudConvert.Task.links | String | APIs link for operation | 
+| CloudConvert.Task.id | String | Unique task ID of the scanned file. | 
+| CloudConvert.Task.status | String | Status of the current task. | 
+| CloudConvert.Task.message | String | Response message from the API. | 
+| CloudConvert.Task.operation | String | The operation that was performed. | 
+| CloudConvert.Task.result.files.filename | String | The file name of the exported file. | 
+| CloudConvert.Task.result.files.size | Number | The size of the exported file. | 
+| CloudConvert.Task.result.files.url | String | The URL of the exported file. | 
+| CloudConvert.Task.created_at | Date | Time the task was created. | 
+| CloudConvert.Task.started_at | Date | Start time of the task. | 
+| CloudConvert.Task.ended_at | Date | End time of the task. | 
+| CloudConvert.Task.host_name | String | Name of the host used for the task. | 
+| CloudConvert.Task.storage | String | Storage server used for the task. | 
+| CloudConvert.Task.depends_on_task_ids | String | The ID of the previous task conducted on this file. | 
+| CloudConvert.Task.links | String | API link for the task. | 
 
 
 #### Command Example
