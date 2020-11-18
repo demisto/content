@@ -3723,7 +3723,9 @@ def main():
             return_error(get_error(result))
 
         file_metadata = result[0]['FileMetadata']
-        file_type = file_metadata.get('type', '') or file_metadata.get('info', '')
+        file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
+        if 'MIME entity text, ISO-8859 text' in file_type:
+            file_type = 'application/pkcs7-mime'
 
     except Exception as ex:
         return_error(
