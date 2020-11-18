@@ -1,5 +1,4 @@
 Use the ipinfo.io API to get data about an IP address
-This integration was integrated and tested with version xx of ipinfo
 ## Configure ipinfo on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -36,12 +35,12 @@ Check IP reputation (when information is available, returns a JSON with details)
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | unknown | The IP address | 
-| IP.Hostname | unknown | The IP hostname | 
-| IP.ASN | unknown | The IP ASN | 
-| IP.Geo.Location | unknown | The IP geographic location in coordinates | 
-| IP.Geo.Country | unknown | The IP country | 
-| IP.Geo.Description | unknown | The IP location as &lt;City, Region, Postal Code, Country&gt; | 
+| IP.Address | String | The IP address | 
+| IP.Hostname | String | The IP hostname | 
+| IP.ASN | String | The IP ASN | 
+| IP.Geo.Location | String | The IP geographic location in coordinates | 
+| IP.Geo.Country | String | The IP country | 
+| IP.Geo.Description | String | The IP location as \<City, Region, Postal Code, Country\> | 
 
 
 #### Command Example
