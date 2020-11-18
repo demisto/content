@@ -17,4 +17,5 @@ Searching PCAP files for common objects such as IP addresses, ports, protocols, 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/pcap-analysis)_
 
 ## Demo Video
-<iframe width="560" height="315" src="https://www.youtube.com/watch?v=VDUdBmGuVYQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="true"></iframe>
+[![PCAP Analysis in Cortex XSOAR](https://img.youtube.com/vi/VDUdBmGuVYQ/0.jpg)](https://www.youtube.com/watch?v=VDUdBmGuVYQ "PCAP Analysis in Cortex XSOAR")
+
