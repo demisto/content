@@ -2,6 +2,7 @@ id: FireEye-Detection-on-Demand-Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: FireEye-Detection-on-Demand-Test
+fromversion: 6.0.0
 starttaskid: "0"
 tasks:
   "0":
