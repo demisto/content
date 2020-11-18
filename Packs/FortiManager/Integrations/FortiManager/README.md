@@ -2,7 +2,7 @@ FortiManager is a single console central management system that manages Fortinet
 This integration was integrated and tested with version 6.2.2 of FortiManager
 
 ## Required Permissions
-Listed below are the required permissions for the integration commands:
+Following are the required permissions for the integration commands:
 
 | **Setting** | **Minimal Requirement** |
 | --- | --- | 
@@ -11,8 +11,8 @@ Listed below are the required permissions for the integration commands:
 | adom-policy-packages | Read-Write |
 | deploy-management | Read-Write |
 
-The eligible predefined administrator profiles are: **Super User**, **Standard User** and **Package User**.
-For more information about administrator permissions see the [official documentation](https://docs.fortinet.com/document/fortimanager/6.2.2/administration-guide/392019/permissions).
+The eligible predefined administrator profiles are: **Super User**, **Standard User**, and **Package User**.
+For more information about administrator permissions see the [FortiManager documentation](https://docs.fortinet.com/document/fortimanager/6.2.2/administration-guide/392019/permissions).
 
 ## Configure FortiManager on Cortex XSOAR
 
