@@ -899,3 +899,41 @@ def test_only_parts_of_object_email_saved(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['logo5.png', 'logo2.png']
+
+
+def test_pkcs7_mime(mocker):
+    def executeCommand(name, args=None):
+        if name == 'getFilePath':
+            return [
+                {
+                    'Type': entryTypes['note'],
+                    'Contents': {
+                        'path': 'test_data/smime2.p7m',
+                        'name': 'smime2.p7m'
+                    }
+                }
+            ]
+        elif name == 'getEntry':
+            return [
+                {
+                    'Type': entryTypes['file'],
+                    'FileMetadata': {
+                        'info': 'MIME entity text, ISO-8859 text, with very long lines, with CRLF line terminators'
+                    }
+                }
+            ]
+        else:
+            raise ValueError('Unimplemented command called: {}'.format(name))
+
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Testing signed multipart email'
