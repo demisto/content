@@ -63,4 +63,4 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Palo_Alto_Networks_Enterprise_DLP - Test
