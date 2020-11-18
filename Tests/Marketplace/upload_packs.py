@@ -203,7 +203,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     if ('CI' not in os.environ) or (
             os.environ.get('CIRCLE_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
             os.environ.get('CIRCLE_BRANCH') == 'master' and storage_bucket.name not in
-            (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET, GCPConfig.TESTING_BUCKET)):
+            (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
 
@@ -596,8 +596,7 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
     skipping_build_task_message = "Skipping Upload Packs To Marketplace Storage Step."
 
     try:
-        if storage_bucket.name not in (GCPConfig.CI_BUILD_BUCKET, GCPConfig.PRODUCTION_BUCKET,
-                                       GCPConfig.TESTING_BUCKET):
+        if storage_bucket.name not in (GCPConfig.CI_BUILD_BUCKET, GCPConfig.PRODUCTION_BUCKET):
             logging.info("Skipping index update check in non production/build bucket")
             return
 
