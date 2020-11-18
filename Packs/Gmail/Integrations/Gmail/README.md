@@ -15,7 +15,7 @@ There are several procedures you have to perform in Google before configuring th
 1.  Access your [Google Service Account](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts%C2%A0).
 2.  In the IAM & admin section select **Service accounts**.
 3.  If you need to create a new project, click **CREATE** do the following:
-    1.  In the **New Project** window, type a project name, select an organization from the drop-down list and then select a location.
+    1.  In the **New Project** window, type a project name, select an organization from the drop-down list, and then select a location.
     2.  Click **CREATE**.
 4.  In the Service accounts section, click **Create Service Account**.
 5.  In the **Create service account** window, type a name for the service account, add a description and then click **CREATE**.
@@ -42,7 +42,7 @@ There are several procedures you have to perform in Google before configuring th
 ![Setup Account](./doc_imgs/mceclip1.png)
 
 ### Get an Immutable Google Apps ID Parameters
-In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
+In order to revoke/fetch a user role, you need an Immutable Google Apps ID param.
 
 1. Open [https://admin.google.com](https://admin.google.com) (as in step 2).
 2. Navigate to **Security > Set up single sign-on (SSO)**. 
@@ -4549,11 +4549,11 @@ Sends mail using Gmail.
 
 ### reply-mail
 ***
-Reply to a mail using Gmail.
+Replies to a mail using Gmail.
 
 #### Limitations:
 
-The `subject` argument should be equal to the subject of the email we're replying to in order for the reply to be a part of the same conversation.
+The *subject* argument should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation.
 
 #### Base Command
 
@@ -4562,23 +4562,23 @@ The `subject` argument should be equal to the subject of the email we're replyin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | Email addresses of the receiver. | Required | 
+| to | Email addresses of the recipients. | Required | 
 | from | Email address of the sender. | Optional | 
 | body | The contents (body) of the email to be sent in plain text. | Optional | 
-| subject | Subject for the email to be sent. <br/> Should be the same as the subject of the email we're replying to in order for the reply to be a part of the same conversation. | Required | 
-| inReplyTo | A comma-separated list of Message IDs to reply to. | Required | 
-| references | A comma-separated list of Message IDs to refer to. | Optional | 
+| subject | Subject of the email to be sent. <br/> Should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation. | Required | 
+| inReplyTo | A comma-separated list of message IDs to reply to. | Required | 
+| references | A comma-separated list of message IDs to refer to. | Optional | 
 | attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need be attached to the email. | Optional | 
-| cc | Additional recipient email address (CC). | Optional | 
-| bcc | Additional recipient email address (BCC). | Optional | 
+| cc | Additional recipient email addresses (CC). | Optional | 
+| bcc | Additional recipient email addresses (BCC). | Optional | 
 | htmlBody | The contents (body) of the email to be sent in HTML format. | Optional | 
 | replyTo | Address that needs to be used to reply to the message. | Optional | 
-| attachNames | A comma-separated list of new names to rename attachments corresponding to the order that they were attached to the email.<br/>        Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3<br/>        To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5 | Optional | 
+| attachNames | A comma-separated list of new names to rename attachments corresponding to the order in which they were attached to the email.<br/>        Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3<br/>        To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5 | Optional | 
 | attachCIDs | A comma-separated list of CID images to embed attachments inside the email. | Optional | 
 | transientFile | Textual name for an attached file. Multiple files are supported as a<br/>        comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated<br/>        list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | transientFileCID | CID image for an attached file to include within the email body. Multiple files are<br/>        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"<br/>        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
-| additionalHeader | A CSV list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
+| additionalHeader | A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
 | templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.' | Optional | 
 
 
@@ -4587,12 +4587,12 @@ The `subject` argument should be equal to the subject of the email we're replyin
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Gmail.SentMail.ID | String | The immutable ID of the message. | 
-| Gmail.SentMail.Labels | String | List of IDs of labels applied to this message. | 
+| Gmail.SentMail.Labels | String | List of IDs of the labels applied to this message. | 
 | Gmail.SentMail.ThreadId | String | The ID of the thread in which the message belongs. | 
-| Gmail.SentMail.To | String | The recipient of the email. | 
+| Gmail.SentMail.To | String | The recipients of the email. | 
 | Gmail.SentMail.From | Unknown | The sender of the email. | 
-| Gmail.SentMail.Cc | String | Additional recipient email address \(CC\). | 
-| Gmail.SentMail.Bcc | String | Additional recipient email address \(BCC\). | 
+| Gmail.SentMail.Cc | String | Additional recipient email addresses \(CC\). | 
+| Gmail.SentMail.Bcc | String | Additional recipient email addresses \(BCC\). | 
 | Gmail.SentMail.Subject | String | The subject of the email. | 
 | Gmail.SentMail.Body | Unknown | The plain-text version of the email. | 
 | Gmail.SentMail.MailBox | String | The mailbox from which the mail was sent. | 
