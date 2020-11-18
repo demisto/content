@@ -1,6 +1,6 @@
 # Content Contribution Guide
 
-![Contegint logo](xsoar_content_logo.png)
+![Content logo](xsoar_content_logo.png)
 
 Welcome to Demisto content repo! Contributions are welcome and appreciated.
 
