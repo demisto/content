@@ -1,0 +1,566 @@
+description: Playbook to handle incident triggered from PANW Iot (Zingbox) UI to send
+  Alert to SIEM.
+id: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
+inputs: []
+name: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
+outputs:
+- contextPath: incident
+  description: This playbook is invoked via the incident type "PANW IoT 3rd Party
+    SIEM Integration - Alert"
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1bad57f9-4b78-4d0e-8178-7b2d945b636a
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 1bad57f9-4b78-4d0e-8178-7b2d945b636a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerror: true
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Syslog Sender
+      using:
+        simple: PANW IoT 3rd Party SIEM Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      id: e957aa35-8442-44a8-81f7-3682ad02d772
+      iscommand: false
+      name: IsIntegrationAvailable
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: e957aa35-8442-44a8-81f7-3682ad02d772
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    continueonerror: true
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integrationName:
+        simple: siem
+      message:
+        simple: Syslog Sender (SIEM) instance is not enabled
+      playbookName:
+        simple: PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM
+      status:
+        simple: disabled
+      type:
+        simple: alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IOT cloud.
+      id: a83ad497-9187-47d6-88de-809ed1c67565
+      iscommand: true
+      name: panw-iot-3rd-party-report-status-to-panw
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: a83ad497-9187-47d6-88de-809ed1c67565
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 400
+        }
+      }
+  "3":
+    continueonerror: true
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetID:
+        simple: ${incident.zb_ticketid}
+      assetType:
+        simple: Alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: For a given a asset ID (alert-id, vulnerability-id or mac-address)
+        returns the asset details.
+      id: db8bf2c6-e454-4d5d-897e-b7f852ab6dc8
+      iscommand: true
+      name: panw-iot-3rd-party-get-single-asset
+      script: '|||panw-iot-3rd-party-get-single-asset'
+      type: regular
+      version: -1
+    taskid: db8bf2c6-e454-4d5d-897e-b7f852ab6dc8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 400
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 6f730d53-b67a-46b6-82e1-982508336403
+      iscommand: false
+      name: isError
+      script: isError
+      type: condition
+      version: -1
+    taskid: 6f730d53-b67a-46b6-82e1-982508336403
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 570
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "8"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${PanwIot3rdParty.SingleAsset}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: fe731bcc-e441-4db6-8b3c-a1fc5b1371aa
+      iscommand: false
+      name: Exists
+      script: Exists
+      type: condition
+      version: -1
+    taskid: fe731bcc-e441-4db6-8b3c-a1fc5b1371aa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 750
+        }
+      }
+  "6":
+    continueonerror: true
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integrationName:
+        simple: siem
+      message:
+        simple: Failed to get Alert (${incident.zb_ticketid}) from IoT cloud.
+      playbookName:
+        simple: PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM
+      status:
+        simple: error
+      type:
+        simple: alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IOT cloud.
+      id: ca377679-a38c-4f63-867b-f7f167fab078
+      iscommand: true
+      name: panw-iot-3rd-party-report-status-to-panw
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: ca377679-a38c-4f63-867b-f7f167fab078
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 760
+        }
+      }
+  "7":
+    continueonerror: true
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetList:
+        simple: ${PanwIot3rdParty.SingleAsset}
+      assetType:
+        simple: Alert
+      outputFormat:
+        simple: SIEM
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: For a given asset (alert, device, vuln) converts it to 3rd party
+        format.
+      id: 446b4b55-52fc-4205-8570-ab2e32fe4627
+      iscommand: true
+      name: panw-iot-3rd-party-convert-assets-to-external-format
+      script: '|||panw-iot-3rd-party-convert-assets-to-external-format'
+      type: regular
+      version: -1
+    taskid: 446b4b55-52fc-4205-8570-ab2e32fe4627
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 930
+        }
+      }
+  "8":
+    continueonerror: true
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integrationName:
+        simple: siem
+      message:
+        simple: No Alert found with given ID  (${incident.zb_ticketid}).
+      playbookName:
+        simple: PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM
+      status:
+        simple: error
+      type:
+        simple: alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IOT cloud.
+      id: d9f3ba08-124b-4098-8fb3-24e42b047bbf
+      iscommand: true
+      name: panw-iot-3rd-party-report-status-to-panw
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: d9f3ba08-124b-4098-8fb3-24e42b047bbf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 930
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${PanwIot3rdParty.AlertCEFSyslogs}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 0dc21477-208b-48d0-82fa-80aab6c7ee52
+      iscommand: false
+      name: Exists
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 0dc21477-208b-48d0-82fa-80aab6c7ee52
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 1090
+        }
+      }
+  "10":
+    continueonerror: true
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address: {}
+      facility: {}
+      level: {}
+      message:
+        simple: ${PanwIot3rdParty.AlertCEFSyslogs}
+      port: {}
+      protocol: {}
+      using:
+        simple: PANW IoT 3rd Party SIEM Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Syslog Sender
+      description: Sends a message to Syslog.
+      id: ca1a6610-bca8-498f-8026-6533a9ad560c
+      iscommand: true
+      name: syslog-send
+      script: Syslog Sender|||syslog-send
+      type: regular
+      version: -1
+    taskid: ca1a6610-bca8-498f-8026-6533a9ad560c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1260
+        }
+      }
+  "11":
+    continueonerror: true
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integrationName:
+        simple: siem
+      message:
+        simple: Alert ID  (${incident.zb_ticketid}) not valid for CEF conversion.
+      playbookName:
+        simple: PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM
+      status:
+        simple: error
+      type:
+        simple: alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IOT cloud.
+      id: be46920b-c4e2-493a-89d9-694482f2ed5f
+      iscommand: true
+      name: panw-iot-3rd-party-report-status-to-panw
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: be46920b-c4e2-493a-89d9-694482f2ed5f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1270
+        }
+      }
+  "12":
+    continueonerror: true
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      integrationName:
+        simple: siem
+      message:
+        simple: Successfully sent Alert (${incident.zb_ticketid}) to SIEM
+      playbookName:
+        simple: PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM
+      status:
+        simple: success
+      type:
+        simple: alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IOT cloud.
+      id: a3d039d2-e9fe-43a5-8813-1a63836425af
+      iscommand: true
+      name: panw-iot-3rd-party-report-status-to-panw
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: a3d039d2-e9fe-43a5-8813-1a63836425af
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1460
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 06bca252-d00d-4760-8333-817d661ae57a
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 06bca252-d00d-4760-8333-817d661ae57a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1750
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1795,
+        "width": 1550,
+        "x": 180,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
