@@ -1,5 +1,5 @@
 import pytest
-from Feed_DHS import *
+from DHS_Feed import *
 
 
 def compare(object_a, object_b):
@@ -52,8 +52,8 @@ class TestTempFile:
 
 class TestHelpers:
     data_test_fix_rsa_data = [
-        ('./test_data/rsa/test_fix_rsa_data.txt', 4),
-        ('./test_data/rsa/test_fix_rsa_data2.txt', 2),
+        ('test_data/rsa/test_fix_rsa_data.txt', 4),
+        ('test_data/rsa/test_fix_rsa_data2.txt', 2),
     ]
 
     @pytest.mark.parametrize('path, count', data_test_fix_rsa_data)
@@ -240,32 +240,32 @@ class TestIndicators:
 
     @pytest.mark.parametrize('data_type', data_types)
     def test_data_to_blocks(self, data_type):
-        data = self.read_json(f'./test_data/data_from_DHS/{data_type}_data.json')
+        data = self.read_json(f'test_data/data_from_DHS/{data_type}_data.json')
         test_blocks = Indicators._blocks(data)
-        blocks = self.read_json(f'./test_data/blocks/blocks_from_{data_type}_data.json')
+        blocks = self.read_json(f'test_data/blocks/blocks_from_{data_type}_data.json')
         assert test_blocks == blocks
 
     @pytest.mark.parametrize('data_type', data_types)
     def test_blocks_to_indicators(self, data_type):
-        blocks = self.read_json(f'./test_data/blocks/blocks_from_{data_type}_data.json')
+        blocks = self.read_json(f'test_data/blocks/blocks_from_{data_type}_data.json')
         test_indicators = []
         for block in blocks:
             test_indicators.extend(list(Indicators._indicators(block)))
-        indicators = self.read_json(f'./test_data/indicators/indicators_from_{data_type}_data.json')
+        indicators = self.read_json(f'test_data/indicators/indicators_from_{data_type}_data.json')
         assert test_indicators == indicators
 
     @pytest.mark.parametrize('data_type', data_types)
     def test_indicators_to_indicator_data(self, data_type):
-        indicators = self.read_json(f'./test_data/indicators/indicators_from_{data_type}_data.json')
+        indicators = self.read_json(f'test_data/indicators/indicators_from_{data_type}_data.json')
         test_data_indicators = list(map(lambda x: Indicators._indicator_data(x, '', ''), indicators))
-        data_indicators = self.read_json(f'./test_data/data_indicators/{data_type}_data_indicators.json')
+        data_indicators = self.read_json(f'test_data/data_indicators/{data_type}_data_indicators.json')
         assert test_data_indicators == data_indicators
 
     @pytest.mark.parametrize('data_type', data_types)
     def test_indicators_to_context_indicators(self, data_type):
-        indicators = self.read_json(f'./test_data/data_indicators/{data_type}_data_indicators.json')
+        indicators = self.read_json(f'test_data/data_indicators/{data_type}_data_indicators.json')
         test_context_indicators = list(map(indicator_to_context, indicators))
-        context_indicators = self.read_json(f'./test_data/context_indicators/context_from_{data_type}_data.json')
+        context_indicators = self.read_json(f'test_data/context_indicators/context_from_{data_type}_data.json')
         assert test_context_indicators == context_indicators
 
     data_test_tlp_color_from_header = [
@@ -279,7 +279,7 @@ class TestIndicators:
     @pytest.mark.parametrize('data_type, tlp_colors', data_test_tlp_color_from_header)
     def test_tlp_color_from_header(self, data_type, tlp_colors):
         blocks_headers = list(
-            map(self.get_stix_header, self.read_json(f'./test_data/blocks/blocks_from_{data_type}_data.json')))
+            map(self.get_stix_header, self.read_json(f'test_data/blocks/blocks_from_{data_type}_data.json')))
         test_tlp_colors = list(map(Indicators._tlp_color_from_header, blocks_headers))
         assert test_tlp_colors == tlp_colors
 
@@ -291,7 +291,7 @@ class TestIndicators:
     @pytest.mark.parametrize('data_type, sources', data_test_source_from_header)
     def test_source_from_header(self, data_type, sources):
         sources_headers = list(
-            map(self.get_stix_header, self.read_json(f'./test_data/blocks/blocks_from_{data_type}_data.json')))
+            map(self.get_stix_header, self.read_json(f'test_data/blocks/blocks_from_{data_type}_data.json')))
         test_sources = list(map(Indicators._source_from_header, sources_headers))
         assert test_sources == sources
 
