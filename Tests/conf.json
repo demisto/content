@@ -3248,7 +3248,6 @@
         "TestCofenseFeed": "Issue 29198",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "Indeni_test": "Non-certified partner pack, this should be skipped for now",
-        "playbook-feodoteackerhash_test": "Issue 29304",
         "TCPUtils-Test": "Issue 29677",
         "OpenCTI Feed Test": "Issue 29592",
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
