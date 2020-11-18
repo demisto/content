@@ -1301,10 +1301,11 @@ script:
           }
           //download the file from Cb server and add file entry to the war room
           fileEntry = downloadFileEntry(args['session'], command['file_id']);
+
+          return [commandEntry, fileEntry];
         }
 
-
-        return [commandEntry, fileEntry];
+        return commandEntry;
     }
 
 
@@ -1860,6 +1861,27 @@ script:
       required: true
       description: File ID
     description: Download a file from Cb server in a given session.
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+    - contextPath: File.SHA1
+      description: File SHA1.
+    - contextPath: File.SHA256
+      description: File SHA256.
+    - contextPath: File.Name
+      description: File name.
+    - contextPath: File.SSDeep
+      description: File SSDeep.
+    - contextPath: File.EntryID
+      description: File EntryID.
+    - contextPath: File.Info
+      description: File info.
+    - contextPath: File.Type
+      description: File type.
+    - contextPath: File.MD5
+      description: File MD5.
+    - contextPath: File.Extension
+      description: File extension.
   - name: cb-file-info
     arguments:
     - name: session

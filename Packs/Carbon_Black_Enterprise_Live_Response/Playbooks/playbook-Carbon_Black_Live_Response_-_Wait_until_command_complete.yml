@@ -6,15 +6,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a4591001-e5c1-4cfe-8f02-e94c36ba859e
+    taskid: 01a8a99e-e5ac-43ed-8be7-3aec16f8aef2
     type: start
     task:
-      id: a4591001-e5c1-4cfe-8f02-e94c36ba859e
+      id: 01a8a99e-e5ac-43ed-8be7-3aec16f8aef2
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: afe96387-f73d-42cd-86a8-fbd0e906b072
+    taskid: 160fb85a-14df-4a16-8599-68c5069fbc1c
     type: playbook
     task:
-      id: afe96387-f73d-42cd-86a8-fbd0e906b072
+      id: 160fb85a-14df-4a16-8599-68c5069fbc1c
       version: -1
       name: GenericPolling
       description: |-
@@ -63,7 +63,8 @@ tasks:
           transformers:
           - operator: Stringify
       Ids:
-        simple: ${inputs.CommnadId}
+        complex:
+          root: inputs.CommnadId
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -73,9 +74,8 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: CbLiveResponse.Commands(val.Status != 'complete' || val.Status !=
-          'error' || val.Status != 'Complete' || val.Status != 'Error' || val.Status
-          != 'COMPLETE' || val.Status != 'ERROR').CbCommandID
+        simple: CbLiveResponse.Commands(val.Status.toUpperCase() != 'COMPLETE'  &&
+          val.Status.toUpperCase() != 'ERROR').CbCommandID
     separatecontext: false
     loop:
       iscommand: false
@@ -96,16 +96,16 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: b0a2eb37-ba60-49f5-8154-265689385e6a
+    taskid: bb32c1a2-3db9-41c0-888b-7df7ed1e5ebd
     type: title
     task:
-      id: b0a2eb37-ba60-49f5-8154-265689385e6a
+      id: bb32c1a2-3db9-41c0-888b-7df7ed1e5ebd
       version: -1
       name: Command completed
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {

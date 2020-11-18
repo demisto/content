@@ -1,23 +1,23 @@
 id: Carbon Black Live Response - Create active session
 version: -1
 name: Carbon Black Live Response - Create active session
-description: Create an active session.
+description: Create an active sessio.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 32ce2bf9-0d4d-4478-8d19-d6e02b22feeb
+    taskid: 1f48e8f5-ec87-4acb-8857-40dd9a445080
     type: start
     task:
-      id: 32ce2bf9-0d4d-4478-8d19-d6e02b22feeb
+      id: 1f48e8f5-ec87-4acb-8857-40dd9a445080
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "4"
     separatecontext: false
     view: |-
       {
@@ -33,50 +33,16 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: e78c405b-8cc7-44a1-8195-a6d9f1e7fc60
+    taskid: 28f833ea-2d5e-4c47-8fb5-9c4f8335280f
     type: title
     task:
-      id: e78c405b-8cc7-44a1-8195-a6d9f1e7fc60
+      id: 28f833ea-2d5e-4c47-8fb5-9c4f8335280f
       version: -1
       name: Session created
       type: title
       iscommand: false
       brand: ""
       description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 9315d2b5-5f84-4267-81d0-cab1f74ff5c3
-    type: regular
-    task:
-      id: 9315d2b5-5f84-4267-81d0-cab1f74ff5c3
-      version: -1
-      name: Create new session
-      description: Create a new CarbonBlack session for a given sensor.
-      script: "|||cb-session-create"
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      command-timeout: {}
-      keepalive-timeout: {}
-      sensor:
-        simple: ${inputs.sensor}
     separatecontext: false
     view: |-
       {
@@ -90,12 +56,47 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8a0beb88-3daf-423c-8e62-5a4b61706b94
+    type: regular
+    task:
+      id: 8a0beb88-3daf-423c-8e62-5a4b61706b94
+      version: -1
+      name: Create new session
+      description: Create a new CarbonBlack session for a given sensor.
+      script: '|||cb-session-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      command-timeout: {}
+      keepalive-timeout: {}
+      sensor:
+        complex:
+          root: inputs.sensor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 7a523366-6353-4e6d-89be-e47e6594d901
+    taskid: 1e9c0da0-ebcb-41b1-8adc-4a95bbb6d7be
     type: playbook
     task:
-      id: 7a523366-6353-4e6d-89be-e47e6594d901
+      id: 1e9c0da0-ebcb-41b1-8adc-4a95bbb6d7be
       version: -1
       name: GenericPolling
       description: |-
@@ -117,7 +118,9 @@ tasks:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
-        simple: ${CbLiveResponse.Sessions.CbSessionID}
+        complex:
+          root: CbLiveResponse.Sessions
+          accessor: CbSessionID
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -127,89 +130,13 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: CbLiveResponse.Sessions(val.Status != 'pending' || val.Status != 'error')
+        simple: CbLiveResponse.Sessions(val.Status.toUpperCase()  != "ACTIVE")
     separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: a3bbdf63-1d9f-4693-89fd-a691912a2e20
-    type: regular
-    task:
-      id: a3bbdf63-1d9f-4693-89fd-a691912a2e20
-      version: -1
-      name: DeleteContext
-      description: Delete field CbLiveResponse.Sessions from context, So it will not
-        conflict with other states.
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: CbLiveResponse.Sessions
-      keysToKeep: {}
-      subplaybook:
-        simple: auto
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 41ec91e7-0c8d-4577-8e8d-07ef2df1d908
-    type: regular
-    task:
-      id: 41ec91e7-0c8d-4577-8e8d-07ef2df1d908
-      version: -1
-      name: DeleteContext
-      description: Delete field CbResponse.Sessions from context, So it will not conflict
-        with other states.
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: CbResponse.Sessions
-      keysToKeep: {}
-      subplaybook:
-        simple: auto
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -227,7 +154,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 560,
         "width": 380,
         "x": 50,
         "y": 50
@@ -236,8 +163,7 @@ view: |-
   }
 inputs:
 - key: sensor
-  value:
-    simple: ""
+  value: {}
   required: true
   description: Sensor ID to create a session for.
   playbookInputQuery:

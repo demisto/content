@@ -6,15 +6,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 454cb983-995e-4158-81fc-934935e70f48
+    taskid: aceb3dc4-8d87-42f2-8689-cef3a0bb831d
     type: start
     task:
-      id: 454cb983-995e-4158-81fc-934935e70f48
+      id: aceb3dc4-8d87-42f2-8689-cef3a0bb831d
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -33,23 +33,24 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 3b8cf07f-3e41-46b6-8c6c-08cf1a29f358
+    taskid: 2634dc8a-846d-421d-886f-3ea11b43a821
     type: playbook
     task:
-      id: 3b8cf07f-3e41-46b6-8c6c-08cf1a29f358
+      id: 2634dc8a-846d-421d-886f-3ea11b43a821
       version: -1
       name: Carbon Black Live Response - Create active session
+      description: Create an active sessio.
       playbookName: Carbon Black Live Response - Create active session
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
       sensor:
-        simple: ${inputs.SensorId}
+        complex:
+          root: inputs.SensorId
     separatecontext: true
     loop:
       iscommand: false
@@ -70,28 +71,31 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 1f3c1f38-3290-494d-84f1-c0b95159c895
+    taskid: cb1983f0-7129-476f-8ebb-be8b7888fc4d
     type: regular
     task:
-      id: 1f3c1f38-3290-494d-84f1-c0b95159c895
+      id: cb1983f0-7129-476f-8ebb-be8b7888fc4d
       version: -1
       name: Start downloading file
       description: Retrieve a file from a path on the endpoint.
-      script: "|||cb-get-file-from-endpoint"
+      script: '|||cb-get-file-from-endpoint'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "7"
     scriptarguments:
       download:
         simple: "false"
       path:
-        simple: ${inputs.Path}
+        complex:
+          root: inputs.Path
       sensor: {}
       session:
-        simple: ${CbLiveResponse.Sessions.CbSessionID}
+        complex:
+          root: CbLiveResponse.Sessions
+          accessor: CbSessionID
       wait-timeout: {}
     separatecontext: false
     view: |-
@@ -106,28 +110,131 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: ed45db66-cd6b-462d-85b2-ea17969402c0
-    type: playbook
+  "4":
+    id: "4"
+    taskid: 5dd1b383-635b-4e6f-8834-475e898e27d4
+    type: regular
     task:
-      id: ed45db66-cd6b-462d-85b2-ea17969402c0
+      id: 5dd1b383-635b-4e6f-8834-475e898e27d4
       version: -1
-      name: Carbon Black Live Response - Wait until command complete
-      playbookName: Carbon Black Live Response - Wait until command complete
-      type: playbook
+      name: Download file
+      description: Download a file from Cb server in a given session. Use cb-get-file-from-endpoint
+        instead.
+      script: '|||cb-file-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file-id:
+        complex:
+          root: CbLiveResponse.Commands
+          accessor: FileID
+      session:
+        complex:
+          root: CbLiveResponse.Sessions
+          accessor: CbSessionID
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 66449819-fe18-4c59-8e28-a85ee83920e0
+    type: title
+    task:
+      id: 66449819-fe18-4c59-8e28-a85ee83920e0
+      version: -1
+      name: File downloaded successfully
+      type: title
       iscommand: false
       brand: ""
       description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 4767d80a-3861-4fd5-8d1e-a10db951c394
+    type: regular
+    task:
+      id: 4767d80a-3861-4fd5-8d1e-a10db951c394
+      version: -1
+      name: Close session
+      description: Close the given session
+      script: '|||cb-session-close'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
+    scriptarguments:
+      session:
+        complex:
+          root: CbLiveResponse.Sessions
+          accessor: CbSessionID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4d87be63-17a9-4b3a-848c-05f7ac469b53
+    type: playbook
+    task:
+      id: 4d87be63-17a9-4b3a-848c-05f7ac469b53
+      version: -1
+      name: Carbon Black Live Response - Wait Until Command Complete
+      description: Polling command status until finished with an error or complete.
+      playbookName: Carbon Black Live Response - Wait Until Command Complete
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
     scriptarguments:
       CommnadId:
-        simple: ${CbLiveResponse.Commands.CbCommandID}
+        complex:
+          root: CbLiveResponse.Commands
+          accessor: CbCommandID
       SessionId:
-        simple: ${CbLiveResponse.Sessions.CbSessionID}
-    separatecontext: false
+        complex:
+          root: CbLiveResponse.Sessions
+          accessor: CbSessionID
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -145,28 +252,31 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 198ca6cf-f1d1-44eb-82d2-2130cd30aa3e
+  "13":
+    id: "13"
+    taskid: 85ff63bb-eeb6-410e-8e30-0dafed3c1231
     type: regular
     task:
-      id: 198ca6cf-f1d1-44eb-82d2-2130cd30aa3e
+      id: 85ff63bb-eeb6-410e-8e30-0dafed3c1231
       version: -1
-      name: Download file
-      description: Download a file from Cb server in a given session. Use cb-get-file-from-endpoint
-        instead.
-      script: "|||cb-file-get"
+      name: Get command info
+      description: Display information on command, Used for getting file ID.
+      script: '|||cb-command-info'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "4"
     scriptarguments:
-      file-id:
-        simple: ${CbLiveResponse.Commands.FileID}
+      command:
+        complex:
+          root: CbLiveResponse.Commands
+          accessor: CbCommandID
       session:
-        simple: ${CbLiveResponse.Sessions.CbSessionID}
+        complex:
+          root: CbLiveResponse.Sessions
+          accessor: CbSessionID
     separatecontext: false
     view: |-
       {
@@ -180,69 +290,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 4c36006b-6a49-480d-8fc7-ec00bbc422cc
-    type: title
-    task:
-      id: 4c36006b-6a49-480d-8fc7-ec00bbc422cc
-      version: -1
-      name: File downloaded successfully
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: f1f386ea-a764-40b2-853d-f39aeef99fd8
-    type: regular
-    task:
-      id: f1f386ea-a764-40b2-853d-f39aeef99fd8
-      version: -1
-      name: Close session
-      description: Close the given session
-      script: "|||cb-session-close"
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      session:
-        simple: ${CbLiveResponse.Sessions.CbSessionID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50
@@ -251,18 +304,46 @@ view: |-
   }
 inputs:
 - key: SensorId
-  value:
-    simple: ""
+  value: {}
   required: true
   description: Sensor ID.
   playbookInputQuery:
 - key: Path
-  value:
-    simple: ""
+  value: {}
   required: true
   description: File Path to download.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: File.Size
+  description: File size.
+  type: number
+- contextPath: File.SHA1
+  description: File SHA1.
+  type: string
+- contextPath: File.SHA256
+  description: File SHA256.
+  type: string
+- contextPath: File.Name
+  description: File name.
+  type: string
+- contextPath: File.SSDeep
+  description: File SSDeep.
+  type: string
+- contextPath: File.EntryID
+  description: File EntryID.
+  type: string
+- contextPath: File.Info
+  description: File info.
+  type: string
+- contextPath: File.Type
+  description: File type.
+  type: string
+- contextPath: File.MD5
+  description: File MD5.
+  type: string
+- contextPath: File.Extension
+  description: File extension.
+  type: string
 fromversion: 5.0.0
 tests:
 - No test
