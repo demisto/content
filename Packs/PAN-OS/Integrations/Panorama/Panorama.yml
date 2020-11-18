@@ -30,16 +30,19 @@ configuration:
   name: template
   required: false
   type: 0
-- display: Use URL Filtering for auto enrichment
+- additionalinfo: "add here"
+  display: Use URL Filtering for auto enrichment
   name: use_url_filtering
   required: false
   type: 8
-- display: URL Filtering Additional suspicious categories. CSV list of categories
+- additionalinfo: "add here2"
+  display: URL Filtering Additional suspicious categories. CSV list of categories
     that will be considered suspicious.
   name: additional_suspicious
   required: false
   type: 12
-- display: URL Filtering Additional malicious categories. CSV list of categories that
+- additionalinfo: "add here3"
+  display: URL Filtering Additional malicious categories. CSV list of categories that
     will be considered malicious.
   name: additional_malicious
   required: false
