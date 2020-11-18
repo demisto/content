@@ -16,78 +16,78 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the CloudConvert integration to convert your files to desired format
+description: Use the CloudConvert integration to convert your files to the desired format.
 display: CloudConvert
 name: CloudConvert
 script:
   commands:
   - arguments:
     - default: false
-      description: The file's url. If an entry id is supplied, do not use this argument
+      description: The file's URL. If an entry ID is supplied, do not use this argument.
       isArray: false
       name: url
       required: false
       secret: false
     - default: false
-      description: The file's war room entry ID. If a url is supplied, do not use this argument
+      description: The file's War Room entry ID. If a URL is supplied, do not use this argument.
       isArray: false
       name: entry_id
       required: false
       secret: false
     deprecated: false
-    description: Import a file for later conversion
+    description: Imports a file to convert.
     execution: false
     name: cloudconvert-import
     outputs:
     - contextPath: CloudConvert.Task.id
-      description: Unique task id of scanned file
+      description: Unique task ID of the scanned file.
       type: String
     - contextPath: CloudConvert.Task.status
-      description: Status of current task
+      description: Status of the current task.
       type: String
     - contextPath: CloudConvert.Task.message
-      description: Response message from the API
+      description: Response message from the API.
       type: String
     - contextPath: CloudConvert.Task.operation
-      description: The operation conducted
+      description: The operation that was performed.
       type: String
     - contextPath: CloudConvert.Task.result.files.filename
-      description: Resulted file name
+      description: The name of the imported file.
       type: String
     - contextPath: CloudConvert.Task.result.files.size
-      description: Resulted size of file
+      description: The size of the imported file.
       type: Number
     - contextPath: CloudConvert.Task.result.files.url
-      description: Resulted file url
+      description: The URL of the imported file.
       type: String
     - contextPath: CloudConvert.Task.created_at
-      description: Creation Time
+      description: Time the task was created.
       type: Date
     - contextPath: CloudConvert.Task.started_at
-      description: Operation start time
+      description: Start time of the task.
       type: Date
     - contextPath: CloudConvert.Task.ended_at
-      description: Operation end time
+      description: End time of the task.
       type: Date
     - contextPath: CloudConvert.Task.host_name
-      description: Name of host used for operation
+      description: Name of the host used for the task.
       type: String
     - contextPath: CloudConvert.Task.storage
-      description: Storage server for operation
+      description: Storage server used for the task.
       type: String
     - contextPath: CloudConvert.Task.links
-      description: APIs link for operation
+      description: API link for the task.
       type: String
   - arguments:
     - default: false
-      description: Task id of the import task of the file of interest
+      description: ID of the task that imported the file.
       isArray: false
       name: task_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The desired output format for the given file. The suppoerted destination formats are -, 3g2, 3gp, 3gpp, 7z, aac, ac3, aif, aifc, aiff, amr, au, avi, azw3, bmp, caf, cavs, cgm, csv, doc, docx, dv, dvr, dwg, dxf, emf, eot, eps, epub, flac, flv, gif, html, icns, ico, jpg, lrf, m2ts, m4a, m4b, m4v, md, mkv, mobi, mod, mov, mp3, mp4, mpeg, mpg, mts, mxf, odd, odp, ods, odt, oeb, oga, ogg, otf, pdb, pdf, png, ppt, pptx, ps, psd, rar, rm, rmvb, rst, rtf, sf2, svg, swf, tar, tar.bz2, tar.gz, tar.lzo, tex, tiff, ts, ttf, txt, vob, voc, wav, weba, webm, webp, wma, wmf, wmv, woff, woff2, wtv, xls, xlsx, xps, zip.
+      description: 'The required output format for the given file. The supported destination formats are: "3g2", "3gp", "3gpp", 7z", "aac", "ac3", "aif", "aifc", "aiff", "amr", "au", "avi", az"w3, "bmp", "caf", "cavs", "cgm", "csv", "doc", "docx", "dv", "dvr", "dwg", "dxf", "emf", "eot", "eps", "epub", "flac", "flv", "gif", "html", "icns", "ico", "jpg", "lrf", "m2ts", "m4a", "m4b", "m4v", "md", "mkv", "mobi", "mod", "mov", "mp3", "mp4", "mpeg", "mpg", "mts", "mxf", "odd", "odp", "ods", "odt", "oeb", "oga", "ogg", "otf", "pdb", "pdf", "png", "ppt", "pptx", "ps", "psd", "rar", "rm", "rmvb", rs"t, "rtf", "sf2", "svg", "swf", "tar", "tar.bz2", "tar.gz", "tar.lzo", "tex", "tiff", "ts", "ttf", "txt", "vob", "voc", "wav", "weba", "webm", "webp", "wma", "wmf", "wmv", "woff", "woff2", "wtv", "xls", "xlsx", "xps", "zip".'
       isArray: false
       name: output_format
       predefined:
@@ -193,61 +193,61 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Convert a priorly uploaded file to desired format
+    description: Converts an uploaded file to the required format.
     execution: false
     name: cloudconvert-convert
     outputs:
     - contextPath: CloudConvert.Task.id
-      description: Unique task id of scanned file
+      description: Unique task ID of the scanned file.
       type: String
     - contextPath: CloudConvert.Task.status
-      description: Status of current task
+      description: Status of the current task.
       type: String
     - contextPath: CloudConvert.Task.message
-      description: Response message from API
+      description: Response message from the API.
       type: String
     - contextPath: CloudConvert.Task.operation
-      description: The operation conducted
+      description: The task that was performed.
       type: String
     - contextPath: CloudConvert.Task.result.files.filename
-      description: Resulted file name
+      description: The name of the converted file.
       type: String
     - contextPath: CloudConvert.Task.result.files.size
-      description: Resulted size of file
+      description: The size of the converted file.
       type: Number
     - contextPath: CloudConvert.Task.result.files.url
-      description: Resulted file url
+      description: The URL of the converted file.
       type: String
     - contextPath: CloudConvert.Task.created_at
-      description: Creation Time
+      description: Time the task was created.
       type: Date
     - contextPath: CloudConvert.Task.started_at
-      description: Operation start time
+      description: Start time of the task.
       type: Date
     - contextPath: CloudConvert.Task.ended_at
-      description: Operation end time
+      description: End time of the task.
       type: Date
     - contextPath: CloudConvert.Task.host_name
-      description: Name of host used for operation
+      description: Name of the host used for the task.
       type: String
     - contextPath: CloudConvert.Task.storage
-      description: Storage server for operation
+      description: Storage server used for the task.
       type: String
     - contextPath: CloudConvert.Task.depends_on_task_ids
-      description: The ID of the previous operation conducted on this file
+      description: The ID of the previous task that was conducted on this file.
       type: String
     - contextPath: CloudConvert.Task.links
-      description: APIs link for operation
+      description: API link for the task.
       type: String
   - arguments:
     - default: false
-      description: Task id of the convert task of the file of interest
+      description: ID of the task used to convert the file.
       isArray: false
       name: task_id
       required: true
       secret: false
     - default: false
-      description: use this argument when checking on an export operation, so an entry will be created if the operation is finished
+      description: 'Whether to create an entry in the War Room if the task is finished. Possible values are: "True" and "False". Use this argument to be able to check on an export operation in the War Room.'
       isArray: false
       name: create_war_room_entry
       predefined:
@@ -256,57 +256,56 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Check the status of an operation. Use the 'create_war_room_entry' argument to
-      also create a war room entry of the file when checking on an export operation.
+    description: Checks the status of an operation. Use the create_war_room_entry argument to also create a War Room entry of the file when checking on an export operation.
     execution: false
     name: cloudconvert-check-status
     outputs:
     - contextPath: CloudConvert.Task.id
-      description: Unique task id of scanned file
+      description: Unique task ID of the scanned file.
       type: String
     - contextPath: CloudConvert.Task.status
-      description: Status of current task
+      description: Status of the current task.
       type: String
     - contextPath: CloudConvert.Task.message
-      description: Response message from API
+      description: Response message from the API.
       type: String
     - contextPath: CloudConvert.Task.operation
-      description: The operation conducted
+      description: The task that was performed.
       type: String
     - contextPath: CloudConvert.Task.result.files.filename
-      description: Resulted file name
+      description: The name of the converted file.
       type: String
     - contextPath: CloudConvert.Task.result.files.size
-      description: Resulted size of file
+      description: The size of the converted file.
       type: Number
     - contextPath: CloudConvert.Task.result.files.url
-      description: Resulted file url
+      description: The URL of the converted file.
       type: String
     - contextPath: CloudConvert.Task.created_at
-      description: Creation Time
+      description: The time the task was created.
       type: Date
     - contextPath: CloudConvert.Task.started_at
-      description: Operation start time
+      description: Start time of the task.
       type: Date
     - contextPath: CloudConvert.Task.ended_at
-      description: Operation end time
+      description: End time of the task.
       type: Date
     - contextPath: CloudConvert.Task.host_name
-      description: Name of host used for operation
+      description: Name of the host used for the task.
       type: String
     - contextPath: CloudConvert.Task.storage
-      description: Storage server for operation
+      description: Storage server used for the task.
       type: String
     - contextPath: CloudConvert.Task.depends_on_task_ids
-      description: The ID of the previous operation conducted on this file
+      description: The ID of the previous task conducted on this file.
       type: String
     - contextPath: CloudConvert.Task.links
-      description: APIs link for operation
+      description: API link for the task.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Export the converted file as a url or as a war room entry. Note that if you are exporting the file as a war room entry, a url of the file will also be generated.
+      description: 'Whether to export the converted file to a URL or as a War Room entry. Possible values are: "url" and "war_room_entry". Note that if you export the file as a War Room entry, a URL of the file will also be generated.'
       isArray: false
       name: export_as
       predefined:
@@ -315,57 +314,57 @@ script:
       required: true
       secret: false
     - default: false
-      description: Task id of the convert task of the file of interest
+      description: ID of the task that converted the file.
       isArray: false
       name: task_id
       required: true
       secret: false
     deprecated: false
-    description: Export a converted file to a url or a war room entry
+    description: Exports a converted file to a URL or a War Room entry.
     execution: false
     name: cloudconvert-export
     outputs:
     - contextPath: CloudConvert.Task.id
-      description: Unique task id of scanned file
+      description: Unique task ID of the scanned file.
       type: String
     - contextPath: CloudConvert.Task.status
-      description: Status of current task
+      description: Status of the current task.
       type: String
     - contextPath: CloudConvert.Task.message
-      description: Response message from API
+      description: Response message from the API.
       type: String
     - contextPath: CloudConvert.Task.operation
-      description: The operation conducted
+      description: The operation that was performed.
       type: String
     - contextPath: CloudConvert.Task.result.files.filename
-      description: Resulted file name
+      description: The file name of the exported file.
       type: String
     - contextPath: CloudConvert.Task.result.files.size
-      description: Resulted size of file
+      description: The size of the exported file.
       type: Number
     - contextPath: CloudConvert.Task.result.files.url
-      description: Resulted file url
+      description: The URL of the exported file.
       type: String
     - contextPath: CloudConvert.Task.created_at
-      description: Creation Time
+      description: Time the task was created.
       type: Date
     - contextPath: CloudConvert.Task.started_at
-      description: Operation start time
+      description: Start time of the task.
       type: Date
     - contextPath: CloudConvert.Task.ended_at
-      description: Operation end time
+      description: End time of the task.
       type: Date
     - contextPath: CloudConvert.Task.host_name
-      description: Name of host used for operation
+      description: Name of the host used for the task.
       type: String
     - contextPath: CloudConvert.Task.storage
-      description: Storage server for operation
+      description: Storage server used for the task.
       type: String
     - contextPath: CloudConvert.Task.depends_on_task_ids
-      description: The ID of the previous operation conducted on this file
+      description: The ID of the previous task conducted on this file.
       type: String
     - contextPath: CloudConvert.Task.links
-      description: APIs link for operation
+      description: API link for the task.
       type: String
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
