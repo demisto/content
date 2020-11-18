@@ -17,8 +17,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "1"
+      "#none#":
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -44,8 +44,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "2"
+      "#none#":
+        - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -78,8 +78,8 @@ tasks:
       iscommand: true
       brand: SecurityAdvisor
     nexttasks:
-      '#none#':
-      - "8"
+      "#none#":
+        - "8"
     scriptarguments:
       context: {}
       user:
@@ -109,8 +109,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "9"
+      "#none#":
+        - "9"
     scriptarguments:
       value:
         simple: SecurityAdvisor test playbook executed successfully with response=${SecurityAdvisor.CoachUser.message}
@@ -139,8 +139,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "9"
+      "#none#":
+        - "9"
     scriptarguments:
       value:
         simple: Error response from SecurityAdvisor Backend ${SecurityAdvisor.CoachUser.message}
@@ -168,22 +168,22 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "6"
+      "#default#":
+        - "6"
       CheckResponse:
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: CheckResponse
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${SecurityAdvisor.CoachUser.message}
-            iscontext: true
-          right:
-            value:
-              simple: Coaching Sent
+      - label: CheckResponse
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ${SecurityAdvisor.CoachUser.message}
+                iscontext: true
+              right:
+                value:
+                  simple: Coaching Sent
     view: |-
       {
         "position": {
@@ -208,8 +208,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "7"
+      "#none#":
+        - "7"
     scriptarguments:
       value:
         simple: ${SecurityAdvisor.CoachUser.message}
