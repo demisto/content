@@ -13,26 +13,37 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 BITCOIN = 'bitcoin'
 INTEGRATION_NAME = 'Cryptocurrency'
+SCORE = {
+    4: 'Critical',
+    3: 'Bad',
+    2: 'Suspicious',
+    1: 'Good',
+    0.5: 'Informational',
+    0: 'Unknown'
+}
 
 
 def get_bitcoin_reputation(addresses) -> List[CommandResults]:
     command_results: List[CommandResults] = []
-
+    score = 2
     for address in addresses:
         dbot_score = Common.DBotScore(
-            indicator=f'bitcoin-{address}',
+            indicator=f'{BITCOIN}-{address}',
             indicator_type=DBotScoreType.CRYPTOCURRENCY,
             integration_name=INTEGRATION_NAME,  # Vendor
-            score=2  # Suspicious
+            score=score  # Suspicious
         )
         crypto_context = Common.Cryptocurrency(
             address=address,
             address_type=BITCOIN,
             dbot_score=dbot_score
         )
+        hr = f'Cryptocurrency reputation for {BITCOIN} address {address} was set to {SCORE[score]}'
+
 
         command_results.append(CommandResults(
             outputs_prefix='Cryptocurrency',
+            readable_output=hr,
             outputs_key_field='Address',
             indicator=crypto_context
         ))
