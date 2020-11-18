@@ -1200,6 +1200,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     if is_nightly:
         packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
         tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET))
+        logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
+                     "should be tested")
     else:
         branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)
@@ -1242,12 +1244,12 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         if tests_string:
             logging.success('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
-            logging.info('No filter configured, running all tests')
+            logging.error('Did not find tests to run')
 
         if packs_to_install_string:
             logging.success('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))
         else:
-            logging.info('Did not find content packs to install')
+            logging.error('Did not find content packs to install')
 
 
 if __name__ == "__main__":
