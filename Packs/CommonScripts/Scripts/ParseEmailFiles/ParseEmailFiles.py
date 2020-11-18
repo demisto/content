@@ -3617,7 +3617,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     else:
                         file_content = part.get_payload(decode=True)
                         # fileResult will return an error if file_content is None.
-                        if file_content:
+                        if file_content and not attachment_file_name.endswith('.p7s'):
                             demisto.results(fileResult(attachment_file_name, file_content))
 
                         if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
