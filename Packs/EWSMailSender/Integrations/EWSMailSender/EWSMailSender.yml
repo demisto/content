@@ -68,7 +68,7 @@ script:
     - name: body
       description: The contents (body) of the email to send.
     - name: htmlBody
-      description: Send an HTML formatted email. This argument overrides the "body" argument.
+      description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
     - name: attachIDs
       description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true
@@ -76,15 +76,15 @@ script:
       description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
       isArray: true
     - name: attachCIDs
-      description: 'A CSV list of CIDs to embed attachments within the email itself.'
+      description: A CSV list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Sends an email using EWS.
   - name: reply-mail
     arguments:
-    - name: to
-      required: true
-      description: Item ID to reply to.
     - name: inReplyTo
+      required: true
+      description: ID of the item to reply to.
+    - name: to
       required: true
       description: A CSV list of email addresses for the 'to' field.
     - name: cc
@@ -94,9 +94,9 @@ script:
     - name: subject
       description: Subject for the email to be sent.
     - name: body
-      description: The contents (body) of the email to send.
+      description: The contents (body) of the email to be sent.
     - name: htmlBody
-      description: Send an HTML formatted email. This argument overrides the "body" argument.
+      description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
     - name: attachIDs
       description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true
@@ -104,9 +104,9 @@ script:
       description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
       isArray: true
     - name: attachCIDs
-      description: 'A CSV list of CIDs to embed attachments within the email itself.'
+      description: A CSV list of CIDs to embed attachments within the email itself.
       isArray: true
-    description: Reply to an email using EWS.
+    description: Replies to an email using EWS.
   dockerimage: demisto/py2-exchangelib:1.0.0.13559
 tests:
 - "EWS Mail Sender Test"
