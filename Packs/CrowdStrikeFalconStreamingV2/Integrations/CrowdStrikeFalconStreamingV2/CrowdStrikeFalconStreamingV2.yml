@@ -20,7 +20,8 @@ configuration:
   required: true
   type: 4
 - additionalinfo: Allows running multiple clients (stream consumers) simultaneously,
-    as each integration instance needs a unique application ID.
+    as each integration instance needs a unique application ID. Must be a max. of
+    32 alphanumeric characters (a-z, A-Z, 0-9).
   defaultvalue: Demisto
   display: Application ID
   hidden: false
