@@ -87,7 +87,7 @@ tasks:
       message:
         simple: Cisco ISE instance not configured
       playbookName:
-        simple: PANW IoT 3rd Party Cisco ISE Integration - Bulk Export to Cisco ISE
+        simple: Bulk Export to Cisco ISE - PANW IoT 3rd Party Integration
       status:
         simple: disabled
       type:
@@ -136,7 +136,7 @@ tasks:
       id: 2a965644-a684-47ca-8d0d-0253b2ba498b
       iscommand: false
       name: GetCiscoISEActiveInstance
-      script: 85188905-f908-4b6a-8ada-e350f8a29874
+      script: GetCiscoISEActiveInstance
       type: regular
       version: -1
     taskid: 2a965644-a684-47ca-8d0d-0253b2ba498b
@@ -201,7 +201,7 @@ tasks:
       message:
         simple: ${PaloAltoIoTIntegrationBase.NodeErrorStatus}
       playbookName:
-        simple: PANW IoT 3rd Party Cisco ISE Integration - Bulk Export to Cisco ISE
+        simple: Bulk Export to Cisco ISE - PANW IoT 3rd Party Integration
       status:
         simple: error
       type:
@@ -249,7 +249,7 @@ tasks:
       id: 6d11f667-8312-4967-8d56-bf262901ecda
       iscommand: false
       name: SendAllPANWIoTDevicesToCiscoISE
-      script: d42e8837-9ab1-47c6-8bb0-d80624238b92
+      script: SendAllPANWIoTDevicesToCiscoISE
       type: regular
       version: -1
     taskid: 6d11f667-8312-4967-8d56-bf262901ecda

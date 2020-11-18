@@ -86,7 +86,7 @@ tasks:
       message:
         simple: Syslog Sender (SIEM) instance is not enabled
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Bulk Export to SIEM
+        simple: Bulk Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: disabled
       type:

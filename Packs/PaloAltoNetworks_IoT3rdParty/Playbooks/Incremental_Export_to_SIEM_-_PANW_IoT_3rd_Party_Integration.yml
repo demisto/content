@@ -89,7 +89,7 @@ tasks:
       message:
         simple: Syslog Sender (SIEM) instance is not enabled
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Incremental Export to SIEM
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: disabled
       type:
@@ -360,7 +360,7 @@ tasks:
       message:
         simple: Failed to get device list from IoT cloud.
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Incremental Export to SIEM
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
       type:
@@ -403,7 +403,7 @@ tasks:
       message:
         simple: Failed to get alert list from IoT cloud.
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Incremental Export to SIEM
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
       type:
@@ -446,7 +446,7 @@ tasks:
       message:
         simple: Failed to get vulnerability list from IoT cloud.
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Incremental Export to SIEM
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
       type:
@@ -597,7 +597,7 @@ tasks:
       message:
         simple: No new devices available for sending to SIEM
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Incremental Export to SIEM
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: success
       type:
@@ -640,7 +640,7 @@ tasks:
       message:
         simple: No new alerts available for sending to SIEM
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Incremental Export to SIEM
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: success
       type:
@@ -683,7 +683,7 @@ tasks:
       message:
         simple: No new vulnerabilities available for sending to SIEM
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Incremental Export to SIEM
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: success
       type:
@@ -957,7 +957,7 @@ tasks:
       message:
         simple: Failed to convert devices to CEF format
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Incremental Export to SIEM
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
       type:
@@ -1000,7 +1000,7 @@ tasks:
       message:
         simple: Failed to convert alerts to CEF format
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Incremental Export to SIEM
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
       type:
@@ -1043,7 +1043,7 @@ tasks:
       message:
         simple: Failed to convert vulnerabilities to CEF format
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Incremental Export to SIEM
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
       type:

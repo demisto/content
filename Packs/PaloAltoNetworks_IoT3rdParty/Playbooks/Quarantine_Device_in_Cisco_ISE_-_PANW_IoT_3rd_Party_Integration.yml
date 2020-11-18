@@ -120,7 +120,7 @@ tasks:
       message:
         simple: Cisco ISE instance is not enabled
       playbookName:
-        simple: PANW IoT 3rd Party Cisco ISE Integration - Quarantine Device in Cisco
+        simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
           ISE
       status:
         simple: disabled
@@ -201,7 +201,7 @@ tasks:
       message:
         simple: ${PaloAltoIoTIntegrationBase.NodeErrorStatus}
       playbookName:
-        simple: PANW IoT 3rd Party Cisco ISE Integration - Quarantine Device in Cisco
+        simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
           ISE
       status:
         simple: error
@@ -317,7 +317,7 @@ tasks:
       message:
         simple: Failed to retrieve ${incident.macAddress} from Cisco ISE
       playbookName:
-        simple: PANW IoT 3rd Party Cisco ISE Integration - Quarantine Device in Cisco
+        simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
           ISE
       status:
         simple: error
@@ -439,7 +439,7 @@ tasks:
       message:
         simple: Failed to Quarantine Endpoint ${Endpoint.MACAddress} on ISE
       playbookName:
-        simple: PANW IoT 3rd Party Cisco ISE Integration - Quarantine Device in Cisco
+        simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
           ISE
       status:
         simple: error
@@ -483,7 +483,7 @@ tasks:
       message:
         simple: Quarantine Successful for Endpoint ${Endpoint.MACAddress}
       playbookName:
-        simple: PANW IoT 3rd Party Cisco ISE Integration - Quarantine Device in Cisco
+        simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
           ISE
       status:
         simple: success

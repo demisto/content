@@ -90,7 +90,7 @@ tasks:
       message:
         simple: Syslog Sender (SIEM) instance is not enabled
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM
+        simple: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: disabled
       type:
@@ -242,7 +242,7 @@ tasks:
       message:
         simple: Failed to get Alert (${incident.zb_ticketid}) from IoT cloud.
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM
+        simple: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
       type:
@@ -325,7 +325,7 @@ tasks:
       message:
         simple: No Alert found with given ID  (${incident.zb_ticketid}).
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM
+        simple: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
       type:
@@ -415,7 +415,7 @@ tasks:
       id: ca1a6610-bca8-498f-8026-6533a9ad560c
       iscommand: true
       name: syslog-send
-      script: Syslog Sender|||syslog-send
+      script: '|||syslog-send'
       type: regular
       version: -1
     taskid: ca1a6610-bca8-498f-8026-6533a9ad560c
@@ -443,7 +443,7 @@ tasks:
       message:
         simple: Alert ID  (${incident.zb_ticketid}) not valid for CEF conversion.
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM
+        simple: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
       type:
@@ -486,7 +486,7 @@ tasks:
       message:
         simple: Successfully sent Alert (${incident.zb_ticketid}) to SIEM
       playbookName:
-        simple: PANW IoT 3rd Party SIEM Integration - Export Single Alert to SIEM
+        simple: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: success
       type:
