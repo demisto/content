@@ -213,7 +213,6 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'incident', return_value=incident)
     mocker.patch.object(PreprocessEmail, 'get_incident_by_query',
                         return_value=util_load_json('test_data/email_related_incident_response.json'))
-    # mocker.patch.object(PreprocessEmail, 'check_incident_status')
     mocker.patch.object(PreprocessEmail, 'get_attachments_using_instance')
     mocker.patch.object(PreprocessEmail, 'get_incident_related_files', return_value=FILES)
     mocker.patch.object(demisto, 'results')

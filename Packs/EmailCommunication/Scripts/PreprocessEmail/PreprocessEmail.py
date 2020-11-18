@@ -8,7 +8,7 @@ QUOTE_MARKERS = ['<div class="gmail_quote">',
                  '<hr tabindex="-1" style="display:inline-block; width:98%"><div id="divRplyFwdMsg"']
 
 
-def create_email_html(email_html='', entry_id_list=[]):
+def create_email_html(email_html='', entry_id_list=None):
     """Modify the email's html body to use entry IDs instead of CIDs and remove the original message body if exists.
     Args:
         email_html (str): The attachments of the email.
@@ -23,9 +23,9 @@ def create_email_html(email_html='', entry_id_list=[]):
         if index != -1:
             email_html = f'{email_html[:index]}</body></html>'
 
-    # Replacing the images' sources from
-    for entry_id in entry_id_list:
-        email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")', f'src=entry/download/{entry_id[1]}',
+    # Replacing the images' sources
+    for image_name, image_entry_id in entry_id_list:
+        email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{image_name}")', f'src=entry/download/{image_entry_id}',
                             email_html)
     return email_html
 
@@ -132,7 +132,7 @@ def get_attachments_using_instance(email_related_incident, labels):
         Only supported with: EWS V2, Gmail
 
     Args:
-        email_related_incident (int): ID of the incident to attach the files to.
+        email_related_incident (str): ID of the incident to attach the files to.
         labels (Dict): Incidnet's labels to fetch the relevant data from.
 
     """
@@ -150,12 +150,12 @@ def get_attachments_using_instance(email_related_incident, labels):
 
     if integration_name == 'EWS v2':
         demisto.executeCommand("executeCommandAt",
-                               {'command': 'ews-get-attachment', 'incidents': str(email_related_incident),
+                               {'command': 'ews-get-attachment', 'incidents': email_related_incident,
                                 'arguments': {'item-id': str(message_id), 'using': instance_name}})
 
     elif integration_name == 'Gmail':
         demisto.executeCommand("executeCommandAt",
-                               {'command': 'gmail-get-attachments', 'incidents': str(email_related_incident),
+                               {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
                                 'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
 
     else:
@@ -171,7 +171,7 @@ def get_incident_related_files(incident_id):
     """
     try:
         res = demisto.executeCommand("getContext", {'id': incident_id})
-        return res[0]['Contents'].get('context', {}).get('File', [])
+        return dict_safe_get(res[0], ['Contents', 'context', 'File'], default_return_value=[])
     except Exception:
         return []
 
@@ -180,7 +180,7 @@ def update_latest_message_field(incident_id, item_id):
     """Update the 'emaillatestmessage' field on the email related incident with the ID of the latest email reply.
 
     Args:
-        incident_id (int): The ID of the incident whose field we'd like to set.
+        incident_id (str): The ID of the incident whose field we'd like to set.
         item_id (str): The email reply ID.
     """
     try:
@@ -202,21 +202,21 @@ def main():
     email_latest_message = custom_fields.get('emaillatestmessage')
 
     try:
-        email_related_incident = int(email_subject.split('#')[1].split()[0])
+        email_related_incident = email_subject.split('#')[1].split()[0]
         update_latest_message_field(email_related_incident, email_latest_message)
         query = f"id:{email_related_incident}"
         incident_details = get_incident_by_query(query)
-        check_incident_status(incident_details, str(email_related_incident))
+        check_incident_status(incident_details, email_related_incident)
         get_attachments_using_instance(email_related_incident, incident.get('labels'))
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(5)
-        files = get_incident_related_files(str(email_related_incident))
+        files = get_incident_related_files(email_related_incident)
         entry_id_list = get_entry_id_list(attachments, files)
         html_body = create_email_html(email_html, entry_id_list)
 
         email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
-        add_entries(email_reply, str(email_related_incident))
+        add_entries(email_reply, email_related_incident)
         # False - to not create new incident
         demisto.results(False)
 
