@@ -1984,7 +1984,7 @@ Schedule a policy package installation.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiManager.Installation | Number | The installation task ID. | 
+| FortiManager.Installation.id | Number | The installation task ID. | 
 
 
 #### Command Example

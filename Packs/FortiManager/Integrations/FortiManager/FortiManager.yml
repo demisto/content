@@ -2916,7 +2916,7 @@ script:
     execution: false
     name: fortimanager-firewall-policy-package-install
     outputs:
-    - contextPath: FortiManager.Installation
+    - contextPath: FortiManager.Installation.id
       description: The installation task ID.
       type: Number
   - arguments:
