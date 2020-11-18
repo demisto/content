@@ -39,7 +39,7 @@ class Client(BaseClient):
             "password": self.conn_password,
             "grant_type": "password"
         }
-        res = self._http_request(
+        res = self.http_request(
             method='POST',
             url_suffix=uri,
             params=params,
@@ -53,7 +53,7 @@ class Client(BaseClient):
 
     def get_user_profile(self, user_term):
         uri = URI_PREFIX + f'sobjects/User/{encode_string_results(user_term)}'
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix=uri
         )
@@ -66,7 +66,7 @@ class Client(BaseClient):
             "User.where": user_where,
             "User.fields": "Id, IsActive, FirstName, LastName,Email,Username"
         }
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix=uri,
             params=params
@@ -74,7 +74,7 @@ class Client(BaseClient):
 
     def create_user_profile(self, data):
         uri = URI_PREFIX + 'sobjects/User'
-        return self._http_request(
+        return self.http_request(
             method='POST',
             url_suffix=uri,
             data=data
@@ -83,12 +83,16 @@ class Client(BaseClient):
     def update_user_profile(self, user_term, data):
         uri = URI_PREFIX + f'sobjects/User/{encode_string_results(user_term)}'
         params = {"_HttpMethod": "PATCH"}
-        return self._http_request(
+        return self.http_request(
             method='POST',
             url_suffix=uri,
             params=params,
             data=data
         )
+
+    def http_request(self, method, url_suffix, params=None, data=None, resp_type='json'):
+        return self._http_request(method=method, url_suffix=url_suffix, params=params, data=data, resp_type=resp_type,
+                                  ok_codes=(200, 201, 204))
 
 
 ''' COMMAND FUNCTIONS '''
@@ -127,13 +131,13 @@ def get_user_command(client, args, mapper_out):
         if not email:
             raise Exception('You must provide a valid email')
 
-        user_id = get_user_if_by_mail(client, email)
+        user_id = get_user_id_by_mail(client, email)
         if not user_id:
+            error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             iam_user_profile.set_result(success=False,
-                                        error_message="User was not found",
-                                        error_code=404,
-                                        action=IAMActions.GET_USER,
-                                        )
+                                        error_message=error_message,
+                                        error_code=error_code,
+                                        action=IAMActions.GET_USER)
         else:
             res = client.get_user_profile(user_id)
             res_json = res.json()
@@ -223,7 +227,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
             salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
             email = salesforce_user.get('email')
-            user_id = get_user_if_by_mail(client, email)
+            user_id = get_user_id_by_mail(client, email)
 
             if not user_id:
                 if create_if_not_exists:
@@ -283,10 +287,10 @@ def enable_disable_user_command(enable, client, args, mapper_out, is_command_ena
             salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
             email = salesforce_user.get('email')
-            user_id = get_user_if_by_mail(client, email)
+            user_id = get_user_id_by_mail(client, email)
 
             if not user_id:
-                if create_if_not_exists:
+                if enable and create_if_not_exists:
                     iam_user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
                 else:
                     error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -327,7 +331,7 @@ def enable_disable_user_command(enable, client, args, mapper_out, is_command_ena
         return iam_user_profile
 
 
-def get_user_if_by_mail(client, email):
+def get_user_id_by_mail(client, email):
     """
     Search user by email, if the user exists return the user id, else return ""
     """
