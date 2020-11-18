@@ -81,7 +81,7 @@ Run a Microsoft Graph API query.
 | api_version | The version of the Microsoft Graph API to use. Possible values are: "v1.0" or "beta". Default is "v1.0". | Optional | 
 | request_body | The request body (required for POST queries). | Optional | 
 | odata | OData system query options, e.g. $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters. Default is "$top=10". | Optional |
-| populate_context | Whether to populate API response to the context data. Default is "true". | Optional | 
+| populate_context | If "true", will populate the API response to the context data. Default is "true". | Optional | 
 
 
 #### Context Output
