@@ -484,7 +484,7 @@ def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, 
         run_test_logic(conf_json_test_details, tests_queue, tests_settings, client, demisto_user,
                        demisto_pass, failed_playbooks, integrations, playbook_id,
                        succeed_playbooks, test_message, test_options, slack, circle_ci,
-                       build_number, server_url, build_name, prints_manager)
+                       build_number, server_url, build_name, prints_manager, thread_index=thread_index)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index,
                                      include_timestamp=True)
 
