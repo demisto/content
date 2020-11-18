@@ -1,25 +1,30 @@
 import demistomock as demisto
 from CommonServerPython import *
-import traceback
 from CommonServerUserPython import *
+import traceback
 from typing import Dict
 import dateparser
+import urllib3
 
 ''' IMPORTS '''
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
-REQUEST_HEADERS = {'Accept': 'application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8',
-                   'Content-Type': 'application/json'}
+REQUEST_HEADERS = {
+    'Accept': 'application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8',
+    'Content-Type': 'application/json'
+}
 
-FIELD_TYPE_DICT = {1: 'Text', 2: 'Numeric', 3: 'Date', 4: 'Values List', 6: 'TrackingID', 7: 'External Links',
-                   8: 'Users/Groups List', 9: 'Cross-Reference', 11: 'Attachment', 12: 'Image',
-                   14: 'Cross-Application Status Tracking (CAST)', 16: 'Matrix', 19: 'IP Address', 20: 'Record Status',
-                   21: 'First Published', 22: 'Last Updated Field', 23: 'Related Records', 24: 'Sub-Form',
-                   25: 'History Log', 26: 'Discussion', 27: 'Multiple Reference Display Control',
-                   28: 'Questionnaire Reference', 29: 'Access History', 30: 'V oting', 31: 'Scheduler',
-                   1001: 'Cross-Application Status Tracking Field Value'}
+FIELD_TYPE_DICT = {
+    1: 'Text', 2: 'Numeric', 3: 'Date', 4: 'Values List', 6: 'TrackingID', 7: 'External Links',
+    8: 'Users/Groups List', 9: 'Cross-Reference', 11: 'Attachment', 12: 'Image',
+    14: 'Cross-Application Status Tracking (CAST)', 16: 'Matrix', 19: 'IP Address', 20: 'Record Status',
+    21: 'First Published', 22: 'Last Updated Field', 23: 'Related Records', 24: 'Sub-Form',
+    25: 'History Log', 26: 'Discussion', 27: 'Multiple Reference Display Control',
+    28: 'Questionnaire Reference', 29: 'Access History', 30: 'V oting', 31: 'Scheduler',
+    1001: 'Cross-Application Status Tracking Field Value'
+}
 
 ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
@@ -103,8 +108,10 @@ def search_records_by_report_soap_request(token, report_guid):
            '</soap:Envelope>'
 
 
-def search_records_soap_request(token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
-                                numeric_operator='', max_results=10):
+def search_records_soap_request(
+        token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
+        numeric_operator='', max_results=10, fetch_filter=''
+):
     request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
                    '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' \
                    'xmlns:xsd="http://www.w3.org/2001/XMLSchema"' \
@@ -147,7 +154,7 @@ def search_records_soap_request(token, app_id, display_fields, field_id, field_n
 
         request_body += '</Conditions></Filter>'
 
-    if date_operator:
+    if date_operator:  # Fetch incidents must present date_operator
         request_body += '<Filter>' + \
                         '<Conditions>' + \
                         '    <DateComparisonFilterCondition>' + \
@@ -156,8 +163,11 @@ def search_records_soap_request(token, app_id, display_fields, field_id, field_n
                         f'        <Value>{search_value}</Value>' + \
                         '        <TimeZoneId>UTC Standard Time</TimeZoneId>' + \
                         '        <IsTimeIncluded>TRUE</IsTimeIncluded>' + \
-                        '    </DateComparisonFilterCondition >' + \
-                        '</Conditions>' + \
+                        '    </DateComparisonFilterCondition >'
+        if fetch_filter:  # Additional filter, if presented
+            request_body += fetch_filter
+
+        request_body += '</Conditions>' + \
                         '</Filter>'
 
     request_body += ' </Criteria></SearchReport>]]>' + \
@@ -369,9 +379,13 @@ class Client(BaseClient):
         }
         return incident, incident_created_time
 
-    def search_records(self, app_id, fields_to_display=[], field_to_search='', search_value='',
-                       numeric_operator='', date_operator='', max_results=10):
-        level_data = self.get_level_by_app_id(app_id)[0]
+    def search_records(
+            self, app_id, fields_to_display=None, field_to_search='', search_value='',
+            numeric_operator='', date_operator='', fetch_filter='', max_results=10,
+    ):
+        if fields_to_display is None:
+            fields_to_display = []
+        level_data = self.get_level_by_app_id(app_id)
         fields_xml = ''
         search_field_name = ''
         search_field_id = ''
@@ -384,12 +398,14 @@ class Client(BaseClient):
                 search_field_name = field_name
                 search_field_id = field
 
-        res, raw_res = self.do_soap_request('archer-search-records',
-                                            app_id=app_id, display_fields=fields_xml,
-                                            field_id=search_field_id, field_name=search_field_name,
-                                            numeric_operator=numeric_operator,
-                                            date_operator=date_operator, search_value=search_value,
-                                            max_results=max_results)
+        res, raw_res = self.do_soap_request(
+            'archer-search-records',
+            app_id=app_id, display_fields=fields_xml,
+            field_id=search_field_id, field_name=search_field_name,
+            numeric_operator=numeric_operator,
+            date_operator=date_operator, search_value=search_value,
+            fetch_filter=fetch_filter, max_results=max_results
+        )
 
         if not res:
             return [], raw_res
@@ -585,9 +601,12 @@ def test_module(client: Client, params) -> str:
 
         last_fetch = last_fetch + timedelta(minutes=(time_offset * -1))
 
-        client.search_records(app_id, fields_to_display, date_field,
-                              last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                              date_operator='GreaterThan', max_results=max_results)
+        client.search_records(
+            app_id, fields_to_display, date_field,
+            last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            date_operator='GreaterThan', fetch_filter=params.get('fetch_filter'),
+            max_results=max_results
+        )
 
         return 'ok'
 
@@ -913,7 +932,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
         fields_to_get = [fields_mapping[next(iter(fields_mapping))]['Name']]
 
     records, raw_res = client.search_records(app_id, fields_to_get, field_to_search, search_value,
-                                             numeric_operator, date_operator, max_results)
+                                             numeric_operator, date_operator, max_results=max_results)
 
     records = list(map(lambda x: x['record'], records))
 
@@ -995,9 +1014,12 @@ def fetch_incidents(client, last_run, first_fetch_time, params):
 
     last_fetch = last_fetch + timedelta(minutes=(time_offset * -1))
 
-    records, raw_res = client.search_records(app_id, fields_to_display, date_field,
-                                             last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                                             date_operator='GreaterThan', max_results=max_results)
+    records, raw_res = client.search_records(
+        app_id, fields_to_display, date_field,
+        last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        date_operator='GreaterThan', fetch_filter=params.get('fetch_filter'),
+        max_results=max_results
+    )
 
     incidents = []
 
@@ -1062,8 +1084,8 @@ def main():
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
-                params=params)
-
+                params=params
+            )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == 'test-module':
