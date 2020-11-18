@@ -237,9 +237,10 @@ def verify_copy(successful_packs, pc_successful_packs_dict):
         pc_successful_packs_dict: The pack that were uploaded successfully in Prepare Content
 
     """
-    pc_successful_packs = {*pc_successful_packs_dict}
-    not_uploaded = [pack for pack in pc_successful_packs if pack not in successful_packs]
-    mistakenly_uploaded = [pack for pack in successful_packs if pack not in pc_successful_packs]
+    pc_successful_packs_names = {*pc_successful_packs_dict}
+    successful_packs_names = {pack.name for pack in successful_packs}
+    not_uploaded = [pack for pack in pc_successful_packs_names if pack not in successful_packs_names]
+    mistakenly_uploaded = [pack for pack in successful_packs_names if pack not in pc_successful_packs_names]
     error_str = "Mismatch in Prepare Content successful packs and Upload successful packs\n"
     error_str += f"Packs not copied: {', '.join(not_uploaded)}\n" if not_uploaded else ""
     error_str += f"Packs mistakenly copied: {', '.join(mistakenly_uploaded)}\n" if mistakenly_uploaded else ""
