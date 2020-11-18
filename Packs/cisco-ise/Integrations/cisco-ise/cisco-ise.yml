@@ -316,7 +316,7 @@ script:
     - description: The name of the policy to remove from the endpoint.
       name: policy_name
       required: true
-    description: Removes an Adapative Network Control policy to an endpoint.
+    description: Removes an Adapative Network Control policy from an endpoint.
     name: cisco-ise-remove-policy
     outputs:
     - contextPath: CiscoISE.Endpoint.MACAddress
@@ -326,10 +326,10 @@ script:
       description: The policy name that was removed from the endpoint.
       type: string
   - arguments:
-    - description: IP address to query in ISE platform
+    - description: IP address to query in ISE platform.
       name: ip_address
       required: true
-    description: Query IP to return session data from active endpoint
+    description: Queries an IP address and returns its session data from an active endpoint.
     name: cisco-ise-get-session-data-by-ip
   dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
