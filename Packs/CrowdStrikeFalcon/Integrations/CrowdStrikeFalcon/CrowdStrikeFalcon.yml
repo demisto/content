@@ -748,7 +748,7 @@ script:
     - default: false
       defaultValue: '30'
       description: Timeout for how long to wait for the request in seconds. Maximum
-        is 10 minutes.
+        is 600 (10 minutes).
       isArray: false
       name: timeout
       required: false

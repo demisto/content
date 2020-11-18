@@ -129,33 +129,6 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     },
 ]
 
-
-class RepeatedTimer:
-    def __init__(self, interval, function, *args, **kwargs):
-        self._timer = None
-        self.interval = interval
-        self.function = function
-        self.args = args
-        self.kwargs = kwargs
-        self.is_running = False
-        self.start()
-
-    def _run(self):
-        self.is_running = False
-        self.start()
-        self.function(*self.args, **self.kwargs)
-
-    def start(self):
-        if not self.is_running:
-            self._timer = Timer(self.interval, self._run)
-            self._timer.start()
-            self.is_running = True
-
-    def stop(self):
-        self._timer.cancel()  # type: ignore[union-attr]
-        self.is_running = False
-
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -450,7 +423,8 @@ def batch_refresh_session(batch_id: str) -> None:
     body = json.dumps({
         'batch_id': batch_id
     })
-    http_request('POST', endpoint_url, data=body)
+    response = http_request('POST', endpoint_url, data=body)
+    demisto.debug(f'Refresh session response: {response}')
     demisto.debug('Finished session refresh')
 
 
@@ -473,7 +447,7 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> D
     return response
 
 
-def run_batch_write_cmd(batch_id: list, command_type: str, full_command: str) -> Dict:
+def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -1657,16 +1631,17 @@ def run_command():
 
     if target == 'batch':
         batch_id = init_rtr_batch_session(host_ids)
-        rt = RepeatedTimer(300, batch_refresh_session, batch_id)
+        timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+        timer.start()
         try:
             if scope == 'read':
                 response = run_batch_read_cmd(batch_id, command_type, full_command)
             elif scope == 'write':
-                response = run_batch_write_cmd(host_ids, command_type, full_command)
+                response = run_batch_write_cmd(batch_id, command_type, full_command)
             else:  # scope = admin
-                response = run_batch_admin_cmd(host_ids, command_type, full_command)
+                response = run_batch_admin_cmd(batch_id, command_type, full_command)
         finally:
-            rt.stop()
+            timer.cancel()
 
         resources: dict = response.get('combined', {}).get('resources', {})
 
@@ -1957,11 +1932,12 @@ def run_script_command():
     command_type = 'runscript'
 
     batch_id = init_rtr_batch_session(host_ids)
-    rt = RepeatedTimer(300, batch_refresh_session, batch_id)
+    timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+    timer.start()
     try:
         response = run_batch_admin_cmd(batch_id, command_type, full_command, timeout)
     finally:
-        rt.stop()
+        timer.cancel()
 
     resources: dict = response.get('combined', {}).get('resources', {})
 

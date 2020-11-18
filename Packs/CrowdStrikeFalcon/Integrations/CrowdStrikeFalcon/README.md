@@ -796,7 +796,7 @@ Runs a script on the agent host.
 | script_name | The name of the script to run. | Optional | 
 | host_ids | A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.) | Required | 
 | raw | The PowerShell script code to run. | Optional | 
-| timeout | Timeout for how long to wait for the request in seconds. Maximum is 10 minutes. Default value is 30. | Optional | 
+| timeout | Timeout for how long to wait for the request in seconds. Maximum is 600 (10 minutes). Default value is 30. | Optional | 
 
 
 #### Context Output
