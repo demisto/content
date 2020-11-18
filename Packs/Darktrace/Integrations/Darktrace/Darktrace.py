@@ -24,10 +24,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
 MIN_SCORE_TO_FETCH = 0
 
-# Collect public and private API tokens from DT for HTTP API Authentication
-PUBLIC_API_TOKEN = demisto.params().get('public_api_token', '')
-PRIVATE_API_TOKEN = demisto.params().get('private_api_token', '')
-
 # For API call mapping
 PARAMS_DICTIONARY = {
     'did': 'did',
@@ -58,7 +54,7 @@ class Client(BaseClient):
 
     def get_time(self):
         request = "/time"
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
         return self._http_request(
             method='GET',
             url_suffix=request,
@@ -73,7 +69,7 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
         request = f"/modelbreaches?pbid={pbid}"
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
         return self._http_request(
             method='GET',
             url_suffix=request,
@@ -88,7 +84,7 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
         request = "/modelbreaches/" + pbid + "/comments"
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
         return self._http_request(
             method='GET',
             url_suffix=request,
@@ -103,7 +99,7 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
         request = "/modelbreaches/" + pbid + "/acknowledge?acknowledge=true"
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
         return self._http_request(
             method='POST',
             url_suffix=request,
@@ -119,7 +115,7 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
         request = "/modelbreaches/" + pbid + "/unacknowledge?unacknowledge=true"
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
         return self._http_request(
             method='POST',
             url_suffix=request,
@@ -137,7 +133,7 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
         request = "/similardevices?did=" + did + "&count=" + max_results
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
         return self._http_request(
             method='GET',
             url_suffix=request,
@@ -161,7 +157,7 @@ class Client(BaseClient):
         """
         request = f"/endpointdetails?{endpoint_type}={endpoint_value}&additionalinfo={additional_info}" \
                   f"&devices={devices}&score={score}"
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
         return self._http_request(
             method='GET',
             url_suffix=request,
@@ -193,7 +189,7 @@ class Client(BaseClient):
         query_dict.pop('self')
         query_string = create_query_from_dict(query_dict)
         request = "/deviceinfo" + query_string
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
         return self._http_request(
             method='GET',
             url_suffix=request,
@@ -218,7 +214,7 @@ class Client(BaseClient):
         query_dict.pop('self')
         query_string = create_query_from_dict(query_dict)
         request = "/devicesearch" + query_string
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
         return self._http_request(
             method='GET',
             url_suffix=request,
@@ -238,11 +234,12 @@ class Client(BaseClient):
         """
         query_string = create_query_from_list(query_list)
         request = '/details' + query_string
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
+
         res = self._http_request(
             method='GET',
             url_suffix=request,
-            headers=http_headers,
+            headers=http_headers
         )
 
         if not isinstance(res, list):
@@ -267,7 +264,7 @@ class Client(BaseClient):
         request = request + '?minscore=' + str(min_score)
         request = request + '&starttime=' + str(start_time)
 
-        http_headers = get_headers(request)
+        http_headers = get_headers(self._auth, request)
 
         return self._http_request(
             method='GET',
@@ -357,8 +354,10 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     raise ValueError(f'Invalid number: "{arg_name}"')
 
 
-def get_headers(request: str) -> Dict[str, str]:
+def get_headers(tokens: tuple, request: str) -> Dict[str, str]:
     """Returns the appropriate HTTP Header for token authentication.
+    :type tokens: ``tuple``
+    :param tokens: Tuple containing the PUBLIC and PRIVATE API tokens
     :type request: ``str``
     :param request: API request being made, ex: /modelbreaches
     :return:
@@ -367,10 +366,12 @@ def get_headers(request: str) -> Dict[str, str]:
     """
     d = datetime.utcnow()
     now = d.strftime('%Y%m%dT%H%M%S')
-    maccer = hmac.new(PRIVATE_API_TOKEN.encode('ASCII'),
-                      (request + '\n' + PUBLIC_API_TOKEN + '\n' + now).encode('ASCII'), hashlib.sha1)
+    public = tokens[0]
+    private = tokens[1]
+    maccer = hmac.new(private.encode('ASCII'),
+                      (request + '\n' + public + '\n' + now).encode('ASCII'), hashlib.sha1)
     sig = maccer.hexdigest()
-    headers = {'DTAPI-Token': PUBLIC_API_TOKEN, 'DTAPI-Date': now, 'DTAPI-Signature': sig}
+    headers = {'DTAPI-Token': public, 'DTAPI-Date': now, 'DTAPI-Signature': sig}
     return headers
 
 
@@ -1003,6 +1004,11 @@ def main() -> None:
     # Collect Darktrace URL
     base_url = demisto.params().get('url')
 
+    # Collect API tokens
+    public_api_token = demisto.params().get('public_api_token', '')
+    private_api_token = demisto.params().get('private_api_token', '')
+    tokens = (public_api_token, private_api_token)
+
     # Client class inherits from BaseClient, so SSL verification is
     # handled out of the box by it. Pass ``verify_certificate`` to
     # the Client constructor.
@@ -1026,7 +1032,9 @@ def main() -> None:
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy,
+            auth=tokens
+        )
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

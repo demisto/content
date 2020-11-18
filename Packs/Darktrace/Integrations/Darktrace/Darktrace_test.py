@@ -23,6 +23,7 @@ def test_get_breach(requests_mock):
     client = Client(
         base_url='https://mock.darktrace.com',
         verify=False,
+        auth=('examplepub', 'examplepri')
     )
 
     args = {
@@ -53,6 +54,7 @@ def test_get_comments(requests_mock):
     client = Client(
         base_url='https://mock.darktrace.com',
         verify=False,
+        auth=('examplepub', 'examplepri')
     )
 
     args = {
@@ -82,6 +84,7 @@ def test_acknowledge(requests_mock):
     client = Client(
         base_url='https://mock.darktrace.com',
         verify=False,
+        auth=('examplepub', 'examplepri')
     )
 
     args = {
@@ -111,6 +114,7 @@ def test_unacknowledge(requests_mock):
     client = Client(
         base_url='https://mock.darktrace.com',
         verify=False,
+        auth=('examplepub', 'examplepri')
     )
 
     args = {
@@ -141,6 +145,7 @@ def test_fetch_incidents(requests_mock):
     client = Client(
         base_url='https://usw1-51965-01.cloud.darktrace.com/',
         verify=False,
+        auth=('examplepub', 'examplepri')
     )
 
     last_run = {
@@ -176,6 +181,7 @@ def test_list_similar_devices(requests_mock):
     client = Client(
         base_url='https://mock.darktrace.com',
         verify=False,
+        auth=('examplepub', 'examplepri')
     )
 
     args = {
@@ -208,6 +214,7 @@ def test_get_external_endpoint_details(requests_mock):
     client = Client(
         base_url='https://mock.darktrace.com',
         verify=False,
+        auth=('examplepub', 'examplepri')
     )
 
     args = {
@@ -242,6 +249,7 @@ def test_get_device_connection_info(requests_mock):
     client = Client(
         base_url='https://mock.darktrace.com',
         verify=False,
+        auth=('examplepub', 'examplepri')
     )
 
     args = {
@@ -272,6 +280,7 @@ def test_get_device_identity_info(requests_mock):
     client = Client(
         base_url='https://mock.darktrace.com',
         verify=False,
+        auth=('examplepub', 'examplepri')
     )
 
     args = {
@@ -302,6 +311,7 @@ def test_get_entity_details(requests_mock):
     client = Client(
         base_url='https://mock.darktrace.com',
         verify=False,
+        auth=('examplepub', 'examplepri')
     )
 
     args = {
