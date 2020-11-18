@@ -505,6 +505,8 @@ def main():
     store_samples = params.get('store_samples', False)
     first_fetch_time, _ = parse_date_range(params.get('fetch_time', '1 hour'))
     app_id = params.get('app_id') or 'Demisto'
+    if not re.match(r'^[A-Za-z0-9]{0,32}$', app_id):
+        raise ValueError('App ID is invalid: Must be a max. of 32 alphanumeric characters (a-z, A-Z, 0-9).')
 
     stream = EventStream(base_url=base_url, app_id=app_id, verify_ssl=verify_ssl, proxy=proxy)
 
