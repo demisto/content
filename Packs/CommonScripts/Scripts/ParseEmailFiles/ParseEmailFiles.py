@@ -3723,7 +3723,7 @@ def main():
             return_error(get_error(result))
 
         file_metadata = result[0]['FileMetadata']
-        file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
+        file_type = file_metadata.get('type', '') or file_metadata.get('info', '')
 
     except Exception as ex:
         return_error(
@@ -3738,7 +3738,7 @@ def main():
             output = create_email_output(email_data, attached_emails)
 
         elif any(eml_candidate in file_type_lower for eml_candidate in
-                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'message/rfc822']):
+                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'message/rfc822', 'application/pkcs7-mime']):
             if 'unicode (with bom) text' in file_type_lower:
                 email_data, attached_emails = handle_eml(
                     file_path, False, file_name, parse_only_headers, max_depth, bom=True
