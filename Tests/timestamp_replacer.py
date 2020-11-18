@@ -1,4 +1,5 @@
 import json
+from ast import literal_eval
 import functools
 import urllib
 from collections import OrderedDict
@@ -110,11 +111,6 @@ class TimestampReplacer:
             print(f'urlencoded_form data = {req.urlencoded_form.items()}')
         print(f'hashed_data={ServerPlayback._hash(self, flow)}')
 
-    # @record_concurrently(
-    #     replaying=bool(
-    #         ctx.options.server_replay or (ctx.options.rfile and ctx.options.save_stream_file)
-    #     )
-    # )
     def request(self, flow: flow.Flow) -> None:
         self.count += 1
         if ctx.options.debug:
@@ -200,9 +196,10 @@ class TimestampReplacer:
                 content = req.raw_content.decode()
             else:
                 content = ''
+            print(f'cleaning json body: content={content}')
             json_data = content.startswith('{')
             if json_data:
-                content = json.loads(content, object_pairs_hook=OrderedDict)
+                content = OrderedDict(literal_eval(content))
                 self.modify_json_body(req, content)
 
     def modify_json_body(self, req: HTTPRequest, json_body: dict) -> None:
@@ -309,9 +306,10 @@ class TimestampReplacer:
                 content = req.raw_content.decode()
             else:
                 content = ''
+            print(f'handling json body: content={content}')
             json_data = content.startswith('{')
             if json_data:
-                content = json.loads(content, object_pairs_hook=OrderedDict)
+                content = OrderedDict(literal_eval(content))
                 json_keys = self.determine_problematic_keys(content)
                 self.json_keys.update(json_keys)
 
