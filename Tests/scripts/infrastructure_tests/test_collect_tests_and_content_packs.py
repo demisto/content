@@ -607,10 +607,8 @@ def get_mock_test_list(minimum_server_version=TWO_BEFORE_GA_VERSION, get_modifie
 
 
 def create_temp_dir_with_metadata(path, pack_name, pack_metadata_content):
-    packs_dir = path / PACKS_DIR
-    packs_dir.mkdir()
-    pack = packs_dir / pack_name
-    pack.mkdir()
+    pack = path / PACKS_DIR / pack_name
+    pack.mkdir(parents=True)
     pack_metadata_file = pack / PACKS_PACK_META_FILE_NAME
     pack_metadata_file.write_text(json.dumps(pack_metadata_content))
     return pack_metadata_file
