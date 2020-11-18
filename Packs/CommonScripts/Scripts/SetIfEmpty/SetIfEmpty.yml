@@ -9,12 +9,13 @@ args:
   description: The new value to return if the original value was empty.
   isArray: false
   name: defaultValue
-  required: true
+  required: false
   secret: false
 - auto: PREDEFINED
   default: true
   defaultValue: 'true'
-  description: If set to true, empty strings, arrays and dictionaries and the strings "None" and "Null" are considered empty entities and the default value is returned.
+  description: If set to true, empty strings, arrays and dictionaries and the strings
+    "None" and "Null" are considered empty entities and the default value is returned.
   isArray: false
   name: applyIfEmpty
   predefined:

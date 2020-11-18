@@ -30,6 +30,14 @@ configuration:
     name: incidentType
     type: 13
     required: false
+  - display: "Mailbox Location"
+    name: mailbox_location
+    defaultvalue: Processed_Reports
+    type: 15
+    required: true
+    options:
+      - Inbox_Reports
+      - Processed_Reports
   - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
       1 year)
     name: date_range
@@ -89,7 +97,7 @@ script:
             4 minutes, 6 month, 1 day".'
           defaultValue: 60 days
         - name: reporter
-          description: Name or ID of the reporter.
+          description: Address or ID of the reporter.
         - name: max_matches
           default: true
           description: Maximum number of matches to fetch. Default is 30.
@@ -149,6 +157,83 @@ script:
         - contextPath: Cofense.Report.Sha256
           description: SHA256 hash of the file.
       description: 'Runs a query for reports.'
+    - name: cofense-search-inbox-reports
+      arguments:
+        - name: file_hash
+          description: File hash, MD5 or SHA256.
+        - name: url
+          description: The reported URLs.
+        - name: subject
+          description: Report's subject
+        - name: reported_at
+          description: 'Retrieve reports that were reported after this time, for example: "2 hours,
+            4 minutes, 6 month, 1 day".'
+          defaultValue: 60 days
+        - name: created_at
+          description: 'Retrieve reports that were created after this time, for example: "2 hours,
+            4 minutes, 6 month, 1 day".'
+          defaultValue: 60 days
+        - name: reporter
+          description: Address or ID of the reporter.
+        - name: max_matches
+          default: true
+          description: Maximum number of matches to fetch. Default is 30.
+          defaultValue: "30"
+        - name: verbose
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Returns all fields of a report.
+      outputs:
+        - contextPath: Cofense.Report.ID
+          description: ID number of the report.
+        - contextPath: Cofense.Report.EmailAttachments
+          description: Email attachments.
+        - contextPath: Cofense.Report.EmailAttachments.id
+          description: Email attachment ID.
+        - contextPath: Cofense.Report.Tags
+          description: Report tags.
+          type: string
+        - contextPath: Cofense.Report.ClusterId
+          description: Cluster ID number.
+          type: number
+        - contextPath: Cofense.Report.CategoryId
+          description: Report category.
+          type: number
+        - contextPath: Cofense.Report.CreatedAt
+          description: Report creation date.
+          type: date
+        - contextPath: Cofense.Report.ReportedAt
+          description: Reporting time.
+          type: string
+        - contextPath: Cofense.Report.MatchPriority
+          description: The highest match priority based on rule hits for the report.
+          type: number
+        - contextPath: Cofense.Report.ReporterId
+          description: Reporter ID.
+          type: number
+        - contextPath: Cofense.Report.Location
+          description: Location of the report.
+          type: string
+        - contextPath: Cofense.Report.Reporter
+          description: Reporter email address.
+          type: string
+        - contextPath: Cofense.Report.SuspectFromAddress
+          description: Suspect from address.
+          type: string
+        - contextPath: Cofense.Report.ReportSubject
+          description: Report subject.
+          type: string
+        - contextPath: Cofense.Report.ReportBody
+          description: Report body.
+          type: string
+        - contextPath: Cofense.Report.Md5
+          description: MD5 hash of the file.
+          type: number
+        - contextPath: Cofense.Report.Sha256
+          description: SHA256 hash of the file.
+      description: 'Runs a query for reports from the `inbox` mailbox.'
     - name: cofense-get-attachment
       arguments:
         - name: attachment_id
@@ -324,8 +409,8 @@ script:
           type: string
       description: Threat Indicators that are designated by analysts as malicious, suspicious
         or benign
-  dockerimage: demisto/chromium:1.0.0.11033
+  dockerimage: demisto/chromium:1.0.0.12337
   isfetch: true
   runonce: false
 tests:
-  - Cofense Triage v2 Test
+- No test - partner integration (test pb exists - Cofense Triage Test)

@@ -1,0 +1,48 @@
+{
+  "items": [
+    {
+      "defenseAttributes": {
+        "maximumArrayLength": 555,
+        "maximumStructureDepth": 555,
+        "maximumTotalLengthOfJSONData": 555,
+        "maximumValueLength": "any",
+        "tolerateJSONParsingWarnings": "true"
+      },
+      "description": "This is a description",
+      "handleJsonValuesAsParameters": "true",
+      "hasValidationFiles": "false",
+      "id": "json-profile-md5-1",
+      "isDefault": "false",
+      "isReferenced": "false",
+      "_kind": "tm:asm:policies:json-profiles:json-profilestate",
+      "lastUpdateMicros": 1596558900000000,
+      "name": "json-profile-1",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/json-profiles/json-profile-md5-1?ver=15.1.0",
+      "validationFiles": [
+
+      ]
+    },
+    {
+      "defenseAttributes": {
+        "maximumArrayLength": "any",
+        "maximumStructureDepth": "any",
+        "maximumTotalLengthOfJSONData": "any",
+        "maximumValueLength": "any",
+        "tolerateJSONParsingWarnings": "true"
+      },
+      "description": "Default JSON Profile",
+      "handleJsonValuesAsParameters": "true",
+      "hasValidationFiles": "false",
+      "id": "json-profile-md5-2",
+      "isDefault": "true",
+      "isReferenced": "true",
+      "_kind": "tm:asm:policies:json-profiles:json-profilestate",
+      "lastUpdateMicros": 1595858790000000,
+      "name": "Default",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/json-profiles/json-profile-md5-2?ver=15.1.0",
+      "validationFiles": [
+
+      ]
+    }
+  ]
+}

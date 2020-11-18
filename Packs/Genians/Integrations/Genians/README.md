@@ -1,8 +1,8 @@
-Use the Genians integration to block IP using assign tag and unassign tag.
+Use the Genian NAC integration to block IP addresses using the assign tag.
 
-Genians’ network sensing technology powered by Device Platform Intelligence (DPI) discovers and presents all detected devices’ business contextual and risk-related information along with their technical information without disturbing existing network infrastructure. The resulting intelligence enhances visibility and allows operators to detect and respond to any non-compliant or compromised devices in real time.
+Genian NAC network sensing technology powered by Device Platform Intelligence (DPI) discovers and presents all detected devices’ business contextual and risk-related information along with their technical information without disturbing existing network infrastructure. The resulting intelligence enhances visibility and allows operators to detect and respond to any non-compliant or compromised devices in real time.
 
-With the result of comprehensive network visibility, Genians can ensure compliance from all connected devices by leveraging Virtual In-Line Packet Inspection which operates at Layer 2. This technology has complete control over endpoint device traffic over TCP and UDP by eliminating the need for complex configurations and network changes.
+With the result of comprehensive network visibility, Genian NAC can ensure compliance from all connected devices by leveraging Virtual In-Line Packet Inspection which operates at Layer 2. This technology has complete control over endpoint device traffic over TCP and UDP by eliminating the need for complex configurations and network changes.
 
 ## Genians Genian NAC Module Requirements
 
@@ -27,7 +27,7 @@ Before you can use this integration in Demisto, you need to enable certain modul
 
 #### Create Enforcement Policy
 
-1. Reference the Enforcement Policy section in the [Genians Docs](https://docs.genians.com/release/en/controlling/understanding-policy.html#enforcement-policy)
+Reference the Enforcement Policy section in the [Genian NAC Docs](https://docs.genians.com/release/en/controlling/understanding-policy.html#enforcement-policy)
 
 
 ## Configuration Parameters
@@ -47,7 +47,7 @@ Before you can use this integration in Demisto, you need to enable certain modul
 1. Input Tag Name for IP Block (e.g. THREAT, GUEST)
 
 
-## Configure Genians on Demisto
+## Configure Genian NAC on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Genians.
@@ -63,8 +63,8 @@ Before you can use this integration in Demisto, you need to enable certain modul
 
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Post IP address to a tag: genians-assign-ip-tag](###Post IP address to a tag)
-2. [Delete IP address from a tag: genians-unassign-ip-tag](###Delete IP address from a tag)
+1. [Post IP address to a tag: genians-assign-ip-tag](#Post-IP-address-to-a-tag)
+2. [Delete IP address from a tag: genians-unassign-ip-tag](#Delete-IP-address-from-a-tag)
 
 ### Post IP address to a tag
 ***

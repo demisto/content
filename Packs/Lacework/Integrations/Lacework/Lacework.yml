@@ -3,8 +3,8 @@ commonfields:
   id: Lacework
   version: -1
 configuration:
-- display: Lacework Instance Name (e.g. https://<Instance_Name>.lacework.net)
-  name: lacework_instance
+- display: 'Lacework Account Name (i.e. Subdomain of the URL: <ACCOUNT>.lacework.net)'
+  name: lacework_account
   required: true
   type: 0
 - display: Lacework API Key
@@ -49,9 +49,8 @@ configuration:
   - '7'
   required: false
   type: 15
-description: Lacework is focused on giving customers visibility and control over their
-  cloud operations at cloud scale to the monitoring of all activities across all cloud
-  components.
+description: Lacework provides end-to-end cloud security automation for AWS, Azure,
+  and GCP with a comprehensive view of risks across cloud workloads and containers.
 display: Lacework
 name: Lacework
 script:
@@ -1137,7 +1136,7 @@ script:
     - contextPath: Lacework.Vulnerability.Host.summary.last_evaluation_time
       description: The time of the last vulnerability evaluation.
       type: String
-  dockerimage: demisto/lacework:1.0.0.11790
+  dockerimage: demisto/lacework:1.0.0.12410
   feed: false
   isfetch: true
   longRunning: false
@@ -1146,6 +1145,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No Tests
+fromversion: 5.0.0

@@ -1,0 +1,192 @@
+commonfields:
+  id: Graylog
+  version: -1
+name: Graylog
+display: Graylog
+category: Analytics & SIEM
+description: Integration with Graylog to search for logs and events
+configuration:
+- display: Server URL (e.g. https://serverurl:9000)
+  name: url
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: The query that is used to fetch events as incidents (lucene syntax)
+  name: fetch_query
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: graylog-cluster-status
+    arguments: []
+    outputs:
+    - contextPath: Graylog.ClusterStatus
+      description: Status of nodes in the Cluster
+      type: String
+    description: Get Cluster nodes status
+  - name: graylog-cluster-node-jvm
+    arguments:
+    - name: nodeId
+      required: true
+      description: Node ID of the cluster member
+    outputs:
+    - contextPath: Graylog.ClusterNodeJVM
+      description: JVM info of Node
+      type: String
+    description: Get JVM status of a node in cluster
+  - name: graylog-cluster-inputstates
+    arguments: []
+    outputs:
+    - contextPath: Graylog.ClusterInputStates
+      description: Input states of the cluster
+      type: String
+    description: Get input states of the cluster
+  - name: graylog-cluster-processing-status
+    arguments: []
+    outputs:
+    - contextPath: Graylog.ClusterProcessingStatus
+      description: Processing status of the cluster
+      type: String
+    description: Shows the processing status of the cluster
+  - name: graylog-indexer-cluster-health
+    arguments: []
+    outputs:
+    - contextPath: Graylog.IndexerHealth
+      description: Health of Indexer
+      type: String
+    description: Get health of the indexer
+  - name: graylog-search
+    arguments:
+    - name: query
+      required: true
+      description: Query (Lucene syntax)
+    - name: range
+      default: true
+      description: Relative timeframe to search in. Default 300s
+      defaultValue: "300"
+    - name: limit
+      default: true
+      description: Maximum number of messages to return. Default 20
+      defaultValue: "20"
+    - name: offset
+      description: offset (integer)
+    - name: filter
+      description: filter
+    - name: fields
+      description: Comma separated list of fields to return
+    - name: sort
+      description: Sorting (field:asc / field:desc)
+    - name: decorate
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Run decorators on search result (default True)
+    outputs:
+    - contextPath: Graylog.Search
+      description: Search results
+      type: String
+    description: 'Search for messages in a relative timerange, specified as seconds
+      from now. Example: 300 means search from 5 minutes ago to now.'
+  - name: graylog-events-search
+    arguments:
+    - name: query
+      description: Query to use
+    - name: filter
+      description: filter to use
+    - name: page
+      description: number of pages as integer
+    - name: sort_direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Ascending or Descending
+    - name: per_page
+      description: how many per page (integer)
+    - name: timerange
+      default: true
+      description: Relative timerange to search in seconds
+      defaultValue: "300"
+    - name: sort_by
+      description: how to sort
+    outputs:
+    - contextPath: Graylog.EventsSearch
+      description: Result of Events Search
+      type: String
+    description: Events overview and search
+  - name: graylog-search-absolute
+    arguments:
+    - name: query
+      required: true
+      description: Query in lucene syntax
+    - name: from
+      required: true
+      description: Search for messages using an absolute timerange, specified as from/to
+        with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd
+        HH:mm:ss.
+    - name: to
+      required: true
+      description: Search for messages using an absolute timerange, specified as from/to
+        with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd
+        HH:mm:ss.
+    - name: limit
+      default: true
+      description: Maximum number of messages to return.
+      defaultValue: "20"
+    - name: offset
+      description: Offset
+    - name: filter
+      description: Filter
+    - name: fields
+      description: Comma separated list of fields to return
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sorting (field:asc / field:desc)
+    - name: decorate
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Run decorators on search result
+    outputs:
+    - contextPath: Graylog.SearchAbsolute
+      description: Search results of Absolute search
+      type: String
+    description: Search with absolute times
+  dockerimage: demisto/python3:3.8.6.12176
+  isfetch: true
+  runonce: false
+  subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
