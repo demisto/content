@@ -47,6 +47,9 @@ class Client(BaseClient):
         self.get_session_token()
 
     def get_session_token(self):
+        """
+        Get the csrf token for the requests which is added to the headers of the client
+        """
         try:
             response = self._http_request(method='GET', url_suffix=URL_SUFFIX['TOKEN'])
             self._headers.update({response['tokenName']: response['tokenValue']})
@@ -58,25 +61,29 @@ class Client(BaseClient):
 
     def get_nodes(self, nodes_filter: str):
         """
-        :return:
+        :param nodes_filter: (str) contains the filter of the request.
+        :return: the result of the http request from the api
         """
         return self._http_request(method='GET', url_suffix=URL_SUFFIX['NODES'].format(nodes_filter))
 
     def get_rules(self, rules_filter: str):
         """
-        :return:
+        :param rules_filter: (str) contains the filter of the request.
+        :return: the result of the http request from the api
         """
         return self._http_request(method='GET', url_suffix=URL_SUFFIX['RULES'].format(rules_filter))
 
     def get_elements(self, elements_filter: str):
         """
-        :return:
+        :param elements_filter: (str) contains the filter of the request.
+        :return: the result of the http request from the api
         """
         return self._http_request(method='GET', url_suffix=URL_SUFFIX['ELEMENTS'].format(elements_filter))
 
     def get_versions(self, versions_filter: str):
         """
-        :return:
+        :param versions_filter: (str) contains the filter of the request.
+        :return: the result of the http request from the api
         """
         return self._http_request(method='GET', url_suffix=URL_SUFFIX['VERSIONS'].format(versions_filter))
 
@@ -84,7 +91,11 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def filter_version(args):
+def filter_versions(args: dict) -> str:
+    """
+    :param args: (dict) args of the command .
+    :return: (str) combination of all filter for the command.
+    """
     filters = ""
     if args.get('rule_oids'):
         filters += f"ruleId={args.get('rule_oids')}&"
@@ -115,7 +126,11 @@ def filter_version(args):
     return filters
 
 
-def filter_rules(args):
+def filter_rules(args: dict) -> str:
+    """
+    :param args: (dict) args of the command .
+    :return: (str) combination of all filter for the command.
+    """
     filters = ""
     if args.get('rule_oids'):
         filters += f"id={args.get('rule_oids')}&"
@@ -130,8 +145,11 @@ def filter_rules(args):
     return filters
 
 
-
-def filter_elements(args):
+def filter_elements(args: dict) -> str:
+    """
+    :param args: (dict) args of the command .
+    :return: (str) combination of all filter for the command.
+    """
     filters = ""
     if args.get('element_oids'):
         filters += f"id={args.get('element_oids')}&"
@@ -152,14 +170,18 @@ def filter_elements(args):
     return filters
 
 
-def filter_nodes(args):
+def filter_nodes(args: dict) -> str:
+    """
+    :param args: (dict) args of the command .
+    :return: (str) combination of all filter for the command.
+    """
     filters = ""
     if args.get('node_oids'):
         filters += f"id={args.get('node_oids')}&"
     if args.get('node_ips'):
         filters += f"ipAddress={args.get('node_ips')}&"
     if args.get('node_mac_adresses'):
-         filters += f"macAddress={args.get('rule_types')}&"
+        filters += f"macAddress={args.get('node_mac_adresses')}&"
     if args.get('node_names'):
         filters += f"ic_name={args.get('node_names')}&"
     if args.get('node_os_names'):
@@ -174,7 +196,11 @@ def filter_nodes(args):
 
 
 def prepare_fetch(params: dict, first_fetch: str):
-
+    """
+    :param params: (dict) args of the command .
+    :param first_fetch: (dict) args of the command .
+    :return: (str) combination of all filter for the command.
+    """
     # check that either ruleid exist or node id for fetch to run
     if not params.get('rule_oids') and not params.get('node_oids'):
         raise DemistoException(
@@ -190,7 +216,7 @@ def prepare_fetch(params: dict, first_fetch: str):
     # set filter for fetch
     time_now = datetime.utcnow().strftime(DATE_FORMAT)
     params['time_received_range'] = f'{last_fetch},{time_now}'
-    fetch_filter = filter_version(params)
+    fetch_filter = filter_versions(params)
 
     return params, fetch_filter, last_fetch
 
@@ -198,18 +224,14 @@ def prepare_fetch(params: dict, first_fetch: str):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, args) -> str:
+def test_module(client: Client, args: Dict[str, Any]) -> str:
     """Tests API connectivity and authentication'
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    :type client: ``dict``
+    :param args: contains the test modules arguments.
 
     :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type name: ``str``
-    :param name: name to append to the 'Hello' string
+    :param client: Tripwire client to use
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
@@ -226,7 +248,7 @@ def versions_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     """tripwire-versions-list command
 
     :type client: ``Client``
-    :param Client: Tripwire client to use
+    :param client: Tripwire client to use
 
     :type args: `` Dict[str, Any]``
     :param args:
@@ -236,7 +258,7 @@ def versions_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
         A ``CommandResults`` object that is then passed to ``return_results``
     :rtype: ``CommandResults``
     """
-    versions_filter = filter_version(args)
+    versions_filter = filter_versions(args)
     result = client.get_versions(versions_filter)
     readable_output = tableToMarkdown('Tripwire Versions list results', result, removeNull=True)
     return CommandResults(
@@ -248,10 +270,10 @@ def versions_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def rules_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """tripwire-versions-list command
+    """tripwire-rules-list command
 
     :type client: ``Client``
-    :param Client: Tripwire client to use
+    :param client: Tripwire client to use
 
     :type args: `` Dict[str, Any]``
     :param args:
@@ -273,10 +295,10 @@ def rules_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def nodes_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """tripwire-notes-list command
+    """tripwire-nodes-list command
 
     :type client: ``Client``
-    :param Client: Tripwire client to use
+    :param client: Tripwire client to use
 
     :type args: `` Dict[str, Any]``
     :param args:
@@ -301,7 +323,7 @@ def elements_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     """tripwire-elements-list command
 
     :type client: ``Client``
-    :param Client: Tripwire client to use
+    :param client: Tripwire client to use
 
     :type args: `` Dict[str, Any]``
     :param args:
@@ -324,39 +346,25 @@ def elements_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 def fetch_incidents(client: Client, max_results: int, last_fetch: str, fetch_filter: Optional[str] = ''
                     ) -> Tuple[Dict[str, str], List[dict]]:
-    """This function retrieves new alerts every interval (default is 1 minute).
-
-    This function has to implement the logic of making sure that incidents are
-    fetched only onces and no incidents are missed. By default it's invoked by
-    XSOAR every minute. It will use last_run to save the timestamp of the last
-    incident it processed. If last_run is not provided, it should use the
-    integration parameter first_fetch_time to determine when to start fetching
-    the first time.
-
-
+    """
     :type client: ``Client``
-    :param Client: Tripwire client to use
+    :param client: Tripwire client to use
 
     :type max_results: ``int``
     :param max_results: Maximum numbers of incidents per fetch
 
-    :type last_run: ``Optional[Dict[str, int]]``
-    :param last_run:
-        A dict with a key containing the latest incident created time we got
-        from last fetch
+    :type last_fetch: ``str``
+    :param last_fetch:
+        A string contains the last fetched date and time.
 
-    :type first_fetch: ``Optional[str]``
-    :param first_fetch:
-        If last_run is None (first time we are fetching), it contains
-        the timestamp in milliseconds on when to start fetching incidents
-
-    :type first_fetch_time: ``Optional[str]``
-    :param fetch_filter: If the user entered filters that should be applied on the fetch request.
+    :type fetch_filter: ``Optional[str]``
+    :param fetch_filter:
+        A string that contains the filters for the command.
 
     :return:
         A tuple containing two elements:
-            next_run (``Dict[str, int]``): Contains the timestamp that will be
-                    used in ``last_run`` on the next fetch.
+            next_run (``Dict[str, str]``): Contains the datetime str that will be
+                    used in ``last_fetch`` on the next fetch.
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
 
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
@@ -375,7 +383,7 @@ def fetch_incidents(client: Client, max_results: int, last_fetch: str, fetch_fil
             'name': incident_name,
             'occurred': incident_created_time.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(alert),
-            }
+        }
         incidents.append(incident)
         last_fetch = incident_created_time
 

@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from Tripwire import Client, fetch_incidents
+from Tripwire import Client, fetch_incidents, prepare_fetch, filter_nodes, filter_elements, filter_rules, filter_versions
 from test_data.raw_response import VERSIONS_RAW_RESPONSE
 
 
@@ -13,13 +13,12 @@ def test_first_fetch(mocker):
         - command args
         - command raw response
         When
-        - mock the Clients's get token function.
-        - mock the Clients's tickets_list_request.
-        - mock the parse_date_range function.
+        - mock the Clients's get session token function.
+        - mock the Clients's get_versions function.
         Then
         - run the fetch incidents command using the Client
         Validate The length of the results.
-        Validate that the first run of fetch incidents runs correctly.
+        Validate that the first run of fetch incidents runs correctly using the occured time.
         """
     mocker.patch.object(Client, 'get_session_token')
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
@@ -41,13 +40,12 @@ def test_second_fetch(mocker):
         - command args
         - command raw response
         When
-        - mock the Clients's get token function.
-        - mock the Clients's tickets_list_request.
-        - mock the parse_date_range function.
+        - mock the Clients's get session token function.
+        - mock the Clients's get_versions function.
         Then
         - run the fetch incidents command using the Client
         Validate The length of the results.
-        Validate that the first run of fetch incidents runs correctly.
+        Validate that the second run of fetch incidents runs correctly using the occured time and last fetch.
         """
     mocker.patch.object(Client, 'get_session_token')
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
@@ -66,13 +64,11 @@ def test_empty_fetch(mocker):
         - command args
         - command raw response
         When
-        - mock the Clients's get token function.
-        - mock the Clients's tickets_list_request.
-        - mock the parse_date_range function.
+        - mock the Clients's get session token function.
+        - mock the Clients's get_versions function.
         Then
         - run the fetch incidents command using the Client
-        Validate The length of the results.
-        Validate that the first run of fetch incidents runs correctly.
+        Validate The length of the results which should equal zero as there should be not results.
         """
     mocker.patch.object(Client, 'get_session_token')
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
@@ -82,25 +78,129 @@ def test_empty_fetch(mocker):
                                    fetch_filter=fetch_filter)
     assert len(incidents) == 0
 
-def test_empty_fetch(mocker):
+
+#   ------------------ helper fucntions -------------------
+
+def test_prepare_fetch():
     """Unit test
         Given
-        - fetch incidents command
-        - command args
-        - command raw response
+        - fetch params - rule oids , node oids and fetch time
+        - expected returned string.
         When
-        - mock the Clients's get token function.
-        - mock the Clients's tickets_list_request.
-        - mock the parse_date_range function.
+            - the prepare fetch function is activated.
         Then
-        - run the fetch incidents command using the Client
-        Validate The length of the results.
-        Validate that the first run of fetch incidents runs correctly.
+        - run the prepare fetch helper function.
+        Validate the response of the function with the expected string.
         """
-    mocker.patch.object(Client, 'get_session_token')
-    mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
-    client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
-    fetch_filter = {'ruleId': '-1:1&timeReceivedRange=2020-10-30T14:20:41Z,2020-11-17T14:20:41Z'}
-    _, incidents = fetch_incidents(client=client, max_results=4, last_fetch="2020-10-30T09:20:41Z",
-                                   fetch_filter=fetch_filter)
-    assert len(incidents) == 0
+    params = {'rule_oids': '-1:1', 'node_oids': '-1:2'}
+    params, fetch_filter, _ = prepare_fetch(params, '1 day ago')
+    expected_filter = 'ruleId=-1:1&nodeId=-1:2'
+    assert expected_filter in fetch_filter
+
+
+def test_filter_nodes():
+    """
+    Given
+        - params dict which include all the available params of the nodes-list-command.
+        - expected returned string.
+    When
+         - the filter nodes function is activated.
+    Then
+        - run the filter nodes helper function.
+    Validate the response of the function with the expected string.
+    """
+    params = {
+        'node_oids': '1',
+        'node_ips': '2',
+        'node_mac_adresses': '3',
+        'node_names': '4',
+        'node_os_names': '5',
+        'tags': '6',
+        'page_limit': '7',
+        'page_start': '8'
+    }
+    filter_node = filter_nodes(params)
+    expected_filter = 'id=1&ipAddress=2&macAddress=3&ic_name=4&make=5&tag=6&pageLimit=7&pageStart=8'
+
+    assert expected_filter in filter_node
+
+
+def test_filter_elements():
+    """
+    Given
+        - params dict which include all the available params of the elements-list-command.
+        - expected returned string.
+    When
+         - the filter elements function is activated.
+    Then
+        - run the filter elements helper function.
+    Validate the response of the function with the expected string.
+    """
+    params = {
+        'element_oids': '1',
+        'element_names': '2',
+        'node_oids': '3',
+        'rule_oids': '4',
+        'baseline_version_ids': '5',
+        'last_version_id': '6',
+        'page_limit': '7',
+        'page_start': '8'
+    }
+    filter_node = filter_elements(params)
+    expected_filter = 'id=1&name=2&nodeId=3&ruleId=4&baselineVersionId=5&lastVersionId=6&pageLimit=7&pageStart=8'
+    assert expected_filter in filter_node
+
+
+def test_filter_rules():
+    """
+    Given
+        - params dict which include all the available params of the rules-list-command.
+        - expected returned string.
+    When
+         - the filter rules function is activated.
+    Then
+        - run the filter rules helper function.
+    Validate the response of the function with the expected string.
+    """
+    params = {
+        'rule_oids': '1',
+        'rule_names': '2',
+        'rule_types': '3',
+        'page_limit': '4',
+        'page_start': '5',
+    }
+    filter_rule = filter_rules(params)
+    expected_filter = 'id=1&name=2&type=3&pageLimit=4&pageStart=5'
+    assert expected_filter in filter_rule
+
+
+def test_filter_versions():
+    """
+    Given
+        - params dict which include all the available params of the versions-list-command.
+        - expected returned string.
+    When
+         - the filter versions function is activated.
+    Then
+        - run the filter versions helper function.
+    Validate the response of the function with the expected string.
+    """
+    params = {
+        'rule_oids': '1',
+        'rule_names': '2',
+        'node_oids': '3',
+        'version_oids': '4',
+        'element_oids': '5',
+        'element_names': '6',
+        'node_names': '7',
+        'version_hashes': '8',
+        'baseline_version_ids': '9',
+        'time_detetcted_range': '10',
+        'time_received_range': '11',
+        'page_limit': '12',
+        'page_start': '13',
+    }
+    filter_version = filter_versions(params)
+    expected_filter = 'ruleId=1&ruleName=2&nodeId=3&id=4&elementId=5&elementName=6&nodeLabel=7&hash=8&baselineVersion' \
+                      '=9&timeDetectedRange=10&timeReceivedRange=11&pageLimit=12&pageStart=13'
+    assert expected_filter in filter_version
