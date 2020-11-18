@@ -1,0 +1,41 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "1bd927db-6bff-4084-8aab-29061b01a985",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"HUNT": "Hunt",
+		"MANUAL": "Job"
+	},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": null,
+	"name": "Rapid7_InsightIDR_Classifier",
+	"nameRaw": "Rapid7_InsightIDR_Classifier",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": {
+			"accessor": "",
+			"filters": [],
+			"root": "source",
+			"transformers": []
+		},
+		"simple": ""
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}

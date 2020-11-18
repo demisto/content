@@ -1,0 +1,120 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "5093a638-ab0b-4844-8cd9-6996a89ba38a",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 6,
+	"mapping": {
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert ID": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "id",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Alert Name": {
+					"complex": {
+						"accessor": "type",
+						"filters": [],
+						"root": "alerts",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Assigned User": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "assignee",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"State": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "status",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Sub Category": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "source",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"details": {
+					"complex": {
+						"accessor": "type_description",
+						"filters": [],
+						"root": "alerts",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "title",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"occurred": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "created_time",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"owner": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "assignee",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"name": "Rapid7_InsightIDR_Mapper",
+	"nameRaw": "Rapid7_InsightIDR_Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
