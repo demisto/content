@@ -15,6 +15,7 @@ from time import sleep
 from threading import Thread
 from distutils.version import LooseVersion
 import logging
+from typing import List
 
 from Tests.scripts.utils.log_util import install_logging
 
@@ -23,7 +24,7 @@ import demisto_client
 from ruamel import yaml
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
     run_command, get_yaml, str2bool, format_version, find_type
-from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FileType
+from demisto_sdk.commands.common.constants import FileType
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
 from Tests.test_content import extract_filtered_tests, get_server_numeric_version
@@ -958,22 +959,24 @@ def restart_server_legacy(server):
         logging.exception('Legacy SSH restart demisto failed')
 
 
-def get_tests(server_numeric_version: str, tests: list) -> list:
+def get_tests(build: Build) -> List[str]:
     """
     Selects the tests from that should be run in this execution and filters those that cannot run in this server version
     Args:
-        server_numeric_version: The server numeric versions
-        tests: All conf.json tests
+        build: Build object
 
     Returns:
         Test configurations from conf.json that should be run in this execution
     """
+    server_numeric_version: str = build.server_numeric_version
+    tests: dict = build.tests
     if Build.run_environment == Running.CIRCLECI_RUN:
-        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests()
-        if run_all_tests:
-            logging.warning(f'Not running instance tests when {RUN_ALL_TESTS_FORMAT} is turned on')
+        filtered_tests = extract_filtered_tests()
+        if build.is_nightly:
+            # skip test button testing
+            logging.debug('Not running instance tests in nightly flow')
             tests_for_iteration = []
-        elif filter_configured and filtered_tests:
+        elif filtered_tests:
             tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
         else:
             tests_for_iteration = tests
@@ -1311,7 +1314,7 @@ def main():
     else:
         installed_content_packs_successfully = True
 
-    tests_for_iteration = get_tests(build.server_numeric_version, build.tests)
+    tests_for_iteration = get_tests(build)
     new_integrations, modified_integrations = get_changed_integrations(build)
     all_module_instances, brand_new_integrations = configure_server_instances(build,
                                                                               tests_for_iteration,
