@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cb6104e6-1258-4022-8a1a-a33cd1077cf8
+    taskid: a41526d9-8f94-40a3-89cb-4e40aed4cf13
     type: start
     task:
-      id: cb6104e6-1258-4022-8a1a-a33cd1077cf8
+      id: a41526d9-8f94-40a3-89cb-4e40aed4cf13
       version: -1
       name: ""
       iscommand: false
@@ -25,7 +25,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1340,
           "y": 50
         }
       }
@@ -36,10 +36,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 12eec8d6-abd2-4777-8426-0784d045d4ed
+    taskid: 93b570ff-3386-4dc1-8f6a-a71773d42f17
     type: regular
     task:
-      id: 12eec8d6-abd2-4777-8426-0784d045d4ed
+      id: 93b570ff-3386-4dc1-8f6a-a71773d42f17
       version: -1
       name: Set Input Source
       description: Set a value in context under the key you entered.
@@ -62,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 195
         }
       }
@@ -73,10 +73,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 37cef208-f453-4f2f-88b5-0316c024995f
+    taskid: fcdfd537-db55-44c7-89a6-2c831a43c3b0
     type: title
     task:
-      id: 37cef208-f453-4f2f-88b5-0316c024995f
+      id: fcdfd537-db55-44c7-89a6-2c831a43c3b0
       version: -1
       name: Done
       type: title
@@ -87,8 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 1245
+          "x": 1770,
+          "y": 1740
         }
       }
     note: false
@@ -98,10 +98,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: c0e418c3-48f9-4846-8150-631b00d077e6
+    taskid: 1c6884f2-a5b2-4e55-8074-75f2f0ab219b
     type: regular
     task:
-      id: c0e418c3-48f9-4846-8150-631b00d077e6
+      id: 1c6884f2-a5b2-4e55-8074-75f2f0ab219b
       version: -1
       name: Set ExpectedEncodedOutput
       description: Set a value in context under the key you entered.
@@ -140,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 380
+          "x": 1882.5,
+          "y": 720
         }
       }
     note: false
@@ -151,10 +151,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 439bfe27-9cd4-4f04-8b4d-e92364bcabce
+    taskid: f2810ef8-31dd-4f21-8ea7-92d5431f8e54
     type: regular
     task:
-      id: 439bfe27-9cd4-4f04-8b4d-e92364bcabce
+      id: f2810ef8-31dd-4f21-8ea7-92d5431f8e54
       version: -1
       name: Set ExtFilterFilter
       description: Set a value in context under the key you entered.
@@ -178,7 +178,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1125,
           "y": 195
         }
       }
@@ -189,10 +189,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 64a11423-235e-4336-8115-249b87f32f46
+    taskid: 39f5005e-8287-4a84-8678-d00f948ed0fe
     type: regular
     task:
-      id: 64a11423-235e-4336-8115-249b87f32f46
+      id: 39f5005e-8287-4a84-8678-d00f948ed0fe
       version: -1
       name: Parse ExtFilterFilter
       description: Set a value in context under the key you entered.
@@ -215,7 +215,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1555,
           "y": 195
         }
       }
@@ -226,10 +226,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 6b24851c-5283-4177-8f0b-9598123440a5
+    taskid: b08e7eae-f7a5-486e-8f94-4c24bc59291c
     type: regular
     task:
-      id: 6b24851c-5283-4177-8f0b-9598123440a5
+      id: b08e7eae-f7a5-486e-8f94-4c24bc59291c
       version: -1
       name: Run ExtFilter
       description: Set a value in context under the key you entered.
@@ -297,8 +297,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 380
+          "x": 1125,
+          "y": 370
         }
       }
     note: false
@@ -308,10 +308,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: c035996e-3218-47b6-8b23-d50bcbf5f808
+    taskid: 6733f003-71af-4313-8555-ee21b3e35bfc
     type: condition
     task:
-      id: c035996e-3218-47b6-8b23-d50bcbf5f808
+      id: 6733f003-71af-4313-8555-ee21b3e35bfc
       version: -1
       name: Verify Result
       description: Prints text to war room (Markdown supported)
@@ -320,7 +320,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "30"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -339,7 +339,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 1555,
           "y": 1070
         }
       }
@@ -350,10 +350,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 9f28a7ad-a51f-4787-8506-9179f58ae0c4
+    taskid: 8b3e670f-8eb9-42ca-8933-f5aa1e9f874a
     type: regular
     task:
-      id: 9f28a7ad-a51f-4787-8506-9179f58ae0c4
+      id: 8b3e670f-8eb9-42ca-8933-f5aa1e9f874a
       version: -1
       name: Set Output
       description: Set a value in context under the key you entered.
@@ -376,7 +376,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1125,
           "y": 895
         }
       }
@@ -387,10 +387,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: aa1fb9c5-6432-4c7d-8d49-b219662d937f
+    taskid: 61a815b3-312d-45ef-8e76-ff2b1c3cd59a
     type: regular
     task:
-      id: aa1fb9c5-6432-4c7d-8d49-b219662d937f
+      id: 61a815b3-312d-45ef-8e76-ff2b1c3cd59a
       version: -1
       name: Set Expected Output
       description: Set a value in context under the key you entered.
@@ -413,7 +413,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
+          "x": 2097.5,
           "y": 895
         }
       }
@@ -424,10 +424,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 8527fdf4-2c5e-4eee-8275-b34bf85213b4
+    taskid: 0fbf32bc-bbb7-4382-8f23-5279f26ae942
     type: condition
     task:
-      id: 8527fdf4-2c5e-4eee-8275-b34bf85213b4
+      id: 0fbf32bc-bbb7-4382-8f23-5279f26ae942
       version: -1
       name: Is ExpectedOutput null?
       description: Set a value in context under the key you entered.
@@ -455,8 +455,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 190
+          "x": 2097.5,
+          "y": 195
         }
       }
     note: false
@@ -466,10 +466,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 286d4a78-5c4e-4a12-8060-4e2008750294
+    taskid: 29745345-e42c-46fb-8b67-0a35ee2e107d
     type: regular
     task:
-      id: 286d4a78-5c4e-4a12-8060-4e2008750294
+      id: 29745345-e42c-46fb-8b67-0a35ee2e107d
       version: -1
       name: Set null for ExpectedEncodedOutput
       description: Set a value in context under the key you entered.
@@ -494,8 +494,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 380
+          "x": 2312.5,
+          "y": 720
         }
       }
     note: false
@@ -505,10 +505,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: eb869264-7268-43ce-85d0-deb5ac50fc0e
+    taskid: 38cb1df0-7806-4c7a-85d0-70a12e91d94c
     type: condition
     task:
-      id: eb869264-7268-43ce-85d0-deb5ac50fc0e
+      id: 38cb1df0-7806-4c7a-85d0-70a12e91d94c
       version: -1
       name: Is EncodedOutput null?
       description: Set a value in context under the key you entered.
@@ -536,7 +536,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1125,
           "y": 545
         }
       }
@@ -547,10 +547,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 1b418fdc-0291-4a24-87e6-0bec05422e27
+    taskid: b1037d60-39af-460f-8716-75d5bdb41402
     type: regular
     task:
-      id: 1b418fdc-0291-4a24-87e6-0bec05422e27
+      id: b1037d60-39af-460f-8716-75d5bdb41402
       version: -1
       name: Set null for EncodedOutput
       description: Set a value in context under the key you entered.
@@ -575,8 +575,340 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 255,
+          "x": 1452.5,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 2c1a7e5f-e427-4469-86b8-e9b39e44da7c
+    type: title
+    task:
+      id: 2c1a7e5f-e427-4469-86b8-e9b39e44da7c
+      version: -1
+      name: Cleanup Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 24e12c9a-9644-409b-8d58-53944e9ec725
+    type: regular
+    task:
+      id: 24e12c9a-9644-409b-8d58-53944e9ec725
+      version: -1
+      name: 'Delete: EncodedOutput'
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: EncodedOutput
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 8d41b61b-55bf-461c-8226-68735a8dac5d
+    type: regular
+    task:
+      id: 8d41b61b-55bf-461c-8226-68735a8dac5d
+      version: -1
+      name: 'Delete: ExpectedEncodedOutput'
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: ExpectedEncodedOutput
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: b6feed6c-64ec-4d35-8bd6-10bf721e10d0
+    type: regular
+    task:
+      id: b6feed6c-64ec-4d35-8bd6-10bf721e10d0
+      version: -1
+      name: 'Delete: ExpectedOutput'
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: ExpectedOutput
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 100752d9-83d2-460b-85ed-be7d0d2d931c
+    type: regular
+    task:
+      id: 100752d9-83d2-460b-85ed-be7d0d2d931c
+      version: -1
+      name: 'Delete: ExtFilterFilter'
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: ExtFilterFilter
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: ac254b1e-a0ed-4b56-87f0-99a02d68a2f9
+    type: regular
+    task:
+      id: ac254b1e-a0ed-4b56-87f0-99a02d68a2f9
+      version: -1
+      name: 'Delete: ExtFilterFilterObject'
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: ExtFilterFilterObject
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 76147f45-f1cc-4390-86bc-969c1ee7c510
+    type: regular
+    task:
+      id: 76147f45-f1cc-4390-86bc-969c1ee7c510
+      version: -1
+      name: 'Delete: Input'
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Input
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: b36a4849-a485-4618-8468-40617fec8e4b
+    type: regular
+    task:
+      id: b36a4849-a485-4618-8468-40617fec8e4b
+      version: -1
+      name: 'Delete: Output'
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Output
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 363550e3-9333-463c-8821-fd2801ee23bf
+    type: condition
+    task:
+      id: 363550e3-9333-463c-8821-fd2801ee23bf
+      version: -1
+      name: Need to cleanup context?
+      description: Need to cleanup context?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "35"
+      - "34"
+      - "33"
+      - "31"
+      - "37"
+      - "36"
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: inputs.CleanupContext
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1390
         }
       }
     note: false
@@ -589,8 +921,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 1660,
+        "height": 1755,
+        "width": 2960,
         "x": 50,
         "y": 50
       }
@@ -622,7 +954,13 @@ inputs:
   required: true
   description: Expected Output
   playbookInputQuery:
+- key: CleanupContext
+  value:
+    simple: "True"
+  required: false
+  description: True if clean up ContextData in the subplaybook
+  playbookInputQuery:
 outputs: []
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
