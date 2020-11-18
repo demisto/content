@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 29bcd70f-1953-4061-84ce-4cde781ad9f7
+    taskid: 45a72624-e140-4a68-825f-992b86efc923
     type: start
     task:
-      id: 29bcd70f-1953-4061-84ce-4cde781ad9f7
+      id: 45a72624-e140-4a68-825f-992b86efc923
       version: -1
       name: ""
       description: Start
@@ -36,10 +36,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 67bbf938-1bc3-4588-8490-0719a0b6ef20
+    taskid: 14d6f48e-8bce-48c4-8377-8ae1ca951b11
     type: title
     task:
-      id: 67bbf938-1bc3-4588-8490-0719a0b6ef20
+      id: 14d6f48e-8bce-48c4-8377-8ae1ca951b11
       version: -1
       name: XM Cyber Available
       description: XM Cyber Available
@@ -64,10 +64,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
+    taskid: 15aea8a5-629c-4c31-8f6d-9fdc044c583c
     type: condition
     task:
-      id: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
+      id: 15aea8a5-629c-4c31-8f6d-9fdc044c583c
       version: -1
       name: Is there an endpoint to enrich?
       description: Checks whether there is at least one endpoint to enrich (by hostname).
@@ -105,14 +105,14 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: ea90c16b-6985-4f28-816f-78608df3fe51
+    taskid: 766ac930-5153-41a3-85f8-1f227ca83c3f
     type: title
     task:
-      id: ea90c16b-6985-4f28-816f-78608df3fe51
+      id: 766ac930-5153-41a3-85f8-1f227ca83c3f
       version: -1
       name: Done
-      type: title
       description: Done
+      type: title
       iscommand: false
       brand: ""
     separatecontext: false
@@ -130,10 +130,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 821a2917-1291-4453-889b-72c0a15ff62b
+    taskid: d1732afd-70c9-4f5a-84b2-85b566c3d712
     type: condition
     task:
-      id: 821a2917-1291-4453-889b-72c0a15ff62b
+      id: d1732afd-70c9-4f5a-84b2-85b566c3d712
       version: -1
       name: Is XM Cyber Available
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -167,10 +167,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f817a9de-6fb6-4686-8cba-43533009f3ed
+    taskid: 42e72ff2-782b-4f9a-88ec-f34dd122f44e
     type: regular
     task:
-      id: f817a9de-6fb6-4686-8cba-43533009f3ed
+      id: 42e72ff2-782b-4f9a-88ec-f34dd122f44e
       version: -1
       name: Enrich Hostname
       description: Return data on Entity by hostname from XM Cyber
@@ -195,8 +195,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
     fieldMapping:
     - incidentfield: Entity ID
       output:
@@ -225,15 +223,17 @@ tasks:
     - incidentfield: Entity Report
       output:
         simple: ${XMCyber.Entity.report}
-    - incidentField: Compromising Techniques
+    - incidentfield: Compromising Techniques
       output:
         simple: ${XMCyber.Entity.compromisingTechniques}
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 1ccaa109-21db-406c-83b3-6677daaf2ee4
+    taskid: 867bd37c-32c1-40b3-8701-2683064f18d9
     type: regular
     task:
-      id: 1ccaa109-21db-406c-83b3-6677daaf2ee4
+      id: 867bd37c-32c1-40b3-8701-2683064f18d9
       version: -1
       name: Get Critical Assets At Risk
       description: List critical assets at risk from an entity and the complexity
@@ -260,18 +260,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
     fieldMapping:
     - incidentfield: Critical Assets At Risk List
       output:
         simple: ${XMCyber.Entity.criticalAssetsAtRiskList}
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 3e13d6a4-74f8-4177-8aeb-07a552a1c750
+    taskid: ae7ec726-080c-408d-8d33-89968f2b48d1
     type: regular
     task:
-      id: 3e13d6a4-74f8-4177-8aeb-07a552a1c750
+      id: ae7ec726-080c-408d-8d33-89968f2b48d1
       version: -1
       name: Get Entities At Risk
       description: List all entities at risk from an entity and the complexity of
@@ -298,12 +298,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
     fieldMapping:
     - incidentfield: Affected Entities List
       output:
         simple: ${XMCyber.Entity.entitiesAtRiskList}
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {

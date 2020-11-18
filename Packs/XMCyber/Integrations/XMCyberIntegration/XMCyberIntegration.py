@@ -437,7 +437,7 @@ def entity_obj_to_data(xm: XM, entity: Any):
         'compromisingTechniques': techniques,
         'type': entity['entityTypeDisplayName'],
         'report': entity_report,
-        'OS': entity['os']['name']
+        'OS': entity['os']['name'] if entity['entityTypeDisplayName'] == 'Sensor' else entity['entityTypeDisplayName']
     }
 
 
