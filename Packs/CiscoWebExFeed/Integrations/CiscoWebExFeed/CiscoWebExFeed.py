@@ -14,7 +14,7 @@ INTEGRATION_NAME = 'WebEx'
 
 # From WebExDomain Table get only domain names with wildcards
 def grab_domains(data):
-    domainList = []
+    domainList: List = []
     for lines in data:
         domains = lines[1].split(' ')
         cleanDomain = " ".join(re.findall("([\^]*[\*\.]*[a-z0-9]+\.+.*)*", domains[0]))
@@ -30,7 +30,7 @@ def grab_domains(data):
 
 
 def grab_ips(data):
-    ipList = []
+    ipList: List = []
     for lines in data:
         for line in lines:
             values = line.split(' (CIDR)')
