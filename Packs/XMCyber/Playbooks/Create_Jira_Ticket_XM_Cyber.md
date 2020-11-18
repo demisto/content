@@ -29,4 +29,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![XM Cyber Security Score To Jira](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/XM_Cyber_Risk_Score_To_Jira.png)
+![Create Jira Ticket - XM Cyber](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/Create_Jira_Ticket_XM_Cyber.png)

@@ -48,4 +48,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![IP Enrichment - XM Cyber](Insert the link to your image here)
+![IP Enrichment - XM Cyber](https://github.com/matan-xmcyber/content/blob/master/docs/images/playbooks/IP_Enrichment_XM_Cyber.png)
