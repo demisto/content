@@ -168,7 +168,7 @@ script:
     deprecated: false
     description: |-
       Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
-      If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
+      If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported. This command requires at least one query argument.
     execution: false
     name: xdr-get-incidents
     outputs:
@@ -1905,17 +1905,6 @@ script:
       command to check if this action completed successfully.
     name: xdr-retrieve-file-details
     outputs:
-    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails
-      description: Data — Link to the file retrieved by Retrieve File request.
-    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.endpoint_id
-      description: Endpoint ID.
-      type: string
-    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.file_link
-      description: Link to the file retrieved by Retrieve File request.
-      type: string
-    - contextPath: PaloAltoNetworksXDR.retrievedFileDetails.action_id
-      description: Action ID of the Retrieve File request
-      type: string
     - contextPath: File
       description: The file details command results.
     - contextPath: File.Name
