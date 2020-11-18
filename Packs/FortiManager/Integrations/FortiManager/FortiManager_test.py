@@ -67,22 +67,22 @@ def test_setup_request_data():
 def test_get_range_for_list_command__only_from():
     from FortiManager import get_range_for_list_command
     args = {'offset': 1}
-    assert [1, 50] == get_range_for_list_command(args)
+    assert [1, 49] == get_range_for_list_command(args)
 
 
 def test_get_range_for_list_command__only_to():
     from FortiManager import get_range_for_list_command
     args = {'limit': 1}
-    assert [0, 2] == get_range_for_list_command(args)
+    assert [0, 1] == get_range_for_list_command(args)
 
 
 def test_get_range_for_list_command__from_and_to():
     from FortiManager import get_range_for_list_command
     args = {'limit': 1, 'offset': 0}
-    assert [0, 2] == get_range_for_list_command(args)
+    assert [0, 1] == get_range_for_list_command(args)
 
 
 def test_get_range_for_list_command__no_from_and_to():
     from FortiManager import get_range_for_list_command
     args = {}
-    assert get_range_for_list_command(args) == [0, 51]
+    assert get_range_for_list_command(args) == [0, 50]
