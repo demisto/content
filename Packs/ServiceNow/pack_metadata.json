@@ -10,7 +10,9 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Incident Mirroring"
+    ],
     "useCases": [],
     "keywords": []
 }
