@@ -385,7 +385,12 @@ class Client(BaseClient):
     ):
         if fields_to_display is None:
             fields_to_display = []
-        level_data = self.get_level_by_app_id(app_id)
+        try:
+            level_data = self.get_level_by_app_id(app_id)[0]
+        except IndexError as exc:
+            raise DemistoException(
+                'Could not find a level data. You might be using the wrong application id'
+            ) from exc
         fields_xml = ''
         search_field_name = ''
         search_field_id = ''
@@ -746,8 +751,12 @@ def get_record_command(client: Client, args: Dict[str, str]):
 def create_record_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     fields_values = args.get('fieldsToValues')
-
-    level_data = client.get_level_by_app_id(app_id)[0]
+    try:
+        level_data = client.get_level_by_app_id(app_id)[0]
+    except IndexError as exc:
+        raise DemistoExceptiom(
+            'Got no level by app id. You might be using the wrong application id'
+        ) from exc
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
