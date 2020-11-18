@@ -1,0 +1,116 @@
+[
+    {
+        "value": "2.2.2.2",
+        "type": "IP",
+        "fields": {
+            "trafficlightprotocol": "",
+            "tags": [
+                "DHS"
+            ],
+            "rawJSON": {
+                "@category": "ipv4-addr",
+                "@xsi:type": "AddressObj:AddressObjectType",
+                "AddressObj:Address_Value": {
+                    "@condition": "Equals",
+                    "#text": "2.2.2.2"
+                }
+            },
+            "reportedby": ""
+        }
+    },
+    {
+        "value": "3.3.3.3",
+        "type": "IP",
+        "fields": {
+            "trafficlightprotocol": "",
+            "tags": [
+                "DHS"
+            ],
+            "rawJSON": {
+                "@category": "ipv4-addr",
+                "@xsi:type": "AddressObj:AddressObjectType",
+                "AddressObj:Address_Value": {
+                    "@condition": "Equals",
+                    "#text": "3.3.3.3"
+                }
+            },
+            "reportedby": ""
+        }
+    },
+    {
+        "value": "4.4.4.4",
+        "type": "IP",
+        "fields": {
+            "trafficlightprotocol": "",
+            "tags": [
+                "DHS"
+            ],
+            "rawJSON": {
+                "@category": "ipv4-addr",
+                "@xsi:type": "AddressObj:AddressObjectType",
+                "AddressObj:Address_Value": {
+                    "@condition": "Equals",
+                    "#text": "4.4.4.4"
+                }
+            },
+            "reportedby": ""
+        }
+    },
+    {
+        "value": "5.5.5.5",
+        "type": "IP",
+        "fields": {
+            "trafficlightprotocol": "",
+            "tags": [
+                "DHS"
+            ],
+            "rawJSON": {
+                "@category": "ipv4-addr",
+                "@xsi:type": "AddressObj:AddressObjectType",
+                "AddressObj:Address_Value": {
+                    "@condition": "Equals",
+                    "#text": "5.5.5.5"
+                }
+            },
+            "reportedby": ""
+        }
+    },
+    {
+        "value": "6.6.6.6",
+        "type": "IP",
+        "fields": {
+            "trafficlightprotocol": "",
+            "tags": [
+                "DHS"
+            ],
+            "rawJSON": {
+                "@category": "ipv4-addr",
+                "@xsi:type": "AddressObj:AddressObjectType",
+                "AddressObj:Address_Value": {
+                    "@condition": "Equals",
+                    "#text": "6.6.6.6"
+                }
+            },
+            "reportedby": ""
+        }
+    },
+    {
+        "value": "7.7.7.7",
+        "type": "IP",
+        "fields": {
+            "trafficlightprotocol": "",
+            "tags": [
+                "DHS"
+            ],
+            "rawJSON": {
+                "@category": "ipv4-addr",
+                "@xsi:type": "AddressObj:AddressObjectType",
+                "AddressObj:Address_Value": {
+                    "@condition": "Equals",
+                    "#text": "7.7.7.7"
+                }
+            },
+            "reportedby": ""
+        }
+    }
+]
