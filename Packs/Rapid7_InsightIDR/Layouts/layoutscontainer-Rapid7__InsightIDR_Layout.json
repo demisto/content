@@ -4,7 +4,7 @@
 	"name": "Rapid7 _InsightIDR_Layout",
 	"description": "",
 	"version": -1,
-	"fromVersion": "5.0.0",
+	"fromVersion": "6.0.0",
 	"detailsV2": {
 		"tabs": [
 			{
