@@ -1,16 +1,16 @@
 {
     "name": "ARIAPacketIntelligence",
-    "description": "The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integrates with Cortex XSOAR to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.",
+    "description": "Manage Packet Intelligence rules in response to incidents. Instantly block conversations, redirect packets, generate alerts, or perform other actions.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "ARIA Cybersecurity Solutions",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "url": "https://www.ariacybersecurity.com/cybersecurity-products/aria-packet-intelligence",
+    "email": "ARIA_support@ariacybersecurity.com",
     "created": "2020-09-17T22:12:55Z",
     "categories": [
         "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": []
+    "tags": ["Alerts", "Incident Response", "Network", "Security", "Threat Intelligence"],
+    "useCases": ["Incident Response", "Threat Intelligence Management"],
+    "keywords": ["Block", "Redirect", "Alert", "PI", "SDS", "ARIA"]
 }
