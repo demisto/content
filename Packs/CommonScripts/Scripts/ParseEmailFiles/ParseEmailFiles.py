@@ -3551,7 +3551,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     base64_encoded = "base64" in part.get("Content-Transfer-Encoding", "")
 
                     if isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
-                        if attachment_file_name is None or attachment_file_name == "":
+                        if attachment_file_name is None or attachment_file_name == "" or attachment_file_name == 'None':
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
                             # Subject will be in the email headers
