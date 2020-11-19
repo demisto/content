@@ -5,17 +5,17 @@ The configuration manager provides the overall Configuration Management (CM) inf
 This integration was integrated and tested with version 1906 of Microsoft Endpoint Configuration Manager.
 ## Prerequisites
 - This integration requires root access in order to execute commands. 
-If you configured the server to run Docker images with a non-root internal user make sure to exclude the *demisto/powershell-ubuntu* Docker image as documented [here](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html)
-- Installation and configuration for Windows Remote Management to support a PowerShell session is a prerequisite in order to support this integration. For more information,  refer to the following Microsoft [Article](https://docs.microsoft.com/en-us/windows/win32/winrm/installation-and-configuration-for-windows-remote-management).
+If you configured the server to run Docker images with a non-root internal user make sure to exclude the *demisto/powershell-ubuntu* Docker image as documented [here](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html)
+- Installation and configuration for Windows Remote Management to support a PowerShell session is a prerequisite in order to support this integration. For more information, refer to the following Microsoft [Article](https://docs.microsoft.com/en-us/windows/win32/winrm/installation-and-configuration-for-windows-remote-management).
 - PowerShell Remote sessions are created over port 5985 (Microsoft Web service management/WinRm). This port needs to be opened from XSOAR to the hosts on the local and network firewalls. 
 - Authentication is NTLM-based. 
 - The integration requires a valid domain user with the permission set needed to perform the required remote tasks.
 - Configuration Manager clients must be running the client from the 1706 release, or later in order to run scripts commands.
 - To use scripts, you must be a member of the appropriate Configuration Manager security role.
-- To use `ms-ecm-script-create` command - Your account must have Create permissions for SMS Scripts.
-- To use `ms-ecm-script-approve` - Your account must have Approve permissions for SMS Scripts.
-- To use `ms-ecm-script-invoke` - Your account must have Run Script permissions for Collections.
-- To use the commands `ms-ecm-service-stop`, `ms-ecm-service-start`, `ms-ecm-service-restart` - Your account must have permissions to use **all** scripts commands
+- To use the ***ms-ecm-script-create*** command, your account must have Create permissions for SMS Scripts.
+- To use the ***ms-ecm-script-approve*** command, your account must have Approve permissions for SMS Scripts.
+- To use the ***ms-ecm-script-invoke*** command, your account must have Run Script permissions for Collections.
+- To use the ***ms-ecm-service-stop***, ***ms-ecm-service-start***, and ***ms-ecm-service-restart*** commands, your account must have permissions to use **all** scripts commands
 ## Configure Microsoft Endpoint Configuration Manager on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -24,17 +24,17 @@ If you configured the server to run Docker images with a non-root internal user 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| ComputerName | ECM Server URL \(e.g., 192.168.64.128\) | True |
-| credentials | Username \(i.e, DOMAIN\\username\)  | True |
-| SiteCode | ECM Site Code | True |
+| ComputerName | ECM Server URL. \(e.g., 192.168.64.128\) | True |
+| credentials | Username. \(i.e, DOMAIN\\username\)  | True |
+| SiteCode | ECM Site Code. | True |
 
 4. Click **Test** to validate the ComputerName, credentials, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ms-ecm-user-last-log-on
 ***
-Gets the last user that logged on to a given device name
+Gets the last user who logged in to a given device name.
 
 
 #### Base Command
@@ -44,17 +44,17 @@ Gets the last user that logged on to a given device name
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_name | Specifies the name of a device. | Required | 
+| device_name | The name of a device. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftECM.LastLogOnUser.IPAddresses | string | The IPAddresses of the device | 
-| MicrosoftECM.LastLogOnUser.LastLogonTimestamp | date | The date of the last login to the device | 
-| MicrosoftECM.LastLogOnUser.LastLogonUserName | string | The name of the last user who logged in  to the device | 
-| MicrosoftECM.LastLogOnUser.Name | string | The name of the device | 
+| MicrosoftECM.LastLogOnUser.IPAddresses | string | The IP addresses of the device. | 
+| MicrosoftECM.LastLogOnUser.LastLogonTimestamp | date | The date of the last login to the device. | 
+| MicrosoftECM.LastLogOnUser.LastLogonUserName | string | The name of the last user who logged in to the device. | 
+| MicrosoftECM.LastLogOnUser.Name | string | The name of the device. | 
 
 
 #### Command Example
@@ -83,53 +83,6 @@ Gets the last user that logged on to a given device name
 >| LastLogonTimestamp | IPAddresses | DeviceName | LastLogonUserName
 >| --- | --- | --- | ---
 >| 2020\-11\-02T05:34:01Z | \["2.2.2.2","fe80::81c5:1670:9363:a40b"\] | EC2AMAZ\-2AKQ815 | 
-
-
-### ms-ecm-user-get-primary
-***
-Get the primary user of a given computer name
-
-
-#### Base Command
-
-`ms-ecm-user-get-primary`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| device_name | Specifies the name of a device. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MicrosoftECM.PrimaryUsers.MachineName | string | The name of the computer | 
-| MicrosoftECM.PrimaryUsers.UserName | string | The name of the primary user | 
-
-
-#### Command Example
-```!ms-ecm-user-get-primary device_name=EC2AMAZ-2AKQ815```
-
-#### Context Example
-```json
-{
-    "MicrosoftECM": {
-        "PrimaryUsers": {
-            "MachineName": "EC2AMAZ-2AKQ815",
-            "UserName": "demisto\\sccmadmin"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Primary users on EC2AMAZ-2AKQ815
->| MachineName | UserName
->| --- | ---
->| EC2AMAZ\-2AKQ815 | demisto\\sccmadmin
-
 
 ### ms-ecm-collection-list
 ***
