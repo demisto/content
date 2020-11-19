@@ -50,8 +50,9 @@ fi
 echo "Finished copying successfully."
 
 # TODO: INDEX_PATH is invalid. look where you can get the zipped file from.
-if [ ! -f "./$INDEX_PATH" ]; then
-  echo "Could not find file ./$INDEX_PATH"
+ls -la
+if [ ! -f "gs://$INDEX_FULL_TARGET_PATH" ]; then
+  echo "Could not find file gs://$INDEX_FULL_TARGET_PATH"
   exit 1
 else
   echo "Testing premium packs in against index file ./$INDEX_PATH"
