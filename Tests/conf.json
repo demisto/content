@@ -3183,6 +3183,11 @@
             "integrations": "Generic Webhook",
             "playbookID": "Generic Webhook - Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Palo Alto Networks Enterprise DLP",
+            "playbookID": "Palo_Alto_Networks_Enterprise_DLP - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
