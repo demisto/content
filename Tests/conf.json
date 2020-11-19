@@ -735,11 +735,18 @@
             "playbookID": "WordTokenizeTest",
             "toversion": "4.5.9"
         },
-        {
+                {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorrelations",
-            "timeout": 1000,
-            "fromversion": "5.0.0"
+            "timeout": 2000,
+            "fromversion": "5.0.0",
+            "toversion": "5.9.9"
+        },
+        {
+            "integrations": "QRadar_v2",
+            "playbookID": "test playbook - QRadarCorrelations For V2",
+            "timeout": 2000,
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Awake Security",
@@ -1372,7 +1379,8 @@
         {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
-            "fromversion": "4.1.0"
+            "fromversion": "4.1.0",
+            "timeout": 500
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -2678,10 +2686,10 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "QRadar",
+            "integrations": "QRadar_v2",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 600,
-            "fromversion": "5.0.0"
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "SetAndHandleEmpty test",
@@ -3165,6 +3173,11 @@
         {
             "integrations": "Analyst1",
             "playbookID": "Analyst1 Integration Demonstration - Test"
+        },
+        {
+            "integrations": "Generic Webhook",
+            "playbookID": "Generic Webhook - Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3228,7 +3241,6 @@
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
-        "Logzio - Test": "Issue 26729",
         "pyEWS_Test": "Issue 28339",
         "GmailTest": "Issue 27057",
         "playbook-SafeBreach-Test": "Issue 21205",
@@ -3236,7 +3248,6 @@
         "TestCofenseFeed": "Issue 29198",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "Indeni_test": "Non-certified partner pack, this should be skipped for now",
-        "playbook-feodoteackerhash_test": "Issue 29304",
         "TCPUtils-Test": "Issue 29677",
         "OpenCTI Feed Test": "Issue 29592",
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
@@ -3394,6 +3405,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Generic Webhook": "Does not send HTTP traffic",
         "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
         "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",

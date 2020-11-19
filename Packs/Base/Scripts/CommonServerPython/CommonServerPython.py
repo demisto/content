@@ -3995,7 +3995,7 @@ if 'requests' in sys.modules:
             except NameError:
                 pass
 
-        def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
+        def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
@@ -4122,15 +4122,10 @@ if 'requests' in sys.modules:
                             # Try to parse json error response
                             error_entry = res.json()
                             err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg, res=error_entry)
+                            raise DemistoException(err_msg, res=res)
                         except ValueError:
                             err_msg += '\n{}'.format(res.text)
-                            try:
-                                error_entry = json.loads(res.text)
-                                raise DemistoException(err_msg, res=error_entry)
-                            except ValueError:
-                                # couldn't parse the response json, sending only the error message
-                                raise DemistoException(err_msg)
+                            raise DemistoException(err_msg, res=res)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -4474,7 +4469,7 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 class DemistoException(Exception):
     def __init__(self, message, exception=None, res=None, *args):
-        self.res = res if res else {}
+        self.res = res
         self.message = message
         self.exception = exception
         super(DemistoException, self).__init__(message, exception, *args)

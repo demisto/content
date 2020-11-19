@@ -15,6 +15,7 @@ from time import sleep
 from threading import Thread
 from distutils.version import LooseVersion
 import logging
+from typing import List
 
 from Tests.scripts.utils.log_util import install_logging
 
@@ -23,7 +24,7 @@ import demisto_client
 from ruamel import yaml
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
     run_command, get_yaml, str2bool, format_version, find_type
-from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FileType
+from demisto_sdk.commands.common.constants import FileType
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
 from Tests.test_content import extract_filtered_tests, get_server_numeric_version
@@ -958,22 +959,24 @@ def restart_server_legacy(server):
         logging.exception('Legacy SSH restart demisto failed')
 
 
-def get_tests(server_numeric_version: str, tests: list) -> list:
+def get_tests(build: Build) -> List[str]:
     """
     Selects the tests from that should be run in this execution and filters those that cannot run in this server version
     Args:
-        server_numeric_version: The server numeric versions
-        tests: All conf.json tests
+        build: Build object
 
     Returns:
         Test configurations from conf.json that should be run in this execution
     """
+    server_numeric_version: str = build.server_numeric_version
+    tests: dict = build.tests
     if Build.run_environment == Running.CIRCLECI_RUN:
-        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests()
-        if run_all_tests:
-            logging.warning(f'Not running instance tests when {RUN_ALL_TESTS_FORMAT} is turned on')
+        filtered_tests = extract_filtered_tests()
+        if build.is_nightly:
+            # skip test button testing
+            logging.debug('Not running instance tests in nightly flow')
             tests_for_iteration = []
-        elif filter_configured and filtered_tests:
+        elif filtered_tests:
             tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
         else:
             tests_for_iteration = tests
@@ -1071,8 +1074,8 @@ def install_packs(build, pack_ids=None):
 
 
 def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations):
-    all_module_instances = []
-    brand_new_integrations = []
+    old_module_instances = []
+    new_module_instances = []
     testing_client = build.servers[0].client
     for test in tests_for_iteration:
         integrations = get_integrations_for_test(test, build.skipped_integrations_conf)
@@ -1107,21 +1110,48 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
             logging.error(f'failed setting parameters for integrations: {integrations_to_configure}')
         if not (new_ints_params_set and ints_to_configure_params_set):
             continue
-        module_instances = []
-        for integration in integrations_to_configure:
-            placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-            module_instance = configure_integration_instance(integration, testing_client, placeholders_map)
-            if module_instance:
-                module_instances.append(module_instance)
 
-        all_module_instances.extend(module_instances)
-        for integration in new_integrations:
-            placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-            module_instance = configure_integration_instance(integration, testing_client, placeholders_map)
-            if module_instance:
-                module_instances.append(module_instance)
-        brand_new_integrations.extend(module_instances)
-    return all_module_instances, brand_new_integrations
+        old_module_instances_for_test, new_module_instances_for_test = configure_old_and_new_integrations(
+            build,
+            integrations_to_configure,
+            new_integrations,
+            testing_client)
+
+        old_module_instances.extend(old_module_instances_for_test)
+        new_module_instances.extend(new_module_instances_for_test)
+    return old_module_instances, new_module_instances
+
+
+def configure_old_and_new_integrations(build: Build,
+                                       old_integrations_to_configure: list,
+                                       new_integrations_to_configure: list,
+                                       demisto_client: demisto_client) -> tuple:
+    """
+    Configures old and new integrations in the server configured in the demisto_client.
+    Args:
+        build: The build object
+        old_integrations_to_configure: Integrations to configure that are already exists
+        new_integrations_to_configure: Integrations to configure that were created in this build
+        demisto_client: A demisto client
+
+    Returns:
+        A tuple with two lists:
+        1. List of configured instances of old integrations
+        2. List of configured instances of new integrations
+    """
+    old_modules_instances = []
+    new_modules_instances = []
+    for integration in old_integrations_to_configure:
+        placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
+        module_instance = configure_integration_instance(integration, demisto_client, placeholders_map)
+        if module_instance:
+            old_modules_instances.append(module_instance)
+    for integration in new_integrations_to_configure:
+        placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
+        module_instance = configure_integration_instance(integration, demisto_client, placeholders_map)
+        if module_instance:
+            new_modules_instances.append(module_instance)
+    return old_modules_instances, new_modules_instances
 
 
 def instance_testing(build: Build, all_module_instances, pre_update):
@@ -1284,7 +1314,7 @@ def main():
     else:
         installed_content_packs_successfully = True
 
-    tests_for_iteration = get_tests(build.server_numeric_version, build.tests)
+    tests_for_iteration = get_tests(build)
     new_integrations, modified_integrations = get_changed_integrations(build)
     all_module_instances, brand_new_integrations = configure_server_instances(build,
                                                                               tests_for_iteration,
