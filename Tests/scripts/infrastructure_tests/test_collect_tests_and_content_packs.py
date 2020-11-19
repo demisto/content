@@ -1,14 +1,20 @@
 import copy
 import json
+import logging
 import os
 
+import pytest
+
+import Tests
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
 from ruamel.yaml import YAML
+from demisto_sdk.commands.common.constants import PACKS_PACK_META_FILE_NAME, PACK_METADATA_SUPPORT
 
 from Tests.scripts.collect_tests_and_content_packs import (
     TestConf, create_filter_envs_file,
     get_test_list_and_content_packs_to_install, collect_content_packs_to_install,
-    get_from_version_and_to_version_bounderies)
+    get_from_version_and_to_version_bounderies, PACKS_DIR, remove_ignored_tests,
+    remove_tests_for_non_supported_packs)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -105,7 +111,7 @@ class TestUtils(object):
         return script
 
     @staticmethod
-    def create_test_playbook(name, with_scripts=None, with_integration_commands=None):
+    def create_test_playbook(name, with_scripts=None, with_integration_commands=None, with_pack=None):
         test_playbook_default = demisto_sdk_tools.get_yaml(
             'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml')
 
@@ -126,6 +132,9 @@ class TestUtils(object):
 
         if with_integration_commands:
             playbook_id_set[name]['command_to_integration'] = with_integration_commands
+
+        if with_pack:
+            playbook_id_set[name]['pack'] = with_pack
 
         test_playbook = {
             'path': file_path,
@@ -202,7 +211,9 @@ class TestChangedPlaybook:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
+                            return_value=True)
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
@@ -220,10 +231,12 @@ class TestChangedTestPlaybook:
         assert filterd_tests == {self.TEST_ID}
         assert content_packs == {"Base", "DeveloperTools", "EWS"}
 
-    def test_changed_runnable_test__mocked_get_modified_files(self, mocker):
+    def test_changed_runnable_test__mocked_get_modified_files(self, mocker, tmp_path):
         # fake_test_playbook is fromversion 4.1.0 in playbook file
         test_id = 'fake_test_playbook'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
+        pack_metadata_file = create_temp_dir_with_metadata(tmp_path, 'fake_pack', {PACK_METADATA_SUPPORT: 'xsoar'})
+        mocker.patch.object(os.path, 'join', return_value=pack_metadata_file)
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
         filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
@@ -397,9 +410,8 @@ class TestChangedIntegrationAndPlaybook:
 
 
 class TestChangedScript:
-    TEST_ID = 'Extract Indicators From File - test'
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker, tmp_path):
         """
         Given
         - script_a was modified
@@ -426,7 +438,13 @@ class TestChangedScript:
 
         # - test_playbook_a exists that should test script_a
         fake_test_playbook = TestUtils.create_test_playbook(name='test_playbook_a',
-                                                            with_scripts=[script_name])
+                                                            with_scripts=[script_name], with_pack='pack_a')
+
+        # Assuming pack is XSOAR supported
+        mocker.patch.object(Tests.scripts.utils.content_packs_util, 'get_pack_metadata',
+                            return_value={PACK_METADATA_SUPPORT: 'xsoar'})
+        create_temp_dir_with_metadata(tmp_path, 'pack_a', {PACK_METADATA_SUPPORT: 'xsoar'})
+        mocker.patch.object(Tests.scripts.utils.content_packs_util, 'PACKS_DIR', tmp_path / PACKS_DIR)
 
         try:
             # - both in conf.json
@@ -454,7 +472,7 @@ class TestChangedScript:
             # Then
             # - ensure test_playbook_a will run/returned
             assert 'test_playbook_a' in filtered_tests
-            assert content_packs == {"Base", "DeveloperTools"}
+            assert content_packs == {"Base", "DeveloperTools", "pack_a"}
 
             # - ensure the validation not failing
             assert not collect_tests_and_content_packs._FAILED
@@ -518,7 +536,7 @@ class TestChangedCommonTesting:
 
     def test_all_tests(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
-        assert content_packs == {"Gmail", "HelloWorld", "DeveloperTools", "Base"}
+        assert content_packs == {"DeveloperTools", "Base"}
 
 
 class TestPackageFilesModified:
@@ -586,6 +604,14 @@ def get_mock_test_list(minimum_server_version=TWO_BEFORE_GA_VERSION, get_modifie
         git_diff_ret, branch_name, minimum_server_version, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF)
     )
     return tests, content_packs
+
+
+def create_temp_dir_with_metadata(path, pack_name, pack_metadata_content):
+    pack = path / PACKS_DIR / pack_name
+    pack.mkdir(parents=True)
+    pack_metadata_file = pack / PACKS_PACK_META_FILE_NAME
+    pack_metadata_file.write_text(json.dumps(pack_metadata_content))
+    return pack_metadata_file
 
 
 def test_skipped_integration_should_not_be_tested(mocker):
@@ -821,7 +847,8 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
 
 
 class TestExtractMatchingObjectFromIdSet:
-    def test_mismatching_script_id(self, mocker):
+
+    def test_mismatching_script_id(self, mocker, tmp_path):
         """
         Given
         - script_a was modified
@@ -845,6 +872,12 @@ class TestExtractMatchingObjectFromIdSet:
         id_set_obj = fake_script['id_set'][script_name]
         fake_script['id_set'] = {'wrong_id': id_set_obj}
 
+        # Assuming pack is XSOAR supported
+        mocker.patch.object(Tests.scripts.utils.content_packs_util, 'get_pack_metadata',
+                            return_value={PACK_METADATA_SUPPORT: 'xsoar'})
+        create_temp_dir_with_metadata(tmp_path, 'pack_a', {PACK_METADATA_SUPPORT: 'xsoar'})
+        mocker.patch.object(Tests.scripts.utils.content_packs_util, 'PACKS_DIR', tmp_path / PACKS_DIR)
+
         # mark as modified
         TestUtils.mock_get_modified_files(mocker,
                                           modified_files_list=[
@@ -853,7 +886,8 @@ class TestExtractMatchingObjectFromIdSet:
 
         # - test_playbook_a exists that should test script_a
         fake_test_playbook = TestUtils.create_test_playbook(name='test_playbook_a',
-                                                            with_scripts=[script_name])
+                                                            with_scripts=[script_name],
+                                                            with_pack='pack_a')
 
         try:
             # - both in conf.json
@@ -881,7 +915,7 @@ class TestExtractMatchingObjectFromIdSet:
             # Then
             # - ensure test_playbook_a will run/returned
             assert 'test_playbook_a' in filtered_tests
-            assert content_packs == {"Base", "DeveloperTools"}
+            assert content_packs == {"Base", "DeveloperTools", "pack_a"}
 
             # - ensure the validation not failing
             assert not collect_tests_and_content_packs._FAILED
@@ -976,12 +1010,14 @@ def test_pack_ignore_test_is_skipped(mocker):
     fake_integration = TestUtils.create_integration(
         name=integration_name, with_commands=["great-command"], pack=pack_name
     )
-    fake_test_playbook = TestUtils.create_test_playbook(name=test_name, with_scripts=["FetchFromInstance"])
-
+    fake_test_playbook = TestUtils.create_test_playbook(name=test_name, with_scripts=["FetchFromInstance"],
+                                                        with_pack='GreatPack')
     pack_ignore_mgr = TestUtils.PackIgnoreManager(os.path.basename(fake_test_playbook['path']))
 
     try:
         mocker.patch.object(os.path, 'join', return_value=fake_test_playbook['path'])
+        mocker.patch.object(Tests.scripts.utils.content_packs_util, 'get_pack_metadata',
+                            return_value={PACK_METADATA_SUPPORT: 'xsoar'})
         mocker.patch.object(demisto_sdk_tools, 'get_pack_ignore_file_path',
                             return_value=pack_ignore_mgr.pack_ignore_path)
         TestUtils.mock_get_modified_files(mocker, modified_files_list=[fake_integration['path']])
@@ -1007,8 +1043,13 @@ def test_pack_ignore_test_is_skipped(mocker):
                 id_set=fake_id_set
             )
 
-            assert content_packs == {"Base", "DeveloperTools", pack_name}
-            assert not filtered_tests
+            assert content_packs == {"HelloWorld", "Gmail", "Base", "DeveloperTools", pack_name}
+            assert filtered_tests == {
+                "Sanity Test - Playbook with no integration",
+                "Sanity Test - Playbook with integration",
+                "Sanity Test - Playbook with mocked integration",
+                "Sanity Test - Playbook with Unmockable Integration"
+            }
             assert not collect_tests_and_content_packs._FAILED
     finally:
         TestUtils.delete_files([
@@ -1100,3 +1141,58 @@ def test_collect_test_playbooks_no_results():
     test_conf = TestConf(MOCK_CONF)
     content_packs = test_conf.get_packs_of_collected_tests(['TestCommonPython'], MOCK_ID_SET)
     assert set() == content_packs
+
+
+@pytest.mark.parametrize('tests_to_filter, ignored_tests, expected_result', [
+    ({'fake_test_playbook'}, {'fake_test_playbook'}, set()),
+    ({'fake_test_playbook'}, set(), {'fake_test_playbook'}),
+    ({'fake_test_playbook'}, {'fake_test_playbook2'}, {'fake_test_playbook'}),
+])
+def test_remove_ignored_tests(tests_to_filter, ignored_tests, expected_result, mocker):
+    """
+    Given:
+        - Case a: test playbook set containing a test that is ignored in the .pack_ignore file.
+        - Case b: test playbook set containing a test that is not ignored in its .pack_ignore file.
+        - Case c: test playbook set containing a test from a pack with a different ignored test.
+    When:
+        Filtering out ignored tests from a given set of tests.
+    Then:
+        - Case a: Ensure that the given test was removed from result list
+        - Case b: Ensure that the given test appears in the result list
+        - Case c: Ensure that the given test appears in the result list
+    """
+    mocker.patch.object(Tests.scripts.collect_tests_and_content_packs.tools, 'get_ignore_pack_skipped_tests',
+                        return_value=ignored_tests)
+    mocker.patch('logging.debug')
+    res = remove_ignored_tests(tests_to_filter, MOCK_ID_SET)
+    assert res == expected_result
+    if ignored_tests:
+        logging.debug.assert_called_once_with("Skipping tests that were ignored via .pack-ignore:\n{}".format(
+            '\n'.join(ignored_tests)))
+
+
+@pytest.mark.parametrize('tests_to_filter, should_test_content, expected_result', [
+    ({'fake_test_playbook'}, False, set()),
+    ({'fake_test_playbook'}, True, {'fake_test_playbook'})
+])
+def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_content, expected_result, mocker):
+    """
+        Given:
+            - Case a: test playbook set containing a test that its pack is un-supported and should not be tested.
+            - Case b: test playbook set containing a test that its pack is supported and should  be tested.
+        When:
+            Filtering out un-supported pack-tests from a given set of tests.
+        Then:
+            - Case a: Ensure that the given test was removed from result list
+            - Case b: Ensure that the given test appears in the result list
+        """
+    mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
+                        return_value=should_test_content)
+    mocker.patch('logging.debug')
+    filtered_tests = copy.deepcopy(tests_to_filter)
+    res = remove_tests_for_non_supported_packs(tests_to_filter, MOCK_ID_SET)
+    assert res == expected_result
+    if not should_test_content:
+        logging.debug.assert_called_once_with(
+            'The following test playbooks are not supported and will not be tested: \n{} '.format(
+                '\n'.join(filtered_tests)))
