@@ -21,12 +21,14 @@ class Client(BaseClient):
     def import_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
         Import the file given as url to the API's server, for later conversion
+        Args:
+            arguments: dict containing the request arguments, should contain the field 'url'
 
-        :type arguments: ``Dict[str, Any]``
-        :param arguments: dict containing the request arguments, should contain the field 'url'
-        :return: dict containing the results of the import action as returned from the API (status, file ID, etc.)
-        :rtype: ``Dict[str, Any]``
+        Returns:
+            dict containing the results of the import action as returned from the API (status, file ID, etc.)
+            ``Dict[str, Any]``
         """
+
         return self._http_request(
             method='POST',
             url_suffix='import/url',
@@ -39,11 +41,15 @@ class Client(BaseClient):
         """
         Import the file given as a war room entry id to the API's server, for later conversion
 
-        :param file_path: path to given file, derived from the entry id
-        :param file_name: name of file, including format suffix
-        :return: dict containing the results of the import action as returned from the API (status, file ID, etc.)
-        :rtype: ``Dict[str, Any]``
+        Args:
+            file_path: path to given file, derived from the entry id
+            file_name: name of file, including format suffix
+
+        Returns:
+            dict containing the results of the import action as returned from the API (status, file ID, etc.)
+            ``Dict[str, Any]``
         """
+
         response_get_form = self._http_request(
             method='POST',
             url_suffix='import/upload'
@@ -92,13 +98,14 @@ class Client(BaseClient):
     def convert(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
         Convert a file to desired format, given the file was priorly imported to the API's server
+        Args:
+            arguments: dict containing the request arguments, should contain the fields 'task_id' and 'output_format'
 
-        :type arguments: ``Dict[str, Any]``
-        :param arguments: dict containing the request arguments, should contain the fields 'task_id' and 'output_format'
-
-        :return: dict containing the results of the convert action as returned from the API (status, file ID, etc.)
-        :rtype: ``Dict[str, Any]``
+        Returns:
+            dict containing the results of the convert action as returned from the API (status, file ID, etc.)
+            ``Dict[str, Any]``
         """
+
         arguments['input'] = arguments.pop('task_id')
         return self._http_request(
             method='POST',
@@ -110,13 +117,15 @@ class Client(BaseClient):
     def check_status(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
         Check the status of a request sent to the API's server
+        Args:
+            arguments: dict containing the request arguments, should contain the field 'task_id'
 
-        :type arguments: ``Dict[str, Any]``
-        :param arguments: dict containing the request arguments, should contain the field 'task_id'
-
-        :return: dict containing the results of the check status action as returned from the API (status, file ID, etc.)
-        :rtype: ``Dict[str, Any]``
+        Returns:
+            dict containing the results of the check status action as returned from the API (status, file ID, etc.)
+            ``Dict[str, Any]``
         """
+
+
         task_id = arguments.get('task_id')
         return self._http_request(
             method='GET',
@@ -128,15 +137,18 @@ class Client(BaseClient):
     def export_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
         Export a converted file to a url
+        Args:
+            arguments:
+                dict containing the request arguments, should contain the field 'task_id' of the desired file
 
-        :type arguments: ``Dict[str, Any]``
-        :param arguments: dict containing the request arguments, should contain the field 'task_id' of the desired file
-
-        :return: dict containing the results of the export action as returned from the API (status, file ID, etc.)
+        Returns:
+            dict containing the results of the export action as returned from the API (status, file ID, etc.)
                     if the action was complete, the result url will be a part of this dict. If the request is pending,
                     one should retrieve the url via the 'check_status' command
-        :rtype: ``Dict[str, Any]``
+            ``Dict[str, Any]``
+
         """
+
         arguments['input'] = arguments.pop('task_id')
         return self._http_request(
             method='POST',
@@ -147,11 +159,15 @@ class Client(BaseClient):
 
     @logger
     def get_file_from_url(self, url: str):
-        """
+       """
         Call a GET http request in order to get the file data given as url
-        :param url: url containing a file
-        :return: request response, containing the data of the file
-        """
+       Args:
+           url: url containing a file
+
+       Returns:
+            request response, containing the data of the file
+       """
+
         return self._http_request(
             method='GET',
             url_suffix=None,
@@ -165,9 +181,12 @@ class Client(BaseClient):
 def import_command(client: Client, arguments: Dict[str, Any]):
     """
     Import a file to the API for later conversion
-    :param client: CloudConvert client to use
-    :param arguments: All command arguments - either 'url' or 'entry_id'.
-    :return: CommandResults object containing the results of the import action as returned from the API and its
+    Args:
+        client: CloudConvert client to use
+        arguments: All command arguments - either 'url' or 'entry_id'.
+
+    Returns:
+        CommandResults object containing the results of the import action as returned from the API and its
              readable output
     """
 
@@ -211,10 +230,15 @@ def import_command(client: Client, arguments: Dict[str, Any]):
 def convert_command(client: Client, arguments: Dict[str, Any]):
     """
     Convert a file that was priorly imported
-    :param client: CloudConvert client to use
-    :param arguments: All command arguments, the fields 'task_id' and 'output_format'
-    :return: CommandResults object containing the results of the convert action as returned from the API and its readable output
+    Args:
+        client: CloudConvert client to use
+        arguments: All command arguments, the fields 'task_id' and 'output_format'
+
+    Returns:
+        CommandResults object containing the results of the convert action as returned from the API and its readable output
+
     """
+
     results = client.convert(arguments)
     results_data = results.get('data')
 
@@ -242,12 +266,17 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
 def check_status_command(client: Client, arguments: Dict[str, Any]):
     """
     Check status of an existing operation using it's task id
-    :param client: CloudConvert client to use
-    :param arguments: All command arguments, the field 'task_id'
-        Note: When the checked operation is 'export', the field 'create_war_room_entry' should be True.
-        This way the results will be a war room entry containing the file.
-    :return: CommandResults object containing the results of the check status action as returned from the API
-     and its readable output OR if the argument create_war_room_entry is set to True, then a war room entry is returned
+    Args:
+        client: CloudConvert client to use
+        arguments: All command arguments, the field 'task_id'
+            Note: When the checked operation is 'export', the field 'create_war_room_entry' should be True.
+            This way the results will be a war room entry containing the file.
+
+    Returns:
+            CommandResults object containing the results of the check status action as returned from the API
+         and its readable output OR if the argument create_war_room_entry is set to True, then a war room entry is also
+         being created.
+
     """
     results = client.check_status(arguments)
     results_data = results.get('data')
@@ -309,11 +338,14 @@ def export_command(client: Client, arguments: Dict[str, Any]):
     Note: in order to get the resulted url/entry of the file you need to use a check-status command as well,
         since the response of the export command is usually responded before the file is fully exported (hence the
     'status' field is 'waiting', and not 'finished')
-    :param client: CloudConvert client to use
-    :param arguments: All command arguments, the fields 'task_id', and 'export_as' (url/war_room_entry)
-    :return: CommandResults object containing the results of the export action as returned from the API, and its readable
-     output.
+    Args:
+        client: CloudConvert client to use
+        arguments: All command arguments, the fields 'task_id', and 'export_as' (url/war_room_entry)
+
+    Returns:
+        CommandResults object containing the results of the export action as returned from the API, and its readable
     """
+
     # Call export to url request
     # In both url and war room entry we still first get a url
     results = client.export_url(arguments)
@@ -346,9 +378,13 @@ def export_command(client: Client, arguments: Dict[str, Any]):
 def test_module(client: Client):
     """
     Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
-    :param client: CloudConvert client
-    :return: 'ok' if test passed, anything else will fail the test
+    Args:
+        client: CloudConvert client
+
+    Returns:
+        'ok' if test passed, anything else will fail the test
     """
+
     dummy_url = 'https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf'
     result = client.import_url({'url': dummy_url})
     if result.get('data'):
