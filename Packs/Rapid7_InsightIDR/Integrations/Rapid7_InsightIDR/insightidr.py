@@ -527,7 +527,7 @@ def insight_idr_download_logs_command(client: Client, log_ids: str, time_range: 
     response = client.download_logs(log_ids.replace(',', ':'), remove_empty_elements(params))
     content_disposition = response.headers.get('Content-Disposition')
     try:
-        filename = content_disposition.split(';')[1].split('=')[1].replace(' ', '')  #  type: ignore
+        filename = content_disposition.split(';')[1].split('=')[1].replace(' ', '')  # type: ignore
     except AttributeError:
         filename = datetime.now().strftime(DATE_FORMAT) + '.log'
 
