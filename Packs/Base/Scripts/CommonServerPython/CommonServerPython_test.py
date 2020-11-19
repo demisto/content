@@ -2887,7 +2887,7 @@ def test_arg_to_timestamp_valid_inputs():
         arg_name='foo'
     )
 
-    assert result == datetime.datetime(2020, 11, 10, 21, 43, 43, tzinfo=datetime.tzinfo.)
+    assert result == datetime.datetime(2020, 11, 10, 21, 43, 43, tzinfo=datetime.timezone.utc)
 
     # relative dates also work
     result = arg_to_datetime(
@@ -2895,7 +2895,7 @@ def test_arg_to_timestamp_valid_inputs():
         arg_name='foo'
     )
 
-    assert result > 1605030471
+    assert result > datetime.datetime(2020, 11, 10, 21, 43, 43)
 
 
 def test_arg_to_timestamp_invalid_inputs():

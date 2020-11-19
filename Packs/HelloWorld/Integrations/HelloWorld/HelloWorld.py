@@ -1057,7 +1057,7 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResult
         severity=','.join(severities),
         alert_status=status,
         alert_type=alert_type,
-        start_time=start_time.timestamp(),
+        start_time=int(start_time.timestamp()),
         max_results=max_results
     )
 
@@ -1353,11 +1353,11 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = arg_to_datetime(
+    first_fetch_time = int(arg_to_datetime(
         arg=demisto.params().get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
-    ).timestamp()
+    ).timestamp())
     # Using assert as a type guard (since first_fetch_time is always an int when required=True)
     assert isinstance(first_fetch_time, int)
 
