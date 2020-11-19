@@ -119,7 +119,7 @@ def main():
 
     configure_servers_and_restart(build, prints_manager)
     #  Get a list of the test we need to run.
-    tests_for_iteration = get_tests(build.server_numeric_version, build.tests)
+    tests_for_iteration = get_tests(build)
     #  Installing the packs.
     installed_content_packs_successfully = install_packs_private(build, prints_manager)
     #  Get a list of the integrations that have changed.
