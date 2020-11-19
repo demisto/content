@@ -33,7 +33,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='import/url',
             data=arguments,
-            ok_codes=(200, 201, 422)
+            ok_codes=(200, 201, 422),
         )
 
     @logger
@@ -80,7 +80,7 @@ class Client(BaseClient):
                 files=file_dict,
                 empty_valid_codes=[201, 204],
                 return_empty_response=True,
-                data=params
+                data=params,
             )
 
         # As shown, this operation has two requests
@@ -111,7 +111,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='convert',
             data=arguments,
-            ok_codes=(200, 201, 422)
+            ok_codes=(200, 201, 422),
         )
 
     def check_status(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
@@ -129,7 +129,7 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix=f'/tasks/{task_id}',
-            ok_codes=(200, 201, 422)
+            ok_codes=(200, 201, 422),
         )
 
     @logger
@@ -153,7 +153,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/export/url',
             data=arguments,
-            ok_codes=(200, 201, 422)
+            ok_codes=(200, 201, 422),
         )
 
     @logger
@@ -171,7 +171,7 @@ class Client(BaseClient):
             url_suffix=None,
             full_url=url,
             headers={'Content-Type': 'application/json'},
-            resp_type='text'
+            resp_type='text',
         )
 
 
@@ -233,7 +233,7 @@ def import_command(client: Client, arguments: Dict[str, Any]):
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
         raw_response=results,
-        outputs=remove_empty_elements(results_data)
+        outputs=remove_empty_elements(results_data),
     )
 
 
@@ -254,15 +254,19 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
     raise_error_if_no_data(results)
     results_data = results.get('data')
 
-    readable_output = tableToMarkdown('Convert Results', remove_empty_elements(results_data),
-                                      headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
-                                      headerTransform=string_to_table_header)
+    readable_output = tableToMarkdown(
+        'Convert Results',
+        remove_empty_elements(results_data),
+        headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
+        headerTransform=string_to_table_header,
+    )
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
         raw_response=results,
-        outputs=remove_empty_elements(results_data)
+        outputs=remove_empty_elements(results_data),
     )
 
 
@@ -315,16 +319,20 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         return war_room_file
 
     else:
-        readable_output = tableToMarkdown('Check Status Results', remove_empty_elements(results_data),
-                                          headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
-                                                   'status'),
-                                          headerTransform=string_to_table_header)
+
+        readable_output = tableToMarkdown(
+            'Check Status Results',
+            remove_empty_elements(results_data),
+            headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result','status'),
+            headerTransform=string_to_table_header,
+        )
+
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
             raw_response=results,
-            outputs=remove_empty_elements(results_data)
+            outputs=remove_empty_elements(results_data),
         )
 
 
@@ -353,15 +361,18 @@ def export_command(client: Client, arguments: Dict[str, Any]):
     if arguments['export_as'] == 'war_room_entry':
         results['data']['operation'] = 'export/entry'
 
-    readable_output = tableToMarkdown('Export Results', remove_empty_elements(results_data),
-                                      headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
-                                      headerTransform=string_to_table_header)
+    readable_output = tableToMarkdown(
+        'Export Results',
+        remove_empty_elements(results_data),
+        headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
+        headerTransform=string_to_table_header,
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
         outputs_key_field='id',
         raw_response=results,
-        outputs=remove_empty_elements(results_data)
+        outputs=remove_empty_elements(results_data),
     )
 
 
@@ -388,6 +399,7 @@ def test_module(client: Client):
 
 def main() -> None:
     try:
+        command = demisto.command()
         params = demisto.params()
         api_key = params.get('apikey')
         verify = not params.get('insecure', False)
@@ -396,7 +408,6 @@ def main() -> None:
             'Authorization': f'Bearer {api_key}'
         }
         client = Client(headers, verify, proxy)
-        command = demisto.command()
 
         if command == 'cloudconvert-import':
             return_results(import_command(client, demisto.args()))
