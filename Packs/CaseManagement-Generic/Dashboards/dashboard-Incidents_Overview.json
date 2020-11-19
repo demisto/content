@@ -2,1353 +2,1472 @@
     "fromDate": "0001-01-01T00:00:00Z",
     "fromDateLicense": "0001-01-01T00:00:00Z",
     "id": "Incidents Overview",
-    "layout": [
-        {
-            "forceRange": false,
-            "h": 2,
-            "i": "8efbf5c0-e4ff-11e7-b60b-df7995291baf",
-            "id": "8efbf5c0-e4ff-11e7-b60b-df7995291baf",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "active-incidents-by-severity",
-                "isPredefined": true,
-                "itemVersion": "",
-                "modified": "0001-01-01T00:00:00Z",
-                "name": "Active Incidents by Severity",
-                "packID": "",
-                "params": {
-                    "groupBy": [
-                        "severity"
-                    ]
-                },
-                "prevName": "",
-                "query": "-category:job and -status:archived and -status:closed",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": -1,
-                "widgetType": "pie"
-            },
-            "x": 0,
-            "y": 1
-        },
-        {
-            "forceRange": false,
-            "h": 2,
-            "i": "8fa3a770-e4ff-11e7-b60b-df7995291baf",
-            "id": "8fa3a770-e4ff-11e7-b60b-df7995291baf",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "",
-                "modified": "0001-01-01T00:00:00Z",
-                "name": "Active Incidents by Type",
-                "packID": "",
-                "params": {
-                    "groupBy": [
-                        "type"
-                    ],
-                    "tableColumns": [
-                        {
-                            "isDefault": true,
-                            "key": "id",
-                            "position": 0,
-                            "width": 110
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "name",
-                            "position": 2,
-                            "width": 300
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "type",
-                            "position": 3,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "severity",
-                            "position": 4,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "status",
-                            "position": 5,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "owner",
-                            "position": 6,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "roles",
-                            "position": 7,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "playbookId",
-                            "position": 8,
-                            "width": 150
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "occurred",
-                            "position": 9,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "dueDate",
-                            "position": 10,
-                            "width": 200
-                        }
-                    ]
-                },
-                "prevName": "",
-                "query": "-category:job and -status:archived and -status:closed",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "pie"
-            },
-            "x": 3,
-            "y": 1
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "ab3a69b0-06a6-11e8-9f30-0903d8762b71",
-            "id": "ab3a69b0-06a6-11e8-9f30-0903d8762b71",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "",
-                "modified": "0001-01-01T00:00:00Z",
-                "name": "Unassigned Incidents",
-                "packID": "",
-                "params": {
-                    "colors": {
-                        "isEnabled": true,
-                        "items": {
-                            "#00CD33": {
-                                "value": -1
-                            },
-                            "#FAC100": {
-                                "value": 0
-                            }
-                        },
-                        "type": "above"
-                    },
-                    "tableColumns": [
-                        {
-                            "isDefault": true,
-                            "key": "id",
-                            "position": 0,
-                            "width": 110
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "name",
-                            "position": 2,
-                            "width": 300
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "type",
-                            "position": 3,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "severity",
-                            "position": 4,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "status",
-                            "position": 5,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "owner",
-                            "position": 6,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "roles",
-                            "position": 7,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "playbookId",
-                            "position": 8,
-                            "width": 150
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "occurred",
-                            "position": 9,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "dueDate",
-                            "position": 10,
-                            "width": 200
-                        }
-                    ]
-                },
-                "prevName": "",
-                "query": "-category:job and -status:archived and -status:closed and owner:\"\"",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "trend"
-            },
-            "x": 6,
-            "y": 0
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "b95f04b0-06a6-11e8-9f30-0903d8762b71",
-            "id": "b95f04b0-06a6-11e8-9f30-0903d8762b71",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": true,
-                "itemVersion": "",
-                "modified": "0001-01-01T00:00:00Z",
-                "name": "Late Incidents",
-                "packID": "",
-                "params": {
-                    "colors": {
-                        "isEnabled": true,
-                        "items": {
-                            "#FF1B15": {
-                                "value": 0
-                            }
-                        },
-                        "type": "above"
-                    }
-                },
-                "prevName": "",
-                "query": "-category:job and -status:archived and -status:closed and dueDate:<now",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": -1,
-                "widgetType": "trend"
-            },
-            "x": 9,
-            "y": 0
-        },
-        {
-            "forceRange": false,
-            "h": 2,
-            "i": "cad75e90-06a6-11e8-9f30-0903d8762b71",
-            "id": "cad75e90-06a6-11e8-9f30-0903d8762b71",
-            "w": 12,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "",
-                "modified": "0001-01-01T00:00:00Z",
-                "name": "Active Incidents Assigned by User",
-                "packID": "",
-                "params": {
-                    "groupBy": [
-                        "owner"
-                    ],
-                    "hideLegend": false,
-                    "tableColumns": [
-                        {
-                            "isDefault": true,
-                            "key": "id",
-                            "position": 0,
-                            "width": 110
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "name",
-                            "position": 2,
-                            "width": 300
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "type",
-                            "position": 3,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "severity",
-                            "position": 4,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "status",
-                            "position": 5,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "owner",
-                            "position": 6,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "roles",
-                            "position": 7,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "playbookId",
-                            "position": 8,
-                            "width": 150
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "occurred",
-                            "position": 9,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "dueDate",
-                            "position": 10,
-                            "width": 200
-                        }
-                    ]
-                },
-                "prevName": "",
-                "query": "-category:job and -status:archived and -status:closed and -owner:\"\"",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "column"
-            },
-            "x": 0,
-            "y": 3
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "5f207d30-0746-11e8-8294-876d51689c2e",
-            "id": "5f207d30-0746-11e8-8294-876d51689c2e",
-            "w": 3,
-            "widget": {
-                "category": "others",
-                "commitMessage": "",
-                "dataType": "roi",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "saved-by-dbot",
-                "isPredefined": true,
-                "itemVersion": "",
-                "modified": "0001-01-01T00:00:00Z",
-                "name": "Saved By DBot",
-                "packID": "",
-                "params": {
-                    "currencySign": "$"
-                },
-                "prevName": "",
-                "query": "",
-                "shouldCommit": false,
-                "size": 5,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": -1,
-                "widgetType": "number"
-            },
-            "x": 9,
-            "y": 1
-        },
-        {
-            "forceRange": true,
-            "h": 1,
-            "i": "0be91fe0-0747-11e8-8294-876d51689c2e",
-            "id": "0be91fe0-0747-11e8-8294-876d51689c2e",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "2018-02-01T00:00:00+02:00",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 0,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "todays-new-incidents",
-                "isPredefined": true,
-                "itemVersion": "",
-                "modified": "0001-01-01T00:00:00Z",
-                "name": "Today's New Incidents",
-                "packID": "",
-                "params": {
-                    "colors": {
-                        "isEnabled": true,
-                        "items": {
-                            "#00CD33": {
-                                "value": -1
-                            },
-                            "#FAC100": {
-                                "value": 10
-                            },
-                            "#FF1B15": {
-                                "value": 100
-                            }
-                        },
-                        "type": "above"
-                    }
-                },
-                "prevName": "",
-                "query": "-status:closed -category:job",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": -1,
-                "widgetType": "trend"
-            },
-            "x": 3,
-            "y": 0
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "c553bff0-a45f-11ea-9256-394fe136c3ee",
-            "id": "c553bff0-a45f-11ea-9256-394fe136c3ee",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "mean-time-to-resolution-occurred",
-                "isPredefined": true,
-                "itemVersion": "",
-                "locked": true,
-                "modified": "2020-05-27T00:37:27.115057596+03:00",
-                "name": "Mean Time to Resolution (Occurred)",
-                "packID": "",
-                "params": {
-                    "keys": [
-                        "avg|closed - occurred",
-                        "count|1"
-                    ]
-                },
-                "prevName": "Mean Time to Resolution (Occurred)",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "-category:job and status:closed",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 1,
-                "widgetType": "duration"
-            },
-            "x": 0,
-            "y": 5
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "7da58050-a462-11ea-9256-394fe136c3ee",
-            "id": "7da58050-a462-11ea-9256-394fe136c3ee",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": null,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "c6be9e3a-0c45-4ba1-8266-b44a4a0c6f70",
-                "isPredefined": false,
-                "itemVersion": "",
-                "modified": "2020-06-02T02:48:59.869411903+03:00",
-                "name": "Open Incidents",
-                "packID": "",
-                "params": {
-                    "colors": {
-                        "isEnabled": false,
-                        "items": {
-                            "#00CD33": {
-                                "value": -1
-                            },
-                            "#FAC100": {
-                                "value": 25
-                            },
-                            "#FF1B15": {
-                                "value": 50
-                            }
-                        },
-                        "type": "above"
-                    },
-                    "tableColumns": [
-                        {
-                            "isDefault": true,
-                            "key": "id",
-                            "position": 0,
-                            "width": 110
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "name",
-                            "position": 2,
-                            "width": 300
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "type",
-                            "position": 3,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "severity",
-                            "position": 4,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "status",
-                            "position": 5,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "owner",
-                            "position": 6,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "roles",
-                            "position": 7,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "playbookId",
-                            "position": 8,
-                            "width": 150
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "occurred",
-                            "position": 9,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "dueDate",
-                            "position": 10,
-                            "width": 200
-                        }
-                    ]
-                },
-                "prevName": "Active Incidents",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "-status:closed -category:job",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 1,
-                "widgetType": "number"
-            },
-            "x": 0,
-            "y": 0
-        },
-        {
-            "forceRange": false,
-            "h": 2,
-            "i": "27f39030-a4de-11ea-8c29-db553c036fb9",
-            "id": "27f39030-a4de-11ea-8c29-db553c036fb9",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "",
-                "locked": true,
-                "modified": "2020-05-27T00:37:26.946364371+03:00",
-                "name": "Incidents Top Close Analysts",
-                "packID": "",
-                "params": {
-                    "groupBy": [
-                        "closingUserId"
-                    ],
-                    "tableColumns": [
-                        {
-                            "isDefault": true,
-                            "key": "id",
-                            "position": 0,
-                            "width": 110
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "name",
-                            "position": 2,
-                            "width": 300
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "type",
-                            "position": 3,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "severity",
-                            "position": 4,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "status",
-                            "position": 5,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "owner",
-                            "position": 6,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "roles",
-                            "position": 7,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "playbookId",
-                            "position": 8,
-                            "width": 150
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "occurred",
-                            "position": 9,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "dueDate",
-                            "position": 10,
-                            "width": 200
-                        }
-                    ]
-                },
-                "prevName": "Incidents Top Close Analysts",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "-category:job and status:closed and -closingUser:\"DBot\"",
-                "shouldCommit": false,
-                "size": 5,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "bar"
-            },
-            "x": 9,
-            "y": 5
-        },
-        {
-            "forceRange": false,
-            "h": 2,
-            "i": "93380b00-a4de-11ea-8c29-db553c036fb9",
-            "id": "93380b00-a4de-11ea-8c29-db553c036fb9",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "3201c062-1e95-4274-8374-b2f8ed10591e",
-                "isPredefined": false,
-                "itemVersion": "",
-                "modified": "2020-06-02T17:37:12.375197769+03:00",
-                "name": "Closed Incidents by Reason",
-                "packID": "",
-                "params": {
-                    "groupBy": [
-                        "closeReason"
-                    ],
-                    "tableColumns": [
-                        {
-                            "isDefault": true,
-                            "key": "id",
-                            "position": 0,
-                            "width": 110
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "name",
-                            "position": 2,
-                            "width": 300
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "type",
-                            "position": 3,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "severity",
-                            "position": 4,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "status",
-                            "position": 5,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "owner",
-                            "position": 6,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "roles",
-                            "position": 7,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "playbookId",
-                            "position": 8,
-                            "width": 150
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "occurred",
-                            "position": 9,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "dueDate",
-                            "position": 10,
-                            "width": 200
-                        }
-                    ]
-                },
-                "prevName": "Closed Incidents by Reason",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "-category:job and status:closed",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 1,
-                "widgetType": "pie"
-            },
-            "x": 6,
-            "y": 1
-        },
-        {
-            "forceRange": false,
-            "h": 2,
-            "i": "8f3e7b10-a5e2-11ea-beb5-2996637e1d9e",
-            "id": "8f3e7b10-a5e2-11ea-beb5-2996637e1d9e",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "",
-                "locked": true,
-                "modified": "2020-05-27T00:37:27.035567366+03:00",
-                "name": "Open Incidents by Role",
-                "packID": "",
-                "params": {
-                    "groupBy": [
-                        "roles"
-                    ],
-                    "tableColumns": [
-                        {
-                            "isDefault": true,
-                            "key": "id",
-                            "position": 0,
-                            "width": 110
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "name",
-                            "position": 2,
-                            "width": 300
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "type",
-                            "position": 3,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "severity",
-                            "position": 4,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "status",
-                            "position": 5,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "owner",
-                            "position": 6,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "roles",
-                            "position": 7,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "playbookId",
-                            "position": 8,
-                            "width": 150
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "occurred",
-                            "position": 9,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "dueDate",
-                            "position": 10,
-                            "width": 200
-                        }
-                    ]
-                },
-                "prevName": "Incidents by Role",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "-category:job",
-                "shouldCommit": false,
-                "size": 10,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "pie"
-            },
-            "x": 3,
-            "y": 5
-        },
-        {
-            "forceRange": false,
-            "h": 2,
-            "i": "9c94c990-a5e2-11ea-beb5-2996637e1d9e",
-            "id": "9c94c990-a5e2-11ea-beb5-2996637e1d9e",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "",
-                "locked": true,
-                "modified": "2020-05-27T00:37:27.260336294+03:00",
-                "name": "Closed Incidents by Role",
-                "packID": "",
-                "params": {
-                    "groupBy": [
-                        "roles"
-                    ],
-                    "tableColumns": [
-                        {
-                            "isDefault": true,
-                            "key": "id",
-                            "position": 0,
-                            "width": 110
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "name",
-                            "position": 2,
-                            "width": 300
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "type",
-                            "position": 3,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "severity",
-                            "position": 4,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "status",
-                            "position": 5,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "owner",
-                            "position": 6,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "roles",
-                            "position": 7,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "playbookId",
-                            "position": 8,
-                            "width": 150
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "occurred",
-                            "position": 9,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "dueDate",
-                            "position": 10,
-                            "width": 200
-                        }
-                    ]
-                },
-                "prevName": "Closed Incidents by Role",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "status:closed",
-                "shouldCommit": false,
-                "size": 10,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "pie"
-            },
-            "x": 6,
-            "y": 5
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "89eecfb0-a5e3-11ea-beb5-2996637e1d9e",
-            "id": "89eecfb0-a5e3-11ea-beb5-2996637e1d9e",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "",
-                "locked": true,
-                "modified": "2020-05-27T00:37:27.295883968+03:00",
-                "name": "Incidents in Error Run Status",
-                "packID": "",
-                "params": {
-                    "colors": {
-                        "isEnabled": true,
-                        "items": {
-                            "#00CD33": {
-                                "value": 0
-                            },
-                            "#FAC100": {
-                                "value": 0
-                            },
-                            "#FF1B15": {
-                                "value": 20
-                            }
-                        },
-                        "type": "above"
-                    }
-                },
-                "prevName": "Incidents in Error Run Status",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "runStatus:error",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "number"
-            },
-            "x": 0,
-            "y": 6
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "27264f10-a5e4-11ea-beb5-2996637e1d9e",
-            "id": "27264f10-a5e4-11ea-beb5-2996637e1d9e",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "scripts",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": null,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "description": "Showing percentage of incidents handled and closed by DBot, without an owner being assigned to, across all incidents in the provided period",
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "",
-                "locked": true,
-                "modified": "2020-05-27T00:37:27.181498162+03:00",
-                "name": "Closed By Dbot",
-                "packID": "",
-                "params": {
-                    "colors": {
-                        "isEnabled": true,
-                        "items": {
-                            "#00CD33": {
-                                "value": -1
-                            }
-                        },
-                        "type": "above"
-                    },
-                    "currencySign": "%",
-                    "signAlignment": "right"
-                },
-                "prevName": "Closed By Dbot",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "DBotClosedIncidentsPercentage",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "number"
-            },
-            "x": 9,
-            "y": 2
-        }
-    ],
     "name": "Incidents Overview",
-    "period": {
-        "by": "",
-        "byFrom": "days",
-        "byTo": "",
-        "field": "",
-        "fromValue": 30,
-        "toValue": null
-    },
+	"layout": [
+		{
+			"id": "8efbf5c0-e4ff-11e7-b60b-df7995291baf",
+			"forceRange": false,
+			"x": 0,
+			"y": 1,
+			"i": "8efbf5c0-e4ff-11e7-b60b-df7995291baf",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "active-incidents-by-severity",
+				"version": -1,
+				"modified": "0001-01-01T00:00:00Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Active Incidents by Severity",
+				"prevName": "",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and -status:archived and -status:closed",
+				"sort": null,
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"severity"
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "8fa3a770-e4ff-11e7-b60b-df7995291baf",
+			"forceRange": false,
+			"x": 3,
+			"y": 1,
+			"i": "8fa3a770-e4ff-11e7-b60b-df7995291baf",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Active Incidents by Type",
+				"prevName": "",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and -status:archived and -status:closed",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"type"
+					],
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "id",
+							"position": 0,
+							"width": 110
+						},
+						{
+							"isDefault": true,
+							"key": "name",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "type",
+							"position": 3,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "severity",
+							"position": 4,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "status",
+							"position": 5,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "owner",
+							"position": 6,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "roles",
+							"position": 7,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "playbookId",
+							"position": 8,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "occurred",
+							"position": 9,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "dueDate",
+							"position": 10,
+							"width": 200
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "ab3a69b0-06a6-11e8-9f30-0903d8762b71",
+			"forceRange": false,
+			"x": 6,
+			"y": 0,
+			"i": "ab3a69b0-06a6-11e8-9f30-0903d8762b71",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Unassigned Incidents",
+				"prevName": "",
+				"dataType": "incidents",
+				"widgetType": "trend",
+				"query": "-category:job and -status:archived and -status:closed and owner:\"\"",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 0
+							}
+						},
+						"type": "above"
+					},
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "id",
+							"position": 0,
+							"width": 110
+						},
+						{
+							"isDefault": true,
+							"key": "name",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "type",
+							"position": 3,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "severity",
+							"position": 4,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "status",
+							"position": 5,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "owner",
+							"position": 6,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "roles",
+							"position": 7,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "playbookId",
+							"position": 8,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "occurred",
+							"position": 9,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "dueDate",
+							"position": 10,
+							"width": 200
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "b95f04b0-06a6-11e8-9f30-0903d8762b71",
+			"forceRange": false,
+			"x": 9,
+			"y": 0,
+			"i": "b95f04b0-06a6-11e8-9f30-0903d8762b71",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": -1,
+				"modified": "0001-01-01T00:00:00Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Late Incidents",
+				"prevName": "",
+				"dataType": "incidents",
+				"widgetType": "trend",
+				"query": "-category:job and -status:archived and -status:closed and dueDate:\u003cnow",
+				"sort": null,
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#FF1B15": {
+								"value": 0
+							}
+						},
+						"type": "above"
+					}
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "cad75e90-06a6-11e8-9f30-0903d8762b71",
+			"forceRange": false,
+			"x": 0,
+			"y": 3,
+			"i": "cad75e90-06a6-11e8-9f30-0903d8762b71",
+			"w": 9,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Active Incidents Assigned by User",
+				"prevName": "",
+				"dataType": "incidents",
+				"widgetType": "column",
+				"query": "-category:job and -status:archived and -status:closed and -owner:\"\"",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"owner"
+					],
+					"hideLegend": false,
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "id",
+							"position": 0,
+							"width": 110
+						},
+						{
+							"isDefault": true,
+							"key": "name",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "type",
+							"position": 3,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "severity",
+							"position": 4,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "status",
+							"position": 5,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "owner",
+							"position": 6,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "roles",
+							"position": 7,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "playbookId",
+							"position": 8,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "occurred",
+							"position": 9,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "dueDate",
+							"position": 10,
+							"width": 200
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "5f207d30-0746-11e8-8294-876d51689c2e",
+			"forceRange": false,
+			"x": 9,
+			"y": 3,
+			"i": "5f207d30-0746-11e8-8294-876d51689c2e",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "saved-by-dbot",
+				"version": -1,
+				"modified": "0001-01-01T00:00:00Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Saved By DBot",
+				"prevName": "",
+				"dataType": "roi",
+				"widgetType": "number",
+				"query": "",
+				"sort": null,
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"currencySign": "$"
+				},
+				"size": 5,
+				"category": "others"
+			}
+		},
+		{
+			"id": "0be91fe0-0747-11e8-8294-876d51689c2e",
+			"forceRange": true,
+			"x": 3,
+			"y": 0,
+			"i": "0be91fe0-0747-11e8-8294-876d51689c2e",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "todays-new-incidents",
+				"version": -1,
+				"modified": "0001-01-01T00:00:00Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Today's New Incidents",
+				"prevName": "",
+				"dataType": "incidents",
+				"widgetType": "trend",
+				"query": "-status:closed -category:job",
+				"sort": null,
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "2018-01-31T22:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 0,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 10
+							},
+							"#FF1B15": {
+								"value": 100
+							}
+						},
+						"type": "above"
+					}
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "c553bff0-a45f-11ea-9256-394fe136c3ee",
+			"forceRange": false,
+			"x": 0,
+			"y": 5,
+			"i": "c553bff0-a45f-11ea-9256-394fe136c3ee",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "mean-time-to-resolution-occurred",
+				"version": 1,
+				"modified": "2020-05-26T21:37:27.115057596Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Mean Time to Resolution (Occurred)",
+				"prevName": "Mean Time to Resolution (Occurred)",
+				"dataType": "incidents",
+				"widgetType": "duration",
+				"query": "-category:job and status:closed",
+				"sort": null,
+				"isPredefined": true,
+				"locked": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"keys": [
+						"avg|closed - occurred",
+						"count|1"
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "7da58050-a462-11ea-9256-394fe136c3ee",
+			"forceRange": false,
+			"x": 0,
+			"y": 0,
+			"i": "7da58050-a462-11ea-9256-394fe136c3ee",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "c6be9e3a-0c45-4ba1-8266-b44a4a0c6f70",
+				"version": 1,
+				"modified": "2020-06-01T23:48:59.869411903Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Open Incidents",
+				"prevName": "Active Incidents",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "-status:closed -category:job",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": null,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 25
+							},
+							"#FF1B15": {
+								"value": 50
+							}
+						},
+						"type": "above"
+					},
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "id",
+							"position": 0,
+							"width": 110
+						},
+						{
+							"isDefault": true,
+							"key": "name",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "type",
+							"position": 3,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "severity",
+							"position": 4,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "status",
+							"position": 5,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "owner",
+							"position": 6,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "roles",
+							"position": 7,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "playbookId",
+							"position": 8,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "occurred",
+							"position": 9,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "dueDate",
+							"position": 10,
+							"width": 200
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "27f39030-a4de-11ea-8c29-db553c036fb9",
+			"forceRange": false,
+			"x": 9,
+			"y": 5,
+			"i": "27f39030-a4de-11ea-8c29-db553c036fb9",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "2020-05-26T21:37:26.946364371Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Incidents Top Close Analysts",
+				"prevName": "Incidents Top Close Analysts",
+				"dataType": "incidents",
+				"widgetType": "bar",
+				"query": "-category:job and status:closed and -closingUser:\"DBot\"",
+				"sort": null,
+				"isPredefined": false,
+				"locked": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"closingUserId"
+					],
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "id",
+							"position": 0,
+							"width": 110
+						},
+						{
+							"isDefault": true,
+							"key": "name",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "type",
+							"position": 3,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "severity",
+							"position": 4,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "status",
+							"position": 5,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "owner",
+							"position": 6,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "roles",
+							"position": 7,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "playbookId",
+							"position": 8,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "occurred",
+							"position": 9,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "dueDate",
+							"position": 10,
+							"width": 200
+						}
+					]
+				},
+				"size": 5,
+				"category": ""
+			}
+		},
+		{
+			"id": "93380b00-a4de-11ea-8c29-db553c036fb9",
+			"forceRange": false,
+			"x": 9,
+			"y": 1,
+			"i": "93380b00-a4de-11ea-8c29-db553c036fb9",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "3201c062-1e95-4274-8374-b2f8ed10591e",
+				"version": 1,
+				"modified": "2020-06-02T14:37:12.375197769Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Closed Incidents by Reason",
+				"prevName": "Closed Incidents by Reason",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and status:closed",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"closeReason"
+					],
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "id",
+							"position": 0,
+							"width": 110
+						},
+						{
+							"isDefault": true,
+							"key": "name",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "type",
+							"position": 3,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "severity",
+							"position": 4,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "status",
+							"position": 5,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "owner",
+							"position": 6,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "roles",
+							"position": 7,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "playbookId",
+							"position": 8,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "occurred",
+							"position": 9,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "dueDate",
+							"position": 10,
+							"width": 200
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "8f3e7b10-a5e2-11ea-beb5-2996637e1d9e",
+			"forceRange": false,
+			"x": 3,
+			"y": 5,
+			"i": "8f3e7b10-a5e2-11ea-beb5-2996637e1d9e",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "2020-05-26T21:37:27.035567366Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Open Incidents by Role",
+				"prevName": "Incidents by Role",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job",
+				"sort": null,
+				"isPredefined": false,
+				"locked": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"roles"
+					],
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "id",
+							"position": 0,
+							"width": 110
+						},
+						{
+							"isDefault": true,
+							"key": "name",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "type",
+							"position": 3,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "severity",
+							"position": 4,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "status",
+							"position": 5,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "owner",
+							"position": 6,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "roles",
+							"position": 7,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "playbookId",
+							"position": 8,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "occurred",
+							"position": 9,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "dueDate",
+							"position": 10,
+							"width": 200
+						}
+					]
+				},
+				"size": 10,
+				"category": ""
+			}
+		},
+		{
+			"id": "9c94c990-a5e2-11ea-beb5-2996637e1d9e",
+			"forceRange": false,
+			"x": 6,
+			"y": 5,
+			"i": "9c94c990-a5e2-11ea-beb5-2996637e1d9e",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "2020-05-26T21:37:27.260336294Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Closed Incidents by Role",
+				"prevName": "Closed Incidents by Role",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "status:closed",
+				"sort": null,
+				"isPredefined": false,
+				"locked": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"roles"
+					],
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "id",
+							"position": 0,
+							"width": 110
+						},
+						{
+							"isDefault": true,
+							"key": "name",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "type",
+							"position": 3,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "severity",
+							"position": 4,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "status",
+							"position": 5,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "owner",
+							"position": 6,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "roles",
+							"position": 7,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "playbookId",
+							"position": 8,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "occurred",
+							"position": 9,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "dueDate",
+							"position": 10,
+							"width": 200
+						}
+					]
+				},
+				"size": 10,
+				"category": ""
+			}
+		},
+		{
+			"id": "89eecfb0-a5e3-11ea-beb5-2996637e1d9e",
+			"forceRange": false,
+			"x": 0,
+			"y": 6,
+			"i": "89eecfb0-a5e3-11ea-beb5-2996637e1d9e",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "2020-05-26T21:37:27.295883968Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Incidents in Error Run Status",
+				"prevName": "Incidents in Error Run Status",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "runStatus:error",
+				"sort": null,
+				"isPredefined": false,
+				"locked": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": 0
+							},
+							"#FAC100": {
+								"value": 0
+							},
+							"#FF1B15": {
+								"value": 20
+							}
+						},
+						"type": "above"
+					}
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "27264f10-a5e4-11ea-beb5-2996637e1d9e",
+			"forceRange": false,
+			"x": 9,
+			"y": 4,
+			"i": "27264f10-a5e4-11ea-beb5-2996637e1d9e",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "2020-05-26T21:37:27.181498162Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Closed By Dbot",
+				"prevName": "Closed By Dbot",
+				"dataType": "scripts",
+				"widgetType": "number",
+				"query": "DBotClosedIncidentsPercentage",
+				"sort": null,
+				"isPredefined": false,
+				"locked": true,
+				"description": "Showing percentage of incidents handled and closed by DBot, without an owner being assigned to, across all incidents in the provided period",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": null,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							}
+						},
+						"type": "above"
+					},
+					"currencySign": "%",
+					"signAlignment": "right"
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "34cddfc0-e7ac-11ea-a986-6f7d22363cf7",
+			"forceRange": false,
+			"x": 6,
+			"y": 1,
+			"i": "34cddfc0-e7ac-11ea-a986-6f7d22363cf7",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "c6be9e3a-0c45-4ba1-8266-b44a4a0c6f70",
+				"version": 2,
+				"modified": "2020-08-26T00:38:40.190772589Z",
+				"sortValues": null,
+				"packID": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"name": "Active Incidents by Source",
+				"prevName": "Active Incidents",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-status:closed -category:job",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": null,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 25
+							},
+							"#FF1B15": {
+								"value": 50
+							}
+						},
+						"type": "above"
+					},
+					"groupBy": [
+						"sourceBrand"
+					],
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "id",
+							"position": 0,
+							"width": 110
+						},
+						{
+							"isDefault": true,
+							"key": "name",
+							"position": 2,
+							"width": 300
+						},
+						{
+							"isDefault": true,
+							"key": "type",
+							"position": 3,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "severity",
+							"position": 4,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "status",
+							"position": 5,
+							"width": 80
+						},
+						{
+							"isDefault": true,
+							"key": "owner",
+							"position": 6,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "roles",
+							"position": 7,
+							"width": 160
+						},
+						{
+							"isDefault": true,
+							"key": "playbookId",
+							"position": 8,
+							"width": 150
+						},
+						{
+							"isDefault": true,
+							"key": "occurred",
+							"position": 9,
+							"width": 200
+						},
+						{
+							"isDefault": true,
+							"key": "dueDate",
+							"position": 10,
+							"width": 200
+						}
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		}
+	],
     "toDate": "0001-01-01T00:00:00Z",
     "version": -1,
     "fromVersion": "5.0.0",

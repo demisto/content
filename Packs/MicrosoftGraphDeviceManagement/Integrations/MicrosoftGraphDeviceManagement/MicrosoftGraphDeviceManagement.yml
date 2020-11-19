@@ -9,16 +9,15 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ID (received from the admin consent - see Detailed Instructions (?)
+- display: ID or Client ID - see Detailed Instructions (?)
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?)
-    section)
+- display: Token or Tenant ID - see Detailed Instructions (?)
   name: tenant_id
   required: true
   type: 4
-- display: Key (received from the admin consent - see Detailed Instructions (?)
+- display: Key or Client Secret - see Detailed Instructions (?)
   name: enc_key
   required: true
   type: 4
@@ -867,7 +866,7 @@ script:
         unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
         unresponsive, compromised, misconfigured.
       type: String
-  dockerimage: demisto/crypto:1.0.0.11412
+  dockerimage: demisto/crypto:1.0.0.12410
   isfetch: false
   longRunning: false
   longRunningPort: false

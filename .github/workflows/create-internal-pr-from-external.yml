@@ -1,0 +1,41 @@
+name: Create Internal PR from Merged External PR
+on:
+  pull_request_target:
+    types: [closed]
+    branches:
+      - contrib/**
+
+jobs:
+  create_internal_pr:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.repo.fork == true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Print Context
+        run: |
+          echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
+      - name: Create Internal PR
+        env:
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          EVENT_PAYLOAD: ${{ toJson(github.event) }}
+        run: |
+          echo "Creating an internal PR from original merged external PR ${{ github.event.pull_request.html_url }}"
+          cd Utils/github_workflow_scripts
+          pipenv install --dev
+          pipenv run ./create_internal_pr.py
+          echo "Finished Creating Internal PR"

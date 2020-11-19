@@ -594,7 +594,7 @@ def test_elasticsearch_builder_called_with_username_password(mocker):
     from elasticsearch import Elasticsearch
     from Elasticsearch_v2 import elasticsearch_builder
     es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
-    elasticsearch_builder()
+    elasticsearch_builder(None)
     assert es_mock.call_args[1].get('http_auth') == ('mock', 'demisto')
     assert es_mock.call_args[1].get('api_key') is None
 
@@ -603,7 +603,7 @@ def test_elasticsearch_builder_called_with_no_creds(mocker):
     from elasticsearch import Elasticsearch
     from Elasticsearch_v2 import elasticsearch_builder
     es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
-    elasticsearch_builder()
+    elasticsearch_builder(None)
     assert es_mock.call_args[1].get('http_auth') is None
     assert es_mock.call_args[1].get('api_key') is None
 

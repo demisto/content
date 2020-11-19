@@ -320,12 +320,12 @@ class MicrosoftClient(BaseClient):
         Returns:
             tuple: An access token, its expiry and refresh token.
         """
-        data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'resource': self.resource if not resource else resource,
-            'redirect_uri': self.redirect_uri
-        }
+        data = assign_params(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            resource=self.resource if not resource else resource,
+            redirect_uri=self.redirect_uri
+        )
 
         if scope:
             data['scope'] = scope

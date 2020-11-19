@@ -211,7 +211,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2'
+              simple: '1'
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1310\n  }\n}"
     note: false
     timertriggers: []
@@ -429,7 +429,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '0'
+              simple: '1'
     view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 770\n  }\n}"
     note: false
     timertriggers: []
@@ -701,7 +701,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2'
+              simple: '1'
     view: "{\n  \"position\": {\n    \"x\": -20,\n    \"y\": 2990\n  }\n}"
     note: false
     timertriggers: []

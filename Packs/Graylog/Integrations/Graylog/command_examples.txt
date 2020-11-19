@@ -1,0 +1,8 @@
+!graylog-cluster-status
+!graylog-cluster-inputstates
+!graylog-cluster-node-jvm nodeId=95ba5102-13c9-4520-ac75-c8736f206953	
+!graylog-cluster-processing-status
+!graylog-indexer-cluster-health
+!graylog-search query=<query here>
+!graylog-search-absolute query=<query here> from=<from time> to=<to time>
+!graylog-events-search query=<query here>

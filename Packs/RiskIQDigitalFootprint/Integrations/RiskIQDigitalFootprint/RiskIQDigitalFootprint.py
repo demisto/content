@@ -2044,7 +2044,7 @@ def check_task_status(client: Client, resp: Dict[str, Any]) -> Dict[str, Any]:
         else:
             demisto.debug(f'Fetching the task status. Retry number: {retries}')
             wait = retries * 30
-            time.sleep(wait)
+            time.sleep(wait)  # pylint: disable=sleep-exists
             retries += 1
     return task_resp
 

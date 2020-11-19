@@ -1,20 +1,19 @@
 id: GmailTest
 version: -1
-contentitemfields:
-  propagationLabels: []
 name: GmailTest
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 20f0b6bb-34fe-4bdb-8a0b-7bd586cc5e56
+    taskid: 0b04420f-6816-4817-84c4-9159ae13bc46
     type: start
     task:
-      id: 20f0b6bb-34fe-4bdb-8a0b-7bd586cc5e56
+      id: 0b04420f-6816-4817-84c4-9159ae13bc46
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -29,12 +28,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: f54ae3c4-7a92-4622-8021-c05558408dcd
+    taskid: a61e5afe-4333-4eda-8aae-ffa06d12ad16
     type: regular
     task:
-      id: f54ae3c4-7a92-4622-8021-c05558408dcd
+      id: a61e5afe-4333-4eda-8aae-ffa06d12ad16
       version: -1
       name: Start clean
       scriptName: DeleteContext
@@ -59,12 +60,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 42312be6-3103-46b3-87c9-b2a1fdef1683
+    taskid: f7f45c9f-34f9-4374-8af3-ab08b1eb84dd
     type: regular
     task:
-      id: 42312be6-3103-46b3-87c9-b2a1fdef1683
+      id: f7f45c9f-34f9-4374-8af3-ab08b1eb84dd
       version: -1
       name: List all users
       script: '|||gmail-list-users'
@@ -97,12 +100,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: a6cfd725-025d-4373-83f7-dfaad6e39ee2
+    taskid: 2f0776e8-d086-480c-8384-0bbb6cfc2ee6
     type: regular
     task:
-      id: a6cfd725-025d-4373-83f7-dfaad6e39ee2
+      id: 2f0776e8-d086-480c-8384-0bbb6cfc2ee6
       version: -1
       name: Get specific user
       script: '|||gmail-get-user'
@@ -150,12 +155,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 67b3945d-f12e-4505-8090-2cbfde004b04
+    taskid: a1797e64-84f8-4548-8ab5-32c470b5cc0e
     type: regular
     task:
-      id: 67b3945d-f12e-4505-8090-2cbfde004b04
+      id: a1797e64-84f8-4548-8ab5-32c470b5cc0e
       version: -1
       name: Create new user
       script: '|||gmail-create-user'
@@ -173,24 +180,26 @@ tasks:
       first-name:
         simple: John
       password:
-        simple: johnpass1!
+        simple: ${NEW_PASSWORD}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1565,
-          "y": 845
+          "y": 915
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 68c669c2-d092-453b-89ef-bf70c5d91735
+    taskid: 236a1321-aa02-4e55-82c6-f3b488b50dce
     type: regular
     task:
-      id: 68c669c2-d092-453b-89ef-bf70c5d91735
+      id: 236a1321-aa02-4e55-82c6-f3b488b50dce
       version: -1
       name: Delete User
       script: '|||gmail-delete-user'
@@ -237,17 +246,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 5fcb892d-f943-49ba-88a8-14997e473e0e
+    taskid: b20ed4be-0428-415c-8e9f-5b58f100dbda
     type: title
     task:
-      id: 5fcb892d-f943-49ba-88a8-14997e473e0e
+      id: b20ed4be-0428-415c-8e9f-5b58f100dbda
       version: -1
       name: Gmail Commands
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -264,12 +276,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 8e0df2cc-54ad-4846-83c5-dd5ffa634675
+    taskid: 3f56579e-b2ad-4a67-8418-e0592d1fc194
     type: regular
     task:
-      id: 8e0df2cc-54ad-4846-83c5-dd5ffa634675
+      id: 3f56579e-b2ad-4a67-8418-e0592d1fc194
       version: -1
       name: Search emails with attachments
       script: '|||gmail-search'
@@ -311,12 +325,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: c5e14467-1f25-4c54-81f2-07551d6f04b8
+    taskid: 1fc33028-bfeb-43e2-8c5e-86d19b5c40ee
     type: regular
     task:
-      id: c5e14467-1f25-4c54-81f2-07551d6f04b8
+      id: 1fc33028-bfeb-43e2-8c5e-86d19b5c40ee
       version: -1
       name: Get mail with attachment
       script: '|||gmail-get-attachments'
@@ -364,12 +380,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: dbfb97e8-c134-4ce1-8b65-db3e0854dfa8
+    taskid: be0698f8-807d-4bcb-83c1-1e75e3825ca2
     type: regular
     task:
-      id: dbfb97e8-c134-4ce1-8b65-db3e0854dfa8
+      id: be0698f8-807d-4bcb-83c1-1e75e3825ca2
       version: -1
       name: Get Tokens
       script: '|||gmail-get-tokens-for-user'
@@ -393,12 +411,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 3a32979c-4c7e-4dda-8dfd-dcc1817ee734
+    taskid: 80da6352-2191-484c-84dd-360c2cf67871
     type: regular
     task:
-      id: 3a32979c-4c7e-4dda-8dfd-dcc1817ee734
+      id: 80da6352-2191-484c-84dd-360c2cf67871
       version: -1
       name: Get Email data
       script: '|||gmail-get-mail'
@@ -447,12 +467,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: ed030f2d-7d09-45c0-843a-b8f7ec7ec050
+    taskid: 60efc593-9cee-48a3-8e98-887e1c400579
     type: regular
     task:
-      id: ed030f2d-7d09-45c0-843a-b8f7ec7ec050
+      id: 60efc593-9cee-48a3-8e98-887e1c400579
       version: -1
       name: Search all mailboxes
       script: '|||gmail-search-all-mailboxes'
@@ -492,12 +514,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: d3b58fd8-3591-443e-8f2c-de058569aca1
+    taskid: 0a01ec85-5f2f-4741-8019-7292c151a55f
     type: regular
     task:
-      id: d3b58fd8-3591-443e-8f2c-de058569aca1
+      id: 0a01ec85-5f2f-4741-8019-7292c151a55f
       version: -1
       name: Get Thread
       script: '|||gmail-get-thread'
@@ -541,12 +565,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 2c611348-6a46-4577-808d-cd2408d086ae
+    taskid: 5ebd87ff-c761-4c7a-802f-8815b5892161
     type: regular
     task:
-      id: 2c611348-6a46-4577-808d-cd2408d086ae
+      id: 5ebd87ff-c761-4c7a-802f-8815b5892161
       version: -1
       name: Search in mailbox
       script: '|||gmail-search'
@@ -586,12 +612,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 0e58bd4a-466f-4ece-8af7-7b89c4bf96f0
+    taskid: b359e6ec-f8e5-40fa-872d-11a9e94a2635
     type: regular
     task:
-      id: 0e58bd4a-466f-4ece-8af7-7b89c4bf96f0
+      id: b359e6ec-f8e5-40fa-872d-11a9e94a2635
       version: -1
       name: Move mail to other folder
       script: '|||gmail-move-mail'
@@ -637,12 +665,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: 19d3aed4-d914-4a82-8863-cb3dafaeafc3
+    taskid: 063e9553-1a19-47bb-8147-cd22d99dd944
     type: regular
     task:
-      id: 19d3aed4-d914-4a82-8863-cb3dafaeafc3
+      id: 063e9553-1a19-47bb-8147-cd22d99dd944
       version: -1
       name: Move back to inbox
       script: '|||gmail-move-mail'
@@ -688,12 +718,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: 92f5b4ed-108a-4f5c-8e77-296e5a79bff6
+    taskid: e44697ac-39b9-430d-8a27-0c0b1aed666d
     type: regular
     task:
-      id: 92f5b4ed-108a-4f5c-8e77-296e5a79bff6
+      id: e44697ac-39b9-430d-8a27-0c0b1aed666d
       version: -1
       name: block the admin
       script: '|||gmail-add-delete-filter'
@@ -734,23 +766,26 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 1040
+          "y": 1080
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 4d4fc276-7871-48d4-86c6-d4d7b002198c
+    taskid: acbb9924-48bb-49fc-8f1f-375ca71511d4
     type: title
     task:
-      id: 4d4fc276-7871-48d4-86c6-d4d7b002198c
+      id: acbb9924-48bb-49fc-8f1f-375ca71511d4
       version: -1
       name: Check all mailboxes
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -765,12 +800,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 1a60ee05-01ae-47ae-81d4-84dfdaecb441
+    taskid: 5f3c76e8-31da-4f87-8e36-acb473f90758
     type: regular
     task:
-      id: 1a60ee05-01ae-47ae-81d4-84dfdaecb441
+      id: 5f3c76e8-31da-4f87-8e36-acb473f90758
       version: -1
       name: Remove the block
       script: '|||gmail-remove-filter'
@@ -810,18 +847,20 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 1215
+          "y": 1235
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: 7041284f-4dc8-48e1-85c3-30c347824745
+    taskid: a7bd0d11-1e61-4362-8b7c-e7fef3f16f15
     type: regular
     task:
-      id: 7041284f-4dc8-48e1-85c3-30c347824745
+      id: a7bd0d11-1e61-4362-8b7c-e7fef3f16f15
       version: -1
       name: List mailbox filters
       script: '|||gmail-list-filters'
@@ -848,12 +887,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 1eb89b50-459d-49bb-885f-c0cf011fcc0b
+    taskid: 61376dc1-e53e-4577-8e88-f638ca7ca817
     type: regular
     task:
-      id: 1eb89b50-459d-49bb-885f-c0cf011fcc0b
+      id: 61376dc1-e53e-4577-8e88-f638ca7ca817
       version: -1
       name: Delete filters from context
       description: Delete field from context
@@ -882,12 +923,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: 6a16a17b-3e8d-487a-8138-175e9dd5b08b
+    taskid: 180d02ae-efe3-45fe-837c-d80ecaea50c9
     type: condition
     task:
-      id: 6a16a17b-3e8d-487a-8138-175e9dd5b08b
+      id: 180d02ae-efe3-45fe-837c-d80ecaea50c9
       version: -1
       name: Verify Filters
       type: condition
@@ -922,12 +965,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: 75dffb7c-6030-465d-81ff-e34e8966acce
+    taskid: d8b841cd-9317-4a3a-82f1-79deb66714d7
     type: regular
     task:
-      id: 75dffb7c-6030-465d-81ff-e34e8966acce
+      id: d8b841cd-9317-4a3a-82f1-79deb66714d7
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -949,17 +994,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: 47a96f32-e062-4291-8c52-f041a153052b
+    taskid: ad910e8f-58ca-42c9-8a48-3497a6817796
     type: title
     task:
-      id: 47a96f32-e062-4291-8c52-f041a153052b
+      id: ad910e8f-58ca-42c9-8a48-3497a6817796
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -971,12 +1019,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: 20a1f3df-3ccf-4a5f-8053-af6241e6bc2a
+    taskid: dfce2601-a3dd-4010-87a9-1f223a361af7
     type: regular
     task:
-      id: 20a1f3df-3ccf-4a5f-8053-af6241e6bc2a
+      id: dfce2601-a3dd-4010-87a9-1f223a361af7
       version: -1
       name: gmail-create-user
       description: Creates a user.
@@ -1007,12 +1057,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: 72a233e5-2223-484a-8fa7-15a463bd34b0
+    taskid: b2ee22e8-6645-4e39-8e6e-29be288914aa
     type: regular
     task:
-      id: 72a233e5-2223-484a-8fa7-15a463bd34b0
+      id: b2ee22e8-6645-4e39-8e6e-29be288914aa
       version: -1
       name: gmail-hide-user-in-directory
       description: Hide a user in the Global Directory
@@ -1039,12 +1091,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: 14220496-262d-4402-8670-e03f0e773523
+    taskid: 25a7d6a1-efaf-4882-8d93-2337ab004c09
     type: condition
     task:
-      id: 14220496-262d-4402-8670-e03f0e773523
+      id: 25a7d6a1-efaf-4882-8d93-2337ab004c09
       version: -1
       name: Verify User creation and visbility
       type: condition
@@ -1080,12 +1134,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
-    taskid: 41386938-4926-4415-8f8c-f64d3115d4d1
+    taskid: 693e41af-9d10-4d2f-86fd-fb0d38e5abf8
     type: regular
     task:
-      id: 41386938-4926-4415-8f8c-f64d3115d4d1
+      id: 693e41af-9d10-4d2f-86fd-fb0d38e5abf8
       version: -1
       name: gmail-delete-user
       description: Delete a User
@@ -1110,12 +1166,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
-    taskid: 73c21785-9241-4e21-8e90-f412848061fd
+    taskid: d2ec23e5-3cdd-471e-8ef4-c5c492c39e05
     type: regular
     task:
-      id: 73c21785-9241-4e21-8e90-f412848061fd
+      id: d2ec23e5-3cdd-471e-8ef4-c5c492c39e05
       version: -1
       name: gmail-get-autoreply
       description: Get the auto-reply message set for the user-account
@@ -1140,15 +1198,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "35":
     id: "35"
-    taskid: 9fb0ecf0-0948-4a29-894f-643811455c26
+    taskid: 48ba4efe-9b0d-402c-8a84-1c8dd15b7ef8
     type: regular
     task:
-      id: 9fb0ecf0-0948-4a29-894f-643811455c26
+      id: 48ba4efe-9b0d-402c-8a84-1c8dd15b7ef8
       version: -1
       name: gmail-set-autoreply
-      description: 'Set auto-reply for the user. Note: if body is not set, the current body will be deleted'
+      description: 'Set auto-reply for the user. Note: if body is not set, the current
+        body will be deleted'
       script: '|||gmail-set-autoreply'
       type: regular
       iscommand: true
@@ -1176,12 +1237,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: 373b471e-f6e3-4975-8d71-fcdc9eb45b57
+    taskid: 240b8779-372d-402e-837f-de0196781c20
     type: regular
     task:
-      id: 373b471e-f6e3-4975-8d71-fcdc9eb45b57
+      id: 240b8779-372d-402e-837f-de0196781c20
       version: -1
       name: gmail-get-autoreply
       description: Get the auto-reply message set for the user-account
@@ -1206,12 +1269,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "37":
     id: "37"
-    taskid: ae374949-4070-49a3-850c-c6d5ab6411d3
+    taskid: 2f2ae812-95ce-43e0-8eac-3af2cafe30ed
     type: condition
     task:
-      id: ae374949-4070-49a3-850c-c6d5ab6411d3
+      id: 2f2ae812-95ce-43e0-8eac-3af2cafe30ed
       version: -1
       name: Verify Autoreply
       type: condition
@@ -1250,15 +1315,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "38":
     id: "38"
-    taskid: e1c474f2-fa58-44dc-8fdf-dc76a7d70239
+    taskid: 9401bb65-24a2-4e4f-877b-b5b1ce1cc628
     type: regular
     task:
-      id: e1c474f2-fa58-44dc-8fdf-dc76a7d70239
+      id: 9401bb65-24a2-4e4f-877b-b5b1ce1cc628
       version: -1
       name: gmail-set-autoreply - reset to original autoreply
-      description: 'Set auto-reply for the user. Note: if body is not set, the current body will be deleted'
+      description: 'Set auto-reply for the user. Note: if body is not set, the current
+        body will be deleted'
       script: '|||gmail-set-autoreply'
       type: regular
       iscommand: true
@@ -1286,12 +1354,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "40":
     id: "40"
-    taskid: 18502ff9-c773-49a6-8efa-b171a593198e
+    taskid: 13897d96-6f21-4a3f-8d05-1c7c4ce0da09
     type: regular
     task:
-      id: 18502ff9-c773-49a6-8efa-b171a593198e
+      id: 13897d96-6f21-4a3f-8d05-1c7c4ce0da09
       version: -1
       name: gmail-get-mail
       description: Gets the specified message.
@@ -1319,12 +1389,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "41":
     id: "41"
-    taskid: 3fe24e1d-0300-4268-8a8e-59b85b008eef
+    taskid: 432d241f-83ce-4cb5-8ceb-17d9213b686f
     type: condition
     task:
-      id: 3fe24e1d-0300-4268-8a8e-59b85b008eef
+      id: 432d241f-83ce-4cb5-8ceb-17d9213b686f
       version: -1
       name: Verify sent mail
       type: condition
@@ -1379,15 +1451,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "43":
     id: "43"
-    taskid: d2d0351e-052e-45fd-80ab-027db25ac5d4
+    taskid: 56a41527-9bb8-4886-8e90-b7aaede2112f
     type: regular
     task:
-      id: d2d0351e-052e-45fd-80ab-027db25ac5d4
+      id: 56a41527-9bb8-4886-8e90-b7aaede2112f
       version: -1
       name: gmail-delegate-user-mailbox
-      description: Adds a delegate to the mailbox, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user.  Note that a delegate user must be referred to by their primary email address, and not an email alias.
+      description: Adds a delegate to the mailbox, without sending any verification
+        email. The delegate user must be a member of the same G Suite organization
+        as the delegator user.  Note that a delegate user must be referred to by their
+        primary email address, and not an email alias.
       script: '|||gmail-delegate-user-mailbox'
       type: regular
       iscommand: true
@@ -1411,12 +1488,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "45":
     id: "45"
-    taskid: 6214e2ee-e9e0-40de-8395-2406c789bd2e
+    taskid: 011ebc29-fabd-48af-8d9f-5a7391231037
     type: regular
     task:
-      id: 6214e2ee-e9e0-40de-8395-2406c789bd2e
+      id: 011ebc29-fabd-48af-8d9f-5a7391231037
       version: -1
       name: gmail-delete-mail
       description: Delete a mail in the user's mailbox.
@@ -1460,12 +1539,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "47":
     id: "47"
-    taskid: df8c2625-7b58-4629-8574-f1bbfe94fd2e
+    taskid: edacaf8d-548a-457e-89af-626df7afafb6
     type: regular
     task:
-      id: df8c2625-7b58-4629-8574-f1bbfe94fd2e
+      id: edacaf8d-548a-457e-89af-626df7afafb6
       version: -1
       name: gmail-set-password
       description: Set password for the user
@@ -1492,12 +1573,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "48":
     id: "48"
-    taskid: 4305b79e-1ef4-4260-871e-4d8631644b30
+    taskid: fb38400f-a248-4132-8720-433f14c5a58a
     type: regular
     task:
-      id: 4305b79e-1ef4-4260-871e-4d8631644b30
+      id: fb38400f-a248-4132-8720-433f14c5a58a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1526,15 +1609,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "49":
     id: "49"
-    taskid: d64f78b2-25f4-4af5-8597-acacf50f3d3e
+    taskid: 4d7696e6-c620-4f1f-8323-9224d95a8317
     type: regular
     task:
-      id: d64f78b2-25f4-4af5-8597-acacf50f3d3e
+      id: 4d7696e6-c620-4f1f-8323-9224d95a8317
       version: -1
       name: gmail-remove-delegated-mailbox
-      description: Removes a delegate from the mailbox, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user.  Note that a delegate user must be referred to by their primary email address, and not an email alias.
+      description: Removes a delegate from the mailbox, without sending any verification
+        email. The delegate user must be a member of the same G Suite organization
+        as the delegator user.  Note that a delegate user must be referred to by their
+        primary email address, and not an email alias.
       script: '|||gmail-remove-delegated-mailbox'
       type: regular
       iscommand: true
@@ -1558,12 +1646,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "50":
     id: "50"
-    taskid: 9a3c083f-90b6-440a-8c8d-c66c31b1229d
+    taskid: 0afbb516-acec-4dfd-8304-7eb18a5a8f9d
     type: regular
     task:
-      id: 9a3c083f-90b6-440a-8c8d-c66c31b1229d
+      id: 0afbb516-acec-4dfd-8304-7eb18a5a8f9d
       version: -1
       name: send-mail
       description: Send an email
@@ -1606,15 +1696,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "51":
     id: "51"
-    taskid: 010732fb-fa79-4652-82ba-f31ea86ecfe8
+    taskid: f2a8502a-a9f6-4558-8b8a-9bae7c2c7fb7
     type: regular
     task:
-      id: 010732fb-fa79-4652-82ba-f31ea86ecfe8
+      id: f2a8502a-a9f6-4558-8b8a-9bae7c2c7fb7
       version: -1
       name: GeneratePassword
-      description: "This function generates a password and allows various parameters to customize the properties of the password depending on the use case (e.g. password complexity requirements).  The default behavior is to generate a password of  *random length* including all four character classes (upper, lower, digits, symbols) with at least five and at most ten characters per class. \n\nThe min_* values all default to 0. This means that if the command is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that a password of length zero could be generated. It is therefore recommended to always include a min_* parameter that matches. \n\nThe debug parameter will print certain properties of the command into the WarRoom for easy diagnostics."
+      description: "This function generates a password and allows various parameters\
+        \ to customize the properties of the password depending on the use case (e.g.\
+        \ password complexity requirements).  The default behavior is to generate\
+        \ a password of  *random length* including all four character classes (upper,\
+        \ lower, digits, symbols) with at least five and at most ten characters per\
+        \ class. \n\nThe min_* values all default to 0. This means that if the command\
+        \ is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible\
+        \ that a password of length zero could be generated. It is therefore recommended\
+        \ to always include a min_* parameter that matches. \n\nThe debug parameter\
+        \ will print certain properties of the command into the WarRoom for easy diagnostics."
       scriptName: GeneratePassword
       type: regular
       iscommand: false
@@ -1647,12 +1748,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "55":
     id: "55"
-    taskid: b5642382-0efd-48a0-8073-668d220f78b7
+    taskid: e2540794-ca89-47f4-8457-6a97790380fb
     type: regular
     task:
-      id: b5642382-0efd-48a0-8073-668d220f78b7
+      id: e2540794-ca89-47f4-8457-6a97790380fb
       version: -1
       name: check for user's existence
       description: Gets information for a specified user.
@@ -1681,12 +1784,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "56":
     id: "56"
-    taskid: dab4054f-ccfc-442a-8be3-5170f70fa416
+    taskid: 46609a06-7d18-45ed-8c07-56d4a5f5e25a
     type: condition
     task:
-      id: dab4054f-ccfc-442a-8be3-5170f70fa416
+      id: 46609a06-7d18-45ed-8c07-56d4a5f5e25a
       version: -1
       name: Check user's existence
       type: condition
@@ -1719,12 +1824,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "57":
     id: "57"
-    taskid: ec8451c1-2c08-42fb-8603-c08c25dbb7f7
+    taskid: 3c2b40c8-5f74-4252-8265-cc6173a36b0c
     type: regular
     task:
-      id: ec8451c1-2c08-42fb-8603-c08c25dbb7f7
+      id: 3c2b40c8-5f74-4252-8265-cc6173a36b0c
       version: -1
       name: gmail-delete-user
       description: Deletes a Gmail user.
@@ -1749,12 +1856,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "58":
     id: "58"
-    taskid: 99530527-83f3-4862-8aa8-15fed330386f
+    taskid: 7e2fe2d7-0359-49d5-840c-b3bc0329076a
     type: regular
     task:
-      id: 99530527-83f3-4862-8aa8-15fed330386f
+      id: 7e2fe2d7-0359-49d5-840c-b3bc0329076a
       version: -1
       name: Get User Role
       description: Retrieves a list of all Google roles for a specified user.
@@ -1775,18 +1884,20 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 130
+          "y": 100
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "59":
     id: "59"
-    taskid: fb3e76d2-ad11-40a3-847c-1c3b112ce91d
+    taskid: bbab2e77-7332-45f7-82ca-1fb82399ba60
     type: condition
     task:
-      id: fb3e76d2-ad11-40a3-847c-1c3b112ce91d
+      id: bbab2e77-7332-45f7-82ca-1fb82399ba60
       version: -1
       name: Verify User Role Context Output
       type: condition
@@ -1845,18 +1956,20 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 295
+          "y": 245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "60":
     id: "60"
-    taskid: ec14dac4-797d-449e-87a7-0fa4dbea4005
+    taskid: 1864bb2d-9030-4fb2-8c81-3cdb37510f5c
     type: regular
     task:
-      id: ec14dac4-797d-449e-87a7-0fa4dbea4005
+      id: 1864bb2d-9030-4fb2-8c81-3cdb37510f5c
       version: -1
       name: Get Role
       description: gmail get role
@@ -1878,18 +1991,20 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 480
+          "y": 410
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "61":
     id: "61"
-    taskid: 3ced040d-4968-48e6-86d6-755b5db6e7fd
+    taskid: 5b6f4831-770f-432b-83a0-86ea439a9d4d
     type: condition
     task:
-      id: 3ced040d-4968-48e6-86d6-755b5db6e7fd
+      id: 5b6f4831-770f-432b-83a0-86ea439a9d4d
       version: -1
       name: Verify Get Role Context
       type: condition
@@ -1897,7 +2012,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "5"
+      - "62"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1969,12 +2084,70 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 650
+          "y": 560
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 15935b7b-cc78-448a-8e9c-31651838965d
+    type: regular
+    task:
+      id: 15935b7b-cc78-448a-8e9c-31651838965d
+      version: -1
+      name: GeneratePassword
+      description: "This function generates a password and allows various parameters\
+        \ to customize the properties of the password depending on the use case (e.g.\
+        \ password complexity requirements).  The default behavior is to generate\
+        \ a password of  *random length* including all four character classes (upper,\
+        \ lower, digits, symbols) with at least five and at most ten characters per\
+        \ class. \n\nThe min_* values all default to 0. This means that if the command\
+        \ is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible\
+        \ that a password of length zero could be generated. It is therefore recommended\
+        \ to always include a min_* parameter that matches. \n\nThe debug parameter\
+        \ will print certain properties of the command into the WarRoom for easy diagnostics."
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "1"
+      max_lcase:
+        simple: "8"
+      max_symbols:
+        simple: "1"
+      max_ucase:
+        simple: "0"
+      min_digits:
+        simple: "1"
+      min_lcase:
+        simple: "8"
+      min_symbols:
+        simple: "1"
+      min_ucase:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -1992,3 +2165,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

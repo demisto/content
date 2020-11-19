@@ -595,30 +595,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "17":
-    id: "17"
-    taskid: f6ecd32e-69da-47fd-8378-6dba8e459ed1
-    type: title
-    task:
-      id: f6ecd32e-69da-47fd-8378-6dba8e459ed1
-      version: -1
-      name: done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "18":
     id: "18"
     taskid: 791a924d-04e2-4f7f-8f6c-3ef3b5126f5d
