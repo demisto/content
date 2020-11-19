@@ -529,14 +529,14 @@ def file_upload_command():
         given_url = ""
         sample = args['entryID'] if 'entryID' in args else args.get('url', "")
     vm_profile_list = int(args['vmProfileList']) if 'vmProfileList' in args else None
-    analyze_again = int(args['analyze_again']) if 'analyze_again' in args else None
-    skip_task_id = int(args['skip_task_id']) if 'skip_task_id' in args else None
-    x_mode = int(args['x_mode']) if 'x_mode' in args else None
+    analyze_again = int(args['analyzeAgain']) if 'analyzeAgain' in args else None
+    skip_task_id = int(args['skipTaskId']) if 'skipTaskId' in args else None
+    x_mode = int(args['xMode']) if 'xMode' in args else None
     message_id = args['messageId'] if 'messageId' in args else None
-    file_priority_q = args['file_priority_q'] if 'file_priority_q' in args else None
-    src_ip = args['src_ip'] if 'src_ip' in args else None
-    dest_ip = args['dest_ip'] if 'dest_ip' in args else None
-    file_name = args['file_name'] if 'file_name' in args else None
+    file_priority_q = args['filePriorityQ'] if 'filePriorityQ' in args else None
+    src_ip = args['srcIp'] if 'srcIp' in args else None
+    dest_ip = args['dstIp'] if 'dstIp' in args else None
+    file_name = args['fileName'] if 'fileName' in args else None
 
     result = file_upload(int(args['submitType']), sample, vm_profile_list,
                          skip_task_id, analyze_again, x_mode, message_id, file_priority_q,
