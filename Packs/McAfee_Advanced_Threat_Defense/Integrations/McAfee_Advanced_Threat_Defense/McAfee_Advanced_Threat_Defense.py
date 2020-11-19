@@ -292,8 +292,8 @@ def check_task_status_by_job_id(job_ids):
     task_ids = []
     for job_id in job_ids:
         result = http_request('php/getTaskIdList.php?jobId=' + job_id, 'get', API_HEADERS)
-        task_id = result['result']['taskIdList']
-        task_ids.append(task_id)
+        task_id = argToList(result['result']['taskIdList'])
+        task_ids.extend(task_id)
     return check_task_status_by_task_id(task_ids)
 
 
