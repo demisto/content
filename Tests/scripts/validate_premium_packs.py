@@ -5,6 +5,7 @@ import zipfile
 import json
 import ast
 import sys
+import os
 
 from Tests.configure_and_test_integration_instances import Build, Server
 from Tests.test_content import get_json_file, ParallelPrintsManager
@@ -32,9 +33,12 @@ def update_expectations_from_git(index_data):
 
 
 def unzip_index_and_return_index_file(index_zip_path):
+    logging.info('Unzipping')
     with zipfile.ZipFile(index_zip_path, 'r') as zip_obj:
-        index_file_path = zip_obj.extract(INDEX_FILE_PATH)
-    return index_file_path
+        zip_obj.extractall()
+
+    os.listdir()
+    return INDEX_FILE_PATH
 
 
 def check_and_return_index_data(index_file_path, commit_hash):
@@ -104,6 +108,7 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data):
 
 
 def main():
+    logging.info('Retrieving the index fle')
     options = options_handler()
     index_file_path = unzip_index_and_return_index_file(options.index_zip_path)
     index_data = check_and_return_index_data(index_file_path)  # options.commit_hash)
