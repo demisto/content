@@ -335,7 +335,6 @@ def insight_idr_set_status_command(client: Client, investigation_id: str, status
     return command_results
 
 
-
 def insight_idr_add_threat_indicators_command(client: Client, key: str,
                                               ip_addresses: str = None,
                                               hashes: str = None,
@@ -528,7 +527,7 @@ def insight_idr_download_logs_command(client: Client, log_ids: str, time_range: 
     response = client.download_logs(log_ids.replace(',', ':'), remove_empty_elements(params))
     content_disposition = response.headers.get('Content-Disposition')
     try:
-        filename = content_disposition.split(';')[1].split('=')[1].replace(' ', '')
+        filename = content_disposition.split(';')[1].split('=')[1].replace(' ', '') # type: ignore
     except AttributeError:
         filename = datetime.now().strftime(DATE_FORMAT) + '.log'
 
@@ -559,7 +558,6 @@ def insight_idr_query_log_command(client: Client, log_id: str, query: str, time_
     if time_range:
         start_time, end_time = parse_date_range(time_range, to_timestamp=True)
 
-    print(start_time, end_time)
     params = {
         'query': query,
         'from': start_time,
@@ -783,7 +781,7 @@ def main():
             proxy=proxy)
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            demisto.results(test_module(client))
+            return_results(test_module(client))
 
         elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(client=client,
@@ -830,8 +828,6 @@ def main():
             return_results(insight_idr_query_log_set_command(client, **demisto.args()))
 
     # Log exceptions
-    except DemistoException as error:
-        return_error(f'Error for {command} command. Error: {str(error)}')
     except Exception as error:
         return_error(f'Failed to execute {command} command. Error: {str(error)}')
 
