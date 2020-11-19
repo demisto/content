@@ -1,0 +1,16 @@
+{
+    "name": "Intel471 Malware Feed",
+    "description": "A feed to fetch indicators from intel471",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-11-09T08:06:35Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
