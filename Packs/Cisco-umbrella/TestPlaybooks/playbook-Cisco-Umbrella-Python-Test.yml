@@ -1011,7 +1011,7 @@ tasks:
       - "35"
     scriptarguments:
       emails:
-        simple: dns@google.com
+        simple: dns@google.com,SomeMail@gmail.com
       limit: {}
       offset: {}
       sort: {}
