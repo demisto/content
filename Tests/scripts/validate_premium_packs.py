@@ -37,11 +37,12 @@ def unzip_index_and_return_index_file(index_zip_path):
     with zipfile.ZipFile(index_zip_path, 'r') as zip_obj:
         zip_obj.extractall()
 
-    os.listdir()
+    dir_list = os.listdir()
+    logging.info(f'dir is now: \n {dir_list}')
     return INDEX_FILE_PATH
 
 
-def check_and_return_index_data(index_file_path, commit_hash):
+def check_and_return_index_data(index_file_path):  # , commit_hash):
     with open(index_file_path, 'r') as index_file:
         index_data = json.load(index_file)
 
