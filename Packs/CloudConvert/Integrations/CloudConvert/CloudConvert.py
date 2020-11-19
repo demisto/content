@@ -125,7 +125,6 @@ class Client(BaseClient):
             ``Dict[str, Any]``
         """
 
-
         task_id = arguments.get('task_id')
         return self._http_request(
             method='GET',
@@ -159,15 +158,14 @@ class Client(BaseClient):
 
     @logger
     def get_file_from_url(self, url: str):
-       """
+        """
         Call a GET http request in order to get the file data given as url
-       Args:
-           url: url containing a file
+        Args:
+            url: url containing a file
 
-       Returns:
-            request response, containing the data of the file
-       """
-
+        Returns:
+             request response, containing the data of the file
+        """
         return self._http_request(
             method='GET',
             url_suffix=None,
