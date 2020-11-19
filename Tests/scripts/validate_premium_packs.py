@@ -8,8 +8,7 @@ import sys
 import os
 
 from Tests.configure_and_test_integration_instances import Build, Server
-from Tests.test_content import get_json_file, ParallelPrintsManager
-from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, print_error
+from Tests.test_content import get_json_file
 
 INDEX_FILE_PATH = 'index.json'
 
@@ -68,8 +67,7 @@ def check_and_return_index_data(index_file_path, commit_hash):
     return index_data
 
 
-def get_paid_packs(client: demisto_client, prints_manager: ParallelPrintsManager, thread_index: int,
-                   request_timeout: int = 999999):
+def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
 
     request_data = \
         {
@@ -83,10 +81,7 @@ def get_paid_packs(client: demisto_client, prints_manager: ParallelPrintsManager
             'general': ["generalFieldPaid"]
         }
 
-    message = f'Getting premium packs from server {client.api_client.configuration.host}:\n'
-    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
-                                 include_timestamp=True)
-    prints_manager.execute_thread_prints(thread_index)
+    logging.info(f'Getting premium packs from server {client.api_client.configuration.host}:\n')
 
     # make the pack installation request
     response_data, status_code, _ = demisto_client.generic_request_func(client,
@@ -98,13 +93,12 @@ def get_paid_packs(client: demisto_client, prints_manager: ParallelPrintsManager
 
     if status_code == 200:
         response = json.load(response_data)
-        packs_message = 'Got premium packs from server'
-        prints_manager.add_print_job(packs_message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
+        logging.info('Got premium packs from server')
         return response["packs"]
+
     result_object = ast.literal_eval(response_data)
     message = result_object.get('message', '')
-    err_msg = f'Failed to retrieve premium packs - with status code {status_code}\n{message}\n'
-    prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+    logging.info(f'Failed to retrieve premium packs - with status code {status_code}\n{message}\n')
     return None
 
 
@@ -149,6 +143,7 @@ def main():
             if paid_packs is not None:
                 logging.info(f'Verifying premium packs in {host}')
                 verify_server_paid_packs_by_index(paid_packs, index_data)
+                logging.info(f'All premium packs in host: {host} are valid')
             else:
                 os.remove(index_file_path)
                 logging.error(f'Missing premium packs in host: {host}')
