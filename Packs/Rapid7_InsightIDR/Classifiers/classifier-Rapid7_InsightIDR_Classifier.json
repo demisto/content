@@ -10,11 +10,12 @@
 	"instanceIds": null,
 	"itemVersion": "",
 	"keyTypeMap": {
+		"ALERT": "Rapid7_InsightIDR_Incident_Type",
 		"HUNT": "Hunt",
 		"MANUAL": "Job"
 	},
 	"locked": false,
-	"logicalVersion": 1,
+	"logicalVersion": 2,
 	"mapping": null,
 	"name": "Rapid7_InsightIDR_Classifier",
 	"nameRaw": "Rapid7_InsightIDR_Classifier",
