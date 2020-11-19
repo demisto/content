@@ -176,7 +176,7 @@ class Client(BaseClient):
 
 
 @logger
-def raise_error_if_no_data(results):
+def raise_error_if_no_data(results: Dict[str, Any]):
     """
     This function checks if No 'data' field was returned from the request, meaning the input was invalid
     Args:
@@ -192,6 +192,7 @@ def raise_error_if_no_data(results):
         else:
             raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
                              'many requests. Please try again later.')
+
 
 @logger
 def import_command(client: Client, arguments: Dict[str, Any]):
@@ -224,10 +225,12 @@ def import_command(client: Client, arguments: Dict[str, Any]):
     else:
         raise ValueError('No url or entry id specified.')
 
+    readable_output = tableToMarkdown(
+        'Import Results',
+        remove_empty_elements(results_data),
+        headers=('created_at', 'id', 'operation', 'status'),
+        headerTransform=string_to_table_header)
 
-    readable_output = tableToMarkdown('Import Results', remove_empty_elements(results_data),
-                                      headers=('created_at', 'id', 'operation', 'status'),
-                                      headerTransform=string_to_table_header)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='CloudConvert.Task',
@@ -288,7 +291,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     """
     results = client.check_status(arguments)
     raise_error_if_no_data(results)
-    results_data = results.get('data')
+    results_data = results.get('data', {})
 
     # If checking on an export to entry operation, manually change the operation name
     # For other operations, the operation matches the operation field in the API's response, so no change is needed
@@ -323,7 +326,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         readable_output = tableToMarkdown(
             'Check Status Results',
             remove_empty_elements(results_data),
-            headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result','status'),
+            headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result', 'status'),
             headerTransform=string_to_table_header,
         )
 

@@ -4012,7 +4012,7 @@ if 'requests' in sys.modules:
                             raise DemistoException(err_msg, res=res)
 
                 if not empty_valid_codes:
-                    empty_valid_codes=[204]
+                    empty_valid_codes = [204]
                 is_response_empty_and_successful = (res.status_code in empty_valid_codes)
                 if is_response_empty_and_successful and return_empty_response:
                     return res
