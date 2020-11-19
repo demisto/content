@@ -58,11 +58,13 @@ def check_and_return_index_data(index_file_path, commit_hash):
 
     logging.info(f"Found index data:\n {index_data} \n\n Checking...")
     # TODO: check commit hash with master
-    assert index_data["commit"] == commit_hash
+    # assert index_data["commit"] == commit_hash
     assert len(index_data["packs"]) != 0
     for pack in index_data["packs"]:
         assert pack["id"] != ""
         assert pack["price"] > 0
+
+    logging.info(f"{index_file_path} file was found valid")
     return index_data
 
 
@@ -116,6 +118,7 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data):
     for (server_pack, index_pack) in zip(sorted_server_packs, sorted_index_packs):
         assert server_pack["id"] == index_pack["id"]
         assert server_pack["price"] == index_pack["price"]
+        logging.info(f'Pack: {server_pack["id"]} is fine.')
 
 
 def main():
@@ -147,7 +150,11 @@ def main():
                 logging.info(f'Verifying premium packs in {host}')
                 verify_server_paid_packs_by_index(paid_packs, index_data)
             else:
+                os.remove(index_file_path)
+                logging.error(f'Missing premium packs in host: {host}')
                 sys.exit(1)
+
+        os.remove(index_file_path)
 
 
 if __name__ == '__main__':
