@@ -23,7 +23,7 @@ def options_handler():
                                              ' In case only_check_index_file is set, specify path to index.json',
                         required=True)
     # parser.add_argument('--commit_hash', help='The commit hash of the current build', required=True)
-    # parser.add_argument('-s', '--secret', help='Path to secret conf file')
+    parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('--only_check_index_zip', help='Path to index.zip')
     parser.add_argument('--only_check_index_file', help='Path to index.json')
 
@@ -43,14 +43,13 @@ def update_expectations_from_git(index_data):
 def unzip_index_and_return_index_file(index_zip_path):
     logging.info('Unzipping')
     with zipfile.ZipFile(index_zip_path, 'r') as zip_obj:
-        zip_obj.extractall(path="./extracted-index")
+        extracted_path = zip_obj.extract(f"index/{INDEX_FILE_PATH}", path="./extracted-index")
 
-    dir_list = os.listdir("./extracted-index")
-    logging.info(f'dir ./extracted-index is now: \n {dir_list}')
-    dir_list = os.listdir("./extracted-index/index")
-    logging.info(f'dir ./extracted-index/index is now: \n {dir_list}')
+    logging.info(f'extracted path is now: {extracted_path}')
+    dir_list = os.listdir(extracted_path)
+    logging.info(f'dir {extracted_path} is now: \n {dir_list}')
 
-    return f"./extracted-index/index/{INDEX_FILE_PATH}"
+    return {INDEX_FILE_PATH}
 
 
 def check_and_return_index_data(index_file_path):  # , commit_hash):
