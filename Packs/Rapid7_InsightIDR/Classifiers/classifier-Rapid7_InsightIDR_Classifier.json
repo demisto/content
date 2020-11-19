@@ -1,32 +1,14 @@
 {
-	"brands": null,
-	"defaultIncidentType": "Rapid7_InsightIDR_Incident_Type",
-	"description": "Classifies Rapid7 InsightIDR incidents.",
-	"feed": false,
-	"fromServerVersion": "",
 	"id": "1bd927db-6bff-4084-8aab-29061b01a985",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
+	"name": "Rapid7_InsightIDR_Classifier",
+	"type": "classification",
+	"description": "Classifies Rapid7 InsightIDR incidents",
+	"defaultIncidentType": "",
 	"keyTypeMap": {
 		"ALERT": "Rapid7_InsightIDR_Incident_Type",
 		"HUNT": "Hunt",
 		"MANUAL": "Job"
 	},
-	"locked": false,
-	"logicalVersion": 2,
-	"mapping": null,
-	"name": "Rapid7_InsightIDR_Classifier",
-	"nameRaw": "Rapid7_InsightIDR_Classifier",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
 	"transformer": {
 		"complex": {
 			"accessor": "",
@@ -36,8 +18,5 @@
 		},
 		"simple": ""
 	},
-	"type": "classification",
-	"unclassifiedCases": {},
-	"version": -1,
-	"fromVersion": "5.0.0"
+	"version": -1
 }
