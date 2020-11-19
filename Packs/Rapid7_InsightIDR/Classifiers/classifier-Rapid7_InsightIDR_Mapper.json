@@ -1,18 +1,10 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "6.0.0",
-	"fromVersion": "6.0.0",
 	"id": "5093a638-ab0b-4844-8cd9-6996a89ba38a",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 6,
+	"name": "Rapid7_InsightIDR_Mapper",
+	"type": "mapping-incoming",
+	"description": "Maps incoming InsightIDR alert fields.",
+	"fromVersion": "5.0.0",
+	"defaultIncidentType": "",
 	"mapping": {
 		"dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": true,
@@ -101,21 +93,5 @@
 			}
 		}
 	},
-	"name": "Rapid7_InsightIDR_Mapper",
-	"nameRaw": "Rapid7_InsightIDR_Mapper",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
 	"version": -1
 }
