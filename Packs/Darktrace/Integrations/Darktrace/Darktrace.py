@@ -52,15 +52,6 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def get_time(self):
-        request = "/time"
-        http_headers = get_headers(self._auth, request)
-        return self._http_request(
-            method='GET',
-            url_suffix=request,
-            headers=http_headers
-        )
-
     def get_modelbreach(self, pbid):
         """Searches for a single Darktrace model breach alerts using '/modelbreaches?pbid=<pbid>'
         :type pbid: ``str``
@@ -491,18 +482,23 @@ def format_JSON_for_modelbreach(modelbreach: Dict[str, Any]) -> Dict[str, Any]:
 """*****COMMAND FUNCTIONS****"""
 
 
-def test_module(client):
+def test_module(client: Client, first_fetch_time: Optional[int]) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
-    Args:
-        client: Darktrace client
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
+    :type client: ``Client``
+    :param client:
+        Darktrace Client
+    :type first_fetch_time: ``Optional[int]``
+    :param first_fetch_time:
+        First fetch time
+    :return:
+        A message to indicate the integration works as it is supposed to
+    :rtype: ``str``
     """
     try:
-        client.get_time()
+        client.search_modelbreaches(min_score=0, start_time=first_fetch_time)
+
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -1038,7 +1034,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, first_fetch_time)
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
