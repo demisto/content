@@ -132,7 +132,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+              simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
       - - operator: isEqualString
           left:
             value:
