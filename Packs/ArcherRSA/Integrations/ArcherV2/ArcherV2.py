@@ -628,6 +628,8 @@ def search_applications_command(client: Client, args: Dict[str, str]):
         res = client.do_request('GET', endpoint_url)
     elif limit:
         res = client.do_request('GET', endpoint_url, params={"$top": limit})
+    else:
+        res = []
 
     errors = get_errors_from_res(res)
     if errors:
@@ -799,7 +801,7 @@ def update_record_command(client: Client, args: Dict[str, str]):
     if res.get('IsSuccessful'):
         return_outputs(f'Record {record_id} updated successfully', {}, res)
     else:
-        return_error('Update record failed')
+        raise DemistoException('Update record failed')
 
 
 def execute_statistics_command(client: Client, args: Dict[str, str]):
@@ -862,9 +864,31 @@ def upload_file_command(client: Client, args: Dict[str, str]):
 
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         attachment_id = res['RequestedObject'].get('Id')
-        return_outputs(f'File uploaded succsessfully, attachment ID: {attachment_id}', {}, res)
     else:
-        return_error('Upload file failed')
+        raise DemistoException('Upload file failed')
+
+    return_outputs(f'File uploaded succsessfully, attachment ID: {attachment_id}', {}, res)
+    return attachment_id
+
+
+def upload_and_associate_command(client: Client, args: Dict[str, str]):
+    """Uploading an entry to archer. than, if needed, associate it to a record.
+    """
+    app_id = args.get('applicationId')
+    content_id = args.get('contentId')
+    associate_field = args.get('associatedField')
+
+    should_associate_to_record = app_id and content_id
+    if not should_associate_to_record:  # If both app_id and content_id
+        if app_id or content_id:  # If one of them, raise error. User's mistake
+            raise DemistoException(
+                'Found arguments to associate an attachment to a record, but not all required arguments supplied'
+            )
+
+    attachment_id = upload_file_command(client, args)
+    if should_associate_to_record:
+        args['fieldsToValues'] = json.dumps({associate_field: [attachment_id]})
+        update_record_command(client, args)
 
 
 def download_file_command(client: Client, args: Dict[str, str]):
@@ -1080,7 +1104,7 @@ def main():
         'archer-get-search-options-by-guid': search_options_command,
         'archer-reset-cache': reset_cache_command,
         'archer-get-valuelist': get_value_list_command,
-        'archer-upload-file': upload_file_command,
+        'archer-upload-file': upload_and_associate_command,
         'archer-get-file': download_file_command,
         'archer-list-users': list_users_command,
         'archer-search-records': search_records_command,

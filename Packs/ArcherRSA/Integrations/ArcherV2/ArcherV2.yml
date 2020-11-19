@@ -336,6 +336,16 @@ script:
       name: entryId
       required: true
       secret: false
+    - name: applicationId
+      required: false
+      description: ID of the application which we want to upload the file to.
+    - name: contentId
+      required: false
+      description: The Content (record) ID to update.
+    - name: associatedField
+      required: false
+      description: Archer field name to associate the file with.
+      defaultValue: Supporting Documentation
     deprecated: false
     description: Uploads a file to Archer.
     execution: false
