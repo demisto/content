@@ -3,7 +3,7 @@
 	"name": "Rapid7_InsightIDR_Mapper",
 	"type": "mapping-incoming",
 	"description": "Maps incoming InsightIDR alert fields.",
-	"fromVersion": "5.0.0",
+	"fromVersion": "6.0.0",
 	"defaultIncidentType": "",
 	"mapping": {
 		"dbot_classification_incident_type_all": {
