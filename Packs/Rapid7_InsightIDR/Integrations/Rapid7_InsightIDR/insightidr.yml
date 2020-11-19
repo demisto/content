@@ -25,12 +25,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days.)
-  defaultvalue: 7 days
+- defaultvalue: 7 days
   display: First Fetch Time
   name: fetch_time
   required: false
   type: 0
+  additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days.)
 - additionalinfo: Max number of alerts per fetch. Defaults to 20, max is 1000.
   defaultvalue: '20'
   display: Fetch Limit
