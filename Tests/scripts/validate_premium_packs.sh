@@ -10,6 +10,7 @@ CIRCLE_SHA1=${CIRCLE_SHA1}
 PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
 ID_SET=$CIRCLE_ARTIFACTS/id_set.json
 EXTRACT_FOLDER=$(mktemp -d)
+SECRET_CONF_PATH="./conf_secret.json"
 
 if [[ -z "$GCS_MARKET_KEY" ]]; then
     echo "GCS_MARKET_KEY not set aborting!"

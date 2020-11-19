@@ -61,8 +61,8 @@ def check_and_return_index_data(index_file_path, commit_hash):
     # assert index_data["commit"] == commit_hash
     assert len(index_data["packs"]) != 0
     for pack in index_data["packs"]:
-        assert pack["id"] != ""
-        assert pack["price"] > 0
+        assert pack["id"] != "", "There is a missing pack id."
+        assert pack["price"] > 0, f"The price on the pack {pack['id']} is 0 or less"
 
     logging.info(f"{index_file_path} file was found valid")
     return index_data
