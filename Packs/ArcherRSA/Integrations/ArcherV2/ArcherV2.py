@@ -595,8 +595,8 @@ def test_module(client: Client, params) -> str:
     if params.get('isFetch', False):
         first_fetch_time = '3 days'
         last_fetch = dateparser.parse(first_fetch_time)
-
         last_fetch = last_fetch.replace(tzinfo=None)
+
         app_id = params.get('applicationId', '75')
         date_field = params.get('applicationDateField', 'Date/Time Reported')
         max_results = 10
@@ -1013,9 +1013,11 @@ def fetch_incidents(
     last_fetch = last_run.get('last_fetch')
 
     if last_fetch:
+        demisto.debug(f'Got a saved last fetch {last_fetch}')
         last_fetch = dateparser.parse(last_fetch)
     else:  # Handle first time fetch
         last_fetch = dateparser.parse(first_fetch_time)
+        demisto.debug(f'New fetch initiate. Time before offset {last_fetch}')
         time_offset = int(params.get('time_zone', '0'))
         last_fetch = last_fetch + timedelta(minutes=(time_offset * -1))
 
@@ -1098,6 +1100,7 @@ def main():
                 first_fetch_time=first_fetch_time,
                 params=params
             )
+            demisto.debug(f'Setting next run to {next_run}')
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == 'test-module':
