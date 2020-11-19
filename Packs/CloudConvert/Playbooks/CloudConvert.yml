@@ -1,6 +1,6 @@
-id: CloudConvert
+id: CloudConvert - Convert File
 version: -1
-name: CloudConvert
+name: CloudConvert - Convert File
 description: Use this playbook to convert a file to the required format using CloudConvert.
 starttaskid: "0"
 tasks:
