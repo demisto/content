@@ -76,7 +76,7 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
             'sort':
                 [{
                     'field': 'updated',
-                    'asc': 'false'
+                    'asc': False
                 }],
             'general': ["generalFieldPaid"]
         }
