@@ -2751,7 +2751,7 @@ class IndicatorsTimeline:
 
 
 
-def arg_to_int(arg, arg_name, required = False):
+def arg_to_number(arg, arg_name, required = False):
     # type: (Any, str, bool) -> Optional[int]
 
     """Converts an XSOAR argument to a Python int
@@ -2791,14 +2791,13 @@ def arg_to_int(arg, arg_name, required = False):
     raise ValueError('Invalid number: "{}"'.format(arg_name))
 
 
-def arg_to_timestamp(arg, arg_name, required = False):
-    # type: (Any, str, bool) -> Optional[int]
+def arg_to_datetime(arg, arg_name, is_utc=True, required = False, settings=None):
+    # type: (Any, str, bool, bool, dict) -> Optional[datetime.datetime]
 
-    """Converts an XSOAR argument to a timestamp (seconds from epoch)
+    """Converts an XSOAR argument to a datetime
 
     This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
-    since epoch). It will throw a ValueError if the input is invalid.
+    via ``demisto.args()`` into an ``datetime``. It will throw a ValueError if the input is invalid.
     If the input is None, it will throw a ValueError if required is ``True``,
     or ``None`` if required is ``False.
 
@@ -2808,15 +2807,18 @@ def arg_to_timestamp(arg, arg_name, required = False):
     :type arg_name: ``str``
     :param arg_name: argument name
 
+    :type is_utc: ``bool``
+    :param is_utc: if True then date converted as utc timezone, otherwise will convert with local timezone.
+
     :type required: ``bool``
     :param required:
         throws exception if ``True`` and argument provided is None
 
     :return:
-        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
+        returns an ``datetime`` if conversion works
         returns ``None`` if arg is ``None`` and required is set to ``False``
         otherwise throws an Exception
-    :rtype: ``Optional[int]``
+    :rtype: ``Optional[datetime]``
     """
 
     if arg is None:
@@ -2824,22 +2826,28 @@ def arg_to_timestamp(arg, arg_name, required = False):
             raise ValueError('Missing "{}"'.format(arg_name))
         return None
 
-    if isinstance(arg, str) and arg.isdigit():
+    if isinstance(arg, str) and arg.isdigit() or isinstance(arg, (int, float)):
         # timestamp is a str containing digits - we just convert it to int
-        return int(arg)
+        ms = int(arg)
+        if is_utc:
+            return datetime.datetime.utcfromtimestamp(ms / 1000.0)
+        else:
+            return datetime.datetime.fromtimestamp(ms / 1000.0)
     if isinstance(arg, str):
         # we use dateparser to handle strings either in ISO8601 format, or
         # relative time stamps.
         # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if settings:
+            date = dateparser.parse(arg, settings=settings)
+        else:
+            date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+
         if date is None:
             # if d is None it means dateparser failed to parse it
-            raise ValueError('Invalid date: {}'.format(arg_name))
+            raise ValueError('Invalid date: "{}"'.format(arg_name))
 
-        return int(date.timestamp())
-    if isinstance(arg, (int, float)):
-        # Convert to int if the input is a float
-        return int(arg)
+        return date
+
     raise ValueError('Invalid date: "{}"'.format(arg_name))
 
 
@@ -3352,6 +3360,8 @@ def string_to_context_key(string):
 
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
+        THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
+
       Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
       Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
 

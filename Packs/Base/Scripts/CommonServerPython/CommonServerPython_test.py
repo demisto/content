@@ -2773,27 +2773,27 @@ def test_arg_to_int__valid_numbers():
     Then
         ensure proper int returned
     """
-    from CommonServerPython import arg_to_int
+    from CommonServerPython import arg_to_number
 
-    result = arg_to_int(
+    result = arg_to_number(
         arg='5',
         arg_name='foo')
 
     assert result == 5
 
-    result = arg_to_int(
+    result = arg_to_number(
         arg='2.0',
         arg_name='foo')
 
     assert result == 2
 
-    result = arg_to_int(
+    result = arg_to_number(
         arg=3,
         arg_name='foo')
 
     assert result == 3
 
-    result = arg_to_int(
+    result = arg_to_number(
         arg=4,
         arg_name='foo',
         required=True)
@@ -2810,10 +2810,10 @@ def test_arg_to_int__valid_numbers():
     Then
         raise ValueError
     """
-    from CommonServerPython import arg_to_int
+    from CommonServerPython import arg_to_number
 
     try:
-        arg_to_int(
+        arg_to_number(
             arg='aa',
             arg_name='foo')
 
@@ -2834,10 +2834,10 @@ def test_arg_to_int_required():
     Then
         ensure ValueError raised
     """
-    from CommonServerPython import arg_to_int
+    from CommonServerPython import arg_to_number
 
     # required set to false
-    result = arg_to_int(
+    result = arg_to_number(
         arg=None,
         arg_name='foo',
         required=False)
@@ -2845,7 +2845,7 @@ def test_arg_to_int_required():
     assert result is None
 
     try:
-        arg_to_int(
+        arg_to_number(
             arg=None,
             arg_name='foo',
             required=True)
@@ -2856,7 +2856,7 @@ def test_arg_to_int_required():
         assert 'Missing' in str(e)
 
     try:
-        arg_to_int(
+        arg_to_number(
             arg='',
             arg_name='foo',
             required=True)
@@ -2878,18 +2878,19 @@ def test_arg_to_timestamp_valid_inputs():
     Then
         ensure returned int which represents timestamp in milliseconds
     """
-    from CommonServerPython import arg_to_timestamp
+    from CommonServerPython import arg_to_datetime
+    import datetime
 
     # hard coded date
-    result = arg_to_timestamp(
+    result = arg_to_datetime(
         arg='2020-11-10T21:43:43Z',
         arg_name='foo'
     )
 
-    assert result == 1605044623
+    assert result == datetime.datetime(2020, 11, 10, 21, 43, 43, tzinfo=datetime.tzinfo.)
 
     # relative dates also work
-    result = arg_to_timestamp(
+    result = arg_to_datetime(
         arg='2 hours ago',
         arg_name='foo'
     )
@@ -2908,10 +2909,9 @@ def test_arg_to_timestamp_invalid_inputs():
     Then
         ensure ValueError is raised
     """
-    from CommonServerPython import arg_to_timestamp
-
+    from CommonServerPython import arg_to_datetime
     try:
-        arg_to_timestamp(
+        arg_to_datetime(
             arg=None,
             arg_name='foo',
             required=True)
@@ -2922,7 +2922,7 @@ def test_arg_to_timestamp_invalid_inputs():
         assert 'Missing' in str(e)
 
     try:
-        arg_to_timestamp(
+        arg_to_datetime(
             arg='aaaa',
             arg_name='foo')
 
@@ -2932,7 +2932,7 @@ def test_arg_to_timestamp_invalid_inputs():
         assert 'Invalid date' in str(e)
 
     try:
-        dd = arg_to_timestamp(
+        dd = arg_to_datetime(
             arg='2010-32-01',
             arg_name='foo')
 
