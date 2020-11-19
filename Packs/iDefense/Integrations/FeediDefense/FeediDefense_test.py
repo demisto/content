@@ -2,8 +2,8 @@ from FeediDefense import build_iterator
 import requests_mock
 import pytest
 
-# from JSONFeedApiModule import Client
-from Packs.ApiModules.Scripts.JSONFeedApiModule.JSONFeedApiModule import Client
+from JSONFeedApiModule import Client
+# from Packs.ApiModules.Scripts.JSONFeedApiModule.JSONFeedApiModule import Client
 
 PARAMS = {'api_token': '{idef1}udCEKL15x1Qp57SWpRWvaDyyVLJGeQgUcWTuckp4G5wq0tSlYH1pD9RKTzZQyRX6', 'insecure': True,
           'indicator_type': ['IP', 'Domain'],

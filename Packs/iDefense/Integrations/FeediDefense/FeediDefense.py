@@ -9,7 +9,7 @@ from JSONFeedApiModule import *  # noqa: E402
 
 def build_iterator(client: Client, feed: Dict, **kwargs) -> List:
     params: dict = feed.get('filters', {})
-    fetch_indicators_limit = 150000
+    fetch_indicators_limit = 100000
     current_indicator_type = feed.get('indicator_type')
     integration_context = get_integration_context()
     page_number = integration_context.get(f'{current_indicator_type}_page', 1)
