@@ -301,10 +301,10 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
 
     # Check if an export to war room entry operation is finished
     # If it did - create the entry
-    if results.get('data', {}).get('status') == 'finished' \
+    if results_data.get('status') == 'finished' \
             and argToBoolean(arguments.get('create_war_room_entry', 'False'))\
-            and results.get('data', {}).get('operation') == 'export/entry':
-        results_info = results.get('data', {}).get('result', {}).get('files', [{}])[0]
+            and results_data.get('operation') == 'export/entry':
+        results_info = results_data.get('result', {}).get('files', [{}])[0]
         url = results_info.get('url')
         file_name = results_info.get('filename')
         file_data = client.get_file_from_url(url)
@@ -342,7 +342,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
 @logger
 def export_command(client: Client, arguments: Dict[str, Any]):
     """
-    Export a converted file back to user, either as a url or directly to a war room entry
+    Export a converted file back to the user, either as a url or directly as a war room entry
     Note: in order to get the resulted url/entry of the file you need to use a check-status command as well,
         since the response of the export command is usually responded before the file is fully exported (hence the
     'status' field is 'waiting', and not 'finished')
