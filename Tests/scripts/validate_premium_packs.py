@@ -40,6 +40,8 @@ def unzip_index_and_return_index_file(index_zip_path):
 def check_and_return_index_data(index_file_path, commit_hash):
     with open(index_file_path, 'r') as index_file:
         index_data = json.load(index_file)
+
+    logging.info(f"Found index data:\n {index_data} \n\n Checking...")
     # TODO: check commit hash with master
     # assert index_data["commit"] == commit_hash
     assert len(index_data["packs"]) != 0
@@ -106,6 +108,7 @@ def main():
     index_file_path = unzip_index_and_return_index_file(options.index_zip_path)
     index_data = check_and_return_index_data(index_file_path)  # options.commit_hash)
     update_expectations_from_git(index_data)
+
 
     # Get the host by the ami env
     hosts, _ = Build.get_servers(ami_env=options.ami_env)

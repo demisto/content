@@ -34,6 +34,7 @@ BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
 GCS_MARKET_BUCKET="marketplace-dist"
 INDEX_PATH="content/packs/index.zip"
+LOCAL_INDEX_PATH="./index.zip"
 
 # ====== TESTING CONFIGURATION ======
 
@@ -41,8 +42,8 @@ GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
 INDEX_TESTING_PATH="dev/content/packs/index.zip"
 
 if [ ! -n "${BUCKET_UPLOAD}" ]; then
-  echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$INDEX_PATH to target path: gs://$INDEX_FULL_TARGET_PATH ..."
-  gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" "gs://$INDEX_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Validate Premium Packs.log" 2>&1
+  echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$INDEX_PATH to target path: $LOCAL_INDEX_PATH ..."
+  gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" $LOCAL_INDEX_PATH > "$CIRCLE_ARTIFACTS/logs/Validate Premium Packs.log" 2>&1
 else
   echo "Copying testing files at: gs://$GCS_MARKET_TESTING_BUCKET/$INDEX_TESTING_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
   gsutil -m cp -r "gs://$GCS_MARKET_TESTING_BUCKET/$INDEX_TESTING_PATH" "gs://$INDEX_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Validate Premium Packs.log" 2>&1
@@ -51,10 +52,10 @@ echo "Finished copying successfully."
 
 # TODO: INDEX_PATH is invalid. look where you can get the zipped file from.
 ls -la
-if [ ! -f "gs://$INDEX_FULL_TARGET_PATH" ]; then
-  echo "Could not find file gs://$INDEX_FULL_TARGET_PATH"
+if [ ! -f $LOCAL_INDEX_PATH ]; then
+  echo "Could not find file $LOCAL_INDEX_PATH"
   exit 1
 else
-  echo "Testing premium packs in against index file ./$INDEX_PATH"
-  python3 ./Tests/scripts/validate_premium_packs.py --index_zip_path ./$INDEX_PATH -s "$SECRET_CONF_PATH" --ami_env "$1"
+  echo "Testing premium packs in against index file $LOCAL_INDEX_PATH"
+  python3 ./Tests/scripts/validate_premium_packs.py --index_zip_path $LOCAL_INDEX_PATH -s "$SECRET_CONF_PATH" --ami_env "$1"
 fi
