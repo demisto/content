@@ -1843,3 +1843,5 @@ outputs:
 - contextPath: LGTM.code_review_result.languages.alerts.query.properties
   type: unknown
 sourceplaybookid: 4ac23472-9a21-4685-8836-a849659b022d
+tests:
+- no tests
