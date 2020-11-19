@@ -129,7 +129,7 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix=f'/tasks/{task_id}',
-            ok_codes=(422, 200, 201, 500)
+            ok_codes=(200, 201, 422, 500)
         )
 
     @logger
