@@ -202,7 +202,7 @@ def import_command(client: Client, arguments: Dict[str, Any]):
         results = client.import_entry_id(file_path, file_name)
         results_data = results.get('data')
     else:
-        raise ValueError('No url or entry id specified')
+        raise ValueError('No url or entry id specified.')
 
     # No 'data' field was returned from the request, meaning the input was invalid
     if results_data is None:
