@@ -1,8 +1,8 @@
 import demisto_client
 import pytest
+import timeout_decorator
 
 import Tests.Marketplace.search_and_install_packs as script
-from Tests.test_content import ParallelPrintsManager
 
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
@@ -128,19 +128,16 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
     mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
-    prints_manager = ParallelPrintsManager(1)
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
-                                                                                      client,
-                                                                                      prints_manager)
+                                                                                      client)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs
     assert success is True
 
     installed_packs, _ = script.search_and_install_packs_and_their_dependencies(bad_pack_ids,
-                                                                                client,
-                                                                                prints_manager)
+                                                                                client)
     assert bad_pack_ids[0] not in installed_packs
 
 
@@ -160,11 +157,9 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
     mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
     mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
-    prints_manager = ParallelPrintsManager(1)
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
-                                                                                      client,
-                                                                                      prints_manager)
+                                                                                      client)
     assert success is False
 
 
@@ -178,13 +173,12 @@ def test_search_pack_with_id(mocker):
    - Ensure the pack is found using its ID
    """
     client = MockClient()
-    prints_manager = ParallelPrintsManager(1)
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
     expected_response = {
         'id': 'HelloWorld',
         'version': '1.1.10'
     }
-    assert expected_response == script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, None)
+    assert expected_response == script.search_pack(client, "New Hello World", 'HelloWorld', None)
 
 
 def test_search_pack_with_failure(mocker):
@@ -198,17 +192,16 @@ def test_search_pack_with_failure(mocker):
    - Ensure error is raised.
    """
     client = MockClient()
-    prints_manager = ParallelPrintsManager(1)
     lock = MockLock()
 
     # Error when searching for pack
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
-    script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, lock)
+    script.search_pack(client, "New Hello World", 'HelloWorld', lock)
     assert not script.SUCCESS_FLAG
 
     # Response with missing data
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('{"id": "HelloWorld"}', 200, None))
-    script.search_pack(client, prints_manager, "New Hello World", 'HelloWorld', 0, lock)
+    script.search_pack(client, "New Hello World", 'HelloWorld', lock)
     assert not script.SUCCESS_FLAG
 
 
@@ -253,3 +246,37 @@ def test_not_find_malformed_pack_id():
     with pytest.raises(Exception, match='The request to install packs has failed. '
                                         'Reason: This is an error message without pack ID'):
         script.find_malformed_pack_id('This is an error message without pack ID')
+
+
+@timeout_decorator.timeout(3)
+def test_install_nightly_packs_endless_loop(mocker):
+    """
+    Given
+    - Packs to install with two packs that cannot be installed
+        (usually because their version does not exist in the bucket)
+    When
+    - Run install_nightly_packs method with those packs
+    Then
+    - Ensure the function does not enter an endless loop and that it gracefully removes the two damaged packs from the
+     installation list
+    """
+
+    def generic_request_mock(self, path: str, method, body=None, accept=None, _request_timeout=None):
+        requested_pack_ids = {pack['id'] for pack in body['packs']}
+        for bad_integration in {'bad_integration1', 'bad_integration2'}:
+            if bad_integration in requested_pack_ids:
+                raise Exception(f'invalid version 1.2.0 for pack with ID {bad_integration}')
+        return MOCK_PACKS_INSTALLATION_RESULT, 200, None
+
+    client = MockClient()
+    mocker.patch.object(demisto_client, 'generic_request_func', generic_request_mock)
+    mocker.patch("Tests.Marketplace.search_and_install_packs.logging")
+    packs_to_install = [
+        {'id': 'HelloWorld'},
+        {'id': 'TestPack'},
+        {'id': 'AzureSentinel'},
+        {'id': 'Base'},
+        {'id': 'bad_integration1'},
+        {'id': 'bad_integration2'},
+    ]
+    script.install_nightly_packs(client, 'my_host', packs_to_install)
