@@ -3453,6 +3453,24 @@ def unfold(s):
     return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
 
 
+def decode_content(mime):
+    """
+      Decode content
+    """
+    charset = mime.get_content_charset()
+    payload = mime.get_payload(decode=True)
+    try:
+        if payload:
+            if charset:
+                return payload.decode(charset)
+            else:
+                return payload.decode()
+        else:
+            return ''
+    except Exception:
+        return payload
+
+
 def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
     global ENCODINGS_TYPES
 
@@ -3533,7 +3551,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     base64_encoded = "base64" in part.get("Content-Transfer-Encoding", "")
 
                     if isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
-                        if attachment_file_name is None or attachment_file_name == "":
+                        if attachment_file_name is None or attachment_file_name == "" or attachment_file_name == 'None':
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
                             # Subject will be in the email headers
@@ -3599,7 +3617,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     else:
                         file_content = part.get_payload(decode=True)
                         # fileResult will return an error if file_content is None.
-                        if file_content:
+                        if file_content and not attachment_file_name.endswith('.p7s'):
                             demisto.results(fileResult(attachment_file_name, file_content))
 
                         if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
@@ -3627,10 +3645,10 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 # This is because SMTP duplicate dots for lines that start with `.` and get_payload() doesn't format
                 # this correctly
                 part._payload = part._payload.replace('=\r\n..', '=\r\n.')
-                html = get_utf_string(part.get_payload(decode=True), 'HTML')
+                html = get_utf_string(decode_content(part), 'HTML')
 
             elif part.get_content_type() == 'text/plain':
-                text = get_utf_string(part.get_payload(decode=True), 'TEXT')
+                text = get_utf_string(decode_content(part), 'TEXT')
         email_data = None
         # if we are parsing a signed attachment there can be one of two options:
         # 1. it is 'multipart/signed' so it is probably a wrapper and we can ignore the outer "email"
@@ -3706,6 +3724,8 @@ def main():
 
         file_metadata = result[0]['FileMetadata']
         file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
+        if 'MIME entity text, ISO-8859 text' in file_type:
+            file_type = 'application/pkcs7-mime'
 
     except Exception as ex:
         return_error(
@@ -3720,7 +3740,7 @@ def main():
             output = create_email_output(email_data, attached_emails)
 
         elif any(eml_candidate in file_type_lower for eml_candidate in
-                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'message/rfc822']):
+                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'message/rfc822', 'application/pkcs7-mime']):
             if 'unicode (with bom) text' in file_type_lower:
                 email_data, attached_emails = handle_eml(
                     file_path, False, file_name, parse_only_headers, max_depth, bom=True

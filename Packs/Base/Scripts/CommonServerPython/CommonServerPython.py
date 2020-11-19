@@ -1379,7 +1379,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
-            def headerTransform(s): return s  # noqa
+            def headerTransform(s): return stringEscapeMD(s, True, True)  # noqa
         for header in headers:
             newHeaders.append(headerTransform(header))
         mdResult += '|'
@@ -1588,7 +1588,7 @@ def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
 
 
-MARKDOWN_CHARS = r"\`*_{}[]()#+-!"
+MARKDOWN_CHARS = r"\`*_{}[]()#+-!|"
 
 
 def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
@@ -2768,13 +2768,16 @@ class CommandResults:
     :type indicators_timeline: ``IndicatorsTimeline``
     :param indicators_timeline: must be an IndicatorsTimeline. used by the server to populate an indicator's timeline.
 
+    :type ignore_auto_extract: ``bool``
+    :param ignore_auto_extract: must be a boolean, default value is False. Used to prevent AutoExtract on output.
+
     :return: None
     :rtype: ``None``
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None, indicator=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator) -> None
+                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool) -> None
         if raw_response is None:
             raw_response = outputs
 
@@ -2803,6 +2806,7 @@ class CommandResults:
         self.raw_response = raw_response
         self.readable_output = readable_output
         self.indicators_timeline = indicators_timeline
+        self.ignore_auto_extract = ignore_auto_extract
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -2812,6 +2816,7 @@ class CommandResults:
             human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
+        ignore_auto_extract = False  # type: bool
 
         indicators = [self.indicator] if self.indicator else self.indicators
 
@@ -2827,6 +2832,9 @@ class CommandResults:
 
         if self.raw_response:
             raw_response = self.raw_response
+
+        if self.ignore_auto_extract:
+            ignore_auto_extract = True
 
         if self.indicators_timeline:
             indicators_timeline = self.indicators_timeline.indicators_timeline
@@ -2858,6 +2866,7 @@ class CommandResults:
             'HumanReadable': human_readable,
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
+            'IgnoreAutoExtract': True if ignore_auto_extract else False
         }
 
         return return_entry
@@ -3865,7 +3874,7 @@ if 'requests' in sys.modules:
             except NameError:
                 pass
 
-        def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
+        def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
@@ -3992,15 +4001,10 @@ if 'requests' in sys.modules:
                             # Try to parse json error response
                             error_entry = res.json()
                             err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg, res=error_entry)
+                            raise DemistoException(err_msg, res=res)
                         except ValueError:
                             err_msg += '\n{}'.format(res.text)
-                            try:
-                                error_entry = json.loads(res.text)
-                                raise DemistoException(err_msg, res=error_entry)
-                            except ValueError:
-                                # couldn't parse the response json, sending only the error message
-                                raise DemistoException(err_msg)
+                            raise DemistoException(err_msg, res=res)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -4193,7 +4197,7 @@ def set_integration_context(context, sync=True, version=-1):
     :rtype: ``dict``
     :return: The new integration context
     """
-    demisto.debug('Setting integration context {}:'.format(str(context)))
+    demisto.debug('Setting integration context')
     if is_versioned_context_available():
         demisto.debug('Updating integration context with version {}. Sync: {}'.format(version, sync))
         return demisto.setIntegrationContextVersioned(context, version, sync)
@@ -4344,7 +4348,7 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 class DemistoException(Exception):
     def __init__(self, message, exception=None, res=None, *args):
-        self.res = res if res else {}
+        self.res = res
         self.message = message
         self.exception = exception
         super(DemistoException, self).__init__(message, exception, *args)
@@ -4745,7 +4749,7 @@ class IAMVendorActionResult:
     """
 
     def __init__(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
-                 error_message=None, details=None, skip=False, skip_reason=None, action=None):
+                 error_message=None, details=None, skip=False, skip_reason=None, action=None, return_error=False):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
         :param success: (bool) whether or not the command succeeded.
@@ -4759,6 +4763,7 @@ class IAMVendorActionResult:
         :param skip: (bool) whether or not the command is skipped.
         :param skip_reason: (str) If the command is skipped, describes the reason.
         :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
+        :param return_error: (bool) Whether or not to return an error entry.
         """
         self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
         self._instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
@@ -4773,6 +4778,10 @@ class IAMVendorActionResult:
         self._skip = skip
         self._skip_reason = skip_reason
         self._action = action
+        self._return_error = return_error
+
+    def should_return_error(self):
+        return self._return_error
 
     def create_outputs(self):
         """ Sets the outputs in `_outputs` attribute.
@@ -4856,22 +4865,26 @@ class IAMUserProfile:
 
         entry_context = {
             'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
-            'IAM.Vendor(val.instanceName && val.instanceName == self.instanceName && '
+            'IAM.Vendor(val.instanceName && val.instanceName == obj.instanceName && '
             'val.email && val.email == obj.email)': outputs
         }
 
         return_entry = {
-            'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': outputs,
-            'HumanReadable': readable_output,
             'EntryContext': entry_context
         }
+
+        if self._vendor_action_results[0].should_return_error():
+            return_entry['Type'] = EntryType.ERROR
+        else:
+            return_entry['Type'] = EntryType.NOTE
+            return_entry['HumanReadable'] = readable_output
 
         return return_entry
 
     def set_result(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
-                   error_message=None, details=None, skip=False, skip_reason=None, action=None):
+                   error_message=None, details=None, skip=False, skip_reason=None, action=None, return_error=False):
         """ Sets the outputs and readable outputs attributes according to the given arguments.
 
         :param success: (bool) whether or not the command succeeded.
@@ -4885,6 +4898,7 @@ class IAMUserProfile:
         :param skip: (bool) whether or not the command is skipped.
         :param skip_reason: (str) If the command is skipped, describes the reason.
         :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
+        :param return_error: (bool) Whether or not to return an error entry.
         """
         if not email:
             email = self.get_attribute('email')
@@ -4900,7 +4914,8 @@ class IAMUserProfile:
             details=details,
             skip=skip,
             skip_reason=skip_reason if skip_reason else '',
-            action=action
+            action=action,
+            return_error=return_error
         )
 
         self._vendor_action_results.append(vendor_action_result)
