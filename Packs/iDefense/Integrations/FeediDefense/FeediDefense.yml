@@ -12,7 +12,7 @@ configuration:
   hidden: false
   name: api_token
   required: true
-  type: 0
+  type: 4
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: feedInstanceReputationNotSet
@@ -71,9 +71,9 @@ configuration:
   display: Indicator Type
   name: indicator_type
   options:
-  - 'IP'
-  - 'Domain'
-  - 'URL'
+  - IP
+  - Domain
+  - URL
   required: false
   type: 16
 - additionalinfo: Severity of the indicator.  Which value to fetch.

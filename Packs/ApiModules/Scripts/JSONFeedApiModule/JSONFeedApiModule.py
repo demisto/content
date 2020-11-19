@@ -75,7 +75,7 @@ class Client:
         self.cert = (cert_file, key_file) if cert_file and key_file else None
         self.tlp_color = tlp_color
 
-    def build_iterator(self, feed, **kwargs) -> List:
+    def build_iterator(self, feed: dict, **kwargs) -> List:
         r = requests.get(
             url=feed.get('url', self.url),
             verify=self.verify,
@@ -96,10 +96,15 @@ class Client:
         return result
 
 
-def test_module(client, params) -> str:
+def test_module(client: Client) -> str:
     for feed_name, feed in client.feed_name_to_config.items():
-        client.build_iterator(feed)
+        build_iterator_paging = feed.get('build_iterator_paging')
+        if build_iterator_paging:
+            build_iterator_paging(client, feed)
+        else:
+            client.build_iterator(feed)
         return 'ok'
+    return ''
 
 
 def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool, **kwargs) \
@@ -225,7 +230,7 @@ def feed_main(params, feed_name, prefix):
         demisto.info(f'Command being called is {demisto.command()}')
     try:
         if command == 'test-module':
-            return_outputs(test_module(client, params))
+            return_outputs(test_module(client))
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators_command(client, indicator_type, feedTags,
