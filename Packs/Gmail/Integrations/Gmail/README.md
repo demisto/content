@@ -12,62 +12,44 @@ There are several procedures you have to perform in Google before configuring th
 
 ### Get a New Private Key
 
-1. Access your [Google Service Account](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts%C2%A0).
-
-2. In the IAM & admin section select **Service accounts**.
-
-3. If you need to create a new project, click **CREATE** do the following:
-    1. In the **New Project** window, type a project name, select an organization from the drop-down list  and then select a location. 
-
-    2. Click **CREATE**.
-
-4. In the Service accounts section, click **Create Service Account**.
-
-5. In the **Create service account** window, type a name for the service account, add a description and then click **CREATE**.
-
-6. Click **Continue**.
-
-7. In the **Create key** section, click **CREATE KEY**.
-
-8. Select Key type **JSON** and click **CREATE**.
-
-9. Click **DONE**.
-
-    A key pair is generated and automatically downloads.
-
-10. In the Actions column, select the service and then click **edit**.
-
-   ![Setup Account](./doc_imgs/mceclip1.png)
-
-11. Under the show domain wide delegation, select **Enable G Suite Domain-wide Delegation**.
-
-    ![Setup Account](./doc_imgs/gmail-enable.png)
-
- NOTE: Copy the value of the Unique ID for the client name in step 2 in Delegate Domain-wide Authority to Your Service Account.  
-
-12. Click Save.
-13. In the top search bar, search for admin sdk.
-14. Click **Enable**.
+1.  Access your [Google Service Account](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts%C2%A0).
+2.  In the IAM & admin section select **Service accounts**.
+3.  If you need to create a new project, click **CREATE** do the following:
+    1.  In the **New Project** window, type a project name, select an organization from the drop-down list, and then select a location.
+    2.  Click **CREATE**.
+4.  In the Service accounts section, click **Create Service Account**.
+5.  In the **Create service account** window, type a name for the service account, add a description and then click **CREATE**.
+6.  Click **Continue.**
+7.  In the **Create key** section, click **CREATE KEY**.
+8.  Select Key type **JSON** and click **CREATE**.
+9.  Click **DONE**.<br/>A key pair is generated and automatically downloads.
+10.  In the **Actions** column, select the service and then click **edit**.
+    ![mceclip1.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/gmail-enable.png) 
+11.  Under the show domain wide delegation, select **Enable G Suite Domain-wide Delegation**.
+    ![gmail-_enable.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/gmail-enable.png)  
+    NOTE: Copy the value of the Unique ID for the client name in step 2 in Delegate Domain-wide Authority to Your Service Account. 
+12.  Click Save.
+13.  In the top search bar, search for _admin sdk_.
+14.  Click **Enable**.
 
 ### Delegate Domain-wide Authority to Your Service Account
 
 1. Access the [Google Administrator Console](http://admin.google.com/).
 2. Enter a client name (the Unique ID) and paste the following into the One or More API Scopes textbox. 
-
-https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.device.mobile.action,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/admin.directory.device.chromeos,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/gmail.readonly,https://mail.google.com,https://www.googleapis.com/auth/gmail.compose
-
+    
+``` https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.device.mobile.action,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/admin.directory.device.chromeos,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/gmail.readonly,https://mail.google.com,https://www.googleapis.com/auth/gmail.compose ```
+    
 ![Setup Account](./doc_imgs/mceclip1.png)
 
 ### Get an Immutable Google Apps ID Parameters
-In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
+In order to revoke/fetch a user role, you need an Immutable Google Apps ID param.
 
 1. Open [https://admin.google.com](https://admin.google.com) (as in step 2).
 2. Navigate to **Security > Set up single sign-on (SSO)**. 
    The SSO URL is the Immutable Google Apps ID.
-
 3. Record the SSO URL, which is the Immutable Google Apps ID, and copy it for later use.
 
-![Setup Account](./doc_imgs/mceclip2.png)
+![Setup Account](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip2.png)
 
 ## Configure Gmail on Cortex XSOAR
 
@@ -75,31 +57,27 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 2. Search for Gmail.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| adminEmail | Email of user with admin privileges \(the Password refers to the Service Account private key\) | True |
-| gappsID | Immutable Google Apps Id | False |
-| query | Events query \(e.g. "from:example@demisto.com"\) | False |
-| queryUserKey | Events user key \(e.g. example@demisto.com\) | False |
-| isFetch | Fetch incidents | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| incidentType | Incident type | False |
-| fetch_time | First fetch timestamp, in days. | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | adminEmail | Email of user with admin privileges \(the Password refers to the Service Account private key\) | True |
+    | gappsID | Immutable Google Apps Id -  Only the Cxxxxxxxx, section is needed| False |
+    | query | Events query \(e.g. "from:example@demisto.com"\) The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
+    | queryUserKey | Events user key \(e.g. example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
+    | isFetch | Fetch incidents | False |
+    | insecure | Trust any certificate \(not secure\) | False |
+    | proxy | Use system proxy settings | False |
+    | incidentType | Incident type | False |
+    | fetch_time | First fetch timestamp, in days. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Use Cases
 
 1. Monitors a mailbox by using the integration fetch incident capability to monitor a mailbox and create incidents for new filtered emails.
-
 2. Searches a mailbox for emails with PDF attachments by using the following command.
-
-``` !gmail-search user-id=admin@demisto.com filename="pdf" after="2018/05/10". ```
-
-3. Deletes emails by using the following command.
-
-``` !gmail-delete-mail user-id=admin@demisto.com message-id=164d2110e0152660 ```
+    `gmail-search user-id=admin@demisto.com filename=”pdf” after=”2018/05/10”.`
+3. Deletes emails by using the following command.  
+    `!gmail-delete-mail user-id=admin@demisto.com message-id=164d2110e0152660`
 
 
 ### Fetched Incidents Data
@@ -122,6 +100,38 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+- Delete a user: **gmail-delete-user**
+- Get tokens for a user: **gmail-get-tokens-for-user**
+- Get information for a Google user: **gmail-get-user**
+- Get all available Google roles: **gmail-get-user-roles**
+- Get Gmail message attachments: **gmail-get-attachments**
+- Get a Gmail message: **gmail-get-mail**
+- Search a user's Gmail records: **gmail-search**
+- Search in all Gmail mailboxes: **gmail-search-all-mailboxes**
+- List all Google users: **gmail-list-users**
+- Revoke a Google user's role: **gmail-revoke-user-role**
+- Create a new user: **gmail-create-user**
+- Delete mail from a mailbox: **gmail-delete-mail**
+- Get message in an email thread: **gmail-get-thread**
+- Move mail to a different folder: **gmail-move-mail**
+- Move a mail to a different mailbox: **gmail-move-mail-to-mailbox**
+- Add a rule to delete an email: **gmail-add-delete-filter**
+- Add a new filter: **gmail-add-filter**
+- Get a list of filters in a mailbox: **gmail-list-filter**
+- Remove a filter from a mail: **gmail-remove-filter**
+- Hide a user's information: **gmail-hide-user-in-directory**
+- Set a password: **gmail-set-password**
+- Get an auto reply message for the user: **gmail-get-autoreply**
+- Set an auto-reply for the user: **gmail-set-autoreply**
+- Add a delete user to a mailbox: **gmail-delegate-user-mailbox**
+- Send an email using Gmail: **send-mail**
+- Reply an email using Gmail: **reply-mail**
+- Removers a delegate from a mailbox: **gmail-remove-delegated-mailbox**
+- Get details of a specific role: **gmail-get-role**
+- Creates a forwarding address.: **gmail-forwarding-address-add**
+- Create a custom "from" send-as alias: **gmail-send-as-add**
+
+
 ### gmail-delete-user
 ***
 Deletes a Gmail user.
@@ -189,7 +199,10 @@ Lists all tokens associated with a specified user. applications.
 >|DisplayText|ClientId|Kind|Scopes|UserKey|
 >|---|---|---|---|---|
 >| Google APIs Explorer | 292824132082.apps.googleusercontent.com | admin#directory#token | openid,<br/>https://www.googleapis.com/auth/calendar | 115824619743385532879 |
-
+>|Go Phish!|422358954086-4fvv287aojmge1qaqe9m5mmgmbuhg1hj.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/gmail.addons.current.message.readonly, <br/> https://www.googleapis.com/auth/script.send_mail, <br/> https://www.googleapis.com/auth/userinfo.email, <br/> openid, <br/> https://www.googleapis.com/auth/script.storage, <br/> https://www.googleapis.com/auth/gmail.addons.execute, <br/> https://www.googleapis.com/auth/admin.directory.user.readonly|103020731686044834269|
+>|Demisto KMS DEV|950822307886-oiv25bpm32dtp21eabn2k5lf1ba7koum.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/cloud-platform|103020731686044834269|
+>|Google Data Studio|371237729773-oj8m98u7esgqep8snt9aold136opo3fi.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/bigquery.readonly|103020731686044834269|
+>|Postman|805864674475-3abs2rivkn7kreou30b8ru8esnti4oih.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/userinfo.profile, <br/> https://www.googleapis.com/auth/userinfo.email|103020731686044834269|
 
 ### gmail-get-user
 ***
@@ -4504,6 +4517,89 @@ Sends mail using Gmail.
 
 #### Command Example
 ```!send-mail subject="this is the subject" to=test@demistodev.com body="this is the body"```
+
+#### Context Example
+```
+{
+    "Gmail.SentMail": [
+        {
+            "Bcc": null,
+            "Body": "this is the body",
+            "Cc": null,
+            "From": "admin@demistodev.com",
+            "ID": "16d43287fc29b71a",
+            "Labels": [
+                "SENT"
+            ],
+            "Mailbox": "test@demistodev.com",
+            "Subject": "this is the subject",
+            "ThreadId": "16d43287fc29b71a",
+            "To": "test@demistodev.com",
+            "Type": "Gmail"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+>### Email sent:
+>|Type|ID|To|From|Subject|Body|Labels|ThreadId|
+>|---|---|---|---|---|---|---|---|
+>| Gmail | 16d43287fc29b71a | test@demistodev.com | admin@demistodev.com | this is the subject |this is the body | SENT | 16d43287fc29b71a |
+
+### reply-mail
+***
+Replies to a mail using Gmail.
+
+#### Limitations:
+
+The *subject* argument should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation.
+
+#### Base Command
+
+`reply-mail`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to | Email addresses of the recipients. | Required | 
+| from | Email address of the sender. | Optional | 
+| body | The contents (body) of the email to be sent in plain text. | Optional | 
+| subject | Subject of the email to be sent. <br/> Should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation. | Required | 
+| inReplyTo | A comma-separated list of message IDs to reply to. | Required | 
+| references | A comma-separated list of message IDs to refer to. | Optional | 
+| attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need be attached to the email. | Optional | 
+| cc | Additional recipient email addresses (CC). | Optional | 
+| bcc | Additional recipient email addresses (BCC). | Optional | 
+| htmlBody | The contents (body) of the email to be sent in HTML format. | Optional | 
+| replyTo | Address that needs to be used to reply to the message. | Optional | 
+| attachNames | A comma-separated list of new names to rename attachments corresponding to the order in which they were attached to the email.<br/>        Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3<br/>        To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5 | Optional | 
+| attachCIDs | A comma-separated list of CID images to embed attachments inside the email. | Optional | 
+| transientFile | Textual name for an attached file. Multiple files are supported as a<br/>        comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated<br/>        list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| transientFileCID | CID image for an attached file to include within the email body. Multiple files are<br/>        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"<br/>        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| additionalHeader | A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
+| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.' | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gmail.SentMail.ID | String | The immutable ID of the message. | 
+| Gmail.SentMail.Labels | String | List of IDs of the labels applied to this message. | 
+| Gmail.SentMail.ThreadId | String | The ID of the thread in which the message belongs. | 
+| Gmail.SentMail.To | String | The recipients of the email. | 
+| Gmail.SentMail.From | Unknown | The sender of the email. | 
+| Gmail.SentMail.Cc | String | Additional recipient email addresses \(CC\). | 
+| Gmail.SentMail.Bcc | String | Additional recipient email addresses \(BCC\). | 
+| Gmail.SentMail.Subject | String | The subject of the email. | 
+| Gmail.SentMail.Body | Unknown | The plain-text version of the email. | 
+| Gmail.SentMail.MailBox | String | The mailbox from which the mail was sent. | 
+
+
+#### Command Example
+``` !reply-mail subject="this is the subject" to=test@demistodev.com replyTo=test@demistodev.com body="this is the body" inReplyTo=<CAEvnzx+zEeFJ1U5g4FOfHKeWe-H3hU7kGiKaK7q0F0A@mail.gmail.com> references=<CAEvnzx+zEeFJ1U5g4FOfHKeWe-H3hU7kGiKaK7q0F0A@mail.gmail.com>```
 
 #### Context Example
 ```
