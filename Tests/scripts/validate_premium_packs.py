@@ -92,7 +92,8 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
                                                                         _request_timeout=request_timeout)
 
     if status_code == 200:
-        response = json.load(response_data)
+        logging.info(f'Got response data {response_data}')
+        response = json.loads(response_data)
         logging.info('Got premium packs from server')
         return response["packs"]
 
