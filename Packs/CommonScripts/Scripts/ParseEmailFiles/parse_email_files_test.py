@@ -901,55 +901,6 @@ def test_only_parts_of_object_email_saved(mocker):
     assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['logo5.png', 'logo2.png']
 
 
-def exec_command_for_file_pkcs7(
-        file_path,
-        info="MIME entity text, ISO-8859 text, with very long lines, with CRLF line terminators",
-        file_name=None,
-        file_type=""
-):
-    """
-    Return a executeCommand function which will return the passed path as an entry to the call 'getFilePath'
-
-    Arguments:
-        file_path {string} -- file name of file residing in test_data dir
-
-    Raises:
-        ValueError: if call with differed name from getFilePath or getEntry
-
-    Returns:
-        [function] -- function to be used for mocking
-    """
-    if not file_name:
-        file_name = file_path
-    path = 'test_data/' + file_path
-
-    def executeCommand(name, args=None):
-        if name == 'getFilePath':
-            return [
-                {
-                    'Type': entryTypes['note'],
-                    'Contents': {
-                        'path': path,
-                        'name': file_name
-                    }
-                }
-            ]
-        elif name == 'getEntry':
-            return [
-                {
-                    'Type': entryTypes['file'],
-                    'FileMetadata': {
-                        'info': info,
-                        'type': file_type
-                    }
-                }
-            ]
-        else:
-            raise ValueError('Unimplemented command called: {}'.format(name))
-
-    return executeCommand
-
-
 def test_pkcs7_mime(mocker):
     """
     Given: An email file smime2.p7m of type application/pkcs7-mime and info -
@@ -959,7 +910,10 @@ def test_pkcs7_mime(mocker):
     """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
 
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file_pkcs7('smime2.p7m'))
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('smime2.p7m',
+                                                          info='MIME entity text, ISO-8859 text, with very long lines,'
+                                                               ' with CRLF line terminators'))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
