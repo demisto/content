@@ -2883,6 +2883,14 @@ def test_arg_to_timestamp_valid_inputs():
 
     assert result > datetime.datetime(2020, 11, 10, 21, 43, 43)
 
+    # relative dates also work
+    result = arg_to_datetime(
+        arg=1581982463,
+        arg_name='foo'
+    )
+
+    assert int(result.timestamp()) == 1581982463
+
 
 def test_arg_to_timestamp_invalid_inputs():
     """

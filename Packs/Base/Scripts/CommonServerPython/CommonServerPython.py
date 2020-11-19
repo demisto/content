@@ -17,7 +17,7 @@ import traceback
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from abc import abstractmethod
 
 import demistomock as demisto
@@ -2832,10 +2832,14 @@ def arg_to_datetime(arg, arg_name, is_utc=True, required = False, settings=None)
     if isinstance(arg, str) and arg.isdigit() or isinstance(arg, (int, float)):
         # timestamp is a str containing digits - we just convert it to int
         ms = int(arg)
+        if ms > 2000000000:
+            # in case timestamp was provided as unix time (in milliseconds)
+            ms = ms / 1000.0
+
         if is_utc:
-            return datetime.utcfromtimestamp(ms / 1000.0)
+            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
         else:
-            return datetime.fromtimestamp(ms / 1000.0)
+            return datetime.fromtimestamp(ms)
     if isinstance(arg, str):
         # we use dateparser to handle strings either in ISO8601 format, or
         # relative time stamps.
