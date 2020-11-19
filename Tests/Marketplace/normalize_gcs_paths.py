@@ -98,7 +98,7 @@ def main():
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
     # download and extract index from test bucket
-    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    index_folder_path, index_blob, _ = download_and_extract_index(storage_bucket, extract_destination_path)
 
     logging.info(f"Starting iterating over packs in {GCPConfig.INDEX_NAME} and normalizing packs integration URLs")
     # starting iterating over packs folders inside index

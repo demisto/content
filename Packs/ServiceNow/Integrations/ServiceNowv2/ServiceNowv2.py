@@ -1,6 +1,7 @@
 import os
 import shutil
 import dateparser
+from urllib import parse
 from typing import List, Tuple, Dict, Callable, Any, Union, Optional
 
 from CommonServerPython import *
@@ -421,6 +422,26 @@ def split_fields(fields: str = '') -> dict:
     return dic_fields
 
 
+def build_query_for_request_params(query):
+    """Split query that contains '&' to a list of queries.
+
+    Args:
+        query: query (Example: "id=5&status=1")
+
+    Returns:
+        List of sub queries. (Example: ["id=5", "status=1"])
+    """
+
+    if '&' in query:
+        query_params = []  # type: ignore
+        query_args = parse.parse_qsl(query)
+        for arg in query_args:
+            query_params.append(parse.urlencode([arg]))  # type: ignore
+        return query_params
+    else:
+        return query
+
+
 class Client(BaseClient):
     """
     Client to use in the ServiceNow integration. Overrides BaseClient.
@@ -773,9 +794,10 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
+
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = sys_param_query
+            query_params['sysparm_query'] = build_query_for_request_params(sys_param_query)
         if system_params:
             query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)

@@ -91,20 +91,46 @@ DATA = [
         'header_1': 'a3',
         'header_2': 'b3',
         'header_3': 'c3'
-    },
+    }
 ]
 
-
-def test_tbl_to_md_only_data():
-    # sanity
-    table = tableToMarkdown('tableToMarkdown test', DATA)
-    expected_table = '''### tableToMarkdown test
+TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
+    (
+        DATA,
+        '''### tableToMarkdown test
 |header_1|header_2|header_3|
 |---|---|---|
 | a1 | b1 | c1 |
 | a2 | b2 | c2 |
 | a3 | b3 | c3 |
 '''
+    ),
+    (
+        [
+            {
+                'header_1|with_pipe': 'a1',
+                'header_2': 'b1',
+            },
+            {
+                'header_1|with_pipe': 'a2',
+                'header_2': 'b2',
+            }
+        ],
+        '''### tableToMarkdown test
+|header_1\\|with_pipe|header_2|
+|---|---|
+| a1 | b1 |
+| a2 | b2 |
+'''
+    )
+]
+
+
+@pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
+def test_tbl_to_md_only_data(data, expected_table):
+    # sanity
+    table = tableToMarkdown('tableToMarkdown test', data)
+
     assert table == expected_table
 
 
@@ -1088,7 +1114,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1172,7 +1199,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1201,7 +1229,8 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1233,7 +1262,8 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1377,7 +1407,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_indicator_timeline_with_list_of_indicators(self):
@@ -1465,20 +1496,20 @@ class TestCommandResults:
         )
 
         assert results.to_context()['EntryContext'] == {
-          'IP(val.Address && val.Address == obj.Address)': [
-            {
-              'Address': '8.8.8.8'
-            }
-          ],
-          'DBotScore(val.Indicator && val.Indicator == '
-          'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
-            {
-              'Indicator': '8.8.8.8',
-              'Type': 'ip',
-              'Vendor': 'Virus Total',
-              'Score': 1
-            }
-          ]
+            'IP(val.Address && val.Address == obj.Address)': [
+                {
+                    'Address': '8.8.8.8'
+                }
+            ],
+            'DBotScore(val.Indicator && val.Indicator == '
+            'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                {
+                    'Indicator': '8.8.8.8',
+                    'Type': 'ip',
+                    'Vendor': 'Virus Total',
+                    'Score': 1
+                }
+            ]
         }
 
     def test_single_indicator_with_indicators(self, mocker):
@@ -1512,6 +1543,33 @@ class TestCommandResults:
                 indicators=[ip]
             )
         assert e.value.args[0] == 'indicators is DEPRECATED, use only indicator'
+
+    def test_indicator_with_no_auto_extract(self):
+        """
+       Given:
+           - a list of an indicator
+           - ignore_auto_extract set to True
+       When
+           - creating a CommandResults object with an indicator
+           - using Ignore Auto Extract
+
+       Then
+           - the IgnoreAutoExtract field is set to True
+       """
+        from CommonServerPython import CommandResults
+
+        indicators = ['8.8.8.8']
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=None,
+            ignore_auto_extract=True
+        )
+
+        assert results.to_context().get('IgnoreAutoExtract') == True
 
 
 class TestBaseClient:
@@ -1673,42 +1731,28 @@ class TestBaseClient:
 
     def test_exception_response_json_parsing_when_ok_code_is_invalid(self, requests_mock):
         from CommonServerPython import DemistoException
-        reason = 'Bad Request'
         json_response = {'error': 'additional text'}
         requests_mock.get('http://example.com/api/v2/event',
                           status_code=400,
-                          reason=reason,
                           json=json_response)
         try:
-            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+            self.client._http_request('get', 'event', ok_codes=(200,))
         except DemistoException as e:
-            assert e.res.get('error') == 'additional text'
+            resp_json = e.res.json()
+            assert e.res.status_code == 400
+            assert resp_json.get('error') == 'additional text'
 
     def test_exception_response_text_parsing_when_ok_code_is_invalid(self, requests_mock):
         from CommonServerPython import DemistoException
-        reason = 'Bad Request'
-        text_response = '{"error": "additional text"}'
         requests_mock.get('http://example.com/api/v2/event',
                           status_code=400,
-                          reason=reason,
-                          text=text_response)
+                          text='{"error": "additional text"}')
         try:
-            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+            self.client._http_request('get', 'event', ok_codes=(200,))
         except DemistoException as e:
-            assert e.res.get('error') == 'additional text'
-
-    def test_exception_response_parsing_fails_when_ok_code_is_invalid(self, requests_mock):
-        from CommonServerPython import DemistoException
-        reason = 'Bad Request'
-        text_response = 'Bad Request'
-        requests_mock.get('http://example.com/api/v2/event',
-                          status_code=400,
-                          reason=reason,
-                          text=text_response)
-        try:
-            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
-        except DemistoException as e:
-            assert isinstance(e.res, dict) and not e.res
+            resp_json = json.loads(e.res.text)
+            assert e.res.status_code == 400
+            assert resp_json.get('error') == 'additional text'
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
@@ -2228,7 +2272,9 @@ INDICATOR_VALUE_AND_TYPE = [
     ('112.126.94.107', 'IP'),
     ('a', None),
     ('*castaneda-thornton.com', 'DomainGlob'),
-    ('53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b', 'File')
+    (
+        '53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b',
+        'File')
 ]
 
 
@@ -2532,7 +2578,8 @@ def test_update_context_no_merge(mocker):
     conversations.extend([new_conversation])
 
     # Arrange
-    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
+    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS,
+                                                                     True)
     new_conversations = json.loads(context['conversations'])
 
     # Assert

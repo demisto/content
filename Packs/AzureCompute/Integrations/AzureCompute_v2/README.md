@@ -17,8 +17,9 @@ For more details about the authentication used in this integration, see <a href=
     <ul>
       <li>Microsoft.Compute/virtualMachines/*</li>
       <li>Microsoft.Network/networkInterfaces/read</li>
+      <li>Microsoft.Resources/subscriptions/resourceGroups/read</li>
     </ul> </li>
-    <li>Select the Azure Secruity Center application.</li>
+    <li>Select the Azure Compute application.</li>
   </ul>
 </li>
 </ul>
