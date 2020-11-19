@@ -622,6 +622,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  tests:
-  - playbook-InsightIDR-test
-  fromversion: 5.0.0
+tests:
+- playbook-InsightIDR-test
+fromversion: 5.0.0
