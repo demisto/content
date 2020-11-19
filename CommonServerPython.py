@@ -3753,7 +3753,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, **kwargs):
+                          error_handler=None, empty_valid_codes=[204], **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -3886,8 +3886,6 @@ if 'requests' in sys.modules:
                             err_msg += '\n{}'.format(res.text)
                             raise DemistoException(err_msg)
 
-                if not empty_valid_codes:
-                    empty_valid_codes=[204]
                 is_response_empty_and_successful = (res.status_code in empty_valid_codes)
                 if is_response_empty_and_successful and return_empty_response:
                     return res
