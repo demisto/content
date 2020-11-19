@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 25fd99f4-22bc-440a-8604-b3feb061b07c
+    taskid: d8ac08df-bb5b-416a-86a4-594f4b97e9fb
     type: start
     task:
-      id: 25fd99f4-22bc-440a-8604-b3feb061b07c
+      id: d8ac08df-bb5b-416a-86a4-594f4b97e9fb
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -31,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 0b43210e-b0aa-41b8-8c0f-4152d5bdd37c
+    taskid: 6885f24c-54cb-470a-8347-0cce473bdec3
     type: regular
     task:
-      id: 0b43210e-b0aa-41b8-8c0f-4152d5bdd37c
+      id: 6885f24c-54cb-470a-8347-0cce473bdec3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -67,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 45dcdfca-4619-4da2-8813-cb333f71fa15
+    taskid: 77d1eb73-4b2b-435f-8010-12016618604a
     type: regular
     task:
-      id: 45dcdfca-4619-4da2-8813-cb333f71fa15
+      id: 77d1eb73-4b2b-435f-8010-12016618604a
       version: -1
       name: Lists all collections
       description: Lists all collections in database
@@ -96,10 +97,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 64b8d9cd-ae24-499c-8e07-1f7c0514a4c0
+    taskid: 9ae6a9c0-19c3-4b75-82aa-04c9bb20545b
     type: condition
     task:
-      id: 64b8d9cd-ae24-499c-8e07-1f7c0514a4c0
+      id: 9ae6a9c0-19c3-4b75-82aa-04c9bb20545b
       version: -1
       name: Is the collection exists?
       type: condition
@@ -145,10 +146,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 913c329b-ab4e-4f33-8879-f20bec014a0d
+    taskid: 18255ab0-bd2a-4be6-8f63-b1f45c30c95c
     type: regular
     task:
-      id: 913c329b-ab4e-4f33-8879-f20bec014a0d
+      id: 18255ab0-bd2a-4be6-8f63-b1f45c30c95c
       version: -1
       name: Drop it
       description: Drops a collection from the database
@@ -178,10 +179,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 9aefff6f-0b23-464c-89c0-884c59f805d0
+    taskid: bb1fbcd5-4be8-47e5-8c56-1856d284cf83
     type: regular
     task:
-      id: 9aefff6f-0b23-464c-89c0-884c59f805d0
+      id: bb1fbcd5-4be8-47e5-8c56-1856d284cf83
       version: -1
       name: Create a collection
       description: Creates a collection
@@ -211,10 +212,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 81259fc8-802a-4254-8434-6a47e3844f1e
+    taskid: fc052d28-6b38-441a-8451-b3d5baadc420
     type: regular
     task:
-      id: 81259fc8-802a-4254-8434-6a47e3844f1e
+      id: fc052d28-6b38-441a-8451-b3d5baadc420
       version: -1
       name: List all collections
       description: Lists all collections in database
@@ -240,15 +241,16 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 8067e057-a0f3-422f-8f9b-79ff0089d701
+    taskid: 1a4af580-3c5c-4ffd-8de6-b278ad478e18
     type: title
     task:
-      id: 8067e057-a0f3-422f-8f9b-79ff0089d701
+      id: 1a4af580-3c5c-4ffd-8de6-b278ad478e18
       version: -1
       name: Prepare environment
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -267,10 +269,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: ad30d80c-7b39-44b1-8ae7-61cb96028b80
+    taskid: 7a52c666-f640-4547-8a07-ee46ef4847b3
     type: condition
     task:
-      id: ad30d80c-7b39-44b1-8ae7-61cb96028b80
+      id: 7a52c666-f640-4547-8a07-ee46ef4847b3
       version: -1
       name: Is collection exists?
       type: condition
@@ -316,10 +318,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 9175d53d-f095-4ba8-8134-093d554da9e4
+    taskid: e0bf6060-9337-4319-8643-6172e5c6a932
     type: regular
     task:
-      id: 9175d53d-f095-4ba8-8134-093d554da9e4
+      id: e0bf6060-9337-4319-8643-6172e5c6a932
       version: -1
       name: Insert an entry
       description: Inserts an entry to the database
@@ -335,7 +337,7 @@ tasks:
         complex:
           root: GeneratedUUID
       entry:
-        simple: '{"test" : "i am test"}'
+        simple: '{"test" : "i am test", "field2": "i am a second field"}'
     separatecontext: false
     view: |-
       {
@@ -351,10 +353,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: d2f16ab5-2a23-47e0-8101-5475dd0a20fd
+    taskid: 6f85899e-6d5c-470f-8a71-08a860a97c14
     type: regular
     task:
-      id: d2f16ab5-2a23-47e0-8101-5475dd0a20fd
+      id: 6f85899e-6d5c-470f-8a71-08a860a97c14
       version: -1
       name: Get entry by ID
       description: Get an entry from database by ID
@@ -388,10 +390,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 18e9b30f-380b-4a82-8389-38e873a59cd8
+    taskid: ab82ae87-b1ee-41d4-84cf-467f2476ad50
     type: condition
     task:
-      id: 18e9b30f-380b-4a82-8389-38e873a59cd8
+      id: ab82ae87-b1ee-41d4-84cf-467f2476ad50
       version: -1
       name: Verify context
       type: condition
@@ -427,10 +429,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: f650b229-dc88-4452-8392-1cda111dfdd3
+    taskid: 5aa2639e-5883-47e3-87f3-de62b31f265d
     type: regular
     task:
-      id: f650b229-dc88-4452-8392-1cda111dfdd3
+      id: 5aa2639e-5883-47e3-87f3-de62b31f265d
       version: -1
       name: Delete context
       description: Delete field from context
@@ -464,10 +466,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: cd3d33cf-cc4c-45ed-8349-35519526063e
+    taskid: 591bdf3a-405c-4730-895e-9d008416236b
     type: regular
     task:
-      id: cd3d33cf-cc4c-45ed-8349-35519526063e
+      id: 591bdf3a-405c-4730-895e-9d008416236b
       version: -1
       name: raise error
       description: Prints an error entry with a given message
@@ -493,10 +495,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: c79e7534-c24a-4678-8798-370e362b8171
+    taskid: 4cce6ee9-6024-4122-8a47-3ae811af433a
     type: regular
     task:
-      id: c79e7534-c24a-4678-8798-370e362b8171
+      id: 4cce6ee9-6024-4122-8a47-3ae811af433a
       version: -1
       name: Raise Error
       description: Prints an error entry with a given message
@@ -522,10 +524,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: fe2bd9d0-0735-44e8-8dc9-76e29eec7468
+    taskid: 614a7c12-493b-470c-8adc-b9cfb53f1d7f
     type: condition
     task:
-      id: fe2bd9d0-0735-44e8-8dc9-76e29eec7468
+      id: 614a7c12-493b-470c-8adc-b9cfb53f1d7f
       version: -1
       name: Verify context
       type: condition
@@ -561,10 +563,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 7b3bef50-5ee0-4449-8ea5-88730cfde609
+    taskid: a21c8db0-7bfc-47a7-8828-ba7e0287b8c0
     type: regular
     task:
-      id: 7b3bef50-5ee0-4449-8ea5-88730cfde609
+      id: a21c8db0-7bfc-47a7-8828-ba7e0287b8c0
       version: -1
       name: raise error
       description: Prints an error entry with a given message
@@ -590,10 +592,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: b3ef2d9e-f1c6-4a2e-8dbb-ebfc2484182f
+    taskid: 9ce3d842-2bd7-4e94-83e4-8062ed61ef5c
     type: regular
     task:
-      id: b3ef2d9e-f1c6-4a2e-8dbb-ebfc2484182f
+      id: 9ce3d842-2bd7-4e94-83e4-8062ed61ef5c
       version: -1
       name: Send query
       description: Searches items by query
@@ -608,8 +610,12 @@ tasks:
       collection:
         complex:
           root: GeneratedUUID
+      fields:
+        simple: test
+      limit: {}
       query:
         simple: '{"test" : "i am test"}'
+      sort: {}
     separatecontext: false
     view: |-
       {
@@ -625,10 +631,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: f9475ded-54f5-4410-8f0b-81e76a52bb22
+    taskid: ce81661e-8c41-4079-8c30-a0ca399bb4f3
     type: condition
     task:
-      id: f9475ded-54f5-4410-8f0b-81e76a52bb22
+      id: ce81661e-8c41-4079-8c30-a0ca399bb4f3
       version: -1
       name: Verify Context
       type: condition
@@ -650,6 +656,11 @@ tasks:
                 root: MongoDB
                 accessor: Entry._id
             iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ${MongoDB.Entry.field2}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -664,10 +675,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 511c2e6f-2692-41f5-8a22-097bb990851b
+    taskid: 12c9be78-c0dd-49a5-8934-14b0529002d6
     type: regular
     task:
-      id: 511c2e6f-2692-41f5-8a22-097bb990851b
+      id: 12c9be78-c0dd-49a5-8934-14b0529002d6
       version: -1
       name: raise error
       description: Prints an error entry with a given message
@@ -693,10 +704,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 978ba157-8e5a-4a04-8814-0c5884a95292
+    taskid: f1b07d86-0c60-4df7-8783-d0dd675656df
     type: regular
     task:
-      id: 978ba157-8e5a-4a04-8814-0c5884a95292
+      id: f1b07d86-0c60-4df7-8783-d0dd675656df
       version: -1
       name: Update entry
       description: Updates an entry in a collection
@@ -731,10 +742,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 0a382193-883d-4128-86ca-c1f7c2a135b9
+    taskid: 52d200e1-cde4-42e7-87c2-897febc298f5
     type: regular
     task:
-      id: 0a382193-883d-4128-86ca-c1f7c2a135b9
+      id: 52d200e1-cde4-42e7-87c2-897febc298f5
       version: -1
       name: Query updated entry
       description: Searches items by query
@@ -766,10 +777,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: c3a06818-974e-4e5e-8b3e-c7fb19079358
+    taskid: b6a6d5c5-a418-4e63-89bf-d124f92d0b98
     type: condition
     task:
-      id: c3a06818-974e-4e5e-8b3e-c7fb19079358
+      id: b6a6d5c5-a418-4e63-89bf-d124f92d0b98
       version: -1
       name: Verify Context
       type: condition
@@ -812,10 +823,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 38689ccf-4d5a-4501-8af4-3a569fe1b4bb
+    taskid: a05b267d-e544-41f6-87e3-817842c63f0b
     type: regular
     task:
-      id: 38689ccf-4d5a-4501-8af4-3a569fe1b4bb
+      id: a05b267d-e544-41f6-87e3-817842c63f0b
       version: -1
       name: Delete entry
       description: Deletes an entry from the database
@@ -848,10 +859,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 960fbfe9-b88f-4a1d-8c96-668cafe36de0
+    taskid: 0ca69ab3-b74f-4f80-8efd-4cedb0cfbb8d
     type: regular
     task:
-      id: 960fbfe9-b88f-4a1d-8c96-668cafe36de0
+      id: 0ca69ab3-b74f-4f80-8efd-4cedb0cfbb8d
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -885,10 +896,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 117dffdd-6a39-42db-8fd6-643ccab1af0f
+    taskid: 490f656a-d7c0-4c01-8d5b-62439958475d
     type: regular
     task:
-      id: 117dffdd-6a39-42db-8fd6-643ccab1af0f
+      id: 490f656a-d7c0-4c01-8d5b-62439958475d
       version: -1
       name: Query for all data
       description: Searches items by query
@@ -920,10 +931,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: d251a8ba-17a3-4921-8e97-e10d443479fa
+    taskid: 441aafa5-5aab-4c99-85b0-e6edcd46facc
     type: condition
     task:
-      id: d251a8ba-17a3-4921-8e97-e10d443479fa
+      id: 441aafa5-5aab-4c99-85b0-e6edcd46facc
       version: -1
       name: Verify Context
       type: condition
@@ -959,10 +970,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 8efbc83d-a8a3-4d52-8bed-0f56eacfef84
+    taskid: 6cc76fde-fbb3-4259-8d99-0b41e457862f
     type: regular
     task:
-      id: 8efbc83d-a8a3-4d52-8bed-0f56eacfef84
+      id: 6cc76fde-fbb3-4259-8d99-0b41e457862f
       version: -1
       name: Delete collection
       description: Drops a collection from the database
@@ -992,15 +1003,16 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 61ea5504-df06-4e12-8e40-b42e30bd6281
+    taskid: 2350b76c-aef2-4466-8e63-e6b0b25385a0
     type: title
     task:
-      id: 61ea5504-df06-4e12-8e40-b42e30bd6281
+      id: 2350b76c-aef2-4466-8e63-e6b0b25385a0
       version: -1
       name: FIN
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1016,10 +1028,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: a00b07b5-8936-438e-8194-e8f123ce64fa
+    taskid: 0bf1c2f4-50a5-43b4-8043-3e66578f3c45
     type: regular
     task:
-      id: a00b07b5-8936-438e-8194-e8f123ce64fa
+      id: 0bf1c2f4-50a5-43b4-8043-3e66578f3c45
       version: -1
       name: Generate UUID as a new collection
       description: Generates random UUID
@@ -1045,10 +1057,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 9ad81346-5325-46cd-8f56-e10f1ef78993
+    taskid: 490f4c97-b777-4b25-88f5-5972c04d70da
     type: regular
     task:
-      id: 9ad81346-5325-46cd-8f56-e10f1ef78993
+      id: 490f4c97-b777-4b25-88f5-5972c04d70da
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1082,10 +1094,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 5e339fdf-36eb-43cb-8984-8d78c3d0d98b
+    taskid: eb345873-160f-4d24-81b3-ee17a36fd2b4
     type: regular
     task:
-      id: 5e339fdf-36eb-43cb-8984-8d78c3d0d98b
+      id: eb345873-160f-4d24-81b3-ee17a36fd2b4
       version: -1
       name: raise error
       description: Prints an error entry with a given message
@@ -1111,15 +1123,16 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 9a125053-1c8b-4232-83f9-6416695f3755
+    taskid: 369583ea-0219-477d-80ae-5b4caa5dd4b0
     type: title
     task:
-      id: 9a125053-1c8b-4232-83f9-6416695f3755
+      id: 369583ea-0219-477d-80ae-5b4caa5dd4b0
       version: -1
       name: Test Datetime
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "37"
@@ -1138,10 +1151,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: b0b6a8c5-efa5-4259-8c75-1a44503cdd52
+    taskid: 2a9a5d3f-ee58-4f61-8c57-7e64c181ea79
     type: regular
     task:
-      id: b0b6a8c5-efa5-4259-8c75-1a44503cdd52
+      id: 2a9a5d3f-ee58-4f61-8c57-7e64c181ea79
       version: -1
       name: Insert Datetime object
       description: Inserts an entry to the database.
@@ -1173,15 +1186,16 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 11056b76-25f8-41fc-841f-72eaaf36adaf
+    taskid: ba30e2c1-db4d-461a-8050-6ee8227925ec
     type: title
     task:
-      id: 11056b76-25f8-41fc-841f-72eaaf36adaf
+      id: ba30e2c1-db4d-461a-8050-6ee8227925ec
       version: -1
       name: No error has raised
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -1200,10 +1214,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 5f4d9405-1522-458e-82f6-8d521e234074
+    taskid: 61280005-dd97-43d7-857f-41a1308b4fa0
     type: regular
     task:
-      id: 5f4d9405-1522-458e-82f6-8d521e234074
+      id: 61280005-dd97-43d7-857f-41a1308b4fa0
       version: -1
       name: Query Datetime object
       description: Searches for items by the specified JSON query.
@@ -1236,10 +1250,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 5331623d-1a3a-416c-866e-a0fbbed98cdc
+    taskid: 20f03746-7fd5-4d72-8f72-3293b4d54453
     type: condition
     task:
-      id: 5331623d-1a3a-416c-866e-a0fbbed98cdc
+      id: 20f03746-7fd5-4d72-8f72-3293b4d54453
       version: -1
       name: Verify Context
       type: condition
@@ -1276,15 +1290,16 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 2dcf4198-2700-4875-8293-1617ff50c427
+    taskid: 9c38c2b4-b4f0-48a4-8b57-fcdc4ebc02b4
     type: title
     task:
-      id: 2dcf4198-2700-4875-8293-1617ff50c427
+      id: 9c38c2b4-b4f0-48a4-8b57-fcdc4ebc02b4
       version: -1
       name: Tear down
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -1316,3 +1331,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

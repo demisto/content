@@ -1,0 +1,48 @@
+{
+  "kind": "tm:asm:policies:cookies:cookiecollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/cookies?ver=15.1.0",
+  "totalItems": 2,
+  "items": [
+    {
+      "isBase64": false,
+      "createdBy": "GUI",
+      "accessibleOnlyThroughTheHttpProtocol": false,
+      "_kind": "tm:asm:policies:cookies:cookiestate",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/cookies/cookie-md5?ver=15.1.0",
+      "securedOverHttpsConnection": false,
+      "id": "cookie-md5",
+      "maskValueInLogs": false,
+      "name": "yummy",
+      "insertSameSiteAttribute": "none",
+      "lastUpdateMicros": 1596661491000000.0,
+      "enforcementType": "allow",
+      "attackSignaturesCheck": true,
+      "signatureOverrides": [
+        
+      ],
+      "performStaging": false,
+      "type": "explicit"
+    },
+    {
+      "isBase64": false,
+      "createdBy": "GUI",
+      "accessibleOnlyThroughTheHttpProtocol": false,
+      "kind": "tm:asm:policies:cookies:cookiestate",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/cookies/cookie-md5-2?ver=15.1.0",
+      "securedOverHttpsConnection": false,
+      "id": "cookie-md5-2",
+      "maskValueInLogs": false,
+      "name": "cookie",
+      "insertSameSiteAttribute": "none",
+      "lastUpdateMicros": 1598178250000000.0,
+      "enforcementType": "allow",
+      "attackSignaturesCheck": true,
+      "signatureOverrides": [
+        
+      ],
+      "performStaging": false,
+      "type": "wildcard",
+      "wildcardOrder": 1
+    }
+  ]
+}
