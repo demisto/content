@@ -375,7 +375,7 @@ class MsClient:
             dict. Related IPs
         """
         cmd_url = f'/alerts/{alert_id}/ips'
-        return self.ms_client.http_request(method='GET', urk_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
     def get_alert_related_user(self, alert_id):
         """Retrieves the User related to a specific alert.
@@ -2275,11 +2275,7 @@ def delete_indicator_command(client: MsClient, args: dict) -> str:
 
 
 def test_module(client: MsClient):
-    try:
-        client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
-    except Exception:
-        raise DemistoException(
-            "API call to Windows Advanced Threat Protection failed. \n Please check authentication related parameters")
+    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
     demisto.results('ok')
 
 

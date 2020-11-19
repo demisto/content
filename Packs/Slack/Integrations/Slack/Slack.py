@@ -31,7 +31,6 @@ SEVERITY_DICT = {
     'Critical': 4
 }
 
-
 USER_TAG_EXPRESSION = '<@(.*?)>'
 CHANNEL_TAG_EXPRESSION = '<#(.*?)>'
 URL_EXPRESSION = r'<(https?://.+?)(?:\|.+)?>'
@@ -47,7 +46,7 @@ ENDPOINT_URL = 'https://oproxy.demisto.ninja/slack-poll'
 POLL_INTERVAL_MINUTES: Dict[Tuple, float] = {
     (0, 15): 1,
     (15, 60): 2,
-    (60, ): 5
+    (60,): 5
 }
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 OBJECTS_TO_KEYS = {
@@ -58,7 +57,6 @@ OBJECTS_TO_KEYS = {
 SYNC_CONTEXT = True
 
 ''' GLOBALS '''
-
 
 BOT_TOKEN: str
 ACCESS_TOKEN: str
@@ -376,7 +374,7 @@ async def get_slack_name(slack_id: str, client) -> str:
                 'user': slack_id
             }
             user = (await send_slack_request_async(client, 'users.info', http_verb='GET',
-                                                           body=body)).get('user', {})
+                                                   body=body)).get('user', {})
 
         slack_name = user.get('name', '')
 
@@ -773,8 +771,11 @@ def check_for_mirrors():
                     users: List[Dict] = demisto.mirrorInvestigation(investigation_id,
                                                                     f'{mirror_type}:{direction}', auto_close)
                     if mirror_type != 'none':
-                        invited_users = invite_to_mirrored_channel(channel_id, users)
-                        updated_users.extend(invited_users)
+                        try:
+                            invited_users = invite_to_mirrored_channel(channel_id, users)
+                            updated_users.extend(invited_users)
+                        except Exception as error:
+                            demisto.error(f"Could not invite investigation users to the mirrored channel: {error}")
 
                     mirror['mirrored'] = True
                     updated_mirrors.append(mirror)
@@ -1503,7 +1504,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
     return response
 
 
-def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = '')\
+def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = '') \
         -> Optional[SlackResponse]:
     """
     Sends a message to provided destinations Slack.
@@ -1535,7 +1536,8 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     return response
 
 
-def send_file(destinations: list, file_dict: dict, integration_context: dict, thread_id: str) -> Optional[SlackResponse]:
+def send_file(destinations: list, file_dict: dict, integration_context: dict, thread_id: str) -> \
+        Optional[SlackResponse]:
     """
     Sends a file to Slack.
 
@@ -1595,7 +1597,7 @@ def send_file_to_destinations(destinations: list, file_dict: dict, thread_id: st
 
 
 def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignore_add_url: bool = False,
-                       thread_id: str = '', message: str = '', blocks: str = '', file_dict: dict = None)\
+                       thread_id: str = '', message: str = '', blocks: str = '', file_dict: dict = None) \
         -> Optional[SlackResponse]:
     """
     Requests to send a message or a file to Slack.
@@ -1947,7 +1949,7 @@ def loop_info(loop: asyncio.AbstractEventLoop):
         return "loop is None"
     info = f'loop: {loop}. id: {id(loop)}.'
     info += f'executor: {loop._default_executor} id: {id(loop._default_executor)}'  # type: ignore[attr-defined]
-    if loop._default_executor:   # type: ignore[attr-defined]
+    if loop._default_executor:  # type: ignore[attr-defined]
         info += f' executor threads size: {len(loop._default_executor._threads)}'  # type: ignore[attr-defined]
         info += f' max: {loop._default_executor._max_workers} {loop._default_executor._threads}'  # type: ignore[attr-defined]
     return info

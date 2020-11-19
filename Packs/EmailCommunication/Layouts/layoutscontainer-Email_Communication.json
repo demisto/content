@@ -158,71 +158,7 @@
       "y": 0
      },
      {
-      "description": "",
-      "displayType": "CARD",
-      "h": 4,
-      "hideName": false,
-      "i": "edsrfgt5ii-8fb15220-e872-11ea-97bd-cbe6e9d030a2",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "emailfrom",
-        "height": 53,
-        "id": "f17d9110-e874-11ea-97bd-cbe6e9d030a2",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "emailto",
-        "height": 53,
-        "id": "f544ab30-e874-11ea-97bd-cbe6e9d030a2",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "emailsubject",
-        "height": 53,
-        "id": "fc408a80-e874-11ea-97bd-cbe6e9d030a2",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "emailcc",
-        "height": 53,
-        "id": "f92d3000-e874-11ea-97bd-cbe6e9d030a2",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "details",
-        "height": 106,
-        "id": "ffd43890-e874-11ea-97bd-cbe6e9d030a2",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Original email details",
-      "static": false,
-      "w": 1,
-      "x": 2,
-      "y": 3
-     },
-     {
-      "h": 2,
+      "h": 3,
       "i": "edsrfgt5ii-a7076560-eac8-11ea-862d-9d68001b5e4b",
       "items": [
 
@@ -251,6 +187,25 @@
       "w": 3,
       "x": 0,
       "y": 7
+     },
+     {
+      "h": 4,
+      "i": "edsrfgt5ii-e09d3040-16bd-11eb-96bd-fdade69ebf6b",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Original Email HTML",
+      "query": "DisplayEmailHtml",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamic",
+      "w": 1,
+      "x": 2,
+      "y": 3
      }
     ],
     "type": "custom"

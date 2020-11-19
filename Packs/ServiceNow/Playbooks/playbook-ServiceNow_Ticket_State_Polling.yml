@@ -1,0 +1,266 @@
+id: ServiceNow Ticket State Polling
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: ServiceNow Ticket State Polling
+description: |-
+  Use ServiceNow Incident State Polling as a sub-playbook when required to pause the execution of a master playbook until the ServiceNow ticket state is either resolved or closed.
+  This playbook implements polling by continuously running the servicenow-get-ticket command until the state is either resolved or closed.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c644af04-2cd7-4462-83e3-5f55bc12aa73
+    type: start
+    task:
+      id: c644af04-2cd7-4462-83e3-5f55bc12aa73
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 914b5b4c-709e-479d-8210-b06bdad59965
+    type: regular
+    task:
+      id: 914b5b4c-709e-479d-8210-b06bdad59965
+      version: -1
+      name: Schedule Ticket State Polling  Task
+      description: Schedule Polling Task
+      scriptName: ScheduleGenericPolling
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        complex:
+          root: inputs.AdditionalPollingCommandName
+      additionalPollingCommandArgValues:
+        complex:
+          root: inputs.InstanceName
+      dt:
+        simple: ServiceNow.Ticket(val.State != '6' && val.State != '7').Number
+      ids:
+        complex:
+          root: inputs.TicketNumber
+      interval:
+        simple: ${inputs.Interval}
+      playbookId:
+        simple: ${currentPlaybookID}
+      pollingCommand:
+        simple: servicenow-get-ticket
+      pollingCommandArgName:
+        simple: number
+      tag: {}
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4991346d-2fa3-4efe-8c21-d531312deacb
+    type: condition
+    task:
+      id: 4991346d-2fa3-4efe-8c21-d531312deacb
+      version: -1
+      name: Waiting for Ticket State Polling to complete (Automated Task)
+      description: This task will complete automatically when polling is complete.
+      tags:
+      - polling
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "YES":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b4dfa54e-3fb9-40a7-803b-edc450bd5aea
+    type: regular
+    task:
+      id: b4dfa54e-3fb9-40a7-803b-edc450bd5aea
+      version: -1
+      name: Run Ticket State Polling Command
+      description: RunPollingCommand
+      scriptName: RunPollingCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        complex:
+          root: inputs.AdditionalPollingCommandName
+      additionalPollingCommandArgValues:
+        complex:
+          root: inputs.InstanceName
+      ids:
+        complex:
+          root: inputs.TicketNumber
+      pollingCommand:
+        simple: servicenow-get-ticket
+      pollingCommandArgName:
+        simple: number
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 778e1007-f7ea-4ff6-89c4-cffc067165c4
+    type: title
+    task:
+      id: 778e1007-f7ea-4ff6-89c4-cffc067165c4
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 62b13486-ae6a-49c1-8988-16765f35f1cc
+    type: regular
+    task:
+      id: 62b13486-ae6a-49c1-8988-16765f35f1cc
+      version: -1
+      name: Scheduled Task Failed
+      description: Scheduled Task Failed
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: GenericPollingScheduledTask encountered an error.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_5_YES": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 770,
+        "width": 830,
+        "x": -170,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: TicketNumber
+  value: {}
+  required: true
+  description: The ServiceNow ticket number to poll for its state.
+  playbookInputQuery:
+- key: Interval
+  value: {}
+  required: true
+  description: Frequency that the polling command will run (minutes).
+  playbookInputQuery:
+- key: Timeout
+  value: {}
+  required: true
+  description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
+  playbookInputQuery:
+- key: InstanceName
+  value: {}
+  required: false
+  description: |-
+    Set the ServiceNow Instance that will be used by the polling command.
+    Only relevant when there is more than one ServiceNow instance.
+  playbookInputQuery:
+- key: AdditionalPollingCommandName
+  value: {}
+  required: false
+  description: 'Values of the additional arguments for the polling command, for example:
+    (value1,value2,...).'
+  playbookInputQuery:
+outputs: []
+tests:
+- Create ServiceNow Ticket and State Polling Test
+fromversion: 6.0.0

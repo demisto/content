@@ -85,7 +85,7 @@
             "count": 2
           }
         ],
-        "webComponentName": "Acuity",
+        "webComponentName": "",
         "webComponentCategory": "Advertising",
         "cves": [],
         "current": true
@@ -103,7 +103,7 @@
             "count": 2
           }
         ],
-        "webComponentName": "AcuityAds",
+        "webComponentName": "",
         "webComponentCategory": "DSP",
         "cves": [],
         "current": true

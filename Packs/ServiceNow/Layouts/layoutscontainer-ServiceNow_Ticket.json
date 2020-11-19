@@ -413,7 +413,7 @@
    {
     "hidden": false,
     "id": "yyrfzsc55n",
-    "name": "ServiceNow Ticket",
+    "name": "ServieNow Ticket",
     "sections": [
      {
       "displayType": "ROW",
@@ -475,80 +475,8 @@
       "name": "Ticket Status",
       "static": false,
       "w": 1,
-      "x": 0,
-      "y": 2
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "hideName": false,
-      "i": "yyrfzsc55n-8fccd740-c9a3-11ea-9075-c575f8e27f6d",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "servicenowassignedto",
-        "height": 22,
-        "id": "9f735750-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "assignmentgroup",
-        "height": 22,
-        "id": "dd343720-dbe2-11ea-85ad-19eb038846fa",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "subcategory",
-        "height": 22,
-        "id": "ae9230d0-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "childincidentscount",
-        "height": 22,
-        "id": "457cfca0-c9a4-11ea-9075-c575f8e27f6d",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "servicenowcategory",
-        "height": 22,
-        "id": "a35ffad0-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "ticketopeneddate",
-        "height": 22,
-        "id": "f7060480-dbe2-11ea-85ad-19eb038846fa",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 2,
-      "minH": 1,
-      "minW": 2,
-      "moved": false,
-      "name": "Ticket Info",
-      "static": false,
-      "w": 2,
-      "x": 0,
-      "y": 0
+      "x": 1,
+      "y": 1
      },
      {
       "description": "",
@@ -595,8 +523,8 @@
       "name": "Ticket Handling",
       "static": false,
       "w": 1,
-      "x": 1,
-      "y": 2
+      "x": 2,
+      "y": 1
      },
      {
       "displayType": "ROW",
@@ -605,19 +533,21 @@
       "i": "yyrfzsc55n-0a7a7b00-c9a4-11ea-9075-c575f8e27f6d",
       "items": [
        {
+        "dropEffect": "move",
         "endCol": 2,
-        "fieldId": "ticketcloseddate",
-        "height": 22,
-        "id": "2b0ca6d0-dbe3-11ea-85ad-19eb038846fa",
+        "fieldId": "closenotes",
+        "height": 44,
+        "id": "3fe20e60-dbe3-11ea-85ad-19eb038846fa",
         "index": 0,
+        "listId": "yyrfzsc55n-0a7a7b00-c9a4-11ea-9075-c575f8e27f6d",
         "sectionItemType": "field",
         "startCol": 0
        },
        {
         "endCol": 2,
-        "fieldId": "closenotes",
-        "height": 44,
-        "id": "3fe20e60-dbe3-11ea-85ad-19eb038846fa",
+        "fieldId": "ticketcloseddate",
+        "height": 22,
+        "id": "2b0ca6d0-dbe3-11ea-85ad-19eb038846fa",
         "index": 1,
         "sectionItemType": "field",
         "startCol": 0
@@ -640,8 +570,136 @@
       "name": "Ticket Closing Information",
       "static": false,
       "w": 1,
+      "x": 2,
+      "y": 3
+     },
+     {
+      "h": 1,
+      "i": "yyrfzsc55n-2d809550-f774-11ea-ba58-0ba474d6bf41",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "ServiceNow Ticket Status",
+      "query": "ServiceNowIncidentStatus",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamic",
+      "w": 3,
       "x": 0,
-      "y": 4
+      "y": 0
+     },
+     {
+      "h": 4,
+      "i": "yyrfzsc55n-57d64a70-f774-11ea-ba58-0ba474d6bf41",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "ServiceNow Comments",
+      "static": false,
+      "type": "notes",
+      "w": 2,
+      "x": 0,
+      "y": 3
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "hideItemTitleOnlyOne": true,
+      "i": "yyrfzsc55n-a8816220-f774-11ea-ba58-0ba474d6bf41",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "incident_attachment",
+        "height": 53,
+        "id": "a81fba21-f774-11ea-ba58-0ba474d6bf41",
+        "index": 0,
+        "isVisible": true,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Attachments",
+      "static": false,
+      "type": "",
+      "w": 1,
+      "x": 2,
+      "y": 5
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "servicenowassignedto",
+        "height": 22,
+        "id": "9f735750-c9a3-11ea-9075-c575f8e27f6d",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "assignmentgroup",
+        "height": 22,
+        "id": "dd343720-dbe2-11ea-85ad-19eb038846fa",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "servicenowcategory",
+        "height": 22,
+        "id": "a35ffad0-c9a3-11ea-9075-c575f8e27f6d",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "subcategory",
+        "height": 22,
+        "id": "ae9230d0-c9a3-11ea-9075-c575f8e27f6d",
+        "index": 3,
+        "listId": "yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "ticketopeneddate",
+        "height": 22,
+        "id": "f7060480-dbe2-11ea-85ad-19eb038846fa",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Ticket Info",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 1
      }
     ],
     "type": "custom"
@@ -673,10 +731,11 @@
    }
   ]
  },
- "fromVersion": "6.0.0",
  "group": "incident",
  "id": "ServiceNow Ticket",
  "name": "ServiceNow Ticket",
+ "system": false,
  "version": -1,
+ "fromVersion": "6.0.0",
  "description": ""
 }

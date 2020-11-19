@@ -101,9 +101,8 @@ def get_api_key_header_val(api_key):
     return "ApiKey " + api_key
 
 
-def elasticsearch_builder():
+def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    proxies = handle_proxy() if PROXY else None
     if API_KEY_ID:
         es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
                            api_key=API_KEY, proxies=proxies)
@@ -211,7 +210,7 @@ def get_total_results(response_dict):
     return total_dict, total_results
 
 
-def search_command():
+def search_command(proxies):
     """Performs a search in Elasticsearch."""
     index = demisto.args().get('index')
     query = demisto.args().get('query')
@@ -222,7 +221,7 @@ def search_command():
     sort_field = demisto.args().get('sort-field')
     sort_order = demisto.args().get('sort-order')
 
-    es = elasticsearch_builder()
+    es = elasticsearch_builder(proxies)
 
     que = QueryString(query=query)
     search = Search(using=es, index=index).query(que)[base_page:base_page + size]
@@ -269,7 +268,7 @@ def fetch_params_check():
         return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + '\n'.join(str_error))
 
 
-def test_general_query(es):
+def test_query_to_fetch_incident_index(es):
     """Test executing query in fetch index.
 
     Notes:
@@ -287,6 +286,23 @@ def test_general_query(es):
 
     except NotFoundError as e:
         return_error("Fetch incidents test failed.\nError message: {}.".format(str(e).split(',')[2][2:-1]))
+
+
+def test_general_query(es):
+    """Test executing query to all available indexes.
+
+    Args:
+        es(Elasticsearch): an Elasticsearch object to which we run the test.
+    """
+    try:
+        query = QueryString(query='*')
+        search = Search(using=es, index='*').query(query)[0:1]
+        response = search.execute().to_dict()
+        get_total_results(response)
+
+    except NotFoundError as e:
+        return_error("Failed executing general search command - please check the Server URL and port number "
+                     "and the supplied credentials.\nError message: {}.".format(str(e)))
 
 
 def test_time_field_query(es):
@@ -365,7 +381,7 @@ def test_timestamp_format(timestamp):
             return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
 
 
-def test_func():
+def test_func(proxies):
     headers = {
         'Content-Type': "application/json"
     }
@@ -396,16 +412,17 @@ def test_func():
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
+    # build general Elasticsearch class
+    es = elasticsearch_builder(proxies)
+
     if demisto.params().get('isFetch'):
         # check the existence of all necessary fields for fetch
         fetch_params_check()
 
         try:
-            # build general Elasticsearch class
-            es = elasticsearch_builder()
 
             # test if FETCH_INDEX exists
-            test_general_query(es)
+            test_query_to_fetch_incident_index(es)
 
             # test if TIME_FIELD in index exists
             response = test_time_field_query(es)
@@ -429,6 +446,10 @@ def test_func():
 
         except ValueError as e:
             return_error("Inserted time format is incorrect.\n" + str(e) + '\n' + TIME_FIELD + ' fetched: ' + hit_date)
+
+    else:
+        # check that we can reach any indexes in the supplied server URL
+        test_general_query(es)
 
     demisto.results('ok')
 
@@ -544,7 +565,7 @@ def format_to_iso(date_string):
     return date_string
 
 
-def fetch_incidents():
+def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
@@ -569,7 +590,7 @@ def fetch_incidents():
     else:
         last_fetch_timestamp = last_fetch
 
-    es = elasticsearch_builder()
+    es = elasticsearch_builder(proxies)
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
     # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
@@ -624,14 +645,16 @@ def get_mapping_fields_command():
 
 
 def main():
+    proxies = handle_proxy()
+    proxies = proxies if proxies else None
     try:
         LOG('command is %s' % (demisto.command(),))
         if demisto.command() == 'test-module':
-            test_func()
+            test_func(proxies)
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents()
+            fetch_incidents(proxies)
         elif demisto.command() in ['search', 'es-search']:
-            search_command()
+            search_command(proxies)
         elif demisto.command() == 'get-mapping-fields':
             get_mapping_fields_command()
     except Exception as e:

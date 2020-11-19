@@ -61,5 +61,3 @@ wget --retry-connrefused --no-check-certificate -T 60 "https://${PUBLIC_IP}:443"
 ssh -t ${USER}@${PUBLIC_IP} "sudo docker pull demisto/threatconnect-sdk"
 
 echo "server started!"
-
-echo Demisto:${PUBLIC_IP} > ./Tests/instance_ips.txt

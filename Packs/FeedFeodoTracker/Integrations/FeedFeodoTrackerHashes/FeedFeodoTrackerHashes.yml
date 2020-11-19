@@ -83,9 +83,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Feodo Tracker publishes a list of hashes (MD5) associated with Dridex
-  and Emotet/Heodo malware samples.
-display: Feodo Tracker Hashes Feed
+description: Deprecated. Feodo Tracker no longer supports this feed.
+display: Feodo Tracker Hashes Feed (Deprecated)
 name: Feodo Tracker Hashes Feed
 script:
   commands:
@@ -111,3 +110,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+deprecated: true
+tests:
+  - No tests
