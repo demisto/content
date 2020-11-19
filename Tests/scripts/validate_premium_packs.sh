@@ -42,8 +42,12 @@ GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
 INDEX_TESTING_PATH="dev/content/packs/index.zip"
 
 ls -la
-echo "Removing file $LOCAL_INDEX_PATH"
-rm $LOCAL_INDEX_PATH
+
+if [ -f $LOCAL_INDEX_PATH ]; then
+  echo "Removing file $LOCAL_INDEX_PATH"
+  rm $LOCAL_INDEX_PATH
+fi
+
 if [ ! -n "${BUCKET_UPLOAD}" ]; then
   echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$INDEX_PATH to target path: $LOCAL_INDEX_PATH ..."
   gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" $LOCAL_INDEX_PATH > "$CIRCLE_ARTIFACTS/logs/Validate Premium Packs.log" 2>&1
