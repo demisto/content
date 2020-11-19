@@ -190,7 +190,7 @@ def import_command(client: Client, arguments: Dict[str, Any]):
 
     if arguments.get('url'):
         if arguments.get('entry_id'):
-            raise ValueError('Both url and entry id were inserted - please insert only one')
+            raise ValueError('Both url and entry id were inserted - please insert only one.')
         results = client.import_url(arguments)
         results_data = results.get('data')
     elif arguments.get('entry_id'):
