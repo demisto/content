@@ -3,7 +3,7 @@ commonfields:
   id: Cryptocurrency
   version: -1
 configuration: []
-description: <FILL HERE>
+description: Cryptocurrency will help classify Cryptocurrency indicators as suspicious when ingested.
 display: Cryptocurrency
 name: Cryptocurrency
 script:

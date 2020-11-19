@@ -28,7 +28,7 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
     score = 2
     for address in addresses:
         dbot_score = Common.DBotScore(
-            indicator=f'{BITCOIN}-{address}',
+            indicator=address,
             indicator_type=DBotScoreType.CRYPTOCURRENCY,
             integration_name=INTEGRATION_NAME,  # Vendor
             score=score  # Suspicious
@@ -38,7 +38,7 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
             address_type=BITCOIN,
             dbot_score=dbot_score
         )
-        hr = f'Cryptocurrency reputation for {BITCOIN} address {address} was set to {SCORE[score]}'
+        hr = f'Cryptocurrency reputation for address {address} was set to {SCORE[score]}'
 
         command_results.append(CommandResults(
             outputs_prefix='Cryptocurrency',
@@ -53,11 +53,12 @@ def crypto_reputation_command(args: Dict[str, str]):
     crypto_addresses = argToList(args.get('crypto', ''))
 
     # For cases the command was executed by a playbook/user and the addresses received are verified
+    # Stripping the `bitcoin` prefix from the given addresses (if exists) then add it to match the convention.
     if args.get('address_type') == BITCOIN:
-        bitcoin_addresses = [address.lstrip('bitcoin-') for address in crypto_addresses]
+        bitcoin_addresses = [f'bitcoin-{address.lstrip("bitcoin-")}' for address in crypto_addresses]
 
     else:
-        bitcoin_addresses = [address.lstrip('bitcoin-') for address in crypto_addresses if BITCOIN in address]
+        bitcoin_addresses = [address for address in crypto_addresses if BITCOIN in address]
 
     result = get_bitcoin_reputation(bitcoin_addresses)
 

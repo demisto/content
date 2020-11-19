@@ -7,14 +7,14 @@ import demistomock as demisto
     'crypto,expected',
     [('bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i',
       {'Cryptocurrency(val.Address && val.Address == obj.Address)': [
-          {'Address': '1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'AddressType': 'bitcoin'}],
+          {'Address': 'bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'AddressType': 'bitcoin'}],
           'DBotScore('
           'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
               {'Indicator': 'bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'Type': 'cryptocurrency',
                'Vendor': 'Cryptocurrency', 'Score': 2}]}),
      ('bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9,1ANNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i',
       {'Cryptocurrency(val.Address && val.Address == obj.Address)': [
-          {'Address': '1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9', 'AddressType': 'bitcoin'}],
+          {'Address': 'bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9', 'AddressType': 'bitcoin'}],
           'DBotScore('
           'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
               {'Indicator': 'bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9', 'Type': 'cryptocurrency',
@@ -49,7 +49,7 @@ def test_main__with_address_type(mocker):
        """
     crypto = '1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'
     expected = {'Cryptocurrency(val.Address && val.Address == obj.Address)': [
-        {'Address': '1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'AddressType': 'bitcoin'}],
+        {'Address': 'bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'AddressType': 'bitcoin'}],
         'DBotScore('
         'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
             {'Indicator': 'bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'Type': 'cryptocurrency',

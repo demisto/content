@@ -46,7 +46,7 @@ Return Cryptocurrency reputation.
 ```json
 {
     "Cryptocurrency": {
-        "Address": "1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
+        "Address": "bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
         "AddressType": "bitcoin"
     },
     "DBotScore": {
@@ -64,7 +64,7 @@ Return Cryptocurrency reputation.
 ```json
 {
     "Cryptocurrency": {
-        "Address": "1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
+        "Address": "bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
         "AddressType": "bitcoin"
     },
     "DBotScore": {
@@ -75,3 +75,5 @@ Return Cryptocurrency reputation.
     }
 }
 ```
+#### Human Readable Output
+>Cryptocurrency reputation for address bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i was set to Suspicious.
