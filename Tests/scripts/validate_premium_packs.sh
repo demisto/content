@@ -6,6 +6,7 @@ set -e
 CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 CIRCLE_BUILD_NUM=${CIRCLE_BUILD_NUM:-00000}
 CIRCLE_ARTIFACTS=${CIRCLE_ARTIFACTS}
+CIRCLE_SHA1=${CIRCLE_SHA1}
 PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
 ID_SET=$CIRCLE_ARTIFACTS/id_set.json
 EXTRACT_FOLDER=$(mktemp -d)
@@ -64,5 +65,5 @@ if [ ! -f $LOCAL_INDEX_PATH ]; then
   exit 1
 else
   echo "Testing premium packs in against index file $LOCAL_INDEX_PATH"
-  python3 ./Tests/scripts/validate_premium_packs.py --index_path "$LOCAL_INDEX_PATH" -s "$SECRET_CONF_PATH" --ami_env "$1"
+  python3 ./Tests/scripts/validate_premium_packs.py --index_path "$LOCAL_INDEX_PATH" -s "$SECRET_CONF_PATH" --ami_env "$1" --commit_hash CIRCLE_SHA1
 fi

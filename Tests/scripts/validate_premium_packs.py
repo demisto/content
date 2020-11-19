@@ -22,7 +22,7 @@ def options_handler():
     parser.add_argument('--index_path', help='The index.zip file path, generated on the cloud\n'
                                              ' In case only_check_index_file is set, specify path to index.json',
                         required=True)
-    # parser.add_argument('--commit_hash', help='The commit hash of the current build', required=True)
+    parser.add_argument('--commit_hash', help='The commit hash of the current build', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('--only_check_index_zip', help='Path to index.zip')
     parser.add_argument('--only_check_index_file', help='Path to index.json')
@@ -43,22 +43,22 @@ def update_expectations_from_git(index_data):
 def unzip_index_and_return_index_file(index_zip_path):
     logging.info('Unzipping')
     with zipfile.ZipFile(index_zip_path, 'r') as zip_obj:
-        extracted_path = zip_obj.extract(f"index/{INDEX_FILE_PATH}", path="./extracted-index")
+        extracted_path = zip_obj.extract(member=f"index/{INDEX_FILE_PATH}", path="./extracted-index")
 
     logging.info(f'extracted path is now: {extracted_path}')
-    dir_list = os.listdir(f"./extracted-index/index")
+    dir_list = os.listdir("./extracted-index/index")
     logging.info(f'dir {extracted_path} is now: \n {dir_list}')
 
     return f"./{extracted_path}"
 
 
-def check_and_return_index_data(index_file_path):  # , commit_hash):
+def check_and_return_index_data(index_file_path, commit_hash):
     with open(index_file_path, 'r') as index_file:
         index_data = json.load(index_file)
 
     logging.info(f"Found index data:\n {index_data} \n\n Checking...")
     # TODO: check commit hash with master
-    # assert index_data["commit"] == commit_hash
+    assert index_data["commit"] == commit_hash
     assert len(index_data["packs"]) != 0
     for pack in index_data["packs"]:
         assert pack["id"] != ""
@@ -126,7 +126,7 @@ def main():
     else:
         index_file_path = options.index_path
 
-    index_data = check_and_return_index_data(index_file_path)  # options.commit_hash)
+    index_data = check_and_return_index_data(index_file_path, options.commit_hash)
     update_expectations_from_git(index_data)
 
     if not (options.only_check_index_zip or options.only_check_index_file):
