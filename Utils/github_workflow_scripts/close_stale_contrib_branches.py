@@ -38,8 +38,6 @@ def get_stale_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa:
                     elapsed_days = (now - last_commit_datetime).days
                     if elapsed_days >= 60:
                         branch_names.append(branch.name)
-                        if len(branch_names) > 1:
-                            break
                 else:
                     print_warning(f"Couldn't load HEAD for {branch.name}")
     return branch_names
@@ -62,7 +60,7 @@ def main():
         except RuntimeError as e:
             # check delete was successful
             if '[deleted]' not in str(e):
-                print_error(f"Deletion of {branch_name} encountered an issue:\n{str(e)}")
+                print_error(f"Deletion of {branch_name} encountered an issue: {str(e)}")
 
     if debug_mode:
         print(f'{stale_contrib_branches=}')
