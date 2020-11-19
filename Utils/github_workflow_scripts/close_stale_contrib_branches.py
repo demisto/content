@@ -3,13 +3,13 @@
 import os
 import sys
 import urllib3
+import inspect
 from github import Github, enable_console_debug_logging
 from github.Repository import Repository
 from typing import List
 from dateparser import parse
 from datetime import datetime, timezone
-import inspect
-from demisto_sdk.commands.common.tools import run_command
+from demisto_sdk.commands.common.tools import run_command, print_error, print_warning
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -33,15 +33,15 @@ def get_stale_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa:
                 # load all members
                 inspect.getmembers(branch.commit)
 
-                last_modified = branch.commit.last_modified
-                if last_modified:
-                    last_commit_datetime = parse(last_modified)
-                    if last_commit_datetime:
-                        elapsed_days = (now - last_commit_datetime).days
-                        if elapsed_days >= 60:
-                            branch_names.append(branch.name)
+                # check if HEAD commit is stale
+                if (last_modified := branch.commit.last_modified) and (last_commit_datetime := parse(last_modified)):
+                    elapsed_days = (now - last_commit_datetime).days
+                    if elapsed_days >= 60:
+                        branch_names.append(branch.name)
+                        if len(branch_names) > 1:
+                            break
                 else:
-                    print(f"Couldn't load {branch.name}")
+                    print_warning(f"Couldn't load HEAD for {branch.name}")
     return branch_names
 
 
@@ -55,13 +55,17 @@ def main():
     content_repo = gh.get_repo(f'{organization}/{repo}')
 
     stale_contrib_branches = list(set(get_stale_branch_names_with_contrib(content_repo)))
-    # for branch_name in stale_contrib_branches:
-    #     try:
-    #         run_command(f"git push origin --delete {branch_name}")
-    #     except Exception as e:
-    #         print(str(e))
+    for branch_name in stale_contrib_branches:
+        try:
+            print(f'Deleting {branch_name}')
+            run_command(f"git push origin --delete {branch_name}", exit_on_error=False)
+        except RuntimeError as e:
+            # check delete was successful
+            if '[deleted]' not in str(e):
+                print_error(f"Deletion of {branch_name} encountered an issue:\n{str(e)}")
 
-    print(f'{stale_contrib_branches=}')
+    if debug_mode:
+        print(f'{stale_contrib_branches=}')
 
 
 if __name__ == "__main__":
