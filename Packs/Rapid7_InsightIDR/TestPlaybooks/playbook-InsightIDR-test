@@ -1,7 +1,7 @@
-id: playbook-InsightIDR-test.yml
+id: playbook-InsightIDR-test
 version: 30
 vcShouldKeepItemLegacyProdMachine: false
-name: playbook-InsightIDR-test.yml
+name: playbook-InsightIDR-test
 starttaskid: "0"
 tasks:
   "0":
