@@ -1815,7 +1815,7 @@ def get_modified_remote_data_command(client, args):
     demisto.debug('Performing get-modified-remote-data command')
 
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update  # In the first run, this value will be set to 10 sec earlier
+    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
     last_update_without_ms = last_update_utc.isoformat().split('.')[0]
 
