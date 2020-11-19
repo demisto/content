@@ -46,10 +46,10 @@ def unzip_index_and_return_index_file(index_zip_path):
         extracted_path = zip_obj.extract(f"index/{INDEX_FILE_PATH}", path="./extracted-index")
 
     logging.info(f'extracted path is now: {extracted_path}')
-    dir_list = os.listdir(extracted_path)
+    dir_list = os.listdir(f"./extracted-index/index")
     logging.info(f'dir {extracted_path} is now: \n {dir_list}')
 
-    return {INDEX_FILE_PATH}
+    return f"./{extracted_path}"
 
 
 def check_and_return_index_data(index_file_path):  # , commit_hash):
