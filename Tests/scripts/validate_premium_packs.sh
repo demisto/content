@@ -49,15 +49,18 @@ if [ -f $LOCAL_INDEX_PATH ]; then
   rm $LOCAL_INDEX_PATH
 fi
 
+
 if [ ! -n "${BUCKET_UPLOAD}" ]; then
   echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$INDEX_PATH to target path: $LOCAL_INDEX_PATH ..."
-  gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" $LOCAL_INDEX_PATH > "$CIRCLE_ARTIFACTS/logs/Validate Premium Packs.log" 2>&1
+  gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" "$LOCAL_INDEX_PATH" > "$CIRCLE_ARTIFACTS/logs/Validate Premium Packs.log" 2>&1
 else
   echo "Copying testing files at: gs://$GCS_MARKET_TESTING_BUCKET/$INDEX_TESTING_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
   gsutil -m cp -r "gs://$GCS_MARKET_TESTING_BUCKET/$INDEX_TESTING_PATH" "gs://$INDEX_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Validate Premium Packs.log" 2>&1
 fi
 echo "Finished copying successfully."
 
+MASTER_COMMIT_HASH=$(git ls-remote git://github.com/demisto/content refs/heads/master | cut -f 1)
+echo "Master commit hash was $MASTER_COMMIT_HASH"
 # TODO: INDEX_PATH is invalid. look where you can get the zipped file from.
 ls -la
 if [ ! -f $LOCAL_INDEX_PATH ]; then
@@ -65,5 +68,5 @@ if [ ! -f $LOCAL_INDEX_PATH ]; then
   exit 1
 else
   echo "Testing premium packs in against index file $LOCAL_INDEX_PATH"
-  python3 ./Tests/scripts/validate_premium_packs.py --index_path "$LOCAL_INDEX_PATH" -s "$SECRET_CONF_PATH" --ami_env "$1" --commit_hash CIRCLE_SHA1
+  python3 ./Tests/scripts/validate_premium_packs.py --index_path "$LOCAL_INDEX_PATH" -s "$SECRET_CONF_PATH" --ami_env "$1" --commit_hash "$CIRCLE_SHA1"
 fi
