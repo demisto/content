@@ -54,7 +54,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='import/upload'
         )
-        form = response_get_form.get('data', {}).get('result', {}).get('form', {})
+        form = dict_safe_get(response_get_form, ('data', 'result', 'form'), default_return_value={})
 
         port_url = form.get('url')
         params = form.get('parameters')
