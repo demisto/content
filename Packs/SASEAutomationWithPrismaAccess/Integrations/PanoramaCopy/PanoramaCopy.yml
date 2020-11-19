@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Panorama
+  id: Panorama3
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -38,8 +38,8 @@ configuration:
   type: 0
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
-display: Panorama
-name: Panorama
+display: Panorama3
+name: Panorama3
 script:
   commands:
   - arguments:

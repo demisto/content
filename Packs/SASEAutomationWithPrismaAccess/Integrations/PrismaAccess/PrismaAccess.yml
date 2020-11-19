@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Prisma Access
+  id: Prisma Access2
   version: -1
 configuration:
 - display: Server Host or IP (e.g.,  10.1.1.9 or panorama.my.domain)
@@ -42,8 +42,8 @@ configuration:
   type: 9
 description: Integrate with Prisma Access to monitor the status of the Service, alert
   and take actions.
-display: Prisma Access
-name: Prisma Access
+display: Prisma Access2
+name: Prisma Access2
 script:
   commands:
   - arguments:
