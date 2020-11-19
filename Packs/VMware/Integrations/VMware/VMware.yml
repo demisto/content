@@ -226,7 +226,7 @@ script:
   dockerimage: demisto/vmware:1.0-alpine
   runonce: false
   script: ''
-  subtype: python3
+  subtype: python2
   type: python
 fromversion: 6.0.0
 tests:
