@@ -449,7 +449,7 @@ def file_upload(submit_type, sample, vm_profile_list,
     data['data']['srcIp'] = src_ip
     data['data']['destIp'] = dest_ip
     data['data']['url'] = get_url_entry_by_submit_type(submit_type, given_url, sample)
-    data['data']['skipTaskId'] = int(skip_task_id) if skip_task_id else None
+    data['data']['skipTaskId'] = skip_task_id
     data['data']['analyzeAgain'] = analyze_again
     data['data']['xMode'] = x_mode
     data['data']['filePriorityQ'] = file_priority_q if file_priority_q else 'run_now'
@@ -530,7 +530,7 @@ def file_upload_command():
         sample = args['entryID'] if 'entryID' in args else args.get('url', "")
     vm_profile_list = int(args['vmProfileList']) if 'vmProfileList' in args else None
     analyze_again = int(args['analyzeAgain']) if 'analyzeAgain' in args else None
-    skip_task_id = int(args['skipTaskId']) if 'skipTaskId' in args else None
+    skip_task_id = int(args['skipTaskId']) if 'skipTaskId' in args else 0
     x_mode = int(args['xMode']) if 'xMode' in args else None
     message_id = args['messageId'] if 'messageId' in args else None
     file_priority_q = args['filePriorityQ'] if 'filePriorityQ' in args else None
