@@ -11,6 +11,7 @@ import hashlib
 from typing import List
 from dateutil.parser import parse
 from typing import Dict, Tuple, Any, Optional, Union
+from threading import Timer
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -411,16 +412,32 @@ def refresh_session(host_id: str) -> Dict:
     return response
 
 
-def run_batch_read_cmd(host_ids: list, command_type: str, full_command: str) -> Dict:
+def batch_refresh_session(batch_id: str) -> None:
+    """
+        Batch refresh a RTR session on multiple hosts.
+        :param batch_id:  Batch ID to execute the command on.
+    """
+    demisto.debug('Starting session refresh')
+    endpoint_url = '/real-time-response/combined/batch-refresh-session/v1'
+
+    body = json.dumps({
+        'batch_id': batch_id
+    })
+    response = http_request('POST', endpoint_url, data=body)
+    demisto.debug(f'Refresh session response: {response}')
+    demisto.debug('Finished session refresh')
+
+
+def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> Dict:
     """
         Sends RTR command scope with read access
-        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+
     body = json.dumps({
         'base_command': command_type,
         'batch_id': batch_id,
@@ -430,16 +447,16 @@ def run_batch_read_cmd(host_ids: list, command_type: str, full_command: str) -> 
     return response
 
 
-def run_batch_write_cmd(host_ids: list, command_type: str, full_command: str) -> Dict:
+def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str) -> Dict:
     """
         Sends RTR command scope with write access
-        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-active-responder-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+
     body = json.dumps({
         'base_command': command_type,
         'batch_id': batch_id,
@@ -449,23 +466,27 @@ def run_batch_write_cmd(host_ids: list, command_type: str, full_command: str) ->
     return response
 
 
-def run_batch_admin_cmd(host_ids: list, command_type: str, full_command: str) -> Dict:
+def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30) -> Dict:
     """
         Sends RTR command scope with write access
-        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
+        :param timeout: Timeout for how long to wait for the request in seconds.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-admin-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+
+    params = {
+        'timeout': timeout
+    }
 
     body = json.dumps({
         'base_command': command_type,
         'batch_id': batch_id,
         'command_string': full_command
     })
-    response = http_request('POST', endpoint_url, data=body)
+    response = http_request('POST', endpoint_url, data=body, params=params)
     return response
 
 
@@ -1609,12 +1630,18 @@ def run_command():
     output = []
 
     if target == 'batch':
-        if scope == 'read':
-            response = run_batch_read_cmd(host_ids, command_type, full_command)
-        elif scope == 'write':
-            response = run_batch_write_cmd(host_ids, command_type, full_command)
-        else:  # scope = admin
-            response = run_batch_admin_cmd(host_ids, command_type, full_command)
+        batch_id = init_rtr_batch_session(host_ids)
+        timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+        timer.start()
+        try:
+            if scope == 'read':
+                response = run_batch_read_cmd(batch_id, command_type, full_command)
+            elif scope == 'write':
+                response = run_batch_write_cmd(batch_id, command_type, full_command)
+            else:  # scope = admin
+                response = run_batch_admin_cmd(batch_id, command_type, full_command)
+        finally:
+            timer.cancel()
 
         resources: dict = response.get('combined', {}).get('resources', {})
 
@@ -1886,6 +1913,11 @@ def run_script_command():
     script_name = args.get('script_name')
     raw = args.get('raw')
     host_ids = argToList(args.get('host_ids'))
+    try:
+        timeout = int(args.get('timeout', 30))
+    except ValueError as e:
+        demisto.error(str(e))
+        raise ValueError('Timeout argument should be an integer, for example: 30')
 
     if script_name and raw:
         raise ValueError('Only one of the arguments script_name or raw should be provided, not both.')
@@ -1895,10 +1927,17 @@ def run_script_command():
         full_command = f'runscript -CloudFile={script_name}'
     elif raw:
         full_command = f'runscript -Raw=```{raw}```'
+    full_command += f' -Timeout={timeout}'
 
     command_type = 'runscript'
 
-    response = run_batch_admin_cmd(host_ids, command_type, full_command)
+    batch_id = init_rtr_batch_session(host_ids)
+    timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+    timer.start()
+    try:
+        response = run_batch_admin_cmd(batch_id, command_type, full_command, timeout)
+    finally:
+        timer.cancel()
 
     resources: dict = response.get('combined', {}).get('resources', {})
 
