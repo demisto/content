@@ -109,7 +109,6 @@ def main():
     index_data = check_and_return_index_data(index_file_path)  # options.commit_hash)
     update_expectations_from_git(index_data)
 
-
     # Get the host by the ami env
     hosts, _ = Build.get_servers(ami_env=options.ami_env)
 
