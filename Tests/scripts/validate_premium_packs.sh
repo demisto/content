@@ -62,7 +62,7 @@ echo "Finished copying successfully."
 
 MASTER_COMMIT_HASH=$(git ls-remote git://github.com/demisto/content refs/heads/master | cut -f 1)
 echo "Master commit hash was $MASTER_COMMIT_HASH"
-# TODO: INDEX_PATH is invalid. look where you can get the zipped file from.
+
 ls -la
 if [ ! -f $LOCAL_INDEX_PATH ]; then
   echo "Could not find file $LOCAL_INDEX_PATH"
@@ -71,3 +71,5 @@ else
   echo "Testing premium packs in against index file $LOCAL_INDEX_PATH"
   python3 ./Tests/scripts/validate_premium_packs.py --index_path "$LOCAL_INDEX_PATH" -s "$SECRET_CONF_PATH" --ami_env "$1" --commit_hash "$CIRCLE_SHA1"
 fi
+
+rm $LOCAL_INDEX_PATH

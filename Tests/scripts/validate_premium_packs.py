@@ -57,7 +57,7 @@ def check_and_return_index_data(index_file_path, commit_hash):
 
     logging.info(f"Found index data:\n {index_data} \n\n Checking...")
     # TODO: check commit hash with master
-    # assert index_data["commit"] == commit_hash
+    # assert index_data["commit"] == commit_hash, f"Commit in index file {index_data['commit']} is not {commit_hash}"
     assert len(index_data["packs"]) != 0
     for pack in index_data["packs"]:
         assert pack["id"] != "", "There is a missing pack id."
@@ -76,7 +76,7 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
             'sort':
                 [{
                     'field': 'updated',
-                    'asc': 0
+                    'asc': 'false'
                 }],
             'general': ["generalFieldPaid"]
         }
