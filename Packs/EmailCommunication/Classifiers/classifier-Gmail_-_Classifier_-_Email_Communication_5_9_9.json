@@ -1,0 +1,97 @@
+{
+ "brandName": "Gmail",
+ "custom": true,
+ "defaultIncidentType": "Email Communication",
+ "feed": false,
+ "id": "6f81fb48-73d0-4f7f-8d3e-9c586ecec38a",
+ "isDefault": false,
+ "keyTypeMap": {
+  "Gmail": "Email Communication"
+ },
+ "mapping": {
+  "Email Communication": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Attachment ID": {
+     "complex": null,
+     "simple": "Attachments.ID"
+    },
+    "Attachment Name": {
+     "complex": null,
+     "simple": "Attachments.Name"
+    },
+    "Email Body": {
+     "complex": null,
+     "simple": "Body"
+    },
+    "Email Body HTML": {
+     "complex": null,
+     "simple": "Html"
+    },
+    "Email CC": {
+     "complex": null,
+     "simple": "Cc"
+    },
+    "Email From": {
+     "complex": null,
+     "simple": "From"
+    },
+    "Email HTML": {
+     "complex": null,
+     "simple": "Html"
+    },
+    "Email Latest Message": {
+     "complex": {
+      "accessor": "Value",
+      "filters": [
+       [
+        {
+         "ignoreCase": true,
+         "left": {
+          "isContext": true,
+          "value": {
+           "complex": null,
+           "simple": "Headers.Name"
+          }
+         },
+         "operator": "isEqualString",
+         "right": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "Message-ID"
+          }
+         }
+        }
+       ]
+      ],
+      "root": "Headers",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Email Subject": {
+     "complex": null,
+     "simple": "Subject"
+    },
+    "Email Labels": {
+     "complex": null,
+     "simple": "Labels"
+    },
+    "Email To": {
+     "complex": null,
+     "simple": "To"
+    }
+   }
+  }
+ },
+ "transformer": {
+  "complex": null,
+  "simple": "Type"
+ },
+ "version": -1,
+ "fromVersion": "5.5.0",
+ "toVersion": "5.9.9"
+}
