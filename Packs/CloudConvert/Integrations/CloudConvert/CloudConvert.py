@@ -392,6 +392,8 @@ def test_module(client: Client):
         return 'ok'
     elif result.get('message') == "Unauthenticated.":
         return 'Authorization Error: make sure API Key is correctly set'
+    elif result.get('message'):
+        return result.get('message')
     else:
         return 'No response from server, the server could be temporary unavailable or it is handling too ' \
                'many requests. Please try again later.'
