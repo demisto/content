@@ -1,5 +1,6 @@
-id: xMatters - Wait for Response
-version: -1
+id: deeb234b-0c7e-4f09-83fb-e2e10fb8f608
+version: 83
+vcShouldKeepItemLegacyProdMachine: false
 name: xMatters - Wait for Response
 description: Trigger an xMatters workflow to notify a user for a response.
 starttaskid: "0"
@@ -14,7 +15,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -75,10 +75,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 87286044-50c4-4ab2-8491-2ccad4cfc5f7
+    taskid: 28f7cc5f-4a8d-4955-82b8-fc4480c5d178
     type: regular
     task:
-      id: 87286044-50c4-4ab2-8491-2ccad4cfc5f7
+      id: 28f7cc5f-4a8d-4955-82b8-fc4480c5d178
       version: -1
       name: waitForxMatters
       description: Response from xMatters.
@@ -89,51 +89,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
           "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 9e20ec55-c37b-4201-8ad6-14331d6fb685
-    type: regular
-    task:
-      id: 9e20ec55-c37b-4201-8ad6-14331d6fb685
-      version: -1
-      name: Copy the comment value to the context
-      description: "Takes the comments of a given entry ID and stores them in the\
-        \ incident context, under a provided context key. \nFor accessing the last\
-        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
-        \ value for the entryId input parameter."
-      scriptName: commentsToContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      contextKey:
-        simple: xMatters.UserResponse
-      entryId:
-        simple: ${lastCompletedTaskEntries}
-      listSeperator: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
         }
       }
     note: false
@@ -152,13 +114,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -234,7 +195,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -253,7 +213,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 735,
         "width": 810,
         "x": 50,
         "y": 50
@@ -267,25 +227,25 @@ inputs:
   required: false
   description: 'The targeted recipients in xMatters. Either the targetName or UUID.
     Can be comma separated list. '
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: subject
   value:
     simple: ${incident.name}
   required: false
   description: A short description of the incident.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: body
   value:
     simple: ${incident.details}
   required: false
   description: A detailed description of the incident.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: incident_id
   value:
     simple: ${incident.id}
   required: false
   description: The ID of the incident.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: xMatters.UserResponse
   description: The user's response.
@@ -293,6 +253,3 @@ outputs:
 - contextPath: xMatters.RequestId
   description: The request_id from xMatters
   type: string
-fromversion: 5.5.0
-tests:
-- no tests
