@@ -2288,7 +2288,7 @@ class Common(object):
 
     class CVE(Indicator):
         """
-        CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatorycve
+        CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cve
         :type id: ``str``
         :param id: The ID of the CVE, for example: "CVE-2015-1653".
         :type cvss: ``str``
