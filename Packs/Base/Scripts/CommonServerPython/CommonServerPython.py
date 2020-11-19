@@ -2792,7 +2792,7 @@ def arg_to_number(arg, arg_name, required = False):
 
 
 def arg_to_datetime(arg, arg_name, is_utc=True, required = False, settings=None):
-    # type: (Any, str, bool, bool, dict) -> Optional[datetime.datetime]
+    # type: (Any, str, bool, bool, dict) -> Optional[datetime]
 
     """Converts an XSOAR argument to a datetime
 
@@ -2814,6 +2814,9 @@ def arg_to_datetime(arg, arg_name, is_utc=True, required = False, settings=None)
     :param required:
         throws exception if ``True`` and argument provided is None
 
+    :type settings: ``dict``
+    :param settings: If provided, passed to dateparser.parse function.
+
     :return:
         returns an ``datetime`` if conversion works
         returns ``None`` if arg is ``None`` and required is set to ``False``
@@ -2830,9 +2833,9 @@ def arg_to_datetime(arg, arg_name, is_utc=True, required = False, settings=None)
         # timestamp is a str containing digits - we just convert it to int
         ms = int(arg)
         if is_utc:
-            return datetime.datetime.utcfromtimestamp(ms / 1000.0)
+            return datetime.utcfromtimestamp(ms / 1000.0)
         else:
-            return datetime.datetime.fromtimestamp(ms / 1000.0)
+            return datetime.fromtimestamp(ms / 1000.0)
     if isinstance(arg, str):
         # we use dateparser to handle strings either in ISO8601 format, or
         # relative time stamps.
