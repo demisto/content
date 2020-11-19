@@ -3,7 +3,7 @@ commonfields:
   id: skybox
   version: -1
 configuration:
-- display: Server URL (e.g. https://soar.monstersofhack.com)
+- display: Server URL
   name: url
   required: true
   type: 0
@@ -31,7 +31,289 @@ description: This is the Hello World integration for getting started.
 display: skybox
 name: skybox
 script:
-  dockerimage: demisto/python3:3.8.6.12176
+  commands:
+  - arguments:
+    - default: false
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-network-findfirewallsbyname
+  - arguments:
+    - default: false
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: status
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: priority
+      predefined:
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: likelihood
+      predefined:
+      - Unknown
+      - Low
+      - Medium
+      - High
+      - Priority
+      - Critical
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: externalTicketId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: externalTicketStatus
+      predefined:
+      - Pending
+      - Open
+      - Closed
+      - Error
+      - Rejected
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeDetails
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-tickets-createChangeManagerTicket
+  - arguments:
+    - default: false
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    - default: false
+      isArray: true
+      name: hostId
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: objectName
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeType
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: addressChange
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: portChange
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: maxAccessRequestsToCreate
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: chainFilterMode
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: chainNames
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-tickets-createTicketAccessRequestsForObjectChange
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ticketId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: dueDate
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ticketPriority
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeType
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: firewallName
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: firewallManagementName
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: objectId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: globalUniqueId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeDetails
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: isRequiredStatus
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: completeStatus
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: completeDate
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: workflowName
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: lastModificationTime
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: implementationStatus
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: isImplementationSupported
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: implementationNotSupportedReasons
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-tickets-implementChangeRequests
+  - arguments:
+    - default: false
+      isArray: false
+      name: hostId
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: objectNameFilter
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-network-findFirewallObjectsIdentifications
+  - arguments:
+    - default: false
+      isArray: false
+      name: hostId
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: startIndex
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: size
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-getDeviceVulnerabilities
+    outputs:
+    - contextPath: Skybox.Vulnerabilities
+      type: Unknown
+  dockerimage: demisto/zeep:1.0.0.8900
   feed: false
   isfetch: false
   longRunning: false
