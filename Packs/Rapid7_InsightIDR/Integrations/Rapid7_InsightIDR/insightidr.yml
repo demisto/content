@@ -21,16 +21,18 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days.
+- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days.)
   defaultvalue: 3 days
   display: First Fetch Time
   name: fetch_time
   required: false
+  type: 0
 - additionalinfo: Max number of alerts per fetch. Defaults to 20, max is 1000.
   defaultvalue: '20'
   display: Fetch Limit
   name: max_fetch
   required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
