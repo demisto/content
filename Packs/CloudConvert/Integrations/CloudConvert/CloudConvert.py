@@ -176,6 +176,24 @@ class Client(BaseClient):
 
 
 @logger
+def raise_error_if_no_data(results):
+    """
+    This function checks if No 'data' field was returned from the request, meaning the input was invalid
+    Args:
+        results: a dict containing the request's results
+
+    Returns:
+        raises error if there is no 'data' field, with the matching error message returned from the server
+        if no error message was given frem the server, suggests the other optional errors
+    """
+    if results.get('data') is None:
+        if results.get('message'):
+            raise ValueError(results.get('message'))
+        else:
+            raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
+                             'many requests. Please try again later.')
+
+@logger
 def import_command(client: Client, arguments: Dict[str, Any]):
     """
     Import a file to the API for later conversion
@@ -192,6 +210,7 @@ def import_command(client: Client, arguments: Dict[str, Any]):
         if arguments.get('entry_id'):
             raise ValueError('Both url and entry id were inserted - please insert only one.')
         results = client.import_url(arguments)
+        raise_error_if_no_data(results)
         results_data = results.get('data')
     elif arguments.get('entry_id'):
         demisto.debug('getting the path of the file from its entry id')
@@ -200,17 +219,11 @@ def import_command(client: Client, arguments: Dict[str, Any]):
             raise ValueError('No file was found for given entry id')
         file_path, file_name = result['path'], result['name']
         results = client.import_entry_id(file_path, file_name)
+        raise_error_if_no_data(results)
         results_data = results.get('data')
     else:
         raise ValueError('No url or entry id specified.')
 
-    # No 'data' field was returned from the request, meaning the input was invalid
-    if results_data is None:
-        if results.get('message'):
-            raise ValueError(results.get('message'))
-        else:
-            raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
-                             'many requests. Please try again later.')
 
     readable_output = tableToMarkdown('Import Results', remove_empty_elements(results_data),
                                       headers=('created_at', 'id', 'operation', 'status'),
@@ -238,15 +251,8 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
     """
 
     results = client.convert(arguments)
+    raise_error_if_no_data(results)
     results_data = results.get('data')
-
-    # No 'data' field was returned from the request, meaning the input was invalid
-    if results_data is None:
-        if results.get('message'):
-            raise ValueError(results.get('message'))
-        else:
-            raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
-                             'many requests. Please try again later.')
 
     readable_output = tableToMarkdown('Convert Results', remove_empty_elements(results_data),
                                       headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
@@ -277,15 +283,8 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
 
     """
     results = client.check_status(arguments)
+    raise_error_if_no_data(results)
     results_data = results.get('data')
-
-    # Check if no 'data' field was returned from the request, meaning the input was invalid
-    if results_data is None:
-        if results.get('message'):
-            raise ValueError(results.get('message'))
-        else:
-            raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
-                             'many requests. Please try again later.')
 
     # If checking on an export to entry operation, manually change the operation name
     # For other operations, the operation matches the operation field in the API's response, so no change is needed
@@ -347,17 +346,10 @@ def export_command(client: Client, arguments: Dict[str, Any]):
     # Call export to url request
     # In both url and war room entry we still first get a url
     results = client.export_url(arguments)
+    raise_error_if_no_data(results)
     results_data = results.get('data')
 
-    # No 'data' field was returned from the request, meaning the input was invalid
-    if results_data is None:
-        if results.get('message'):
-            raise ValueError(results.get('message'))
-        else:
-            raise ValueError('No response from server, the server could be temporary unavailable or it is handling too '
-                             'many requests. Please try again later.')
-
-    # If exporting to war room entry, manually change the operation name
+    # If exporting as war room entry, manually change the operation name
     if arguments['export_as'] == 'war_room_entry':
         results['data']['operation'] = 'export/entry'
 
@@ -390,7 +382,8 @@ def test_module(client: Client):
     elif result.get('message') == "Unauthenticated.":
         return 'Authorization Error: make sure API Key is correctly set'
     else:
-        return 'Test failed'
+        return 'No response from server, the server could be temporary unavailable or it is handling too ' \
+               'many requests. Please try again later.'
 
 
 def main() -> None:
