@@ -21,7 +21,7 @@ HelloWorld API
 
 The HelloWorld API is a simple API that shows a realistic use case for an XSOAR
 integration. It's actually a real API that is available to the following URL:
-https://soar.mastersofhack.com - if you need an API Key to test it out please
+- if you need an API Key to test it out please
 reach out to your Cortex XSOAR contacts.
 
 This API has a few basic functions:
@@ -250,6 +250,15 @@ import dateparser
 import traceback
 import random
 
+import tempfile
+
+from requests import Session
+from zeep import helpers
+from zeep import Client as zClient
+from zeep import Settings
+from zeep.cache import SqliteCache
+from zeep.transports import Transport
+
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 # Disable insecure warnings
@@ -257,6 +266,10 @@ urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
+
+
+SKYBOX_NETWORK_SERVICE_WSDL = "skybox/webservice/jaxws/network?wsdl"
+SKYBOX_TICKET_SERVICE_WSDL = "skybox/webservice/jaxws/tickets?wsdl"
 
 ''' SOAP TEMPLATES'''
 
@@ -325,9 +338,49 @@ class Client(BaseClient):
         return retval
 
 
+    def getDeviceVulnerabilities(self, hostId: int, startIndex: int, size: int):
+
+        params = {
+            'startIndex':startIndex,
+            'size' : size
+        }
+
+        url = f'{self._base_url}/netmodel/v1/hosts/{hostId}/vulnerabilities'
+
+        response = self._http_request("GET",full_url=url,params=params)
+
+        return response
+
+
+
+
+
+
+
+
 
 ''' HELPER FUNCTIONS '''
 
+def get_cache_path():
+    path = tempfile.gettempdir() + "/zeepcache"
+    try:
+        os.makedirs(path)
+    except OSError:
+        if os.path.isdir(path):
+            pass
+        else:
+            raise
+    db_path = os.path.join(path, "cache.db")
+    try:
+        if not os.path.isfile(db_path):
+            static_init_db = os.getenv('ZEEP_STATIC_CACHE_DB', '/zeep/static/cache.db')
+            if os.path.isfile(static_init_db):
+                demisto.debug(f'copying static init db: {static_init_db} to: {db_path}')
+                shutil.copyfile(static_init_db, db_path)
+    except Exception as ex:
+        # non fatal
+        demisto.error(f'Failed copying static init db to: {db_path}. Error: {ex}')
+    return db_path
 
 def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
     """Converts whois date format to an ISO8601 string
@@ -470,6 +523,21 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
 
+def resolve_datetime(input: OrderedDict) -> Dict:
+
+    output = {}
+    for key in input:
+
+        if isinstance(input[key],datetime):
+
+            output[key] = input[key].__str__()
+
+        else:
+            output[key] = input[key]
+
+    return output
+
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -509,6 +577,218 @@ def test_module(client: Client) -> str:
     else:
         return f'Value {anyVal} does not match'
 
+def getDeviceVulnerabilities_command(client: Client, args):
+
+    hostId = args.get('hostId',0)
+    startIndex = args.get('startIndex',0)
+    size = args.get('size',10)
+
+    results = client.getDeviceVulnerabilities(hostId,startIndex,size)
+
+    return CommandResults(
+        outputs_prefix='Skybox.Vulnerabilities',
+        outputs_key_field='id',
+        outputs=results['elements'],
+        readable_output=f"Returned {len(results['elements'])} vulnerabilities for asset id {hostId}"
+
+    )
+
+
+
+
+
+def findFirewallObjectsIdentifications_command(client:zClient, args):
+
+    resp = findFirewallObjectsIdentifications(client, args)
+
+    resp=helpers.serialize_object(resp)
+
+    command_results = CommandResults(
+        outputs_prefix="Skybox.Network.FirewallObjects",
+        outputs_key_field="objectName",
+        outputs= resp
+    )
+
+    return command_results
+
+
+
+
+def findFirewallObjectsIdentifications(client: zClient, args):
+
+    resp = client.service.findFirewallObjectsIdentifications(
+        hostId = args.get('hostId',None),
+        objectNameFilter = args.get('objectNameFilter','')
+    )
+
+    return resp
+
+
+
+def findFirewallsByName(client: zClient, args):
+
+    resp = client.service.findFirewallsByName(
+        name = args.get('name','')
+    )
+
+    resp = helpers.serialize_object(resp['fwElements'])
+
+
+    command_results = CommandResults(
+        outputs_prefix="Skybox.Network.Firewalls",
+        outputs_key_field="id",
+        outputs=resp
+      )
+
+    return(command_results)
+
+
+
+def createChangeManagerTicket(client: zClient, args):
+
+
+
+
+    customField_type = client.get_type('ns0:customField')
+    customField = customField_type(
+        comment = '',
+        createdBy = '',
+        creationTime = '',
+        description = '',
+        id = 0,
+        lastModificationTime = '',
+        lastModifiedBy = '',
+        name= '',
+        typeCode = 0,
+        value = ''
+    )
+
+
+    emailRecipient_type = client.get_type('ns0:emailRecipient')
+    emailRecipient = emailRecipient_type(
+        email = 'test@test.com',
+        userName = 'xsoar'
+    )
+
+    accessChangeTicket_type = client.get_type('ns0:accessChangeTicket')
+    accessChangeTicket = accessChangeTicket_type(
+        id=-1,
+        status=args.get('status', 'New'),
+        likelihood=args.get('likelihood', 'Unknown'),
+        priority=args.get('priority', 'P5'),
+        title=args.get('title', ''),
+        comment=args.get('comment', ''),
+        externalTicketId=args.get('externalTicketId', ''),
+        externalTicketStatus=args.get('externalTicketStatus', 'Pending'),
+        changeDetails=args.get('changeDetails',''),
+        owner=args.get('owner', ''),
+        description=args.get('description', ''),
+        ccList = [emailRecipient],
+        #customFields = [customField]
+    )
+
+    resp = client.service.createChangeManagerTicket(
+        accessChangeTicket = accessChangeTicket,
+        workflowId=1
+    )
+
+
+
+    command_results = CommandResults(
+        outputs_prefix="Skybox.ChangeManagerTicket",
+        outputs_key_field="id",
+        outputs=resolve_datetime(resp),
+        readable_output=f"Created Ticket {resp['id']}"
+    )
+
+    return command_results
+
+
+def createTicketAccessRequestsForObjectChange(client: zClient, args):
+
+    resp = client.service.createTicketAccessRequestsForObjectChange(
+        ticketId = args.get('ticketId',0),
+        hostId = args.get('hostId',0),
+        objectName = args.get('objectName',''),
+        changeType = args.get('changeType',0),
+        addressChange = args.get('addressChange',['']),
+        portChange = args.get('portChange',''),
+        maxAccessRequestsToCreate = args.get('maxAccessRequestsToCreate',1),
+        chainFilterMode = args.get('chainFilterMode',1),
+        chainNames = args.get('chainNames','')
+    )
+
+
+
+    return "Change Requested"
+
+def implementChangeRequests(client: zClient, args):
+
+    ChangeRequestImplementation_type = client.get_type('ns0:changeRequestImplementation')
+    ChangeRequestImplementation = ChangeRequestImplementation_type(
+        id = args.get('id',0),
+        ticketId = args.get('ticketId',0),
+        dueDate = args.get('dueDate','2020-05-30T09:00:00'),
+        ticketPriority = args.get('ticketPriority', 'P5'),
+        changeType = args.get('changeType',''),
+        firewallName = args.get('firewallName',''),
+        firewallManagementName = args.get('firewallManagementName',''),
+        objectId = args.get('objectId',''),
+        globalUniqueId = args.get('globalUniqueId',''),
+        changeDetails =args.get('changeDetails',''),
+        additionalDetails = args.get('additionalDetails',''),
+        isRequiredStatus = args.get('isRequiredStatus','UNCOMPUTED'),
+        owner = args.get('owner','xsoar'),
+        completeDate = args.get('completeData','2002-05-30T09:00:00'),
+        workflowName = args.get('workflowName',''),
+        comment = args.get('comment',''),
+        lastModificationTime = args.get('lastModificationTime','2002-05-30T09:00:00'),
+        implementationStatus = args.get('implementationStatus','')
+
+
+
+
+
+
+    )
+
+
+    resp = client.service.implementChangeRequests(
+        changeRequests = ChangeRequestImplementation,
+        comment = ''
+    )
+
+
+    return_results(str(resp))
+
+
+
+
+def addRequireAccess(client: zClient, args):
+
+
+    requireAccessChangeRequestV7_type = client.get_type('ns0:requireAccessChangeRequestV7') #This uses ChangeRequestV3 as a base
+    requireAccessChangeRequestV7 = requireAccessChangeRequestV7_type(
+        comment = args.get('comment'),
+        complianceStatus = args.get('complianceStatus','UNCOMPUTED'),
+        createdBy = args.get('createdBy','xsoar'),
+        creationTime = args.get('creationTime',''),
+        description = args.get('description',''),
+        id = args.get('id',0),
+        isRequiredStatus =  args.get('isRequiredStatus','UNCOMPUTED'),
+        lastModificationTime = args.get('lastModificationTime',''),
+        lastModifiedBy = args.get('lastModifiedBy','xsoar'),
+        originalChangeRequestId = args.get('originalChangeRequestId',0),
+        verificationStatus = args.get('verificationStatus','Unknown'), #END of ChangeRequestV3 BASE.
+        destinationObjects = args.get('destinationObjects',[])
+
+
+
+
+
+
+
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -524,7 +804,9 @@ def main() -> None:
     api_key = demisto.params().get('apikey')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/skybox/webservice/jaxws')
+    base_url = demisto.params()['url']
+    service_url = urljoin(base_url, '/skybox/webservice/jaxws')
+    service_url = urljoin(base_url, '/skybox/webservice/jaxrs')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -547,11 +829,32 @@ def main() -> None:
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
+
+
+
+    #verify_ssl = not demisto.params.get('insecure', False)
+    if demisto.command().startswith("skybox-network"):
+        wsdl: str = f'{base_url}/{SKYBOX_NETWORK_SERVICE_WSDL}'
+
+    else :
+        wsdl: str = f'{base_url}/{SKYBOX_TICKET_SERVICE_WSDL}'
+
+
+    session: Session = Session()
+    session.auth = (username, password)
+    session.verify = verify_certificate
+    cache: SqliteCache = SqliteCache(path=get_cache_path(), timeout=None)
+    transport: Transport = Transport(session=session, cache=cache)
+    settings: Settings = Settings(strict=False, xsd_ignore_sequence_order=True)
+
+    zclient: zClient = zClient(wsdl=wsdl, transport=transport, settings=settings)
+
+
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
         client = Client(
-            base_url=base_url,
+            base_url=service_url,
             verify=verify_certificate,
             auth=(username,password),
             proxy=proxy)
@@ -561,40 +864,26 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            alert_status = demisto.params().get('alert_status', None)
-            alert_type = demisto.params().get('alert_type', None)
-            min_severity = demisto.params().get('min_severity', None)
+        elif demisto.command()== 'skybox-getDeviceVulnerabilities':
+            return_results(getDeviceVulnerabilities_command(client,demisto.args()))
 
-            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
-            max_results = arg_to_int(
-                arg=demisto.params().get('max_fetch'),
-                arg_name='max_fetch',
-                required=False
-            )
-            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-                max_results = MAX_INCIDENTS_TO_FETCH
+        elif demisto.command() == 'skybox-network-findfirewallsbyname':
+            return_results(findFirewallsByName(zclient,demisto.args()))
 
-            next_run, incidents = fetch_incidents(
-                client=client,
-                max_results=max_results,
-                last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_time,
-                alert_status=alert_status,
-                min_severity=min_severity,
-                alert_type=alert_type
-            )
+        elif demisto.command() == 'skybox-network-findFirewallObjectsIdentifications':
+            return_results(findFirewallObjectsIdentifications_command(zclient, demisto.args()))
 
-            # saves next_run for the time fetch-incidents is invoked
-            demisto.setLastRun(next_run)
-            # fetch-incidents calls ``demisto.incidents()`` to provide the list
-            # of incidents to crate
-            demisto.incidents(incidents)
+        elif demisto.command() == 'skybox-tickets-createChangeManagerTicket':
+            return_results(createChangeManagerTicket(zclient,demisto.args()))
 
-        elif demisto.command() == 'ip':
-            default_threshold_ip = int(demisto.params().get('threshold_ip', '65'))
-            return_results(ip_reputation_command(client, demisto.args(), default_threshold_ip))
+        elif demisto.command() == 'skybox-tickets-createTicketAccessRequestsForObjectChange':
+            return_results(createTicketAccessRequestsForObjectChange(zclient,demisto.args()))
+
+        elif demisto.command() == 'skybox-tickets-implementChangeRequests':
+            return_results(implementChangeRequests(zclient, demisto.args()))
+
+
+
 
         elif demisto.command() == 'domain':
             default_threshold_domain = int(demisto.params().get('threshold_domain', '65'))
