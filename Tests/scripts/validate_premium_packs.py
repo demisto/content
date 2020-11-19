@@ -19,11 +19,19 @@ def options_handler():
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
                                           '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
                                           ' AMI environment.', default="Demisto Marketplace")
-    parser.add_argument('--index_zip_path', help='The index.zip file path, generated on the cloud', required=True)
+    parser.add_argument('--index_path', help='The index.zip file path, generated on the cloud\n'
+                                             ' In case only_check_index_file is set, specify path to index.json',
+                        required=True)
     # parser.add_argument('--commit_hash', help='The commit hash of the current build', required=True)
-    parser.add_argument('-s', '--secret', help='Path to secret conf file')
+    # parser.add_argument('-s', '--secret', help='Path to secret conf file')
+    parser.add_argument('--only_check_index_zip', help='Path to index.zip')
+    parser.add_argument('--only_check_index_file', help='Path to index.json')
 
     options = parser.parse_args()
+    if options.only_check_index_zip and options.only_check_index_file:
+        logging.info('Options only_check_index_zip and only_check_index_file cannot be true together.')
+        return None
+
     return options
 
 
@@ -35,11 +43,14 @@ def update_expectations_from_git(index_data):
 def unzip_index_and_return_index_file(index_zip_path):
     logging.info('Unzipping')
     with zipfile.ZipFile(index_zip_path, 'r') as zip_obj:
-        zip_obj.extractall()
+        zip_obj.extractall(path="./extracted-index")
 
-    dir_list = os.listdir()
-    logging.info(f'dir is now: \n {dir_list}')
-    return INDEX_FILE_PATH
+    dir_list = os.listdir("./extracted-index")
+    logging.info(f'dir ./extracted-index is now: \n {dir_list}')
+    dir_list = os.listdir("./extracted-index/index")
+    logging.info(f'dir ./extracted-index/index is now: \n {dir_list}')
+
+    return f"./extracted-index/index/{INDEX_FILE_PATH}"
 
 
 def check_and_return_index_data(index_file_path):  # , commit_hash):
@@ -111,26 +122,33 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data):
 def main():
     logging.info('Retrieving the index fle')
     options = options_handler()
-    index_file_path = unzip_index_and_return_index_file(options.index_zip_path)
+    if not options.only_check_index_file:
+        index_file_path = unzip_index_and_return_index_file(options.index_path)
+    else:
+        index_file_path = options.index_path
+
     index_data = check_and_return_index_data(index_file_path)  # options.commit_hash)
     update_expectations_from_git(index_data)
 
-    # Get the host by the ami env
-    hosts, _ = Build.get_servers(ami_env=options.ami_env)
+    if not (options.only_check_index_zip or options.only_check_index_file):
 
-    logging.info('Retrieving the credentials for Cortex XSOAR server')
-    secret_conf_file = get_json_file(path=options.secret)
-    username: str = secret_conf_file.get('username')
-    password: str = secret_conf_file.get('userPassword')
+        # Get the host by the ami env
+        hosts, _ = Build.get_servers(ami_env=options.ami_env)
 
-    # Check the marketplace
-    for host in hosts:
-        server = Server(host=host, user_name=username, password=password)
-        paid_packs = get_paid_packs(client=server.client)
-        if paid_packs is not None:
-            verify_server_paid_packs_by_index(paid_packs, index_data)
-        else:
-            sys.exit(1)
+        logging.info('Retrieving the credentials for Cortex XSOAR server')
+        secret_conf_file = get_json_file(path=options.secret)
+        username: str = secret_conf_file.get('username')
+        password: str = secret_conf_file.get('userPassword')
+
+        # Check the marketplace
+        for host in hosts:
+            server = Server(host=host, user_name=username, password=password)
+            paid_packs = get_paid_packs(client=server.client)
+            if paid_packs is not None:
+                logging.info(f'Verifying premium packs in {host}')
+                verify_server_paid_packs_by_index(paid_packs, index_data)
+            else:
+                sys.exit(1)
 
 
 if __name__ == '__main__':
