@@ -1,10 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 import traceback
-from typing import Dict
+
 import dateparser
 import urllib3
+from typing import Dict, Tuple
+
+from CommonServerPython import *
 
 ''' IMPORTS '''
 
@@ -345,7 +345,7 @@ class Client(BaseClient):
             record['Id'] = content_obj.get('Id')
         return record, res, errors
 
-    def record_to_incident(self, record_item, app_id, date_field):
+    def record_to_incident(self, record_item, app_id, date_field) -> Tuple[dict, datetime]:
         labels = []
         raw_record = record_item['raw']
         record_item = record_item['record']
@@ -754,7 +754,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
     try:
         level_data = client.get_level_by_app_id(app_id)[0]
     except IndexError as exc:
-        raise DemistoExceptiom(
+        raise DemistoException(
             'Got no level by app id. You might be using the wrong application id'
         ) from exc
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
@@ -940,8 +940,10 @@ def search_records_command(client: Client, args: Dict[str, str]):
         fields_mapping = level_data['mapping']
         fields_to_get = [fields_mapping[next(iter(fields_mapping))]['Name']]
 
-    records, raw_res = client.search_records(app_id, fields_to_get, field_to_search, search_value,
-                                             numeric_operator, date_operator, max_results=max_results)
+    records, raw_res = client.search_records(
+        app_id, fields_to_get, field_to_search, search_value,
+        numeric_operator, date_operator, max_results=max_results
+    )
 
     records = list(map(lambda x: x['record'], records))
 
@@ -975,6 +977,7 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
 
     raw_records = json.loads(xml2json(res))
     records = []
+    ec = {}
     if raw_records.get('Records') and raw_records['Records'].get('Record'):
         level_id = raw_records['Records']['Record'][0]['@levelId']
 
@@ -1003,25 +1006,26 @@ def print_cache_command(client: Client, args: Dict[str, str]):
     return_outputs(cache, {}, {})
 
 
-def fetch_incidents(client, last_run, first_fetch_time, params):
+def fetch_incidents(
+        client: Client, last_run: dict, first_fetch_time: str, params: dict
+) -> Tuple[dict, list]:
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
 
-    # Handle first time fetch
-    if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch_time)
-    else:
+    if last_fetch:
         last_fetch = dateparser.parse(last_fetch)
+    else:  # Handle first time fetch
+        last_fetch = dateparser.parse(first_fetch_time)
+        time_offset = int(params.get('time_zone', '0'))
+        last_fetch = last_fetch + timedelta(minutes=(time_offset * -1))
 
     last_fetch = last_fetch.replace(tzinfo=None)
+
     app_id = params.get('applicationId')
     date_field = params.get('applicationDateField')
     max_results = params.get('fetch_limit', 10)
-    time_offset = int(params.get('time_zone', '0'))
     fields_to_display = argToList(params.get('fields_to_fetch'))
     fields_to_display.append(date_field)
-
-    last_fetch = last_fetch + timedelta(minutes=(time_offset * -1))
 
     records, raw_res = client.search_records(
         app_id, fields_to_display, date_field,
@@ -1039,7 +1043,6 @@ def fetch_incidents(client, last_run, first_fetch_time, params):
         if incident_created_time > last_fetch:
             last_fetch = incident_created_time
 
-    last_fetch = last_fetch + timedelta(minutes=time_offset)
     next_run = {'last_fetch': last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ')}
     return next_run, incidents
 
@@ -1048,7 +1051,7 @@ def main():
     params = demisto.params()
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/')
-    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
+    first_fetch_time = params.get('fetch_time', '3 days').strip()
 
     cache = demisto.getIntegrationContext()
     if not cache.get('fieldValueList'):
