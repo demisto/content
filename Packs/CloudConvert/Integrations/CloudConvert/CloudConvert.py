@@ -290,7 +290,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     # If checking on an export to entry operation, manually change the operation name
     # For other operations, the operation matches the operation field in the API's response, so no change is needed
     if argToBoolean(arguments.get('create_war_room_entry', False)) \
-            and results.get('data', {}).get('operation') == 'export/url':
+            and results_data.get('operation') == 'export/url':
         results['data']['operation'] = 'export/entry'
 
     # Check if an export to war room entry operation is finished
