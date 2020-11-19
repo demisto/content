@@ -3272,6 +3272,7 @@
     "skipped_integrations": {
 
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "ServiceNow v2": "stop testing while password is reset",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
         "Recorded Future v2": "Issue 29090",
