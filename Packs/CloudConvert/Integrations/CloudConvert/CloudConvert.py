@@ -332,7 +332,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
 @logger
 def export_command(client: Client, arguments: Dict[str, Any]):
     """
-    Export a converted file back to user, either as a url or directly to a war room entry
+    Export a converted file back to the user, either as a url or directly as a war room entry
     Note: in order to get the resulted url/entry of the file you need to use a check-status command as well,
         since the response of the export command is usually responded before the file is fully exported (hence the
     'status' field is 'waiting', and not 'finished')
