@@ -1,0 +1,37 @@
+Aggregate entries from multiple sources into AttributionUser
+
+## Script Data
+---
+
+| **Name** | **Description** |
+| --- | --- |
+| Script Type | python3 |
+| Tags | expanse |
+| Demisto Version | 5.0.0 |
+
+## Used In
+---
+This script is used in the following playbooks and scripts.
+* Expanse Attribution Subplaybook
+
+## Inputs
+---
+
+| **Argument Name** | **Description** |
+| --- | --- |
+| input | input list |
+| current | current aggregation state |
+| username_fields | comma separated list of fields to treat as serial number |
+| sightings_fields | comma separated list of field names to be considered sighting counts |
+
+## Outputs
+---
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| Expanse.AttributionUser.username | Username of the user | string |
+| Expanse.AttributionUser.domain | Domain of the user | string |
+| Expanse.AttributionUser.groups | List of groups the user is member of | Unknown |
+| Expanse.AttributionUser.display-name | Display Name | string |
+| Expanse.AttributionUser.description | Description of the user | string |
+| Expanse.AttributionUser.sightings | Number of sessions seen on this device | number |

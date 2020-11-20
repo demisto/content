@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": null,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "bf9db8f8-21e8-4700-8482-76073fcbffeb",
+    "isPredefined": true,
+    "name": "Map",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "ExpanseGenerateIssueMap",
+    "size": 0,
+    "version": -1,
+    "widgetType": "text",
+    "fromVersion": "5.0.0",
+    "description": ""
+}
