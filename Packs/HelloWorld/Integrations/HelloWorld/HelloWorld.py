@@ -1057,7 +1057,7 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResult
         severity=','.join(severities),
         alert_status=status,
         alert_type=alert_type,
-        start_time=int(start_time.timestamp()),
+        start_time=int(start_time.timestamp()) if start_time else None,
         max_results=max_results
     )
 
@@ -1353,13 +1353,14 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = int(arg_to_datetime(
+    first_fetch_time = arg_to_datetime(
         arg=demisto.params().get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
-    ).timestamp())
+    )
+    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
     # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-    assert isinstance(first_fetch_time, int)
+    assert isinstance(first_fetch_timestamp, int)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
@@ -1384,7 +1385,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, first_fetch_time)
+            result = test_module(client, first_fetch_timestamp)
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
@@ -1406,7 +1407,7 @@ def main() -> None:
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_time,
+                first_fetch_time=first_fetch_timestamp,
                 alert_status=alert_status,
                 min_severity=min_severity,
                 alert_type=alert_type

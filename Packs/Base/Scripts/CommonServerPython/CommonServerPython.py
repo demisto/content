@@ -2832,8 +2832,8 @@ def arg_to_datetime(arg, arg_name, is_utc=True, required = False, settings=None)
 
     if isinstance(arg, str) and arg.isdigit() or isinstance(arg, (int, float)):
         # timestamp is a str containing digits - we just convert it to int
-        ms = int(arg)
-        if ms > 2000000000:
+        ms = float(arg)
+        if ms > 2000000000.0:
             # in case timestamp was provided as unix time (in milliseconds)
             ms = ms / 1000.0
 
