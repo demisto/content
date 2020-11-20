@@ -1,0 +1,635 @@
+id: TestplaybookTripwire
+name: TestplaybookTripwire
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: tripwire-versions-list
+      description: ''
+      script: '|||tripwire-versions-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.approvalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.baselineVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.changeType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.elementId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.elementName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.exists
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.isPromoted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.nodeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.nodeName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.outsideMaintenanceWindow
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.promotionComment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.scanId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.sha512
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.timeDetected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.timeReceived
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: tripwire-rules-list
+      description: ''
+      script: '|||tripwire-rules-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.command
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.elementName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.importedTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.modifiedTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.timeoutMillis
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.trackingId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: tripwire-elements-list
+      description: ''
+      script: '|||tripwire-elements-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.baselineVersionId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.inScope
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.isRestorable
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.lastSuccessDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.lastVersionChangeSeverity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.lastVersionChangeType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.lastVersionId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.lastVersionTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.nodeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.ruleId
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: tripwire-nodes-list
+      description: ''
+      script: '|||tripwire-nodes-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.agentType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.agentVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.auditEnabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.elementCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.eventGeneratorEnabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.eventGeneratorInstalled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.hasFailures
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.importedTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.ipAddresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.isDisabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.isSocksProxy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.lastCheck
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.lastRegistration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.licensedFeatures
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.make
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.maxSeverity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.model
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.modifiedTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.realTimeEnabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.rmiHost
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.rmiPort
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.tags.tag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.tags.tagset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.tags.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.trackingId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.version
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: '10'
+    taskid: '10'
+    type: title
+    task:
+      id: '10'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
