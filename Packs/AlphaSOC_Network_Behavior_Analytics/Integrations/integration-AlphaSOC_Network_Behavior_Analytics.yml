@@ -25,6 +25,7 @@ configuration:
   defaultvalue: "4"
   type: 0
   required: true
+  additionalinfo: "AlphaSOC alert severity: (1) info, (2) low, (3) medium, (4) high, (5) critical"
 - display: Include policy violations
   name: policy
   defaultvalue: "true"
