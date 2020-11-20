@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-res = []
 run_time_count = 1
 offset = 0
 PAGE_SIZE = 100
@@ -74,7 +73,8 @@ while True:
             insert_num = insert_count
 
             if insert_count == 0 and update_count == 0:
-                err_msg = "Error, Bulk Servicenow sync failed to get upsert devices from PANW IoT cloud %s" % upsert_devices_result
+                err_msg = "Error, Bulk Servicenow sync failed to get upsert " \
+                          "devices from PANW IoT cloud %s" % upsert_devices_result
                 send_status_to_panw_iot_cloud("error", err_msg)
                 demisto.info("PANW_IOT_3RD_PARTY_BASE %s" % err_msg)
                 return_error("Error, could not get upsert devices")
@@ -114,8 +114,7 @@ while True:
         msg = str(run_time_count) + ". Successfully update " + str(update_num) + \
             " Devices and insert " + str(insert_num) + " to Servicenow "
         send_status_to_panw_iot_cloud("success", msg)
-        demisto.results(str(run_time_count) + ".Successfully update " + str(update_num) +
-                        " Devices and insert " + str(insert_num) + " to Servicenow")
+        demisto.results(msg)
         run_time_count += 1
     else:
         break
@@ -123,5 +122,4 @@ while True:
 msg = "Successfully total update " + \
     str(total_update_num) + " Devices to Servicenow and total insert " + str(total_insert_num) + " Devices to Servicenow"
 send_status_to_panw_iot_cloud("success", msg)
-demisto.results("Successfully total update " + str(total_update_num) +
-                " Devices to Servicenow and total insert " + str(total_insert_num) + " Devices to Servicenow")
+demisto.results(msg)
