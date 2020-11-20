@@ -474,7 +474,7 @@ def convert_alert_to_servicenow(args):
     url = str(incident['url'])
     urgency = str(incident['urgency'])
     incident.setdefault('user_email', 'cannot find any email')
-    user_email = incident['user_email']
+    # user_email = incident['user_email']
     zb_ticketid = incident['correlation_id']
 
     alert.setdefault('msg', {}).setdefault('impact', 'Sorry, no impact available to display so far!')
@@ -513,7 +513,7 @@ def convert_vulnerability_to_servicenow(args):
     url = str(incident['url'])
     urgency = str(incident['urgency'])
     incident.setdefault('user_email', 'cannot find any email')
-    user_email = incident['user_email']
+    # user_email = incident['user_email']
     zb_ticketid = incident['correlation_id']
 
     assetList = args.get('assetList')
@@ -625,11 +625,12 @@ def get_servicenow_upsert_devices(args):
             instance["sys_id"] = sn_id
             update_list.append(instance)
 
-    result = {}
-    result["insert"] = insert_list
-    result["update"] = update_list
-    result["update_count"] = len(update_list)
-    result["insert_count"] = len(insert_list)
+    result = {
+        "insert": insert_list,
+        "update": update_list,
+        "update_count": len(update_list),
+        "insert_count": len(insert_list)
+    }
     return result
 
 
