@@ -15,7 +15,7 @@ Otherwise just return the original error
 
 
 def extract_ise_api_error(err_msg):
-    #return_results("getting message = %s" % err_msg)
+    # return_results("getting message = %s" % err_msg)
     err_msg = err_msg.split('-')[0]
     if err_msg.startswith("Error in API call to Cisco"):
         start = err_msg.find('[') + 1
@@ -29,7 +29,7 @@ def extract_ise_api_error(err_msg):
 
 for attr_list in attr_lists:
     mac = attr_list['mac']
-    if mac == None or mac == "":
+    if mac is None or mac == "":
         continue
     attr_map = attr_list['zb_attributes']
     # check if the endpoint already exists by getting the endpoint ID.
@@ -78,7 +78,8 @@ for attr_list in attr_lists:
                 demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to update Custom Attributes for Endpoint %s" % mac)
             else:
                 count += 1
-        except:
+        except Exception as ex:
+            demisto.info(ex)
             continue
 
 readable_status = "Successfully sent %d devices to ISE" % count

@@ -116,7 +116,7 @@ while True:
 
             res = demisto.executeCommand("syslog-send", {"message": cef, "using": SIEM_INSTANCE})
             if isError(res[0]):
-                    # We only get an error is configured syslog server address cant be resolved
+                # We only get an error is configured syslog server address cant be resolved
                 err_msg = "Cant connect to SIEM server %s" % res[0].get('Contents')
                 send_status_to_panw_iot_cloud("error", err_msg)
                 return_error(err_msg)
