@@ -1,5 +1,4 @@
-import demistomock as demisto
-from CommonServerPython import *
+from Integrations.ArgusManagedDefence.CommonServerPython import *
 ''' IMPORTS '''
 
 import json
