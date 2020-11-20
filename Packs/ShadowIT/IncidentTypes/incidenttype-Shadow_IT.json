@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#a737f4",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Shadow IT",
+    "layout": "4a9a1fea-73da-4dec-8b75-597fb0daea5e",
+    "locked": false,
+    "name": "Shadow IT",
+    "playbookId": "75fcbbba-95f8-4caa-89f9-2deb5eebf5b0",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.0.0"
+}
