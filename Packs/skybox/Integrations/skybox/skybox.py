@@ -599,7 +599,10 @@ def getDeviceVulnerabilities_command(client: Client, args):
 
 def findFirewallObjectsIdentifications_command(client:zClient, args):
 
-    resp = findFirewallObjectsIdentifications(client, args)
+    hostId = args.get('hostId',0)
+    objectNameFilter = args.get('objectNameFilter',"*")
+
+    resp = findFirewallObjectsIdentifications(client, hostId,objectNameFilter)
 
     resp=helpers.serialize_object(resp)
 
@@ -614,11 +617,11 @@ def findFirewallObjectsIdentifications_command(client:zClient, args):
 
 
 
-def findFirewallObjectsIdentifications(client: zClient, args):
+def findFirewallObjectsIdentifications(client: zClient, hostId, objectNameFilter):
 
     resp = client.service.findFirewallObjectsIdentifications(
-        hostId = args.get('hostId',None),
-        objectNameFilter = args.get('objectNameFilter','')
+        hostId =hostId,
+        objectNameFilter = f'"{objectNameFilter}"' #Quote marks force an explicit match.
     )
 
     return resp
@@ -724,6 +727,7 @@ def createTicketAccessRequestsForObjectChange(client: zClient, args):
 
 def implementChangeRequests(client: zClient, args):
 
+
     ChangeRequestImplementation_type = client.get_type('ns0:changeRequestImplementation')
     ChangeRequestImplementation = ChangeRequestImplementation_type(
         id = args.get('id',0),
@@ -764,32 +768,46 @@ def implementChangeRequests(client: zClient, args):
 
 
 
-def addRequireAccess(client: zClient, args):
+def addRequireAccess(ticket_client: zClient,network_client: zClient, args):
+
+    dHostId = args.get('dhostId',0)
+    dObject = args.get('dObject',"*")
+
+    destinationobjects = findFirewallObjectsIdentifications(network_client,hostId=dHostId, objectNameFilter=dObject)
 
 
-    requireAccessChangeRequestV7_type = client.get_type('ns0:requireAccessChangeRequestV7') #This uses ChangeRequestV3 as a base
+    requireAccessChangeRequestV7_type = ticket_client.get_type('ns0:requireAccessChangeRequestV7') #This uses ChangeRequestV3 as a base
     requireAccessChangeRequestV7 = requireAccessChangeRequestV7_type(
         comment = args.get('comment'),
         complianceStatus = args.get('complianceStatus','UNCOMPUTED'),
         createdBy = args.get('createdBy','xsoar'),
-        creationTime = args.get('creationTime',''),
+        #creationTime = args.get('creationTime',''),
         description = args.get('description',''),
         id = args.get('id',0),
         isRequiredStatus =  args.get('isRequiredStatus','UNCOMPUTED'),
-        lastModificationTime = args.get('lastModificationTime',''),
-        lastModifiedBy = args.get('lastModifiedBy','xsoar'),
+        #lastModificationTime = args.get('lastModificationTime',''),
+        #lastModifiedBy = args.get('lastModifiedBy','xsoar'),
         originalChangeRequestId = args.get('originalChangeRequestId',0),
-        verificationStatus = args.get('verificationStatus','Unknown'), #END of ChangeRequestV3 BASE.
-        destinationObjects = args.get('destinationObjects',[])
-
-
-
-
-
-
+        verificationStatus = args.get('verificationStatus','UNKNOWN'), #END of ChangeRequestV3 BASE.
+        destinationObjects = [destinationobjects],
+        isGlobal = False,
+        isInstallOnAny = False,
+        isLogEnabled = args.get('isLogEnabled', True),
+        isSharedObject = args.get('isSharedObject',False),
+        NATPorts = args.get('NATPorts', ""),
+        ports = args.get('ports',""),
+        sourceAddresses = args.get('sourceAddresses',""),
+        useApplicationsDefaultPorts = False,
+        userUsage = "ANY"
 
     )
 
+    resp=ticket_client.service.addOriginalChangeRequestsV7(
+        ticketId = args.get('ticketId',64),
+        changeRequests = requireAccessChangeRequestV7
+    )
+
+    return_results(str(resp))
 
 ''' MAIN FUNCTION '''
 
@@ -847,7 +865,13 @@ def main() -> None:
     transport: Transport = Transport(session=session, cache=cache)
     settings: Settings = Settings(strict=False, xsd_ignore_sequence_order=True)
 
-    zclient: zClient = zClient(wsdl=wsdl, transport=transport, settings=settings)
+    wsdl: str = f'{base_url}/{SKYBOX_TICKET_SERVICE_WSDL}'
+    ticket_client: zClient = zClient(wsdl=wsdl, transport=transport, settings=settings)
+
+    wsdl: str = f'{base_url}/{SKYBOX_NETWORK_SERVICE_WSDL}'
+    network_client: zClient = zClient(wsdl=wsdl, transport=transport, settings=settings)
+
+
 
 
     demisto.debug(f'Command being called is {demisto.command()}')
@@ -868,19 +892,22 @@ def main() -> None:
             return_results(getDeviceVulnerabilities_command(client,demisto.args()))
 
         elif demisto.command() == 'skybox-network-findfirewallsbyname':
-            return_results(findFirewallsByName(zclient,demisto.args()))
+            return_results(findFirewallsByName(network_client,demisto.args()))
 
         elif demisto.command() == 'skybox-network-findFirewallObjectsIdentifications':
-            return_results(findFirewallObjectsIdentifications_command(zclient, demisto.args()))
+            return_results(findFirewallObjectsIdentifications_command(network_client, demisto.args()))
 
         elif demisto.command() == 'skybox-tickets-createChangeManagerTicket':
-            return_results(createChangeManagerTicket(zclient,demisto.args()))
+            return_results(createChangeManagerTicket(ticket_client,demisto.args()))
 
         elif demisto.command() == 'skybox-tickets-createTicketAccessRequestsForObjectChange':
-            return_results(createTicketAccessRequestsForObjectChange(zclient,demisto.args()))
+            return_results(createTicketAccessRequestsForObjectChange(ticket_client,demisto.args()))
 
         elif demisto.command() == 'skybox-tickets-implementChangeRequests':
-            return_results(implementChangeRequests(zclient, demisto.args()))
+            return_results(implementChangeRequests(ticket_client, demisto.args()))
+
+        elif demisto.command() == 'skybox-tickets-addRequireAccess':
+            return_results(addRequireAccess(network_client=network_client, ticket_client=ticket_client, args=demisto.args()))
 
 
 

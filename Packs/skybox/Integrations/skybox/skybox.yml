@@ -313,6 +313,25 @@ script:
     outputs:
     - contextPath: Skybox.Vulnerabilities
       type: Unknown
+  - arguments:
+    - default: false
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: dhostId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: dObject
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-tickets-addRequireAccess
   dockerimage: demisto/zeep:1.0.0.8900
   feed: false
   isfetch: false
