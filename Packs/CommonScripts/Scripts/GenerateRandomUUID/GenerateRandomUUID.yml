@@ -1,0 +1,19 @@
+comment: Generates  Random UUID (UUID 4)
+commonfields:
+  id: GenerateRandomUUID
+  version: -1
+enabled: true
+name: GenerateRandomUUID
+outputs:
+- contextPath: GeneratedUUID
+  description: The generated UUID.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+dockerimage: demisto/dnspython:1.0.0.12410
+fromversion: 5.0.0
