@@ -101,14 +101,6 @@ RESULT = """
 
 
 def test_evidence_dynamic_section(mocker):
-    """
-    Given:
-        - an incident with expanse latest evidence in json format
-    When
-        - Showing Expanse evidence dynamic section ins Incident layout
-    Then
-        - Evidence Data is transformed into a markdown document with hierarchical tables
-    """
     mocker.patch.object(demisto, 'incidents', return_value=[INCIDENT])
 
     result = ExpanseEvidenceDynamicSection.evidence_dynamic_section({})
