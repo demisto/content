@@ -1,0 +1,588 @@
+{
+    "group": "indicator",
+    "id": "da05eeb3-c002-40bc-8450-f2796b692b50",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 6,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-comments",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-relatedIncidents",
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 22,
+                                "id": "indicator-type",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansesha256fingerprint",
+                                "height": 22,
+                                "id": "1b54a850-0f2d-11eb-9064-8b4f430ebd51",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "expansesubjectdn",
+                                "height": 22,
+                                "id": "96b32950-0edc-11eb-a27c-f7f192fa4e0c",
+                                "index": 2,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansesans",
+                                "height": 44,
+                                "id": "8f4fd5a0-0edc-11eb-a27c-f7f192fa4e0c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "expanseissuerdn",
+                                "height": 22,
+                                "id": "9a814850-0edc-11eb-a27c-f7f192fa4e0c",
+                                "index": 4,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expanseserialnumber",
+                                "height": 22,
+                                "id": "30aedea0-0edd-11eb-a27c-f7f192fa4e0c",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansevalidnotbefore",
+                                "height": 22,
+                                "id": "4ad98820-0ee2-11eb-a27c-f7f192fa4e0c",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansevalidnotafter",
+                                "height": 22,
+                                "id": "48ac6ef0-0ee2-11eb-a27c-f7f192fa4e0c",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expiration",
+                                "height": 22,
+                                "id": "indicator-expiration",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "indicator-timestamp",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "indicator-modified",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Basic Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-indicatorTimeline",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-reputationStatus",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Reputation Status",
+                        "static": false,
+                        "type": "reputationStatus",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-expirationStatus",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-reputationSources",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Reputation",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-sources",
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Sources Data",
+                        "static": false,
+                        "type": "sources",
+                        "w": 2,
+                        "x": 0,
+                        "y": 10
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039b",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "indicator-first-seen",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseen",
+                                "height": 22,
+                                "id": "indicator-last-seen",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-5da3f6c0-0edd-11eb-a27c-f7f192fa4e0c",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansetenantname",
+                                "height": 22,
+                                "id": "7b30f760-0edd-11eb-a27c-f7f192fa4e0c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansebusinessunits",
+                                "height": 22,
+                                "id": "7e4a9370-0edd-11eb-a27c-f7f192fa4e0c",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansetags",
+                                "height": 22,
+                                "id": "8ab74540-0edd-11eb-a27c-f7f192fa4e0c",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansecertificateadvertisementstatus",
+                                "height": 22,
+                                "id": "90dc9ab0-0edd-11eb-a27c-f7f192fa4e0c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Expanse Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-24f92eb0-0f07-11eb-a27c-f7f192fa4e0c",
+                        "items": [
+                            {
+                                "args": {
+
+                                },
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "34054380-0f07-11eb-a27c-f7f192fa4e0c",
+                                "index": 0,
+                                "name": "Enrich",
+                                "scriptId": "Builtin|||enrichIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+
+                                },
+                                "buttonClass": "error",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "429104c0-0f07-11eb-a27c-f7f192fa4e0c",
+                                "index": 0,
+                                "listId": "default-main-24f92eb0-0f07-11eb-a27c-f7f192fa4e0c",
+                                "name": "Expire",
+                                "scriptId": "Builtin|||expireIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-92499ef0-0f2f-11eb-9064-8b4f430ebd51",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "feedrelatedindicators",
+                                "height": 106,
+                                "id": "ab60cee0-0f2f-11eb-9064-8b4f430ebd51",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Feed Related Indicators",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 8
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "q2e8fvdnsm",
+                "name": "Details",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "af568900-e170-4110-8118-485df84d5bbc-q2e8fvdnsm-q2e8fvdnsm-ac8c4a70-0eca-11eb-a27c-f7f192fa4e0c",
+                        "items": [
+
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Custom Details",
+                        "static": false,
+                        "type": "customDetails",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "af568900-e170-4110-8118-485df84d5bbc-q2e8fvdnsm-q2e8fvdnsm-b00f7dc0-0eca-11eb-a27c-f7f192fa4e0c",
+                        "items": [
+
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Extended Details",
+                        "static": false,
+                        "type": "extendedDetails",
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": [
+            {
+                "id": "indicator-quick-view-info",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "indicator-quick-view-info-expirationStatus",
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-reputationSources",
+                        "moved": false,
+                        "name": "Reputation",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-relatedIncidents",
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-comments",
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-4d85ab10-1ac4-11eb-b08c-559d7e2bad9c",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansetags",
+                                "height": 22,
+                                "id": "5b4c2080-1ac4-11eb-b08c-559d7e2bad9c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansecommonname",
+                                "height": 22,
+                                "id": "6e1404d0-1ac4-11eb-b08c-559d7e2bad9c",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansesubjectdn",
+                                "height": 22,
+                                "id": "71498d50-1ac4-11eb-b08c-559d7e2bad9c",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expanseissuerdn",
+                                "height": 22,
+                                "id": "72cad620-1ac4-11eb-b08c-559d7e2bad9c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansevalidnotbefore",
+                                "height": 22,
+                                "id": "760a49b0-1ac4-11eb-b08c-559d7e2bad9c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expansevalidnotafter",
+                                "height": 22,
+                                "id": "74c71b50-1ac4-11eb-b08c-559d7e2bad9c",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tags",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "ExpanseCertificate Layout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
+}

@@ -17,7 +17,24 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [],
+    "selectValues": [
+        "xsoar-ballmer",
+        "xsoar-test",
+        "{\"id\":\"ac586467-98dc-3073-831d-7557c4b0dcda\",\"name\":\"expanse identified\"}",
+        "gns",
+        "test-my-cert",
+        "test-my-iprange",
+        "prismaaccess",
+        "xsoar-ou-gpcloudservice",
+        "xsoar-false-positive",
+        "xsoar-ou-redlockdev",
+        "xsoar-ou-devrel",
+        "xsoar-ou-xsoarcs",
+        "production2",
+        "xsoar-ou-xsoardev",
+        "inap",
+        "cloudgenix"
+    ],
     "sla": 0,
     "system": false,
     "threshold": 72,
@@ -26,5 +43,5 @@
     "unsearchable": false,
     "useAsKpi": true,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.0.0"
 }

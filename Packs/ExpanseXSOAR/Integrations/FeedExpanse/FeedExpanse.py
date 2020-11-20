@@ -8,11 +8,9 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-import base64
-from datetime import datetime, timedelta
 from ipaddress import IPv4Address, AddressValueError, summarize_address_range
 from typing import (
-    Any, Dict, Optional, Iterable, List
+    Any, Dict, Optional, Iterable,
 )
 
 
@@ -84,6 +82,7 @@ class Client(BaseClient):
         next_url: Optional[str] = None
 
         while True:
+            demisto.debug(f"Calling: {next_url}")
             result = self._http_request(
                 method=method,
                 url_suffix=url_suffix,
@@ -248,16 +247,6 @@ def validate_min_last_observed(min_last_observed_param: Optional[str]) -> Option
     return start_time.strftime("%Y-%m-%d")
 
 
-def safe_b64_to_hex(i: str) -> Optional[str]:
-    if not i:
-        return None
-
-    try:
-        return base64.urlsafe_b64decode(i).hex()
-    except Exception:
-        return None
-
-
 """ INDICATORS HANDLING FUNCTIONS """
 
 
@@ -305,94 +294,69 @@ def ip_to_demisto_indicator(ip_indicator: Dict[str, Any]) -> Optional[Dict[str, 
     }
 
 
-def certificate_to_demisto_indicator(certificate: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    certificate_details = certificate.get('certificate')
-    if certificate_details is None:
+def certificate_to_demisto_indicator(cert_indicator: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    # We used pem_md5_hash here as id because that is what used by Expander
+    # this is not great as it's prone to collision, would be much better using the sha256 of the der encoded
+    # certificate but that is not available in the summary API response and the base64encoded cert is only
+    # available in the detailed view (the one with specific ID)
+    certificate = cert_indicator.get('certificate', None)
+    if certificate is None:
         return None
 
-    ec_sha256 = certificate_details.get('pemSha256')
-    if ec_sha256 is None:
-        return None
-    indicator_value = safe_b64_to_hex(ec_sha256)
-    if indicator_value is None:
+    pem_md5_hash = certificate.get('md5Hash', None)
+    if pem_md5_hash is None:
         return None
 
-    ec_md5 = certificate_details.get('md5Hash')
-    ec_sha1 = certificate_details.get('pemSha1')
-    ec_spki = certificate_details.get('publicKeySpki')
+    subject_alternative_names = certificate.get('subjectAlternativeNames', None)
 
-    ec_modulus = certificate_details.get('publicKeyModulus')
-    ec_publickey = None
-    if (pktemp := certificate_details.get('publicKey')) is not None:
-        ec_publickey = safe_b64_to_hex(pktemp)
-
-    ec_san = certificate_details.get('subjectAlternativeNames')
-
-    ec_names = set()
-    if isinstance(ec_san, str) and len(ec_san) > 0:
-        ec_names.update([san for san in ec_san.split() if len(san) != 0])
-    if (ec_subject_name := certificate_details.get('subjectName')) is not None:
-        ec_names.add(ec_subject_name)
-
-    annotations = certificate.get('annotations', {})
+    annotations = cert_indicator.get('annotations', {})
     tags = []
     if 'tags' in annotations:
         tags = [tag['name'] for tag in annotations['tags']]
 
     provider_name: Optional[str] = None
-    providers = certificate.get('providers', None)
-    if isinstance(providers, list) and len(providers) > 0:
-        provider_name = providers[0].get('name', None)
+    provider = cert_indicator.get('provider', None)
+    if provider is not None:
+        provider_name = provider.get('name', None)
 
     tenant_name: Optional[str] = None
-    tenant = certificate.get('tenant', None)
+    tenant = cert_indicator.get('tenant', None)
     if tenant is not None:
         tenant_name = tenant.get('name', None)
 
     business_unit_names: List[str] = []
-    business_units = certificate.get("businessUnits", [])
+    business_units = cert_indicator.get("businessUnits", [])
     for bu in business_units:
         if 'name' not in bu:
             continue
         business_unit_names.append(bu['name'])
 
+    # to faciliate classifiers
+    cert_indicator['expanseType'] = 'certificate'
+
     return {
-        'type': 'Certificate',
-        'value': indicator_value,
-        'rawJSON': certificate,
+        'type': 'ExpanseCertificate',
+        'value': pem_md5_hash,
+        'rawJSON': cert_indicator,
         'score': Common.DBotScore.NONE,
         'fields': {
-            # standard context
-            "serialnumber": certificate_details.get('serialNumber'),
-            "certificatenames": '\n'.join(sorted(list(ec_names))) if ec_names else None,
-            "subjectdn": certificate_details.get('subject'),
-            "certificatesignature": {'algorithm': certificate_details.get('signatureAlgorithm')},
-            "subjectalternativenames": [{'value': san} for san in ec_san.split() if len(san) != 0] if ec_san else None,
-            "validitynotafter": certificate_details.get('validNotAfter'),
-            "spkisha256": safe_b64_to_hex(ec_spki) if ec_spki else None,
-            "validitynotbefore": certificate_details.get('validNotBefore'),
-            "publickey": {
-                "algorithm": certificate_details.get('publicKeyAlgorithm'),
-                "length": certificate_details.get('publicKeyBits'),
-                "modulus": ':'.join([ec_modulus[i:i + 2] for i in range(0, len(ec_modulus), 2)]) if ec_modulus else None,
-                "exponent": certificate_details.get('publicKeyRsaExponent'),
-                "publickey": ':'.join([ec_publickey[i:i + 2] for i in range(0, len(ec_publickey), 2)]) if ec_publickey else None
-            },
-            "issuerdn": certificate_details.get('issuer'),
-            "md5": safe_b64_to_hex(ec_md5) if ec_md5 else None,
-            "sha1": safe_b64_to_hex(ec_sha1) if ec_sha1 else None,
-            "sha256": indicator_value,
-
-            # expanse specific
+            'expansepemmd5hash': pem_md5_hash,
             'expansetags': tags,
-            'expansecertificateadvertisementstatus': certificate.get('certificateAdvertisementStatus', None),
-            'expansedateadded': certificate.get('dateAdded', None),
-            'expansefirstobserved': certificate.get('firstObserved', None),
-            'firstseenbysource': certificate.get('firstObserved', None),
-            'expanselastobserved': certificate.get('lastObserved', None),
-            'lastseenbysource': certificate.get('lastObserved', None),
-            'expanseproperties': '\n'.join(certificate.get('properties', [])),
-            'expanseservicestatus': certificate.get('serviceStatus', None),
+            'expansecertificateadvertisementstatus': cert_indicator.get('certificateAdvertisementStatus', None),
+            'expansecommonname': cert_indicator.get('commonName', None),
+            'expansesans': None if subject_alternative_names is None else '\n'.join(subject_alternative_names.split(' ')),
+            'expanseserialnumber': certificate.get('serialNumber', None),
+            'expansesubjectdn': certificate.get('subject', None),
+            'expanseissuerdn': certificate.get('issuer', None),
+            'expansevalidnotafter': certificate.get('validNotAfter', None),
+            'expansevalidnotbefore': certificate.get('validNotBefore', None),
+            'expansedateadded': cert_indicator.get('dateAdded', None),
+            'expansefirstobserved': cert_indicator.get('firstObserved', None),
+            'firstseenbysource': cert_indicator.get('firstObserved', None),
+            'expanselastobserved': cert_indicator.get('lastObserved', None),
+            'lastseenbysource': cert_indicator.get('lastObserved', None),
+            'expanseproperties': '\n'.join(cert_indicator.get('properties', [])),
+            'expanseservicestatus': cert_indicator.get('serviceStatus', None),
             'expanseprovidername': provider_name,
             'expansetenantname': tenant_name,
             'expansebusinessunits': business_unit_names
@@ -668,15 +632,14 @@ def get_indicators_command(client: Client, args: Dict[str, Any],
     readable_output = tableToMarkdown(
         f'Expanse Indicators (capped at {max_indicators})',
         indicators,
-        headers=['value', 'type']
+        headers=['value', 'type', 'rawJSON', 'score']
     )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=None,
-        outputs_key_field=None,
-        outputs=None,
-        raw_response=indicators
+        outputs_prefix="Expanse.Indicator",
+        outputs_key_field=["value", "type"],
+        outputs=indicators
     )
 
 

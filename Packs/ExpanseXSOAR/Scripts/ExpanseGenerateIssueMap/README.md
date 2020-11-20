@@ -8,7 +8,7 @@ This widget script generates a map of the Open Expanse Issue Incidents with prov
 | --- | --- |
 | Script Type | python3 |
 | Tags | widget |
-| Demisto Version | 6.0.0 |
+| Demisto Version | 5.0.0 |
 
 ## Inputs
 ---

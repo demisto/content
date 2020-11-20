@@ -1,22 +1,22 @@
-id: Expanse Attribution Subplaybook
-version: -1
+id: 1a8bd8bd-9e41-465b-81e3-e3a9c51402d5
+version: 175
+vcShouldKeepItemLegacyProdMachine: false
 name: Expanse Attribution Subplaybook
-description: "Given an Expanse Asset, Issue IP, Issue Provider, Issue Domain, Issue\
-  \ Port and Issue Protocol hunts for internal activity on the detected service. \n\
-  Returns a list of potential owner BUs, owner Users, Device and Notes"
+description: "Given an Ember Asset, Issue IP, Issue Provider, Issue Domain, Issue
+  Port and Issue Protocol hunts for internal activity on the detected service. \nReturns
+  a list of potential owner BUs, owner Users, Device and Notes"
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cef3ae52-74fb-4534-8be5-976b4e61264a
+    taskid: 9c3507eb-7fa0-4843-88c1-0d370daec2b0
     type: start
     task:
-      id: cef3ae52-74fb-4534-8be5-976b4e61264a
+      id: 9c3507eb-7fa0-4843-88c1-0d370daec2b0
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -37,16 +37,15 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 934e2c63-b53e-4788-81fb-b6d0df0de6cd
+    taskid: 3bffbcfe-d6f0-4b10-8530-55eb03198cff
     type: title
     task:
-      id: 934e2c63-b53e-4788-81fb-b6d0df0de6cd
+      id: 3bffbcfe-d6f0-4b10-8530-55eb03198cff
       version: -1
       name: Splunk
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -65,16 +64,15 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 9c139393-f893-4511-878b-52c743a8a04c
+    taskid: cf1a207e-a20f-4f12-8256-e1c905d8bc34
     type: title
     task:
-      id: 9c139393-f893-4511-878b-52c743a8a04c
+      id: cf1a207e-a20f-4f12-8256-e1c905d8bc34
       version: -1
       name: User Enrichment
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -93,10 +91,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: e67201d6-678b-4909-868d-63102f2b599a
+    taskid: a1605e79-861f-4621-80da-566372d50861
     type: regular
     task:
-      id: e67201d6-678b-4909-868d-63102f2b599a
+      id: a1605e79-861f-4621-80da-566372d50861
       version: -1
       name: Splunk Hunt For Users To IP
       description: Searches Splunk for events.
@@ -184,10 +182,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 2cb37411-0164-4129-8f38-78d686eab1ff
+    taskid: ea42db64-ef25-4bee-85cf-33f65ff184a3
     type: regular
     task:
-      id: 2cb37411-0164-4129-8f38-78d686eab1ff
+      id: ea42db64-ef25-4bee-85cf-33f65ff184a3
       version: -1
       name: Splunk Hunt For Unknown Users To IP
       description: Searches Splunk for events.
@@ -275,13 +273,12 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: d7a32f40-f1cb-4e12-8dd1-2a0ba78b2012
+    taskid: 286d8d35-a3e9-4e0b-8a47-00017a2eb4f0
     type: condition
     task:
-      id: d7a32f40-f1cb-4e12-8dd1-2a0ba78b2012
+      id: 286d8d35-a3e9-4e0b-8a47-00017a2eb4f0
       version: -1
       name: Is Splunk Enabled?
-      description: Check if Splunk integration is enabled
       type: condition
       iscommand: false
       brand: ""
@@ -332,16 +329,15 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: b5c227ac-0618-4bf8-8782-a8c83aa9c6cf
+    taskid: 56ca853b-0fcb-462b-88fd-ebf238abf66b
     type: title
     task:
-      id: b5c227ac-0618-4bf8-8782-a8c83aa9c6cf
+      id: 56ca853b-0fcb-462b-88fd-ebf238abf66b
       version: -1
       name: Cortex Data Lake
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -360,13 +356,12 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 00484cea-bd5a-49bb-8c98-ad457c79f380
+    taskid: c5dd8d70-512a-4e30-8d38-3d37c191a0b0
     type: condition
     task:
-      id: 00484cea-bd5a-49bb-8c98-ad457c79f380
+      id: c5dd8d70-512a-4e30-8d38-3d37c191a0b0
       version: -1
       name: Is Cortex Data Lake Enabled?
-      description: Check if Cortex Data Lake is enabled
       type: condition
       iscommand: false
       brand: ""
@@ -374,8 +369,7 @@ tasks:
       '#default#':
       - "35"
       "yes":
-      - "13"
-      - "12"
+      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -417,10 +411,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 92be78c3-8009-4946-89d9-e41416236165
+    taskid: 51f1cacd-a3f5-4856-83c8-3e340861ae7a
     type: regular
     task:
-      id: 92be78c3-8009-4946-89d9-e41416236165
+      id: 51f1cacd-a3f5-4856-83c8-3e340861ae7a
       version: -1
       name: Cortex Data Lake Hunt for Unknown Users To IP
       description: Runs a query on  any table or field.
@@ -432,8 +426,10 @@ tasks:
       '#none#':
       - "45"
     scriptarguments:
+      extend-context:
+        simple: CDLResult=page.result.data
       ignore-outputs:
-        simple: "false"
+        simple: "true"
       limit:
         simple: "100"
       query:
@@ -489,8 +485,6 @@ tasks:
               suffix:
                 value:
                   simple: ' GROUP BY log_source_id, vsys, src_ip'
-      transform_results:
-        simple: "No"
     separatecontext: false
     view: |-
       {
@@ -506,10 +500,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 17da2748-742f-4759-868c-929cfa8e6a09
+    taskid: fcf1f5a1-99f0-47e2-8b70-6018ccd8ddc0
     type: regular
     task:
-      id: 17da2748-742f-4759-868c-929cfa8e6a09
+      id: fcf1f5a1-99f0-47e2-8b70-6018ccd8ddc0
       version: -1
       name: Cortex Data Lake Hunt for Users To IP
       description: Runs a query on  any table or field.
@@ -521,8 +515,10 @@ tasks:
       '#none#':
       - "45"
     scriptarguments:
+      extend-context:
+        simple: CDLResult=page.result.data
       ignore-outputs:
-        simple: "false"
+        simple: "true"
       limit:
         simple: "100"
       query:
@@ -578,8 +574,6 @@ tasks:
               suffix:
                 value:
                   simple: ' GROUP BY log_source_id,vsys,source_user'
-      transform_results:
-        simple: "No"
     separatecontext: false
     view: |-
       {
@@ -595,19 +589,15 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: d2bc0870-caa6-454b-821e-6d32739d5b8c
+    taskid: 120c2611-4262-4de8-8886-cd1283d90d45
     type: title
     task:
-      id: d2bc0870-caa6-454b-821e-6d32739d5b8c
+      id: 120c2611-4262-4de8-8886-cd1283d90d45
       version: -1
       name: Panorama
       type: title
       iscommand: false
       brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "18"
     separatecontext: false
     view: |-
       {
@@ -623,13 +613,12 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 873cf6d8-9d64-4249-85a5-f827154229f2
+    taskid: 55107f4c-504a-445e-8803-976160bf3138
     type: condition
     task:
-      id: 873cf6d8-9d64-4249-85a5-f827154229f2
+      id: 55107f4c-504a-445e-8803-976160bf3138
       version: -1
       name: Is Panorama Enabled?
-      description: Check if Panorama/PAN-OS is enabled
       type: condition
       iscommand: false
       brand: ""
@@ -637,7 +626,7 @@ tasks:
       '#default#':
       - "36"
       "yes":
-      - "25"
+      - "29"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -679,15 +668,15 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 51b562e8-4853-4f33-889d-6cd35af92f87
+    taskid: 5480051f-8589-437f-8430-00b2dc65af61
     type: playbook
     task:
-      id: 51b562e8-4853-4f33-889d-6cd35af92f87
+      id: 5480051f-8589-437f-8430-00b2dc65af61
       version: -1
-      name: Panorama Query Logs
+      name: Panorama Query Logs - Src IPs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
-      playbookName: Panorama Query Logs
+      playbookName: Panorama Query Logs - Extended
       type: playbook
       iscommand: false
       brand: ""
@@ -746,7 +735,8 @@ tasks:
       rule: {}
       time-generated: {}
       url: {}
-      using: {}
+      using:
+        simple: ${inputs.PanoramaLogInstance}
       zone-dst: {}
       zone-src: {}
     separatecontext: true
@@ -759,7 +749,7 @@ tasks:
       {
         "position": {
           "x": 1900,
-          "y": 720
+          "y": 1090
         }
       }
     note: false
@@ -769,21 +759,21 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 55ab8ad0-a957-48bb-8223-549ab6fa29b6
+    taskid: 444dcd86-5078-4bce-8f6c-174050757bc5
     type: playbook
     task:
-      id: 55ab8ad0-a957-48bb-8223-549ab6fa29b6
+      id: 444dcd86-5078-4bce-8f6c-174050757bc5
       version: -1
-      name: Panorama Query Logs
+      name: Panorama Query Logs - Users
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
-      playbookName: Panorama Query Logs
+      playbookName: Panorama Query Logs - Extended
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "37"
     scriptarguments:
       action: {}
       addr-dst: {}
@@ -848,6 +838,79 @@ tasks:
       {
         "position": {
           "x": 1900,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 3f7fcb4e-a9be-40c7-8e6d-97beb575a244
+    type: regular
+    task:
+      id: 3f7fcb4e-a9be-40c7-8e6d-97beb575a244
+      version: -1
+      name: Create Empty CDLResult
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+      - "12"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CDLResult
+      stringify: {}
+      value:
+        simple: '[]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1185,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 2f5be729-8295-498c-8708-3ab88e36e182
+    type: regular
+    task:
+      id: 2f5be729-8295-498c-8708-3ab88e36e182
+      version: -1
+      name: Create Empty PanoramaResult
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      append: {}
+      key:
+        simple: PanoramaResult
+      stringify: {}
+      value:
+        simple: '[]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1900,
           "y": 530
         }
       }
@@ -858,16 +921,15 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: bed21409-50ea-4507-8273-1c945c981e9e
+    taskid: ea6ac8f3-fcb6-4231-8ee9-e45d9b58008c
     type: title
     task:
-      id: bed21409-50ea-4507-8273-1c945c981e9e
+      id: ea6ac8f3-fcb6-4231-8ee9-e45d9b58008c
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -883,13 +945,12 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 4c29bb80-150b-4b91-8ecd-4c7bb6c50aba
+    taskid: 290a4c98-c4ca-4f5b-87a0-8c9cce9384d2
     type: condition
     task:
-      id: 4c29bb80-150b-4b91-8ecd-4c7bb6c50aba
+      id: 290a4c98-c4ca-4f5b-87a0-8c9cce9384d2
       version: -1
       name: Is AD Enabled And We Have Users?
-      description: Check if AD is enabled & we have users to enrich
       type: condition
       iscommand: false
       brand: ""
@@ -949,10 +1010,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: bdc6f7d9-f8d6-4b20-8a3d-f0cc274a0c31
+    taskid: 35028d11-398d-465f-8059-4f7f647b53ff
     type: regular
     task:
-      id: bdc6f7d9-f8d6-4b20-8a3d-f0cc274a0c31
+      id: 35028d11-398d-465f-8059-4f7f647b53ff
       version: -1
       name: Retrieve Details From AD
       description: Retrieves detailed information about a user account. The user can
@@ -994,10 +1055,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 2ad37863-8384-4adb-8e77-4a393327d337
+    taskid: 297978d9-2cdc-4d61-85e0-3b251fe5aa56
     type: regular
     task:
-      id: 2ad37863-8384-4adb-8e77-4a393327d337
+      id: 297978d9-2cdc-4d61-85e0-3b251fe5aa56
       version: -1
       name: Export Enriched Users
       description: Expanse Enrich Attribution Data Structure with additional details
@@ -1014,7 +1075,7 @@ tasks:
       enrich:
         simple: ${ActiveDirectory.Users}
       enrich_fields:
-        simple: mExpanseOf=groups,description,manager,mail
+        simple: memberOf=groups,description,manager,mail
       enrich_key:
         simple: sAMAccountName
       type:
@@ -1034,16 +1095,15 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 90762ee5-e646-4851-8a86-0238c020cbb2
+    taskid: 16d14578-74e4-4823-8d22-9f78c8191786
     type: title
     task:
-      id: 90762ee5-e646-4851-8a86-0238c020cbb2
+      id: 16d14578-74e4-4823-8d22-9f78c8191786
       version: -1
       name: Splunk Not Enabled
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -1059,16 +1119,15 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: a67d69b0-d8a9-4d0d-802e-3011fadb14e1
+    taskid: 462dcabf-12e4-4b45-8010-620b685e8caf
     type: title
     task:
-      id: a67d69b0-d8a9-4d0d-802e-3011fadb14e1
+      id: 462dcabf-12e4-4b45-8010-620b685e8caf
       version: -1
       name: Cortex Data Lake Not Enabled
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -1084,16 +1143,15 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 5113b5db-ee10-4449-87e5-e11bfc1cf3c2
+    taskid: a650d685-23d7-4fc2-82e0-ce51ddbbbd0b
     type: title
     task:
-      id: 5113b5db-ee10-4449-87e5-e11bfc1cf3c2
+      id: a650d685-23d7-4fc2-82e0-ce51ddbbbd0b
       version: -1
       name: Panorama Not Enabled
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -1107,18 +1165,54 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "37":
+    id: "37"
+    taskid: 1c8135c9-944a-4beb-8a62-59b61a5e05b6
+    type: regular
+    task:
+      id: 1c8135c9-944a-4beb-8a62-59b61a5e05b6
+      version: -1
+      name: Save PanoramaResult
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PanoramaResultUser
+      stringify: {}
+      value:
+        simple: ${PanoramaResult}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "38":
     id: "38"
-    taskid: 953825de-2185-473b-8a77-d44f225afff0
+    taskid: 573fb882-41f7-43e3-841a-35cdc09001fa
     type: title
     task:
-      id: 953825de-2185-473b-8a77-d44f225afff0
+      id: 573fb882-41f7-43e3-841a-35cdc09001fa
       version: -1
       name: Device Enrichmnent
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -1137,13 +1231,12 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: eebf5429-e3c8-46e2-851e-7edb9b78eac6
+    taskid: c0db48d4-dd12-474b-8318-77bd33cdca85
     type: condition
     task:
-      id: eebf5429-e3c8-46e2-851e-7edb9b78eac6
+      id: c0db48d4-dd12-474b-8318-77bd33cdca85
       version: -1
       name: Is Panorama Enabled And We Have Devices?
-      description: Check if Panorama/PAN-OS is enabled & we have device to enrich
       type: condition
       iscommand: false
       brand: ""
@@ -1203,10 +1296,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: e9dc3760-510e-4d43-8db5-d1b1256f5adf
+    taskid: 104dd1bf-d784-4436-860a-7cdacd26c033
     type: regular
     task:
-      id: e9dc3760-510e-4d43-8db5-d1b1256f5adf
+      id: 104dd1bf-d784-4436-860a-7cdacd26c033
       version: -1
       name: Retrieve Device Groups
       description: Run any command supported in the API.
@@ -1262,10 +1355,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: d6342a57-c6f3-424f-8081-46036bcddad0
+    taskid: 542aaf68-4d3d-42b0-8460-8cd3448b9e1c
     type: regular
     task:
-      id: d6342a57-c6f3-424f-8081-46036bcddad0
+      id: 542aaf68-4d3d-42b0-8460-8cd3448b9e1c
       version: -1
       name: Enrich Attribution Device
       description: Expanse Enrich Attribution Data Structure with additional details
@@ -1309,16 +1402,15 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: ee832525-161f-4468-85bf-446638713f42
+    taskid: 75b58e3e-a54d-4bc2-8323-392125aaf03f
     type: title
     task:
-      id: ee832525-161f-4468-85bf-446638713f42
+      id: 75b58e3e-a54d-4bc2-8323-392125aaf03f
       version: -1
       name: Cortex Data Lake Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -1337,16 +1429,15 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 41733d10-c018-431d-88a6-4e88669df278
+    taskid: 166e6a79-57ed-43a9-8632-02b1339d2e20
     type: title
     task:
-      id: 41733d10-c018-431d-88a6-4e88669df278
+      id: 166e6a79-57ed-43a9-8632-02b1339d2e20
       version: -1
       name: Splunk Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -1365,16 +1456,15 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: af061842-fdc4-4295-8e12-e37b9df9ab55
+    taskid: 1a3b125c-0268-4d92-86ad-59a0e9ad5928
     type: title
     task:
-      id: af061842-fdc4-4295-8e12-e37b9df9ab55
+      id: 1a3b125c-0268-4d92-86ad-59a0e9ad5928
       version: -1
       name: Panorama Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -1383,7 +1473,7 @@ tasks:
       {
         "position": {
           "x": 1900,
-          "y": 925
+          "y": 1270
         }
       }
     note: false
@@ -1393,16 +1483,15 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 6d0d754f-9a39-4451-8062-fd36eaa9cb2f
+    taskid: b2d3abd9-fcb3-4166-87b5-5d0fef4710a3
     type: title
     task:
-      id: 6d0d754f-9a39-4451-8062-fd36eaa9cb2f
+      id: b2d3abd9-fcb3-4166-87b5-5d0fef4710a3
       version: -1
       name: Aggregation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -1423,10 +1512,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: ec6ebd75-e0b5-4706-8314-fd225f78c543
+    taskid: b58ee50f-cec5-4987-88d9-51d84f98ed43
     type: regular
     task:
-      id: ec6ebd75-e0b5-4706-8314-fd225f78c543
+      id: b58ee50f-cec5-4987-88d9-51d84f98ed43
       version: -1
       name: Aggregate Attribution Device Result
       description: Aggregate entries from multiple sources into AttributionDevice
@@ -1451,21 +1540,25 @@ tasks:
             args:
               item:
                 value:
-                  simple: CDL.Logging
+                  simple: CDLResult
                 iscontext: true
           - operator: append
             args:
               item:
                 value:
-                  simple: Panorama.Monitor.Logs
+                  simple: PanoramaResult
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PanoramaResultUser
                 iscontext: true
       internal_ip_networks: {}
-      serial_fields:
-        simple: serial_number,serial,log_source_id,DeviceSN
+      serial_fields: {}
       sightings_fields: {}
       source_ip_fields: {}
-      vsys_fields:
-        simple: vsys,Vsys
+      vsys_fields: {}
     separatecontext: false
     view: |-
       {
@@ -1481,10 +1574,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 394bd3fa-8590-417e-8204-9551c50b121b
+    taskid: fd4bacab-c084-4b43-8aa5-80f2775e7ac9
     type: regular
     task:
-      id: 394bd3fa-8590-417e-8204-9551c50b121b
+      id: fd4bacab-c084-4b43-8aa5-80f2775e7ac9
       version: -1
       name: Aggregate Attribution IP Result
       description: Aggregate entries from multiple sources into AttributionIP
@@ -1509,18 +1602,17 @@ tasks:
             args:
               item:
                 value:
-                  simple: CDL.Logging
+                  simple: CDLResult
                 iscontext: true
           - operator: append
             args:
               item:
                 value:
-                  simple: Panorama.Monitor.Logs
+                  simple: PanoramaResult
                 iscontext: true
       internal_ip_networks: {}
       sightings_fields: {}
-      source_ip_fields:
-        simple: src,src_ip,SourceAddress
+      source_ip_fields: {}
     separatecontext: false
     view: |-
       {
@@ -1536,10 +1628,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: fd633ddf-f4ef-4823-8d20-28f91ee8bd35
+    taskid: 7a1fa99f-f9e9-426b-8cc1-758873bee8b2
     type: regular
     task:
-      id: fd633ddf-f4ef-4823-8d20-28f91ee8bd35
+      id: 7a1fa99f-f9e9-426b-8cc1-758873bee8b2
       version: -1
       name: Aggregate Attribution User Result
       description: Aggregate entries from multiple sources into AttributionUser
@@ -1564,17 +1656,16 @@ tasks:
             args:
               item:
                 value:
-                  simple: CDL.Logging
+                  simple: CDLResult
                 iscontext: true
           - operator: append
             args:
               item:
                 value:
-                  simple: Panorama.Monitor.Logs
+                  simple: PanoramaResultUser
                 iscontext: true
       sightings_fields: {}
-      username_fields:
-        simple: source_user,srcuser,user,SourceUser
+      username_fields: {}
     separatecontext: false
     view: |-
       {
@@ -1603,40 +1694,40 @@ view: |-
 inputs:
 - key: Asset
   value:
-    simple: ${incident.expanseasset[0]}
+    simple: ${incident.labels.assets[0]}
   required: false
-  description: Expanse Asset
-  playbookInputQuery:
+  description: Ember Asset
+  playbookInputQuery: null
 - key: IP
   value:
-    simple: ${incident.expanseip}
+    simple: ${incident.labels.ip}
   required: true
-  description: Expanse Issue IP
-  playbookInputQuery:
+  description: Ember Issue IP
+  playbookInputQuery: null
 - key: Domain
   value:
-    simple: ${incident.expansedomain}
+    simple: ${incident.labels.domain}
   required: false
-  description: Expanse Issue Domain
-  playbookInputQuery:
+  description: Ember Issue Domain
+  playbookInputQuery: null
 - key: Provider
   value:
-    simple: ${incident.expanseprovider}
+    simple: ${incident.labels.providers[0].name}
   required: false
-  description: Expanse Issue Provider
-  playbookInputQuery:
+  description: Ember Issue Provider
+  playbookInputQuery: null
 - key: Port
   value:
-    simple: ${incident.expanseport}
-  required: true
-  description: Expanse Issue Port
-  playbookInputQuery:
+    simple: ${incident.labels.portNumber}
+  required: false
+  description: Ember Issue Port
+  playbookInputQuery: null
 - key: Protocol
   value:
-    simple: ${incident.expanseprotocol}
-  required: true
-  description: Expanse Issue Protocol
-  playbookInputQuery:
+    simple: ${incident.labels.portProtocol}
+  required: false
+  description: Ember Issue Protocol
+  playbookInputQuery: null
 - key: InternalIPRange
   value: {}
   required: false
@@ -1645,13 +1736,13 @@ inputs:
     ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges
     is not provided, the list provided in the IsIPInRanges script (the known IPv4
     private address ranges) is used by default.'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: NumberOfDaysInThePast
   value:
     simple: "7"
   required: false
   description: Number of days to look back to for logs.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Expanse.AttributionIP
   description: IP addresses
@@ -1661,7 +1752,4 @@ outputs:
   type: unknown
 - contextPath: Expanse.AttributionUser
   description: Users
-  type: Unknown
-tests:
-- No tests (auto formatted)
-fromversion: 6.0.0
+  type: string

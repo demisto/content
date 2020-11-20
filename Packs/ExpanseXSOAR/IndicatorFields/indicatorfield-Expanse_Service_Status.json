@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Certificate",
+        "ExpanseCertificate",
         "DomainGlob",
         "Domain"
     ],
@@ -19,7 +19,14 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [],
+    "selectValues": [
+        "NO_ACTIVE_SERVICE",
+        "NO_ACTIVE_ON_PREM_SERVICE",
+        "NO_ACTIVE_CLOUD_SERVICE",
+        "HAS_ACTIVE_SERVICE",
+        "HAS_ACTIVE_ON_PREM_SERVICE",
+        "HAS_ACTIVE_CLOUD_SERVICE"
+    ],
     "sla": 0,
     "system": false,
     "threshold": 72,
@@ -28,5 +35,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.0.0"
 }

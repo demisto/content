@@ -109,7 +109,6 @@ tasks:
       name: Are assets in Prisma Cloud found?
       type: condition
       version: -1
-      description: Check if Prisma Cloud assets are present
     taskid: 659602ca-fdfd-4b6c-8d6b-2e3481101345
     timertriggers: []
     type: condition
@@ -373,7 +372,6 @@ tasks:
       name: Prisma Cloud Alerts found?
       type: condition
       version: -1
-      description: Check if Prisma Cloud alerts were found
     taskid: dd6c89cf-3f57-4f65-8633-cfbc7fcd46cf
     timertriggers: []
     type: condition
@@ -422,7 +420,6 @@ tasks:
       name: Are we linking found Prisma Cloud Incidents?
       type: condition
       version: -1
-      description: Check if we should link Prisma Cloud incidents to the current incident.
     taskid: 4eacb327-5a69-4f7a-8d47-f6bd17036d53
     timertriggers: []
     type: condition
@@ -478,7 +475,6 @@ tasks:
       name: Is Prisma Cloud enabled?
       type: condition
       version: -1
-      description: Check if the Prisma Cloud integration is enabled
     taskid: 956d1726-3eb8-48b0-8409-ff00fa2bbfb6
     timertriggers: []
     type: condition
@@ -508,4 +504,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 5.0.0

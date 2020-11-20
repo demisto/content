@@ -17,7 +17,7 @@ args:
 commonfields:
   id: ExpanseGenerateIssueMap
   version: -1
-dockerimage: demisto/chromium:1.0.0.13616
+dockerimage: demisto/chromium:1.0.0.13181
 enabled: true
 name: ExpanseGenerateIssueMap
 runas: DBotWeakRole
@@ -28,5 +28,5 @@ subtype: python3
 tags:
 - widget
 type: python
-fromversion: 6.0.0
+fromversion: 5.0.0
 tests: []
