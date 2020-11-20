@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "ExpanseCertificate"
+    ],
+    "caseInsensitive": true,
+    "cliName": "expansecertificateadvertisementstatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_expansecertificateadvertisementstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Expanse Certificate Advertisement Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "[\"HAS_CERTIFICATE_ADVERTISEMENT\"]",
+        "HAS_CERTIFICATE_ADVERTISEMENT",
+        "[\"NO_CERTIFICATE_ADVERTISEMENT\"]",
+        "NO_CERTIFICATE_ADVERTISEMENT"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

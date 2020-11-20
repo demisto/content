@@ -1,0 +1,52 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "ac728d3c-5ab0-4968-8f4e-ad29b09ca10d",
+    "isPredefined": true,
+    "name": "Open Issues",
+    "params": {
+        "tableColumns": [
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "id",
+                "width": 110
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "name",
+                "width": 300
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "severity",
+                "width": 80
+            },
+            {
+                "displayed": true,
+                "key": "Expanse Category",
+                "width": 200
+            }
+        ]
+    },
+    "query": "type:\"Expanse Issue\" and (severity:High or severity:Critical or severity:Medium) -status:Closed",
+    "size": 0,
+    "version": -1,
+    "widgetType": "table",
+    "fromVersion": "5.0.0",
+    "description": ""
+}

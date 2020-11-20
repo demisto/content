@@ -1,0 +1,1800 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ExpanseV2
+  version: -1
+configuration:
+- defaultvalue: https://expander.expanse.co
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  additionalinfo: The API Key to use for connection
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch additional incident (Asset tags, Attribution Reasons)
+  hidden: false
+  name: fetch_details
+  required: false
+  defaultvalue: false
+  type: 8
+- display: Fetch risky flows from Expanse Behavior
+  hidden: false
+  name: fetch_behavior
+  required: false
+  defaultvalue: false
+  type: 8
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0  
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Fetch issues with priority
+  name: priority
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  type: 16
+- display: Fetch issues with Activity Status
+  defaultvalue: Active
+  name: activityStatus
+  options:
+  - Active
+  - Inactive
+  required: false
+  type: 16
+- display: Fetch issues with Progress Status
+  name: progressStatus
+  options:
+  - New
+  - Investigating
+  - InProgress
+  - AcceptableRisk
+  - Resolved
+  required: false
+  type: 16  
+- display: Fetch issues with Business Units (comma separated)
+  name: businessUnit
+  required: false
+  type: 0
+- display: Fetch issues with Tags (comma separated)
+  name: tag
+  required: false
+  type: 0
+- defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Both
+  required: false
+  type: 15  
+- display: Sync Incident Owners
+  hidden: false
+  name: sync_owners
+  required: false
+  defaultvalue: false
+  type: 8
+- display: Tag(s) to assign to incoming mirrored comments (comma separated)
+  name: incoming_tags
+  required: false
+  type: 0
+  defaultvalue: FromExpanse
+- display: Mirror out Entries with tag(s) (comma separated)
+  name: sync_tags
+  required: false
+  type: 0  
+description: Expanse Expander V2
+display: Expanse v2
+name: ExpanseV2
+script:
+  commands:
+  - name: expanse-get-issues
+    description: Retrieve issues
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Maximum number of issues to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: content_search
+      isArray: false
+      name: content_search
+      required: false
+      secret: false
+    - default: false
+      description: provider
+      isArray: true
+      name: provider
+      required: false
+      secret: false
+    - default: false
+      description: business_unit
+      isArray: true
+      name: business_unit
+      required: false
+      secret: false
+    - default: false
+      description: assignee
+      isArray: true
+      name: assignee
+      required: false
+      secret: false
+    - default: false
+      description: issue_type
+      isArray: true
+      name: issue_type
+      required: false
+      secret: false 
+    - default: false
+      description: inet_search
+      isArray: false
+      name: inet_search
+      required: false
+      secret: false
+    - default: false
+      description: domain_search
+      isArray: false
+      name: domain_search
+      required: false
+      secret: false         
+    - default: false
+      description: port_number
+      isArray: true
+      name: port_number
+      required: false
+      secret: false        
+    - default: false
+      description: progress_status
+      isArray: true
+      name: progress_status
+      required: false
+      secret: false
+    - default: false
+      description: activity_status
+      isArray: true
+      name: activity_status
+      required: false
+      secret: false
+    - default: false
+      description: tag
+      isArray: true
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: created_before
+      isArray: false
+      name: created_before
+      required: false
+      secret: false       
+    - default: false
+      description: created_after
+      isArray: false
+      name: created_after
+      required: false
+      secret: false 
+    - default: false
+      description: modified_before
+      isArray: false
+      name: modified_before
+      required: false
+      secret: false       
+    - default: false
+      description: modified_after
+      isArray: false
+      name: modified_after
+      required: false
+      secret: false    
+    - default: false
+      description: sort
+      isArray: false
+      auto: PREDEFINED
+      name: sort
+      required: true
+      secret: false
+      defaultValue: created
+      predefined:
+      - created
+      - -created
+      - modified
+      - -modified
+      - activityStatus
+      - -assigneeUsername
+      - priority
+      - -priority
+      - progressStatus
+      - -progressStatus
+      - activityStatus
+      - -activityStatus
+      - headline
+      - -headline
+    outputs:
+    - contextPath: Expanse.Issue.id
+      description: 'Expanse Issue ID'
+      type: String
+  - name: expanse-get-issue-updates
+    description: Retrieve issue updates
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Expanse issue ID to retrieve updates for
+      isArray: false
+      name: issue_id
+      required: true
+      secret: false
+    - default: false
+      description: Update types (comma separated). Valid options are Assignee, Comment, Priority, ProgressStatus, ActivityStatus
+      isArray: false
+      name: update_types
+      required: false
+      secret: false
+    - default: false
+      description: Created after
+      isArray: false
+      name: created_after
+      required: false
+      secret: false
+    outputs:
+    - contextPath: Expanse.IssueUpdate.id
+      description: 'Expanse Issue Update ID'
+      type: String
+  - name: expanse-get-issue-comments
+    description: Retrieve issue comments (subset of updates)
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Expanse issue ID to retrieve comments for
+      isArray: false
+      name: issue_id
+      required: true
+      secret: false
+    - default: false
+      description: Created after
+      isArray: false
+      name: created_after
+      required: false
+      secret: false
+    outputs:
+    - contextPath: Expanse.IssueComment.id
+      description: 'Expanse Issue Comment ID'
+      type: String
+  - name: expanse-update-issue
+    description: Update Expanse issue.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Issue ID to update
+      isArray: false
+      name: issue_id
+      required: true
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      predefined:
+      - 'Assignee'
+      - 'Comment'
+      - 'Priority'
+      - 'ProgressStatus'
+      description: Update type
+      isArray: true
+      name: update_type
+      defaultValue: false
+      required: true
+      secret: false      
+    - default: false
+      description: New value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    outputs:
+    - contextPath: Expanse.IssueUpdate.id
+      description: 'Expanse Issue Update ID'
+      type: String
+  - name: expanse-get-issue
+    description: Retrieve issue by ID
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Issue ID to retrieve
+      isArray: false
+      name: issue_id
+      required: true
+      secret: false
+    outputs:
+    - contextPath: Expanse.Issue.activityStatus
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.assets.assetKey
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.assets.assetType
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.assets.displayName
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.assets.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.assigneeUsername
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.businessUnits.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.businessUnits.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.category
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.issuer
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.issuerAlternativeNames
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.issuerCountry
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.issuerEmail
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.certificate.issuerLocality
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.issuerName
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.issuerOrg
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.issuerOrgUnit
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.certificate.issuerState
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.md5Hash
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.pemSha1
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.pemSha256
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.publicKey
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.publicKeyAlgorithm
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.publicKeyBits
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.certificate.publicKeyModulus
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.publicKeyRsaExponent
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.certificate.publicKeySpki
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.serialNumber
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.signatureAlgorithm
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.subject
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.subjectAlternativeNames
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.subjectCountry
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.subjectEmail
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.certificate.subjectLocality
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.subjectName
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.subjectOrg
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.subjectOrgUnit
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.certificate.subjectState
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.certificate.validNotAfter
+      description: ''
+      type: Date
+    - contextPath: Expanse.Issue.certificate.validNotBefore
+      description: ''
+      type: Date
+    - contextPath: Expanse.Issue.certificate.version
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.created
+      description: ''
+      type: Date
+    - contextPath: Expanse.Issue.domain
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.headline
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.helpText
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.issuer
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.issuerAlternativeNames
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.issuerCountry
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.issuerEmail
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.initialEvidence.certificate.issuerLocality
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.issuerName
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.issuerOrg
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.issuerOrgUnit
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.initialEvidence.certificate.issuerState
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.md5Hash
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.pemSha1
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.pemSha256
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.publicKey
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.publicKeyAlgorithm
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.publicKeyBits
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.initialEvidence.certificate.publicKeyModulus
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.publicKeyRsaExponent
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.initialEvidence.certificate.publicKeySpki
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.serialNumber
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.signatureAlgorithm
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.subject
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.subjectAlternativeNames
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.subjectCountry
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.subjectEmail
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.initialEvidence.certificate.subjectLocality
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.subjectName
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.subjectOrg
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.subjectOrgUnit
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.initialEvidence.certificate.subjectState
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.certificate.validNotAfter
+      description: ''
+      type: Date
+    - contextPath: Expanse.Issue.initialEvidence.certificate.validNotBefore
+      description: ''
+      type: Date
+    - contextPath: Expanse.Issue.initialEvidence.certificate.version
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.cipherSuite
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration._type
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.applicationServerSoftware
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.certificateId
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.hasApplicationServerSoftware
+      description: ''
+      type: Boolean
+    - contextPath: Expanse.Issue.initialEvidence.configuration.hasServerSoftware
+      description: ''
+      type: Boolean
+    - contextPath: Expanse.Issue.initialEvidence.configuration.hasUnencryptedLogin
+      description: ''
+      type: Boolean
+    - contextPath: Expanse.Issue.initialEvidence.configuration.htmlPasswordAction
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.htmlPasswordField
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.httpAuthenticationMethod
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.httpAuthenticationRealm
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.httpHeaders.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.httpHeaders.value
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.httpStatusCode
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.isLoadBalancer
+      description: ''
+      type: Boolean
+    - contextPath: Expanse.Issue.initialEvidence.configuration.loadBalancer
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.loadBalancerPool
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.configuration.serverSoftware
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.discoveryType
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.domain
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.evidenceType
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.exposureId
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.exposureType
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.geolocation.city
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.geolocation.countryCode
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.geolocation.latitude
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.initialEvidence.geolocation.longitude
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.initialEvidence.geolocation.regionCode
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.geolocation.timeZone
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.initialEvidence.ip
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.portNumber
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.initialEvidence.portProtocol
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.serviceId
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.serviceProperties.serviceProperties.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.serviceProperties.serviceProperties.reason
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.initialEvidence.timestamp
+      description: ''
+      type: Date
+    - contextPath: Expanse.Issue.initialEvidence.tlsVersion
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.ip
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.issueType.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.issueType.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.issuer
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.issuerAlternativeNames
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.issuerCountry
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.issuerEmail
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.latestEvidence.certificate.issuerLocality
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.issuerName
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.issuerOrg
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.issuerOrgUnit
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.latestEvidence.certificate.issuerState
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.md5Hash
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.pemSha1
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.pemSha256
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.publicKey
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyAlgorithm
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyBits
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyModulus
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyRsaExponent
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeySpki
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.serialNumber
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.signatureAlgorithm
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.subject
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.subjectAlternativeNames
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.subjectCountry
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.subjectEmail
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.latestEvidence.certificate.subjectLocality
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.subjectName
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.subjectOrg
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.subjectOrgUnit
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.latestEvidence.certificate.subjectState
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.certificate.validNotAfter
+      description: ''
+      type: Date
+    - contextPath: Expanse.Issue.latestEvidence.certificate.validNotBefore
+      description: ''
+      type: Date
+    - contextPath: Expanse.Issue.latestEvidence.certificate.version
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.cipherSuite
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration._type
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.applicationServerSoftware
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.certificateId
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.hasApplicationServerSoftware
+      description: ''
+      type: Boolean
+    - contextPath: Expanse.Issue.latestEvidence.configuration.hasServerSoftware
+      description: ''
+      type: Boolean
+    - contextPath: Expanse.Issue.latestEvidence.configuration.hasUnencryptedLogin
+      description: ''
+      type: Boolean
+    - contextPath: Expanse.Issue.latestEvidence.configuration.htmlPasswordAction
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.htmlPasswordField
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.httpAuthenticationMethod
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.httpAuthenticationRealm
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.httpHeaders.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.httpHeaders.value
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.httpStatusCode
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.isLoadBalancer
+      description: ''
+      type: Boolean
+    - contextPath: Expanse.Issue.latestEvidence.configuration.loadBalancer
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.loadBalancerPool
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.configuration.serverSoftware
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.discoveryType
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.domain
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.latestEvidence.evidenceType
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.exposureId
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.exposureType
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.geolocation.city
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.geolocation.countryCode
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.geolocation.latitude
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.latestEvidence.geolocation.longitude
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.latestEvidence.geolocation.regionCode
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.geolocation.timeZone
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Issue.latestEvidence.ip
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.portNumber
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.latestEvidence.portProtocol
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.serviceId
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.serviceProperties.serviceProperties.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.serviceProperties.serviceProperties.reason
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.latestEvidence.timestamp
+      description: ''
+      type: Date
+    - contextPath: Expanse.Issue.latestEvidence.tlsVersion
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.modified
+      description: ''
+      type: Date
+    - contextPath: Expanse.Issue.portNumber
+      description: ''
+      type: Number
+    - contextPath: Expanse.Issue.portProtocol
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.priority
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.progressStatus
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.providers.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Issue.providers.name
+      description: ''
+      type: String      
+  - name: expanse-list-businessunits
+    description: List available business units 
+    deprecated: false
+    execution: false
+    arguments: []
+    outputs:
+    - contextPath: Expanse.BusinessUnit.id
+      description: 'Business Unit ID'
+      type: String
+    - contextPath: Expanse.BusinessUnit.name
+      description: 'Business Unit Name'
+      type: String
+  - name: expanse-list-providers
+    description: List available providers 
+    deprecated: false
+    execution: false
+    arguments: []
+    outputs:
+    - contextPath: Expanse.Provider.id
+      description: 'Provider ID'
+      type: String
+    - contextPath: Expanse.Provider.name
+      description: 'Provider Name'
+      type: String
+  - name: expanse-list-tags
+    description: List available tags
+    deprecated: false
+    execution: false
+    arguments: []
+    outputs:
+    - contextPath: 'Expanse.Tag.created'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.Tag.description'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Tag.disabled'
+      description: ''
+      type: Boolean
+    - contextPath: 'Expanse.Tag.id'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Tag.modified'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.Tag.name'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Tag.tenantId'
+      description: ''
+      type: String
+  - name: expanse-assign-tags-to-asset
+    description: Assign tags to Asset.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Asset type
+      isArray: false
+      name: asset_type
+      required: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'IpRange'
+      - 'Certificate'
+      - 'Domain'
+    - default: false
+      description: Asset ID.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the tags.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Names of the tags.
+      isArray: true
+      name: tagnames
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-unassign-tags-from-asset
+    description: Unassign tags from Asset.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Asset type
+      isArray: false
+      name: asset_type
+      required: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'IpRange'
+      - 'Certificate'
+      - 'Domain'
+    - default: false
+      description: Asset ID.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the tags.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Names of the tags.
+      isArray: true
+      name: tagnames
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-assign-tags-to-iprange
+    description: Assign tags to IP Range.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: IP Range ID.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the tags.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Names of the tags.
+      isArray: true
+      name: tagnames
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-unassign-tags-from-iprange
+    description: Unassign tags from IP Range.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: IP Range ID.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the tags.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Names of the tags.
+      isArray: true
+      name: tagnames
+      required: false
+      secret: false
+    outputs: []    
+  - name: expanse-assign-tags-to-certificate
+    description: Assign tags to certificate.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Certificate ID.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the tags.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Names of the tags.
+      isArray: true
+      name: tagnames
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-unassign-tags-from-certificate
+    description: Unassign tags from certificate.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Certificate ID.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the tags.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Names of the tags.
+      isArray: true
+      name: tagnames
+      required: false
+      secret: false
+    outputs: []   
+  - name: expanse-assign-tags-to-domain
+    description: Assign tags to domain.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Domain ID.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the tags.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Names of the tags.
+      isArray: true
+      name: tagnames
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-unassign-tags-from-domain
+    description: Unassign tags from domain.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Domain ID.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the tags.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Names of the tags.
+      isArray: true
+      name: tagnames
+      required: false
+      secret: false
+    outputs: []           
+  - name: expanse-create-tag
+    description: Create a new tag in Expanse.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Name of the tag (less than 128 characters).
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the tag (less than 512 characters).
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    outputs:
+    - contextPath: 'Expanse.Tag.created'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.Tag.description'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Tag.disabled'
+      description: ''
+      type: Boolean
+    - contextPath: 'Expanse.Tag.id'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Tag.modified'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.Tag.name'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Tag.tenantId'
+      description: ''
+      type: String      
+  - name: expanse-get-iprange
+    description: Get ip-range by id or search ip-ranges
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: IP Range ID
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Business Unit IDs
+      isArray: true
+      name: businessunits
+      required: false
+      secret: false
+    - default: false
+      description: Business Unit Names
+      isArray: true
+      name: businessunitnames
+      required: false
+      secret: false
+    - default: false
+      description: Search for a given IP, CIDR or IP Range
+      isArray: false
+      name: inet
+      required: false
+      secret: false
+    - default: false
+      description: Tag IDs
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Tag Names
+      isArray: true
+      name: tagnames
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: include
+      description: Include "none" or any of the following options (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation, locationInformation
+      defaultValue: none
+      required: false
+      secret: false
+    outputs:
+    - contextPath: 'Expanse.IPRange.annotations'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.IPRange.attributionReasons.reason'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.IPRange.businessUnits'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.IPRange.created'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.IPRange.endAddress'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.IPRange.id'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.IPRange.ipVersion'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.IPRange.locationInformation'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.IPRange.modified'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.IPRange.rangeIntroduced'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.IPRange.rangeSize'
+      description: ''
+      type: Number
+    - contextPath: 'Expanse.IPRange.rangeType'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.IPRange.relatedRegistrationInformation'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.IPRange.responsiveIpCount'
+      description: ''
+      type: Number
+    - contextPath: 'Expanse.IPRange.severityCounts'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.IPRange.startAddress'
+      description: ''
+      type: String
+  - name: expanse-get-domain
+    description: Get domain details by domain name or search certificates
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Domain
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: Last Observed Date (YYYY-MM-DD), to be used with domain arg
+      isArray: false
+      name: last_observed_date
+      required: false
+      secret: false
+    - default: false
+      description: List all domains with the specified substring
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only domains with or without resolution
+      isArray: false
+      name: has_dns_resolution
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - default: false
+      description: Retrieve only domains with or without active service
+      isArray: false
+      name: has_active_service
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - default: false
+      description: Retrieve only domains with or without cloud resources
+      isArray: false
+      name: has_related_cloud_resources
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - default: false
+      description: Retrieve only domains with one of the specified tag IDs
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only domains with one of the specified tag names
+      name: tagnames
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only domains with one of the specified Business Unit IDs
+      isArray: false
+      name: businessunits
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only domains with one of the specified Business Unit names
+      name: businessunitnames
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only domains with one of the specified Provider IDs
+      isArray: false
+      name: providers
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only domains with one of the specified Provider names
+      name: providernames
+      required: false
+      secret: false
+    outputs:
+    - contextPath: 'Expanse.Domain.annotations'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Domain.businessUnits'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Domain.dateAdded'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.Domain.details'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Domain.dnsResolutionStatus'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Domain.domain'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Domain.firstObserved'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.Domain.hasLinkedCloudResources'
+      description: ''
+      type: Boolean
+    - contextPath: 'Expanse.Domain.id'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Domain.isCollapsed'
+      description: ''
+      type: Boolean
+    - contextPath: 'Expanse.Domain.isPaidLevelDomain'
+      description: ''
+      type: Boolean
+    - contextPath: 'Expanse.Domain.lastObserved'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.Domain.lastSampledIp'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Domain.lastSubdomainMetadata'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Domain.providers'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Domain.serviceStatus'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Domain.sourceDomain'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Domain.tenant'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Domain.whois'
+      description: ''
+      type: Unknown
+  - name: expanse-get-certificate
+    description: Get certificate details by certificate md5 hash or search certificates
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: MD5 Hash of the certificate pem
+      isArray: false
+      name: pem_md5_hash
+      required: false
+      secret: false
+    - default: false
+      description: Last Observed Date (YYYY-MM-DD), to be used with domain arg
+      isArray: false
+      name: last_observed_date
+      required: false
+      secret: false
+    - default: false
+      description: List all certificates with the specified substring in common name
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only certificates actively/not actively advertised
+      isArray: false
+      name: has_certificate_advertisement
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only certificates with or without active service
+      isArray: false
+      name: has_active_service
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only certificates with or without cloud resources
+      isArray: false
+      name: has_related_cloud_resources
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only certificates with one of the specified tag IDs
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only certificates with one of the specified tag names
+      name: tagnames
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only certificates with one of the specified Business Unit IDs
+      isArray: false
+      name: businessunits
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only certificates with one of the specified Business Unit names
+      name: businessunitnames
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only certificates with one of the specified Provider IDs
+      isArray: false
+      name: providers
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve only certificates with one of the specified Provider names
+      name: providernames
+      required: false
+      secret: false
+    outputs:
+    - contextPath: 'Expanse.Certificate.annotations'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Certificate.businessUnits'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Certificate.certificate'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Certificate.certificateAdvertisementStatus'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Certificate.commonName'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Certificate.dateAdded'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.Certificate.details'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Certificate.firstObserved'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.Certificate.hasLinkedCloudResources'
+      description: ''
+      type: Boolean
+    - contextPath: 'Expanse.Certificate.id'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Certificate.lastObserved'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.Certificate.properties'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.Certificate.providers'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.Certificate.tenant'
+      description: ''
+      type: Unknown
+  - name: expanse-certificate
+    arguments:
+    - default: true
+      description: The pem MD5 hash of the certificate to enrich.
+      isArray: true
+      name: pem_md5_hash
+      required: false
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for ExpanseCertificate.
+    execution: false
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+  - name: expanse-get-risky-flows
+    description: Retrieve Expanse Behavior Risky Flows
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Maximum number of flows to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Risk rule
+      isArray: true
+      name: risk-rule
+      required: false
+      secret: false
+    - default: false
+      description: Internal IP range. Supported formats a.b.c.d, a.b.c.d/e, a.b.c.d-a.b.c.d, a., a.*
+      isArray: true
+      name: internal_ip_range
+      required: false
+      secret: false
+    - default: false
+      description: Tag names
+      isArray: true
+      name: tagnames
+      required: false
+      secret: false
+    - default: false
+      description: created_before
+      isArray: false
+      name: created_before
+      required: false
+      secret: false       
+    - default: false
+      description: created_after
+      isArray: false
+      name: created_after
+      required: false
+      secret: false 
+    outputs:
+    - contextPath: Expanse.RiskyFlow.id
+      description: 'Expanse Risky Flow ID'
+      type: String
+  - name: expanse-list-risk-rules
+    description: List Risk Rules
+    deprecated: false
+    execution: false
+    arguments: []
+    outputs:
+    - contextPath: Expanse.RiskRule.id
+      description: 'Expanse Risk Rule ID'
+      type: String
+  - name: domain
+    arguments:
+    - default: true
+      description: The domain to enrich
+      isArray: true
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for domains.
+    execution: false
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+  - name: ip
+    arguments:
+    - default: true
+      description: The ip to enrich
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for ips.
+    execution: false
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+  - name: cidr
+    arguments:
+    - default: true
+      description: The CIDR block to enrich
+      isArray: true
+      name: cidr
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: include
+      description: Include "none" or any of the following options (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation, locationInformation
+      required: false
+      secret: false
+      defaultValue: severityCounts,annotations,attributionReasons,relatedRegistrationInformation,locationInformation
+    deprecated: false
+    description: Provides data enrichment for CIDR blocks using Expanse IP Range.
+    execution: false
+    outputs:
+    - contextPath: 'Expanse.IPRange.annotations'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.IPRange.attributionReasons.reason'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.IPRange.businessUnits'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.IPRange.created'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.IPRange.endAddress'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.IPRange.id'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.IPRange.ipVersion'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.IPRange.locationInformation'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.IPRange.modified'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.IPRange.rangeIntroduced'
+      description: ''
+      type: Date
+    - contextPath: 'Expanse.IPRange.rangeSize'
+      description: ''
+      type: Number
+    - contextPath: 'Expanse.IPRange.rangeType'
+      description: ''
+      type: String
+    - contextPath: 'Expanse.IPRange.relatedRegistrationInformation'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.IPRange.responsiveIpCount'
+      description: ''
+      type: Number
+    - contextPath: 'Expanse.IPRange.severityCounts'
+      description: ''
+      type: Unknown
+    - contextPath: 'Expanse.IPRange.startAddress'
+      description: ''
+      type: String
+  isfetch: true
+  feed: false
+  runonce: false
+  isremotesyncin: true
+  isremotesyncout: true
+  ismappable: false  
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.8.6.12176
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

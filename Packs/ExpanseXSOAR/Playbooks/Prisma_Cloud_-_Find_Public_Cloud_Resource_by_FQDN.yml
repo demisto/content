@@ -1,0 +1,754 @@
+description: |-
+  Find a Public Cloud resource of the following types:
+  - CDN
+  - Domain Hosted Zone
+  - ???
+
+  on: AWS, Azure, GCP
+
+  using Prisma Cloud inventory
+id: Prisma Cloud - Find Public Cloud Resource by FQDN
+inputs:
+- description: FQDN to look up
+  key: FQDN
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Public Cloud Provider (AWS, Azure, GCP)
+  key: CloudProvider
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Prisma Cloud - Find Public Cloud Resource by FQDN
+outputs:
+- contextPath: PrismaCloud.Attribution
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e1f99a23-4c36-4cd1-89d4-06a6069ecd39
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e1f99a23-4c36-4cd1-89d4-06a6069ecd39
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": -460
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.FQDN
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'resourceRecordSet[*].name equals '
+              suffix:
+                value:
+                  simple: .
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: "config where cloud.type = 'aws' AND cloud.service = 'Amazon\
+                    \ Route53' AND api.name = 'aws-route53-list-hosted-zones' AND\
+                    \ json.rule = \n ( "
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7f087652-9857-449e-897f-93b74119d7fa
+      iscommand: true
+      name: Search FQDN in Route53 HostedZone Entries
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 7f087652-9857-449e-897f-93b74119d7fa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 775
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CloudProvider
+          operator: inList
+          right:
+            value:
+              simple: AWS,Amazon Web Services,Amazon
+      label: AWS
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CloudProvider
+          operator: inList
+          right:
+            value:
+              simple: Azure,Microsoft Azure
+      label: Azure
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CloudProvider
+          operator: inList
+          right:
+            value:
+              simple: GCP,Google Cloud Platform,Google
+      label: GCP
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      AWS:
+      - "3"
+      Azure:
+      - "4"
+      GCP:
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab985172-80ca-4640-888a-8ed88d1d26a8
+      iscommand: false
+      name: What Cloud Provider?
+      type: condition
+      version: -1
+    taskid: ab985172-80ca-4640-888a-8ed88d1d26a8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+      - "1"
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7d55b911-def4-4fe7-88da-731dcfe678e6
+      iscommand: false
+      name: Search in AWS
+      type: title
+      version: -1
+      description: ''
+    taskid: 7d55b911-def4-4fe7-88da-731dcfe678e6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 630
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fe46cd1f-b3fc-4c61-8451-35666b2929b1
+      iscommand: false
+      name: Search in Azure
+      type: title
+      version: -1
+      description: ''
+    taskid: fe46cd1f-b3fc-4c61-8451-35666b2929b1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 630
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eb40d866-362f-4302-873e-12fb5acae82a
+      iscommand: false
+      name: Search in GCP
+      type: title
+      version: -1
+      description: ''
+    taskid: eb40d866-362f-4302-873e-12fb5acae82a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 630
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+      - "4"
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e50fc375-1d5f-41c7-896e-434d83dfa934
+      iscommand: false
+      name: Search All Cloud Providers
+      type: title
+      version: -1
+      description: ''
+    taskid: e50fc375-1d5f-41c7-896e-434d83dfa934
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 380
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c6073a79-da6d-476e-8129-89c2dd042e72
+      iscommand: false
+      name: Check Results
+      type: title
+      version: -1
+      description: ''
+    taskid: c6073a79-da6d-476e-8129-89c2dd042e72
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.FQDN
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'dnsname equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''aws'' AND cloud.service = ''Amazon
+                    Elastic Load Balancing'' AND json.rule =  ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 09bcd3fc-613c-4654-8cdc-aef8711bde8d
+      iscommand: true
+      name: Search in Load Balancers
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 09bcd3fc-613c-4654-8cdc-aef8711bde8d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 960
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.FQDN
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'domainName equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''aws'' and cloud.service = ''Amazon
+                    CloudFront'' and json.rule =  ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 62f5118f-14b1-4895-8ea7-254e80020548
+      iscommand: true
+      name: Search in CloudFront
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 62f5118f-14b1-4895-8ea7-254e80020548
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 750
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: SplitFQDN
+      stringify: {}
+      value:
+        complex:
+          root: inputs.FQDN
+          transformers:
+          - args:
+              groups:
+                value:
+                  simple: 0,1
+              keys:
+                value:
+                  simple: hostname,domain
+              regex:
+                value:
+                  simple: ([A-z0-9\-]*)\.(.*)
+            operator: RegexGroups
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: 8d0e14f6-d5b9-42e8-8707-cd76d7852f11
+      iscommand: false
+      name: Split Hostname from Domain
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 8d0e14f6-d5b9-42e8-8707-cd76d7852f11
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: domain
+          root: SplitFQDN
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'hostedZone.name equals '
+              suffix:
+                value:
+                  simple: .
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: "config where cloud.type = 'aws' AND cloud.service = 'Amazon\
+                    \ Route53' AND api.name = 'aws-route53-list-hosted-zones' AND\
+                    \ json.rule = \n ( "
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bee4c762-9183-484e-812b-dd24ea94d41e
+      iscommand: true
+      name: Search Domain in Route53 HostedZone Name
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: bee4c762-9183-484e-812b-dd24ea94d41e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -790,
+          "y": 775
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset
+                root: Redlock
+          operator: isNotEmpty
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8f98d2e1-6097-498b-86a0-75ebc26c05cd
+      iscommand: false
+      name: Are results found?
+      type: condition
+      version: -1
+    taskid: 8f98d2e1-6097-498b-86a0-75ebc26c05cd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1340
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assets:
+        complex:
+          accessor: Asset
+          root: Redlock
+      fields: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prisma Cloud Attribution
+      id: ebd26521-5675-4d11-8696-ac5ab7e27f1c
+      iscommand: false
+      name: Transform Results
+      script: 92c8d82c-2c20-449d-8a9a-995d7cee3cdf
+      type: regular
+      version: -1
+    taskid: ebd26521-5675-4d11-8696-ac5ab7e27f1c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1600
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7c2a8ff4-7a1e-46ef-8d05-95445c53a689
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 7c2a8ff4-7a1e-46ef-8d05-95445c53a689
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1850
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: RedLock
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1bdd5f5f-52f3-4399-8489-de76cc5a4c2c
+      iscommand: false
+      name: Is Prisma Cloud enabled?
+      type: condition
+      version: -1
+    taskid: 1bdd5f5f-52f3-4399-8489-de76cc5a4c2c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": -315
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cbd6b949-9294-4c42-8d8d-0d84e0d59dc0
+      iscommand: false
+      name: Search Prisma Cloud Inventory
+      type: title
+      version: -1
+      description: ''
+    taskid: cbd6b949-9294-4c42-8d8d-0d84e0d59dc0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -80
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_AWS": 0.26,
+      "2_4_Azure": 0.29,
+      "2_5_GCP": 0.82
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2375,
+        "width": 2550,
+        "x": -790,
+        "y": -460
+      }
+    }
+  }
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

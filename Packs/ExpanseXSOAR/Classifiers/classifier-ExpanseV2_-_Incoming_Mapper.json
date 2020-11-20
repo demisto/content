@@ -1,0 +1,330 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "2e331df1-6d09-4031-841a-37b44ae80cbd",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 28,
+	"mapping": {
+		"Expanse Issue": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Expanse Activity Status": {
+					"complex": null,
+					"simple": "activityStatus"
+				},
+				"Expanse Asset": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "assets",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "Stringify"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "assetkey"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "assetKey"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "assettype"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "assetType"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "displayname"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "displayName"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "attributionreasons"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "attributionReasons"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {},
+								"operator": "ParseJSON"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Expanse Assignee": {
+					"complex": null,
+					"simple": "assigneeUsername"
+				},
+				"Expanse Business Units": {
+					"complex": null,
+					"simple": "businessUnits.name"
+				},
+				"Expanse Category": {
+					"complex": null,
+					"simple": "category"
+				},
+				"Expanse Certificate": {
+					"complex": null,
+					"simple": "certificate.md5Hash"
+				},
+				"Expanse Created": {
+					"complex": null,
+					"simple": "created"
+				},
+				"Expanse Domain": {
+					"complex": null,
+					"simple": "domain"
+				},
+				"Expanse Geolocation": {
+					"complex": {
+						"accessor": "geolocation",
+						"filters": [],
+						"root": "latestEvidence",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "Stringify"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "country"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "countryCode"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "region"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "regionCode"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {},
+								"operator": "ParseJSON"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Expanse IP": {
+					"complex": null,
+					"simple": "ip"
+				},
+				"Expanse Initial Evidence": {
+					"complex": null,
+					"simple": "initialEvidence"
+				},
+				"Expanse Issue ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"Expanse Issue Type": {
+					"complex": null,
+					"simple": "issueType.name"
+				},
+				"Expanse Latest Evidence": {
+					"complex": null,
+					"simple": "latestEvidence"
+				},
+				"Expanse Latest Evidence Geolocation": {
+					"complex": null,
+					"simple": "latestEvidence.geolocation"
+				},
+				"Expanse ML Features": {
+					"complex": null,
+					"simple": "ml_features"
+				},
+				"Expanse Modified": {
+					"complex": null,
+					"simple": "modified"
+				},
+				"Expanse Port": {
+					"complex": null,
+					"simple": "portNumber"
+				},
+				"Expanse Priority": {
+					"complex": null,
+					"simple": "priority"
+				},
+				"Expanse Progress Status": {
+					"complex": null,
+					"simple": "progressStatus"
+				},
+				"Expanse Protocol": {
+					"complex": null,
+					"simple": "portProtocol"
+				},
+				"Expanse Provider": {
+					"complex": null,
+					"simple": "providers.[0].name"
+				},
+				"Expanse Tags": {
+					"complex": null,
+					"simple": "annotations.tags.name"
+				},
+				"dbotMirrorDirection": {
+					"complex": null,
+					"simple": "xsoar_mirroring.mirror_direction"
+				},
+				"dbotMirrorId": {
+					"complex": null,
+					"simple": "xsoar_mirroring.mirror_id"
+				},
+				"dbotMirrorInstance": {
+					"complex": null,
+					"simple": "xsoar_mirroring.mirror_instance"
+				},
+				"owner": {
+					"complex": null,
+					"simple": "xsoar_owner"
+				},
+				"severity": {
+					"complex": null,
+					"simple": "xsoar_severity"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Event Type": {
+					"complex": null,
+					"simple": "issueType.name"
+				},
+				"dbotMirrorTags": {
+					"complex": null,
+					"simple": "xsoar_mirroring.sync_tags"
+				}
+			}
+		}
+	},
+	"name": "ExpanseV2 - Incoming Mapper",
+	"nameRaw": "ExpanseV2 - Incoming Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

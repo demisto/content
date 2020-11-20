@@ -1,0 +1,29 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Expanse Issue"
+    ],
+    "caseInsensitive": true,
+    "cliName": "expansemodified",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_expansemodified",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Expanse Modified",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

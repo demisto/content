@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Expanse Issue"
+    ],
+    "caseInsensitive": true,
+    "cliName": "expansepriority",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_expansepriority",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Expanse Priority",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "",
+        "Low",
+        "High",
+        "Medium",
+        "Critical"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}
