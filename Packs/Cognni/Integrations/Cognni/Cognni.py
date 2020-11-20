@@ -636,10 +636,7 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'cognni-ping':
-            return_results(ping_command(client))
-
-        elif demisto.command() == 'cognni-fetch-incidents':
+        if demisto.command() == 'cognni-fetch-incidents':
             return_results(fetch_incidents_command(client, first_fetch_time, demisto.args()))
 
         elif demisto.command() == 'fetch-incidents':

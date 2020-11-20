@@ -63,14 +63,6 @@ display: Cognni
 name: Cognni
 script:
   commands:
-  - deprecated: false
-    description: Ping command - check ping.
-    execution: false
-    name: cognni-ping
-    outputs:
-    - contextPath: Cognni.ping
-      description: Should be "ok".
-      type: String
   - arguments:
     - default: false
       description: The event ID
@@ -165,28 +157,28 @@ script:
     description: Fetch incidents
     execution: false
     name: cognni-fetch-incidents
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: "# \n\n\nimport urllib3\nimport dateparser\nimport traceback\nfrom typing\
-    \ import Any, Dict, List, Optional, Tuple, cast, Iterable\n\n# Disable insecure\
-    \ warnings\nurllib3.disable_warnings()\n\n''' CONSTANTS '''\n\nDATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'\n\
-    MAX_EVENTS_TO_FETCH = 20\nCOGNNI_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']\n\
-    \n''' CLIENT CLASS '''\n\n\nclass Client(BaseClient):\n    \"\"\"Client class\
-    \ to interact with the service API\n\n    This Client implements API calls, and\
-    \ does not contain any Demisto logic.\n    Should only do requests and return\
-    \ data.\n    It inherits from BaseClient defined in CommonServer Python.\n   \
-    \ Most calls use _http_request() that handles proxy, SSL verification, etc.\n\
-    \    \"\"\"\n\n    def fetch_key(self, api_key: str) -> Dict[str, Any]:\n    \
-    \    return self._http_request(\n            method='GET',\n            url_suffix=f\"\
-    /api/v1/login/key/{api_key}\"\n        )\n\n    def graphql(self, query: str,\
-    \ variables: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:\n        if not\
-    \ variables:\n            variables = {}\n\n        graphql_operation = {\n  \
-    \          \"query\": query,\n            \"variables\": variables\n        }\n\
-    \n        res = self._http_request(\n            method='POST',\n            url_suffix='/intelligence/data/graphql',\n\
+    \ import Any, Dict, List, Optional, Tuple, cast, Iterable\n\nurllib3.disable_warnings()\n\
+    \n''' CONSTANTS '''\n\nDATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'\nMAX_EVENTS_TO_FETCH\
+    \ = 20\nCOGNNI_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']\n\n''' CLIENT\
+    \ CLASS '''\n\n\nclass Client(BaseClient):\n    \"\"\"Client class to interact\
+    \ with the service API\n\n    This Client implements API calls, and does not contain\
+    \ any Demisto logic.\n    Should only do requests and return data.\n    It inherits\
+    \ from BaseClient defined in CommonServer Python.\n    Most calls use _http_request()\
+    \ that handles proxy, SSL verification, etc.\n    \"\"\"\n\n    def fetch_key(self,\
+    \ api_key: str) -> Dict[str, Any]:\n        return self._http_request(\n     \
+    \       method='GET',\n            url_suffix=f\"/api/v1/login/key/{api_key}\"\
+    \n        )\n\n    def graphql(self, query: str, variables: Optional[Dict[str,\
+    \ Any]] = None) -> Dict[str, Any]:\n        if not variables:\n            variables\
+    \ = {}\n\n        graphql_operation = {\n            \"query\": query,\n     \
+    \       \"variables\": variables\n        }\n\n        res = self._http_request(\n\
+    \            method='POST',\n            url_suffix='/intelligence/data/graphql',\n\
     \            json_data=graphql_operation\n        )\n        return res['data']\n\
     \n    def ping(self) -> Dict[str, Any]:\n        query = \"{ping}\"\n\n      \
     \  return self.graphql(\n            query=query\n        )\n\n    def fetch_events(self,\
@@ -232,76 +224,68 @@ script:
     \        variables = {\n            \"insight_id\": insight_id\n        }\n\n\
     \        res = self.graphql(\n            query=query,\n            variables=variables\n\
     \        )\n        return res['insight']\n\n\n''' HELPER FUNCTIONS '''\n\n\n\
-    def convert_to_demisto_severity(severity: str) -> int:\n    \"\"\"Maps HelloWorld\
-    \ severity to Cortex XSOAR severity\n\n    Converts the HelloWorld alert severity\
+    def convert_to_demisto_severity(severity: str) -> int:\n    \"\"\"Maps Cognni\
+    \ severity to Cortex XSOAR severity\n\n    Converts the Cognni alert severity\
     \ level ('Low', 'Medium',\n    'High', 'Critical') to Cortex XSOAR incident severity\
     \ (1 to 4)\n    for mapping.\n\n    :type severity: ``str``\n    :param severity:\
-    \ severity as returned from the HelloWorld API (str)\n\n    :return: Cortex XSOAR\
-    \ Severity (1 to 4)\n    :rtype: ``int``\n    \"\"\"\n\n    # In this case the\
-    \ mapping is straightforward, but more complex mappings\n    # might be required\
-    \ in your integration, so a dedicated function is\n    # recommended. This mapping\
-    \ should also be documented.\n    return {\n        'Low': 1,  # low severity\n\
-    \        'Medium': 2,  # medium severity\n        'High': 3,  # high severity\n\
-    \        'Critical': 4  # critical severity\n    }[severity]\n\n\ndef convert_to_demisto_severity_int(severity:\
-    \ int) -> int:\n    \"\"\"Maps HelloWorld severity to Cortex XSOAR severity\n\n\
-    \    Converts the HelloWorld alert severity level ('Low', 'Medium',\n    'High',\
-    \ 'Critical') to Cortex XSOAR incident severity (1 to 4)\n    for mapping.\n\n\
-    \    :type severity: ``str``\n    :param severity: severity as returned from the\
-    \ HelloWorld API (str)\n\n    :return: Cortex XSOAR Severity (1 to 4)\n    :rtype:\
-    \ ``int``\n    \"\"\"\n\n    return severity\n\n\ndef arg_to_int(arg: Any, arg_name:\
-    \ str, required: bool = False) -> Optional[int]:\n    \"\"\"Converts an XSOAR\
-    \ argument to a Python int\n\n    This function is used to quickly validate an\
-    \ argument provided to XSOAR\n    via ``demisto.args()`` into an ``int`` type.\
-    \ It will throw a ValueError\n    if the input is invalid. If the input is None,\
-    \ it will throw a ValueError\n    if required is ``True``, or ``None`` if required\
-    \ is ``False.\n\n    :type arg: ``Any``\n    :param arg: argument to convert\n\
-    \n    :type arg_name: ``str``\n    :param arg_name: argument name\n\n    :type\
-    \ required: ``bool``\n    :param required:\n        throws exception if ``True``\
-    \ and argument provided is None\n\n    :return:\n        returns an ``int`` if\
-    \ arg can be converted\n        returns ``None`` if arg is ``None`` and required\
-    \ is set to ``False``\n        otherwise throws an Exception\n    :rtype: ``Optional[int]``\n\
-    \    \"\"\"\n\n    if arg is None:\n        if required is True:\n           \
-    \ raise ValueError(f'Missing \"{arg_name}\"')\n        return None\n    if isinstance(arg,\
-    \ str):\n        if arg.isdigit():\n            return int(arg)\n        raise\
-    \ ValueError(f'Invalid number: \"{arg_name}\"=\"{arg}\"')\n    if isinstance(arg,\
-    \ int):\n        return arg\n    raise ValueError(f'Invalid number: \"{arg_name}\"\
-    ')\n\n\ndef arg_to_timestamp(arg: Any, arg_name: str, required: bool = False)\
-    \ -> Optional[int]:\n    \"\"\"Converts an XSOAR argument to a timestamp (seconds\
-    \ from epoch)\n\n    This function is used to quickly validate an argument provided\
-    \ to XSOAR\n    via ``demisto.args()`` into an ``int`` containing a timestamp\
-    \ (seconds\n    since epoch). It will throw a ValueError if the input is invalid.\n\
-    \    If the input is None, it will throw a ValueError if required is ``True``,\n\
-    \    or ``None`` if required is ``False.\n\n    :type arg: ``Any``\n    :param\
-    \ arg: argument to convert\n\n    :type arg_name: ``str``\n    :param arg_name:\
-    \ argument name\n\n    :type required: ``bool``\n    :param required:\n      \
-    \  throws exception if ``True`` and argument provided is None\n\n    :return:\n\
-    \        returns an ``int`` containing a timestamp (seconds from epoch) if conversion\
-    \ works\n        returns ``None`` if arg is ``None`` and required is set to ``False``\n\
-    \        otherwise throws an Exception\n    :rtype: ``Optional[int]``\n    \"\"\
-    \"\n\n    if arg is None:\n        if required is True:\n            raise ValueError(f'Missing\
-    \ \"{arg_name}\"')\n        return None\n\n    if isinstance(arg, str) and arg.isdigit():\n\
-    \        # timestamp is a str containing digits - we just convert it to int\n\
-    \        return int(arg)\n    if isinstance(arg, str):\n        # we use dateparser\
-    \ to handle strings either in ISO8601 format, or\n        # relative time stamps.\n\
-    \        # For example: format 2019-10-23T00:00:00 or \"3 days\", etc\n      \
-    \  date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})\n        if date\
-    \ is None:\n            # if d is None it means dateparser failed to parse it\n\
-    \            raise ValueError(f'Invalid date: {arg_name}')\n\n        return int(date.timestamp())\n\
-    \    if isinstance(arg, (int, float)):\n        # Convert to int if the input\
-    \ is a float\n        return int(arg)\n    raise ValueError(f'Invalid date: \"\
-    {arg_name}\"')\n\n\ndef flatten_event_file_items(event: Dict[str, Any]):\n   \
-    \ if not event or not event['items']:\n        return []\n\n    return list(map(lambda\
+    \ severity as returned from the Cognni API (str)\n\n    :return: Cortex XSOAR\
+    \ Severity (1 to 4)\n    :rtype: ``int``\n    \"\"\"\n    return {\n        'Low':\
+    \ 1,  # low severity\n        'Medium': 2,  # medium severity\n        'High':\
+    \ 3,  # high severity\n        'Critical': 4  # critical severity\n    }[severity]\n\
+    \n\ndef convert_to_demisto_severity_int(severity: int) -> int:\n    \"\"\"Maps\
+    \ Cognni severity to Cortex XSOAR severity\n\n    Converts the Cognni alert severity\
+    \ level ('Low', 'Medium',\n    'High', 'Critical') to Cortex XSOAR incident severity\
+    \ (1 to 4)\n    for mapping.\n\n    :type severity: ``str``\n    :param severity:\
+    \ severity as returned from the Cognni API (str)\n\n    :return: Cortex XSOAR\
+    \ Severity (1 to 4)\n    :rtype: ``int``\n    \"\"\"\n\n    return severity\n\n\
+    \ndef arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:\n\
+    \    \"\"\"Converts an XSOAR argument to a Python int\n\n    This function is\
+    \ used to quickly validate an argument provided to XSOAR\n    via ``demisto.args()``\
+    \ into an ``int`` type. It will throw a ValueError\n    if the input is invalid.\
+    \ If the input is None, it will throw a ValueError\n    if required is ``True``,\
+    \ or ``None`` if required is ``False.\n\n    :type arg: ``Any``\n    :param arg:\
+    \ argument to convert\n\n    :type arg_name: ``str``\n    :param arg_name: argument\
+    \ name\n\n    :type required: ``bool``\n    :param required:\n        throws exception\
+    \ if ``True`` and argument provided is None\n\n    :return:\n        returns an\
+    \ ``int`` if arg can be converted\n        returns ``None`` if arg is ``None``\
+    \ and required is set to ``False``\n        otherwise throws an Exception\n  \
+    \  :rtype: ``Optional[int]``\n    \"\"\"\n\n    if arg is None:\n        if required\
+    \ is True:\n            raise ValueError(f'Missing \"{arg_name}\"')\n        return\
+    \ None\n    if isinstance(arg, str):\n        if arg.isdigit():\n            return\
+    \ int(arg)\n        raise ValueError(f'Invalid number: \"{arg_name}\"=\"{arg}\"\
+    ')\n    if isinstance(arg, int):\n        return arg\n    raise ValueError(f'Invalid\
+    \ number: \"{arg_name}\"')\n\n\ndef arg_to_timestamp(arg: Any, arg_name: str,\
+    \ required: bool = False) -> Optional[int]:\n    \"\"\"Converts an XSOAR argument\
+    \ to a timestamp (seconds from epoch)\n\n    This function is used to quickly\
+    \ validate an argument provided to XSOAR\n    via ``demisto.args()`` into an ``int``\
+    \ containing a timestamp (seconds\n    since epoch). It will throw a ValueError\
+    \ if the input is invalid.\n    If the input is None, it will throw a ValueError\
+    \ if required is ``True``,\n    or ``None`` if required is ``False.\n\n    :type\
+    \ arg: ``Any``\n    :param arg: argument to convert\n\n    :type arg_name: ``str``\n\
+    \    :param arg_name: argument name\n\n    :type required: ``bool``\n    :param\
+    \ required:\n        throws exception if ``True`` and argument provided is None\n\
+    \n    :return:\n        returns an ``int`` containing a timestamp (seconds from\
+    \ epoch) if conversion works\n        returns ``None`` if arg is ``None`` and\
+    \ required is set to ``False``\n        otherwise throws an Exception\n    :rtype:\
+    \ ``Optional[int]``\n    \"\"\"\n\n    if arg is None:\n        if required is\
+    \ True:\n            raise ValueError(f'Missing \"{arg_name}\"')\n        return\
+    \ None\n\n    if isinstance(arg, str) and arg.isdigit():\n        return int(arg)\n\
+    \    if isinstance(arg, str):\n        date = dateparser.parse(arg, settings={'TIMEZONE':\
+    \ 'UTC'})\n        if date is None:\n            raise ValueError(f'Invalid date:\
+    \ {arg_name}')\n\n        return int(date.timestamp())\n    if isinstance(arg,\
+    \ (int, float)):\n        return int(arg)\n    raise ValueError(f'Invalid date:\
+    \ \"{arg_name}\"')\n\n\ndef flatten_event_file_items(event: Dict[str, Any]):\n\
+    \    if not event or not event['items']:\n        return []\n\n    return list(map(lambda\
     \ item: {\n        \"eventId\": event.get('eventId'),\n        \"fileName\": item.get('name'),\n\
     \        \"fileId\": item.get('itemId'),\n        \"name\": item.get('name'),\n\
     \        \"eventType\": item.get('type'),\n        \"description\": event.get('description'),\n\
-    \        # \"insights\"\n        # \"information\"\n        \"severity\": event.get('severity'),\n\
-    \        # \"created\"\n        # \"status\"\n        \"sourceApplication\": event.get('sourceApplication')\n\
-    \    }, event['items']))\n\n\ndef convert_file_event_to_incident(file_event: Dict[str,\
-    \ Any]):\n    return {\n        'name': file_event.get('name'),\n        'details':\
-    \ file_event['description'],\n        'occurred': file_event.get('date'),\n  \
-    \      'rawJSON': json.dumps(file_event),\n        'severity': convert_to_demisto_severity_int(file_event.get('severity',\
-    \ 1)),\n        # 'CustomFields': {  # Map specific XSOAR Custom Fields\n    \
-    \    # }\n    }\n\n\ndef convert_events_to_incidents(events: Iterable[Dict[str,\
+    \        \"date\": event.get('date'),\n        \"severity\": event.get('severity'),\n\
+    \        \"sourceApplication\": event.get('sourceApplication')\n    }, event['items']))\n\
+    \n\ndef convert_file_event_to_incident(file_event: Dict[str, Any]):\n    return\
+    \ {\n        'name': file_event.get('name'),\n        'details': file_event['description'],\n\
+    \        'occurred': file_event.get('date'),\n        'rawJSON': json.dumps(file_event),\n\
+    \        'severity': convert_to_demisto_severity_int(file_event.get('severity',\
+    \ 1)),\n    }\n\n\ndef convert_events_to_incidents(events: Iterable[Dict[str,\
     \ Any]]) -> List[Dict[str, Any]]:\n    if not events:\n        return []\n\n \
     \   file_events: List[Dict[str, Any]] = sum(map(flatten_event_file_items, events),\
     \ [])\n\n    incidents = list(map(convert_file_event_to_incident, file_events))\n\
@@ -316,30 +300,16 @@ script:
     \ like it is supposed to.\n    Connection to the service is successful.\n    Raises\
     \ exceptions if something goes wrong.\n\n    :type client: ``Client``\n    :param\
     \ client: Cognni client to use\n\n    :return: 'ok' if test passed, anything else\
-    \ will fail the test.\n    :rtype: ``str``\n    \"\"\"\n\n    # INTEGRATION DEVELOPER\
-    \ TIP\n    # Client class should raise the exceptions, but if the test fails\n\
-    \    # the exception text is printed to the Cortex XSOAR UI.\n    # If you have\
-    \ some specific errors you want to capture (i.e. auth failure)\n    # you should\
-    \ catch the exception here and return a string with a more\n    # readable output\
-    \ (for example return 'Authentication Error, API Key\n    # invalid').\n    #\
-    \ Cortex XSOAR will print everything you return different than 'ok' as\n    #\
-    \ an error\n    try:\n        client.ping()\n    except DemistoException as e:\n\
-    \        if 'Forbidden' in str(e):\n            return 'Authorization Error: make\
-    \ sure API Key is correctly set'\n        else:\n            raise e\n    return\
-    \ 'ok'\n\n\ndef ping_command(client: Client) -> CommandResults:\n    \"\"\"cognni-ping\
-    \ command: Prints ping\n\n    :type client: ``Client``\n    :param client: Cognni\
-    \ client to use\n\n    :return:\n        A ``CommandResults`` object that is then\
-    \ passed to ``return_results``,\n        that contains the ping response\n\n \
-    \   :rtype: ``CommandResults``\n    \"\"\"\n\n    # Call the Client function and\
-    \ get the raw response\n    result = client.ping()\n\n    # Create the human readable\
-    \ output.\n    # It will be in markdown format - https://www.markdownguide.org/basic-syntax/\n\
-    \    # More complex output can be formatted using ``tableToMarkDown()`` defined\n\
-    \    # in ``CommonServerPython.py``\n    readable_output = f'## ping: {result[\"\
-    ping\"]}'\n\n    # More information about Context:\n    # https://xsoar.pan.dev/docs/integrations/context-and-outputs\n\
-    \    # We return a ``CommandResults`` object, and we want to pass a custom\n \
-    \   # markdown here, so the argument ``readable_output`` is explicit. If not\n\
-    \    # passed, ``CommandResults``` will do a ``tableToMarkdown()`` do the data\n\
-    \    # to generate the readable output.\n    return CommandResults(\n        readable_output=readable_output,\n\
+    \ will fail the test.\n    :rtype: ``str``\n    \"\"\"\n\n    try:\n        client.ping()\n\
+    \    except DemistoException as e:\n        if 'Forbidden' in str(e):\n      \
+    \      return 'Authorization Error: make sure API Key is correctly set'\n    \
+    \    else:\n            raise e\n    return 'ok'\n\n\ndef ping_command(client:\
+    \ Client) -> CommandResults:\n    \"\"\"cognni-ping command: Prints ping\n\n \
+    \   :type client: ``Client``\n    :param client: Cognni client to use\n\n    :return:\n\
+    \        A ``CommandResults`` object that is then passed to ``return_results``,\n\
+    \        that contains the ping response\n\n    :rtype: ``CommandResults``\n \
+    \   \"\"\"\n\n    result = client.ping()\n    readable_output = f'## ping: {result[\"\
+    ping\"]}'\n    return CommandResults(\n        readable_output=readable_output,\n\
     \        outputs_prefix='Cognni.ping',\n        raw_response={},\n        outputs={}\n\
     \    )\n\n\ndef fetch_incidents(client: Client, last_run: Dict[str, int],\n  \
     \                  first_fetch_time: Optional[int],\n                    events_limit:\
@@ -398,9 +368,7 @@ script:
     \ is then passed to ``return_results``,\n        that contains an alert\n\n  \
     \  :rtype: ``CommandResults``\n    \"\"\"\n\n    event_id = args.get('event_id',\
     \ None)\n    if not event_id:\n        raise ValueError('event_id not specified')\n\
-    \n    event = client.get_event(event_id=event_id)\n\n    # tableToMarkdown() is\
-    \ defined is CommonServerPython.py and is used very\n    # often to convert lists\
-    \ and dicts into a human readable format in markdown\n    readable_output = tableToMarkdown(f'Cognni\
+    \n    event = client.get_event(event_id=event_id)\n    readable_output = tableToMarkdown(f'Cognni\
     \ event {event_id}', event)\n\n    return CommandResults(\n        readable_output=readable_output,\n\
     \        outputs_prefix='Cognni.event',\n        outputs_key_field='id',\n   \
     \     outputs=event\n    )\n\n\ndef fetch_insights_command(client: Client, args:\
@@ -425,53 +393,35 @@ script:
     \ FUNCTION '''\n\n\ndef main() -> None:\n    \"\"\"main function, parses params\
     \ and runs command functions\n\n    :return:\n    :rtype:\n    \"\"\"\n\n    api_key\
     \ = demisto.params().get('apikey')\n\n    # get the service API url\n    base_url\
-    \ = demisto.params()['url']\n\n    # if your Client class inherits from BaseClient,\
-    \ SSL verification is\n    # handled out of the box by it, just pass ``verify_certificate``\
-    \ to\n    # the Client constructor\n    verify_certificate = not demisto.params().get('insecure',\
-    \ False)\n\n    # How much time before the first fetch to retrieve incidents\n\
-    \    first_fetch_time = arg_to_timestamp(\n        arg=demisto.params().get('first_fetch',\
+    \ = demisto.params()['url']\n\n    verify_certificate = not demisto.params().get('insecure',\
+    \ False)\n\n    first_fetch_time = arg_to_timestamp(\n        arg=demisto.params().get('first_fetch',\
     \ '3 days'),\n        arg_name='First fetch time',\n        required=True\n  \
-    \  )\n    # Using assert as a type guard (since first_fetch_time is always an\
-    \ int when required=True)\n    assert isinstance(first_fetch_time, int)\n\n  \
-    \  # if your Client class inherits from BaseClient, system proxy is handled\n\
-    \    # out of the box by it, just pass ``proxy`` to the Client constructor\n \
-    \   proxy = demisto.params().get('proxy', False)\n\n    # INTEGRATION DEVELOPER\
-    \ TIP\n    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,\n\
-    \    # etc. to print information in the XSOAR server log. You can set the log\n\
-    \    # level on the server configuration\n    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging\n\
-    \n    demisto.debug(f'Command being called is {demisto.command()}')\n    try:\n\
-    \        client = Client(\n            base_url=base_url,\n            verify=verify_certificate,\n\
-    \            proxy=proxy)\n\n        fetch_key_res = client.fetch_key(api_key)\n\
-    \        access_token = fetch_key_res['token']\n\n        headers = {\n      \
-    \      'Authorization': f'Bearer {access_token}',\n            'Content-Type':\
-    \ 'application/json',\n        }\n\n        client = Client(\n            base_url=base_url,\n\
-    \            verify=verify_certificate,\n            headers=headers,\n      \
-    \      proxy=proxy)\n\n        if demisto.command() == 'test-module':\n      \
-    \      # This is the call made when pressing the integration Test button.\n  \
-    \          result = test_module(client)\n            return_results(result)\n\n\
-    \        elif demisto.command() == 'cognni-ping':\n            return_results(ping_command(client))\n\
-    \n        elif demisto.command() == 'cognni-fetch-incidents':\n            return_results(fetch_incidents_command(client,\
+    \  )\n    assert isinstance(first_fetch_time, int)\n\n    proxy = demisto.params().get('proxy',\
+    \ False)\n\n    demisto.debug(f'Command being called is {demisto.command()}')\n\
+    \    try:\n        client = Client(\n            base_url=base_url,\n        \
+    \    verify=verify_certificate,\n            proxy=proxy)\n\n        fetch_key_res\
+    \ = client.fetch_key(api_key)\n        access_token = fetch_key_res['token']\n\
+    \n        headers = {\n            'Authorization': f'Bearer {access_token}',\n\
+    \            'Content-Type': 'application/json',\n        }\n\n        client\
+    \ = Client(\n            base_url=base_url,\n            verify=verify_certificate,\n\
+    \            headers=headers,\n            proxy=proxy)\n\n        if demisto.command()\
+    \ == 'cognni-fetch-incidents':\n            return_results(fetch_incidents_command(client,\
     \ first_fetch_time, demisto.args()))\n\n        elif demisto.command() == 'fetch-incidents':\n\
-    \            # Set and define the fetch incidents command to run after activated\
-    \ via integration settings.\n            min_severity = demisto.params().get('min_severity',\
-    \ None)\n\n            # Convert the argument to an int using helper function\
-    \ or set to MAX_EVENTS_TO_FETCH\n            max_fetch = arg_to_int(\n       \
-    \         arg=demisto.params().get('max_fetch'),\n                arg_name='max_fetch',\n\
-    \                required=False\n            )\n            if not max_fetch or\
-    \ max_fetch > MAX_EVENTS_TO_FETCH:\n                max_fetch = MAX_EVENTS_TO_FETCH\n\
-    \n            next_run, incidents = fetch_incidents(\n                client=client,\n\
-    \                events_limit=max_fetch,\n                last_run=demisto.getLastRun(),\
-    \  # getLastRun() gets the last run dict\n                first_fetch_time=first_fetch_time,\n\
-    \                min_severity=min_severity\n            )\n\n            # saves\
-    \ next_run for the time fetch-incidents is invoked\n            demisto.setLastRun(next_run)\n\
-    \            # fetch-incidents calls ``demisto.incidents()`` to provide the list\n\
-    \            # of incidents to crate\n            demisto.incidents(incidents)\n\
-    \n        elif demisto.command() == 'cognni-get-event':\n            return_results(get_event_command(client,\
-    \ demisto.args()))\n\n        elif demisto.command() == 'cognni-fetch-insights':\n\
-    \            return_results(fetch_insights_command(client, demisto.args()))\n\n\
-    \        elif demisto.command() == 'cognni-get-insight':\n            return_results(get_insight_command(client,\
-    \ demisto.args()))\n\n    # Log exceptions and return errors\n    except Exception\
-    \ as e:\n        demisto.error(traceback.format_exc())  # print the traceback\n\
+    \            min_severity = demisto.params().get('min_severity', None)\n\n   \
+    \         max_fetch = arg_to_int(\n                arg=demisto.params().get('max_fetch'),\n\
+    \                arg_name='max_fetch',\n                required=False\n     \
+    \       )\n            if not max_fetch or max_fetch > MAX_EVENTS_TO_FETCH:\n\
+    \                max_fetch = MAX_EVENTS_TO_FETCH\n\n            next_run, incidents\
+    \ = fetch_incidents(\n                client=client,\n                events_limit=max_fetch,\n\
+    \                last_run=demisto.getLastRun(),  # getLastRun() gets the last\
+    \ run dict\n                first_fetch_time=first_fetch_time,\n             \
+    \   min_severity=min_severity\n            )\n\n            demisto.setLastRun(next_run)\n\
+    \            demisto.incidents(incidents)\n\n        elif demisto.command() ==\
+    \ 'cognni-get-event':\n            return_results(get_event_command(client, demisto.args()))\n\
+    \n        elif demisto.command() == 'cognni-fetch-insights':\n            return_results(fetch_insights_command(client,\
+    \ demisto.args()))\n\n        elif demisto.command() == 'cognni-get-insight':\n\
+    \            return_results(get_insight_command(client, demisto.args()))\n\n \
+    \   # Log exceptions and return errors\n    except Exception as e:\n        demisto.error(traceback.format_exc())\n\
     \        return_error(f'Failed to execute {demisto.command()} command.\\nError:\\\
     n{str(e)}')\n\n\n''' ENTRY POINT '''\n\nif __name__ in ('__main__', '__builtin__',\
     \ 'builtins'):\n    main()"

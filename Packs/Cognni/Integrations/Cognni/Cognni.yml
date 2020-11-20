@@ -3,8 +3,7 @@ commonfields:
   id: Cognni
   version: -1
 configuration:
-- defaultvalue: ''
-  display: Server URL
+- display: Server URL
   name: url
   required: true
   type: 0
@@ -54,14 +53,6 @@ display: Cognni
 name: Cognni
 script:
   commands:
-  - deprecated: false
-    description: Ping command - check ping.
-    execution: false
-    name: cognni-ping
-    outputs:
-    - contextPath: Cognni.ping
-      description: Should be "ok".
-      type: String
   - arguments:
     - default: false
       description: The event ID
