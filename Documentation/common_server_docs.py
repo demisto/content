@@ -22,7 +22,7 @@ JS_PRIVATE_FUNCS = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRec
 
 PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
                     "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
-                    "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException",
+                    "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "timezone",
                     "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
                     "IndicatorType", "EntryType", "EntryFormat", "abstractmethod",
                     "HTTPAdapter", "Retry", "Common", "randint", "GetDemistoVersion", "get_demisto_version",
@@ -176,7 +176,7 @@ def create_py_documentation(path, origin, language):
 
                     x.append(y)
                 except parser.MethodParsingException:
-                    logging.exception('Failed to parse {} class/function')
+                    logging.exception('Failed to parse {} class/function'.format(a))
                     is_error_py = True
 
     if is_error_py:
@@ -236,7 +236,7 @@ def create_ps_documentation(path, origin, language):
     return function_doc_list, is_error_ps
 
 
-def main(argv):
+def main():
     install_logging('Common Server Documentation.log')
     js_doc, is_error_js = create_js_documentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs',
                                                   'javascript')
@@ -258,4 +258,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
