@@ -17,7 +17,7 @@ import traceback
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from abc import abstractmethod
 
 import demistomock as demisto
@@ -29,6 +29,7 @@ try:
     from urllib3.util import Retry
     from typing import Optional, List, Any
     import dateparser
+    from datetime import timezone
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
