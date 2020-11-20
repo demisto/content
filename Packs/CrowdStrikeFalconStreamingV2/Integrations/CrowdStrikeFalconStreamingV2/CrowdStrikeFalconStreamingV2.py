@@ -63,9 +63,9 @@ class Client(BaseClient):
             params={'appId': self.app_id},
         )
 
-    def refresh_stream_session(self) -> None:
+    def refresh_stream_session(self) -> Dict:
         demisto.debug(f'Sending request to refresh stream to {self.refresh_stream_url}')
-        self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='',
             full_url=self.refresh_stream_url
@@ -110,11 +110,20 @@ class EventStream:
         """
         client = Client(base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy)
         while True:
+            refreshed = True
             if client.refresh_stream_url:
                 # We already discovered an event stream, need to refresh it
                 demisto.debug('Starting stream refresh')
-                client.refresh_stream_session()
-                demisto.debug('Finished stream refresh')
+                try:
+                    response = client.refresh_stream_session()
+                    demisto.debug(f'Refresh stream response: {response}')
+                except Exception as e:
+                    demisto.updateModuleHealth('Failed refreshing stream session, will retry in 10 seconds.')
+                    demisto.debug(f'Failed refreshing stream session: {e}')
+                    refreshed = False
+                else:
+                    demisto.updateModuleHealth('')
+                    demisto.debug('Finished stream refresh successfully')
             else:
                 # We have no event stream, need to discover
                 await client.set_access_token(self.refresh_token)
@@ -126,6 +135,7 @@ class EventStream:
                     demisto.updateModuleHealth('Did not discover event stream resources, verify the App ID is not used'
                                                ' in another integration instance')
                     demisto.error(f'Did not discover event stream resources - {str(discover_stream_response)}')
+                    return
                 resource = resources[0]
                 self.data_feed_url = resource.get('dataFeedURL')
                 demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
@@ -133,8 +143,12 @@ class EventStream:
                 refresh_url = resource.get('refreshActiveSessionURL')
                 client.refresh_stream_url = refresh_url
                 event.set()
-            await sleep(MINUTES_25)
-            event.clear()
+            if refreshed:
+                await sleep(MINUTES_25)
+                event.clear()
+            else:
+                demisto.debug('Failed refreshing stream, going to sleep for 10 seconds and then retry')
+                await sleep(10)
 
     async def fetch_event(
             self, first_fetch_time: datetime, initial_offset: int = 0, event_type: str = ''
