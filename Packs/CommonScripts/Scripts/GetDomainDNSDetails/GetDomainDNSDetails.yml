@@ -28,9 +28,21 @@ commonfields:
 enabled: false
 name: GetDomainDNSDetails
 outputs:
-- contextPath: DomainDNSDetails
-  description: The returned details
-  type: Unknown
+- contextPath: DomainDNSDetails.A
+  description: Domain A records.
+  type: String
+- contextPath: DomainDNSDetails.AAAA
+  description: Domain AAAA records.
+  type: String
+- contextPath: DomainDNSDetails.NS
+  description: Domain CNAME records.
+  type: String
+- contextPath: DomainDNSDetails.domain
+  description: Domain name used in the query.
+  type: String
+- contextPath: DomainDNSDetails.server
+  description: Name server that returned the result.
+  type: String
 script: '-'
 system: false
 tags: []

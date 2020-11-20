@@ -24,29 +24,31 @@ Returns DNS details for a domain
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DomainDNSDetails | The returned details | Unknown |
+| DomainDNSDetails.A | Domain A records. | String |
+| DomainDNSDetails.AAAA | Domain AAAA records. | String |
+| DomainDNSDetails.NS | Domain CNAME records. | String |
+| DomainDNSDetails.domain | Domain name used in the query. | String |
+| DomainDNSDetails.server | Name server that returned the result. | String |
 
 
 ## Script Example
-```!GetDomainDNSDetails domain=paloaltonetworks.com```
+```!GetDomainDNSDetails domain=example.com```
 
 ## Context Example
 ```json
 {
     "DomainDNSDetails": {
         "A": [
-            "34.107.151.202"
+            "10.11.12.13"
+        ],
+        "AAAA": [
+            "2001:2001:200:1:200:2001:2001:2001"
         ],
         "NS": [
-            "ns5.dnsmadeeasy.com.",
-            "ns6.dnsmadeeasy.com.",
-            "ns7.dnsmadeeasy.com.",
-            "ns1.p23.dynect.net.",
-            "ns2.p23.dynect.net.",
-            "ns3.p23.dynect.net.",
-            "ns4.p23.dynect.net."
+            "a.iana-servers.net.",
+            "b.iana-servers.net."
         ],
-        "domain": "paloaltonetworks.com",
+        "domain": "example.com",
         "server": "system"
     }
 }
@@ -54,8 +56,8 @@ Returns DNS details for a domain
 
 ## Human Readable Output
 
->###  Domain DNS Details for paloaltonetworks.com
+>###  Domain DNS Details for example.com
 >|domain|server|CNAME|NS|A|AAAA|
 >|---|---|---|---|---|---|
->| paloaltonetworks.com | system |  | ns5.dnsmadeeasy.com.,<br/>ns6.dnsmadeeasy.com.,<br/>ns7.dnsmadeeasy.com.,<br/>ns1.p23.dynect.net.,<br/>ns2.p23.dynect.net.,<br/>ns3.p23.dynect.net.,<br/>ns4.p23.dynect.net. | 34.107.151.202 |  |
+>| example.com | system |  | a.iana-servers.net.,<br/>b.iana-servers.net. | 10.11.12.13 | 2001:2001:200:1:200:2001:2001:2001 |
 
