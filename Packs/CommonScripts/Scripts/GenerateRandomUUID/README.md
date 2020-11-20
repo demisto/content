@@ -1,4 +1,4 @@
-Generates  Random UUID (UUID 4)
+Generates a random UUID (UUID 4).
 
 ## Script Data
 ---

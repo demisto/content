@@ -1,4 +1,4 @@
-comment: Generates  Random UUID (UUID 4)
+comment: Generates a random UUID (UUID 4).
 commonfields:
   id: GenerateRandomUUID
   version: -1
