@@ -6688,7 +6688,7 @@ script:
     - contextPath: Argus.ObservationsIP.data.address.address
       description: Argus
       type: String
-  dockerimage: demisto/argus-toolbelt:1.0.0.13208
+  dockerimage: devdemisto/argus-toolbelt:1.0.0.13826
   feed: false
   isfetch: true
   longRunning: false

@@ -13,6 +13,7 @@ pytest-asyncio = "*"
 [packages]
 pytest = "*"
 requests = "*"
+argus-toolbelt = ">=5.0.1"
 
 [requires]
 python_version = "3.7"

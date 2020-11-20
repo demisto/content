@@ -11,7 +11,8 @@ from typing import Any, Dict, List  # , Tuple, Optional, Union, cast
 import logging
 
 # from argus_cli.utils import formatting
-from argus_cli.settings import settings
+# from argus_cli.settings import settings
+from argus_api import session as argus_session
 
 from argus_api.api.currentuser.v1.user import get_current_user
 
@@ -66,9 +67,13 @@ FETCH_TAG = demisto.params().get("fetch_tag")
 """ HELPER FUNCTIONS """
 
 
-def set_argus_settings(api_key, api_url):
-    settings["api"]["api_key"] = api_key
-    settings["api"]["api_url"] = api_url
+def set_argus_settings(
+    api_key: str, base_url: str = None, proxies: dict = None, verify: bool = None
+):
+    argus_session.api_key = api_key
+    argus_session.base_url = base_url
+    argus_session.proxies = proxies
+    argus_session.verify = verify
 
 
 def argus_priority_to_demisto_severity(priority: str) -> int:
@@ -950,20 +955,20 @@ def fetch_observations_for_i_p_command(args: Dict[str, Any]) -> CommandResults:
 
 def main() -> None:
     logging.getLogger("argus_cli").setLevel("WARNING")
-    # verify_certificate = not demisto.params().get("insecure", False)  TODO
-    # proxy = demisto.params().get("proxy", False)  TODO
 
     first_fetch_period = parse_first_fetch(
         demisto.params().get("first_fetch_period", "-1 day")
     )
 
+    set_argus_settings(
+        demisto.params().get("api_key"),
+        demisto.params().get("api_url"),
+        handle_proxy(),
+        demisto.params().get("insecure", None)
+    )
+
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-
-        set_argus_settings(
-            demisto.params().get("api_key"), demisto.params().get("api_url")
-        )
-
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module_command())
