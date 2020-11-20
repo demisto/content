@@ -6,8 +6,8 @@ Aggregate entries from multiple sources into AttributionUser
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags | |
-| Demisto Version | 6.0.0 |
+| Tags | expanse |
+| Demisto Version | 5.0.0 |
 
 ## Used In
 ---

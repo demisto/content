@@ -143,8 +143,12 @@ script:
       name: iprange
       required: false
       secret: false
+    outputs:
+    - contextPath: Expanse.Indicator
+      description: 'Expanse Discovered Assets'
+      type: Unknown
     deprecated: false
-    description: Retrieve discovered IPs/IP Ranges/Domains/Certificates
+    description: Retrieve discovered IPs/IP Ranges/Domains/Certificates as indicators
     execution: true
   isfetch: false
   feed: true
@@ -154,7 +158,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.12176
 fromversion: 6.0.0
 tests:
-- Feed Expanse Test
+- No tests (auto formatted)

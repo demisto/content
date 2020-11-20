@@ -10,7 +10,6 @@ args:
   name: expanseips
 - isArray: true
   name: prismacloudassets
-  description: Assets found in Prisma Cloud
 - description: Shadow IT suggestions
   isArray: true
   name: shadowit
@@ -41,7 +40,7 @@ comment: Print  Expanse Attribution Suggestions
 commonfields:
   id: ExpansePrintSuggestions
   version: -1
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.8.6.12176
 enabled: true
 name: ExpansePrintSuggestions
 runas: DBotWeakRole
@@ -49,8 +48,9 @@ runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
-tags: []
+tags:
+- expanse
 type: python
-fromversion: 6.0.0
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

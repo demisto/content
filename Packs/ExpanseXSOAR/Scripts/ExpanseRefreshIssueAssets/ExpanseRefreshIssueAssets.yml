@@ -4,7 +4,7 @@ comment: >
 commonfields:
   id: ExpanseRefreshIssueAssets
   version: -1
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.8.6.12176
 enabled: true
 name: ExpanseRefreshIssueAssets
 runas: DBotWeakRole
@@ -14,5 +14,5 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
-fromversion: 6.0.0
+fromversion: 5.0.0
 tests: []

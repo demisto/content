@@ -125,7 +125,6 @@ tasks:
       name: Cloud Provider Selector
       type: condition
       version: -1
-      description: Select the appropriate branch depending on the Cloud Provider
     taskid: e689a6a5-2163-4dfd-80e2-e3f567586a12
     timertriggers: []
     type: condition
@@ -160,7 +159,7 @@ tasks:
       id: 148e2a46-7809-4536-8452-08bcf3a66ee1
       iscommand: false
       name: Match IP in AWS CIDR Indicators
-      script: MatchIPinCIDRIndicators
+      script: 9a7d2051-b4ac-4839-8213-c07f991bcae2
       type: regular
       version: -1
     taskid: 148e2a46-7809-4536-8452-08bcf3a66ee1
@@ -197,7 +196,7 @@ tasks:
       id: 8e6e332f-0c8f-4ed5-8370-d85f7abc9166
       iscommand: false
       name: Match IP in GCP CIDR Indicators
-      script: MatchIPinCIDRIndicators
+      script: 9a7d2051-b4ac-4839-8213-c07f991bcae2
       type: regular
       version: -1
     taskid: 8e6e332f-0c8f-4ed5-8370-d85f7abc9166
@@ -234,7 +233,7 @@ tasks:
       id: 776c1eb0-eaa7-4f02-84ed-a9a56d10f9ad
       iscommand: false
       name: Match IP in AZURE CIDR Indicators
-      script: MatchIPinCIDRIndicators
+      script: 9a7d2051-b4ac-4839-8213-c07f991bcae2
       type: regular
       version: -1
     taskid: 776c1eb0-eaa7-4f02-84ed-a9a56d10f9ad
@@ -315,6 +314,6 @@ view: |-
       }
     }
   }
-fromversion: 6.0.0
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

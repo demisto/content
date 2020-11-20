@@ -52,16 +52,6 @@ RESULT_USER = [
 
 
 def test_enrich_command():
-    """
-    Given:
-        - nonenriched lists of: ips, users, devices sightings
-        - enrichment information for ips, users, devices
-    When
-        - enriching lists of ips, users, devices
-    Then
-        - data is enriched
-        - enriched output is returned
-    """
     ip_result = ExpanseEnrichAttribution.enrich_command({
         'type': 'IP',
         'current': CURRENT_IP,

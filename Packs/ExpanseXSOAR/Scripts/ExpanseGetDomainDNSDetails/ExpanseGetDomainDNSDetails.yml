@@ -1,0 +1,41 @@
+args:
+- default: false
+  description: The domain to query
+  isArray: false
+  name: domain
+  required: true
+  secret: false
+- default: false
+  description: "IP of the DNS Server to use (default: system settings)"
+  isArray: false
+  name: server
+  required: false
+  secret: false
+- default: false
+  description: "Use TCP for the query (default: False)"
+  isArray: false
+  name: use_tcp
+  secret: false
+- default: false
+  description: "Comma separated list of query types (default: CNAME,NS,A,AAAA)"
+  isArray: false
+  name: qtype
+  secret: false
+comment: Returns DNS details for a domain
+commonfields:
+  id: ExpanseGetDomainDNSDetails
+  version: -1
+enabled: false
+name: ExpanseGetDomainDNSDetails
+outputs:
+- contextPath: Expanse.DomainDNSDetails
+  description: The returned details
+  type: Unknown
+script: '-'
+system: false
+tags: []
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/dnspython:1.0.0.12410
+fromversion: 5.5.0

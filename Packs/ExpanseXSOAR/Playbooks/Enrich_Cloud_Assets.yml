@@ -118,15 +118,15 @@ tasks:
       description: |-
         Find a Public Cloud resource of the following types:
          - Compute Instance
-         - Load Balancer
+        - Load Balancer
 
         on: AWS, Azure, GCP
 
         using Prisma Cloud inventory
       id: c5c0eb60-408b-4736-85e1-24e51da9723e
       iscommand: false
-      name: Prisma Cloud - Find Public Cloud Resource by Public IP
-      playbookId: Prisma Cloud - Find Public Cloud Resource by Public IP
+      name: 0e5a880d-8ada-470a-8c61-2f93b4afee31
+      playbookId: 0e5a880d-8ada-470a-8c61-2f93b4afee31
       type: playbook
       version: -1
     taskid: c5c0eb60-408b-4736-85e1-24e51da9723e
@@ -167,15 +167,15 @@ tasks:
         Find a Public Cloud resource of the following types:
         - CDN
         - Domain Hosted Zone
-        - Other
+        - ???
 
         on: AWS, Azure, GCP
 
         using Prisma Cloud inventory
       id: 836fb635-0ab0-46ad-80e5-f548d9da6626
       iscommand: false
-      name: Prisma Cloud - Find Public Cloud Resource by FQDN
-      playbookId: Prisma Cloud - Find Public Cloud Resource by FQDN
+      name: e22ecee3-63bf-4971-84af-b4dd15742b4c
+      playbookId: e22ecee3-63bf-4971-84af-b4dd15742b4c
       type: playbook
       version: -1
     taskid: 836fb635-0ab0-46ad-80e5-f548d9da6626
@@ -216,7 +216,6 @@ tasks:
       name: Is there a FQDN?
       type: condition
       version: -1
-      description: Check whether any FQDN is present.
     taskid: 79196058-f6f3-4bc1-8945-25b15b53ba78
     timertriggers: []
     type: condition
@@ -264,8 +263,8 @@ tasks:
         using Indicators (CIDRs)
       id: b3f2f17c-1e4e-4839-820e-39eb9bc9f9ef
       iscommand: false
-      name: Find Cloud IP Address Region and Service
-      playbookId: Find Cloud IP Address Region and Service
+      name: 69823c3d-2c85-4d2c-805d-66f47bcc1f69
+      playbookId: 69823c3d-2c85-4d2c-805d-66f47bcc1f69
       type: playbook
       version: -1
     taskid: b3f2f17c-1e4e-4839-820e-39eb9bc9f9ef
@@ -308,7 +307,6 @@ tasks:
       name: Found Indicator?
       type: condition
       version: -1
-      description: Check whether an indicator is found.
     taskid: defecacb-2df3-46ef-883f-1f8f756e27c4
     timertriggers: []
     type: condition
@@ -840,7 +838,6 @@ tasks:
       name: Is there an IP?
       type: condition
       version: -1
-      description: Check whether an IP is present.
     taskid: 65664dbd-d1d6-4d20-8d46-7c2963bda538
     timertriggers: []
     type: condition
@@ -883,7 +880,6 @@ tasks:
       name: Update incident?
       type: condition
       version: -1
-      description: Check whether the incident has to be updated.
     taskid: 8a24f1c3-0b75-4373-8d0d-36b71b4e0ca2
     timertriggers: []
     type: condition
@@ -912,4 +908,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 5.0.0
