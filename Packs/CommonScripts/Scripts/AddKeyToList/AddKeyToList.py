@@ -31,13 +31,17 @@ def add_key_to_list(list_name: str, key_name: str, value: str, append: bool = Fa
             raise ValueError(f'List does not contain valid JSON data: {e}')
 
     if append and key_name in list_data:
+        entries: List = []
         if isinstance(list_data[key_name], list):
-            if not allow_dups and value in list_data[key_name]:
-                return f'Value already present in key {key_name} of list {list_name}: not appending.'
-            list_data[key_name].append(value)
+            entries = list_data[key_name]
         else:
-            old_value = list_data[key_name]
-            list_data[key_name] = [old_value, value]
+            entries = [list_data[key_name]]
+
+        if value in entries and allow_dups is False:
+            return f'Value already present in key {key_name} of list {list_name}: not appending.'
+
+        entries.append(value)
+        list_data[key_name] = entries
     else:
         list_data[key_name] = value
 

@@ -27,7 +27,7 @@ There are no inputs for this script.
 ## Context Example
 ```json
 {
-    "GeneratedUUID": "3a91dc43-f9a8-4ebe-a2af-160870c7ed11"
+    "GeneratedUUID": "8aad5925-aae2-4141-b3fb-2d8e2c0da00b"
 }
 ```
 
@@ -36,5 +36,5 @@ There are no inputs for this script.
 >### Random UUID Generated.
 >|GeneratedUUID|
 >|---|
->| 3a91dc43-f9a8-4ebe-a2af-160870c7ed11 |
+>| 8aad5925-aae2-4141-b3fb-2d8e2c0da00b |
 

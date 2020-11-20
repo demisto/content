@@ -39,6 +39,7 @@ args:
   predefined:
   - 'true'
   - 'false'
+outputs: []
 comment: Adds/Replaces a key in key/value store backed by an XSOAR list.
 commonfields:
   id: AddKeyToList
@@ -47,7 +48,7 @@ enabled: false
 name: AddKeyToList
 script: '-'
 system: false
-tags:
+tags: []
 timeout: '0'
 type: python
 subtype: python3

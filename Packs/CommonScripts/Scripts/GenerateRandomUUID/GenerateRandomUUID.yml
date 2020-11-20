@@ -8,12 +8,10 @@ outputs:
 - contextPath: GeneratedUUID
   description: The generated UUID.
   type: string
-runas: DBotWeakRole
 runonce: false
 script: ''
-scripttarget: 0
 subtype: python3
 tags: []
 type: python
-dockerimage: demisto/dnspython:1.0.0.12410
+dockerimage: demisto/python3:3.8.6.12176
 fromversion: 5.0.0

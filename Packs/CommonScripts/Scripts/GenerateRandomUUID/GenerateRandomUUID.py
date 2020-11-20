@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
 
-import json
 import uuid
 
 
@@ -22,7 +21,7 @@ def generate_random_uuid_command() -> CommandResults:
     }
 
     return CommandResults(
-        readable_output=f'## Random UUID Generated: {outputs['GeneratedUUID']}',
+        readable_output=f'## Random UUID Generated: {outputs["GeneratedUUID"]}',
         outputs=outputs,
     )
 
@@ -32,7 +31,7 @@ def generate_random_uuid_command() -> CommandResults:
 
 def main():
     try:
-        return_results(generate_random_uuid_command(demisto.args()))
+        return_results(generate_random_uuid_command())
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GenerateRandomUUID. Error: {str(ex)}')

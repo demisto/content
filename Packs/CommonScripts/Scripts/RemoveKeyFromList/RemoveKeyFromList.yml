@@ -12,6 +12,7 @@ args:
   required: true
   secret: false
 comment: Removes a key in key/value store backed by an XSOAR list.
+outputs: []
 commonfields:
   id: RemoveKeyFromList
   version: -1
@@ -19,7 +20,7 @@ enabled: false
 name: RemoveKeyFromList
 script: '-'
 system: false
-tags:
+tags: []
 timeout: '0'
 type: python
 subtype: python3

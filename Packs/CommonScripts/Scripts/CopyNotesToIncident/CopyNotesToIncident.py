@@ -1,5 +1,7 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
+
 from typing import Dict, Any, List
 import traceback
 
@@ -20,7 +22,10 @@ def copy_notes_to_target_incident(args: Dict[str, Any]) -> CommandResults:
     md: str = ''
 
     if isinstance(entries, list) and len(entries) > 0:
-        [note_entries.append(n) for n in entries if 'Note' in n and n['Note'] is True]
+        for n in entries:
+            if 'Note' in n and n['Note'] is True:
+                note_entries.append(n)
+
         if len(note_entries) > 0:
             demisto.executeCommand("addEntries", {"id": target_incident, "entries": note_entries})
             md = f'## {len(note_entries)} notes copied'
