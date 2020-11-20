@@ -1,0 +1,507 @@
+description: Search alerts in Prisma Cloud for a specific asset ID and, if present
+  in XSOAR, link them
+id: Prisma Cloud Correlate Alerts
+inputs:
+- description: Attribution information from Prisma Cloud
+  key: Prisma Cloud Attribution
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: Attribution
+      root: PrismaCloud
+- description: Link found Prisma Cloud incidents to current one?
+  key: Link Incidents
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "True"
+name: Prisma Cloud Correlate Alerts
+outputs:
+- contextPath: foundIncidents
+  description: Found Prisma Cloud Incidents
+  type: unknown
+- contextPath: Redlock.Alert
+  description: Prisma Cloud Alert
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "109"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 569aafc5-1607-4b78-83d2-c6bfe05c2a07
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 569aafc5-1607-4b78-83d2-c6bfe05c2a07
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 5650
+        }
+      }
+  "109":
+    id: "109"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "169"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 37dbf3c9-e00b-4171-8cf7-f6b6245d5b69
+      iscommand: false
+      name: Prisma Cloud Alert Detection
+      type: title
+      version: -1
+      description: ''
+    taskid: 37dbf3c9-e00b-4171-8cf7-f6b6245d5b69
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 5810
+        }
+      }
+  "110":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Prisma Cloud Attribution
+          operator: isNotEmpty
+      label: "yes"
+    id: "110"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "111"
+      "yes":
+      - "112"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 659602ca-fdfd-4b6c-8d6b-2e3481101345
+      iscommand: false
+      name: Are assets in Prisma Cloud found?
+      type: condition
+      version: -1
+    taskid: 659602ca-fdfd-4b6c-8d6b-2e3481101345
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 6110
+        }
+      }
+  "111":
+    id: "111"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab24e389-a3e9-4bfc-8019-67767ecdc44c
+      iscommand: false
+      name: Done Prisma Cloud Alert Detection
+      type: title
+      version: -1
+      description: ''
+    taskid: ab24e389-a3e9-4bfc-8019-67767ecdc44c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 7430
+        }
+      }
+  "112":
+    id: "112"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "113"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert-id: {}
+      alert-rule-name: {}
+      alert-status: {}
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
+      policy-compliance-standard: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
+      resource-id:
+        complex:
+          accessor: id
+          root: inputs.Prisma Cloud Attribution
+      resource-name: {}
+      resource-type: {}
+      risk-grade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search alerts on the Prisma Cloud (RedLock) platform
+      id: 6b73703f-91c6-4c59-81ea-608081cd8d0d
+      iscommand: true
+      name: Find Prisma Cloud Alerts for detected assets
+      script: '|||redlock-search-alerts'
+      type: regular
+      version: -1
+    taskid: 6b73703f-91c6-4c59-81ea-608081cd8d0d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 6295
+        }
+      }
+  "113":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Prisma Cloud Alerts related to assets
+    id: "113"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "167"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      columns: {}
+      data:
+        complex:
+          accessor: Alert
+          root: Redlock
+          transformers:
+          - args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: '[]'
+            operator: SetIfEmpty
+      title:
+        simple: Prisma Cloud Alerts related to discovered assets
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Convert an array to a nice table display. Usually, from the context.
+      id: 56ede8ba-7f6c-45d6-8df0-df36b1f6db4d
+      iscommand: false
+      name: Print Prisma Cloud Alerts
+      script: ToTable
+      type: regular
+      version: -1
+    taskid: 56ede8ba-7f6c-45d6-8df0-df36b1f6db4d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 6490
+        }
+      }
+  "114":
+    id: "114"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "168"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      details: {}
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id: {}
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query:
+        complex:
+          accessor: ID
+          root: Redlock.Alert
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'prismacloudid:'
+              suffix: {}
+            operator: concat
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type:
+        simple: Prisma Cloud
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Searches Demisto incidents
+      id: 9079ea83-9a82-4d29-864e-380d032d7795
+      iscommand: false
+      name: Find Prisma Cloud Incidents
+      script: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: 9079ea83-9a82-4d29-864e-380d032d7795
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 6840
+        }
+      }
+  "115":
+    id: "115"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "111"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: link
+      incidentId: {}
+      linkedIncidentIDs:
+        complex:
+          accessor: id
+          root: foundIncidents
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.linkIncidents
+      id: ce1ed273-f682-4492-8e40-cb2bb365eda4
+      iscommand: true
+      name: Link Incidents
+      script: Builtin|||linkIncidents
+      type: regular
+      version: -1
+    taskid: ce1ed273-f682-4492-8e40-cb2bb365eda4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 7200
+        }
+      }
+  "167":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Alert
+                root: Redlock
+          operator: isNotEmpty
+      label: "yes"
+    id: "167"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "111"
+      "yes":
+      - "114"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dd6c89cf-3f57-4f65-8633-cfbc7fcd46cf
+      iscommand: false
+      name: Prisma Cloud Alerts found?
+      type: condition
+      version: -1
+    taskid: dd6c89cf-3f57-4f65-8633-cfbc7fcd46cf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 6670
+        }
+      }
+  "168":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: foundIncidents
+          operator: isNotEmpty
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Link Incidents
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "168"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "111"
+      "yes":
+      - "115"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4eacb327-5a69-4f7a-8d47-f6bd17036d53
+      iscommand: false
+      name: Are we linking found Prisma Cloud Incidents?
+      type: condition
+      version: -1
+    taskid: 4eacb327-5a69-4f7a-8d47-f6bd17036d53
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 7000
+        }
+      }
+  "169":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: RedLock
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "169"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "111"
+      "yes":
+      - "110"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 956d1726-3eb8-48b0-8409-ff00fa2bbfb6
+      iscommand: false
+      name: Is Prisma Cloud enabled?
+      type: condition
+      version: -1
+    taskid: 956d1726-3eb8-48b0-8409-ff00fa2bbfb6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 5940
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "167_111_#default#": 0.17,
+      "168_111_#default#": 0.19,
+      "169_111_#default#": 0.17
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1845,
+        "width": 1730,
+        "x": -380,
+        "y": 5650
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

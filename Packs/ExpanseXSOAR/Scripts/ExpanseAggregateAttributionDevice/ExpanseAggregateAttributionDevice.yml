@@ -1,0 +1,57 @@
+enabled: false
+name: ExpanseAggregateAttributionDevice
+comment: Aggregate entries from multiple sources into AttributionDevice
+commonfields:
+  id: ExpanseAggregateAttributionDevice
+  version: -1
+args:
+- name: input
+  description: input list
+  isArray: true
+- name: current
+  required: false
+  description: current aggregation state
+  isArray: true
+- name: serial_fields
+  description: comma separated list of fields to treat as serial number
+  defaultValue: serial_number,serial,log_source_id
+- name: vsys_fields
+  description: comma separate list of field names to be used as vsys
+  defaultValue: vsys
+- name: sightings_fields
+  description: comma separated list of field names to be considered sighting counts
+  defaultValue: count
+- name: source_ip_fields
+  description: comma separated list of field names to be considered as source IPs
+  defaultValue: src,src_ip
+- name: internal_ip_networks
+  description: comma separated list of IPv4 Networks to be considered internal (default to RFC private networks)
+  defaultValue: ""
+outputs:
+- contextPath: Expanse.AttributionDevice.serial
+  description: Serial Number of the device
+  type: string
+- contextPath: Expanse.AttributionDevice.vsys
+  description: VSYS of the device
+  type: string
+- contextPath: Expanse.AttributionDevice.device-group
+  description: Device Group inside Panorama
+  type: string
+- contextPath: Expanse.AttributionDevice.xsoar-instance
+  description: XSOAR Panorama instance for this device
+  type: string
+- contextPath: Expanse.AttributionDevice.exposing_service
+  description: Is the device exposing the asset?
+  type: boolean
+- contextPath: Expanse.AttributionDevice.sightings
+  description: Number of sessions seen on this device
+  type: number
+script: '-'
+system: false
+tags:
+- expanse
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.6.12176
+fromversion: 5.0.0

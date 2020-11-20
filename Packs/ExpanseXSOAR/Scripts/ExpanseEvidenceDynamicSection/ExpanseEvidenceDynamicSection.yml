@@ -1,0 +1,17 @@
+commonfields:
+  id: ExpanseEvidenceDynamicSection
+  version: -1
+dockerimage: demisto/python3:3.8.6.12176
+enabled: true
+name: ExpanseEvidenceDynamicSection
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

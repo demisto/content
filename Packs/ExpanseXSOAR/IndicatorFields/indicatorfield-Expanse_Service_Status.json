@@ -1,0 +1,39 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "ExpanseCertificate",
+        "DomainGlob",
+        "Domain"
+    ],
+    "caseInsensitive": true,
+    "cliName": "expanseservicestatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_expanseservicestatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Expanse Service Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "NO_ACTIVE_SERVICE",
+        "NO_ACTIVE_ON_PREM_SERVICE",
+        "NO_ACTIVE_CLOUD_SERVICE",
+        "HAS_ACTIVE_SERVICE",
+        "HAS_ACTIVE_ON_PREM_SERVICE",
+        "HAS_ACTIVE_CLOUD_SERVICE"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}
