@@ -1,13 +1,16 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa
+from CommonServerPython import *  # noqa
+
 import json
+import traceback
 from json import JSONDecodeError
+from typing import Dict, Any, Tuple, List, Optional
 
 
-dict_stack = []
+''' STANDALONE FUNCTION '''
 
 
-def valueToMarkdown(v):
+def valueToMarkdown(v: Any) -> Optional[str]:
     if v is None:
         return "*empty*"
 
@@ -20,7 +23,7 @@ def valueToMarkdown(v):
     return None
 
 
-def dsToFieldList(name, d):
+def dsToFieldList(name: str, d: Dict[str, Any], dict_stack: List[Tuple[str, Dict[str, Any]]]) -> List[str]:
     if isinstance(d, dict):
         fields = d.items()
     elif isinstance(d, list):
@@ -68,18 +71,23 @@ def dsToFieldList(name, d):
     return md_result
 
 
-def convert_to_markdown(evidence):
+def convert_to_markdown(evidence: Dict[str, Any]) -> str:
     md_result = []
+    dict_stack: List[Tuple[str, Dict[str, Any]]] = []
+
     dict_stack.append(("Evidence", evidence))
 
     while len(dict_stack) > 0:
         next_dict = dict_stack.pop()
-        md_result.extend(dsToFieldList(next_dict[0], next_dict[1]))
+        md_result.extend(dsToFieldList(next_dict[0], next_dict[1], dict_stack))
 
     return '\n'.join(md_result)
 
 
-try:
+''' COMMAND FUNCTION '''
+
+
+def evidence_dynamic_section(args: Dict[str, Any]) -> CommandResults:
     incident = demisto.incidents()[0]
     custom_fields = incident.get('CustomFields')
 
@@ -89,7 +97,25 @@ try:
     else:
         latest_evidence = convert_to_markdown(json.loads(latest_evidence))
 
-    return_outputs(readable_output=latest_evidence)
+    return CommandResults(
+        readable_output=latest_evidence
+    )
 
-except Exception as e:
-    return_error(f'Error in creating ExpanseEvidenceDynamicField: {str(e)}')
+
+''' MAIN FUNCTION '''
+
+
+def main():
+    try:
+        result = evidence_dynamic_section(demisto.args())
+        return_results(result)
+    except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute ExpanseEvidenceDynamicSection. Error: {str(ex)}')
+
+
+''' ENTRY POINT '''
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
