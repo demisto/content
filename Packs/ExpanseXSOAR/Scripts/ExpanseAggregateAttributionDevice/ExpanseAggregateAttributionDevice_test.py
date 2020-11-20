@@ -59,18 +59,6 @@ RESULT = [
 
 
 def test_aggregate_command():
-    """
-    Given:
-        - previous list aggregated devices
-        - new data source with device/sightings information
-        - merged aggregated data with new information
-        - list of internal ip networks
-    When
-        - merging new sightings to existing aggregated data
-    Then
-        - data is merged
-        - expected output is returned
-    """
     result = ExpanseAggregateAttributionDevice.aggregate_command({
         'input': INPUT,
         'current': CURRENT,

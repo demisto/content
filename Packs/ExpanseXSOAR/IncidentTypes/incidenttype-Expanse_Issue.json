@@ -8,15 +8,15 @@
     "hours": 0,
     "hoursR": 0,
     "id": "Expanse Issue",
-    "layout": "expanseissue",
+    "layout": "095c930b-d7dc-475f-8520-8d8f47d88398",
     "locked": false,
     "name": "Expanse Issue",
-    "playbookId": "Handle Expanse Incident",
+    "playbookId": "66a301e6-ae3b-49be-84b8-8d73185b0311",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.0.0"
 }

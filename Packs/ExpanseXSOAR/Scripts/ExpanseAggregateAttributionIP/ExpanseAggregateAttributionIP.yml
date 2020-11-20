@@ -33,9 +33,10 @@ outputs:
   type: number
 script: '-'
 system: false
-tags: []
+tags:
+- expanse
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.8.6.13358
-fromversion: 6.0.0
+dockerimage: demisto/python3:3.8.6.12176
+fromversion: 5.0.0

@@ -2,7 +2,7 @@ description: |-
   Find a Public Cloud resource of the following types:
   - CDN
   - Domain Hosted Zone
-  - Other
+  - ???
 
   on: AWS, Azure, GCP
 
@@ -23,7 +23,6 @@ name: Prisma Cloud - Find Public Cloud Resource by FQDN
 outputs:
 - contextPath: PrismaCloud.Attribution
   type: unknown
-  description: Prisma Cloud attributed asset information.
 starttaskid: "0"
 tasks:
   "0":
@@ -103,7 +102,6 @@ tasks:
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search Route53 hosted zones in Prisma Cloud
     taskid: 7f087652-9857-449e-897f-93b74119d7fa
     timertriggers: []
     type: regular
@@ -171,7 +169,6 @@ tasks:
       name: What Cloud Provider?
       type: condition
       version: -1
-      description: Branch based on Cloud Provider
     taskid: ab985172-80ca-4640-888a-8ed88d1d26a8
     timertriggers: []
     type: condition
@@ -374,7 +371,6 @@ tasks:
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search AWS Elastic Load Balancers in Prisma Cloud
     taskid: 09bcd3fc-613c-4654-8cdc-aef8711bde8d
     timertriggers: []
     type: regular
@@ -432,7 +428,6 @@ tasks:
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search AWS CloudFront in Prisma Cloud
     taskid: 62f5118f-14b1-4895-8ea7-254e80020548
     timertriggers: []
     type: regular
@@ -544,7 +539,6 @@ tasks:
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search Route53 Hosted Zones in Prisma Cloud
     taskid: bee4c762-9183-484e-812b-dd24ea94d41e
     timertriggers: []
     type: regular
@@ -584,7 +578,6 @@ tasks:
       name: Are results found?
       type: condition
       version: -1
-      description: Check whether results are found.
     taskid: 8f98d2e1-6097-498b-86a0-75ebc26c05cd
     timertriggers: []
     type: condition
@@ -700,7 +693,6 @@ tasks:
       name: Is Prisma Cloud enabled?
       type: condition
       version: -1
-      description: Check whether Prisma Cloud integration is enabled.
     taskid: 1bdd5f5f-52f3-4399-8489-de76cc5a4c2c
     timertriggers: []
     type: condition
@@ -757,6 +749,6 @@ view: |-
       }
     }
   }
-fromversion: 6.0.0
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

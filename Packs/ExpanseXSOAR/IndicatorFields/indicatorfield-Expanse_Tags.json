@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Certificate",
+        "ExpanseCertificate",
         "IP",
         "DomainGlob",
         "Domain"
@@ -20,7 +20,18 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [],
+    "selectValues": [
+        "inap",
+        "gns",
+        "prismaaccess",
+        "it",
+        "test-bulk",
+        "cloudgenix",
+        "test-my-iprange",
+        "test-tag-1",
+        "xsoar-ou-devrel",
+        "xsoar-ou-gpcloudservice"
+    ],
     "sla": 0,
     "system": false,
     "threshold": 72,
@@ -29,5 +40,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.0.0"
 }

@@ -1,0 +1,465 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and
+  wildfire.'
+id: Panorama Query Logs - Extended
+inputs:
+- description: 'Log type to query. Can be: traffic, threat, wildfire, url or data-filtering.'
+  key: log_type
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The query string by which to match criteria for the logs. This is similar
+    to the query provided in the web interface under the Monitor tab when viewing
+    the logs.
+  key: query
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'The time the log was generated from the timestamp and prior to it.
+    For example: "2019/08/11 01:10:44".'
+  key: time-generated
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Source address.
+  key: addr-src
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Destination address.
+  key: addr-dst
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Source or destination IP address.
+  key: ip
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Source zone.
+  key: zone-src
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Destination zone.
+  key: zone-dst
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Rule action.
+  key: action
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Destination port.
+  key: port-dst
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Rule name, for example: "Allow all outbound".'
+  key: rule
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'URL, for example: "safebrowsing.googleapis.com".'
+  key: url
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: File hash (for WildFIre logs only).
+  key: filedigest
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Panorama Query Logs - Extended
+outputs:
+- contextPath: PanoramaResult
+  description: Logs from Panorama
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a0d6fdde-6ca0-4bfb-8fe1-b107ef3e0781
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: a0d6fdde-6ca0-4bfb-8fe1-b107ef3e0781
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
+        integration enabled.
+      id: 8cc99b6c-6607-4ad3-8581-5526974c4bef
+      iscommand: false
+      name: Is Palo Alto Networks PAN-OS enabled?
+      type: condition
+      version: -1
+    taskid: 8cc99b6c-6607-4ad3-8581-5526974c4bef
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.action
+      addr-dst:
+        complex:
+          root: inputs.addr-dst
+      addr-src:
+        complex:
+          root: inputs.addr-src
+      filedigest:
+        complex:
+          root: inputs.filedigest
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        complex:
+          root: inputs.log_type
+      number_of_logs: {}
+      port-dst:
+        complex:
+          root: inputs.port-dst
+      query:
+        complex:
+          root: inputs.query
+      rule:
+        complex:
+          root: inputs.rule
+      time-generated:
+        complex:
+          root: inputs.time-generated
+      url:
+        complex:
+          root: inputs.url
+      zone-dst:
+        complex:
+          root: inputs.zone-dst
+      zone-src:
+        complex:
+          root: inputs.zone-src
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Query logs
+      id: dbda85f2-d5de-4c7c-8b20-669062267c36
+      iscommand: true
+      name: Panorama Query Logs
+      script: '|||panorama-query-logs'
+      type: regular
+      version: -1
+    taskid: dbda85f2-d5de-4c7c-8b20-669062267c36
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          accessor: Monitor.JobID
+          root: Panorama
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: panorama-check-logs-status
+      Timeout:
+        simple: "15"
+      dt:
+        simple: Panorama.Monitor(val.Status != 'Completed' && val.Status != 'Failed').JobID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 38d07e9a-b039-4df9-8d51-3654c51a8947
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 38d07e9a-b039-4df9-8d51-3654c51a8947
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: PanoramaResult=response.result.log.logs.entry
+      ignore-outputs:
+        simple: "true"
+      ignore_auto_extract: {}
+      job_id:
+        complex:
+          accessor: Monitor.JobID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Panorama.Monitor.Status
+              operator: isEqualString
+              right:
+                value:
+                  simple: Completed
+          root: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves log query data by job ID.
+      id: baf867d9-450b-47c2-8aff-bda8477b04b8
+      iscommand: true
+      name: Panorama Get Logs
+      script: '|||panorama-get-logs'
+      type: regular
+      version: -1
+    taskid: baf867d9-450b-47c2-8aff-bda8477b04b8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 58850584-2a54-4ac5-80ec-268f5ed17c1a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 58850584-2a54-4ac5-80ec-268f5ed17c1a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      job_id:
+        complex:
+          accessor: Monitor.JobID
+          root: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the status of a log query.
+      id: 5ca48741-8bb6-4ee0-8772-52b59d415518
+      iscommand: true
+      name: Panorama Check Log Status
+      script: '|||panorama-check-logs-status'
+      type: regular
+      version: -1
+    taskid: 5ca48741-8bb6-4ee0-8772-52b59d415518
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Monitor.JobID
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Panorama.Monitor.Status
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Pending
+                root: Panorama
+          operator: isExists
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3a40b2a9-6c37-4bd7-85cd-bb8c5720b91c
+      iscommand: false
+      name: Filter JobID
+      type: condition
+      version: -1
+    taskid: 3a40b2a9-6c37-4bd7-85cd-bb8c5720b91c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

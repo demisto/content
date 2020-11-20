@@ -9,7 +9,7 @@ comment: Match IP address in all the CIDRs indicators (longest match)
 commonfields:
   id: MatchIPinCIDRIndicators
   version: -1
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.8.6.12176
 enabled: true
 name: MatchIPinCIDRIndicators
 outputs:
@@ -20,8 +20,9 @@ runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
-tags: []
+tags:
+- expanse
 type: python
-fromversion: 6.0.0
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

@@ -9,18 +9,16 @@ from CommonServerUserPython import *  # noqa
 import requests
 import traceback
 import copy
-import json
-import base64
 
+from base64 import b64decode
+from hashlib import sha256
 from typing import (
     Any, Dict, Optional, Iterator,
-    Tuple, Union, cast, Set, List
+    Tuple, Union, cast,
 )
 
-from itertools import islice
 from dateparser import parse
 from datetime import datetime, timezone
-from collections import defaultdict
 import ipaddress
 
 # Disable insecure warnings
@@ -31,14 +29,10 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 SERVER = "https://expander.expanse.co"
 TOKEN_DURATION = 7200
-DEFAULT_RESULTS = 20  # default results per search
-MAX_RESULTS = 5000  # max results per search
-MAX_PAGE_SIZE = 1000  # max results per page
+MAX_RESULTS = 1000  # max results per search
 MAX_INCIDENTS = 100  # max incidents per fetch
-MAX_UPDATES = 100  # max updates received
 PREFIX = SERVER + "/api"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-PAGE_SIZE = 200
 
 ISSUE_PROGRESS_STATUS = ['New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved']
 ISSUE_PROGRESS_STATUS_CLOSED = ['AcceptableRisk', 'Resolved']
@@ -113,8 +107,7 @@ class Client(BaseClient):
 
         while True:
             if '/issues' in url_suffix and 'updates' not in url_suffix:
-                pass
-                # demisto.debug(f'DEBUGDEBUG Client._paginate: calling {url_suffix} with {params}')
+                demisto.debug(f'DEBUGDEBUG Client._paginate: calling {url_suffix} with {params}')
             result = self._http_request(
                 method=method,
                 url_suffix=url_suffix,
@@ -126,8 +119,7 @@ class Client(BaseClient):
             data = result.get('data', [])
             if data is not None:
                 if '/issues' in url_suffix and 'updates' not in url_suffix:
-                    pass
-                    # demisto.debug(f'DEBUGDEBUG Client._paginate: returning {len(data)} results')
+                    demisto.debug(f'DEBUGDEBUG Client._paginate: returning {len(data)} results')
                 for a in data:
                     yield a
 
@@ -140,19 +132,13 @@ class Client(BaseClient):
 
             params = None
 
-    def _get_utcnow(self) -> datetime:
-        """
-        Used to allow mocking for Unit Tests
-        """
-        return datetime.utcnow()
-
     def authenticate(self) -> None:
         """
         Perform authentication using API_KEY,
         stores token and stored timestamp in integration context,
         retrieves new token when expired
         """
-        current_utc_timestamp = int(self._get_utcnow().timestamp())
+        current_utc_timestamp = int(datetime.utcnow().timestamp())
         token_expiration = current_utc_timestamp + TOKEN_DURATION
 
         stored_token = demisto.getIntegrationContext()
@@ -188,10 +174,10 @@ class Client(BaseClient):
         return int(r['count'])
 
     def get_issues(self,
-                   limit: int,
+                   max_issues: int,
                    content_search: Optional[str] = None,
                    provider: Optional[str] = None,
-                   business_units: Optional[str] = None,
+                   business_unit: Optional[str] = None,
                    assignee: Optional[str] = None,
                    issue_type: Optional[str] = None,
                    inet_search: Optional[str] = None,
@@ -200,19 +186,20 @@ class Client(BaseClient):
                    progress_status: Optional[str] = None,
                    activity_status: Optional[str] = None,
                    priority: Optional[str] = None,
-                   tags: Optional[str] = None,
+                   tag: Optional[str] = None,
                    created_before: Optional[str] = None,
                    created_after: Optional[str] = None,
                    modified_before: Optional[str] = None,
                    modified_after: Optional[str] = None,
-                   sort: Optional[str] = None
-                   ) -> Iterator[Any]:
+                   sort: Optional[str] = None,
+                   skip: Optional[str] = None
+                   ) -> List[Dict[str, Any]]:
 
         params = {
-            'limit': limit,
+            'limit': max_issues if not skip else max_issues + 1,  # workaround to avoid unnecessary API calls
             'contentSearch': content_search,
             'providerName': provider if provider else None,
-            'businessUnitName': business_units if business_units else None,
+            'businessUnitName': business_unit if business_unit else None,
             'assigneeUsername': assignee if assignee else None,
             'issueTypeName': issue_type if issue_type else None,
             'inetSearch': inet_search,
@@ -221,7 +208,7 @@ class Client(BaseClient):
             'progressStatus': progress_status if progress_status else None,
             'activityStatus': activity_status if activity_status else None,
             'priority': priority if priority else None,
-            'tagName': tags if tags else None,
+            'tagName': tag if tag else None,
             'createdBefore': created_before,
             'createdAfter': created_after,
             'modifiedBefore': modified_before,
@@ -229,19 +216,50 @@ class Client(BaseClient):
             'sort': sort
         }
 
-        return self._paginate(
-            method='GET', url_suffix="/v1/issues/issues", params=params
+        r = self._paginate(
+            method='GET', url_suffix=f"/v1/issues/issues", params=params
         )
+        broken = False
+        ret: List = []
+        for i in r:
+            if skip and not broken:
+                if 'id' not in i or 'created' not in i:
+                    demisto.debug(f'DEBUGDEBUG get_issues: skipping an incident that does not have id or created')
+                    continue
+
+                # fix created time to make sure precision is the same to microsecond with no rounding
+                i['created'] = timestamp_us_to_datestring_utc(datestring_to_timestamp_us(i['created']), DATE_FORMAT)
+
+                demisto.debug(f'DEBUGDEBUG get_issues: skip check is on loop: processing issue {i["id"]}')
+                if i['created'] != created_after:
+                    demisto.debug(f'DEBUGDEBUG get_issues: breaking as {i["id"]}  time different than created_after '
+                                  f'[{i["created"]} vs {created_after}]')
+                    ret.append(i)
+                    broken = True
+                elif i['id'] == skip:
+                    demisto.debug(f'DEBUGDEBUG get_issues: breaking as found id {skip} (skipping this one)')
+                    broken = True
+                else:
+                    demisto.debug(f'DEBUGDEBUG get_issues: skipping possible dup incident {i["id"]}')
+            else:
+                demisto.debug(f'DEBUGDEBUG get_issues: adding incident {i["id"]}')
+                ret.append(i)
+            if len(ret) == max_issues:
+                demisto.debug(f'DEBUGDEBUG get_issues: got enough incidents ({max_issues}), exiting for cycle')
+                break
+
+        demisto.debug(f'DEBUGDEBUG get_issues: returning IDs: [{str([i["id"] for i in ret])}]')
+        return ret
 
     def get_issue_by_id(self, issue_id: str) -> Dict[str, Any]:
         return self._http_request(
             method='GET', url_suffix=f'/v1/issues/issues/{issue_id}')
 
     def get_issue_updates(self, issue_id: str, update_types: Optional[List],
-                          created_after: Optional[str], limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
+                          created_after: Optional[str]) -> Iterator[Any]:
         updates = self._paginate(
             method='GET', url_suffix=f'/v1/issues/issues/{issue_id}/updates',
-            params=dict(limit=limit))
+            params=dict(limit=MAX_RESULTS))
         after = datestring_to_timestamp_us(created_after) if created_after else None
 
         for u in updates:
@@ -251,24 +269,24 @@ class Client(BaseClient):
                 continue
             yield u
 
-    def list_businessunits(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
-        params = dict(limit=limit)
+    def list_businessunits(self) -> Iterator[Any]:
+        params = dict(limit=MAX_RESULTS)
         return self._paginate(
             method='GET',
             url_suffix='/v1/issues/businessUnits',
             params=params
         )
 
-    def list_providers(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
-        params = dict(limit=limit)
+    def list_providers(self) -> Iterator[Any]:
+        params = dict(limit=MAX_RESULTS)
         return self._paginate(
             method='GET',
             url_suffix='/v1/issues/providers',
             params=params
         )
 
-    def list_tags(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
-        params = dict(limit=limit)
+    def list_tags(self) -> Iterator[Any]:
+        params = dict(limit=MAX_RESULTS)
         return self._paginate(
             method='GET',
             url_suffix='/v3/annotations/tags',
@@ -290,14 +308,14 @@ class Client(BaseClient):
     def get_asset_details(self, asset_type: str, asset_id: str,
                           include: str = 'annotations,attributionReasons') -> Dict[str, Any]:
         data: Dict = {}
-        # demisto.debug(f'DEBUGDEBUG get_asset_details: retrieving details for asset {asset_id} of type {asset_type}')
+        demisto.debug(f'DEBUGDEBUG get_asset_details: retrieving details for asset {asset_id} of type {asset_type}')
         if asset_type == 'IpRange':
             data = self.get_iprange_by_id(
                 iprange_id=asset_id,
                 include=include
             )
         elif asset_type == 'Certificate':
-            data = self.get_certificate_by_md5_hash(asset_id)
+            data = self.get_certificate_by_pem_md5_hash(asset_id)
         elif asset_type == 'Domain':
             data = self.get_domain_by_domain(domain=asset_id)
         else:
@@ -320,7 +338,7 @@ class Client(BaseClient):
         )
 
     def update_issue(self, issue_id: str, update_type: str, value: str) -> Dict[str, Any]:
-        # demisto.debug(f'DEBUGDEBUG update_issue: {issue_id}, {update_type}, {value}')
+        demisto.debug(f'DEBUGDEBUG update_issue: {issue_id}, {update_type}, {value}')
         data: Dict = {
             'updateType': update_type,
             'value': value
@@ -332,19 +350,14 @@ class Client(BaseClient):
         )
 
     def get_iprange_by_id(self, iprange_id: str, include: str) -> Dict[str, Any]:
-        try:
-            result: Dict = self._http_request(
-                method='GET',
-                url_suffix=f'/v2/ip-range/{iprange_id}',
-                raise_on_status=True,
-                params={
-                    'include': include
-                }
-            )
-        except DemistoException as e:
-            if str(e).startswith('Error in API call [404]') or str(e).startswith('Error in API call [400]'):
-                return {}
-            raise e
+        result: Dict = self._http_request(
+            method='GET',
+            url_suffix=f'/v2/ip-range/{iprange_id}',
+            raise_on_status=True,
+            params={
+                'include': include
+            }
+        )
         return result
 
     def get_domain_by_domain(self, domain: str, last_observed_date: Optional[str] = None) -> Dict[str, Any]:
@@ -365,23 +378,18 @@ class Client(BaseClient):
             raise e
         return result
 
-    def get_certificate_by_md5_hash(self, md5_hash: str, last_observed_date: Optional[str] = None) -> Dict[str, Any]:
+    def get_certificate_by_pem_md5_hash(self, pem_md5_hash: str, last_observed_date: Optional[str] = None) -> Dict[str, Any]:
         params = {}
 
         if last_observed_date is not None:
             params['minRecentIpLastObservedDate'] = last_observed_date
 
-        try:
-            result: Dict = self._http_request(
-                method='GET',
-                url_suffix=f'/v2/assets/certificates/{md5_hash}',
-                raise_on_status=True,
-                params=params
-            )
-        except DemistoException as e:
-            if str(e).startswith('Error in API call [404]') or str(e).startswith('Error in API call [400]'):
-                return {}
-            raise e
+        result: Dict = self._http_request(
+            method='GET',
+            url_suffix=f'/v2/assets/certificates/{pem_md5_hash}',
+            raise_on_status=True,
+            params=params
+        )
         return result
 
     def get_ipranges(self, params: Dict[str, Any]) -> Iterator[Any]:
@@ -412,11 +420,11 @@ class Client(BaseClient):
             params=params
         )
 
-    def list_risk_rules(self, params: Dict[str, Any]) -> Iterator[Any]:
+    def list_risk_rules(self) -> Iterator[Any]:
         return self._paginate(
             method='GET',
             url_suffix='/v1/behavior/risk-rules',
-            params=params
+            params=None
         )
 
     def get_risky_flows(self, limit: int, created_before: Optional[str], created_after: Optional[str],
@@ -430,7 +438,7 @@ class Client(BaseClient):
             "risk-rule": risk_rule,
             "tag-names": tag_names
         }
-        demisto.debug(f'DEBUGDEBUG params: {json.dumps(params)}')
+
         return self._paginate(
             method='GET',
             url_suffix='/v1/behavior/risky-flows',
@@ -544,34 +552,13 @@ class Client(BaseClient):
                                 if (x := reg.get(f, None)):
                                     ml_feature_list.append(x)
 
-        # demisto.debug(f'DEBUGDEBUG parse_asset_data: fetch_details is {fetch_details}, ml_features_list is {ml_feature_list!r}')
+        demisto.debug(f'DEBUGDEBUG parse_asset_data: fetch_details is {fetch_details}, ml_features_list is {ml_feature_list!r}')
         if len(ml_feature_list) > 0:
             changed = True
         return assets, ml_feature_list, changed
 
 
 """ HELPER FUNCTIONS """
-
-
-class DBotScoreOnlyIndicator(Common.Indicator):
-    """
-    This class represents a generic indicator and is used only to return DBotScore
-    """
-    def __init__(self, dbot_score: Common.DBotScore):
-        self.dbot_score = dbot_score
-
-    def to_context(self):
-        return self.dbot_score.to_context()
-
-
-def calculate_limits(limit: str) -> Tuple[int, int]:
-    total_results = check_int(limit, 'limit', None, None, False)
-    if not total_results:
-        total_results = DEFAULT_RESULTS
-    elif total_results > MAX_RESULTS:
-        total_results = MAX_RESULTS
-    max_page_size = MAX_PAGE_SIZE if total_results > MAX_PAGE_SIZE else total_results
-    return (total_results, max_page_size)
 
 
 def handle_iprange_include(arg: Optional[str], arg_name: Optional[str]) -> str:
@@ -658,72 +645,24 @@ def timestamp_us_to_datestring_utc(ts: int, date_format: str = DATE_FORMAT) -> s
     return ds
 
 
-def format_cidr_data(cidrs: List[Dict[str, Any]]) -> CommandResults:
-    cidr_data_list: List[Dict[str, Any]] = []
-    cidr_standard_list: List[DBotScoreOnlyIndicator] = []
-
-    for cidr_data in cidrs:
-        cidr_data['cidr'] = ','.join(range_to_cidrs(cidr_data['startAddress'], cidr_data['endAddress'])) if (
-            'startAddress' in cidr_data
-            and 'endAddress' in cidr_data
-        ) else None
-
-        if not cidr_data['cidr']:
-            continue
-
-        cidr_context_excluded_fields: List[str] = ['startAddress', 'endAddress']
-        cidr_data_list.append({
-            k: cidr_data[k]
-            for k in cidr_data if k not in cidr_context_excluded_fields
-        })
-
-        cidr_standard_context = DBotScoreOnlyIndicator(
-            dbot_score=Common.DBotScore(
-                indicator=cidr_data['cidr'],
-                indicator_type=DBotScoreType.CIDR,
-                integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
-            )
-        )
-        cidr_standard_list.append(cidr_standard_context)
-
-    readable_output = tableToMarkdown(
-        'Expanse IP Range List', cidr_data_list) if len(cidr_standard_list) > 0 else "## No IP Ranges found"
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.IPRange',
-        outputs_key_field='id',
-        outputs=cidr_data_list if len(cidr_data_list) > 0 else None,
-        indicators=cidr_standard_list if len(cidr_standard_list) > 0 else None
-    )
-
-
-def find_indicator_md5_by_hash(h: str) -> Optional[str]:
-    field = {
-        40: 'sha1',
-        64: 'sha256',
-        128: 'sha512'
-    }.get(len(h))
-
-    if field is None:
-        return None
-
-    fetched_iocs = demisto.searchIndicators(
-        query=f'{field}:{h} and type:Certificate and -md5:""',
-        page=0, size=1  # we just take the first one
-    ).get('iocs')
-    if fetched_iocs is None or len(fetched_iocs) == 0:
-        return None
-
-    if (custom_fields := fetched_iocs[0].get('CustomFields')) is None:
-        return None
-
-    return custom_fields.get('md5')
-
-
 def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
-    domain_standard_list: List[Common.Domain] = []
+    class DomainGlob(Common.Domain):
+        def to_context(self):
+            DBOT_CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && ' \
+                                'val.Vendor == obj.Vendor && val.Type == obj.Type)'
+            c = super(DomainGlob, self).to_context()
+            if not c or not isinstance(c, dict):
+                return {}
+            if DBOT_CONTEXT_PATH in c:
+                if isinstance(c[DBOT_CONTEXT_PATH], dict):
+                    c[DBOT_CONTEXT_PATH]['Type'] = 'domainglob'
+                elif isinstance(c[DBOT_CONTEXT_PATH, list]):
+                    for n, l in enumerate(c['CONTEXT_PATH']):
+                        if isinstance(l, dict):
+                            c[DBOT_CONTEXT_PATH][n]['Type'] = 'domainglob'
+            return c
+
+    domain_standard_list: List[Union[Common.Domain, DomainGlob]] = []
     domain_data_list: List[Dict[str, Any]] = []
 
     for domain_data in domains:
@@ -759,22 +698,31 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
             whois_args['registrant_phone'] = registrant.get('phoneNumber', None) if registrar is not None else None
             whois_args['registrant_country'] = registrant.get('country', None) if registrar is not None else None
 
-        domain_standard_context: Common.Domain
+        domain_standard_context: Union[Common.Domain, DomainGlob]
         if domain.startswith('*.'):
-            indicator_type = DBotScoreType.DOMAINGLOB
+            # DomainGlob
+            domain_standard_context = DomainGlob(
+                domain=domain,
+                dbot_score=Common.DBotScore(
+                    indicator=domain,
+                    indicator_type=DBotScoreType.DOMAIN,
+                    integration_name="ExpanseV2",
+                    score=Common.DBotScore.NONE
+                ),
+                **whois_args
+            )
         else:
-            indicator_type = DBotScoreType.DOMAIN
-
-        domain_standard_context = Common.Domain(
-            domain=domain,
-            dbot_score=Common.DBotScore(
-                indicator=domain,
-                indicator_type=indicator_type,
-                integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
-            ),
-            **whois_args
-        )
+            # Domain
+            domain_standard_context = Common.Domain(
+                domain=domain,
+                dbot_score=Common.DBotScore(
+                    indicator=domain,
+                    indicator_type=DBotScoreType.DOMAIN,
+                    integration_name="ExpanseV2",
+                    score=Common.DBotScore.NONE
+                ),
+                **whois_args
+            )
         domain_standard_list.append(domain_standard_context)
 
         domain_context_excluded_fields: List[str] = []
@@ -783,98 +731,14 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
             for k in domain_data if k not in domain_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown(
-        'Expanse Domain List', domain_data_list) if len(domain_data_list) > 0 else "## No Domains found"
+    readable_output = tableToMarkdown('Expanse Domain List', domain_data_list)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.Domain',
         outputs_key_field='domain',
-        outputs=domain_data_list if len(domain_data_list) > 0 else None,
-        indicators=domain_standard_list if len(domain_standard_list) > 0 else None
-    )
-
-
-def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResults:
-    certificate_standard_list: List[Common.Indicator] = []
-    certificate_data_list: List[Dict[str, Any]] = []
-    certificate_context_excluded_fields: List[str] = []
-
-    for certificate in certificates:
-        expanse_certificate = certificate.get('certificate')
-        if expanse_certificate is None:
-            continue
-
-        # Standard Context (Common.Certificate + DBotScore)
-        # they are prefixed with PEM but they really the hashes of DER (like it should be)
-        ec_sha256 = expanse_certificate.get('pemSha256')
-        if ec_sha256 is None:
-            demisto.debug('SHA-256 not found!!!')
-            continue
-        indicator_value = base64.urlsafe_b64decode(ec_sha256).hex()
-
-        ec_md5 = expanse_certificate.get('md5Hash')
-        ec_sha1 = expanse_certificate.get('pemSha1')
-        ec_spki = expanse_certificate.get('publicKeySpki')
-
-        ec_modulus = expanse_certificate.get('publicKeyModulus')
-        ec_publickey = None
-        if (pktemp := expanse_certificate.get('publicKey')) is not None:
-            ec_publickey = base64.urlsafe_b64decode(pktemp).hex()
-
-        ec_san = expanse_certificate.get('subjectAlternativeNames')
-
-        pem = None
-        if (details := certificate.get('details')) is not None:
-            if (base64Encoded := details.get('base64Encoded')) is not None:
-                pem_lines = '\n'.join([base64Encoded[i:i + 64] for i in range(0, len(base64Encoded), 64)])
-                pem = f"-----BEGIN CERTIFICATE-----\n{pem_lines}\n-----END CERTIFICATE-----"
-
-        certificate_standard_context = Common.Certificate(
-            serial_number=expanse_certificate.get('serialNumber'),
-            subject_dn=expanse_certificate.get('subject'),
-            issuer_dn=expanse_certificate.get('issuer'),
-            md5=base64.urlsafe_b64decode(ec_md5).hex() if ec_md5 else None,
-            sha1=base64.urlsafe_b64decode(ec_sha1).hex() if ec_sha1 else None,
-            sha256=indicator_value,
-            publickey=Common.CertificatePublicKey(
-                algorithm=expanse_certificate.get('publicKeyAlgorithm'),
-                length=expanse_certificate.get('publicKeyBits'),
-                modulus=':'.join([ec_modulus[i:i + 2] for i in range(0, len(ec_modulus), 2)]) if ec_modulus else None,
-                exponent=expanse_certificate.get('publicKeyRsaExponent'),
-                publickey=':'.join([ec_publickey[i:i + 2] for i in range(0, len(ec_publickey), 2)]) if ec_publickey else None
-            ),
-            spki_sha256=base64.urlsafe_b64decode(ec_spki).hex() if ec_spki else None,
-            signature_algorithm=expanse_certificate.get('signatureAlgorithm'),
-            subject_alternative_name=[san for san in ec_san.split() if len(san) != 0] if ec_san else None,
-            validity_not_after=expanse_certificate.get('validNotAfter'),
-            validity_not_before=expanse_certificate.get('validNotBefore'),
-            pem=pem,
-            dbot_score=Common.DBotScore(
-                indicator=indicator_value,
-                indicator_type=DBotScoreType.CERTIFICATE,
-                integration_name="ExpanseV2",
-                score=Common.DBotScore.NONE
-            )
-        )
-        certificate_standard_list.append(certificate_standard_context)
-
-        # Expanse Context
-        certificate_data_list.append({
-            k: certificate[k]
-            for k in certificate if k not in certificate_context_excluded_fields
-        })
-
-    readable_output = tableToMarkdown(
-        'Expanse Certificate List', certificate_data_list) if len(certificate_data_list) > 0 else "## No Certificates found"
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.Certificate',
-        outputs_key_field='id',
-        outputs=certificate_data_list if len(certificate_data_list) > 0 else None,
-        indicators=certificate_standard_list if len(certificate_standard_list) > 0 else None,
-        ignore_auto_extract=True,
+        outputs=domain_data_list,
+        indicators=domain_standard_list
     )
 
 
@@ -907,13 +771,15 @@ def test_module(client: Client) -> str:
 
 def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    max_issues = check_int(args.get('limit'), 'limit', None, None, False)
+    if not max_issues:
+        max_issues = MAX_RESULTS
 
     provider = ','.join(argToList(args.get('provider')))
-    business_units = ','.join(argToList(args.get('business_unit')))
+    business_unit = ','.join(argToList(args.get('business_unit')))
     assignee = ','.join(argToList(args.get('assignee')))
     issue_type = ','.join(argToList(args.get('issue_type')))
-    tags = ','.join(argToList(args.get('tag')))
+    tag = ','.join(argToList(args.get('tag')))
 
     content_search = args.get('content_search')
     inet_search = args.get('domain_search')
@@ -956,17 +822,12 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     d = args.get('modified_after', None)
     modified_after = parse(d).strftime(DATE_FORMAT) if d else None
 
-    issues = list(
-        islice(
-            client.get_issues(limit=max_page_size, content_search=content_search, provider=provider,
-                              business_units=business_units, assignee=assignee, issue_type=issue_type,
-                              inet_search=inet_search, domain_search=domain_search, port_number=port_number,
-                              progress_status=progress_status, activity_status=activity_status, priority=priority,
-                              tags=tags, created_before=created_before, created_after=created_after,
-                              modified_before=modified_before, modified_after=modified_after, sort=sort),
-            total_results
-        )
-    )
+    issues = client.get_issues(max_issues=max_issues, content_search=content_search, provider=provider,
+                               business_unit=business_unit, assignee=assignee, issue_type=issue_type,
+                               inet_search=inet_search, domain_search=domain_search, port_number=port_number,
+                               progress_status=progress_status, activity_status=activity_status, priority=priority,
+                               tag=tag, created_before=created_before, created_after=created_after,
+                               modified_before=modified_before, modified_after=modified_after, sort=sort)
 
     if len(issues) < 1:
         return CommandResults(readable_output='No Issues Found')
@@ -990,7 +851,6 @@ def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     issue_id = args.get('issue_id', None)
     if not issue_id:
@@ -1003,22 +863,10 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
     d = args.get('created_after', None)
     created_after = parse(d).strftime(DATE_FORMAT) if d else None
 
-    issue_updates = [
-        {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
-        for u in sorted(
-            islice(
-                client.get_issue_updates(
-                    issue_id=issue_id,
-                    limit=max_page_size,
-                    update_types=update_types,
-                    created_after=created_after
-                ),
-                total_results
-            ),
-            key=lambda k: k['created']
-        )
-    ]
-
+    issue_updates = sorted(client.get_issue_updates(issue_id=issue_id,
+                                                    update_types=update_types,
+                                                    created_after=created_after),
+                           key=lambda k: k['created'])
     # demisto.debug(f'DEBUGDEBUG issue_updates is {json.dumps(issue_updates)}')
     return CommandResults(
         outputs_prefix="Expanse.IssueUpdate", outputs_key_field="id", outputs=issue_updates
@@ -1026,7 +874,6 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     issue_id = args.get('issue_id', None)
     if not issue_id:
@@ -1035,21 +882,10 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
     d = args.get('created_after', None)
     created_after = parse(d).strftime(DATE_FORMAT) if d else None
 
-    issue_comments = [
-        {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
-        for u in sorted(
-            islice(
-                client.get_issue_updates(
-                    issue_id=issue_id,
-                    limit=max_page_size,
-                    update_types=['Comment'],
-                    created_after=created_after
-                ),
-                total_results
-            ),
-            key=lambda k: k['created']
-        )
-    ]
+    issue_comments = sorted(client.get_issue_updates(issue_id=issue_id,
+                                                     update_types=['Comment'],
+                                                     created_after=created_after),
+                            key=lambda k: k['created'])
 
     for n, c in enumerate(issue_comments):
         if (u := c.get('user'), None) and isinstance(u, dict) and 'username' in u:
@@ -1064,7 +900,7 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
     return CommandResults(
-        outputs_prefix="Expanse.IssueComment",
+        outputs_prefix="ExpanseIssueComment",
         outputs_key_field="id",
         outputs=issue_comments,
         readable_output=md
@@ -1088,18 +924,16 @@ def update_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     issue_update = client.update_issue(issue_id, update_type, value)
 
     return CommandResults(
-        outputs_prefix="Expanse.IssueUpdate",
-        outputs_key_field="id",
-        outputs={**issue_update, "issueId": issue_id}  # this adds the issue id to the resulting dict
+        outputs_prefix="Expanse.IssueUpdate", outputs_key_field="id", outputs=issue_update
     )
 
 
 def fetch_incidents(client: Client, max_incidents: int,
                     last_run: Dict[str, Union[Optional[int], Optional[str]]], first_fetch: Optional[int],
                     priority: Optional[str], activity_status: Optional[str],
-                    progress_status: Optional[str], business_units: Optional[str], issue_types: Optional[str],
-                    tags: Optional[str], mirror_direction: Optional[str], sync_tags: Optional[List[str]],
-                    fetch_details: Optional[bool]
+                    progress_status: Optional[str], business_unit: Optional[str],
+                    tag: Optional[str], mirror_direction: Optional[str], sync_tags: Optional[List[str]],
+                    fetch_details: Optional[bool], fetch_behavior: Optional[bool]
                     ) -> Tuple[Dict[str, Union[Optional[int], Optional[str]]], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
     This function has to implement the logic of making sure that incidents are
@@ -1124,12 +958,12 @@ def fetch_incidents(client: Client, max_incidents: int,
         last_fetch = cast(int, last_fetch)
 
     latest_created_time = last_fetch
-    # demisto.debug(
-    # f'DEBUGDEBUG fetch_incidents: last_fetch is {last_fetch}'
-    # f' [{timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)}]')
+    demisto.debug(
+        f'DEBUGDEBUG fetch_incidents: last_fetch is {last_fetch}'
+        f' [{timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)}]')
 
     last_issue_id = last_run.get('last_issue_id', None)
-    # demisto.debug(f'DEBUGDEBUG fetch_incidents: last_issue_id is {last_issue_id}')
+    demisto.debug(f'DEBUGDEBUG fetch_incidents: last_issue_id is {last_issue_id}')
     latest_issue_id: Optional[str] = None
 
     incidents: List[Dict[str, Any]] = []
@@ -1151,46 +985,12 @@ def fetch_incidents(client: Client, max_incidents: int,
 
     created_after = timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)
 
-    r = client.get_issues(
-        limit=max_incidents if not last_issue_id else max_incidents + 1,  # workaround to avoid unnecessary API calls
-        priority=_priority, business_units=business_units,
-        progress_status=_progress_status, activity_status=_activity_status, tags=tags,
-        created_after=created_after, sort='created'
+    issues = client.get_issues(
+        max_issues=max_incidents, priority=_priority, business_unit=business_unit,
+        progress_status=_progress_status, activity_status=_activity_status, tag=tag,
+        created_after=created_after, sort='created', skip=cast(str, last_issue_id)
     )
-
-    broken = False
-    issues: List = []
-    skip = cast(str, last_issue_id)
-    for i in r:
-        if skip and not broken:
-            if 'id' not in i or 'created' not in i:
-                # demisto.debug('DEBUGDEBUG get_issues: skipping an incident that does not have id or created')
-                continue
-
-            # fix created time to make sure precision is the same to microsecond with no rounding
-            i['created'] = timestamp_us_to_datestring_utc(datestring_to_timestamp_us(i['created']), DATE_FORMAT)
-
-            # demisto.debug(f'DEBUGDEBUG get_issues: skip check is on loop: processing issue {i["id"]}')
-            if i['created'] != created_after:
-                # demisto.debug(f'DEBUGDEBUG get_issues: breaking as {i["id"]}  time different than created_after '
-                #               f'[{i["created"]} vs {created_after}]')
-                issues.append(i)
-                broken = True
-            elif i['id'] == skip:
-                # demisto.debug(f'DEBUGDEBUG get_issues: breaking as found id {skip} (skipping this one)')
-                broken = True
-            else:
-                pass
-                # demisto.debug(f'DEBUGDEBUG get_issues: skipping possible dup incident {i["id"]}')
-        else:
-            # demisto.debug(f'DEBUGDEBUG get_issues: adding incident {i["id"]}')
-            issues.append(i)
-        if len(issues) == max_incidents:
-            # demisto.debug(f'DEBUGDEBUG get_issues: got enough incidents ({max_issues}), exiting for cycle')
-            break
-
-    # demisto.debug(f'DEBUGDEBUG get_issues: returning IDs: [{str([i["id"] for i in ret])}]')
-    # demisto.debug(f'DEBUGDEBUG fetch_incidents: created_after is {created_after}')
+    demisto.debug(f'DEBUGDEBUG fetch_incidents: created_after is {created_after}')
 
     for issue in issues:
         ml_feature_list: List[str] = []
@@ -1199,13 +999,13 @@ def fetch_incidents(client: Client, max_incidents: int,
             continue
         incident_created_time = datestring_to_timestamp_us(issue['created'])
 
-        # demisto.debug(
-        #     f'DEBUGDEBUG fetch_incidents: loop: issue id is {issue["id"]} created at '
-        #     f'{issue["created"]} and incident_created_time is {incident_created_time} '
-        #     f'[{timestamp_us_to_datestring_utc(incident_created_time, DATE_FORMAT)}]')
+        demisto.debug(
+            f'DEBUGDEBUG fetch_incidents: loop: issue id is {issue["id"]} created at '
+            f'{issue["created"]} and incident_created_time is {incident_created_time} '
+            f'[{timestamp_us_to_datestring_utc(incident_created_time, DATE_FORMAT)}]')
         if last_fetch:
             if incident_created_time < last_fetch:
-                # demisto.debug(f'DEBUGDEBUG fetch_incidents loop: skipping issue id {issue["id"]}')
+                demisto.debug(f'DEBUGDEBUG fetch_incidents loop: skipping issue id {issue["id"]}')
                 continue
         incident_name = issue['headline'] if 'headline' in issue else issue['id']
 
@@ -1241,7 +1041,7 @@ def fetch_incidents(client: Client, max_incidents: int,
                     if (x := geolocation.get(f, None)):
                         ml_feature_list.append(x)
 
-        # demisto.debug(f'DEBUGDEBUG fetch_incidents: ml_features_list is {ml_feature_list!r}')
+        demisto.debug(f'DEBUGDEBUG fetch_incidents: ml_features_list is {ml_feature_list!r}')
         # dedup, sort and join ml feature list
         issue['ml_features'] = ' '.join(sorted(list(set(ml_feature_list))))
         incident = {
@@ -1255,35 +1055,27 @@ def fetch_incidents(client: Client, max_incidents: int,
         incidents.append(incident)
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
-            # demisto.debug(
-            #     f'DEBUGDEBUG fetch_incidents loop: issue id is {issue["id"]} and '
-            #     f' updating latest_created_time to {latest_created_time} '
-            #     f'[{timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)}]')
+            demisto.debug(
+                f'DEBUGDEBUG fetch_incidents loop: issue id is {issue["id"]} and '
+                f' updating latest_created_time to {latest_created_time} '
+                f'[{timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)}]')
 
     next_run = {
         'last_fetch': latest_created_time,
         'last_issue_id': latest_issue_id if latest_issue_id else last_issue_id}
-    # demisto.debug(f'DEBUGDEBUG fetch_incidents: next_run is {next_run} ({timestamp_us_to_datestring_utc(latest_created_time)}')
+    demisto.debug(f'DEBUGDEBUG fetch_incidents: next_run is {next_run} ({timestamp_us_to_datestring_utc(latest_created_time)}')
     return next_run, incidents
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: bool = False,
-                            incoming_tags: Optional[List[str]] = [], mirror_details: bool = False) -> GetRemoteDataResponse:
+                            incoming_tags: Optional[List[str]] = [], fetch_details: bool = False) -> GetRemoteDataResponse:
     parsed_args = GetRemoteDataArgs(args)
-    # demisto.debug(f'DEBUGDEBUG get_remote_data_command invoked on incident {parsed_args.remote_incident_id} '
-    #               f'with last_update: {parsed_args.last_update}')
-    issue_updates: List[Dict[str, Any]] = sorted(
-        islice(
-            client.get_issue_updates(
-                issue_id=parsed_args.remote_incident_id,
-                limit=MAX_UPDATES,
-                update_types=None,
-                created_after=parsed_args.last_update
-            ),
-            MAX_UPDATES
-        ),
-        key=lambda k: k['created']
-    )
+    demisto.debug(f'DEBUGDEBUG get_remote_data_command invoked on incident {parsed_args.remote_incident_id} '
+                  f'with last_update: {parsed_args.last_update}')
+    issue_updates: List[Dict[str, Any]] = sorted(client.get_issue_updates(issue_id=parsed_args.remote_incident_id,
+                                                                          update_types=None,
+                                                                          created_after=parsed_args.last_update),
+                                                 key=lambda k: k['created'])
 
     new_entries: List = []
     incident_updates: Dict[str, Any] = {}
@@ -1366,9 +1158,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
             })
 
     # update_assets
-    if mirror_details:
+    if fetch_details:
         issue_details: Dict[str, Any] = client.get_issue_by_id(issue_id=parsed_args.remote_incident_id)
-        assets, ml_feature_list, changed = client.parse_asset_data(issue_details, mirror_details)
+        assets, ml_feature_list, changed = client.parse_asset_data(issue_details, fetch_details)
         if changed:
             incident_updates['assets'] = assets
             # dedup, sort and join ml feature list
@@ -1378,7 +1170,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
     if len(incident_updates) > 0 or len(new_entries) > 0:
         incident_updates['id'] = parsed_args.remote_incident_id
 
-    # demisto.debug(f'DEBUGDEBUG get-remote-data returning {json.dumps(incident_updates)} and {json.dumps(new_entries)}')
+    demisto.debug(f'DEBUGDEBUG get-remote-data returning {json.dumps(incident_updates)} and {json.dumps(new_entries)}')
     return GetRemoteDataResponse(incident_updates, new_entries)
 
 
@@ -1467,57 +1259,39 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], sync_owne
                 )
 
         if changed:
-            pass
-            # demisto.debug(f'DEBUGDEBUG update-remote-system Updating on remote ID [{remote_incident_id}]')
+            demisto.debug(f'DEBUGDEBUG update-remote-system Updating on remote ID [{remote_incident_id}]')
         else:
-            pass
-            # demisto.debug(f'DEBUGDEBUG update-remote-system Skipping update on remote ID [{remote_incident_id}] [no changes]')
+            demisto.debug(f'DEBUGDEBUG update-remote-system Skipping update on remote ID [{remote_incident_id}] [no changes]')
 
     except Exception as e:
-        # demisto.debug(f"DEBUGDEBUG update-remote-system Error in Expanse outgoing mirror for incident {remote_incident_id} \n"
-        #               f"Error message: {str(e)}")
+        demisto.debug(f"DEBUGDEBUG update-remote-system Error in Expanse outgoing mirror for incident {remote_incident_id} \n"
+                      f"Error message: {str(e)}")
         raise e
 
     return remote_incident_id
 
 
-def list_businessunits_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
-    outputs = list(
-        islice(client.list_businessunits(limit=max_page_size), total_results)
-    )
+def list_businessunits_command(client: Client, _: Dict[str, Any]) -> CommandResults:
+    outputs = [businessunit for businessunit in client.list_businessunits()]
 
     return CommandResults(
-        outputs_prefix="Expanse.BusinessUnit",
-        outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Business Units found" if len(outputs) == 0 else None
+        outputs_prefix="Expanse.BusinessUnit", outputs_key_field="id", outputs=outputs
     )
 
 
 def list_providers_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
-    outputs = list(
-        islice(client.list_providers(limit=max_page_size), total_results)
-    )
+    outputs = [provider for provider in client.list_providers()]
+
     return CommandResults(
-        outputs_prefix="Expanse.Provider",
-        outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Providers found" if len(outputs) == 0 else None
+        outputs_prefix="Expanse.Provider", outputs_key_field="id", outputs=outputs
     )
 
 
 def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
-    outputs = list(
-        islice(client.list_tags(limit=max_page_size), total_results)
-    )
+    outputs = [tag for tag in client.list_tags()]
+
     return CommandResults(
-        outputs_prefix="Expanse.Tag",
-        outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Tags found" if len(outputs) == 0 else None
+        outputs_prefix="Expanse.Tag", outputs_key_field="id", outputs=outputs
     )
 
 
@@ -1564,7 +1338,7 @@ def manage_asset_tags_command(client: Client, args: Dict[str, Any]) -> CommandRe
         [tag_ids.append(t['id']) for t in client.list_tags() if t['name'] in tag_names]
     tags: List[str] = list(set(tag_ids))
     if len(tags) < 1:
-        raise ValueError('Must provide valid tag IDs or names')
+        raise ValueError('Must provide tag IDs or names')
 
     client.manage_asset_tags(mapped_asset_type, operation_type, asset_id, tags)
     return CommandResults(
@@ -1577,43 +1351,53 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     id_: Optional[str] = args.pop('id', None)
 
     if id_ is not None and len(args) != 0:
+        # XXX - is this the right form?
         raise ValueError("You can only use [id] only with [include] parameter")
 
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
-
-    outputs: List[Dict[str, Any]]
+    outputs: Iterator[Any] = iter([])
+    ip_ranges: List = []
     if id_ is not None:
-        outputs = [client.get_iprange_by_id(id_, include)]
+        outputs = iter([client.get_iprange_by_id(id_, include)])
     else:
         params: Dict = {
-            "include": include,
-            "limit": max_page_size
+            "include": include
         }
 
         business_units = argToList(args.get('businessunits'))
         if len(business_units) != 0:
-            params['business-units'] = ','.join(business_units)
+            params['business-units'] = business_units
         business_unit_names = argToList(args.get('businessunitnames'))
         if len(business_unit_names) != 0:
-            params['business-unit-names'] = ','.join(business_unit_names)
+            params['business-unit-names'] = business_unit_names
         inet = args.get('inet')
         if inet is not None:
             params['inet'] = inet
         tags = argToList(args.get('tags'))
         if len(tags) != 0:
-            params['tags'] = ','.join(tags)
+            params['tags'] = tags
         tag_names = argToList(args.get('tagnames'))
         if len(tag_names) != 0:
-            params['tag-names'] = ','.join(tag_names)
+            params['tag-names'] = tag_names
 
-        outputs = list(
-            islice(
-                client.get_ipranges(params=params),
-                total_results
-            )
-        )
+        outputs = client.get_ipranges(params=params)
 
-    return(format_cidr_data(outputs))
+    for o in outputs:
+        o['cidr'] = ','.join(range_to_cidrs(o['startAddress'], o['endAddress'])) if (
+            'startAddress' in o
+            and 'endAddress' in o
+        ) else None
+
+        cidr_context_excluded_fields: List[str] = ['startAddress', 'endAddress']
+        ip_ranges.append({
+            k: o[k]
+            for k in o if k not in cidr_context_excluded_fields
+        })
+
+    return CommandResults(
+        outputs_prefix="Expanse.IPRange",
+        outputs_key_field="id",
+        outputs=ip_ranges
+    )
 
 
 def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1621,9 +1405,8 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     last_observed_date: Optional[str] = args.pop('last_observed_date', None)
 
     if domain is not None and len(args) != 0:
+        # XXX - is this the right form?
         raise ValueError("The only argument allowed with domain is last_observed_date")
-
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     if domain is not None:
         output = client.get_domain_by_domain(domain=domain, last_observed_date=last_observed_date)
@@ -1631,9 +1414,7 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             output['domain'] = domain
         return format_domain_data([output])
 
-    params: Dict[str, Any] = {
-        "limit": max_page_size
-    }
+    params: Dict[str, Any] = {}
 
     domain_search: Optional[str] = args.get('search', None)
     if domain_search is not None:
@@ -1641,27 +1422,27 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     provider_id = argToList(args.get('providers'))
     if len(provider_id) > 0:
-        params['providerId'] = ','.join(provider_id)
+        params['providerId'] = provider_id
 
     provider_name = argToList(args.get('providernames'))
     if len(provider_name) > 0:
-        params['providerName'] = ','.join(provider_name)
+        params['providerName'] = provider_name
 
     business_unit_id = argToList(args.get('businessunits'))
     if len(business_unit_id) > 0:
-        params['businessUnitId'] = ','.join(business_unit_id)
+        params['businessUnitId'] = business_unit_id
 
     business_unit_name = argToList(args.get('businessunitnames'))
     if len(business_unit_name) > 0:
-        params['businessUnitName'] = ','.join(business_unit_name)
+        params['businessUnitName'] = business_unit_name
 
     tag_id = argToList(args.get('tags'))
     if len(tag_id) > 0:
-        params['tagId'] = ','.join(tag_id)
+        params['tagId'] = tag_id
 
     tag_name = argToList(args.get('tagnames'))
     if len(tag_name) > 0:
-        params['tagName'] = ','.join(tag_name)
+        params['tagName'] = tag_name
 
     dns_resolution_status = args.get('has_dns_resolution')
     if dns_resolution_status is not None:
@@ -1678,69 +1459,56 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if last_observed_date is not None:
         params['minLastObservedDate'] = last_observed_date
 
-    domain_data = list(
-        islice(
-            client.get_domains(params=params),
-            total_results
-        )
-    )
+    domain_data = list(client.get_domains(params=params))
     return format_domain_data(domain_data)
 
 
 def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    md5_hash: Optional[str] = args.pop('md5_hash', None)
+    pem_md5_hash: Optional[str] = args.pop('pem_md5_hash', None)
     last_observed_date: Optional[str] = args.pop('last_observed_date', None)
 
-    if md5_hash is not None and len(args) != 0:
-        raise ValueError("The only argument allowed with md5_hash is last_observed_date")
+    if pem_md5_hash is not None and len(args) != 0:
+        # XXX - is this the right form?
+        raise ValueError("The only argument allowed with pem_md5_hash is last_observed_date")
 
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
-
-    if md5_hash is not None:
-        # we try to convert it as hex, and if we fail we trust it's a base64 encoded
-        # MD5 hash
-        try:
-            if len(ba_hash := bytearray.fromhex(md5_hash)) == 16:
-                md5_hash = base64.urlsafe_b64encode(ba_hash).decode('ascii')
-        except ValueError:
-            pass
-
-        output = client.get_certificate_by_md5_hash(
-            md5_hash=md5_hash,
+    if pem_md5_hash is not None:
+        output = client.get_certificate_by_pem_md5_hash(
+            pem_md5_hash=pem_md5_hash,
             last_observed_date=last_observed_date
         )
-        return format_certificate_data(certificates=[output])
+        return CommandResults(
+            outputs_prefix="Expanse.Certificate", outputs_key_field="id", outputs=output
+        )
 
-    params: Dict[str, Any] = {
-        "limit": max_page_size
-    }
-    cn_search: Optional[str] = args.get('search', None)
-    if cn_search is not None:
-        params['commonNameSearch'] = cn_search
+    params: Dict[str, Any] = {}
+
+    domain_search: Optional[str] = args.get('search', None)
+    if domain_search is not None:
+        params['commonNameSearch'] = domain_search
 
     provider_id = argToList(args.get('providers'))
     if len(provider_id) > 0:
-        params['providerId'] = ','.join(provider_id)
+        params['providerId'] = provider_id
 
     provider_name = argToList(args.get('providernames'))
     if len(provider_name) > 0:
-        params['providerName'] = ','.join(provider_name)
+        params['providerName'] = provider_name
 
     business_unit_id = argToList(args.get('businessunits'))
     if len(business_unit_id) > 0:
-        params['businessUnitId'] = ','.join(business_unit_id)
+        params['businessUnitId'] = business_unit_id
 
     business_unit_name = argToList(args.get('businessunitnames'))
     if len(business_unit_name) > 0:
-        params['businessUnitName'] = ','.join(business_unit_name)
+        params['businessUnitName'] = business_unit_name
 
     tag_id = argToList(args.get('tags'))
     if len(tag_id) > 0:
-        params['tagId'] = ','.join(tag_id)
+        params['tagId'] = tag_id
 
     tag_name = argToList(args.get('tagnames'))
     if len(tag_name) > 0:
-        params['tagName'] = ','.join(tag_name)
+        params['tagName'] = tag_name
 
     certificate_advertisement_status = args.get('has_certificate_advertisement')
     if certificate_advertisement_status is not None:
@@ -1760,209 +1528,80 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     if last_observed_date is not None:
         params['minLastObservedDate'] = last_observed_date
 
-    cert_data = list(
-        islice(
-            client.get_certificates(params=params),
-            total_results
-        )
+    return CommandResults(
+        outputs_prefix="Expanse.Certificate",
+        outputs_key_field="id",
+        outputs=list(client.get_certificates(
+            params=params
+        ))
     )
 
-    return format_certificate_data(certificates=cert_data)
 
+def expanse_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    # XXX - should we dump the full timeline of the certificate inside the details?
+    class ExpanseCertificate(Common.Indicator):
+        def __init__(self, indicator: str):
+            self.indicator = indicator
 
-def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    cn_search = args.get('common_name')
-    ip_search = args.get('ip')
-
-    if ip_search is not None and cn_search is not None:
-        raise ValueError("only one of common_name and ip arguments should be specified")
-
-    if cn_search is None and ip_search is None:
-        raise ValueError("one of common_name or ip arguments should be specified")
-
-    max_certificates, certificates_max_page_size = calculate_limits(args.get('limit', None))
-    max_domains, domains_max_page_size = calculate_limits(args.get('domains_limit', None))
-    ips_base_params: Dict[str, Any] = {
-        "limit": domains_max_page_size
-    }
-
-    certificates_search_params = {
-        "commonNameSearch": cn_search,
-        "limit": certificates_max_page_size
-    }
-
-    matching_domains: Dict[str, Dict[str, Any]] = {}
-    ips_to_query: Dict[str, Set[str]] = defaultdict(set)
-
-    if ip_search is not None:
-        ips_to_query[ip_search].clear()  # create an empty set
-
-    if cn_search is not None:
-        certificates = islice(client.get_certificates(certificates_search_params), max_certificates)
-        for certificate in certificates:
-            md5_hash = certificate.get('certificate', {}).get('md5Hash')
-            if md5_hash is None:
-                continue
-
-            certificate_details = client.get_certificate_by_md5_hash(md5_hash=md5_hash)
-            if certificate_details is None:
-                continue
-
-            for recent_ip in certificate_details.get('details', {}).get('recentIps', []):
-                ip_address = recent_ip.get('ip')
-                if ip_address is None:
-                    continue
-
-                ips_to_query[ip_address].add(md5_hash)
-
-    for ip2q in ips_to_query.keys():
-        ips_search_params: Dict[str, Any] = {
-            'inetSearch': ip2q,
-            'assetType': 'DOMAIN'
-        }
-        ips_search_params.update(ips_base_params)
-
-        for ipdomain in islice(client.get_ips(ips_search_params), max_domains):
-            if (domain := ipdomain.get('domain')) is None:
-                continue
-
-            if domain not in matching_domains:
-                matching_domains[domain] = {
-                    'name': domain,
-                    'IP': [],
-                    'certificate': []
+        def to_context(self):
+            return {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
+                    'Score': Common.DBotScore.NONE,
+                    'Vendor': 'ExpanseV2',
+                    'Type': 'ExpanseCertificate',
+                    'Indicator': self.indicator
                 }
+            }
 
-            matching_domains[domain]['IP'].append(ip2q)
-            matching_domains[domain]['certificate'].extend(list(ips_to_query[ip2q]))
+    pem_md5_hashes = argToList(args.get('pem_md5_hash'))
+    if len(pem_md5_hashes) == 0:
+        raise ValueError('pem_md5_hash(s) not specified')
 
-    readable_output = tableToMarkdown(
-        f"Expanse Domains matching Certificate Common Name: {cn_search}",
-        list(matching_domains.values()) if len(matching_domains) > 0 else "## No Domains found",
-        headers=['name', 'IP', 'certificate']
-    )
+    certificate_standard_list: List[Common.Indicator] = []
+    certificate_data_list: List[Dict[str, Any]] = []
+
+    for pem_md5_hash in pem_md5_hashes:
+        certificate_data = client.get_certificate_by_pem_md5_hash(pem_md5_hash=pem_md5_hash)
+        certificate_data['pemMD5Hash'] = pem_md5_hash
+
+        # We can't use Common.DBotScore here because ExpanseCertificate is not one of the well known
+        # Indicator types
+        certificate_standard_context = ExpanseCertificate(pem_md5_hash)
+        certificate_standard_list.append(certificate_standard_context)
+
+        if 'certificate' in certificate_data:
+            details = certificate_data['details']
+
+            if 'base64Encoded' in details:
+                try:
+                    cert_der = b64decode(details['base64Encoded'])
+                    sha256_fingerprint = sha256(cert_der).hexdigest()
+                    certificate_data['sha256Fingerprint'] = sha256_fingerprint
+                except ValueError:
+                    pass
+
+            if 'recentIps' in details:
+                certificate_data['feedrelatedindicators'] = [
+                    {'value': rip['ip'], 'type': 'IP', 'description': ""}
+                    for rip in details['recentIps'] if 'ip' in rip
+                ]
+
+        certificate_context_excluded_fields: List[str] = []
+        certificate_data_list.append({
+            k: certificate_data[k]
+            for k in certificate_data if k not in certificate_context_excluded_fields
+        })
+
+    readable_output = tableToMarkdown('ExpanseCertificate List', certificate_data_list)
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Expanse.AssociatedDomain',
-        outputs_key_field='name',
-        outputs=list(
-            matching_domains.values()) if len(matching_domains) > 0 else None,
-        indicators=[
-            Common.Domain(
-                d,
-                Common.DBotScore(
-                    d,
-                    DBotScoreType.DOMAIN,
-                    "ExpanseV2",
-                    Common.DBotScore.NONE
-                )
-            ) for d in matching_domains.keys()
-        ] if len(matching_domains) > 0 else None,
+        outputs_prefix='Expanse.ExpanseCertificate',
+        outputs_key_field='pemMD5Hash',
+        outputs=certificate_data_list,
+        indicators=certificate_standard_list
     )
-
-
-def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    hashes = argToList(args.get('certificate'))
-    if len(hashes) == 0:
-        raise ValueError('certificate hash(es) not specified')
-
-    set_expanse_fields = argToBoolean(args.get('set_expanse_fields', 'true'))
-
-    if len(hashes) > MAX_RESULTS:
-        hashes = hashes[:MAX_RESULTS]
-
-    certificate_data: List[Dict[str, Any]] = []
-
-    for curr_hash in hashes:
-        # we try to convert it as hex, and if we fail we trust it's a base64 encoded
-        try:
-            ba_hash = bytearray.fromhex(curr_hash)
-            if len(ba_hash) == 16:
-                # MD5 hash
-                curr_hash = base64.urlsafe_b64encode(ba_hash).decode('ascii')
-            else:  #  maybe a different hash? let's look for an indicator with a corresponding hash
-                result_hash = find_indicator_md5_by_hash(ba_hash.hex())
-                if result_hash is None:
-                    continue
-
-                curr_hash = base64.urlsafe_b64encode(bytearray.fromhex(result_hash)).decode('ascii')
-
-        except ValueError:
-            pass
-
-        c = client.get_certificate_by_md5_hash(md5_hash=curr_hash)
-        if not c or not isinstance(c, dict):
-            continue
-
-        certificate_data.append(c)
-
-    result = format_certificate_data(certificate_data)
-
-    # XXX - this is a workaround to the lack of the possibility of extending mapper
-    # of standard Indicator Types. We need to call createIndicator to set custom fields
-    if not set_expanse_fields or result.outputs is None:
-        return result
-
-    indicators: List[Dict[str, Any]] = []
-    result_outputs = cast(List[Dict[str, Any]], result.outputs)  # we keep mypy happy
-    for certificate in result_outputs:
-        ec_sha256 = certificate.get('certificate', {}).get('pemSha256')
-        if ec_sha256 is None:
-            continue
-        indicator_value = base64.urlsafe_b64decode(ec_sha256).hex()
-
-        if find_indicator_md5_by_hash(indicator_value) is None:
-            demisto.debug(f'Update: Indicator {indicator_value} not found')
-            continue
-
-        annotations = certificate.get('annotations', {})
-        tags = []
-        if 'tags' in annotations:
-            tags = [tag['name'] for tag in annotations['tags']]
-
-        provider_name: Optional[str] = None
-        providers = certificate.get('providers', None)
-        if isinstance(providers, list) and len(providers) > 0:
-            provider_name = providers[0].get('name', None)
-
-        tenant_name: Optional[str] = None
-        tenant = certificate.get('tenant', None)
-        if tenant is not None:
-            tenant_name = tenant.get('name', None)
-
-        business_unit_names: List[str] = []
-        business_units = certificate.get("businessUnits", [])
-        for bu in business_units:
-            if 'name' not in bu:
-                continue
-            business_unit_names.append(bu['name'])
-
-        indicator: Dict[str, Any] = {
-            'type': 'Certificate',
-            'value': indicator_value,
-            'score': Common.DBotScore.NONE,
-            'source': 'ExpanseV2',
-            'fields': {
-                'expansedateadded': certificate.get('dateAdded'),
-                'expansefirstobserved': certificate.get('firstObserved'),
-                'firstseenbysource': certificate.get('firstObserved'),
-                'expanselastobserved': certificate.get('lastObserved'),
-                'lastseenbysource': certificate.get('lastObserved'),
-                'expansecertificateadvertisementstatus': certificate.get('certificateAdvertisementStatus'),
-                'expansetags': tags,
-                'expanseproperties': '\n'.join(certificate.get('properties', [])),
-                'expanseservicestatus': certificate.get('serviceStatus'),
-                'expanseprovidername': provider_name,
-                'expansetenantname': tenant_name,
-                'expansebusinessunits': business_unit_names
-            }
-        }
-        indicators.append(indicator)
-
-    demisto.createIndicators(indicators)
-
-    return result
 
 
 def domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1971,10 +1610,6 @@ def domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(domains) == 0:
         raise ValueError('domain(s) not specified')
 
-    # trim down the list to the max number of supported results
-    if len(domains) > MAX_RESULTS:
-        domains = domains[:MAX_RESULTS]
-
     domain_data: List[Dict[str, Any]] = []
 
     for domain in domains:
@@ -1982,7 +1617,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         if not d or not isinstance(d, dict):
             continue
         if 'domain' not in d:
-            d['domain'] = domain
+            d['domain'] = 'domain'
         domain_data.append(d)
 
     return format_domain_data(domain_data)
@@ -1993,15 +1628,11 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(ips) == 0:
         raise ValueError('ip(s) not specified')
 
-    # trim down the list to the max number of supported results
-    if len(ips) > MAX_RESULTS:
-        ips = ips[:MAX_RESULTS]
-
     ip_standard_list: List[Common.IP] = []
     ip_data_list: List[Dict[str, Any]] = []
 
     for ip in ips:
-        ip_data = next(client.get_ips(params={'inetSearch': f"{ip}", "limit": 1}), None)
+        ip_data = next(client.get_ips(params={'inetSearch': f"{ip}"}), None)
         if ip_data is None:
             continue
 
@@ -2025,64 +1656,90 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             for k in ip_data if k not in ip_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown(
-        'Expanse IP List', ip_data_list) if len(ip_data_list) > 0 else "## No IPs found"
+    readable_output = tableToMarkdown('Expanse IP List', ip_data_list)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.IP',
-        outputs_key_field=['ip', 'type', 'assetKey', 'assetType'],
-        outputs=ip_data_list if len(ip_data_list) > 0 else None,
-        indicators=ip_standard_list if len(ip_standard_list) > 0 else None
+        outputs_key_field='IP',
+        outputs=ip_data_list,
+        indicators=ip_standard_list
     )
 
 
 def cidr_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    class ExpanseCIDR(Common.Indicator):
+        def __init__(self, indicator: str):
+            self.indicator = indicator
+
+        def to_context(self):
+            return {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
+                    'Score': Common.DBotScore.NONE,
+                    'Vendor': 'ExpanseV2',
+                    'Type': 'CIDR',
+                    'Indicator': self.indicator
+                }
+            }
     cidrs = argToList(args.get('cidr'))
     if len(cidrs) == 0:
         raise ValueError('cidr(s) not specified')
 
-    # trim down the list to the max number of supported results
-    if len(cidrs) > MAX_RESULTS:
-        cidrs = cidrs[:MAX_RESULTS]
-
     include = handle_iprange_include(args.get('include'), 'include')
 
-    cidr_data: List[Dict[str, Any]] = []
+    cidr_data_list: List[Dict[str, Any]] = []
+    cidr_standard_list: List[Common.Indicator] = []
 
     for cidr in cidrs:
-        c = next(client.get_ipranges(params={'inet': cidr, 'include': include, 'limit': 1}), None)
-
-        if not c or not isinstance(c, dict):
+        cidr_data = next(client.get_ipranges(params={'inet': cidr, 'include': include}), None)
+        if cidr_data is None:
             continue
-        cidr_data.append(c)
 
-    return format_cidr_data(cidr_data)
+        cidr_data['cidr'] = ','.join(range_to_cidrs(cidr_data['startAddress'], cidr_data['endAddress'])) if (
+            'startAddress' in cidr_data
+            and 'endAddress' in cidr_data
+        ) else None
+
+        if not cidr_data['cidr']:
+            continue
+
+        cidr_context_excluded_fields: List[str] = ['startAddress', 'endAddress']
+        cidr_data_list.append({
+            k: cidr_data[k]
+            for k in cidr_data if k not in cidr_context_excluded_fields
+        })
+
+        # We can't use Common.DBotScore here because CIDR is not one of the well known
+        # Indicator types
+        cidr_standard_context = ExpanseCIDR(cidr_data['cidr'])
+        cidr_standard_list.append(cidr_standard_context)
+
+    readable_output = tableToMarkdown('Expanse IP Range List', cidr_data_list)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Expanse.IPRange',
+        outputs_key_field='IP',
+        outputs=cidr_data_list,
+        indicators=cidr_standard_list
+    )
 
 
 def list_risk_rules_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
 
-    params = {
-        "limit": max_page_size
-    }
-    risk_rules = list(
-        islice(
-            client.list_risk_rules(params),
-            total_results
-        )
-    )
+    risk_rules = client.list_risk_rules()
 
     return CommandResults(
-        outputs_prefix="Expanse.RiskRule",
-        outputs_key_field="id",
-        readable_output="## No Risk Rules found" if len(risk_rules) == 0 else None,
-        outputs=risk_rules if len(risk_rules) > 0 else None
+        outputs_prefix="Expanse.RiskRules", outputs_key_field="id", outputs=list(risk_rules)
     )
 
 
 def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+
+    limit = check_int(args.get('limit'), 'limit', None, None, False)
+    if not limit:
+        limit = MAX_RESULTS
 
     d = args.get('created_before', None)
     created_before = parse(d).strftime(DATE_FORMAT) if d else None
@@ -2092,23 +1749,12 @@ def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     internal_ip_range = args.get('internal_ip_range', None)
     risk_rule = args.get('risk_rule', None)
+    tag_names = args.get('tagnames', None)
 
-    tags = argToList(args.get('tagnames'))
-    tag_names: Optional[str] = ','.join(tags) if tags else None
-
-    risky_flows = list(
-        islice(
-            client.get_risky_flows(limit=max_page_size, created_before=created_before, created_after=created_after,
-                                   internal_ip_range=internal_ip_range, risk_rule=risk_rule, tag_names=tag_names),
-            total_results
-        )
-    )
-
+    risky_flows = client.get_risky_flows(limit=limit, created_before=created_before, created_after=created_after,
+                                         internal_ip_range=internal_ip_range, risk_rule=risk_rule, tag_names=tag_names)
     return CommandResults(
-        outputs_prefix="Expanse.RiskyFlow",
-        outputs_key_field="id",
-        readable_output="## No Risky Flows found" if len(risky_flows) == 0 else None,
-        outputs=risky_flows if len(risky_flows) > 0 else None
+        outputs_prefix="Expanse.RiskyFlows", outputs_key_field="id", outputs=list(risky_flows)
     )
 
 
@@ -2152,12 +1798,12 @@ def main() -> None:
             priority = demisto.params().get('priority', None)
             activity_status = demisto.params().get('activityStatus', None)
             progress_status = demisto.params().get('progressStatus', None)
-            business_units = argToList(demisto.params().get('businessUnit', None))
-            issue_types = argToList(demisto.params().get('issueType', None))
-            tags = argToList(demisto.params().get('tags', None))
+            business_unit = demisto.params().get('businessUnit', None)
+            tag = demisto.params().get('tag', None)
 
             sync_tags = argToList(demisto.params().get('sync_tags', None))
             fetch_details = argToBoolean(demisto.params().get('fetch_details'))
+            fetch_behavior = argToBoolean(demisto.params().get('fetch_behavior'))
 
             mirror_direction = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
             next_run, incidents = fetch_incidents(
@@ -2168,12 +1814,12 @@ def main() -> None:
                 priority=priority,
                 activity_status=activity_status,
                 progress_status=progress_status,
-                business_units=business_units,
-                tags=tags,
-                issue_types=issue_types,
+                business_unit=business_unit,
+                tag=tag,
                 mirror_direction=mirror_direction,
                 sync_tags=sync_tags,
-                fetch_details=fetch_details
+                fetch_details=fetch_details,
+                fetch_behavior=fetch_behavior
             )
 
             demisto.setLastRun(next_run)
@@ -2181,12 +1827,9 @@ def main() -> None:
 
         elif demisto.command() == "get-remote-data":
             sync_owners = argToBoolean(demisto.params().get('sync_owners'))
-            # XXX: forced to be disabled to reduce API calls in the backend.
-            # Will be reviewed in next versions to use XSOAR 6.1 mirroring enhancements.
-            mirror_details = False
-            # mirror_details = argToBoolean(demisto.params().get('mirror_details'))
+            fetch_details = argToBoolean(demisto.params().get('fetch_details'))
             incoming_tags = argToList(demisto.params().get('incoming_tags', None))
-            return_results(get_remote_data_command(client, demisto.args(), sync_owners, incoming_tags, mirror_details))
+            return_results(get_remote_data_command(client, demisto.args(), sync_owners, incoming_tags, fetch_details))
 
         elif demisto.command() == "update-remote-system":
             sync_owners = argToBoolean(demisto.params().get('sync_owners'))
@@ -2274,11 +1917,8 @@ def main() -> None:
         elif demisto.command() == "expanse-get-certificate":
             return_results(get_certificate_command(client, demisto.args()))
 
-        elif demisto.command() == "expanse-get-associated-domains":
-            return_results(get_associated_domains_command(client, demisto.args()))
-
-        elif demisto.command() == "certificate":
-            return_results(certificate_command(client, demisto.args()))
+        elif demisto.command() == "expanse-certificate":
+            return_results(expanse_certificate_command(client, demisto.args()))
 
         elif demisto.command() == "domain":
             return_results(domain_command(client, demisto.args()))

@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Certificate"
+        "ExpanseCertificate"
     ],
     "caseInsensitive": true,
     "cliName": "expansecertificateadvertisementstatus",
@@ -17,7 +17,12 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [],
+    "selectValues": [
+        "[\"HAS_CERTIFICATE_ADVERTISEMENT\"]",
+        "HAS_CERTIFICATE_ADVERTISEMENT",
+        "[\"NO_CERTIFICATE_ADVERTISEMENT\"]",
+        "NO_CERTIFICATE_ADVERTISEMENT"
+    ],
     "sla": 0,
     "system": false,
     "threshold": 72,
@@ -26,5 +31,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.0.0"
 }
