@@ -212,7 +212,6 @@ class TimestampReplacer:
             if json_data:
                 try:
                     content = OrderedDict(literal_eval(content))
-                    # content = json.loads(content, object_pairs_hook=OrderedDict)
                     self.modify_json_body(req, content)
                 except Exception:
                     logging.exception(f'failed to run literal_eval on content {content}')
@@ -341,7 +340,6 @@ class TimestampReplacer:
             List[str]: A list of keys (in dot notation, e.g. 'query.filter.time' is an example of what could be one
                 problematic key) whose values are potentially timestamp data.
         """
-
         def travel_dict(obj: Union[dict, list], key_path='') -> List[str]:
             bad_key_paths = []
             if isinstance(obj, dict):
