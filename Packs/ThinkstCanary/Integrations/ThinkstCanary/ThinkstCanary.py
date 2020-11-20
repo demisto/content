@@ -145,6 +145,18 @@ def list_canaries():
         device in res['devices']]
     return res, new_devices
 
+def list_dead_canaries():
+    """
+    Retrieve all dead Canaries available in Canary Tools
+    :return: json response, a list of all dead devices
+    """
+    res = http_request('GET', SERVER + 'devices/dead')
+    new_devices = [
+        {new_key: device[old_key] if old_key in device else None for old_key, new_key in
+         RELEVANT_DEVICE_ENTRIES.items()} for
+        device in res['devices']]
+    return res, new_devices
+
 
 def list_canaries_command():
     """
@@ -168,6 +180,27 @@ def list_canaries_command():
     outputs = {'CanaryTools.Device(val.ID && val.ID === obj.ID)': context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
+def list_dead_canaries_command():
+    """
+    Retrieve all daed Canaries available in Canary Tools
+    """
+    res_json, new_devices = list_dead_canaries()
+    context = createContext(new_devices, removeNull=True)
+    headers = [
+        'ID',
+        'Name',
+        'Description',
+        'Address',
+        'Status',
+        'Location',
+        'Version',
+        'LastSeen',
+        'LastUpdated'
+    ]
+    contents = res_json
+    human_readable = tableToMarkdown('Dead Canary Devices', new_devices, headers=headers)
+    outputs = {'CanaryTools.Device(val.ID && val.ID === obj.ID)': context}
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 def list_tokens():
     """
@@ -383,6 +416,8 @@ try:
         get_token_command()
     elif demisto.command() == 'canarytools-list-canaries':
         list_canaries_command()
+    elif demisto.command() == 'canarytools-list-dead-canaries':
+        list_dead_canaries_command()
     elif demisto.command() == 'canarytools-check-whitelist':
         check_whitelist_command()
     elif demisto.command() == 'canarytools-whitelist-ip':

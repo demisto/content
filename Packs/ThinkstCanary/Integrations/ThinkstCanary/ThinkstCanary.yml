@@ -75,6 +75,37 @@ script:
       description: Device last updated time
       type: date
     description: Lists all registered Canaries.
+  - name: canarytools-list-dead-canaries
+    arguments: []
+    outputs:
+    - contextPath: CanaryTools.Device.ID
+      description: Device ID
+      type: string
+    - contextPath: CanaryTools.Device.Name
+      description: Device name
+      type: string
+    - contextPath: CanaryTools.Device.Description
+      description: Device description
+      type: string
+    - contextPath: CanaryTools.Device.Address
+      description: Device IP address
+      type: string
+    - contextPath: CanaryTools.Device.Status
+      description: Device status - Live (True/False)
+      type: string
+    - contextPath: CanaryTools.Device.Location
+      description: Device location
+      type: string
+    - contextPath: CanaryTools.Device.Version
+      description: Device version
+      type: string
+    - contextPath: CanaryTools.Device.LastSeen
+      description: Device last seen time
+      type: date
+    - contextPath: CanaryTools.Device.LastUpdated
+      description: Device last updated time
+      type: date
+    description: Lists all dead Canaries    
   - name: canarytools-list-tokens
     arguments: []
     outputs:

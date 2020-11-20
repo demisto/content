@@ -49,6 +49,7 @@
 <div class="cl-preview-section">
 <ol>
 <li><a href="#list-all-registered-canaries" target="_self">List all registered Canaries: canarytools-list-canaries</a></li>
+<li><a href="#list-all-dead-canaries" target="_self">List all dead Canaries: canarytools-list-dead-canaries</a></li>
 <li><a href="#list-all-canary-tokens" target="_self">List all Canary tokens: canarytools-list-tokens</a></li>
 <li><a href="#check-if-an-ip-address-is-whitelisted" target="_self">Check if an IP address is whitelisted: canarytools-check-whitelist</a></li>
 <li><a href="#add-an-ip-address-to-the-whitelist" target="_self">Add an IP address to the whitelist: canarytools-whitelist-ip</a></li>
@@ -173,7 +174,162 @@
 <p><img src="https://user-images.githubusercontent.com/43776787/53302684-b58aba00-3869-11e9-8a7e-67c13fc8562c.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
-<h3 id="list-all-canary-tokens">2. List all Canary tokens</h3>
+<h3 id="list-all-dead-canaries">1. List all dead Canaries</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Lists all dead Canaries.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>canarytools-list-dead-canaries</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input">Input</h5>
+</div>
+<div class="cl-preview-section">
+<p>There are no input arguments for this command.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-output">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 745px;">
+<thead>
+<tr>
+<th style="width: 326px;"><strong>Path</strong></th>
+<th style="width: 32px;"><strong>Type</strong></th>
+<th style="width: 382px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 326px;">CanaryTools.Device.ID</td>
+<td style="width: 32px;">string</td>
+<td style="width: 382px;">Device ID</td>
+</tr>
+<tr>
+<td style="width: 326px;">CanaryTools.Device.Name</td>
+<td style="width: 32px;">string</td>
+<td style="width: 382px;">Device name</td>
+</tr>
+<tr>
+<td style="width: 326px;">CanaryTools.Device.Description</td>
+<td style="width: 32px;">string</td>
+<td style="width: 382px;">Device description</td>
+</tr>
+<tr>
+<td style="width: 326px;">CanaryTools.Device.Address</td>
+<td style="width: 32px;">string</td>
+<td style="width: 382px;">Device IP address</td>
+</tr>
+<tr>
+<td style="width: 326px;">CanaryTools.Device.Status</td>
+<td style="width: 32px;">boolean</td>
+<td style="width: 382px;">Device status - Live (True/False)</td>
+</tr>
+<tr>
+<td style="width: 326px;">CanaryTools.Device.Location</td>
+<td style="width: 32px;">string</td>
+<td style="width: 382px;">Device location</td>
+</tr>
+<tr>
+<td style="width: 326px;">CanaryTools.Device.Version</td>
+<td style="width: 32px;">string</td>
+<td style="width: 382px;">Device version</td>
+</tr>
+<tr>
+<td style="width: 326px;">CanaryTools.Device.LastSeen</td>
+<td style="width: 32px;">date</td>
+<td style="width: 382px;">Device last seen time</td>
+</tr>
+<tr>
+<td style="width: 326px;">CanaryTools.Device.LastUpdated</td>
+<td style="width: 32px;">date</td>
+<td style="width: 382px;">Device last updated time</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="command-example">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>!canarytools-list-dead-canaries</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-example">Context Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>{  
+   "CanaryTools":{  
+      "Device":{  
+         "Status":false,
+         "Description":"Lab",
+         "LastUpdated":"2019-02-24 16:46:01 UTC+0000",
+         "Version":"2.1.2",
+         "Location":"Lab",
+         "Address":"192.168.1.43",
+         "Name":"VirtualCanary-1",
+         "ID":"0002f07cb32d45b1",
+         "LastSeen":"Sun Feb 24 2019 16:46:01 GMT+0000 (UTC)"
+      }
+   }
+}
+</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output">Human Readable Output</h5>
+</div>
+<table style="width: 595px;" border="2">
+<thead>
+<tr>
+<th style="width: 171px;">ID</th>
+<th style="width: 84px;">0002f07cb32d45b1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 171px;">Name</td>
+<td style="width: 84px;">VirtualCanary-1</td>
+</tr>
+<tr>
+<td style="width: 171px;">Description</td>
+<td style="width: 84px;">Lab</td>
+</tr>
+<tr>
+<td style="width: 171px;">Address</td>
+<td style="width: 84px;">192.168.1.43</td>
+</tr>
+<tr>
+<td style="width: 171px;">Status</td>
+<td style="width: 84px;">false</td>
+</tr>
+<tr>
+<td style="width: 171px;">Location</td>
+<td style="width: 84px;">Lab</td>
+</tr>
+<tr>
+<td style="width: 171px;">Version</td>
+<td style="width: 84px;">2.3.4</td>
+</tr>
+<tr>
+<td style="width: 171px;">LastSeen</td>
+<td style="width: 84px;">Sun Feb 24 2019 16:46:01 GMT+0000 (UTC)</td>
+</tr>
+<tr>
+<td style="width: 171px;">LastUpdated</td>
+<td style="width: 84px;">2019-02-24 16:46:01 UTC+0000</td>
+</tr>
+</tbody>
+</table>
+<div class="cl-preview-section">
+<h3 id="list-all-canary-tokens">3. List all Canary tokens</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -279,7 +435,7 @@
 <p><img src="https://user-images.githubusercontent.com/43776787/53302739-35b11f80-386a-11e9-95be-5af5db6e8a8a.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
-<h3 id="check-if-an-ip-address-is-whitelisted">3. Check if an IP address is whitelisted</h3>
+<h3 id="check-if-an-ip-address-is-whitelisted">4. Check if an IP address is whitelisted</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -382,7 +538,7 @@
 <p><img src="https://user-images.githubusercontent.com/43776787/53302758-86c11380-386a-11e9-89c5-d1bd1ab46a45.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
-<h3 id="add-an-ip-address-to-the-whitelist">4. Add an IP address to the whitelist</h3>
+<h3 id="add-an-ip-address-to-the-whitelist">5. Add an IP address to the whitelist</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -485,7 +641,7 @@
 <p><img src="https://user-images.githubusercontent.com/43776787/53302772-b5d78500-386a-11e9-816c-bb69eecfe879.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
-<h3 id="edit-an-alert-status">5. Edit an alert status</h3>
+<h3 id="edit-an-alert-status">6. Edit an alert status</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -582,7 +738,7 @@
 <p><img src="https://user-images.githubusercontent.com/43776787/53302809-2f6f7300-386b-11e9-8eba-71a9d6f4ddd8.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
-<h3 id="get-a-canary-token-file">6. Get a Canary Token file</h3>
+<h3 id="get-a-canary-token-file">7. Get a Canary Token file</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
