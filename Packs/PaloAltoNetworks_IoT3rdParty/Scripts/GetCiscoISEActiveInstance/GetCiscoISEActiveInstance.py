@@ -20,14 +20,15 @@ for resp in response:
         # and is also a primary or is in standalone mode
         for node_data in resp['Contents']['CiscoISE.NodesData']:
             if node_data['isLocalIstance']:
-                if node_data['inDeployment'] == False or (node_data['inDeployment'] == True and node_data['primaryPapNode'] == True):
+                if node_data['inDeployment'] is False or (node_data['inDeployment']
+                                                          is True and node_data['primaryPapNode'] is True):
                     active_instance = local_instance
 
 
 # If no active instances are found that means we dont have any valid ise nodes.
 # We can either report to cloud here or better write to the context data
 # and do it in the playbook for better visibility
-if active_instance == None:
+if active_instance is None:
     readable_status = "No Primary/Active Cisco ISE node found = %s" % err_msg
     results = CommandResults(
         readable_output=readable_status,

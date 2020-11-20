@@ -113,11 +113,11 @@ while True:
         for device_map in device_list:
             if 'mac_address' in device_map:
                 mac = device_map['mac_address']
-                if mac == None or mac == "":
+                if mac is None or mac == "":
                     continue
                 attr_map = {}
                 for field in device_map:
-                    if device_map[field] == None or device_map[field] == "":
+                    if device_map[field] is None or device_map[field] == "":
                         continue
                     if field in cisco_ise_field_map:
                         attr_map[cisco_ise_field_map[field][0]] = device_map[field]
@@ -132,7 +132,8 @@ while True:
                     # if this api call is not allowed (Method Not Allowed), we need to move to the older filter based API
                     if err_msg == '405':
                         GET_EP_ID_CMD = "cisco-ise-get-endpoint-id"
-                        demisto.info("PANW_IOT_3RD_PARTY_BASE endpoint name API not available, switch to filter based get-endpoint-id API")
+                        demisto.info("PANW_IOT_3RD_PARTY_BASE endpoint name API not available, switch to filter based "
+                                     "get-endpoint-id API")
                     # If we get 404 Not Found or empty results are returned, we need to create a new Endpoint
                     elif err_msg == "404" or err_msg == "list index out of range":
                         ret = demisto.executeCommand("cisco-ise-create-endpoint", {
@@ -142,10 +143,10 @@ while True:
                         })
                         if isError(ret[0]):
                             return_results("Failed to create new Endpoint %s" % mac)  # log to the war room
-                            demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to create new Endpoint %s, reason" %
+                            demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to create new Endpoint %s, reason %s" %
                                          (mac, ret[0]['Contents']))
                         else:
-                            #demisto.info("PANW_IOT_3RD_PARTY_BASE New Endpoint created %s" % mac)
+                            # demisto.info("PANW_IOT_3RD_PARTY_BASE New Endpoint created %s" % mac)
                             count += 1
                     # The primary went down (connection Error) or 401 if a fail over occurred. We need to get the new Primary
                     elif err_msg == "Connection Error" or err_msg == "401":
@@ -156,10 +157,10 @@ while True:
                         time.sleep(10 * 60)
                         # Try again to get a new active instance
                         new_active_instance, err_msg = get_active_ise_instance()
-                        if new_active_instance == None:
+                        if new_active_instance is None:
                             send_status_to_panw_iot_cloud("error", err_msg)
-                            demisto.info(
-                                "PANW_IOT_3RD_PARTY_BASE failed to get any active ISE instance, sending report back to panw cloud. Error = %s", err_msg)
+                            demisto.info("PANW_IOT_3RD_PARTY_BASE failed to get any active ISE instance, sending "
+                                         "report back to panw cloud. Error = %s", err_msg)
                             return_error(err_msg)
                         else:
                             active_instance = new_active_instance
@@ -187,13 +188,15 @@ while True:
                         })
                         if isError(res[0]):
                             # this can happen if any of the custom attributes already exist on ISE
-                            demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to update Custom Attributes for Endpoint %s, reason" % (
-                                mac, res[0]['Contents']))
+                            demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to update Custom Attributes for Endpoint %s, "
+                                         "reason %s" % (mac, res[0]['Contents']))
                         else:
-                            #demisto.info("PANW_IOT_3RD_PARTY_BASE Updated existing Endpoint %s" % mac)
+                            # demisto.info("PANW_IOT_3RD_PARTY_BASE Updated existing Endpoint %s" % mac)
                             count += 1
-                    except:
+                    except Exception as ex:
+                        demisto.info(ex)
                         continue
+
                 time.sleep(1)
     except Exception as ex:
         demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to parse device map %s" % str(ex))

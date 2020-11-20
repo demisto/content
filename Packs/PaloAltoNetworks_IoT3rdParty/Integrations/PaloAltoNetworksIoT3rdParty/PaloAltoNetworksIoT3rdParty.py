@@ -3,9 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import requests
 import json
 import urllib3
-import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
 from datetime import datetime
 from datetime import timedelta
 
@@ -167,16 +165,16 @@ vulnerabilities_fields_map = [
 
 def http_request(method, url, api_params={}, data=None):
 
-    params = (
-        ('customerid', CUSTOMER_ID),
-    )
-    if api_params:
-        params += api_params
+    params = {
+        'customerid': CUSTOMER_ID,
+    }
+    if api_params is not None:
+        params.update(api_params)
     try:
         LOG(f'running {method} request with url={url}')
         response = requests.request(method, url, headers=DEFAULT_HEADERS, params=params, data=data)
     except requests.exceptions.ConnectionError as e:
-        err_msg = "Failed to connect to PANW IoT Cloud. Verify assess_key, key_id and url are correct."
+        err_msg = "Failed to connect to PANW IoT Cloud. Verify assess_key, key_id and url are correct. %s" % e
         return_error(err_msg)
 
     if response.status_code not in {200, 201, 202, 204}:
@@ -214,26 +212,26 @@ def get_asset_list():
     poll_time = None  # Device API uses poll time
     stime = None  # Alerts and Vulns use stime
 
-    if page_length == None:
+    if page_length is None:
         page_length = DEFAULT_PAGE_SIZE
-    if offset == None:
+    if offset is None:
         offset = '0'
-    if increment_time:
+    if increment_time is not None:
         if asset_type == "Device":
             poll_time = int(round(time.time() * 1000)) - int(increment_time) * 60 * 1000
         else:
             stime = datetime.now() - timedelta(minutes=int(increment_time))
 
-    params = (
-        ('offset', str(offset)),
-        ('pagelength', str(page_length)),
-        ('stime', stime),
-    )
+    params = {
+        'offset': str(offset),
+        'pagelength': str(page_length),
+        'stime': stime
+    }
     if asset_type == "Device":
-        params += (('detail', 'true'),)
-        params += (('last_poll_time', poll_time),)
+        params['detail'] = 'true'
+        params['last_poll_time'] = str(poll_time)
     elif asset_type == "Vulnerability":
-        params += (('groupby', 'device'),)
+        params['groupby'] = 'device'
 
     # gather all the results, break if the return size is less than requested page size
     while True:
@@ -269,26 +267,20 @@ def get_single_asset():
     asset_type = demisto.args().get('assetType')
     asset_id = demisto.args().get('assetID')
 
-    if asset_type == None:
+    if asset_type is None:
         return_error("Invalid Asset Type ")
-    if asset_id == None:
+    if asset_id is None:
         return_error("Invalid Asset ID")
 
-    params = ()
+    params = {}
     if asset_type == 'Device':
-        params += (
-            ('detail', 'true'),
-            ('deviceid', str(asset_id)),
-        )
+        params['detail'] = 'true'
+        params['deviceid'] = str(asset_id)
     elif asset_type == 'Alert':
-        params += (
-            ('zb_ticketid', str(asset_id)),
-        )
+        params['zb_ticketid'] = str(asset_id)
     elif asset_type == 'Vulnerability':
-        params += (
-            ('groupby', 'device'),
-            ('zb_ticketid', str(asset_id)),
-        )
+        params['groupby'] = 'device'
+        params['zb_ticketid'] = str(asset_id)
     else:
         return_error("Invalid asset type")
 
@@ -301,7 +293,7 @@ def get_single_asset():
     msg = "Successfully pulled %s (%s) from PANW IoT Cloud" % (asset_type, asset_id)
 
     return CommandResults(
-        readable_output="Successfully pulled %s (%s) from PANW IoT Cloud" % (asset_type, asset_id),
+        readable_output=msg,
         outputs_prefix="PanwIot3rdParty.SingleAsset",
         outputs=data
     )
@@ -376,7 +368,7 @@ def convert_alert_list_to_cef(alert_list=None):
     """
     data = []
     for alert in alert_list:
-        if alert != None and "msg" in alert and "status" in alert["msg"] and alert["msg"]["status"] == "publish":
+        if alert is not None and "msg" in alert and "status" in alert["msg"] and alert["msg"]["status"] == "publish":
             msg = alert['msg']
             line = "CEF:0|PaloAltoNetworks|PANWIOT|1.0|PaloAltoNetworks Alert:policy_alert|"
 
@@ -446,19 +438,19 @@ def convert_device_list_to_ise_attributes(device_list=None):
     data = []
     for device_map in device_list:
         if 'mac_address' in device_map:
-            if device_map['mac_address'] == None or device_map['mac_address'] == "":
+            if device_map['mac_address'] is None or device_map['mac_address'] == "":
                 continue
             attribute_list = {}
             attribute_list['mac'] = device_map['mac_address']
             zb_attributes = {}
             for field in device_map:
-                if device_map[field] == None or device_map[field] == "":
+                if device_map[field] is None or device_map[field] == "":
                     continue
                 if field in cisco_ise_field_map:
                     if field in int_fields:
                         try:
                             int_val = int(device_map[field])
-                        except:
+                        except Exception:
                             continue
                         zb_attributes[cisco_ise_field_map[field][0]] = int_val
                         zb_attributes[cisco_ise_field_map[field][1]] = int_val
@@ -581,7 +573,7 @@ def convert_device_to_servicenow_format(device):
         sn_name = device_fields_mapping[field]
         value = ''
         if field in device:
-            if device[field] != None:
+            if device[field] is not None:
                 value = str(device[field])
         else:
             value = ' '
@@ -592,7 +584,7 @@ def convert_device_to_servicenow_format(device):
         sn_name = device_custome_fields_mapping[field]
         value = ''
         if field in device:
-            if device[field] != None:
+            if device[field] is not None:
                 value = str(device[field])
         else:
             value = ' '
@@ -718,13 +710,13 @@ def connection_test_command(return_bool: bool = False):
     """
     Try to get a single device from the Cloud to test connectivity.
     """
-    params = (
-        ('offset', '0'),
-        ('pagelength', '1'),
-        ('detail', 'false'),
-    )
+    params = {
+        'offset': '0',
+        'pagelength': '1',
+        'detail': 'false',
+    }
     url = BASE_URL + api_type_map['Device']['list_url']
-    data = http_request('GET', url, params)
+    http_request('GET', url, params)
 
     if return_bool:
         return True

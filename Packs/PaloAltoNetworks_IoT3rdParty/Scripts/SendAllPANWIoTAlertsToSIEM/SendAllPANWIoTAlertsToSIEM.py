@@ -45,7 +45,7 @@ while True:
         alert_list = resp[0]['Contents']
         size = len(alert_list)
         for alert in alert_list:
-            if alert != None and "msg" in alert and "status" in alert["msg"] and alert["msg"]["status"] == "publish":
+            if alert is not None and "msg" in alert and "status" in alert["msg"] and alert["msg"]["status"] == "publish":
                 msg = alert['msg']
                 cef = "CEF:0|PaloAltoNetworks|PANWIOT|1.0|PaloAltoNetworks Alert:policy_alert|"
 
