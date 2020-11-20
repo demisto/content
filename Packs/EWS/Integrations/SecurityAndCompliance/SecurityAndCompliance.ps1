@@ -47,7 +47,7 @@ function GetRedirectUri {
             "URI" = "https://$uri/powershell-liveid?BasicAuthToOAuthConversion=true;PSVersion=7.0.3"
             "Method" = "Post"
             "Credential" = $credential
-            "NoProxy" = $proxy
+            "NoProxy" = !$proxy
             "SkipCertificateCheck" = $insecure
             "MaximumRedirection" = 0
         }
@@ -449,7 +449,7 @@ class OAuth2DeviceCodeClient {
             "Method" = "Post"
             "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
             "Body" = "client_id=$($this.application_id)&scope=$($this.application_scope)"
-            "NoProxy" = $this.proxy
+            "NoProxy" = !$this.proxy
             "SkipCertificateCheck" = $this.insecure
         }
         $response = Invoke-WebRequest @params
@@ -484,7 +484,7 @@ class OAuth2DeviceCodeClient {
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
                 "Body" = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&code=$($this.device_code)&client_id=$($this.application_id)"
-                "NoProxy" = $this.proxy
+                "NoProxy" = !$this.proxy
                 "SkipCertificateCheck" = $this.insecure
             }
             $response = Invoke-WebRequest @params
@@ -534,7 +534,7 @@ class OAuth2DeviceCodeClient {
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
                 "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
-                "NoProxy" = $this.proxy
+                "NoProxy" = !$this.proxy
                 "SkipCertificateCheck" = $this.insecure
             }
             $response = Invoke-WebRequest @params
@@ -1190,14 +1190,6 @@ function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplian
     return $human_readable, $entry_context, $raw_response
 }
 
-function IntegrationContextCommand () {
-    $raw_response = @{}
-    $human_readable = TableToMarkdown $Demisto.getIntegrationContext()
-    $entry_context = @{}
-
-    return $human_readable, $entry_context, $raw_response
-}
-
 function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Command arguemnts parsing
     $allow_not_found_exchange_locations = ConvertTo-Boolean $kwargs.allow_not_found_exchange_locations
@@ -1396,7 +1388,7 @@ function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
-    $proxy = !(ConvertTo-Boolean $integration_params.proxy)
+    $proxy = $false
     $insecure = (ConvertTo-Boolean $integration_params.insecure)
 
 	try {
@@ -1421,9 +1413,6 @@ function Main {
             }
             "$script:COMMAND_PREFIX-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
-            }
-            "$script:COMMAND_PREFIX-integration-context" {
-                ($human_readable, $entry_context, $raw_response) = IntegrationContextCommand
             }
 			"$script:COMMAND_PREFIX-new-search" {
 				($human_readable, $entry_context, $raw_response) = NewSearchCommand $cs_client $command_arguments

@@ -17,10 +17,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 description: This integration allow to manage and interuct with microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search
 name: SecurityAndCompliance
@@ -38,10 +34,6 @@ script:
     description: Test authorization.
     execution: false
     name: o365-sc-test
-  - deprecated: false
-    description: Print the integration context (Oauth2.0 related information - Internal use).
-    execution: false
-    name: o365-sc-integration-context
   - arguments:
     - default: false
       description: The name of the compliance search.
