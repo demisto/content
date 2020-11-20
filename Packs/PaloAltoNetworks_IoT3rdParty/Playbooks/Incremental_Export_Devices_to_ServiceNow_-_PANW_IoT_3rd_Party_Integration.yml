@@ -82,9 +82,11 @@ tasks:
       assetType:
         simple: Device
       incrementTime:
-        simple: "4"
+        simple: "15"
       offset: {}
       pageLength: {}
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -126,6 +128,8 @@ tasks:
         simple: disabled
       type:
         simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -236,6 +240,8 @@ tasks:
         simple: error
       type:
         simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -346,6 +352,8 @@ tasks:
         simple: error
       type:
         simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -455,6 +463,8 @@ tasks:
       system_params: {}
       table_name:
         simple: u_zingbox_discovered_devices
+      using:
+        simple: PANW IoT 3rd Party ServiceNow Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -499,6 +509,8 @@ tasks:
       metadata1: {}
       outputFormat:
         simple: ServiceNow
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -577,6 +589,8 @@ tasks:
         simple: error
       type:
         simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -697,6 +711,8 @@ tasks:
         simple: success
       type:
         simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -776,6 +792,8 @@ tasks:
       input_display_value: {}
       table_name:
         simple: u_zingbox_discovered_devices
+      using:
+        simple: PANW IoT 3rd Party ServiceNow Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -852,6 +870,8 @@ tasks:
         simple: error
       type:
         simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -970,6 +990,8 @@ tasks:
         simple: success
       type:
         simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -1034,6 +1056,8 @@ tasks:
       input_display_value: {}
       table_name:
         simple: u_zingbox_discovered_devices
+      using:
+        simple: PANW IoT 3rd Party ServiceNow Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -1110,6 +1134,8 @@ tasks:
         simple: error
       type:
         simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -1220,6 +1246,8 @@ tasks:
         simple: error
       type:
         simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:

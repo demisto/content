@@ -90,6 +90,8 @@ tasks:
             operator: getField
       assetType:
         simple: Alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -131,6 +133,8 @@ tasks:
         simple: disabled
       type:
         simple: alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -253,6 +257,8 @@ tasks:
         simple: ${incident}
       outputFormat:
         simple: ServiceNow
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -294,6 +300,8 @@ tasks:
         simple: error
       type:
         simple: alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -405,6 +413,8 @@ tasks:
         simple: error
       type:
         simple: alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -476,6 +486,8 @@ tasks:
       input_display_value: {}
       table_name:
         simple: u_zingbox_alerts_vulnerablilty_incident
+      using:
+        simple: PANW IoT 3rd Party ServiceNow Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -517,6 +529,8 @@ tasks:
         simple: success
       type:
         simple: alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -628,6 +642,8 @@ tasks:
         simple: error
       type:
         simple: alert
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:

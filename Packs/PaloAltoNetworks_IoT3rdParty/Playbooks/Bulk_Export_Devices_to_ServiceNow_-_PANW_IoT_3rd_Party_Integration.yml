@@ -86,7 +86,7 @@ tasks:
       id: 45a007f8-8472-4be6-8488-4d45af894399
       iscommand: false
       name: SendAllPANWIoTDevicesToServiceNow
-      script: 189eabd5-8705-467a-8c5a-9499af595521
+      script: SendAllPANWIoTDevicesToServiceNow
       type: regular
       version: -1
     taskid: 45a007f8-8472-4be6-8488-4d45af894399
@@ -264,6 +264,8 @@ tasks:
         simple: error
       type:
         simple: device
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
