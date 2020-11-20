@@ -30,16 +30,16 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Password
-  name: password
-  required: true
-  type: 4
 - display: Username
   name: username
   required: true
   type: 0
-description: Respond Software Description
-display: Respond Analyst (Developer Contribution)
+- display: Password
+  name: password
+  required: true
+  type: 4
+description: Respond Software Integration - fetches incidents with mirroring api enabled
+display: Respond Analyst
 name: Respond_Analyst
 script:
   commands:
@@ -47,7 +47,7 @@ script:
     - default: false
       description: ID of the Tenant in which the incident resides
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -68,7 +68,7 @@ script:
     - default: false
       description: ID of the Tenant in which the incident resides
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -108,7 +108,7 @@ script:
     - default: false
       description: tenant id
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -131,7 +131,7 @@ script:
     - default: false
       description: tenant id
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -152,7 +152,7 @@ script:
       secret: false
     - default: false
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: true
       secret: false
     deprecated: false
@@ -162,6 +162,9 @@ script:
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
@@ -170,6 +173,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-defaultmapperin: Respond Analyst (mapper)
-defaultclassifier: Respond Analyst (classifier)
 fromversion: 5.0.0

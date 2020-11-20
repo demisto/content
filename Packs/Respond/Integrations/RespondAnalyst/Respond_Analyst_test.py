@@ -13,7 +13,7 @@ params = {
     'username': 'qa-user@respond-software.com',
     'password': 'password',
     'insecure': True,
-    'mirror_direction': 'Incoming'
+    'mirror_direction': 'Both'
 }
 
 
@@ -83,7 +83,7 @@ def test_get_incident_command(requests_mock):
         json=full_incidents_response
     )
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 6
     }
     incident = get_incident_command(client, args)
@@ -124,9 +124,7 @@ def test_fetch_incidents_no_new(mocker, requests_mock):
 def test_fetch_incidents(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents, RestClient
 
-    get_ids_response = [{'id': '6'}, {'id': '8'}, {'id': '11'}, {'id': '14'}, {'id': '16'},
-                        {'id': '27'}]
-
+    get_ids_response = [{'id': '8'}, {'id': '14'}]
     get_full_incidents_response = load_test_data('test_data/full_incidents.json')
 
     client = RestClient(
@@ -148,7 +146,7 @@ def test_fetch_incidents(mocker, requests_mock):
 
     next_run, response = fetch_incidents(client, None)
     assert expected_output == response
-    assert next_run['Tenant 1']['time'] == '1591374031591'
+    assert next_run['Tenant 1']['time'] == '1591374028642'
 
 
 def test_remove_user(mocker, requests_mock):
@@ -183,7 +181,7 @@ def test_remove_user(mocker, requests_mock):
     )
 
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user2@respond-software.com'
     }
@@ -225,7 +223,7 @@ def test_assign_user(mocker, requests_mock):
     )
 
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user2@respond-software.com',
     }
@@ -279,7 +277,7 @@ def test_close_incident(mocker, requests_mock):
     )
 
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'incident_feedback': 'NonActionable',
         'feedback_selected_options': [{'id': '4', 'key': 'unmonitoredAssets', 'value': 'true'},
@@ -333,7 +331,7 @@ def test_assign_user_raise_exception(mocker, requests_mock):
               'firstname': 'jay', 'lastname': 'blue'}
     )
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user2@respond-software.com',
     }
@@ -372,7 +370,7 @@ def test_remove_user_raises_exception(mocker, requests_mock):
               'firstname': 'jay', 'lastname': 'blue'}
     )
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user4@respond-software.com'
     }
@@ -416,7 +414,7 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
     )
 
     args = {
-        'tenant_id': 'Tenant 1',
+        'respond_tenant_id': 'Tenant 1',
         'incident_id': 5,
         'incident_feedback': 'NonActionable',
         'feedback_selected_options': [{'id': '4', 'key': 'unmonitoredAssets', 'value': 'true'},
@@ -453,23 +451,25 @@ def test_get_remote_data_command(requests_mock):
 
     res = get_remote_data_command(rest_client, args)
     expected_result = [
-        {"id": "Tenant 1:1","incidentId": "6", "timeGenerated": "2020-06-05T16:20:21Z", "eventCount": 24,
+        {"id": "Tenant 1:1", "incidentId": "6", "timeGenerated": "2020-06-05T16:20:21Z",
+         "eventCount": 24,
          "firstEventTime": "2019-12-21T13:05:31Z",
          "lastEventTime": "2020-06-05T08:20:17Z",
          "URL": "https://localhost:6078/secure/incidents/6?tenantId=dev1",
          "closeURL": "https://localhost:6078/secure/incidents/feedback/6?tenantId=dev1",
          "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
+         "description":"description of the incident",
          "status": "Closed", "severity": "Critical", "probability": "VeryHigh",
          "attackStage": "LateralMovement", "attackTactic": None,
          "assetCriticality": "Critical", "internalSystemsCount": 1,
-         "internalSystems": [{"hostname": "enterprise.com"}], "escalationReasons": [
+         "internalSystems": [{"hostname": "enterprise.com", "ipAddress": "100.100.100.100"}], "escalationReasons": [
             {"label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"}],
          "assignedUsers": ["cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"],
          "feedback": {"timeUpdated": "1593469076049",
                       "userId": "qa-user@respond-software.com",
                       "outcome": "Non-Actionable", "comments": "blah blah blah"},
          "tenantIdRespond": "dev1", "tenantId": "Tenant 1",
-         "respondRemoteId": "Tenant 1:6", "dbotMirrorDirection": "In",
+         "respondRemoteId": "Tenant 1:6", "dbotMirrorDirection": "Both",
          "dbotMirrorInstance": "respond_test", "owner": "user1"}, {
             "Contents": {
                 "closeNotes": "blah blah blah",
@@ -483,6 +483,54 @@ def test_get_remote_data_command(requests_mock):
     assert res == expected_result
 
 
+def test_update_remote_system_command(mocker, requests_mock):
+    from RespondAnalyst import update_remote_system_command, RestClient
+    args = {
+        "data": "tons of data",
+        "entries": "entries val",
+        "incidentChanged": True,
+        "remoteId": "Tenant 1:1",
+        "status": "status val",
+        "delta": {"title": "title val", "responddescription": "description val"}
+    }
+    rest_client = RestClient(
+        base_url='https://localhost:6078',
+        auth=('un', 'pw'),
+        verify=False
+    )
+    get_all_users_response = load_test_data('test_data/users.json')
+    requests_mock.get(
+        f'{BASE_URL}/session/tenantIdMapping',
+        json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
+    )
+    requests_mock.get(
+        f'{BASE_URL}/api/v0/users',
+        json=get_all_users_response
+    )
+    requests_mock.get(
+        f'{BASE_URL}/session/activeUser',
+        json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
+              'email': 'qa-user@respond-software.com',
+              'firstname': 'jay', 'lastname': 'blue'}
+    )
+    mocker.patch.object(rest_client, 'construct_and_send_update_title_mutation', return_value={})
+    mocker.patch.object(rest_client, 'construct_and_send_update_description_mutation', return_value={})
+    title_spy = mocker.spy(rest_client, 'construct_and_send_update_title_mutation')
+    desc_spy = mocker.spy(rest_client, 'construct_and_send_update_description_mutation')
+    res = update_remote_system_command(rest_client, args)
+    assert title_spy.call_count == 1
+    assert desc_spy.call_count == 1
+    assert res == 'Tenant 1:1'
+
+def test_get_mapping_fields_command():
+    from RespondAnalyst import get_mapping_fields_command
+    res = get_mapping_fields_command()
+    expected = [{'Respond Software Incident': {
+        'feedback comments': 'the user assigned outcome of a closed incident',
+        'title': 'incident title', 'feedback outcome': 'the outcome of the incident close'}}]
+    assert res.extract_mapping() == expected
+
+
 def test_get_escalations_no_new(requests_mock, mocker):
     from RespondAnalyst import get_escalations_command, RestClient
     escalation_query_response = {'data': {'newEscalations': []}}
@@ -490,7 +538,7 @@ def test_get_escalations_no_new(requests_mock, mocker):
         f'{BASE_URL}/graphql?tenantId=dev1',
         json=escalation_query_response
     )
-    args = {'tenant_id': 'Tenant 1', 'incident_id': '1'}
+    args = {'respond_tenant_id': 'Tenant 1', 'incident_id': '1'}
     rest_client = RestClient(
         base_url='https://localhost:6078',
         auth=('un', 'pw'),
@@ -504,4 +552,24 @@ def test_get_escalations_no_new(requests_mock, mocker):
     res = get_escalations_command(rest_client, args)
     assert res == [{'Type': 1, 'Contents': 'No new escalations', 'ContentsFormat': 'text'}]
     assert escalations_spy.call_count == 1
+
+def test_get_escalations_throws_exception(requests_mock, mocker):
+    from RespondAnalyst import get_escalations_command, RestClient
+    args = {'respond_tenant_id': 'Tenant 1', 'incident_id': '1'}
+    rest_client = RestClient(
+        base_url='https://localhost:6078',
+        auth=('un', 'pw'),
+        verify=False
+    )
+    requests_mock.get(
+        f'{BASE_URL}/session/tenantIdMapping',
+        json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
+    )
+    debug_spy = mocker.spy(demisto, 'debug')
+    mocker.patch.object(rest_client, 'construct_and_send_new_escalations_query').side_effect = Exception('Unauthorized')
+    with pytest.raises(Exception):
+        get_escalations_command(rest_client, args)
+    assert debug_spy.call_count == 2
+    debug_spy.assert_called_with("Error while getting escalation data in Respond incoming mirror for incident 1 Error message: Unauthorized")
+
 
