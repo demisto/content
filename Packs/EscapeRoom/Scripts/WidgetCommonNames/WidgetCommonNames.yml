@@ -1,0 +1,16 @@
+comment: A list of duplicate first names in content.
+commonfields:
+  id: WidgetCommonNames
+  version: -1
+enabled: false
+name: WidgetCommonNames
+script: '-'
+system: false
+tags:
+- widget
+- dynamic-section
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.6.12176
+fromversion: 5.0.0

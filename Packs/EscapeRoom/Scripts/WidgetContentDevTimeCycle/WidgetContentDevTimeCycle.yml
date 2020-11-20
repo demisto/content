@@ -1,0 +1,16 @@
+comment: Time cycle of content developers
+commonfields:
+  id: WidgetContentDevTimeCycle
+  version: -1
+enabled: false
+name: WidgetContentDevTimeCycle
+script: '-'
+system: false
+tags:
+- widget
+- dynamic-section
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.6.12176
+fromversion: 5.0.0

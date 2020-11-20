@@ -1,0 +1,16 @@
+comment: List of top users opening server bugs.
+commonfields:
+  id: WidgetShameWizardStats
+  version: -1
+enabled: false
+name: WidgetShameWizardStats
+script: '-'
+system: false
+tags:
+- widget
+- dynamic-section
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.6.12176
+fromversion: 5.0.0
