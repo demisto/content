@@ -58,6 +58,7 @@ class Client(BaseClient):
 
     async def discover_stream(self, refresh_token: 'RefreshToken') -> Dict:
         demisto.debug('Sending request to discover stream')
+        i = 0
         while True:
             try:
                 return self._http_request(
@@ -67,7 +68,10 @@ class Client(BaseClient):
                 )
             except DemistoException as e:
                 if 'Error in API call [401]' in str(e):
-                    demisto.debug(f'Got status code 401 on stream discovery, getting new OAuth2 token - {str(e)}')
+                    sleep_time = uniform(1, 10)
+                    demisto.debug(f'Got status code 401 on stream discovery, going to sleep for {sleep_time} - {str(e)}')
+                    await sleep(sleep_time)
+                    demisto.debug('Getting new OAuth2 token')
                     token = await refresh_token.get_access_token()
                     self.set_auth_headers(token)
 
