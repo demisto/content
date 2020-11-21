@@ -247,6 +247,20 @@ def verify_copy(successful_packs, pc_successful_packs_dict):
     assert not not_uploaded and not mistakenly_uploaded, error_str
 
 
+def check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict):
+    """ If the two dicts are empty then no upload was done in Prepare Content step, so we need to skip uploading
+
+    Args:
+        pc_successful_packs_dict: The successful packs dict
+        pc_failed_packs_dict: The failed packs dict
+
+    """
+    if not pc_successful_packs_dict and not pc_failed_packs_dict:
+        logging.warning("Production bucket is updated with origin/master.")
+        logging.warning("Skipping Upload To Marketplace Storage Step.")
+        sys.exit(0)
+
+
 def options_handler():
     """ Validates and parses script arguments.
 
@@ -315,6 +329,9 @@ def main():
     pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(
         os.path.join(os.path.dirname(packs_artifacts_path), PACKS_RESULTS_FILE)
     )
+
+    # Check if needs to upload or not
+    check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict)
 
     # Detect packs to upload
     pack_names = get_pack_names(target_packs)
