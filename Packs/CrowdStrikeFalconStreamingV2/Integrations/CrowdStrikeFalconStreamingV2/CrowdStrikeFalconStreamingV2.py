@@ -56,13 +56,20 @@ class Client(BaseClient):
         self._headers.update({'Authorization': f'Bearer {token}'})
         demisto.debug('Set auth headers successfully')
 
-    def discover_stream(self) -> Dict:
+    async def discover_stream(self, refresh_token: 'RefreshToken') -> Dict:
         demisto.debug('Sending request to discover stream')
-        return self._http_request(
-            method='GET',
-            url_suffix='/sensors/entities/datafeed/v2',
-            params={'appId': self.app_id},
-        )
+        while True:
+            try:
+                return self._http_request(
+                    method='GET',
+                    url_suffix='/sensors/entities/datafeed/v2',
+                    params={'appId': self.app_id},
+                )
+            except DemistoException as e:
+                if 'Error in API call [401]' in str(e):
+                    demisto.debug(f'Got status code 401 on stream discovery, getting new OAuth2 token - {str(e)}')
+                    token = await refresh_token.get_access_token()
+                    self.set_auth_headers(token)
 
     def refresh_stream_session(self) -> Dict:
         demisto.debug(f'Sending request to refresh stream to {self.refresh_stream_url}')
@@ -112,7 +119,7 @@ class EventStream:
         client = Client(base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy)
         await client.set_access_token(self.refresh_token)
         demisto.debug('Starting stream discovery')
-        discover_stream_response = client.discover_stream()
+        discover_stream_response = await client.discover_stream(self.refresh_token)
         resources = discover_stream_response.get('resources', [])
         if not resources:
             demisto.updateModuleHealth('Did not discover event stream resources, verify the App ID is not used'
