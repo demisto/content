@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 from aiohttp import ClientSession, TCPConnector
 from typing import Dict, AsyncGenerator, AsyncIterator
 from collections import deque
+from random import uniform
 
 requests.packages.urllib3.disable_warnings()
 
@@ -109,46 +110,23 @@ class EventStream:
             Iterator[Dict]: Event fetched from the stream.
         """
         client = Client(base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy)
-        while True:
-            refreshed = True
-            if client.refresh_stream_url:
-                # We already discovered an event stream, need to refresh it
-                demisto.debug('Starting stream refresh')
-                try:
-                    response = client.refresh_stream_session()
-                    demisto.debug(f'Refresh stream response: {response}')
-                except Exception as e:
-                    demisto.updateModuleHealth('Failed refreshing stream session, will retry in 10 seconds.')
-                    demisto.debug(f'Failed refreshing stream session: {e}')
-                    refreshed = False
-                else:
-                    demisto.updateModuleHealth('')
-                    demisto.debug('Finished stream refresh successfully')
-            else:
-                # We have no event stream, need to discover
-                await client.set_access_token(self.refresh_token)
-                demisto.debug('Starting stream discovery')
-                discover_stream_response = client.discover_stream()
-                demisto.debug('Finished stream discovery')
-                resources = discover_stream_response.get('resources', [])
-                if not resources:
-                    demisto.updateModuleHealth('Did not discover event stream resources, verify the App ID is not used'
-                                               ' in another integration instance')
-                    demisto.error(f'Did not discover event stream resources - {str(discover_stream_response)}')
-                    return
-                resource = resources[0]
-                self.data_feed_url = resource.get('dataFeedURL')
-                demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
-                self.session_token = resource.get('sessionToken', {}).get('token')
-                refresh_url = resource.get('refreshActiveSessionURL')
-                client.refresh_stream_url = refresh_url
-                event.set()
-            if refreshed:
-                await sleep(MINUTES_25)
-                event.clear()
-            else:
-                demisto.debug('Failed refreshing stream, going to sleep for 10 seconds and then retry')
-                await sleep(10)
+        await client.set_access_token(self.refresh_token)
+        demisto.debug('Starting stream discovery')
+        discover_stream_response = client.discover_stream()
+        resources = discover_stream_response.get('resources', [])
+        if not resources:
+            demisto.updateModuleHealth('Did not discover event stream resources, verify the App ID is not used'
+                                       ' in another integration instance')
+            demisto.error(f'Did not discover event stream resources - {str(discover_stream_response)}')
+            return
+        demisto.debug('Finished stream discovery')
+        resource = resources[0]
+        self.data_feed_url = resource.get('dataFeedURL')
+        demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
+        self.session_token = resource.get('sessionToken', {}).get('token')
+        refresh_url = resource.get('refreshActiveSessionURL')
+        client.refresh_stream_url = refresh_url
+        event.set()
 
     async def fetch_event(
             self, first_fetch_time: datetime, initial_offset: int = 0, event_type: str = ''
@@ -168,17 +146,19 @@ class EventStream:
             try:
                 event = Event()
                 create_task(self._discover_refresh_stream(event))
-                demisto.debug('Waiting for stream discovery or refresh')
-                await wait_for(event.wait(), 10)
+                demisto.debug('Waiting for stream discovery')
+                await wait_for(event.wait(), 30)
             except TimeoutError as e:
-                demisto.debug(f'Failed discovering/refreshing stream: {e} - '
-                              f'Going to sleep for 10 seconds and then retry - {traceback.format_exc()}')
-                await sleep(10)
+                demisto.debug(f'Failed discovering stream: {e} - '
+                              f'Going to sleep for 30 seconds and then retry - {traceback.format_exc()}')
+                await sleep(30)
             else:
-                demisto.debug('Done waiting for stream discovery or refresh')
+                demisto.debug('Done waiting for stream discovery')
                 events_fetched = 0
                 new_lines_fetched = 0
                 last_fetch_stats_print = datetime.utcnow()
+                client_timeout = MINUTES_25 + uniform(-5 * 60, 5 * 60)
+                demisto.debug(f'Starting client session with timeout: {client_timeout}')
                 async with ClientSession(
                     connector=TCPConnector(ssl=self.verify_ssl),
                     headers={
@@ -186,7 +166,7 @@ class EventStream:
                         'Connection': 'keep-alive'
                     },
                     trust_env=self.proxy,
-                    timeout=None
+                    timeout=client_timeout
                 ) as session:
                     try:
                         integration_context = get_integration_context()
