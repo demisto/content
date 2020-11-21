@@ -20,8 +20,7 @@ def close_task_set_context(args: Dict[str, Any]) -> CommandResults:
     if not context_key:
         raise ValueError('context_key not specified')
 
-    result = {}
-    result[context_key] = comments
+    result = {context_key: comments}
 
     return CommandResults(
         outputs_key_field='',

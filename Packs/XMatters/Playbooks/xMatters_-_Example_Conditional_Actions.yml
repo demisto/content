@@ -1,5 +1,5 @@
 id: 7952a25a-656f-4b89-8cec-d2a43fc6b70c
-version: 17
+version: 31
 vcShouldKeepItemLegacyProdMachine: false
 name: xMatters - Example Conditional Actions
 description: 'Example playbook showing how to use the Trigger and Wait sub-playbook
@@ -35,10 +35,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: d53b16f8-4754-4c2c-8d21-a14445208e17
+    taskid: f15345fc-7f39-49ae-8057-84a7bcada062
     type: condition
     task:
-      id: d53b16f8-4754-4c2c-8d21-a14445208e17
+      id: f15345fc-7f39-49ae-8057-84a7bcada062
       version: -1
       name: Check Response
       description: Checks the user's response and branches accordingly.
@@ -59,7 +59,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: xMatters.UserResponse
+              simple: XMatters.UserResponseOut
             iscontext: true
           right:
             value:
@@ -69,7 +69,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: xMatters.UserResponse
+              simple: XMatters.UserResponseOut
             iscontext: true
           right:
             value:
@@ -289,12 +289,13 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: c2c771bf-7030-4c3a-871e-76d489a75b87
+    taskid: ef6fe423-b869-491a-86b1-9ead40837fd9
     type: playbook
     task:
-      id: c2c771bf-7030-4c3a-871e-76d489a75b87
+      id: ef6fe423-b869-491a-86b1-9ead40837fd9
       version: -1
       name: xMatters - Wait for Response
+      description: Trigger an xMatters workflow to notify a user for a response.
       playbookName: xMatters - Wait for Response
       type: playbook
       iscommand: false
@@ -366,7 +367,4 @@ inputs:
   required: false
   description: The related incident id
   playbookInputQuery: null
-outputs:
-- contextPath: xMatters.UserResponse
-  description: The user's response
-  type: string
+outputs: []

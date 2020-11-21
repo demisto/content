@@ -1,5 +1,5 @@
 id: deeb234b-0c7e-4f09-83fb-e2e10fb8f608
-version: 83
+version: 134
 vcShouldKeepItemLegacyProdMachine: false
 name: xMatters - Wait for Response
 description: Trigger an xMatters workflow to notify a user for a response.
@@ -89,7 +89,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     separatecontext: false
     view: |-
       {
@@ -119,7 +119,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -208,12 +208,46 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "7":
+    id: "7"
+    taskid: be5c9111-d5fd-4085-8e83-df76fb86376e
+    type: regular
+    task:
+      id: be5c9111-d5fd-4085-8e83-df76fb86376e
+      version: -1
+      name: Print to wait
+      description: "Pretty-print the contents of the playbook context. \nThis seems
+        to properly set the XMatters.UserResponseOut value in the context after the
+        \ CloseTaskSetContext command."
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      outputformat:
+        simple: json
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 910,
         "width": 810,
         "x": 50,
         "y": 50
@@ -247,9 +281,9 @@ inputs:
   description: The ID of the incident.
   playbookInputQuery: null
 outputs:
-- contextPath: xMatters.UserResponse
-  description: The user's response.
-  type: string
-- contextPath: xMatters.RequestId
+- contextPath: XMatters.RequestId
   description: The request_id from xMatters
+  type: string
+- contextPath: XMatters.UserResponseOut
+  description: The User's response from the notification.
   type: string

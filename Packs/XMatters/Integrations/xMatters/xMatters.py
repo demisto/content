@@ -513,13 +513,13 @@ def xm_trigger_workflow_command(client: Client, recipients: str,
 
     outputs = {}
 
-    outputs['xMatters.Workflow.request_id'] = out['requestId']
+    outputs['requestId'] = out['requestId']
 
     return CommandResults(
         readable_output="Successfully sent a message to xMatters.",
         outputs=outputs,
         outputs_prefix='xMatters.Workflow',
-        outputs_key_field='request_id'
+        outputs_key_field='requestId'
     )
 
 
