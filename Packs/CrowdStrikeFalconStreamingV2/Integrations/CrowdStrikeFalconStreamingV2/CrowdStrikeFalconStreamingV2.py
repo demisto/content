@@ -58,7 +58,6 @@ class Client(BaseClient):
 
     async def discover_stream(self, refresh_token: 'RefreshToken') -> Dict:
         demisto.debug('Sending request to discover stream')
-        i = 0
         while True:
             try:
                 return self._http_request(
