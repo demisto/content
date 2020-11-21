@@ -4452,7 +4452,7 @@ class GetModifiedRemoteDataResponse:
         :rtype: ``list``
         """
         demisto.info('Modified incidents: {}'.format(self.modified_incident_ids))
-        return {'Contents': self.modified_incident_ids, 'Type': EntryType.NOTE, 'ContentsFormat': 'json'}
+        return {'Contents': self.modified_incident_ids, 'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON}
 
 
 class SchemeTypeMapping:
