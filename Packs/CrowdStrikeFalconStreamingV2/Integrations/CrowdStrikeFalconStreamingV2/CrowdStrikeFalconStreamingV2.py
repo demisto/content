@@ -157,7 +157,7 @@ class EventStream:
                 events_fetched = 0
                 new_lines_fetched = 0
                 last_fetch_stats_print = datetime.utcnow()
-                client_timeout = MINUTES_25 + uniform(-5 * 60, 5 * 60)
+                client_timeout = 20 * 60 + uniform(-5 * 60, 5 * 60)  # 20 minutes +/- 5 minutes
                 demisto.debug(f'Starting client session with timeout: {client_timeout}')
                 async with ClientSession(
                     connector=TCPConnector(ssl=self.verify_ssl),
