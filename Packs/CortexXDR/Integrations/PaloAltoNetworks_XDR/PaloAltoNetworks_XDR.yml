@@ -1637,7 +1637,7 @@ script:
       secret: false
     deprecated: false
     description: Get the list of incidents that were modified since the last update.
-      Please note that this method is here for debugging purposes.
+      Please note that this method is here for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.
     execution: false
     name: get-modified-remote-data
   dockerimage: demisto/python3:3.8.6.13358
