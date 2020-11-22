@@ -30,19 +30,17 @@ configuration:
   name: template
   required: false
   type: 0
-- additionalinfo: "add here"
+- additionalinfo: If selected, when running the !url command, the command will execute using pan-os with PAN_DB (with applied filters). The URL filtering categories determine DBot score (malicious, suspicious, benign).
   display: Use URL Filtering for auto enrichment
   name: use_url_filtering
   required: false
   type: 8
-- additionalinfo: "add here2"
-  display: URL Filtering Additional suspicious categories. CSV list of categories
+- display: URL Filtering Additional suspicious categories. CSV list of categories
     that will be considered suspicious.
   name: additional_suspicious
   required: false
   type: 12
-- additionalinfo: "add here3"
-  display: URL Filtering Additional malicious categories. CSV list of categories that
+- display: URL Filtering Additional malicious categories. CSV list of categories that
     will be considered malicious.
   name: additional_malicious
   required: false
