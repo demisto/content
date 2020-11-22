@@ -102,6 +102,7 @@ tasks:
       id: 906150a0-7387-437f-8bc7-998e2f0dc517
       version: -1
       name: MD5 hash is provided?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
