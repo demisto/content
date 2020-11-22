@@ -55,6 +55,8 @@ class Client(BaseClient):
         except DemistoException as e:
             if 'CSRF Token must only be requested once per session' in str(e) and self._headers.get('CSRFToken'):
                 pass
+            elif 'Authentication Failed: Invalid user name or password' in str(e):
+                raise DemistoException('Authentication Failed: Invalid user name or password')
             else:
                 raise DemistoException(e)
 
