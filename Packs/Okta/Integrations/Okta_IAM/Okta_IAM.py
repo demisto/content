@@ -123,10 +123,25 @@ class Client(BaseClient):
         )
         return res.status_code == 200  # True if user is assigned to app, false otherwise
 
-    def get_logs(self, query_filter, last_run_time=None, time_now=None):
+    def list_apps(self, query, query_filter, limit):
+        query_params = {
+            'q': query,
+            'filter': query_filter,
+            'limit': limit
+        }
+        res = self._http_request(
+            method='GET',
+            url_suffix='/apps',
+            params=query_params
+        )
+
+    def get_logs(self, last_run_time=None, time_now=None):
         logs = []
 
         uri = 'logs'
+        query_filter = get_query_filter()
+
+        demisto.debug('okta fetch: ' + str(query_filter))
         params = {
             'filter': encode_string_results(query_filter),
             'since': encode_string_results(last_run_time),
@@ -168,6 +183,31 @@ class Client(BaseClient):
 
 
 '''HELPER FUNCTIONS'''
+
+
+def get_query_filter():
+    application_ids = []
+    exception_msg = 'You must configure AppInstance mapping before fetching logs from Okta.'
+    query_filter = '(eventType eq "application.user_membership.add" ' \
+                   'or eventType eq "application.user_membership.remove") and'
+
+    indicator_query = 'type:\"IAM Settings - Test (Dan)\" value:\"IAM Settings\"'
+    iam_settings_indicator = demisto.searchIndicators(query=indicator_query).get('iocs', [])
+    if not iam_settings_indicator:
+        raise DemistoException(exception_msg)
+
+    iam_settings = iam_settings_indicator[0].get('CustomFields', {}).get('appinstancemapping')
+    if not iam_settings:
+        raise DemistoException(exception_msg)
+
+    for row in iam_settings:
+        application_ids.append(row['applicationid'])
+
+    query_suffix = '(' + ' or '.join([f'target.id co "{app_id}"' for app_id in application_ids]) + ')'
+
+    query_filter += query_suffix
+
+    return query_filter
 
 
 def handle_exception(user_profile, e, action):
@@ -240,10 +280,7 @@ def get_incident_title(entry):
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client, is_fetch, fetch_query_filter, first_fetch_str):
-    if is_fetch and not fetch_query_filter:
-        raise DemistoException('You must define the Fetch Query Filter parameter in order to fetch incidents.')
-
+def test_module(client, first_fetch_str):
     try:
         dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
     except AttributeError:
@@ -448,7 +485,21 @@ def get_app_user_assignment_command(client, args):
     )
 
 
-def fetch_incidents(client, last_run, query_filter, first_fetch_str, fetch_limit):
+def list_apps_command(client, args):
+    query = args.get('query')
+    query_filter = args.get('filter')
+    limit = min(int(args.get('limit')), 200)
+
+    applications = client.list_apps(query, query_filter, limit)  # todo: complete if needed
+
+    return CommandResults(
+        outputs=applications,
+        outputs_prefix='Okta.Application',
+        outputs_key_field='id'
+    )
+
+
+def fetch_incidents(client, last_run, first_fetch_str, fetch_limit):
     """ If no events were saved from last run, returns new events from Okta's /log API. Otherwise,
     returns the events from last run. In both cases, no more than `fetch_limit` incidents will be returned,
     and the rest of them will be saved for next run.
@@ -456,7 +507,6 @@ def fetch_incidents(client, last_run, query_filter, first_fetch_str, fetch_limit
         Args:
             client: (BaseClient) Okta client.
             last_run: (dict) The "last run" object that was set on the previous run.
-            query_filter: (str) A query filter for okta logs API.
             first_fetch_str: (str) First fetch time parameter (e.g. "1 day", "2 months", etc).
             fetch_limit: (int) Maximum number of incidents to return.
         Returns:
@@ -472,7 +522,7 @@ def fetch_incidents(client, last_run, query_filter, first_fetch_str, fetch_limit
 
     demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
     if not incidents:
-        log_events = client.get_logs(query_filter, last_run_time, time_now)
+        log_events = client.get_logs(last_run_time, time_now)
         for entry in log_events:
             # mapping is done at the classification and mapping stage
             incident = {
@@ -506,10 +556,8 @@ def main():
     is_update_enabled = demisto.params().get("update-user-enabled")
     create_if_not_exists = demisto.params().get("create-if-not-exists")
 
-    fetch_query_filter = params.get('fetch_query_filter')
     first_fetch_str = params.get('first_fetch')
     fetch_limit = int(params.get('max_fetch'))
-    is_fetch = params.get('isFetch')
 
     headers = {
         'Content-Type': 'application/json',
@@ -549,7 +597,7 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client, is_fetch, fetch_query_filter, first_fetch_str)
+            test_module(client, first_fetch_str)
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
@@ -557,9 +605,12 @@ def main():
         elif command == 'okta-get-app-user-assignment':
             return_results(get_app_user_assignment_command(client, args))
 
+        elif command == 'okta-list-applications':
+            return_results(list_apps_command(client, args))
+
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
-            incidents, next_run = fetch_incidents(client, last_run, fetch_query_filter, first_fetch_str, fetch_limit)
+            incidents, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 
