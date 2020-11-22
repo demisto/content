@@ -1,5 +1,5 @@
-id: 8a655839-e51f-465f-81e3-12185ac0484f
-version: 35
+id: Get File Sample By Hash - Generic v3
+version: -1
 name: Get File Sample By Hash - Generic v3
 description: |-
   This playbook returns a file sample correlating to a hash in the war-room using the following sub-playbooks:
@@ -17,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -45,6 +46,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -153,14 +155,34 @@ inputs:
   value: {}
   required: false
   description: Get file sample from MD5 input
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA256
   value: {}
   required: false
   description: Get file sample from SHA256 input
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File
   description: File sample object
   type: unknown
-sourceplaybookid: Get File Sample By Hash - Generic v2
+tests:
+- Account Enrichment - Generic v2.1 - Test
+- Calculate Severity - Generic v2 - Test
+- Calculate Severity - Standard - Test
+- Test Convert file hash to corresponding hashes
+- Dedup - Generic v2 - Test
+- Detonate File - Generic Test
+- Detonate File - No Files test
+- Detonate URL - Generic Test
+- Domain Enrichment - Generic v2 - Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Extract Indicators From File - Generic v2 - Test
+- Field polling test
+- File Enrichment - Generic v2 - Test
+- IP Enrichment - Generic v2 - Test
+- Send Investigation Summary Reports - Test
+- test-domain-indicator
+- URL Enrichment - Generic v2 - Test
+- Wait Until Datetime - Test
+fromversion: 5.0.0
