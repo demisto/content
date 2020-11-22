@@ -35,10 +35,10 @@ This integration was integrated and tested majorly with G Suite Basic and Enterp
     3. Under the main menu, select ``IAM & Admin`` -> ``Service Accounts`` and open the account you just created.
     
     4. Generate new credentials:
-        1. On the Service account details page, under Keys, click ADD KEY and select Create new key:
+        1. On the Service account details page, under Keys, click **ADD KEY** and select **Create new key**:
             ![Setup Account](./../../doc_files/service-account-create-3.png)
         
-        2. Under Key type, select ``JSON``, and click ``CREATE``. Save the credentials in a secure location. You will need the generated ``credentials.json`` file when you configure the instance in Cortex XSOAR:
+        2. Under Key type, select **JSON**, and click **CREATE**. Save the credentials in a secure location. You will need the generated **credentials.json** file when you configure the instance in Cortex XSOAR:
             ![Setup Account](./../../doc_files/service-account-create-4.png)   
 
 ## Add Scopes in G Suite Admin
@@ -64,22 +64,22 @@ This integration was integrated and tested majorly with G Suite Basic and Enterp
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | isFetch | Fetch incidents | False |
-    | user_service_account_json | User's Service Account JSON | True |
-    | user_id | User ID | False |
-    | action_detail_case_include | Action Detail Case Include | False |
-    | drive_item_search_field | Drive Item Search Field | False |
-    | drive_item_search_value | Drive Item Search Value | False |
-    | max_fetch | Max Incidents | False |
-    | first_fetch | First Fetch Time Interval | False |
-    | incidentType | Incident type | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+    | isFetch | Fetch incidents. | False |
+    | user_service_account_json | User's Service Account JSON. | True |
+    | user_id | User ID. | False |
+    | action_detail_case_include | Action Detail Case Include. | False |
+    | drive_item_search_field | Drive Item Search Field. | False |
+    | drive_item_search_value | Drive Item Search Value. | False |
+    | max_fetch | Max Incidents. | False |
+    | first_fetch | First fetch time interval. | False |
+    | incidentType | Incident type. | False |
+    | insecure | Trust any certificate \(not secure\). | False |
+    | proxy | Use system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
@@ -153,15 +153,15 @@ Lists the changes for a user or shared drive.
 | page_token | The token for continuing a previous list request on the next page. | Required | 
 | user_id | The user's primary email address. | Optional | 
 | drive_id | The shared drive from which changes are returned. | Optional | 
-| include_corpus_removals | Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file. | Optional | 
-| include_items_from_all_drives | Whether both My Drive and shared drive items should be included in results. | Optional | 
+| include_corpus_removals | Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file. Default is "false". | Optional | 
+| include_items_from_all_drives | Whether both My Drive and shared drive items should be included in results. Default is "false". | Optional | 
 | include_permissions_for_view | Specifies which additional view's permissions to include in the response. Only 'published' is supported. | Optional | 
-| include_removed | Whether to include changes indicating that items have been removed from the list of changes, for example by deletion or loss of access. | Optional | 
-| page_size | The maximum number of changes to return per page. Acceptable values are 1 to 1000, inclusive. | Optional | 
-| restrict_to_my_drive | Whether to restrict the results to changes inside the My Drive hierarchy. This omits changes to files such as those in the Application Data folder or shared files which have not been added to My Drive. | Optional | 
+| include_removed | Whether to include changes indicating that items have been removed from the list of changes, for example by deletion or loss of access. Default is "true". | Optional | 
+| page_size | The maximum number of changes to return per page. Acceptable values are 1 to 1000, inclusive. Default is "100". | Optional | 
+| restrict_to_my_drive | Whether to restrict the results to changes inside the My Drive hierarchy. This omits changes to files such as those in the Application Data folder or shared files which have not been added to My Drive. Default is "false". | Optional | 
 | spaces | A comma-separated list of spaces to query within the user corpus. Supported values are 'drive', 'appDataFolder' and 'photos'. | Optional | 
-| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. | Optional | 
-| fields | The paths of the fields you want to be included in the response. Option basic will consider a response that includes a default set of fields, specific to this method. While in advance option, special value * will be used which returns all the fields. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Default is "false". | Optional | 
+| fields | The paths of the fields you want to be included in the response. Possible values are: ""basic" (the response will include a default set of fields specific to this method) and "advance" (you can use the value * to return all the fields). Default is "basic". | Optional | 
 
 
 #### Context Output
@@ -764,11 +764,11 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.user.unknownUser | Boolean | If true, a user about whom nothing is currently known. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.group.email | String | The email address of the group. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.group.title | String | The title of the group. | 
-| GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.domain.name | String | The name of the domain, e.g. "google.com". | 
+| GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.domain.name | String | The name of the domain, e.g., "google.com". | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.domain.legacyId | String | An opaque string used to identify this domain. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.anyone | Boolean | If true, represents any user \(including a logged out user\). | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.role | String | Indicates the Google Drive permissions role. | 
-| GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.allowDiscovery | Boolean | If true, the item can be discovered \(e.g. in the user's "Shared with me" collection\) without needing a link to the item. | 
+| GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.allowDiscovery | Boolean | If true, the item can be discovered \(e.g., in the user's "Shared with me" collection\) without needing a link to the item. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.user.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.user.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.user.deletedUser | Boolean | If true, a user whose account has since been deleted. | 
@@ -822,7 +822,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.actions.target.drive.root.name | String | The target Drive item. The format is "items/ITEM_ID". | 
 | GoogleDrive.DriveActivity.actions.target.drive.root.title | String | The title of the Drive item. | 
 | GoogleDrive.DriveActivity.actions.target.drive.root.mimeType | String | The MIME type of the Drive item. | 
-| GoogleDrive.DriveActivity.actions.target.drive.root.owner.domain.name | String | The name of the domain, e.g. "google.com". | 
+| GoogleDrive.DriveActivity.actions.target.drive.root.owner.domain.name | String | The name of the domain, e.g., "google.com". | 
 | GoogleDrive.DriveActivity.actions.target.drive.root.owner.domain.legacyId | String | An opaque string used to identify this domain. | 
 | GoogleDrive.DriveActivity.actions.target.drive.root.owner.user.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.actions.target.drive.root.owner.user.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
@@ -838,7 +838,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.name | String | The target Drive item. The format is "items/ITEM_ID". | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.title | String | The title of the Drive item. | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.mimeType | String | The MIME type of the Drive item. | 
-| GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.domain.name | String | The name of the domain, e.g. "google.com". | 
+| GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.domain.name | String | The name of the domain, e.g., "google.com". | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.domain.legacyId | String | An opaque string used to identify this domain. | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.user.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.user.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
@@ -854,7 +854,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.targets.driveItem.name | String | The target Drive item. The format is "items/ITEM_ID". | 
 | GoogleDrive.DriveActivity.targets.driveItem.title | String | The title of the Drive item. | 
 | GoogleDrive.DriveActivity.targets.driveItem.mimeType | String | The MIME type of the Drive item. | 
-| GoogleDrive.DriveActivity.targets.driveItem.owner.domain.name | String | The name of the domain, e.g. "google.com". | 
+| GoogleDrive.DriveActivity.targets.driveItem.owner.domain.name | String | The name of the domain, e.g., "google.com". | 
 | GoogleDrive.DriveActivity.targets.driveItem.owner.domain.legacyId | String | An opaque string used to identify this domain. | 
 | GoogleDrive.DriveActivity.targets.driveItem.owner.user.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.targets.driveItem.owner.user.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
@@ -869,7 +869,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.targets.drive.root.name | String | The target Drive item. The format is "items/ITEM_ID". | 
 | GoogleDrive.DriveActivity.targets.drive.root.title | String | The title of the Drive item. | 
 | GoogleDrive.DriveActivity.targets.drive.root.mimeType | String | The MIME type of the Drive item. | 
-| GoogleDrive.DriveActivity.targets.drive.root.owner.domain.name | String | The name of the domain, e.g. "google.com". | 
+| GoogleDrive.DriveActivity.targets.drive.root.owner.domain.name | String | The name of the domain, e.g., "google.com". | 
 | GoogleDrive.DriveActivity.targets.drive.root.owner.domain.legacyId | String | An opaque string used to identify this domain. | 
 | GoogleDrive.DriveActivity.targets.drive.root.owner.user.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.targets.drive.root.owner.user.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
@@ -885,7 +885,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.targets.fileComment.parent.name | String | The target Drive item. The format is "items/ITEM_ID". | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.title | String | The title of the Drive item. | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.mimeType | String | The MIME type of the Drive item. | 
-| GoogleDrive.DriveActivity.targets.fileComment.parent.owner.domain.name | String | The name of the domain, e.g. "google.com". | 
+| GoogleDrive.DriveActivity.targets.fileComment.parent.owner.domain.name | String | The name of the domain, e.g., "google.com". | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.owner.domain.legacyId | String | An opaque string used to identify this domain. | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.owner.user.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.owner.user.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
