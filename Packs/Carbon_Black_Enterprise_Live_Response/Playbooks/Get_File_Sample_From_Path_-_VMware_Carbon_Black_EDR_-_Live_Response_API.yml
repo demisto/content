@@ -1,5 +1,5 @@
 id: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
-version: 72
+version: -1
 name: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
 description: |-
   This playbook retrieve file from endpoints by path using VMware Carbon Black EDR (Live Response API).
@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -89,6 +90,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -110,6 +112,7 @@ tasks:
       id: 479ffe0a-38c6-4af1-8dec-a15dc315a1c9
       version: -1
       name: Is there a file path and sensor ID?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -230,6 +233,7 @@ tasks:
       id: 67f43bdf-699b-4199-8f00-455088ceed5a
       version: -1
       name: Is there a open CB Session?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -446,12 +450,12 @@ inputs:
   required: false
   description: The sensor ID. Provided the sensor ID to run the command with a new
     session. The session will be created and closed automatically.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Path
   value: {}
   required: false
   description: Path of the file on the endpoint
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: 'File '
   description: The file to sample.
@@ -476,3 +480,6 @@ outputs:
   description: File MD5.
 - contextPath: CbLiveResponse.File.Extension
   description: File extension.
+tests:
+- Carbon Black Live Response Test
+fromversion: 5.0.0
