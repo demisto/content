@@ -93,7 +93,7 @@ class Client(BaseClient):
                     )
                     await sleep(sleep_time)
                     demisto.debug('Getting new OAuth2 token')
-                    token = await kwargs.get('refresh_token').get_access_token()
+                    token = await kwargs.get('refresh_token').get_access_token()  # type: ignore[union-attr]
                     self.set_auth_headers(token)
                 elif res.status_code == TOO_MANY_REQUESTS_STATUS_CODE:
                     now_time = int(time.time())
