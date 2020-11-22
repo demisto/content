@@ -43,8 +43,6 @@ LOCAL_INDEX_PATH="./index.zip"
 GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
 INDEX_TESTING_PATH="dev/content/packs/index.zip"
 
-ls -la
-
 if [ -f $LOCAL_INDEX_PATH ]; then
   echo "Removing file $LOCAL_INDEX_PATH"
   rm $LOCAL_INDEX_PATH
