@@ -53,7 +53,6 @@ echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$INDEX_PATH to target pat
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" "$LOCAL_INDEX_PATH" > "$CIRCLE_ARTIFACTS/Validate Premium Packs.log" 2>&1
 echo "Finished copying successfully."
 
-MASTER_COMMIT_HASH=$(git ls-remote git://github.com/demisto/content refs/heads/master | cut -f 1)
 touch $MASTER_HISTORY_PATH
 git log master --pretty="%H" > $MASTER_HISTORY_PATH
 

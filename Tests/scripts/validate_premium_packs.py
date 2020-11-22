@@ -2,6 +2,7 @@
 
 Check index.json file inside the index.zip archive in the cloud.
 Validate no missing ids are found and that all packs have a positive price.
+Validate commit hash is in master's history.
 Check the server configured on master.
 Validate the pack id's in the index file are present on the server and the prices match.
 """
@@ -69,7 +70,8 @@ def check_and_return_index_data(index_file_path):
     with open(index_file_path, 'r') as index_file:
         index_data = json.load(index_file)
 
-    logging.info(f"Found index data:\n {index_data} \n\n Checking...")
+    logging.info("Found index data in index file. Checking...")
+    logging.debug(f"Index data is:\n {index_data}")
 
     assert len(index_data["packs"]) != 0
     for pack in index_data["packs"]:
