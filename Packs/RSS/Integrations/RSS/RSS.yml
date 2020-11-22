@@ -23,7 +23,7 @@ script:
   - arguments: []
     name: test-fetch-rss
     description: ''
-  dockerimage: demisto/feed-parser:1.0.0.13305
+  dockerimage: demisto/feed-parser:1.0.0.13383
   isfetch: true
   runonce: false
   script: ''
