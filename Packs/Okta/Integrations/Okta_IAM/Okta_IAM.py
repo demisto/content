@@ -113,7 +113,7 @@ class Client(BaseClient):
 
         return okta_fields
 
-    def get_app_user_assignment(self, application_id, user_id):
+    def check_app_user_assignment(self, application_id, user_id):
         uri = f'/apps/{application_id}/users/{user_id}'
         res = self._http_request(
             method='GET',
@@ -433,7 +433,7 @@ def get_app_user_assignment_command(client, args):
     user_id = args.get('user_id')
     application_id = args.get('application_id')
 
-    is_user_assigned_to_app = client.get_app_user_assignment(application_id, user_id)
+    is_user_assigned_to_app = client.check_app_user_assignment(application_id, user_id)
 
     outputs = {
         'UserID': user_id,
