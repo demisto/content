@@ -1,6 +1,5 @@
-id: ebe9508a-3752-48c6-8c46-246c99d9ea3e
+id: EnrichIpNode
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: EnrichIpNode
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -313,3 +313,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+tests:
+- TestplaybookTripwire
+description: Enrich the IP of a node

@@ -245,24 +245,34 @@ script:
     name: tripwire-rules-list
     outputs:
     - contextPath: Tripwire.Rules.command
+      description: Content of the rule.
       type: String
     - contextPath: Tripwire.Rules.elementName
+      description: Include Command Output Capture Rules with matching element name.
       type: String
     - contextPath: Tripwire.Rules.id
+      description: IDs of rules.
       type: String
     - contextPath: Tripwire.Rules.importedTime
+      description: Imported times of rules.
       type: Date
     - contextPath: Tripwire.Rules.modifiedTime
+      description: Modified times of rules.
       type: Date
     - contextPath: Tripwire.Rules.name
+      description: Names of rules.
       type: String
     - contextPath: Tripwire.Rules.severity
+      description: Severities of rules.
       type: Number
     - contextPath: Tripwire.Rules.timeoutMillis
+      description: Include Command Output Capture Rules with matching timeout in milliseconds.
       type: Number
     - contextPath: Tripwire.Rules.trackingId
+      description: Tracking ids of rules.
       type: String
     - contextPath: Tripwire.Rules.type
+      description: Types of rules.
       type: String
   - arguments:
     - default: false
@@ -319,30 +329,43 @@ script:
     name: tripwire-elements-list
     outputs:
     - contextPath: Tripwire.Elements.baselineVersionId
+      description: Latest baseline version Id for this element.
       type: String
     - contextPath: Tripwire.Elements.description
+      description: Element description.
       type: String
     - contextPath: Tripwire.Elements.id
+      description: Id of the element.
       type: String
     - contextPath: Tripwire.Elements.inScope
+      description: False if element is no longer in scope for the rule.
       type: Boolean
     - contextPath: Tripwire.Elements.isRestorable
+      description: True if this can be restored by the restore action.
       type: Boolean
     - contextPath: Tripwire.Elements.lastSuccessDate
+      description: Timestamp of last successful run of the rule on the related node.
       type: Date
     - contextPath: Tripwire.Elements.lastVersionChangeSeverity
+      description: Severity value for the latest version of this element.
       type: Number
     - contextPath: Tripwire.Elements.lastVersionChangeType
+      description: Change type for the latest version of this element
       type: String
     - contextPath: Tripwire.Elements.lastVersionId
+      description: Id for the latest version of this element.
       type: String
     - contextPath: Tripwire.Elements.lastVersionTime
+      description: Time detected of that latest version of this element.
       type: Date
     - contextPath: Tripwire.Elements.name
+      description: Name of the element.
       type: String
     - contextPath: Tripwire.Elements.nodeId
+      description: Id of the node for this element.
       type: String
     - contextPath: Tripwire.Elements.ruleId
+      description: Id of the rule for this element.
       type: String
   - arguments:
     - default: false
@@ -401,6 +424,7 @@ script:
     name: tripwire-nodes-list
     outputs:
     - contextPath: Tripwire.Nodes.agentType
+      description: Agent Type of nodes.
       type: String
     - contextPath: Tripwire.Nodes.agentVersion
       description: Agent versions of nodes.
@@ -489,7 +513,7 @@ script:
     - contextPath: Tripwire.Nodes.version
       description: Versions of nodes.
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
   longRunning: false

@@ -1,8 +1,7 @@
 from datetime import datetime
 
-import pytest
-
-from Tripwire import Client, fetch_incidents, prepare_fetch, filter_nodes, filter_elements, filter_rules, filter_versions
+from Tripwire import Client, fetch_incidents, prepare_fetch, filter_nodes, filter_elements, filter_rules, \
+    filter_versions
 from test_data.raw_response import VERSIONS_RAW_RESPONSE
 
 

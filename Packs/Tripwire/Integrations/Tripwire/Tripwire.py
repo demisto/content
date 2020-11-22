@@ -4,9 +4,8 @@ from CommonServerUserPython import *
 
 import json
 import urllib3
-import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast, Callable
+from typing import Any, Dict, Tuple, List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -224,7 +223,7 @@ def prepare_fetch(params: dict, first_fetch: str):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, args: Dict[str, Any]) -> str:
+def test_module(client: Client, args: dict) -> str:
     """Tests API connectivity and authentication'
 
     :type client: ``dict``
@@ -236,8 +235,8 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    if demisto.params().get('isFetch'):
-        params, fetch_filter, last_fetch = prepare_fetch(demisto.params(), demisto.params().get('first_fetch'))
+    if args.get('isFetch'):
+        params, fetch_filter, last_fetch = prepare_fetch(args, args.get('first_fetch', ''))
         fetch_incidents(client=client, last_fetch=last_fetch, fetch_filter=fetch_filter, max_results=1)
 
     client.get_nodes("")
@@ -344,7 +343,7 @@ def elements_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def fetch_incidents(client: Client, max_results: int, last_fetch: str, fetch_filter: Optional[str] = ''
+def fetch_incidents(client: Client, max_results: int, last_fetch: str, fetch_filter: str = ''
                     ) -> Tuple[Dict[str, str], List[dict]]:
     """
     :type client: ``Client``
@@ -418,7 +417,6 @@ def main() -> None:
         LOG(f'Command being called is {command}')
 
         commands = {
-            'test-module': test_module,
             "tripwire-versions-list": versions_list_command,
             "tripwire-rules-list": rules_list_command,
             "tripwire-elements-list": elements_list_command,
@@ -428,6 +426,9 @@ def main() -> None:
 
         if command in commands:
             return_results(commands[command](client, demisto.args()))
+        elif command == 'test-module':
+            return_results(test_module(client, demisto.params()))
+
         elif command == 'fetch-incidents':
             max_fetch = params.get('max_fetch', 10)
             params, fetch_filter, last_fetch = prepare_fetch(params, params.get('first_fetch'))
