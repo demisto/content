@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 127553b1-ec0d-4d35-8fa8-74da0b82c879
+    taskid: df5ec691-577e-4ae2-8647-3617a447e353
     type: start
     task:
-      id: 127553b1-ec0d-4d35-8fa8-74da0b82c879
+      id: df5ec691-577e-4ae2-8647-3617a447e353
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 3491510a-77e8-49dc-80b2-8e1c3a35ffba
+    taskid: 18a861eb-da27-4c9c-886f-cd050c3eaca2
     type: regular
     task:
-      id: 3491510a-77e8-49dc-80b2-8e1c3a35ffba
+      id: 18a861eb-da27-4c9c-886f-cd050c3eaca2
       version: -1
       name: Import File To Server From URL
       script: '|||cloudconvert-import'
@@ -67,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 9aa9bd79-c70e-488e-8b03-6dda472407f1
+    taskid: 74d14da9-de0d-4a50-86d4-afc13948f420
     type: playbook
     task:
-      id: 9aa9bd79-c70e-488e-8b03-6dda472407f1
+      id: 74d14da9-de0d-4a50-86d4-afc13948f420
       version: -1
       name: GenericPolling - Wait For Import Operation To Finish
       description: |-
@@ -123,10 +123,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 2c674755-6ed7-434b-855d-8c165c6a6976
+    taskid: b878af20-c95e-4a0d-88cd-ddffc4f4910e
     type: regular
     task:
-      id: 2c674755-6ed7-434b-855d-8c165c6a6976
+      id: b878af20-c95e-4a0d-88cd-ddffc4f4910e
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -159,10 +159,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: d5a95436-1ec7-4dd4-8ad3-8b82fc2099fa
+    taskid: 828349bb-f35c-41b2-8ad2-38cccafcb6d0
     type: regular
     task:
-      id: d5a95436-1ec7-4dd4-8ad3-8b82fc2099fa
+      id: 828349bb-f35c-41b2-8ad2-38cccafcb6d0
       version: -1
       name: Convert File
       script: '|||cloudconvert-convert'
@@ -204,10 +204,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 7dd421de-f380-47f4-833b-104c94f9858b
+    taskid: d9de62f2-5083-45a3-879a-902c99b74112
     type: playbook
     task:
-      id: 7dd421de-f380-47f4-833b-104c94f9858b
+      id: d9de62f2-5083-45a3-879a-902c99b74112
       version: -1
       name: GenericPolling - Wait For Convert Operation To Finish
       description: |-
@@ -271,10 +271,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: d3b1f440-fdc6-4e93-8b94-fa768e8d5e19
+    taskid: 75480f24-5462-4c97-880c-61d7d966bbed
     type: regular
     task:
-      id: d3b1f440-fdc6-4e93-8b94-fa768e8d5e19
+      id: 75480f24-5462-4c97-880c-61d7d966bbed
       version: -1
       name: Export File To War Room Entry
       script: '|||cloudconvert-export'
@@ -316,10 +316,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 93d18a33-2f2f-4a86-8ca3-880d61d133d7
+    taskid: e33ea27f-0346-4aaa-83f0-d6cc8c715cf7
     type: title
     task:
-      id: 93d18a33-2f2f-4a86-8ca3-880d61d133d7
+      id: e33ea27f-0346-4aaa-83f0-d6cc8c715cf7
       version: -1
       name: Done!
       type: title
@@ -331,7 +331,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3680
+          "y": 3780
         }
       }
     note: false
@@ -341,10 +341,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 3c2f36c0-91cd-4bdd-80da-96618a5465a9
+    taskid: fb818712-fcdc-45cc-82c0-723e14d7891a
     type: condition
     task:
-      id: 3c2f36c0-91cd-4bdd-80da-96618a5465a9
+      id: fb818712-fcdc-45cc-82c0-723e14d7891a
       version: -1
       name: Verify - Check If Import Request Sent Successfully
       type: condition
@@ -400,10 +400,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: e6513f16-a810-4a5b-8d1e-b24168e0b2d8
+    taskid: 2360ff07-56de-4c2e-8327-91ca7d467009
     type: condition
     task:
-      id: e6513f16-a810-4a5b-8d1e-b24168e0b2d8
+      id: 2360ff07-56de-4c2e-8327-91ca7d467009
       version: -1
       name: Verify - Check If Convert Request Sent Successfully
       type: condition
@@ -459,10 +459,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 4ade2de2-1a68-4525-8c5e-4c10da974357
+    taskid: f8b7ad22-f454-42d6-8a50-754165958fb0
     type: condition
     task:
-      id: 4ade2de2-1a68-4525-8c5e-4c10da974357
+      id: f8b7ad22-f454-42d6-8a50-754165958fb0
       version: -1
       name: Verify command results - export
       type: condition
@@ -518,10 +518,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: e5b4f967-445e-428c-84f0-9a970d245297
+    taskid: 548e8bfe-5bfd-4cbf-8ea3-05eef7ade0ae
     type: playbook
     task:
-      id: e5b4f967-445e-428c-84f0-9a970d245297
+      id: 548e8bfe-5bfd-4cbf-8ea3-05eef7ade0ae
       version: -1
       name: GenericPolling - Wait For Export Request To Finish
       description: |-
@@ -538,7 +538,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "47"
     scriptarguments:
       AdditionalPollingCommandArgNames:
         simple: create_war_room_entry
@@ -577,7 +577,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1640
+          "y": 1590
         }
       }
     note: false
@@ -587,10 +587,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 593bfb6e-f3b5-41bc-8d8c-0816c61bded4
+    taskid: ad50c0f8-4417-4f52-8f24-686edd03a3a3
     type: regular
     task:
-      id: 593bfb6e-f3b5-41bc-8d8c-0816c61bded4
+      id: ad50c0f8-4417-4f52-8f24-686edd03a3a3
       version: -1
       name: Create Sample File
       description: Sends http request. Returns the response as json.
@@ -622,7 +622,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2540
+          "y": 2650
         }
       }
     note: false
@@ -632,10 +632,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 7f6d7ab2-efc8-41cc-8508-439151676efe
+    taskid: 9c7e10b0-0489-4fbd-8f05-b03d2fc763e4
     type: condition
     task:
-      id: 7f6d7ab2-efc8-41cc-8508-439151676efe
+      id: 9c7e10b0-0489-4fbd-8f05-b03d2fc763e4
       version: -1
       name: Check export type
       type: condition
@@ -670,10 +670,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: a7fb6a01-e9c1-448d-856a-e2f789f3c86d
+    taskid: 223a37ef-4004-4af8-8cae-1b8f03e889c7
     type: condition
     task:
-      id: a7fb6a01-e9c1-448d-856a-e2f789f3c86d
+      id: 223a37ef-4004-4af8-8cae-1b8f03e889c7
       version: -1
       name: Verify - Check Format Of Resulted File
       type: condition
@@ -701,7 +701,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1790
+          "y": 1880
         }
       }
     note: false
@@ -711,10 +711,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 10a667b1-b550-4702-8156-a0b8c045557d
+    taskid: 6081ef77-2cea-42a5-8ddd-e16a230d3f66
     type: condition
     task:
-      id: 10a667b1-b550-4702-8156-a0b8c045557d
+      id: 6081ef77-2cea-42a5-8ddd-e16a230d3f66
       version: -1
       name: Verify - Check If We Got A Resulted URL
       type: condition
@@ -736,7 +736,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2240
+          "y": 2320
         }
       }
     note: false
@@ -746,10 +746,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: d6bb441d-ef49-4aa3-8f67-5cd96a6e2ddb
+    taskid: a1eb30ad-20ac-432b-884f-38242222da7d
     type: condition
     task:
-      id: d6bb441d-ef49-4aa3-8f67-5cd96a6e2ddb
+      id: a1eb30ad-20ac-432b-884f-38242222da7d
       version: -1
       name: Verify - Check Format Of Resulted File
       type: condition
@@ -777,7 +777,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3500
+          "y": 3590
         }
       }
     note: false
@@ -787,10 +787,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 549f5fc3-d14a-4555-87c9-56d852656aa4
+    taskid: f18b10a5-afcf-4f56-8347-9ecfd3ac9d27
     type: regular
     task:
-      id: 549f5fc3-d14a-4555-87c9-56d852656aa4
+      id: f18b10a5-afcf-4f56-8347-9ecfd3ac9d27
       version: -1
       name: Create Sample File
       description: Sends http request. Returns the response as json.
@@ -822,7 +822,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3190
+          "y": 3280
         }
       }
     note: false
@@ -832,10 +832,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: f6e5fc0d-4c6e-464e-8632-06e3a7bcefa5
+    taskid: 23e56a6d-8f0c-45b8-8f23-17307ea4e5d2
     type: regular
     task:
-      id: f6e5fc0d-4c6e-464e-8632-06e3a7bcefa5
+      id: 23e56a6d-8f0c-45b8-8f23-17307ea4e5d2
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -858,7 +858,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1950
+          "y": 2040
         }
       }
     note: false
@@ -868,10 +868,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 9a3d5c13-b0f3-48ee-899a-27402c2cd7c5
+    taskid: aee05bef-c7ea-46da-8230-5ffab8d7eba7
     type: regular
     task:
-      id: 9a3d5c13-b0f3-48ee-899a-27402c2cd7c5
+      id: aee05bef-c7ea-46da-8230-5ffab8d7eba7
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -894,7 +894,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2400
+          "y": 2510
         }
       }
     note: false
@@ -904,10 +904,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: af9cd053-98d0-4660-816d-72912f4cfdc1
+    taskid: 6fc41ee6-f1ea-45cc-88a5-b3f449b83b27
     type: regular
     task:
-      id: af9cd053-98d0-4660-816d-72912f4cfdc1
+      id: 6fc41ee6-f1ea-45cc-88a5-b3f449b83b27
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -930,7 +930,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3010
+          "y": 3120
         }
       }
     note: false
@@ -940,10 +940,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 0fc00f9d-b382-4549-8a25-5f7d5c323cf1
+    taskid: 2363dbc3-ebc6-4d9e-86d8-0f145489bfb2
     type: playbook
     task:
-      id: 0fc00f9d-b382-4549-8a25-5f7d5c323cf1
+      id: 2363dbc3-ebc6-4d9e-86d8-0f145489bfb2
       version: -1
       name: Convert URL TO URL Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
@@ -972,7 +972,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2100
+          "y": 2170
         }
       }
     note: false
@@ -982,10 +982,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: ad9bddb8-c746-4bc6-8318-2d194ec66a0a
+    taskid: 0f75e0de-4bcd-43b6-8c77-947f7c74f878
     type: playbook
     task:
-      id: ad9bddb8-c746-4bc6-8318-2d194ec66a0a
+      id: 0f75e0de-4bcd-43b6-8c77-947f7c74f878
       version: -1
       name: Convert Entry TO URL Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
@@ -1014,7 +1014,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2680
+          "y": 2800
         }
       }
     note: false
@@ -1024,10 +1024,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 0278e430-66a5-4853-877e-0b8fecbb5560
+    taskid: 7a6d9d2d-e832-4812-89fc-179f0f0be470
     type: playbook
     task:
-      id: 0278e430-66a5-4853-877e-0b8fecbb5560
+      id: 7a6d9d2d-e832-4812-89fc-179f0f0be470
       version: -1
       name: Convert Entry To Entry Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
@@ -1056,7 +1056,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3350
+          "y": 3440
         }
       }
     note: false
@@ -1066,10 +1066,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: cdaf490d-129d-4191-87bb-9402b5f71586
+    taskid: fbe17ff1-ffe4-439f-87e4-8579728fab92
     type: condition
     task:
-      id: cdaf490d-129d-4191-87bb-9402b5f71586
+      id: fbe17ff1-ffe4-439f-87e4-8579728fab92
       version: -1
       name: Verify - Check If We Got A Resulted URL
       type: condition
@@ -1093,7 +1093,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2835
+          "y": 2965
         }
       }
     note: false
@@ -1103,10 +1103,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 63b54eaa-9dae-4d60-80c8-e16d31927a35
+    taskid: e31a328e-ad9b-40b4-8540-70e681ab4be8
     type: condition
     task:
-      id: 63b54eaa-9dae-4d60-80c8-e16d31927a35
+      id: e31a328e-ad9b-40b4-8540-70e681ab4be8
       version: -1
       name: IsIntegrationAvailable
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -1136,12 +1136,67 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "47":
+    id: "47"
+    taskid: a27dd8e2-7176-4719-8807-f2b5f32a7a61
+    type: regular
+    task:
+      id: a27dd8e2-7176-4719-8807-f2b5f32a7a61
+      version: -1
+      name: cloudconvert-check-status
+      description: Checks the status of an operation. Use the create_war_room_entry
+        argument to also create a War Room entry of the file when checking on an export
+        operation.
+      script: CloudConvert|||cloudconvert-check-status
+      type: regular
+      iscommand: true
+      brand: CloudConvert
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      create_war_room_entry:
+        simple: "True"
+      task_id:
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: export
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CloudConvert.Task.status
+                iscontext: true
+              right:
+                value:
+                  simple: finished
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4095,
+        "height": 4195,
         "width": 380,
         "x": 450,
         "y": -350
