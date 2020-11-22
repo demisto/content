@@ -3,12 +3,12 @@ commonfields:
   id: SecurityAndCompliance
   version: -1
 configuration:
-- defaultvalue: ps.compliance.protection.outlook.com
+- defaultvalue: https://ps.compliance.protection.outlook.com
   display: Search and Compliance URI
   name: uri
   required: true
   type: 0
-- display: UPN (Password for basic authentication only)
+- display: Email (Password for basic authentication only)
   name: credentials
   defaultvalue: ""
   type: 9

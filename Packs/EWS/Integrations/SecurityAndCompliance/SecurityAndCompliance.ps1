@@ -38,13 +38,13 @@ function GetRedirectUri {
     param([string]$uri, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
     $end_uri = $uri
     if ($password){
-        $end_uri = "https://$uri/powershell-liveid/"
+        $end_uri = "$uri/powershell-liveid/"
     }
     elseif ($bearer_token) {
         $token_value = ConvertTo-SecureString "Bearer $bearer_token" -AsPlainText -Force
         $credential = New-Object System.Management.Automation.PSCredential($upn, $token_value)
         $params = @{
-            "URI" = "https://$uri/powershell-liveid?BasicAuthToOAuthConversion=true;PSVersion=7.0.3"
+            "URI" = "$uri/powershell-liveid?BasicAuthToOAuthConversion=true;PSVersion=7.0.3"
             "Method" = "Post"
             "Credential" = $credential
             "NoProxy" = !$proxy
@@ -284,7 +284,7 @@ function ParseSearchToEntryContext([psobject]$search, [int]$limit = 0, [bool]$al
         "SharePointLocationExclusion" = $search.SharePointLocationExclusion
         "Size" = $search.Size
         "Status" = $search.Status
-        "SuccessResults" = ParseSuccessResults $search.SuccessResults $limit $all_results
+        "SuccessResults" = ParseSuccessResults -success_results $search.SuccessResults -limit $limit -all_results $all_results
         "TenantId" = $search.TenantId
     }
     <#
@@ -293,6 +293,12 @@ function ParseSearchToEntryContext([psobject]$search, [int]$limit = 0, [bool]$al
 
         .PARAMETER search
         search raw psobject.
+
+        .PARAMETER all_results
+        Whether to include also not found locations.
+
+        .PARAMETER limit
+        Limit found items.
 
         .EXAMPLE
         ParseSearchToEntryContext $search
@@ -339,7 +345,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
         "SearchName" = $search_action.SearchName
         "Status" = $search_action.Status
         "TenantId" = $search_action.TenantId
-        "Results" = ParseResults $search_action.Results $limit
+        "Results" = ParseResults -results $search_action.Results -limit $limit
     }
     <#
         .DESCRIPTION
@@ -1024,7 +1030,7 @@ class SecurityAndComplianceClient {
         <#
             .DESCRIPTION
             Stop compliance search by name in the Security & Compliance Center.
- 
+
             .PARAMETER search_name
             The name of the compliance search.
 
@@ -1318,7 +1324,7 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $raw_response = $client.GetSearch($kwargs.search_name, $kwargs.limit)
     # Entry context
     $entry_context = @{
-        $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext $raw_response $kwargs.limit $all_results
+        $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext -search $raw_response -limit $kwargs.limit -all_results $all_results
     }
     # Human readable - Basic info
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy

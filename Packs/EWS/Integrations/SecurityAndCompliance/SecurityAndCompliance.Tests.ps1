@@ -7,7 +7,7 @@ Describe 'StringRegexParse' {
     Context "SuccesResults" {
         It "No SuccesResults" {
             $string = ''
-            $parsed_object = ParseSuccessResults $string
+            $parsed_object = ParseSuccessResults $string -1
             $parsed_object | Should -Be $null
         }
 
@@ -18,7 +18,7 @@ Describe 'StringRegexParse' {
                 "ItemsCount" = 1
                 "Size" = 2
             }
-            $parsed_object = ParseSuccessResults $string
+            $parsed_object = ParseSuccessResults $string 1
 
             Compare-Object $excepted_object $parsed_object -Property Location, ItemsCount, Size, Count | Should -Be $null
         }
@@ -44,7 +44,7 @@ Describe 'StringRegexParse' {
             }
             )
 
-            $parsed_objects = ParseSuccessResults $string
+            $parsed_objects = ParseSuccessResults $string 3
 
             for ($i = 0; $i -lt $excepted_objects.Count; $i++) {
                 Compare-Object $excepted_objects[$i] $parsed_objects[$i] -Property Location, ItemsCount, Size, Count | Should -Be $null
@@ -71,7 +71,7 @@ Describe 'StringRegexParse' {
                 "DataLink" = "data"
             }
 
-            $parsed_object = ParseResults $string
+            $parsed_object = ParseResults $string 1
 
             Compare-Object $excepted_object $parsed_object -Property Location, Sender, Subject, Type, ReceivedTime ,Size, DataLink, Count | Should -Be $null
         }
@@ -109,7 +109,7 @@ Describe 'StringRegexParse' {
             }
             )
 
-            $parsed_objects = ParseResults $string
+            $parsed_objects = ParseResults $string 3
 
             for ($i = 0; $i -lt $excepted_objects.Count; $i++) {
                 Compare-Object $excepted_objects[$i] $parsed_objects[$i] -Property Location, Sender, Subject, Type, ReceivedTime ,Size, DataLink, Count | Should -Be $null
