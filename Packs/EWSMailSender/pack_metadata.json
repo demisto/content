@@ -2,7 +2,7 @@
   "name": "EWS Mail Sender",
   "description": "Exchange Web Services and Office 365 Email sender",
   "support": "xsoar",
-  "currentVersion": "1.0.0",
+  "currentVersion": "1.1.0",
   "author": "Cortex XSOAR",
   "url": "https://www.paloaltonetworks.com/cortex",
   "email": "",
