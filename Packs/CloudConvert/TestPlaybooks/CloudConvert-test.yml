@@ -947,7 +947,7 @@ tasks:
       version: -1
       name: Convert URL TO URL Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
-      playbookName: CloudConvert
+      playbookName: CloudConvert - Convert File
       type: playbook
       iscommand: false
       brand: ""
@@ -989,7 +989,7 @@ tasks:
       version: -1
       name: Convert Entry TO URL Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
-      playbookName: CloudConvert
+      playbookName: CloudConvert - Convert File
       type: playbook
       iscommand: false
       brand: ""
@@ -1031,7 +1031,7 @@ tasks:
       version: -1
       name: Convert Entry To Entry Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
-      playbookName: CloudConvert
+      playbookName: CloudConvert - Convert File
       type: playbook
       iscommand: false
       brand: ""
