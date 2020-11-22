@@ -1,7 +1,7 @@
 id: Carbon Black Live Response - Create active session
 version: -1
 name: Carbon Black Live Response - Create active session
-description: Create an active sessio.
+description: Creates an active session.
 starttaskid: "0"
 tasks:
   "0":
