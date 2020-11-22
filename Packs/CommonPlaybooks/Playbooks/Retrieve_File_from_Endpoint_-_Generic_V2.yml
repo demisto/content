@@ -246,3 +246,5 @@ tests:
 - URL Enrichment - Generic v2 - Test
 - Wait Until Datetime - Test
 fromversion: 5.0.0
+tests:
+- Generic_retrieve_file_-_Test
