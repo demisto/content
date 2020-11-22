@@ -12,6 +12,6 @@ tags:
 - server
 timeout: 0s
 type: python
-dockerimage: demisto/jmespath:1.0.0.10854
+dockerimage: demisto/jmespath:1.0.0.12410
 dependson: {}
 fromversion: 5.0.0
