@@ -8,6 +8,7 @@ import sys
 import os
 
 from Tests.configure_and_test_integration_instances import Build, Server
+from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import get_json_file
 
 INDEX_FILE_PATH = 'index.json'
@@ -99,7 +100,7 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
 
     result_object = ast.literal_eval(response_data)
     message = result_object.get('message', '')
-    logging.info(f'Failed to retrieve premium packs - with status code {status_code}\n{message}\n')
+    logging.error(f'Failed to retrieve premium packs - with status code {status_code}\n{message}\n')
     return None
 
 
@@ -113,10 +114,11 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data):
     for (server_pack, index_pack) in zip(sorted_server_packs, sorted_index_packs):
         assert server_pack["id"] == index_pack["id"]
         assert server_pack["price"] == index_pack["price"]
-        logging.info(f'Pack: {server_pack["id"]} is fine.')
+        logging.success(f'Pack: {server_pack["id"]} is fine.')
 
 
 def main():
+    install_logging('Validate Premium Packs.log')
     logging.info('Retrieving the index fle')
     options = options_handler()
     if not options.only_check_index_file:
@@ -144,7 +146,7 @@ def main():
             if paid_packs is not None:
                 logging.info(f'Verifying premium packs in {host}')
                 verify_server_paid_packs_by_index(paid_packs, index_data)
-                logging.info(f'All premium packs in host: {host} are valid')
+                logging.success(f'All premium packs in host: {host} are valid')
             else:
                 os.remove(index_file_path)
                 logging.error(f'Missing premium packs in host: {host}')
