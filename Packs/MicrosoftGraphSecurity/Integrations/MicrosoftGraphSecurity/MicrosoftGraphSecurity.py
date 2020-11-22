@@ -53,9 +53,7 @@ class MsGraphClient:
         filters = " and ".join(filters)
         cmd_url = 'security/alerts'
         params = {'$filter': filters}
-        demisto.debug(f'Search alerts params: {params}')
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
-        demisto.debug(f'Search alerts response: {response}')
         return response
 
     def get_alert_details(self, alert_id):
@@ -99,19 +97,14 @@ class MsGraphClient:
 
 def create_filter_query(filter_param: str, providers_param: str):
     filter_query = ""
-    demisto.debug(f'filter_param: {filter_param}')
-    demisto.debug(f'providers_param: {providers_param}')
     if providers_param:
         providers_query = []
         providers_lst = providers_param.split(',')
         for provider in providers_lst:
             providers_query.append(f"vendorInformation/provider eq '{provider}'")
         filter_query = (" or ".join(providers_query))
-        demisto.debug(f'filter_query providers: {filter_query}')
     if filter_param:  # overrides the providers query, if given
         filter_query = filter_param
-        demisto.debug(f'filter_query filter: {filter_query}')
-    demisto.debug(f'filter_query: {filter_query}')
     return filter_query
 
 
@@ -139,7 +132,6 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
     if incidents:
         count = 0
         incidents = sorted(incidents, key=lambda k: k['createdDateTime'])  # sort the incidents by time-increasing order
-        demisto.debug(f'incidents: {incidents}')
         last_incident_time = last_run.get('time', '0')
         demisto.debug(f'Incidents times: {[incidents[i]["createdDateTime"] for i in range(len(incidents))]}\n')
         for incident in incidents:
