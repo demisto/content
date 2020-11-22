@@ -11,7 +11,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- defaultvalue: 'true'
+- defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -40,22 +40,31 @@ script:
     outputs:
     - contextPath: VMWare.Name
       description: VM name
+      type: String
     - contextPath: VMWare.Template
       description: true if template, else false
+      type: bool
     - contextPath: VMWare.Path
       description: Path to VM
+      type: String
     - contextPath: VMWare.Guest
       description: Guest full name
+      type: String
     - contextPath: VMWare.UUID
       description: VM instance UUID
+      type: String
     - contextPath: VMWare.IP
       description: VM IP address
+      type: String
     - contextPath: VMWare.State
       description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      type: String
     - contextPath: VMWare.HostName
       description: Host name of VM
+      type: String
     - contextPath: VMWare.MACAddress
       description: MAC Address of VM
+      type: String
   - arguments:
     - description: VM UUID of virtual machine to be powered on.
       name: vm-uuid
@@ -73,8 +82,10 @@ script:
     outputs:
     - contextPath: VMWare.UUID
       description: VM instance UUID
+      type: String
     - contextPath: VMWare.State
       description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      type: String
   - arguments:
     - description: VM UUID of virtual machine to be powered on.
       name: vm-uuid
@@ -92,8 +103,10 @@ script:
     outputs:
     - contextPath: VMWare.UUID
       description: VM instance UUID
+      type: String
     - contextPath: VMWare.State
       description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      type: String
   - arguments:
     - description: VM UUID of virtual machine to reboot.
       name: vm-uuid
@@ -111,8 +124,10 @@ script:
     outputs:
     - contextPath: VMWare.UUID
       description: VM instance UUID
+      type: String
     - contextPath: VMWare.State
       description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      type: String
   - arguments:
     - description: VM UUID of virtual machine to be suspended.
       name: vm-uuid
@@ -130,8 +145,10 @@ script:
     outputs:
     - contextPath: VMWare.UUID
       description: VM instance UUID
+      type: String
     - contextPath: VMWare.State
       description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      type: String
   - arguments:
     - description: VM UUID of virtual machine to reboot.
       name: vm-uuid
@@ -183,8 +200,10 @@ script:
     outputs:
     - contextPath: VMWare.UUID
       description: VM instance UUID
+      type: String
     - contextPath: VMWare.Snapshot
       description: Name of the snapshot reverted to.
+      type: String
   - arguments:
     - description: VM UUID of virtual machine to get events of.
       name: vm-uuid
@@ -221,8 +240,10 @@ script:
     outputs:
     - contextPath: VMWare.UUID
       description: VM instance UUID
+      type: String
     - contextPath: VMWare.NICState
       description: VM NIC State (i.e. connected, disconnected, delete)
+      type: String
   dockerimage: demisto/vmware:1.0-alpine
   runonce: false
   script: ''

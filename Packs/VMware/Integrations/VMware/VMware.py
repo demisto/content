@@ -1,4 +1,3 @@
-import os
 import ssl
 import sys
 from datetime import datetime
@@ -25,7 +24,7 @@ def login():
                           user=USERNAME,
                           pwd=PASSWORD,
                           port=PORT)
-    except:
+    except Exception:
         si = SmartConnect(host=URL,
                           user=USERNAME,
                           pwd=PASSWORD,
@@ -39,7 +38,7 @@ def logout(si):
 
 
 def get_vm(uuid):
-    vm = si.content.searchIndex.FindByUuid(None, uuid, True, True)
+    vm = si.content.searchIndex.FindByUuid(None, uuid, True, True)  # type: ignore
     if vm is None:
         raise SystemExit('Unable to locate Virtual Machine.')
     return vm
@@ -47,7 +46,7 @@ def get_vm(uuid):
 
 def get_vms():
     data = []
-    content = si.RetrieveContent()
+    content = si.RetrieveContent()  # type: ignore
     container = content.rootFolder
     viewType = [vim.VirtualMachine]
     recursive = True
@@ -56,7 +55,7 @@ def get_vms():
     for child in children:
         summary = child.summary
         for dev in child.config.hardware.device:
-            if isinstance(dev, vim.vm.device.VirtualEthernetCard):
+            if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
                 macAddress = dev.macAddress
                 break
         data.append({
@@ -93,7 +92,7 @@ def power_on(uuid):
     if vm.runtime.powerState == 'poweredOn':
         raise SystemExit('Virtual Machine is already powered on.')
     task = vm.PowerOn()
-    while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+    while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:    # type: ignore
         time.sleep(1)
     if task.info.state == 'success':
         ec = {
@@ -119,7 +118,7 @@ def power_off(uuid):
     if vm.runtime.powerState == 'poweredOff':
         raise SystemExit('Virtual Machine is already powered off.')
     task = vm.PowerOff()
-    while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+    while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:    # type: ignore
         time.sleep(1)
     if task.info.state == 'success':
         ec = {
@@ -145,7 +144,7 @@ def suspend(uuid):
     if vm.runtime.powerState == 'suspended':
         raise SystemExit('Virtual Machine is already suspended.')
     task = vm.Suspend()
-    while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+    while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:    # type: ignore
         time.sleep(1)
     if task.info.state == 'success':
         ec = {
@@ -192,8 +191,8 @@ def hard_reboot(uuid):
 def wait_for_tasks(si, tasks):
     propertyCollector = si.content.propertyCollector
     taskList = [str(task) for task in tasks]
-    objSpecs = [vmodl.query.PropertyCollector.ObjectSpec(obj=task) for task in tasks]
-    propertySpec = vmodl.query.PropertyCollector.PropertySpec(type=vim.Task, pathSet=[], all=True)
+    objSpecs = [vmodl.query.PropertyCollector.ObjectSpec(obj=task) for task in tasks]  # type: ignore
+    propertySpec = vmodl.query.PropertyCollector.PropertySpec(type=vim.Task, pathSet=[], all=True)  # type: ignore
     filterSpec = vmodl.query.PropertyCollector.FilterSpec()
     filterSpec.objectSet = objSpecs
     filterSpec.propSet = [propertySpec]
@@ -214,9 +213,9 @@ def wait_for_tasks(si, tasks):
                             continue
                         if not str(task) in taskList:
                             continue
-                        if state == vim.TaskInfo.State.success:
+                        if state == vim.TaskInfo.State.success:  # type: ignore
                             taskList.remove(str(task))
-                        elif state == vim.TaskInfo.State.error:
+                        elif state == vim.TaskInfo.State.error:  # type: ignore
                             raise task.info.error
             version = update.version
     finally:
@@ -285,13 +284,13 @@ def get_snapshots(snapshots, snapname):
 def get_events(uuid, event_type):
     vm = get_vm(uuid)
     hr = []
-    content = si.RetrieveServiceContent()
+    content = si.RetrieveServiceContent()   # type: ignore
     eventManager = content.eventManager
-    filter = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")
+    filter = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")    # type: ignore
     filterSpec = vim.event.EventFilterSpec()
     ids = event_type.split(',')
-    filterSpec.eventTypeId = ids
-    filterSpec.entity = filter
+    filterSpec.eventTypeId = ids    # type: ignore
+    filterSpec.entity = filter  # type: ignore
     eventRes = eventManager.QueryEvents(filterSpec)
     for e in eventRes:
         hr.append({
@@ -316,22 +315,22 @@ def change_nic_state(args):
     nic_label = nic_prefix_header + str(nic_number)
     virtual_nic_device = None
     for dev in vm.config.hardware.device:
-        if isinstance(dev, vim.vm.device.VirtualEthernetCard) and dev.deviceInfo.label == nic_label:
+        if isinstance(dev, vim.vm.device.VirtualEthernetCard) and dev.deviceInfo.label == nic_label:    # type: ignore
             virtual_nic_device = dev
     if not virtual_nic_device:
         raise SystemExit("Virtual {} could not be found.".format(nic_label))
 
-    virtual_nic_spec = vim.vm.device.VirtualDeviceSpec()
+    virtual_nic_spec = vim.vm.device.VirtualDeviceSpec()    # type: ignore
     if new_nic_state == 'delete':
-        virtual_nic_spec.operation = vim.vm.device.VirtualDeviceSpec.Operation.remove
+        virtual_nic_spec.operation = vim.vm.device.VirtualDeviceSpec.Operation.remove   # type: ignore
     else:
-        virtual_nic_spec.operation = vim.vm.device.VirtualDeviceSpec.Operation.edit
+        virtual_nic_spec.operation = vim.vm.device.VirtualDeviceSpec.Operation.edit  # type: ignore
     virtual_nic_spec.device = virtual_nic_device
     virtual_nic_spec.device.key = virtual_nic_device.key
     virtual_nic_spec.device.macAddress = virtual_nic_device.macAddress
     virtual_nic_spec.device.backing = virtual_nic_device.backing
     virtual_nic_spec.device.wakeOnLanEnabled = virtual_nic_device.wakeOnLanEnabled
-    connectable = vim.vm.device.VirtualDevice.ConnectInfo()
+    connectable = vim.vm.device.VirtualDevice.ConnectInfo()  # type: ignore
     if new_nic_state == 'connect':
         connectable.connected = True
         connectable.startConnected = True
@@ -343,12 +342,12 @@ def change_nic_state(args):
     virtual_nic_spec.device.connectable = connectable
     dev_changes = []
     dev_changes.append(virtual_nic_spec)
-    spec = vim.vm.ConfigSpec()
+    spec = vim.vm.ConfigSpec()  # type: ignore
     spec.deviceChange = dev_changes
     task = vm.ReconfigVM_Task(spec=spec)
     wait_for_tasks(si, [task])
 
-    res_new_nic_state = new_nic_state + "ed".replace("eed", "ed")
+    res_new_nic_state = (new_nic_state + "ed").replace("eed", "ed")
 
     if task.info.state == 'success':
         ec = {
@@ -366,7 +365,7 @@ def change_nic_state(args):
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occured while trying to chage NIC state.')
+        raise SystemExit('Error occurred while trying to change NIC state.')
 
 
 sout = sys.stdout
@@ -400,12 +399,13 @@ try:
         result = change_nic_state(demisto.args())
     res.append(result)
 except Exception as ex:
-    res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})
+    res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})  # type: ignore
 
 try:
     logout(si)
 except Exception as ex:
-    res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
+    res.append({     # type: ignore
+        "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
 
 sys.stdout = sout
 demisto.results(res)
