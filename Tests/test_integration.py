@@ -3,6 +3,7 @@ from __future__ import print_function
 import ast
 import copy
 import json
+import logging
 import re
 import time
 from typing import Optional, Tuple
@@ -340,7 +341,7 @@ class Docker:
 # ----- Functions ----- #
 
 # get integration configuration
-def __get_integration_config(client, integration_name, prints_manager, thread_index=0):
+def __get_integration_config(client, integration_name, prints_manager=None, thread_index=0):
     body = {
         'page': 0, 'size': 100, 'query': 'name:' + integration_name
     }
@@ -348,7 +349,10 @@ def __get_integration_config(client, integration_name, prints_manager, thread_in
         res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
                                                       method='POST', body=body)
     except ApiException as conn_error:
-        prints_manager.add_print_job(conn_error.body, print, thread_index)
+        if prints_manager:
+            prints_manager.add_print_job(conn_error.body, print, thread_index)
+        else:
+            logging.exception(f'failed to get integration {integration_name} configuration')
         return None
 
     res = ast.literal_eval(res_raw[0])
@@ -357,9 +361,11 @@ def __get_integration_config(client, integration_name, prints_manager, thread_in
     total_sleep = 0
     while 'configurations' not in res:
         if total_sleep == TIMEOUT:
-            error_message = "Timeout - failed to get integration {} configuration. Error: {}".format(integration_name,
-                                                                                                     res)
-            prints_manager.add_print_job(error_message, print_error, thread_index)
+            error_message = f"Timeout - failed to get integration {integration_name} configuration. Error: {res}"
+            if prints_manager:
+                prints_manager.add_print_job(error_message, print_error, thread_index)
+            else:
+                logging.error(error_message)
             return None
 
         time.sleep(SLEEP_INTERVAL)
@@ -369,17 +375,29 @@ def __get_integration_config(client, integration_name, prints_manager, thread_in
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
 
     if not match_configurations or len(match_configurations) == 0:
-        prints_manager.add_print_job('integration was not found', print_error, thread_index)
+        if prints_manager:
+            prints_manager.add_print_job('integration was not found', print_error, thread_index)
+        else:
+            logging.error('integration was not found')
         return None
 
     return match_configurations[0]
 
 
 # __test_integration_instance
-def __test_integration_instance(client, module_instance, prints_manager, thread_index=0):
+def __test_integration_instance(client, module_instance, prints_manager=None, thread_index=0):
     connection_retries = 3
     response_code = 0
-    prints_manager.add_print_job("trying to connect.", print_warning, thread_index)
+    integration_of_instance = module_instance.get('brand', '')
+    instance_name = module_instance.get('name', '')
+    if prints_manager:
+        prints_manager.add_print_job(
+            f'Running "test-module" for instance "{instance_name}" of integration "{integration_of_instance}".',
+            print_warning,
+            thread_index)
+    else:
+        logging.info(
+            f'Running "test-module" for instance "{instance_name}" of integration "{integration_of_instance}".')
     for i in range(connection_retries):
         try:
             response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
@@ -388,31 +406,39 @@ def __test_integration_instance(client, module_instance, prints_manager, thread_
                                                                                   _request_timeout=120)
             break
         except ApiException as conn_err:
-            error_msg = 'Failed to test integration instance, error trying to communicate with demisto ' \
-                        'server: {} '.format(conn_err.body)
-            prints_manager.add_print_job(error_msg, print_error, thread_index)
+            if prints_manager:
+                error_msg = 'Failed to test integration instance, error trying to communicate with demisto server: ' \
+                            f'{conn_err.body} '
+                prints_manager.add_print_job(error_msg, print_error, thread_index)
+            else:
+                logging.exception(
+                    'Failed to test integration instance, error trying to communicate with demisto server')
             return False, None
         except urllib3.exceptions.ReadTimeoutError:
-            warning_msg = "Could not connect. Trying to connect for the {} time".format(i + 1)
-            prints_manager.add_print_job(warning_msg, print_warning, thread_index)
+            warning_msg = f"Could not connect. Trying to connect for the {i + 1} time"
+            if prints_manager:
+                prints_manager.add_print_job(warning_msg, print_warning, thread_index)
+            else:
+                logging.warning(warning_msg)
 
     if int(response_code) != 200:
-        test_failed_msg = 'Integration-instance test ("Test" button) failed.\nBad status code: ' + str(
-            response_code)
-        prints_manager.add_print_job(test_failed_msg, print_error, thread_index)
+        test_failed_msg = f'Integration-instance test ("Test" button) failed. Bad status code: {response_code}'
+        if prints_manager:
+            prints_manager.add_print_job(test_failed_msg, print_error, thread_index)
+        else:
+            logging.error(test_failed_msg)
         return False, None
 
     result_object = ast.literal_eval(response_data)
     success, failure_message = bool(result_object.get('success')), result_object.get('message')
     if not success:
         server_url = client.api_client.configuration.host
-        if failure_message:
-            test_failed_msg = 'Test integration failed - server: {}.\nFailure message: {}'.format(server_url,
-                                                                                                  failure_message)
+        test_failed_msg = f'Test integration failed - server: {server_url}.'
+        test_failed_msg += f'\nFailure message: {failure_message}' if failure_message else ' No failure message.'
+        if prints_manager:
             prints_manager.add_print_job(test_failed_msg, print_error, thread_index)
         else:
-            test_failed_msg = 'Test integration failed - server: {}.\nNo failure message.'.format(server_url)
-            prints_manager.add_print_job(test_failed_msg, print_error, thread_index)
+            logging.error(test_failed_msg)
     return success, failure_message
 
 
@@ -593,7 +619,7 @@ def __create_integration_instance(server, username, password, integration_name, 
     return module_instance, '', docker_image
 
 
-def __disable_integrations_instances(client, module_instances, prints_manager, thread_index=0):
+def __disable_integrations_instances(client, module_instances, prints_manager=None, thread_index=0):
     for configured_instance in module_instances:
         # tested with POSTMAN, this is the minimum required fields for the request.
         module_instance = {
@@ -601,21 +627,27 @@ def __disable_integrations_instances(client, module_instances, prints_manager, t
         }
         module_instance['enable'] = "false"
         module_instance['version'] = -1
-
+        logging.debug(f'Disabling integration {module_instance.get("name")}')
         try:
             res = demisto_client.generic_request_func(self=client, method='PUT',
                                                       path='/settings/integration',
                                                       body=module_instance)
         except ApiException as conn_err:
-            error_message = 'Failed to disable integration instance, error trying to communicate with demisto ' \
-                            'server: {} '.format(conn_err.body)
-            prints_manager.add_print_job(error_message, print_error, thread_index)
+            if prints_manager:
+                error_message = 'Failed to disable integration instance, error trying to communicate with demisto' \
+                                f' server: {conn_err.body}'
+                prints_manager.add_print_job(error_message, print_error, thread_index)
+            else:
+                logging.exception('Failed to disable integration instance')
             return
 
         if res[1] != 200:
-            error_message = 'disable instance failed with status code ' + str(res[1])
-            prints_manager.add_print_job(error_message, print_error, thread_index)
-            prints_manager.add_print_job(pformat(res), print_error, thread_index)
+            error_message = f'disable instance failed with status code {res[1]}'
+            if prints_manager:
+                prints_manager.add_print_job(error_message, print_error, thread_index)
+                prints_manager.add_print_job(pformat(res), print_error, thread_index)
+            else:
+                logging.error(f'disable instance failed, Error: {pformat(res)}')
 
 
 def __enable_integrations_instances(client, module_instances):
